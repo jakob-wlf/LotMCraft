@@ -42,7 +42,7 @@ public class AbilityHandler {
     public static DeferredItem<Item> CLEAVE_OF_PURIFICATION = ITEMS.registerItem("cleave_of_purification_ability",  CleaveOfPurificationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> HOLY_OATH = ITEMS.registerItem("holy_oath_ability",  HolyOathAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> NOTARY_BUFF = ITEMS.registerItem("notary_buff_ability",  GodSaysItsEffectiveAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> NOTARY_DEBUFF = ITEMS.registerItem("notary_debuff_ability",  HolyOathAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> NOTARY_DEBUFF = ITEMS.registerItem("notary_debuff_ability",  GodSaysItsNotEffectiveAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> TRAP = ITEMS.registerItem("trap_ability", TrapAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> PROVOKING = ITEMS.registerItem("provoking_ability", ProvokingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

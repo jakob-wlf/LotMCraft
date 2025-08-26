@@ -1,4 +1,4 @@
-// 1.21.1	2025-08-26T02:38:05.5234775	Item Models: lotmcraft
+// 1.21.1	2025-08-27T00:09:53.5819994	Item Models: lotmcraft
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/abomination.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/abyss.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/alchemist.json
@@ -154,6 +154,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/nightmare.
 fcdd6a50e2513fc9c9291e2d65f9afebc8eb73ce assets/lotmcraft/models/item/nightmare_potion.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/nightwatcher.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/notary.json
+2041fb0c252eef1802bcfb739698a98c080aaee3 assets/lotmcraft/models/item/notary_potion.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/ocean_songster.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/omniscient_eye.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/pale_emperor.json

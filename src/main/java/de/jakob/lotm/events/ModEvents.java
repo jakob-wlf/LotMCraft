@@ -31,8 +31,6 @@ import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 
 import java.util.*;
 
-import static de.jakob.lotm.item.ModItems.selectRandomIngredient;
-import static de.jakob.lotm.loottables.ChestLootModifier.selectRandomPotion;
 import static de.jakob.lotm.util.BeyonderData.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)

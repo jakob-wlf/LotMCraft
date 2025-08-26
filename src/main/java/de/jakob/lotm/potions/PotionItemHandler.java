@@ -43,6 +43,10 @@ public class PotionItemHandler {
                     new BeyonderPotion(properties, 7, "sun"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
+    public static DeferredItem<Item> NOTARY_POTION = ITEMS.registerItem("notary_potion", properties ->
+                    new BeyonderPotion(properties, 6, "sun"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
 
     public static DeferredItem<Item> SAILOR_POTION = ITEMS.registerItem("sailor_potion", properties ->
                     new BeyonderPotion(properties, 9, "tyrant"),

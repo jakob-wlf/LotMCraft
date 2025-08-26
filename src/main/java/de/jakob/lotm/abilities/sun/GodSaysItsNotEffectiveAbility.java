@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -13,10 +14,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class GodSaysItsEffectiveAbility extends AbilityItem {
-    public GodSaysItsEffectiveAbility(Properties properties) {
+public class GodSaysItsNotEffectiveAbility extends AbilityItem {
+    public GodSaysItsNotEffectiveAbility(Properties properties) {
         super(properties, 20);
     }
 
@@ -35,13 +37,15 @@ public class GodSaysItsEffectiveAbility extends AbilityItem {
         if(level.isClientSide)
             return;
 
+        List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 15).stream().filter(BeyonderData::isBeyonder).toList();
+
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
-        BeyonderData.addModifier(entity, "notary_buff", 1.35);
+        nearbyEntities.forEach(e -> BeyonderData.addModifier(e, "notary_debuff", .8));
         ServerScheduler.scheduleForDuration(0, 35, 20 * 20, () -> {
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.END_ROD, entity.getEyePosition().subtract(0, .4, 0), 25, 5, 0);
             RingExpansionRenderer.createRingForAll(entity.getEyePosition().subtract(0, .4, 0), 6, 20 * 2, 252 / 255f, 173 /255f, 3 / 255f, .65f, .5f, 1f, .5f, true, (ServerLevel) level);
         }, () -> {
-            BeyonderData.removeModifier(entity, "notary_buff");
+            nearbyEntities.forEach(e -> BeyonderData.removeModifier(e, "notary_debuff"));
         }, (ServerLevel) level);
     }
 }
