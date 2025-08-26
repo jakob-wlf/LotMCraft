@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "B": {
+      "item": "minecraft:blaze_powder"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "I I",
+    "IBI",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lotmcraft:brewing_cauldron"
+  }
+}

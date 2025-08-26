@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:item/generated",
+    "textures": {
+        "layer0": "lotmcraft:item/fool_card"
+    },"display": {
+    "firstperson_righthand": {
+      "translation": [1.25, 5.25, 0.75],
+      "scale": [0.65, 0.65, 0.65]
+    },
+    "firstperson_lefthand": {
+      "translation": [1.25, 5.25, 0.75],
+      "scale": [0.65, 0.65, 0.65]
+    }
+  }
+}

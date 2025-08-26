@@ -1,0 +1,242 @@
+{
+  "lotm.pathway": "Pathway",
+  "lotm.sequence": "Sequence",
+
+  "item.lotmcraft.fool_card": "Fool Card",
+  "item.lotmcraft.lotm_icon": "LotM Icon",
+  "item.lotmcraft.paper_figurine_substitute": "Paper Figurine Substitute",
+  "item.lotmcraft.mirror": "Mirror",
+  "item.lotmcraft.spacer": "",
+
+  "creativetab.lotmcraft.lotm_tab": "Lord of the Mysteries",
+  "creativetab.lotmcraft.abilities_tab": "Beyonder Abilities",
+  "creativetab.lotmcraft.passive_abilities_tab": "Passive Beyonder Abilities",
+  "creativetab.lotmcraft.beyonder_potions_tab": "Beyonder Potions",
+
+  "_comment000": "Key Binds-------------------------------------------------------------------------------------",
+  "key.beyonders.become_beyonder_debug": "Become a Beyonder",
+  "key.beyonders.switch_beyonder": "Switch Beyonder Pathway",
+  "key.beyonders.pathway_infos": "Open Pathway Infos",
+  "key.beyonders.clear_beyonder": "Clear Beyonder Status",
+  "key.beyonders.open_ability_selection": "Open Ability Selection",
+  "key.categories.beyonders": "Beyonders",
+  "key.beyonders.toggle_griefing": "Toggle Griefing",
+  "key.beyonders.show_passives": "Show Passive Abilities",
+  "key.beyonders.next_ability": "Next Ability",
+  "key.beyonders.previous_ability": "Previous Ability",
+  "key.beyonders.increase_sequence": "Increase Sequence",
+  "key.beyonders.decrease_sequence": "Decrease Sequence",
+
+
+
+  "_comment001": "Abilities------------------------------------------------------------------------------------",
+
+  "item.lotmcraft.cogitation_ability": "Cogitation",
+  "item.lotmcraft.divination_ability": "Divination",
+  "item.lotmcraft.spirit_vision_ability": "Spirit Vision",
+
+  "item.lotmcraft.illuminate_ability": "Illuminate",
+  "item.lotmcraft.holy_song_ability": "Holy Song",
+  "item.lotmcraft.holy_light_ability": "Holy Light",
+  "item.lotmcraft.fire_of_light_ability": "Fire of Light",
+  "item.lotmcraft.holy_light_summoning_ability": "Holy Light Summoning",
+  "item.lotmcraft.cleave_of_purification_ability": "Cleave of Purification",
+  "item.lotmcraft.holy_oath_ability": "Holy Oath",
+  "item.lotmcraft.notary_buff_ability": "God says its effective",
+  "item.lotmcraft.notary_debuff_ability": "God says its not effective",
+
+  "item.lotmcraft.trap_ability": "Trap",
+  "item.lotmcraft.provoking_ability": "Provoking",
+  "item.lotmcraft.pyrokinesis_ability": "Pyrokinesis",
+  "ability.lotmcraft.pyrokinesis.fireball": "Fireball",
+  "ability.lotmcraft.pyrokinesis.wall_of_fire": "Wall of Fire",
+  "ability.lotmcraft.pyrokinesis.fire_ravens": "Fire Ravens",
+  "ability.lotmcraft.pyrokinesis.flaming_spear": "Flaming Spear",
+  "ability.lotmcraft.pyrokinesis.flame_wave": "Flame Wave",
+
+  "item.lotmcraft.raging_blows_ability": "Raging Blows",
+  "item.lotmcraft.water_manipulation_ability": "Water Manipulation",
+  "ability.lotmcraft.water_manipulation.water_bolt": "Water Bolt",
+  "ability.lotmcraft.water_manipulation.aqueous_light": "Aqueous Light",
+  "ability.lotmcraft.water_manipulation.water_whip": "Water Whip",
+  "ability.lotmcraft.water_manipulation.water_surge": "Water Surge",
+  "ability.lotmcraft.water_manipulation.corrosive_rain": "Corrosive Rain",
+  "item.lotmcraft.wind_manipulation_ability": "Wind Manipulation",
+  "ability.lotmcraft.wind_manipulation.wind_blade": "Wind Blade",
+  "ability.lotmcraft.wind_manipulation.flight": "Flight",
+  "ability.lotmcraft.wind_manipulation.boost": "Boost",
+  "ability.lotmcraft.wind_manipulation.binding": "Wind Binding",
+
+
+  "item.lotmcraft.toxic_smoke_ability": "Toxic Smoke",
+  "item.lotmcraft.poisonous_flame_ability": "Poisonous Flame",
+
+  "item.lotmcraft.flame_controlling_ability": "Flame Controlling",
+  "item.lotmcraft.air_bullet_ability": "Air Bullet",
+  "item.lotmcraft.paper_figurine_substitute_ability": "Paper Figurine Substitute",
+  "item.lotmcraft.flaming_jump_ability": "Flaming Jump",
+  "item.lotmcraft.underwater_breathing_ability": "Underwater Breathing",
+
+  "item.lotmcraft.midnight_poem_ability": "Midnight Poem",
+  "ability.lotmcraft.midnight_poem.lullaby": "Lullaby",
+  "ability.lotmcraft.midnight_poem.wilt": "Wilt",
+
+  "item.lotmcraft.mighty_blow_ability": "Mighty Blow",
+  "item.lotmcraft.shadow_concealment_ability": "Shadow Concealment",
+  "item.lotmcraft.black_flame_ability": "Black Flame",
+  "ability.lotmcraft.black_flame.burn": "Burn",
+  "ability.lotmcraft.black_flame.shoot": "Shoot",
+  "ability.lotmcraft.black_flame.expel": "Expel",
+  "item.lotmcraft.frost_ability": "Frost Manipulation",
+  "ability.lotmcraft.frost.shoot": "Shoot",
+  "ability.lotmcraft.frost.spear": "Spear",
+  "ability.lotmcraft.frost.freeze_area": "Freeze Area",
+  "item.lotmcraft.invisibility_ability": "Invisibility",
+  "item.lotmcraft.mirror_substitution_ability": "Mirror Substitution",
+
+
+  "item.lotmcraft.plant_nurturing_ability": "Plant Nurturing",
+  "item.lotmcraft.healing_ability": "Healing",
+  "ability.lotmcraft.healing.self": "Heal Self",
+  "ability.lotmcraft.healing.others": "Heal Others",
+  "item.lotmcraft.cleanse_ability": "Cleansing",
+  "ability.lotmcraft.cleansing.self": "Cleanse Self",
+  "ability.lotmcraft.cleansing.others": "Cleanse Others",
+
+  "item.lotmcraft.door_opening_ability": "Door Opening",
+  "item.lotmcraft.spells_ability": "Spells",
+  "ability.lotmcraft.spells.electric_shock": "Electric Shock",
+  "ability.lotmcraft.spells.wind": "Wind",
+  "ability.lotmcraft.spells.freeze": "Freeze",
+  "ability.lotmcraft.spells.flash": "Flash",
+
+
+  "lotm.ability.cogitation.tick": "Cogitating",
+
+
+  "_comment002": "Passive Abilities-----------------------------------------------------------------------------",
+  "item.lotmcraft.physical_enhancements_red_priest_ability": "Physical Enhancements",
+  "item.lotmcraft.physical_enhancements_abyss_ability": "Physical Enhancements",
+  "item.lotmcraft.physical_enhancements_chained_ability": "Physical Enhancements",
+  "item.lotmcraft.physical_enhancements_death_ability": "Physical Enhancements",
+  "item.lotmcraft.physical_enhancements_door_ability": "Physical Enhancements",
+  "item.lotmcraft.physical_enhancements_fool_ability": "Physical Enhancements",
+  "item.lotmcraft.physical_enhancements_hermit_ability": "Physical Enhancements",
+  "item.lotmcraft.physical_enhancements_moon_ability": "Physical Enhancements",
+  "item.lotmcraft.physical_enhancements_sun_ability": "Physical Enhancements",
+  "item.lotmcraft.physical_enhancements_twilight_giant_ability": "Physical Enhancements",
+  "item.lotmcraft.physical_enhancements_demoness_ability": "Physical Enhancements",
+  "item.lotmcraft.physical_enhancements_tyrant_ability": "Physical Enhancements",
+  "item.lotmcraft.physical_enhancements_darkness_ability": "Physical Enhancements",
+  "item.lotmcraft.physical_enhancements_mother_ability": "Physical Enhancements",
+
+  "item.lotmcraft.flaming_hit_ability": "Flaming Hit",
+  "item.lotmcraft.fire_resistance_ability": "Fire Resistance",
+
+  "item.lotmcraft.paper_dagger_ability": "Paper Daggers",
+
+  "item.lotmcraft.nocturnality_ability": "Nocturnality",
+
+  "item.lotmcraft.feather_fall_ability": "Feather Fall",
+
+  "_comment003": "Effects-----------------------------------------------------------------------------",
+  "effect.lotmcraft.asleep": "Asleep",
+  "effect.lotmcraft.loosing_control": "Loosing Control",
+
+  "_comment004": "Sounds-----------------------------------------------------------------------------",
+  "sounds.lotmcraft.midnight_poem": "Midnight Poem",
+
+  "_comment005": "Entities-----------------------------------------------------------------------------",
+  "entity.lotmcraft.fire_raven": "Fire Raven",
+  "entity.lotmcraft.flaming_spear": "Flaming Spear",
+  "entity.lotmcraft.fireball": "Fireball",
+  "entity.lotmcraft.paper_dagger": "Paper Dagger",
+  "entity.lotmcraft.frost_spear": "Frost Spear",
+  "entity.lotmcraft.electric_shock": "Electric Shock",
+  "entity.minecraft.villager.lotmcraft.beyonder_merchant": "Beyonder Merchant",
+
+  "_comment006": "Potions-----------------------------------------------------------------------------",
+  "item.lotmcraft.empty_bottle": "Empty Bottle",
+
+  "item.lotmcraft.seer_potion": "Seer Potion",
+  "item.lotmcraft.clown_potion": "Clown Potion",
+  "item.lotmcraft.magician_potion": "Magician Potion",
+  "item.lotmcraft.faceless_potion": "Faceless Potion",
+  "item.lotmcraft.marionettist_potion": "Marionettist Potion",
+
+  "item.lotmcraft.bard_potion": "Bard Potion",
+  "item.lotmcraft.light_supplicant_potion": "Light Supplicant Potion",
+  "item.lotmcraft.solar_high_priest_potion": "Solar High Priest Potion",
+  "item.lotmcraft.notary_potion": "Notary Potion",
+  "item.lotmcraft.priest_of_light_potion": "Priest of Light Potion",
+
+  "item.lotmcraft.sailor_potion": "Sailor Potion",
+  "item.lotmcraft.folk_of_rage_potion": "Folk of Rage Potion",
+  "item.lotmcraft.seafarer_potion": "Seafarer Potion",
+  "item.lotmcraft.wind_blessed_potion": "Wind Blessed Potion",
+  "item.lotmcraft.ocean_songster_potion": "Ocean Songster Potion",
+
+  "item.lotmcraft.hunter_potion": "Hunter Potion",
+  "item.lotmcraft.provoker_potion": "Provoker Potion",
+  "item.lotmcraft.pyromaniac_potion": "Pyromaniac Potion",
+  "item.lotmcraft.conspirer_potion": "Conspirer Potion",
+  "item.lotmcraft.reaper_potion": "Reaper Potion",
+
+  "item.lotmcraft.criminal_potion": "Criminal Potion",
+  "item.lotmcraft.unwinged_angel_potion": "Unwinged Angel Potion",
+  "item.lotmcraft.serial_killer_potion": "Serial Killer Potion",
+  "item.lotmcraft.devil_potion": "Devil Potion",
+  "item.lotmcraft.desire_apostle_potion": "Desire Apostle Potion",
+
+  "item.lotmcraft.sleepless_potion": "Sleepless Potion",
+  "item.lotmcraft.midnight_poet_potion": "Midnight Poet Potion",
+  "item.lotmcraft.nightmare_potion": "Nightmare Potion",
+  "item.lotmcraft.soul_assurer_potion": "Soul Assurer Potion",
+  "item.lotmcraft.spirit_warlock_potion": "Spirit Warlock Potion",
+
+  "item.lotmcraft.apprentice_potion": "Apprentice Potion",
+  "item.lotmcraft.trickmaster_potion": "Trickmaster Potion",
+  "item.lotmcraft.astrologer_potion": "Astrologer Potion",
+  "item.lotmcraft.scribe_potion": "Scribe Potion",
+  "item.lotmcraft.traveler_potion": "Traveler Potion",
+
+  "item.lotmcraft.planter_potion": "Planter Potion",
+  "item.lotmcraft.doctor_potion": "Doctor Potion",
+  "item.lotmcraft.harvest_priest_potion": "Harvest Priest Potion",
+  "item.lotmcraft.biologist_potion": "Harvest Priest Potion",
+  "item.lotmcraft.druid_potion": "Harvest Priest Potion",
+
+  "item.lotmcraft.assassin_potion": "Assassin Potion",
+  "item.lotmcraft.instigator_potion": "Instigator Potion",
+  "item.lotmcraft.witch_potion": "Witch Potion",
+  "item.lotmcraft.pleasure_potion": "Pleasure Potion",
+  "item.lotmcraft.affliction_potion": "Affliction Potion",
+
+  "_comment007": "Damage-----------------------------------------------------------------------------",
+  "death.attack.loosing_control": "%1$s lost control.",
+
+
+  "_comment008": "Blocks-----------------------------------------------------------------------------",
+  "block.lotmcraft.brewing_cauldron": "Brewing Cauldron",
+
+
+  "_comment009": "Ingredients-----------------------------------------------------------------------------",
+  "item.lotmcraft.lavos_squid_blood": "Lavos Squid Blood",
+  "item.lotmcraft.hornacis_gray_mountain_goat_horn": "Horn of a Gray Hornacis Mountain Goat",
+  "item.lotmcraft.true_root_of_mist_treant": "True Root of a Mist Treant",
+  "item.lotmcraft.spirit_eater_stomach_pouch": "Stomach Pouch of a Spirit Eater",
+  "item.lotmcraft.illusion_crystal": "Illusion Crystal",
+  "item.lotmcraft.meteorite_crystal": "Meteorite Crystal",
+  "item.lotmcraft.crystal_sunflower": "Crystal Sunflower",
+  "item.lotmcraft.spirit_pact_tree_fruit": "Spirit Pact Tree's Fruit",
+  "item.lotmcraft.powder_of_dazzling_soul": "Powder of Dazzling Soul",
+
+
+  "lotm.griefing": "Griefing Enabled",
+  "lotm.selected": "Selected",
+  "lotm.potion_recipe": "Potion recipe",
+  "lotm.beyonder_message.full": "Become a Beyonder of the %s Pathway at Sequence %s",
+  "creativetab.lotmcraft.beyonder_ingredients_tab": "Potion Ingredients",
+  "creativetab.lotmcraft.beyonder_recipes_tab": "Potion Recipes",
+  "lotm.danger_premonition": "Danger Premonition"
+}

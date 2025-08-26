@@ -1,0 +1,25 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "lotmcraft:item/holy_song_ability"
+  },
+"display": {
+		"thirdperson_righthand": {
+			"translation": [3, 5, 0],
+			"scale": [0.0, 0.0, 0.0]
+		},
+		"thirdperson_lefthand": {
+			"translation": [1.75, 6, 0.75],
+			"scale": [0.0, 0.0, 0.0]
+		},
+		"firstperson_righthand": {
+			"translation": [1.25, 4.25, 0.75],
+			"scale": [0.39, 0.39, 0.39]
+		},
+		"firstperson_lefthand": {
+			"translation": [1.25, 4.25, 0.75],
+			"scale": [0.39, 0.39, 0.39]
+		}
+	},
+	"light_emission": 15
+}
