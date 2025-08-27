@@ -55,6 +55,7 @@
   "ability.lotmcraft.pyrokinesis.fire_ravens": "Fire Ravens",
   "ability.lotmcraft.pyrokinesis.flaming_spear": "Flaming Spear",
   "ability.lotmcraft.pyrokinesis.flame_wave": "Flame Wave",
+  "item.lotmcraft.cull_ability": "Cull",
 
   "item.lotmcraft.raging_blows_ability": "Raging Blows",
   "item.lotmcraft.water_manipulation_ability": "Water Manipulation",
@@ -68,7 +69,6 @@
   "ability.lotmcraft.wind_manipulation.flight": "Flight",
   "ability.lotmcraft.wind_manipulation.boost": "Boost",
   "ability.lotmcraft.wind_manipulation.binding": "Wind Binding",
-
 
   "item.lotmcraft.toxic_smoke_ability": "Toxic Smoke",
   "item.lotmcraft.poisonous_flame_ability": "Poisonous Flame",
@@ -88,6 +88,7 @@
   "ability.lotmcraft.nightmare.reshape": "Reshape",
   "ability.lotmcraft.nightmare.restrict": "Restrict",
   "ability.lotmcraft.nightmare.attack": "Attack",
+  "ability.lotmcraft.nightmare.teleport": "Teleport",
 
   "item.lotmcraft.mighty_blow_ability": "Mighty Blow",
   "item.lotmcraft.shadow_concealment_ability": "Shadow Concealment",

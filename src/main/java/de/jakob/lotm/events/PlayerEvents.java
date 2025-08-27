@@ -4,6 +4,7 @@ import com.mojang.authlib.minecraft.client.MinecraftClient;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.common.DivinationAbility;
+import de.jakob.lotm.abilities.darkness.NightmareAbility;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
@@ -36,6 +37,13 @@ public class PlayerEvents {
             if(event.getEntity() instanceof ServerPlayer player) {
                 Component actionBarText = Component.literal("Dodged Attack").withStyle(ChatFormatting.DARK_PURPLE);
                 sendActionBar(player, actionBarText);
+            }
+        }
+        if(NightmareAbility.hasActiveNightmare(event.getEntity())) {
+            if(event.getAmount() >= event.getEntity().getHealth()) {
+                event.setCanceled(true);
+                event.getEntity().setHealth(event.getEntity().getMaxHealth());
+                NightmareAbility.stopNightmare(event.getEntity().getUUID());
             }
         }
     }

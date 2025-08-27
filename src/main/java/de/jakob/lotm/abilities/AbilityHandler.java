@@ -15,6 +15,7 @@ import de.jakob.lotm.abilities.fool.*;
 import de.jakob.lotm.abilities.mother.CleansingAbility;
 import de.jakob.lotm.abilities.mother.HealingAbility;
 import de.jakob.lotm.abilities.mother.PlantNurturingAbility;
+import de.jakob.lotm.abilities.red_priest.CullAbility;
 import de.jakob.lotm.abilities.red_priest.ProvokingAbility;
 import de.jakob.lotm.abilities.red_priest.PyrokinesisAbility;
 import de.jakob.lotm.abilities.red_priest.TrapAbility;
@@ -50,6 +51,7 @@ public class AbilityHandler {
     public static DeferredItem<Item> TRAP = ITEMS.registerItem("trap_ability", TrapAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> PROVOKING = ITEMS.registerItem("provoking_ability", ProvokingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> PYROKINESIS = ITEMS.registerItem("pyrokinesis_ability", PyrokinesisAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> CULL = ITEMS.registerItem("cull_ability", CullAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> RAGING_BLOWS = ITEMS.registerItem("raging_blows_ability", RagingBlowsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> WATER_MANIPULATION = ITEMS.registerItem("water_manipulation_ability", WaterManipulationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

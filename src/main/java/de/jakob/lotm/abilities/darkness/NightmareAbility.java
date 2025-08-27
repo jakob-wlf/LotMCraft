@@ -5,6 +5,7 @@ import de.jakob.lotm.util.data.LocationSupplier;
 import de.jakob.lotm.util.data.NightmareCenter;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.helper.RegionSnapshot;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -13,23 +14,29 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NightmareAbility extends SelectableAbilityItem {
     private static final HashMap<UUID, NightmareCenter> activeNightmares = new HashMap<>();
+    private static final HashSet<UUID> isReshaping = new HashSet<>();
+    private static final HashMap<UUID, RegionSnapshot> storedRegions = new HashMap<>();
 
     public NightmareAbility(Properties properties) {
         super(properties, .15f);
@@ -47,7 +54,7 @@ public class NightmareAbility extends SelectableAbilityItem {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.nightmare.nightmare", "ability.lotmcraft.nightmare.reshape", "ability.lotmcraft.nightmare.restrict", "ability.lotmcraft.nightmare.attack"};
+        return new String[]{"ability.lotmcraft.nightmare.nightmare", "ability.lotmcraft.nightmare.reshape", "ability.lotmcraft.nightmare.restrict", "ability.lotmcraft.nightmare.attack", "ability.lotmcraft.nightmare.teleport"};
     }
 
     @Override
@@ -56,7 +63,32 @@ public class NightmareAbility extends SelectableAbilityItem {
             case 0 -> nightmare(level, entity);
             case 1 -> reshape(level, entity);
             case 2 -> restrict(level, entity);
+            case 3 -> attack(level, entity);
+            case 4 -> teleport(level, entity);
         }
+    }
+
+    private void teleport(Level level, LivingEntity entity) {
+        if(level.isClientSide)
+            return;
+
+        if(!activeNightmares.containsKey(entity.getUUID())) {
+            if(entity instanceof ServerPlayer player) {
+                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("You need to create a Nightmare first.").withColor(0xFFff124d));
+                player.connection.send(packet);
+            }
+            return;
+        }
+
+        Vec3 targetLoc = getTargetBlock(entity, 8).getCenter().add(0, 1, 0);
+        level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
+
+        entity.teleportTo(targetLoc.x, targetLoc.y, targetLoc.z);
+        ParticleUtil.spawnParticles((ServerLevel) level, dustSmall, targetLoc.add(0, .5, 0), 30, .4, 1, .4, 0);
+    }
+
+    private void attack(Level level, LivingEntity entity) {
+
     }
 
     private void restrict(Level level, LivingEntity entity) {
@@ -72,7 +104,7 @@ public class NightmareAbility extends SelectableAbilityItem {
         }
 
         LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 20, 2);
-        if(targetEntity == null) {
+        if(targetEntity == null || !isAffectedByNightmare(targetEntity)) {
             Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 15, 1.5f, true);
             ParticleUtil.createParticleSpirals((ServerLevel) level, dustSmall, targetPos, 2, 2, 2.5, .5, 8, 20 * 5, 11, 8);
             return;
@@ -98,6 +130,11 @@ public class NightmareAbility extends SelectableAbilityItem {
         if(level.isClientSide)
             return;
 
+        if(isReshaping.contains(entity.getUUID())) {
+            isReshaping.remove(entity.getUUID());
+            return;
+        }
+
         if(!activeNightmares.containsKey(entity.getUUID())) {
             if(entity instanceof ServerPlayer player) {
                 ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("You need to create a Nightmare first.").withColor(0xFFff124d));
@@ -106,6 +143,66 @@ public class NightmareAbility extends SelectableAbilityItem {
             return;
         }
 
+        BlockPos targetLoc = AbilityUtil.getTargetBlock(entity, 35, false);
+        BlockState state = level.getBlockState(targetLoc);
+        if(!isBlockInRadius(targetLoc.getCenter(), entity.getUUID()) || state.getCollisionShape(level, targetLoc).isEmpty()) {
+            if(entity instanceof ServerPlayer player) {
+                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("Select a solid block inside the nightmare.").withColor(0xFFff124d));
+                player.connection.send(packet);
+            }
+            return;
+        }
+
+        isReshaping.add(entity.getUUID());
+
+        double radius = entity.getEyePosition().distanceTo(targetLoc.getCenter());
+        Block block = state.getBlock();
+
+        AtomicBoolean shouldStop = new AtomicBoolean(false);
+
+        ServerScheduler.scheduleUntil((ServerLevel) level, () -> {
+            if(!activeNightmares.containsKey(entity.getUUID())) {
+                shouldStop.set(true);
+                isReshaping.remove(entity.getUUID());
+                return;
+            }
+
+            if(!isReshaping.contains(entity.getUUID())) {
+                shouldStop.set(true);
+                return;
+            }
+
+            BlockPos currentTarget = AbilityUtil.getTargetBlock(entity, radius - 2, radius, false);
+
+            if(currentTarget.getCenter().distanceTo(entity.position()) < 5)
+                return;
+
+            createBlockSphere(block, (ServerLevel) level, currentTarget.getCenter(), entity.getUUID());
+        }, 2, null, shouldStop);
+
+    }
+
+    public static void stopNightmare(UUID uuid) {
+        activeNightmares.remove(uuid);
+    }
+
+    public BlockPos getTargetBlock(LivingEntity entity, double radius) {
+        Vec3 lookDirection = entity.getLookAngle().normalize();
+        Vec3 playerPosition = entity.position().add(0, entity.getEyeHeight(), 0);
+
+        Vec3 targetPosition = playerPosition;
+
+        for(int i = 0; i < radius; i++) {
+            targetPosition = playerPosition.add(lookDirection.scale(i));
+
+            BlockState block = entity.level().getBlockState(BlockPos.containing(targetPosition));
+
+            if (!block.getCollisionShape(entity.level(), BlockPos.containing(targetPosition)).isEmpty()) {
+                targetPosition = playerPosition.add(lookDirection.scale(i - 1));
+            }
+        }
+
+        return BlockPos.containing(targetPosition);
     }
 
     private final DustParticleOptions dustBig = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), 10f);
@@ -121,7 +218,7 @@ public class NightmareAbility extends SelectableAbilityItem {
             return;
         }
 
-        double radius = 30;
+        int radius = 40;
         NightmareCenter center = new NightmareCenter((ServerLevel) level, entity.position(), radius * radius);
 
         for(NightmareCenter c : activeNightmares.values()) {
@@ -136,36 +233,47 @@ public class NightmareAbility extends SelectableAbilityItem {
         }
 
         activeNightmares.put(entity.getUUID(), center);
+        RegionSnapshot region = new RegionSnapshot(level, BlockPos.containing(center.pos()), radius);
+        storedRegions.put(entity.getUUID(), region);
 
         AtomicBoolean shouldStop = new AtomicBoolean(false);
         ServerScheduler.scheduleUntil((ServerLevel) level, () -> {
             if(!activeNightmares.containsKey(entity.getUUID())) {
                 shouldStop.set(true);
-                activeNightmares.remove(entity.getUUID());
+                stopNightmare((ServerLevel) level, entity.getUUID(), radius, center);
                 return;
             }
 
             if(entity.level() != center.level()) {
                 shouldStop.set(true);
-                activeNightmares.remove(entity.getUUID());
+                stopNightmare((ServerLevel) level, entity.getUUID(), radius, center);
                 return;
             }
 
             if(entity.position().distanceToSqr(center.pos()) > (radius * radius)) {
                 shouldStop.set(true);
-                activeNightmares.remove(entity.getUUID());
+                stopNightmare((ServerLevel) level, entity.getUUID(), radius, center);
                 return;
             }
 
-            ParticleUtil.spawnParticles((ServerLevel) level, dustBig, center.pos(), 30, radius, 0);
-        }, 10, null, shouldStop);
+            ParticleUtil.spawnParticles((ServerLevel) level, dustBig, center.pos(), 50, radius, 0);
+        }, 5, null, shouldStop);
     }
 
-    public static boolean hasActiveNightmare(Player player) {
-        return activeNightmares.containsKey(player.getUUID());
+    private void stopNightmare(ServerLevel level, UUID uuid, int radius, NightmareCenter center) {
+        level.playSound(null, center.pos().x, center.pos().y, center.pos().z, Blocks.GLASS.getSoundType(Blocks.ICE.defaultBlockState(), level, BlockPos.containing(center.pos().x, center.pos().y, center.pos().z), null).getBreakSound(), SoundSource.BLOCKS, 10.0f, 1.0f);
+        ParticleUtil.spawnParticles(level, dustBig, center.pos(), 8000, radius, 20, radius, 0);
+
+        storedRegions.get(uuid).restore(level);
+        storedRegions.remove(uuid);
+        activeNightmares.remove(uuid);
     }
 
-    private boolean isAffectedByNightmare(LivingEntity entity) {
+    public static boolean hasActiveNightmare(LivingEntity entity) {
+        return activeNightmares.containsKey(entity.getUUID());
+    }
+
+    public static boolean isAffectedByNightmare(LivingEntity entity) {
         for(Map.Entry<UUID, NightmareCenter> entry : activeNightmares.entrySet()) {
             if(entity.getUUID() == entry.getKey())
                 continue;
@@ -177,5 +285,38 @@ public class NightmareAbility extends SelectableAbilityItem {
         return false;
     }
 
+    private boolean isBlockInRadius(Vec3 pos, UUID casterUUID) {
+        if(!activeNightmares.containsKey(casterUUID))
+            return false;
+
+        NightmareCenter center = activeNightmares.get(casterUUID);
+        return pos.distanceToSqr(center.pos()) <= center.radiusSquared();
+    }
+
+    private void createBlockSphere(Block block, ServerLevel level, Vec3 center, UUID casterUuid) {
+        int radius = 3;
+        BlockPos centerPos = BlockPos.containing(center);
+
+        // Iterate through all positions in a cube around the center
+        for (int x = -radius; x <= radius; x++) {
+            for (int y = -radius; y <= radius; y++) {
+                for (int z = -radius; z <= radius; z++) {
+                    // Calculate distance from center
+                    double distance = Math.sqrt(x * x + y * y + z * z);
+
+                    // Only place blocks within the sphere radius
+                    if (distance <= radius) {
+                        BlockPos pos = centerPos.offset(x, y, z);
+                        BlockState currentState = level.getBlockState(pos);
+
+                        // Only replace passable blocks (air, water, lava, etc.)
+                        if (currentState.getCollisionShape(level, pos).isEmpty() && isBlockInRadius(pos.getCenter(), casterUuid)) {
+                            level.setBlock(pos, block.defaultBlockState(), 3);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 }

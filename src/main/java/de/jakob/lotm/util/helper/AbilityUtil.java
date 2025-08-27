@@ -7,6 +7,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -53,7 +54,7 @@ public class AbilityUtil {
         return pos.getCenter().distanceTo(startPos);
     }
 
-    public static BlockPos getTargetBlock(LivingEntity entity, int radius, boolean oneBlockBefore) {
+    public static BlockPos getTargetBlock(LivingEntity entity, double radius, boolean oneBlockBefore) {
         Vec3 lookDirection = entity.getLookAngle().normalize();
         Vec3 playerPosition = entity.position().add(0, entity.getEyeHeight(), 0);
 
@@ -64,7 +65,31 @@ public class AbilityUtil {
 
             BlockState block = entity.level().getBlockState(BlockPos.containing(targetPosition));
 
-            if (!block.isAir()) {
+            if (!block.getCollisionShape(entity.level(), BlockPos.containing(targetPosition)).isEmpty()) {
+                if(oneBlockBefore)
+                    targetPosition = playerPosition.add(lookDirection.scale(i - 1));
+                else
+                    targetPosition = playerPosition.add(lookDirection.scale(i));
+
+                break;
+            }
+        }
+
+        return BlockPos.containing(targetPosition);
+    }
+
+    public static BlockPos getTargetBlock(LivingEntity entity, double minRadius, double radius, boolean oneBlockBefore) {
+        Vec3 lookDirection = entity.getLookAngle().normalize();
+        Vec3 playerPosition = entity.position().add(0, entity.getEyeHeight(), 0);
+
+        Vec3 targetPosition = playerPosition;
+
+        for(int i = 0; i < radius; i++) {
+            targetPosition = playerPosition.add(lookDirection.scale(i));
+
+            BlockState block = entity.level().getBlockState(BlockPos.containing(targetPosition));
+
+            if (!block.isAir() && i >= minRadius) {
                 if(oneBlockBefore)
                     targetPosition = playerPosition.add(lookDirection.scale(i - 1));
                 else

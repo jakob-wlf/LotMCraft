@@ -43,7 +43,7 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onFogColor(ViewportEvent.ComputeFogColor event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null && NightmareAbility.hasActiveNightmare(mc.player)) {
+        if (mc.player != null && (NightmareAbility.hasActiveNightmare(mc.player) || NightmareAbility.isAffectedByNightmare(mc.player))) {
             int color = 0xFFff2b4f; // ARGB (0xAARRGGBB)
 
             float r = ((color >> 16) & 0xFF) / 255f;
