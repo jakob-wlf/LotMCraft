@@ -1,4 +1,4 @@
-// 1.21.1	2025-08-27T00:57:53.3885925	Item Models: lotmcraft
+// 1.21.1	2025-08-27T06:08:24.9080631	Item Models: lotmcraft
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/abomination.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/abyss.json
 96494cfdd79ca3a005a680f1a30ae543a6ed1959 assets/lotmcraft/models/item/air_bullet_ability.json
@@ -180,6 +180,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/mysticism_
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/mysticologist.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/naturewalker.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/nightmare.json
+18ab5a8edeb1cb14cffe4b1dda01e63016348bd4 assets/lotmcraft/models/item/nightmare_ability.json
 fcdd6a50e2513fc9c9291e2d65f9afebc8eb73ce assets/lotmcraft/models/item/nightmare_potion.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/nightwatcher.json
 84c26339e99df8707a320a1831fb33e371155de9 assets/lotmcraft/models/item/nocturnality_ability.json
@@ -257,6 +258,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/servant_of
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/shadow_ascetic.json
 d4a4c2509b2864aa68c5854864e8d3134e3f3709 assets/lotmcraft/models/item/shadow_concealment_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/shaman_king.json
+a13987d46a84d593c916d3f084c5bba5ced6e766 assets/lotmcraft/models/item/shapeshifting_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/shepherd.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/sheriff.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/silver_knight.json

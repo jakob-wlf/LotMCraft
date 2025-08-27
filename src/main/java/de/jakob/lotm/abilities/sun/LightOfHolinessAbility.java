@@ -77,7 +77,7 @@ public class LightOfHolinessAbility extends AbilityItem {
                         ServerScheduler.scheduleForDuration(0, 1, 12, () -> {
                             Vec3 particlePos = currentPos.get().add(0, 1, 0);
 
-                            ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.END_ROD, particlePos, i.get(), (int) Math.round(12 * i.get()));
+                            ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.END_ROD, particlePos, i.get(), (int) Math.round(20 * i.get()));
                             ParticleUtil.spawnCircleParticles((ServerLevel) level, dustOptions, particlePos, i.get(), (int) Math.round(12 * i.get()));
                             ParticleUtil.spawnCircleParticles((ServerLevel) level, ModParticles.HOLY_FLAME.get(), particlePos, i.get(), (int) Math.round(12 * i.get()));
                             i.addAndGet(.5);
@@ -88,7 +88,7 @@ public class LightOfHolinessAbility extends AbilityItem {
 
                 ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.FIREWORK, pos, 2, 16);
                 ParticleUtil.spawnCircleParticles((ServerLevel) level, dustOptions, pos, 2, 50);
-                ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.END_ROD, pos, 2, 40);
+                ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.END_ROD, pos, 2.25, 80);
                 ParticleUtil.spawnCircleParticles((ServerLevel) level, ModParticles.HOLY_FLAME.get(), pos, 2, 50);
 
                 AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 4.35f, 26 * multiplier(entity), pos, true, false, false, 10);

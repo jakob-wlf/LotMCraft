@@ -78,10 +78,16 @@
   "item.lotmcraft.paper_figurine_substitute_ability": "Paper Figurine Substitute",
   "item.lotmcraft.flaming_jump_ability": "Flaming Jump",
   "item.lotmcraft.underwater_breathing_ability": "Underwater Breathing",
+  "item.lotmcraft.shapeshifting_ability": "Shapeshifting",
 
   "item.lotmcraft.midnight_poem_ability": "Midnight Poem",
   "ability.lotmcraft.midnight_poem.lullaby": "Lullaby",
   "ability.lotmcraft.midnight_poem.wilt": "Wilt",
+  "item.lotmcraft.nightmare_ability": "Nightmare",
+  "ability.lotmcraft.nightmare.nightmare": "Nightmare",
+  "ability.lotmcraft.nightmare.reshape": "Reshape",
+  "ability.lotmcraft.nightmare.restrict": "Restrict",
+  "ability.lotmcraft.nightmare.attack": "Attack",
 
   "item.lotmcraft.mighty_blow_ability": "Mighty Blow",
   "item.lotmcraft.shadow_concealment_ability": "Shadow Concealment",

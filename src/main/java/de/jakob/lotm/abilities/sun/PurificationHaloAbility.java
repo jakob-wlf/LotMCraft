@@ -35,10 +35,11 @@ public class PurificationHaloAbility extends AbilityItem {
 
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 3.0f, 1.0f);
 
-        RingExpansionRenderer.createRingForAll(entity.getEyePosition().subtract(0, .4, 0), 18, 20 * 5, 252 / 255f, 173 /255f, 3 / 255f, .85f, 1f, 2f, .25f, true, (ServerLevel) level);
+        RingExpansionRenderer.createRingForAll(entity.getEyePosition().subtract(0, .4, 0), 30, 20 * 20, 252 / 255f, 173 /255f, 3 / 255f, .85f, 1f, 2f, .24f, true, (ServerLevel) level);
         AtomicDouble radius = new AtomicDouble(.5);
         ServerScheduler.scheduleForDuration(0, 2, 20 * 5, () -> {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius.get() - .5, radius.get() + .5,24 * multiplier(entity), entity.position(), true, false, true, 0);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius.get() - .25, radius.get() + .25,15 * multiplier(entity), entity.position(), true, false, true, 0);
+            radius.addAndGet(.25f);
         });
     }
 }

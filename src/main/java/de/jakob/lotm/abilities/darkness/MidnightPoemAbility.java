@@ -65,7 +65,7 @@ public class MidnightPoemAbility extends SelectableAbilityItem {
         });
 
         ParticleUtil.spawnParticles((ServerLevel) level, dustBig, entity.getEyePosition().subtract(0, .4, 0), 1100, 7, 0);
-        ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.CRIMSON_LEAF.get(), entity.getEyePosition().subtract(0, .4, 0), 700, 7, 0.07);
+        ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.CRIMSON_LEAF.get(), entity.position().subtract(0, .2, 0), 700, 7, .01, 7, 0.07);
 
         AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 20, 12 * multiplier(entity), entity.getEyePosition(), true, false);
     }
@@ -84,7 +84,7 @@ public class MidnightPoemAbility extends SelectableAbilityItem {
         });
 
         ParticleUtil.spawnParticles((ServerLevel) level, dustBig, entity.getEyePosition().subtract(0, .4, 0), 1100, 7, 0);
-        ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.CRIMSON_LEAF.get(), entity.getEyePosition().subtract(0, .4, 0), 700, 7, 0.07);
+        ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.CRIMSON_LEAF.get(), entity.position().subtract(0, .2, 0), 700, 7, .01, 7, 0.07);
 
         ServerScheduler.scheduleForDuration(0, 2, duration, () -> {
             targets.forEach(target -> {

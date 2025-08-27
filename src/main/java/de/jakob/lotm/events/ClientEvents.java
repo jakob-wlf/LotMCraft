@@ -1,11 +1,17 @@
 package de.jakob.lotm.events;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.darkness.NightmareAbility;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
 import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
@@ -33,4 +39,21 @@ public class ClientEvents {
         event.register(LOTMCraft.showPassiveAbilitiesKey);
         event.register(LOTMCraft.nextAbilityKey);
     }
+
+    @SubscribeEvent
+    public static void onFogColor(ViewportEvent.ComputeFogColor event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null && NightmareAbility.hasActiveNightmare(mc.player)) {
+            int color = 0xFFff2b4f; // ARGB (0xAARRGGBB)
+
+            float r = ((color >> 16) & 0xFF) / 255f;
+            float g = ((color >> 8) & 0xFF) / 255f;
+            float b = (color & 0xFF) / 255f;
+
+            event.setRed(r);
+            event.setGreen(g);
+            event.setBlue(b);
+        }
+    }
+
 }

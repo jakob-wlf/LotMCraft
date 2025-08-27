@@ -460,7 +460,8 @@ public class RingExpansionRenderer {
             }
         }
 
-        BufferUploader.drawWithShader(buffer.buildOrThrow());
+        try {BufferUploader.drawWithShader(buffer.buildOrThrow());}
+        catch (Exception ignored) {}
     }
 
     /**
