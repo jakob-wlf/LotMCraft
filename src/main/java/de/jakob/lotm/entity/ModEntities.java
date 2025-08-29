@@ -6,6 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -35,6 +36,13 @@ public class ModEntities {
                     .clientTrackingRange(64)
                     .updateInterval(1)
                     .build("electric_shock"));
+
+    public static final Supplier<EntityType<LightningEntity>> LIGHTNING =
+            ENTITY_TYPES.register("lightning", () -> EntityType.Builder.<LightningEntity>of(LightningEntity::new, MobCategory.MISC)
+                    .sized(0.1f, 0.1f) // Small hitbox
+                    .clientTrackingRange(64)
+                    .updateInterval(1)
+                    .build("lightning"));
 
     public static final Supplier<EntityType<FrostSpearProjectileEntity>> FROST_SPEAR =
             ENTITY_TYPES.register("frost_spear", () -> EntityType.Builder.<FrostSpearProjectileEntity>of(FrostSpearProjectileEntity::new, MobCategory.MISC)

@@ -26,7 +26,7 @@ public class UsernameInputScreen extends Screen {
         int centerY = this.height / 2;
 
         this.xBox = new EditBox(this.font, centerX - 60, centerY - 30, 120, 20, Component.literal("X - Coordinate"));
-        this.xBox.setMaxLength(10);
+        this.xBox.setMaxLength(1000);
         this.addRenderableWidget(this.xBox);
 
         // Confirm button

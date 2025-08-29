@@ -58,13 +58,10 @@ public class ShapeShiftingAbility extends AbilityItem {
                 return;
             }
 
-            System.out.println(attemptingToChangeSkin.get(entity.getUUID()));
-
             if(!attemptingToChangeSkin.get(entity.getUUID()).equals("None")) {
-                System.out.println("In here");
                 shouldStop.set(true);
                 String username = attemptingToChangeSkin.get(entity.getUUID());
-                SkinChanger.exampleUsage(player, username);
+                SkinChanger.exampleUsageWithDebug(player, username);
                 attemptingToChangeSkin.remove(entity.getUUID());
                 return;
             }

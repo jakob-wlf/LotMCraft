@@ -19,6 +19,7 @@ import de.jakob.lotm.abilities.red_priest.CullAbility;
 import de.jakob.lotm.abilities.red_priest.ProvokingAbility;
 import de.jakob.lotm.abilities.red_priest.PyrokinesisAbility;
 import de.jakob.lotm.abilities.red_priest.TrapAbility;
+import de.jakob.lotm.abilities.tyrant.LightningAbility;
 import de.jakob.lotm.abilities.tyrant.WaterManipulationAbility;
 import de.jakob.lotm.abilities.sun.*;
 import de.jakob.lotm.abilities.tyrant.RagingBlowsAbility;
@@ -56,6 +57,7 @@ public class AbilityHandler {
     public static DeferredItem<Item> RAGING_BLOWS = ITEMS.registerItem("raging_blows_ability", RagingBlowsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> WATER_MANIPULATION = ITEMS.registerItem("water_manipulation_ability", WaterManipulationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> WIND_MANIPULATION = ITEMS.registerItem("wind_manipulation_ability", WindManipulationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> LIGHTNING = ITEMS.registerItem("lightning_ability", LightningAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> TOXIC_SMOKE = ITEMS.registerItem("toxic_smoke_ability", ToxicSmokeAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> POISONOUS_FLAME = ITEMS.registerItem("poisonous_flame_ability", PoisonousFlameAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

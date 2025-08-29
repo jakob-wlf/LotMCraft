@@ -2,19 +2,28 @@ package de.jakob.lotm.events;
 
 import com.mojang.authlib.minecraft.client.MinecraftClient;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.AbilityHandler;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.darkness.NightmareAbility;
+import de.jakob.lotm.abilities.red_priest.CullAbility;
+import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import org.joml.Vector3f;
 
 import java.util.Random;
 
@@ -30,6 +39,11 @@ public class PlayerEvents {
 
     private static final Random random = new Random();
 
+    private static final DustParticleOptions dust = new DustParticleOptions(
+            new Vector3f(.05f, 0, 0),
+            1.5f
+    );
+
     @SubscribeEvent
     public static void onDamage(LivingIncomingDamageEvent event) {
         if(DivinationAbility.dangerPremonitionActive.contains(event.getEntity().getUUID()) && random.nextFloat() < .1) {
@@ -44,6 +58,13 @@ public class PlayerEvents {
                 event.setCanceled(true);
                 event.getEntity().setHealth(event.getEntity().getMaxHealth());
                 NightmareAbility.stopNightmare(event.getEntity().getUUID());
+            }
+        }
+        Entity damager = event.getSource().getEntity();
+        if(damager instanceof LivingEntity source && ((CullAbility) AbilityHandler.CULL.get()).isActive(source)) {
+            Level level = event.getEntity().level();
+            if(!level.isClientSide) {
+                ParticleUtil.spawnParticles((ServerLevel) level, dust, event.getEntity().getEyePosition().subtract(0, .4, 0), 40, .4, .8, .4, 0);
             }
         }
     }

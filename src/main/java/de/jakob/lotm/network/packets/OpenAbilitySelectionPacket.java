@@ -6,6 +6,7 @@ import de.jakob.lotm.gui.custom.AbilitySelectionMenuProvider;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.pathways.PathwayInfos;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -13,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,9 +64,19 @@ public record OpenAbilitySelectionPacket(int sequence, String pathway) implement
 
             PathwayInfos pathwayInfo = BeyonderData.pathwayInfos.get(pathway);
 
+            Minecraft mc = Minecraft.getInstance();
+            long windowHandle = mc.getWindow().getWindow();
+
+            // Get current mouse position
+            double[] xPos = new double[1];
+            double[] yPos = new double[1];
+            GLFW.glfwGetCursorPos(windowHandle, xPos, yPos);
+
             player.openMenu(new AbilitySelectionMenuProvider(passiveAbilities, pathwayInfo.name() + " Pathway Sequence " + sequence, pathwayInfo.color(), sequence, pathway));
 
             PacketHandler.sendToPlayer(player, new SyncAbilityMenuPacket(sequence, pathway));
+
+            GLFW.glfwSetCursorPos(windowHandle, xPos[0], yPos[0]);
         });
     }
 

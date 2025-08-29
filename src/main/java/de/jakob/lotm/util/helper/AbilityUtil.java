@@ -157,7 +157,7 @@ public class AbilityUtil {
             // Check for blocks
             BlockState block = entity.level().getBlockState(BlockPos.containing(targetPosition));
 
-            if (!block.isAir()) {
+            if (!block.getCollisionShape(entity.level(), BlockPos.containing(targetPosition)).isEmpty()) {
                 targetPosition = playerPosition.add(lookDirection.scale(i - 1));
                 break;
             }

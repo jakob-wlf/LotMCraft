@@ -69,6 +69,7 @@
   "ability.lotmcraft.wind_manipulation.flight": "Flight",
   "ability.lotmcraft.wind_manipulation.boost": "Boost",
   "ability.lotmcraft.wind_manipulation.binding": "Wind Binding",
+  "item.lotmcraft.lightning_ability": "Lightning",
 
   "item.lotmcraft.toxic_smoke_ability": "Toxic Smoke",
   "item.lotmcraft.poisonous_flame_ability": "Poisonous Flame",
@@ -162,6 +163,7 @@
   "entity.lotmcraft.paper_dagger": "Paper Dagger",
   "entity.lotmcraft.frost_spear": "Frost Spear",
   "entity.lotmcraft.electric_shock": "Electric Shock",
+  "entity.lotmcraft.lightning": "Lightning",
   "entity.minecraft.villager.lotmcraft.beyonder_merchant": "Beyonder Merchant",
 
   "_comment006": "Potions-----------------------------------------------------------------------------",

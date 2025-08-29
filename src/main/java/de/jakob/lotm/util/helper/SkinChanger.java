@@ -161,6 +161,260 @@ public class SkinChanger {
     }
 
     /**
+     * Simple synchronous version that should work
+     */
+    public static boolean changePlayerSkinSimple(ServerPlayer player, String targetUsername) {
+        try {
+            System.out.println("SIMPLE: Starting simple skin change for: " + targetUsername);
+
+            if (targetUsername == null || targetUsername.trim().isEmpty()) {
+                System.out.println("SIMPLE: Target username is null or empty");
+                return false;
+            }
+
+            // Get the game profile cache
+            GameProfileCache profileCache = ServerLifecycleHooks.getCurrentServer().getProfileCache();
+            Optional<GameProfile> targetProfileOpt = profileCache.get(targetUsername);
+            System.out.println("SIMPLE: Profile cache lookup result: " + (targetProfileOpt.isPresent() ? "FOUND" : "NOT FOUND"));
+
+            if (targetProfileOpt.isPresent()) {
+                GameProfile cachedProfile = targetProfileOpt.get();
+                System.out.println("SIMPLE: Cached profile properties: " + cachedProfile.getProperties().keySet());
+                if (cachedProfile.getProperties().containsKey("textures")) {
+                    System.out.println("SIMPLE: Profile has texture data");
+                    Property textureProperty = cachedProfile.getProperties().get("textures").iterator().next();
+                    applySkinToPlayer(player, textureProperty);
+                    System.out.println("SIMPLE: Successfully applied skin - returning true");
+                    return true;
+                } else {
+                    System.out.println("SIMPLE: Profile found but no texture data, will try to fetch");
+                }
+            }
+
+            // Try online players
+            ServerPlayer onlinePlayer = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(targetUsername);
+            System.out.println("SIMPLE: Online player lookup result: " + (onlinePlayer != null ? "FOUND" : "NOT FOUND"));
+
+            if (onlinePlayer != null) {
+                System.out.println("SIMPLE: Online player profile properties: " + onlinePlayer.getGameProfile().getProperties().keySet());
+                if (onlinePlayer.getGameProfile().getProperties().containsKey("textures")) {
+                    System.out.println("SIMPLE: Online player has texture data");
+                    Property textureProperty = onlinePlayer.getGameProfile().getProperties().get("textures").iterator().next();
+                    applySkinToPlayer(player, textureProperty);
+                    System.out.println("SIMPLE: Successfully applied online player skin - returning true");
+                    return true;
+                } else {
+                    System.out.println("SIMPLE: Online player found but no texture data");
+                }
+            }
+
+            // If we have a cached profile, try to fill it with properties
+            if (targetProfileOpt.isPresent()) {
+                try {
+                    System.out.println("SIMPLE: Attempting to fill profile properties from session service");
+                    GameProfile profileToFill = targetProfileOpt.get();
+
+                    // Try to get texture properties using the session service
+                    var sessionService = ServerLifecycleHooks.getCurrentServer().getSessionService();
+                    var profileResult = sessionService.fetchProfile(profileToFill.getId(), true);
+
+                    if (profileResult != null && profileResult.profile() != null) {
+                        GameProfile filledProfile = profileResult.profile();
+                        System.out.println("SIMPLE: Filled profile properties: " + filledProfile.getProperties().keySet());
+
+                        if (filledProfile.getProperties().containsKey("textures")) {
+                            System.out.println("SIMPLE: Filled profile has texture data");
+                            Property textureProperty = filledProfile.getProperties().get("textures").iterator().next();
+                            applySkinToPlayer(player, textureProperty);
+                            System.out.println("SIMPLE: Successfully applied filled profile skin - returning true");
+                            return true;
+                        }
+                    }
+                } catch (Exception fetchException) {
+                    System.out.println("SIMPLE: Failed to fetch profile properties: " + fetchException.getMessage());
+                    // Continue to default Steve skin
+                }
+            }
+
+            // Default to Steve
+            System.out.println("SIMPLE: Defaulting to Steve skin");
+            clearPlayerSkin(player);
+            System.out.println("SIMPLE: Successfully cleared skin - returning true");
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("SIMPLE: Exception occurred: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Simple example usage with chat debug messages
+     */
+    public static void exampleUsageWithDebug(ServerPlayer player, String targetUsername) {
+        player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Starting skin change for: " + targetUsername));
+
+        try {
+            if (targetUsername == null || targetUsername.trim().isEmpty()) {
+                player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§c[DEBUG] Target username is null or empty"));
+                return;
+            }
+
+            // Get the game profile cache
+            GameProfileCache profileCache = ServerLifecycleHooks.getCurrentServer().getProfileCache();
+            Optional<GameProfile> targetProfileOpt = profileCache.get(targetUsername);
+            player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Profile cache lookup: " + (targetProfileOpt.isPresent() ? "FOUND" : "NOT FOUND")));
+
+            if (targetProfileOpt.isPresent()) {
+                GameProfile cachedProfile = targetProfileOpt.get();
+                player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Cached profile properties: " + cachedProfile.getProperties().keySet()));
+                if (cachedProfile.getProperties().containsKey("textures")) {
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§a[DEBUG] Profile has texture data - applying"));
+                    Property textureProperty = cachedProfile.getProperties().get("textures").iterator().next();
+                    applySkinToPlayerWithDebug(player, textureProperty);
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§a✓ Successfully applied skin!"));
+                    return;
+                } else {
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Profile found but no texture data, will try to fetch"));
+                }
+            }
+
+            // Try online players
+            ServerPlayer onlinePlayer = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(targetUsername);
+            player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Online player lookup: " + (onlinePlayer != null ? "FOUND" : "NOT FOUND")));
+
+            if (onlinePlayer != null) {
+                player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Online player properties: " + onlinePlayer.getGameProfile().getProperties().keySet()));
+                if (onlinePlayer.getGameProfile().getProperties().containsKey("textures")) {
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§a[DEBUG] Online player has texture data - applying"));
+                    Property textureProperty = onlinePlayer.getGameProfile().getProperties().get("textures").iterator().next();
+                    applySkinToPlayerWithDebug(player, textureProperty);
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§a✓ Successfully applied online player skin!"));
+                    return;
+                } else {
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Online player found but no texture data"));
+                }
+            }
+
+            // If we have a cached profile, try to fill it with properties
+            if (targetProfileOpt.isPresent()) {
+                try {
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Attempting to fetch skin data from Mojang..."));
+                    GameProfile profileToFill = targetProfileOpt.get();
+
+                    var sessionService = ServerLifecycleHooks.getCurrentServer().getSessionService();
+                    var profileResult = sessionService.fetchProfile(profileToFill.getId(), true);
+
+                    if (profileResult != null && profileResult.profile() != null) {
+                        GameProfile filledProfile = profileResult.profile();
+                        player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Filled profile properties: " + filledProfile.getProperties().keySet()));
+
+                        if (filledProfile.getProperties().containsKey("textures")) {
+                            player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§a[DEBUG] Filled profile has texture data - applying"));
+                            Property textureProperty = filledProfile.getProperties().get("textures").iterator().next();
+                            applySkinToPlayerWithDebug(player, textureProperty);
+                            player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§a✓ Successfully applied fetched skin!"));
+                            return;
+                        }
+                    }
+                } catch (Exception fetchException) {
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§c[DEBUG] Failed to fetch profile: " + fetchException.getMessage()));
+                }
+            }
+
+            // Default to Steve
+            player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Defaulting to Steve skin"));
+            clearPlayerSkinWithDebug(player);
+            player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§a✓ Successfully cleared skin (Steve)"));
+
+        } catch (Exception e) {
+            player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§c[DEBUG] Exception: " + e.getMessage()));
+        }
+    }
+
+    private static void applySkinToPlayerWithDebug(ServerPlayer player, Property textureProperty) {
+        player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Applying skin texture..."));
+        player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Texture data length: " + textureProperty.value().length()));
+
+        // Clear and apply
+        player.getGameProfile().getProperties().removeAll("textures");
+        player.getGameProfile().getProperties().put("textures", textureProperty);
+
+        player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Applied texture, current properties: " + player.getGameProfile().getProperties().keySet()));
+
+        // Update appearance
+        updatePlayerAppearanceWithDebug(player);
+    }
+
+    private static void clearPlayerSkinWithDebug(ServerPlayer player) {
+        player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Clearing skin properties..."));
+        player.getGameProfile().getProperties().removeAll("textures");
+        updatePlayerAppearanceWithDebug(player);
+    }
+
+    private static void updatePlayerAppearanceWithDebug(ServerPlayer player) {
+        try {
+            player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Updating player appearance..."));
+
+            var playerList = ServerLifecycleHooks.getCurrentServer().getPlayerList();
+
+            // Try multiple packet approaches
+            ClientboundPlayerInfoUpdatePacket updatePacket = new ClientboundPlayerInfoUpdatePacket(
+                    EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER),
+                    java.util.List.of(player));
+
+            playerList.broadcastAll(updatePacket);
+            player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Sent player info update packet"));
+
+            // Try respawn refresh
+            try {
+                var connection = player.connection;
+
+                connection.send(new net.minecraft.network.protocol.game.ClientboundRespawnPacket(
+                        player.createCommonSpawnInfo(player.serverLevel()),
+                        (byte) 0x03
+                ));
+
+                connection.send(new net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket(
+                        player.getX(),
+                        player.getY(),
+                        player.getZ(),
+                        player.getYRot(),
+                        player.getXRot(),
+                        java.util.Set.of(),
+                        0
+                ));
+
+                player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[DEBUG] Sent respawn packets"));
+
+            } catch (Exception respawnException) {
+                player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§c[DEBUG] Respawn failed: " + respawnException.getMessage()));
+            }
+
+        } catch (Exception e) {
+            player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§c[DEBUG] Update appearance failed: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Simple example usage with chat debug messages
+     */
+    public static void exampleUsageSimple(ServerPlayer player, String targetUsername) {
+        System.out.println("SIMPLE EXAMPLE: Starting simple example");
+        boolean success = changePlayerSkinSimple(player, targetUsername);
+        System.out.println("SIMPLE EXAMPLE: Result: " + success);
+
+        if (success) {
+            player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+                    "Successfully changed skin to " + targetUsername + "'s skin!"));
+        } else {
+            player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+                    "Failed to change skin."));
+        }
+    }
+
+    /**
      * Simple synchronous version for testing
      */
     public static void exampleUsageSync(ServerPlayer player, String targetUsername) {
