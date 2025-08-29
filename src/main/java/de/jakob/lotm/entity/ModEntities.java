@@ -18,6 +18,11 @@ public class ModEntities {
             ENTITY_TYPES.register("flaming_spear", () -> EntityType.Builder.<FlamingSpearProjectileEntity>of(FlamingSpearProjectileEntity::new, MobCategory.MISC)
                     .sized(.35f, .35f).build("flaming_spear"));
 
+    public static final Supplier<EntityType<UnshadowedSpearProjectileEntity>> UNSHADOWED_SPEAR =
+            ENTITY_TYPES.register("unshadowed_spear", () -> EntityType.Builder.<UnshadowedSpearProjectileEntity>of(UnshadowedSpearProjectileEntity::new, MobCategory.MISC)
+                    .sized(.35f, .35f).build("unshadowed_spear"));
+
+
     public static final Supplier<EntityType<FireballEntity>> FIREBALL =
             ENTITY_TYPES.register("fireball", () -> EntityType.Builder.<FireballEntity>of(FireballEntity::new, MobCategory.MISC)
                     .sized(.55f, .55f).build("fireball"));

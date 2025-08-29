@@ -6,6 +6,7 @@ import de.jakob.lotm.util.data.NightmareCenter;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.RegionSnapshot;
+import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -32,6 +33,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class NightmareAbility extends SelectableAbilityItem {
     private static final HashMap<UUID, NightmareCenter> activeNightmares = new HashMap<>();
@@ -88,7 +90,49 @@ public class NightmareAbility extends SelectableAbilityItem {
     }
 
     private void attack(Level level, LivingEntity entity) {
+        if(level.isClientSide)
+            return;
 
+        if(!activeNightmares.containsKey(entity.getUUID())) {
+            if(entity instanceof ServerPlayer player) {
+                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("You need to create a Nightmare first.").withColor(0xFFff124d));
+                player.connection.send(packet);
+            }
+            return;
+        }
+
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 20, 2);
+        if(!isBlockInRadius(targetLoc, entity.getUUID())) {
+            if(entity instanceof ServerPlayer player) {
+                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("You cant attack outside the nightmare.").withColor(0xFFff124d));
+                player.connection.send(packet);
+            }
+            return;
+        }
+
+        Vec3 startLoc = VectorUtil.getRelativePosition(targetLoc, entity.getLookAngle().normalize(), 0, random.nextDouble(-3, 3), random.nextDouble(1, 3));
+        Vec3 dir = targetLoc.subtract(startLoc).normalize().scale(.6);
+
+        AtomicReference<Vec3> currentPos = new AtomicReference<>(startLoc);
+
+        AtomicBoolean hasHit = new AtomicBoolean(false);
+
+        ServerScheduler.scheduleUntil((ServerLevel) level, () -> {
+            Vec3 pos = currentPos.get();
+
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, .75f, 12, pos, true, false, true, 0)) {
+                hasHit.set(true);
+                return;
+            }
+            BlockState state = level.getBlockState(BlockPos.containing(pos));
+            if(!state.getCollisionShape(level, BlockPos.containing(pos)).isEmpty() || state.getBlock() == Blocks.VOID_AIR) {
+                hasHit.set(true);
+                return;
+            }
+            ParticleUtil.spawnParticles((ServerLevel) level, dustVerySmall, pos, 20, .25, 0);
+
+            currentPos.set(pos.add(dir));
+        }, null, hasHit);
     }
 
     private void restrict(Level level, LivingEntity entity) {
@@ -206,7 +250,7 @@ public class NightmareAbility extends SelectableAbilityItem {
     }
 
     private final DustParticleOptions dustBig = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), 10f);
-    private final DustParticleOptions dustSmall = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), 2f);
+    private final DustParticleOptions dustSmall = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), 1.2f);
     private final DustParticleOptions dustVerySmall = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), .7f);
 
     private void nightmare(Level level, LivingEntity entity) {

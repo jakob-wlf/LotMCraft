@@ -124,6 +124,7 @@ public class LOTMCraft
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             EntityRenderers.register(ModEntities.FLAMING_SPEAR.get(), FlamingSpearProjectileRenderer::new);
+            EntityRenderers.register(ModEntities.UNSHADOWED_SPEAR.get(), UnshadowedSpearProjectileRenderer::new);
             EntityRenderers.register(ModEntities.WIND_BLADE.get(), WindBladeRenderer::new);
             EntityRenderers.register(ModEntities.FIREBALL.get(), FireballRenderer::new);
             EntityRenderers.register(ModEntities.PAPER_DAGGER.get(), PaperDaggerProjectileRenderer::new);
