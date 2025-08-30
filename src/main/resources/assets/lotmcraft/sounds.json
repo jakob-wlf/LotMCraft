@@ -4,5 +4,11 @@
     "sounds": [
       "lotmcraft:midnight_poem"
     ]
+  },
+  "melody_of_death": {
+    "subtitle": "sounds.lotmcraft.melody_of_death",
+    "sounds": [
+      "lotmcraft:melody_of_death"
+    ]
   }
 }

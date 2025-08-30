@@ -317,6 +317,77 @@ public class ParticleUtil {
         return shouldStop;
     }
 
+    public static List<AtomicBoolean> createExpandingParticleSpirals(ServerLevel level, ParticleOptions particleType, LocationSupplier centerPosition, double starRadius, double endRadius, double height, double speed, double density, int duration, int spiralCount, int delayBetweenSpirals) {
+        ArrayList<AtomicBoolean> stopConditions = new ArrayList<>();
+
+        int degreeIncrease = 360 / spiralCount;
+
+        for(int i = 0; i < spiralCount; i++) {
+            stopConditions.add(createExpandingParticleSpiral(level, particleType, centerPosition, starRadius, endRadius, duration, i * degreeIncrease, height, speed, density, delayBetweenSpirals * i));
+        }
+
+        return stopConditions;
+    }
+
+    public static AtomicBoolean createExpandingParticleSpiral(ServerLevel level, ParticleOptions particleType, LocationSupplier positionSupplier, double starRadius, double endRadius, int duration, int startingAngle, double height, double speed, double density, int delay) {
+        if(level == null)
+            return new AtomicBoolean(true);
+
+        int particleCount = (int) (((int) Math.round(Math.max(starRadius, endRadius))) * 5 * density);
+
+        double startRadians = Math.toRadians(startingAngle);
+        double stepSize = (2 * Math.PI) / particleCount;
+        int startingI = (int) Math.round(startRadians / stepSize);
+
+        AtomicBoolean shouldStop = new AtomicBoolean(false);
+
+        AtomicDouble radius = new AtomicDouble(starRadius);
+        AtomicDouble yPosIncrease = new AtomicDouble(0);
+
+        double yIncreaseStep = .15 * speed;
+        double radiusIncreaseStep = .15 * speed;
+
+        AtomicInteger i = new AtomicInteger(startingI);
+        AtomicInteger delayCountdown = new AtomicInteger(delay);
+
+        ServerScheduler.scheduleForDuration(0, 1, duration, () -> {
+            if(shouldStop.get())
+                return;
+
+            Vec3 centerPosition = positionSupplier.getPos();
+
+            double angle = (2 * Math.PI * i.get()) / particleCount;
+            double x = centerPosition.x + radius.get() * Math.cos(angle);
+            double z = centerPosition.z + radius.get() * Math.sin(angle);
+
+            level.sendParticles(particleType, x, yPosIncrease.get() + centerPosition.y, z,0, 0, 0, 0, 0);
+
+            radius.addAndGet(radiusIncreaseStep);
+
+            if(delayCountdown.get() <= 0)
+                yPosIncrease.addAndGet(yIncreaseStep);
+
+            i.addAndGet(1);
+
+            if(yPosIncrease.get() > height) {
+                yPosIncrease.set(0);
+            }
+
+            if(radius.get() >= endRadius) {
+                radius.set(starRadius);
+            }
+
+            if(delayCountdown.get() > 0)
+                delayCountdown.decrementAndGet();
+
+            if(i.get() > particleCount)
+                i.set(0);
+
+        }, level);
+
+        return shouldStop;
+    }
+
     /**
      * Helper method to spawn particles at a location for a duration
      *

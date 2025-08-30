@@ -86,7 +86,7 @@ public class LightningEntity extends Entity {
             entityData.set(STEP, 4f);
 
             for(int i = 0; i < branches; i++) {
-                distancesAtWhichToSpawnNewBranches.add((new Random()).nextInt(7) * step + 1);
+                distancesAtWhichToSpawnNewBranches.add((new Random()).nextInt(8) * step + 1);
             }
         }
 
@@ -179,8 +179,8 @@ public class LightningEntity extends Entity {
                             startPos.add(0, -d, 0),
                             0,
                             random.nextInt(2),
-                            random.nextInt(15, 30),
-                            (new Vec3(random.nextDouble(-1, 1), random.nextDouble(-2.8, -1.6), random.nextDouble(-1, 1)).normalize()));
+                            random.nextInt(12, 20),
+                            (new Vec3(random.nextDouble(-1, 1), random.nextDouble(-3.4, -2), random.nextDouble(-1, 1)).normalize()));
                     level().addFreshEntity(entity);
                     branches.add(entity);
                 }
@@ -188,10 +188,11 @@ public class LightningEntity extends Entity {
         }
 
         // Advance beam
-        currentDistance += step; // Beam travel speed (blocks per tick)
+        if(currentDistance < maxDistance)
+            currentDistance += step; // Beam travel speed (blocks per tick)
 
-        if (currentDistance >= maxDistance) {
-            discard();
+        if (currentDistance >= maxDistance && !level().isClientSide) {
+            ServerScheduler.scheduleDelayed(10, this::discard);
         }
 
         // Remove after 5 seconds max

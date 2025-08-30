@@ -28,6 +28,7 @@ import de.jakob.lotm.util.scheduling.ClientScheduler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.villager.ModVillagers;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.particle.NoteParticle;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -150,6 +151,7 @@ public class LOTMCraft
             event.registerSpriteSet(ModParticles.GREEN_FLAME.get(), GreenFlameParticle.Provider::new);
             event.registerSpriteSet(ModParticles.BLACK_FLAME.get(), BlackFlameParticle.Provider::new);
             event.registerSpriteSet(ModParticles.HEALING.get(), HealingParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.BLACK_NOTE.get(), BlackNoteParticle.Provider::new);
         }
 
         @SubscribeEvent

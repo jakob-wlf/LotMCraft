@@ -14,6 +14,7 @@ public class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, LOTMCraft.MOD_ID);
 
     public static final Supplier<SoundEvent> MIDNIGHT_POEM = registerSound("midnight_poem");
+    public static final Supplier<SoundEvent> DEATH_MELODY = registerSound("melody_of_death");
 
     private static Supplier<SoundEvent> registerSound(String name) {
         return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, name)));

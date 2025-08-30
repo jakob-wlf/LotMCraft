@@ -1,4 +1,4 @@
-// 1.21.1	2025-08-29T19:57:52.3825343	Item Models: lotmcraft
+// 1.21.1	2025-08-30T00:48:43.1107157	Item Models: lotmcraft
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/abomination.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/abyss.json
 96494cfdd79ca3a005a680f1a30ae543a6ed1959 assets/lotmcraft/models/item/air_bullet_ability.json
@@ -264,6 +264,7 @@ a13987d46a84d593c916d3f084c5bba5ced6e766 assets/lotmcraft/models/item/shapeshift
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/shepherd.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/sheriff.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/silver_knight.json
+6143c64dcab062e5dd30abd50d2be3e83e9421ee assets/lotmcraft/models/item/siren_song_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/sleepless.json
 6abac197367ff0a78888aaebd00470b91b15e0a2 assets/lotmcraft/models/item/sleepless_potion.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/snake_of_mercury.json

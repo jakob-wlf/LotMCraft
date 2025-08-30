@@ -71,6 +71,11 @@
   "ability.lotmcraft.wind_manipulation.boost": "Boost",
   "ability.lotmcraft.wind_manipulation.binding": "Wind Binding",
   "item.lotmcraft.lightning_ability": "Lightning",
+  "item.lotmcraft.siren_song_ability": "Siren Song",
+  "ability.lotmcraft.siren_song.death_melody": "Melody of Death",
+  "ability.lotmcraft.siren_song.strengthening_melody": "Song of Courage",
+  "ability.lotmcraft.siren_song.dazing_song": "Dazing Song",
+
 
   "item.lotmcraft.toxic_smoke_ability": "Toxic Smoke",
   "item.lotmcraft.poisonous_flame_ability": "Poisonous Flame",
@@ -156,6 +161,7 @@
 
   "_comment004": "Sounds-----------------------------------------------------------------------------",
   "sounds.lotmcraft.midnight_poem": "Midnight Poem",
+  "sounds.lotmcraft.melody_of_death": "Melody of Death",
 
   "_comment005": "Entities-----------------------------------------------------------------------------",
   "entity.lotmcraft.fire_raven": "Fire Raven",
