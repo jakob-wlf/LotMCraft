@@ -134,6 +134,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.FROST_SPEAR.get(), FrostSpearProjectileRenderer::new);
             EntityRenderers.register(ModEntities.ELECTRIC_SHOCK.get(), ElectricShockRenderer::new);
             EntityRenderers.register(ModEntities.LIGHTNING.get(), LightningRenderer::new);
+            EntityRenderers.register(ModEntities.APPRENTICE_BOOK.get(), ApprenticeBookRenderer::new);
         }
 
         @SubscribeEvent

@@ -125,6 +125,9 @@
   "ability.lotmcraft.spells.wind": "Wind",
   "ability.lotmcraft.spells.freeze": "Freeze",
   "ability.lotmcraft.spells.flash": "Flash",
+  "item.lotmcraft.recording_ability": "Recording",
+  "ability.lotmcraft.recording.record": "Record",
+  "ability.lotmcraft.recording.get_abilities": "Get Recorded Abilities",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",

@@ -35,6 +35,10 @@ public class ModEntities {
             ENTITY_TYPES.register("apprentice_door", () -> EntityType.Builder.<ApprenticeDoorEntity>of(ApprenticeDoorEntity::new, MobCategory.MISC)
                     .sized(.005f, 2f).build("apprentice_door"));
 
+    public static final Supplier<EntityType<ApprenticeBookEntity>> APPRENTICE_BOOK =
+            ENTITY_TYPES.register("apprentice_book", () -> EntityType.Builder.<ApprenticeBookEntity>of(ApprenticeBookEntity::new, MobCategory.MISC)
+                    .sized(.8f, .2f).build("apprentice_book"));
+
     public static final Supplier<EntityType<ElectricShockEntity>> ELECTRIC_SHOCK =
             ENTITY_TYPES.register("electric_shock", () -> EntityType.Builder.<ElectricShockEntity>of(ElectricShockEntity::new, MobCategory.MISC)
                     .sized(0.1f, 0.1f) // Small hitbox

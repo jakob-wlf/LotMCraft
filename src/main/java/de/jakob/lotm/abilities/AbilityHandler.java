@@ -10,6 +10,7 @@ import de.jakob.lotm.abilities.darkness.MidnightPoemAbility;
 import de.jakob.lotm.abilities.darkness.NightmareAbility;
 import de.jakob.lotm.abilities.demoness.*;
 import de.jakob.lotm.abilities.door.DoorOpeningAbility;
+import de.jakob.lotm.abilities.door.RecordingAbility;
 import de.jakob.lotm.abilities.door.SpellsAbility;
 import de.jakob.lotm.abilities.fool.*;
 import de.jakob.lotm.abilities.mother.CleansingAbility;
@@ -84,6 +85,7 @@ public class AbilityHandler {
 
     public static DeferredItem<Item> DOOR_OPENING = ITEMS.registerItem("door_opening_ability", DoorOpeningAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SPELLS = ITEMS.registerItem("spells_ability", SpellsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> RECORDING = ITEMS.registerItem("recording_ability", RecordingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static void registerAbilities(IEventBus eventBus) {
         ITEMS.register(eventBus);
