@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class RecordingAbility extends SelectableAbilityItem {
     public RecordingAbility(Properties properties) {
-        super(properties, 1f);
+        super(properties, 8f);
     }
 
     @Override
@@ -50,9 +50,9 @@ public class RecordingAbility extends SelectableAbilityItem {
         ApprenticeBookEntity book = new ApprenticeBookEntity(level, pos, dir);
         level.addFreshEntity(book);
 
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 2, () -> {
+        ServerScheduler.scheduleForDuration(0, 1, 20 * 5, () -> {
             Vec3 currentPlayerDir = (new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z)).normalize();
-            Vec3 currentPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(0, -.65, 0), currentPlayerDir, 1.4, 0, -.4);
+            Vec3 currentPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(0, -.8, 0), currentPlayerDir, 1.1, 0, -.2);
             Vec3 currentDir = entity.getEyePosition().subtract(currentPos).normalize();
             book.setPos(currentPos);
             book.setFacingDirection(currentDir);

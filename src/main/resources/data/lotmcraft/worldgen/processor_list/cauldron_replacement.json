@@ -1,7 +1,0 @@
-{
-  "processors": [
-    {
-      "processor_type": "lotmcraft:cauldron_replacement"
-    }
-  ]
-}

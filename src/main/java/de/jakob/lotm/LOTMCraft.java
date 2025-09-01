@@ -19,7 +19,7 @@ import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.potions.PotionRecipes;
 import de.jakob.lotm.sound.ModSounds;
-import de.jakob.lotm.structure.ModProcessorTypes;
+import de.jakob.lotm.structure.ModStructures;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.abilities.AbilityHandler;
 import de.jakob.lotm.util.Config;
@@ -28,7 +28,6 @@ import de.jakob.lotm.util.scheduling.ClientScheduler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.villager.ModVillagers;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.particle.NoteParticle;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -89,7 +88,7 @@ public class LOTMCraft
         ModVillagers.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
-        ModProcessorTypes.register(modEventBus);
+        ModStructures.register(modEventBus);
         PotionRecipeItemHandler.registerRecipes(modEventBus);
 
         AbilityHandler.registerAbilities(modEventBus);

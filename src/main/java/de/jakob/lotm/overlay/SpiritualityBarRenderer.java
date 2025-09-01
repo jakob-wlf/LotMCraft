@@ -1,6 +1,7 @@
 package de.jakob.lotm.overlay;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.SpiritualityProgressTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -37,7 +38,7 @@ public class SpiritualityBarRenderer {
         int progressColorEnd = 0xFF50E3C2;
 
         // Check if current player has progress
-        if (SpiritualityProgressTracker.hasProgress(mc.player)) {
+        if (SpiritualityProgressTracker.hasProgress(mc.player) && (ClientBeyonderCache.isBeyonder(mc.player.getUUID()))) {
             float progress = SpiritualityProgressTracker.getProgress(mc.player);
 
             // Draw background
