@@ -3,6 +3,7 @@ package de.jakob.lotm;
 import com.mojang.logging.LogUtils;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.*;
@@ -21,7 +22,7 @@ import de.jakob.lotm.potions.PotionRecipes;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.structure.ModStructures;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.abilities.AbilityHandler;
+import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.util.Config;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.util.scheduling.ClientScheduler;
@@ -89,9 +90,10 @@ public class LOTMCraft
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModStructures.register(modEventBus);
+        ModDataComponents.register(modEventBus);
         PotionRecipeItemHandler.registerRecipes(modEventBus);
 
-        AbilityHandler.registerAbilities(modEventBus);
+        AbilityItemHandler.registerAbilities(modEventBus);
         PassiveAbilityHandler.registerAbilities(modEventBus);
         PotionItemHandler.registerPotions(modEventBus);
 

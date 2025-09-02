@@ -2,9 +2,8 @@ package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.block.ModBlocks;
-import de.jakob.lotm.potions.BeyonderPotion;
 import de.jakob.lotm.potions.PotionItemHandler;
-import de.jakob.lotm.abilities.AbilityHandler;
+import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import net.minecraft.core.registries.Registries;
@@ -13,7 +12,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -34,11 +32,11 @@ public class ModCreativeModTabs {
                     .build());
 
     public static final Supplier<CreativeModeTab> ABILITIES_TAB = CREATIVE_MODE_TABS.register("abilities_tab",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(AbilityHandler.COGITATION.get()))
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(AbilityItemHandler.COGITATION.get()))
                     .withTabsBefore(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "lotm_tab"))
                     .title(Component.translatable("creativetab.lotmcraft.abilities_tab"))
                     .displayItems((parameters, output) -> {
-                        AbilityHandler.ITEMS.getEntries().forEach(itemHolder -> {
+                        AbilityItemHandler.ITEMS.getEntries().forEach(itemHolder -> {
                             output.accept(itemHolder.get());
                         });
                     })

@@ -39,7 +39,7 @@ public class SelectedAbilityRenderer {
         int color = BeyonderData.pathwayInfos.get(ClientBeyonderCache.getPathway(mc.player.getUUID())).color();
 
         if(ClientBeyonderCache.isBeyonder(mc.player.getUUID())){
-            if (mc.player.getMainHandItem().getItem() instanceof SelectableAbilityItem abilityItem && abilityItem.canUse(mc.player)) {
+            if (mc.player.getMainHandItem().getItem() instanceof SelectableAbilityItem abilityItem && abilityItem.canUse(mc.player, mc.player.getMainHandItem())) {
                 Component message1 = Component.translatable("lotm.selected").append(":").withColor(grayColor);
                 Component message2 = Component.translatable(abilityItem.getSelectedAbility(mc.player)).withColor(color);
                 guiGraphics.drawString(mc.font, message1, x, y, grayColor);

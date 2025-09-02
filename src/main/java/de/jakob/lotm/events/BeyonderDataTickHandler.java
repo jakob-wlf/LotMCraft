@@ -3,7 +3,7 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.abilities.AbilityHandler;
+import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
@@ -53,7 +53,7 @@ public class BeyonderDataTickHandler {
             }
         });
 
-        AbilityHandler.ITEMS.getEntries().forEach(item -> {
+        AbilityItemHandler.ITEMS.getEntries().forEach(item -> {
             if(item.get() instanceof AbilityItem abilityItem && player.getItemInHand(InteractionHand.MAIN_HAND).is(abilityItem)) {
                 if(abilityItem.canUse(player)) {
                     abilityItem.onHold(player.level(), player);
@@ -63,7 +63,7 @@ public class BeyonderDataTickHandler {
     }
 
     private static void tickAbilitiesClientSide(Player player) {
-        AbilityHandler.ITEMS.getEntries().forEach(item -> {
+        AbilityItemHandler.ITEMS.getEntries().forEach(item -> {
             if(item.get() instanceof AbilityItem abilityItem && player.getItemInHand(InteractionHand.MAIN_HAND).is(abilityItem)) {
                 if(abilityItem.canUse(player)) {
                     abilityItem.onHold(player.level(), player);

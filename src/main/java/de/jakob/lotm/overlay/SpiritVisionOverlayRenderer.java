@@ -2,7 +2,7 @@ package de.jakob.lotm.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.AbilityHandler;
+import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.common.SpiritVisionAbility;
 import net.minecraft.client.Minecraft;
@@ -32,7 +32,7 @@ public class SpiritVisionOverlayRenderer {
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
 
-        if (((ToggleAbilityItem) (AbilityHandler.SPIRIT_VISION.get())).isActive(mc.player)) {
+        if (((ToggleAbilityItem) (AbilityItemHandler.SPIRIT_VISION.get())).isActive(mc.player)) {
             ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/spirit_vision_overlay.png");
             // Push the current pose
             guiGraphics.pose().pushPose();

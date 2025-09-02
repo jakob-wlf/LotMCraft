@@ -77,55 +77,7 @@ public abstract class ToggleAbilityItem extends Item {
     }
 
     public boolean canUse(Player player, boolean ignoreCreative) {
-        // Creative mode always works
-        if (player.isCreative() && !ignoreCreative) {
-            return true;
-        }
-
-        if (player.level().isClientSide()) {
-            // Client-side: use cached data
-            String pathway = ClientBeyonderCache.getPathway(player.getUUID());
-            int sequence = ClientBeyonderCache.getSequence(player.getUUID());
-            float spirituality = ClientBeyonderCache.getSpirituality(player.getUUID());
-
-            // Debug pathway always works
-            if (pathway.equalsIgnoreCase("debug")) {
-                return true;
-            }
-
-            if(!getRequirements().containsKey(pathway))
-                return false;
-
-            // Check if pathway has requirements
-            Integer minSeq = getRequirements().get(pathway);
-            if (minSeq == null) {
-                return false;
-            }
-
-            // Check sequence and spirituality requirements
-            return sequence <= minSeq && spirituality >= getSpiritualityCost();
-        } else {
-            // Server-side: use your existing logic
-            String pathway = BeyonderData.getPathway(player);
-            int sequence = BeyonderData.getSequence(player);
-
-            // Debug pathway always works
-            if (pathway.equalsIgnoreCase("debug")) {
-                return true;
-            }
-
-            if(!getRequirements().containsKey(pathway))
-                return false;
-
-            // Check if pathway has requirements
-            Integer minSeq = getRequirements().get(pathway);
-            if (minSeq == null) {
-                return false;
-            }
-
-            // Check sequence and spirituality requirements
-            return sequence <= minSeq && BeyonderData.getSpirituality(player) >= getSpiritualityCost();
-        }
+        return AbilityHandler.canUse(player, ignoreCreative, getRequirements(), getSpiritualityCost());
     }
 
     public boolean isActive(LivingEntity entity) {

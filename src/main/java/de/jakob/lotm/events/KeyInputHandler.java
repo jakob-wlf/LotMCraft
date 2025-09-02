@@ -89,7 +89,7 @@ public class KeyInputHandler {
         if(LOTMCraft.nextAbilityKey != null && LOTMCraft.nextAbilityKey.consumeClick()) {
             Player player = Minecraft.getInstance().player;
             if(player != null && ClientBeyonderCache.isBeyonder(player.getUUID())) {
-                if(player.getMainHandItem().getItem() instanceof SelectableAbilityItem abilityItem && abilityItem.canUse(player))
+                if(player.getMainHandItem().getItem() instanceof SelectableAbilityItem abilityItem && abilityItem.canUse(player, player.getMainHandItem()))
                     abilityItem.nextAbility(player);
             }
         }
@@ -97,7 +97,7 @@ public class KeyInputHandler {
         if(LOTMCraft.previousAbilityKey != null && LOTMCraft.previousAbilityKey.consumeClick()) {
             Player player = Minecraft.getInstance().player;
             if(player != null && ClientBeyonderCache.isBeyonder(player.getUUID())) {
-                if(player.getMainHandItem().getItem() instanceof SelectableAbilityItem abilityItem && abilityItem.canUse(player))
+                if(player.getMainHandItem().getItem() instanceof SelectableAbilityItem abilityItem && abilityItem.canUse(player, player.getMainHandItem()))
                     abilityItem.previousAbility(player);
             }
         }

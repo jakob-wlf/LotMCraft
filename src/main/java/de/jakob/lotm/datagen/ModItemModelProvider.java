@@ -1,7 +1,7 @@
 package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.AbilityHandler;
+import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
@@ -37,7 +37,7 @@ public class ModItemModelProvider extends ItemModelProvider {
             basicItem(i.get());
         });
 
-        AbilityHandler.ITEMS.getEntries().forEach(i -> {
+        AbilityItemHandler.ITEMS.getEntries().forEach(i -> {
             itemWithCustomDisplay(i.get());
         });
         PassiveAbilityHandler.ITEMS.getEntries().forEach(i -> {

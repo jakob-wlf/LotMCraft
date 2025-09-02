@@ -1,7 +1,10 @@
 package de.jakob.lotm.abilities;
 
+import de.jakob.lotm.abilities.door.RecordingAbility;
+import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -32,6 +36,12 @@ public abstract class AbilityItem extends Item {
         this.cooldown = (int) (cooldown * 20);
     }
 
+    public int lowestSequenceUsable() {
+        return getRequirements().values().stream()
+                .max(Integer::compareTo)
+                .orElse(-1);
+    }
+
     public abstract Map<String, Integer> getRequirements();
 
     protected abstract float getSpiritualityCost();
@@ -39,7 +49,7 @@ public abstract class AbilityItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
 
-        if (!canUse(player)) return InteractionResultHolder.fail(player.getItemInHand(hand));
+        if (!canUse(player) && !isRecorded(player.getItemInHand(hand))) return InteractionResultHolder.fail(player.getItemInHand(hand));
 
         if(cooldown > 0 && cooldowns.containsKey(player) && (System.currentTimeMillis() - cooldowns.get(player)) < cooldown && !level.isClientSide) {
             return InteractionResultHolder.fail(player.getItemInHand(hand));
@@ -54,9 +64,19 @@ public abstract class AbilityItem extends Item {
             player.getCooldowns().addCooldown(this, cooldown);
         }
 
+        if(!level.isClientSide)
+            AbilityHandler.useAbilityInArea(this, new Location(player.position(), level));
+
         onAbilityUse(level, player);
 
+        if(isRecorded(player.getItemInHand(hand)))
+            player.setItemInHand(hand, ItemStack.EMPTY);
+
         return InteractionResultHolder.success(player.getItemInHand(hand));
+    }
+
+    private boolean isRecorded(ItemStack item) {
+        return item.getOrDefault(ModDataComponents.IS_RECORDED, false);
     }
 
     protected double multiplier(LivingEntity entity) {
@@ -67,56 +87,12 @@ public abstract class AbilityItem extends Item {
         return canUse(player, false);
     }
 
+    public boolean canUse(Player player, ItemStack itemStack) {
+        return canUse(player, false) || isRecorded(itemStack);
+    }
+
     public boolean canUse(Player player, boolean ignoreCreative) {
-        // Creative mode always works
-        if (player.isCreative() && !ignoreCreative) {
-            return true;
-        }
-
-        if (player.level().isClientSide()) {
-            // Client-side: use cached data
-            String pathway = ClientBeyonderCache.getPathway(player.getUUID());
-            int sequence = ClientBeyonderCache.getSequence(player.getUUID());
-            float spirituality = ClientBeyonderCache.getSpirituality(player.getUUID());
-
-            // Debug pathway always works
-            if (pathway.equalsIgnoreCase("debug")) {
-                return true;
-            }
-
-            if(!getRequirements().containsKey(pathway))
-                return false;
-
-            // Check if pathway has requirements
-            Integer minSeq = getRequirements().get(pathway);
-            if (minSeq == null) {
-                return false;
-            }
-
-            // Check sequence and spirituality requirements
-            return sequence <= minSeq && spirituality >= getSpiritualityCost();
-        } else {
-            // Server-side: use your existing logic
-            String pathway = BeyonderData.getPathway(player);
-            int sequence = BeyonderData.getSequence(player);
-
-            // Debug pathway always works
-            if (pathway.equalsIgnoreCase("debug")) {
-                return true;
-            }
-
-            if(!getRequirements().containsKey(pathway))
-                return false;
-
-            // Check if pathway has requirements
-            Integer minSeq = getRequirements().get(pathway);
-            if (minSeq == null) {
-                return false;
-            }
-
-            // Check sequence and spirituality requirements
-            return sequence <= minSeq && BeyonderData.getSpirituality(player) >= getSpiritualityCost();
-        }
+        return AbilityHandler.canUse(player, ignoreCreative, getRequirements(), getSpiritualityCost());
     }
 
     protected abstract void onAbilityUse(Level level, LivingEntity entity);

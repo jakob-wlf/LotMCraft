@@ -3,8 +3,7 @@ package de.jakob.lotm.overlay;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.AbilityHandler;
-import de.jakob.lotm.abilities.common.DivinationAbility;
+import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.red_priest.CullAbility;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -34,7 +33,7 @@ public class CullOverlay {
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
 
-        if (((CullAbility) AbilityHandler.CULL.get()).isActive(mc.player)) {
+        if (((CullAbility) AbilityItemHandler.CULL.get()).isActive(mc.player)) {
             ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/cull_overlay.png");
             // Push the current pose
             guiGraphics.pose().pushPose();
@@ -58,7 +57,7 @@ public class CullOverlay {
     @SubscribeEvent
     public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?> event) {
         Player localPlayer = Minecraft.getInstance().player;
-        if (localPlayer == null || !((CullAbility) AbilityHandler.CULL.get()).isActive(localPlayer)) {
+        if (localPlayer == null || !((CullAbility) AbilityItemHandler.CULL.get()).isActive(localPlayer)) {
             return;
         }
 
@@ -75,7 +74,7 @@ public class CullOverlay {
     @SubscribeEvent
     public static void onRenderLivingPost(RenderLivingEvent.Post<?, ?> event) {
         Player localPlayer = Minecraft.getInstance().player;
-        if (localPlayer == null || !((CullAbility) AbilityHandler.CULL.get()).isActive(localPlayer)) {
+        if (localPlayer == null || !((CullAbility) AbilityItemHandler.CULL.get()).isActive(localPlayer)) {
             return;
         }
 

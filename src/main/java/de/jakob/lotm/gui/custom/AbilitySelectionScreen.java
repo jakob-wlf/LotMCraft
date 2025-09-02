@@ -68,6 +68,7 @@ public class AbilitySelectionScreen extends AbstractContainerScreen<AbilitySelec
             this.addRenderableWidget(leftButton);
         }
 
+
         if(sequence > ClientBeyonderCache.getSequence(player.getUUID())) {
             // Right button
             this.rightButton = Button.builder(
@@ -79,6 +80,26 @@ public class AbilitySelectionScreen extends AbstractContainerScreen<AbilitySelec
                     .bounds(this.leftPos + this.imageWidth + 5, this.topPos + 20, 20, 20)
                     .build();
             this.addRenderableWidget(rightButton);
+        }
+
+        int increment = -(this.rightButton.getHeight() + 2);
+
+
+        int maxSequence = ClientBeyonderCache.getSequence(player.getUUID());
+        for(int i = 9; i > maxSequence - 1; i--) {
+            if(i == sequence)
+                continue;
+
+            int newSequence = i;
+            Button b = Button.builder(
+                            Component.literal(i + ""),
+                            button -> {
+                                PacketHandler.sendToServer(new OpenAbilitySelectionPacket(newSequence, pathway));
+                            })
+                    .bounds(this.leftPos + this.imageWidth + this.rightButton.getWidth() + 10, this.topPos + increment + 20, 20, 20)
+                    .build();
+            this.addRenderableWidget(b);
+            increment += this.rightButton.getHeight() + 2;
         }
     }
 

@@ -30,6 +30,7 @@ public class FlamingJumpAbility extends AbilityItem {
         return new HashMap<>(Map.of("fool", 7));
     }
 
+    //TODO: Fix Flaming Jump
     @Override
     protected float getSpiritualityCost() {
         return 12;

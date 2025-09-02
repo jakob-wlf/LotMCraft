@@ -1,8 +1,7 @@
 package de.jakob.lotm.events;
 
-import com.mojang.authlib.minecraft.client.MinecraftClient;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.AbilityHandler;
+import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.darkness.NightmareAbility;
@@ -17,10 +16,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.joml.Vector3f;
@@ -61,7 +58,7 @@ public class PlayerEvents {
             }
         }
         Entity damager = event.getSource().getEntity();
-        if(damager instanceof LivingEntity source && ((CullAbility) AbilityHandler.CULL.get()).isActive(source)) {
+        if(damager instanceof LivingEntity source && ((CullAbility) AbilityItemHandler.CULL.get()).isActive(source)) {
             Level level = event.getEntity().level();
             if(!level.isClientSide) {
                 ParticleUtil.spawnParticles((ServerLevel) level, dust, event.getEntity().getEyePosition().subtract(0, .4, 0), 40, .4, .8, .4, 0);

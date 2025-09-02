@@ -52,7 +52,7 @@ public record OpenAbilitySelectionPacket(int sequence, String pathway) implement
                 return abilityItem.getRequirements().containsKey(pathway) && sequence == abilityItem.getRequirements().get(pathway);
             }).map(entry -> new ItemStack(entry.get())).toList());
 
-            List<ItemStack> abilities = AbilityHandler.ITEMS.getEntries().stream().filter(entry -> {
+            List<ItemStack> abilities = AbilityItemHandler.ITEMS.getEntries().stream().filter(entry -> {
                 if(entry.get() instanceof AbilityItem abilityItem)
                     return abilityItem.getRequirements().containsKey(pathway) && sequence == abilityItem.getRequirements().get(pathway);
                 else if(entry.get() instanceof ToggleAbilityItem abilityItem)

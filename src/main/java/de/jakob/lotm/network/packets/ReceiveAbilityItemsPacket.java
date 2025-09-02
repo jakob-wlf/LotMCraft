@@ -1,7 +1,7 @@
 package de.jakob.lotm.network.packets;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.AbilityHandler;
+import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import net.minecraft.network.FriendlyByteBuf;
@@ -31,7 +31,7 @@ public record ReceiveAbilityItemsPacket() implements CustomPacketPayload {
             ServerPlayer player = (ServerPlayer) context.player();
 
             // Give abilities
-            AbilityHandler.ITEMS.getEntries().forEach(entry -> {
+            AbilityItemHandler.ITEMS.getEntries().forEach(entry -> {
                 if(entry.get() instanceof AbilityItem abilityItem && abilityItem.canUse(player))
                     giveAbility(player, entry.get());
                 else if(entry.get() instanceof ToggleAbilityItem toggleAbilityItem && toggleAbilityItem.canUse(player))
