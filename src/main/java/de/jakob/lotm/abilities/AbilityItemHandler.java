@@ -1,17 +1,14 @@
 package de.jakob.lotm.abilities;
 
+import de.jakob.lotm.abilities.abyss.*;
 import de.jakob.lotm.abilities.common.CogitationAbility;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.common.SpiritVisionAbility;
-import de.jakob.lotm.abilities.abyss.PoisonousFlameAbility;
-import de.jakob.lotm.abilities.abyss.ToxicSmokeAbility;
 import de.jakob.lotm.abilities.darkness.MidnightPoemAbility;
 import de.jakob.lotm.abilities.darkness.NightmareAbility;
 import de.jakob.lotm.abilities.demoness.*;
-import de.jakob.lotm.abilities.door.DoorOpeningAbility;
-import de.jakob.lotm.abilities.door.RecordingAbility;
-import de.jakob.lotm.abilities.door.SpellsAbility;
+import de.jakob.lotm.abilities.door.*;
 import de.jakob.lotm.abilities.fool.*;
 import de.jakob.lotm.abilities.mother.CleansingAbility;
 import de.jakob.lotm.abilities.mother.HealingAbility;
@@ -61,6 +58,9 @@ public class AbilityItemHandler {
 
     public static DeferredItem<Item> TOXIC_SMOKE = ITEMS.registerItem("toxic_smoke_ability", ToxicSmokeAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> POISONOUS_FLAME = ITEMS.registerItem("poisonous_flame_ability", PoisonousFlameAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> DEVIL_TRANSFORMATION = ITEMS.registerItem("devil_transformation_ability", DevilTransformationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> AVATAR_OF_DESIRE = ITEMS.registerItem("avatar_of_desire_ability", AvatarOfDesireAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> DEFILING_SEED = ITEMS.registerItem("defiling_seed_ability", DefilingSeedAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> AIR_BULLET = ITEMS.registerItem("air_bullet_ability", AirBulletAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> FLAME_CONTROLLING = ITEMS.registerItem("flame_controlling_ability", FlameControllingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
@@ -78,6 +78,9 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> FROST = ITEMS.registerItem("frost_ability", FrostAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> INVISIBILITY = ITEMS.registerItem("invisibility_ability", InvisibilityAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> MIRROR_SUBSTITUTION = ITEMS.registerItem("mirror_substitution_ability", MirrorSubstituteAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> THREAD_MANIPULATION = ITEMS.registerItem("thread_manipulation_ability", ThreadManipulationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> CHARM = ITEMS.registerItem("charm_ability", CharmAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> DISEASE = ITEMS.registerItem("disease_ability", DiseaseAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> PLANT_NURTURING = ITEMS.registerItem("plant_nurturing_ability", PlantNurturingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> HEALING = ITEMS.registerItem("healing_ability", HealingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
@@ -86,6 +89,8 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> DOOR_OPENING = ITEMS.registerItem("door_opening_ability", DoorOpeningAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SPELLS = ITEMS.registerItem("spells_ability", SpellsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> RECORDING = ITEMS.registerItem("recording_ability", RecordingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> BLINK = ITEMS.registerItem("blink_ability", BlinkAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> TRAVELERS_DOOR = ITEMS.registerItem("travelers_door_ability", TravelersDoorAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static void registerAbilities(IEventBus eventBus) {
         ITEMS.register(eventBus);

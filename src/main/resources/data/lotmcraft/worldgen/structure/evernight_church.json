@@ -1,20 +1,20 @@
 {
   "type": "minecraft:jigsaw",
   "start_pool": "lotmcraft:evernight_church/start_pool",
-  "size": 7,
-  "max_distance_from_center": 80,
+  "size": 1,
+  "max_distance_from_center": 16,
   "biomes": "#minecraft:is_overworld",
   "step": "surface_structures",
   "spawn_overrides": {},
   "start_height": {
     "type": "minecraft:uniform",
     "min_inclusive": {
-      "absolute": 60
+      "absolute": -64
     },
     "max_inclusive": {
-      "absolute": 80
+      "absolute": 320
     }
   },
-  "project_start_to_heightmap": "WORLD_SURFACE_WG",
+  "project_start_to_heightmap": "OCEAN_FLOOR_WG",
   "use_expansion_hack": false
 }

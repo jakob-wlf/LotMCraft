@@ -79,6 +79,9 @@
 
   "item.lotmcraft.toxic_smoke_ability": "Toxic Smoke",
   "item.lotmcraft.poisonous_flame_ability": "Poisonous Flame",
+  "item.lotmcraft.devil_transformation_ability": "Devil Transformation",
+  "item.lotmcraft.avatar_of_desire_ability": "Avatar of Desire",
+  "item.lotmcraft.defiling_seed_ability": "Defiling Seed",
 
   "item.lotmcraft.flame_controlling_ability": "Flame Controlling",
   "item.lotmcraft.air_bullet_ability": "Air Bullet",
@@ -109,6 +112,9 @@
   "ability.lotmcraft.frost.freeze_area": "Freeze Area",
   "item.lotmcraft.invisibility_ability": "Invisibility",
   "item.lotmcraft.mirror_substitution_ability": "Mirror Substitution",
+  "item.lotmcraft.thread_manipulation_ability": "Thread Manipulation",
+  "item.lotmcraft.charm_ability": "Charm",
+  "item.lotmcraft.disease_ability": "Disease",
 
 
   "item.lotmcraft.plant_nurturing_ability": "Plant Nurturing",
@@ -128,6 +134,8 @@
   "item.lotmcraft.recording_ability": "Recording",
   "ability.lotmcraft.recording.record": "Record",
   "ability.lotmcraft.recording.get_abilities": "Get Recorded Abilities",
+  "item.lotmcraft.blink_ability": "Blink",
+  "item.lotmcraft.travelers_door_ability": "Travelers Door",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",

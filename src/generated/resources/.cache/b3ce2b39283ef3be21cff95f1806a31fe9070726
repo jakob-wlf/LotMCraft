@@ -1,4 +1,4 @@
-// 1.21.1	2025-09-01T00:30:13.2388204	Item Models: lotmcraft
+// 1.21.1	2025-09-03T05:09:16.8091495	Item Models: lotmcraft
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/abomination.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/abyss.json
 96494cfdd79ca3a005a680f1a30ae543a6ed1959 assets/lotmcraft/models/item/air_bullet_ability.json
@@ -19,6 +19,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/astrologer
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/astronomer.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/attendant_of_mysteries.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/author.json
+9755e100a4e1431dc2a0911ac2eb43ffd6695be8 assets/lotmcraft/models/item/avatar_of_desire_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/balancer.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/barbarian.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/bard.json
@@ -32,6 +33,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/black_empe
 9b397ef35da6a6009ac197ed9b1fc009412d32e6 assets/lotmcraft/models/item/black_flame_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/black_knight.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/blatherer.json
+a80778987f969f2bf0ef323381667f111f36b1a6 assets/lotmcraft/models/item/blink_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/bloody_archduke.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/briber.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/calamity.json
@@ -40,6 +42,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/cataclysmi
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/chained.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/chaoswalker.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/chaos_hunter.json
+9d2ccadca5357536f8ebfaa379501fe6e06b0886 assets/lotmcraft/models/item/charm_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/clairvoyant.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/classical_alchemist.json
 a950240155563e7a04fad2dc5cfb0439c6cbf186 assets/lotmcraft/models/item/cleanse_ability.json
@@ -62,6 +65,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/dark_angel
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/dawn_paladin.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/death.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/death_consul.json
+39f9d91b0fa101f6f71e5c1e71e7cbba341fee8e assets/lotmcraft/models/item/defiling_seed_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/demon.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/demoness.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/demoness_of_affliction.json
@@ -75,9 +79,11 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/desire_apo
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/desolate_matriarch.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/detective.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/devil.json
+33da58870be4006e12f7f4827f7d30e8fedd721e assets/lotmcraft/models/item/devil_transformation_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/discerner.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/disciple_of_silence.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/disciplinary_paladin.json
+8b44f65f58349f12864ce58fd0f6d6d998658d26 assets/lotmcraft/models/item/disease_ability.json
 24b1dfa69ae91e81c6a0a51be301a3835cdc4be8 assets/lotmcraft/models/item/divination_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/doctor.json
 2a92cf27f930c351873b3177c3f94b8726fa16a9 assets/lotmcraft/models/item/doctor_potion.json
@@ -285,10 +291,12 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/student_of
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/sun.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/swindler.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/telepathist.json
+5343324b529681f6227f44b0af3cd3ed00e94b79 assets/lotmcraft/models/item/thread_manipulation_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/thunder_god.json
 4865c763e9760ff402e2011e4f0f41cf9708b91d assets/lotmcraft/models/item/toxic_smoke_ability.json
 be3f094f5e2fce2080e86643820d02b44d1a07f5 assets/lotmcraft/models/item/trap_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/traveler.json
+4979b64f249e978c28d51bde2b6d671f6a2574ec assets/lotmcraft/models/item/travelers_door_ability.json
 a902251f9c00ab89f444cae2329c7bb2f7be4de2 assets/lotmcraft/models/item/traveler_potion.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/trickmaster.json
 5c520d72eaa4f2eaa9141e8abde432e74b212349 assets/lotmcraft/models/item/trickmaster_potion.json
