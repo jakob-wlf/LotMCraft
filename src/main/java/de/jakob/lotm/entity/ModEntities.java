@@ -35,6 +35,10 @@ public class ModEntities {
             ENTITY_TYPES.register("apprentice_door", () -> EntityType.Builder.<ApprenticeDoorEntity>of(ApprenticeDoorEntity::new, MobCategory.MISC)
                     .sized(.005f, 2f).build("apprentice_door"));
 
+    public static final Supplier<EntityType<TravelersDoorEntity>> TRAVELERS_DOOR =
+            ENTITY_TYPES.register("travelers_door", () -> EntityType.Builder.<TravelersDoorEntity>of(TravelersDoorEntity::new, MobCategory.MISC)
+                    .sized(1.5f, 2.5f).build("travelers_door"));
+
     public static final Supplier<EntityType<ApprenticeBookEntity>> APPRENTICE_BOOK =
             ENTITY_TYPES.register("apprentice_book", () -> EntityType.Builder.<ApprenticeBookEntity>of(ApprenticeBookEntity::new, MobCategory.MISC)
                     .sized(.8f, .2f).build("apprentice_book"));
