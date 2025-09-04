@@ -155,6 +155,7 @@ public class LOTMCraft
             event.registerSpriteSet(ModParticles.HEALING.get(), HealingParticle.Provider::new);
             event.registerSpriteSet(ModParticles.BLACK_NOTE.get(), BlackNoteParticle.Provider::new);
             event.registerSpriteSet(ModParticles.GOLDEN_NOTE.get(), GoldenNoteParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.DISEASE.get(), DiseaseParticle.Provider::new);
         }
 
         @SubscribeEvent

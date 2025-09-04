@@ -1,7 +1,7 @@
 package de.jakob.lotm.util.helper;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import de.jakob.lotm.util.data.LocationSupplier;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.scheduling.ClientScheduler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -249,22 +249,19 @@ public class ParticleUtil {
         return shouldStop;
     }
 
-    public static List<AtomicBoolean> createParticleSpirals(ServerLevel level, ParticleOptions particleType, LocationSupplier centerPosition, double starRadius, double endRadius, double height, double speed, double density, int duration, int spiralCount, int delayBetweenSpirals) {
+    public static List<AtomicBoolean> createParticleSpirals(ParticleOptions particleType, Location centerPosition, double starRadius, double endRadius, double height, double speed, double density, int duration, int spiralCount, int delayBetweenSpirals) {
         ArrayList<AtomicBoolean> stopConditions = new ArrayList<>();
 
         int degreeIncrease = 360 / spiralCount;
 
         for(int i = 0; i < spiralCount; i++) {
-            stopConditions.add(createParticleSpiral(level, particleType, centerPosition, starRadius, endRadius, duration, i * degreeIncrease, height, speed, density, delayBetweenSpirals * i));
+            stopConditions.add(createParticleSpiral(particleType, centerPosition, starRadius, endRadius, duration, i * degreeIncrease, height, speed, density, delayBetweenSpirals * i));
         }
 
         return stopConditions;
     }
 
-    public static AtomicBoolean createParticleSpiral(ServerLevel level, ParticleOptions particleType, LocationSupplier positionSupplier, double starRadius, double endRadius, int duration, int startingAngle, double height, double speed, double density, int delay) {
-        if(level == null)
-            return new AtomicBoolean(true);
-
+    public static AtomicBoolean createParticleSpiral(ParticleOptions particleType, Location positionSupplier, double starRadius, double endRadius, int duration, int startingAngle, double height, double speed, double density, int delay) {
         int particleCount = (int) (((int) Math.round(Math.max(starRadius, endRadius))) * 5 * density);
 
         double startRadians = Math.toRadians(startingAngle);
@@ -286,7 +283,12 @@ public class ParticleUtil {
             if(shouldStop.get())
                 return;
 
-            Vec3 centerPosition = positionSupplier.getPos();
+            if(positionSupplier.getLevel() == null || positionSupplier.getLevel().isClientSide)
+                return;
+
+            ServerLevel level = (ServerLevel) positionSupplier.getLevel();
+
+            Vec3 centerPosition = positionSupplier.getPosition();
 
             double angle = (2 * Math.PI * i.get()) / particleCount;
             double x = centerPosition.x + radius.get() * Math.cos(angle);
@@ -312,27 +314,24 @@ public class ParticleUtil {
             if(i.get() > particleCount)
                 i.set(0);
 
-        }, level);
+        });
 
         return shouldStop;
     }
 
-    public static List<AtomicBoolean> createExpandingParticleSpirals(ServerLevel level, ParticleOptions particleType, LocationSupplier centerPosition, double starRadius, double endRadius, double height, double speed, double density, int duration, int spiralCount, int delayBetweenSpirals) {
+    public static List<AtomicBoolean> createExpandingParticleSpirals(ParticleOptions particleType, Location centerPosition, double starRadius, double endRadius, double height, double speed, double density, int duration, int spiralCount, int delayBetweenSpirals) {
         ArrayList<AtomicBoolean> stopConditions = new ArrayList<>();
 
         int degreeIncrease = 360 / spiralCount;
 
         for(int i = 0; i < spiralCount; i++) {
-            stopConditions.add(createExpandingParticleSpiral(level, particleType, centerPosition, starRadius, endRadius, duration, i * degreeIncrease, height, speed, density, delayBetweenSpirals * i));
+            stopConditions.add(createExpandingParticleSpiral(particleType, centerPosition, starRadius, endRadius, duration, i * degreeIncrease, height, speed, density, delayBetweenSpirals * i));
         }
 
         return stopConditions;
     }
 
-    public static AtomicBoolean createExpandingParticleSpiral(ServerLevel level, ParticleOptions particleType, LocationSupplier positionSupplier, double starRadius, double endRadius, int duration, int startingAngle, double height, double speed, double density, int delay) {
-        if(level == null)
-            return new AtomicBoolean(true);
-
+    public static AtomicBoolean createExpandingParticleSpiral(ParticleOptions particleType, Location positionSupplier, double starRadius, double endRadius, int duration, int startingAngle, double height, double speed, double density, int delay) {
         int particleCount = (int) (((int) Math.round(Math.max(starRadius, endRadius))) * 5 * density);
 
         double startRadians = Math.toRadians(startingAngle);
@@ -354,7 +353,12 @@ public class ParticleUtil {
             if(shouldStop.get())
                 return;
 
-            Vec3 centerPosition = positionSupplier.getPos();
+            if(positionSupplier.getLevel() == null || positionSupplier.getLevel().isClientSide)
+                return;
+
+            ServerLevel level = (ServerLevel) positionSupplier.getLevel();
+
+            Vec3 centerPosition = positionSupplier.getPosition();
 
             double angle = (2 * Math.PI * i.get()) / particleCount;
             double x = centerPosition.x + radius.get() * Math.cos(angle);
@@ -383,7 +387,7 @@ public class ParticleUtil {
             if(i.get() > particleCount)
                 i.set(0);
 
-        }, level);
+        });
 
         return shouldStop;
     }

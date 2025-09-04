@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lotmcraft:item/priest_of_light_potion"
+  }
+}

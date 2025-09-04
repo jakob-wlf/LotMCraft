@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.data.LocationSupplier;
 import de.jakob.lotm.util.data.NightmareCenter;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -154,11 +155,14 @@ public class NightmareAbility extends SelectableAbilityItem {
             return;
         }
 
-        LocationSupplier locationSupplier = new LocationSupplier(targetEntity.position());
-        ParticleUtil.createParticleSpirals((ServerLevel) level, dustVerySmall, locationSupplier, 1.2, 1.2, 2.5, .5, 8, 20 * 20, 11, 8);
+        Location loc = new Location(targetEntity.position(), level);
+        ParticleUtil.createParticleSpirals(dustVerySmall, loc, 1.2, 1.2, 2.5, .5, 8, 20 * 20, 11, 8);
 
         ServerScheduler.scheduleForDuration(0, 2, 20 * 20, () -> {
-            locationSupplier.setPos(targetEntity.position());
+            if(entity.level().isClientSide)
+                return;
+            loc.setPosition(targetEntity.position());
+            loc.setLevel(entity.level());
             Vec3 startPos = targetEntity.getEyePosition().subtract(0, .15, 0);
             ParticleUtil.drawParticleLine((ServerLevel) level, dustSmall, startPos, startPos.add(2.75, -3, 0), .25, 1);
             ParticleUtil.drawParticleLine((ServerLevel) level, dustSmall, startPos, startPos.add(-2.75, -3, 0), .25, 1);

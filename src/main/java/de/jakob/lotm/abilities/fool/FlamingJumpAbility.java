@@ -3,10 +3,14 @@ package de.jakob.lotm.abilities.fool;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -41,12 +45,17 @@ public class FlamingJumpAbility extends AbilityItem {
         if(level.isClientSide)
             return;
 
-        BlockPos block = AbilityUtil.getTargetBlock(entity, 50, false);
+        BlockPos block = AbilityUtil.getTargetBlock(entity, 50, false, true);
 
-        if(!level.getBlockState(block).is(Blocks.FIRE))
+        if(!level.getBlockState(block).is(Blocks.FIRE)) {
+            if(entity instanceof ServerPlayer player) {
+                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("No fire found.").withColor(0xFFff124d));
+                player.connection.send(packet);
+            }
             return;
-
+        }
         entity.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 20 * 3, 1, false, false, false));
+        ServerScheduler.scheduleForDuration(0, 1, 20 * 3, () -> entity.setRemainingFireTicks(0));
         entity.teleportTo(block.getCenter().x, block.getCenter().y + .75, block.getCenter().z);
 
         level.playSound(null, block, SoundEvents.BLAZE_SHOOT, SoundSource.BLOCKS, 1, 1);
@@ -58,7 +67,7 @@ public class FlamingJumpAbility extends AbilityItem {
         if(!level.isClientSide)
             return;
 
-        BlockPos block = AbilityUtil.getTargetBlock(entity, 50, false);
+        BlockPos block = AbilityUtil.getTargetBlock(entity, 50, false, true);
 
         if(!level.getBlockState(block).is(Blocks.FIRE))
             return;

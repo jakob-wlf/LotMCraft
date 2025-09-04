@@ -82,7 +82,7 @@ public class AbilitySelectionScreen extends AbstractContainerScreen<AbilitySelec
             this.addRenderableWidget(rightButton);
         }
 
-        int increment = -(this.rightButton.getHeight() + 2);
+        int increment = -22;
 
 
         int maxSequence = ClientBeyonderCache.getSequence(player.getUUID());
@@ -96,10 +96,10 @@ public class AbilitySelectionScreen extends AbstractContainerScreen<AbilitySelec
                             button -> {
                                 PacketHandler.sendToServer(new OpenAbilitySelectionPacket(newSequence, pathway));
                             })
-                    .bounds(this.leftPos + this.imageWidth + this.rightButton.getWidth() + 10, this.topPos + increment + 20, 20, 20)
+                    .bounds(this.leftPos + this.imageWidth + 30, this.topPos + increment + 20, 20, 20)
                     .build();
             this.addRenderableWidget(b);
-            increment += this.rightButton.getHeight() + 2;
+            increment += 22;
         }
     }
 

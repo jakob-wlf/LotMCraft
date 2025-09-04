@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.entity.custom.WindBladeEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.data.LocationSupplier;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -73,9 +74,9 @@ public class WindManipulationAbility extends SelectableAbilityItem {
 
         isFlying.add(player.getUUID());
 
-        LocationSupplier supplier = new LocationSupplier(entity.position());
+        Location supplier = new Location(entity.position(), entity.level());
 
-        List<AtomicBoolean> canceled = ParticleUtil.createParticleSpirals((ServerLevel) level, ParticleTypes.EFFECT, supplier, .25, 1.35, entity.getEyeHeight(), .75, 8, 20 * 60 * 12, 18, 2);
+        List<AtomicBoolean> canceled = ParticleUtil.createParticleSpirals(ParticleTypes.EFFECT, supplier, .25, 1.35, entity.getEyeHeight(), .75, 8, 20 * 60 * 12, 18, 2);
         AtomicBoolean shouldStop = new AtomicBoolean(false);
         ServerScheduler.scheduleForDuration(0, 1, 20 * 60 * 12, () -> {
             if(shouldStop.get()) {
@@ -102,7 +103,10 @@ public class WindManipulationAbility extends SelectableAbilityItem {
             player.resetFallDistance();
             player.hurtMarked = true;
 
-            supplier.setPos(player.position());
+            if(!player.level().isClientSide) {
+                supplier.setPosition(player.position());
+                supplier.setLevel(player.level());
+            }
 
         }, (ServerLevel) level);
     }

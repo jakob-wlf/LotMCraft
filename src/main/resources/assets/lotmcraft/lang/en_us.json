@@ -238,8 +238,8 @@
   "item.lotmcraft.assassin_potion": "Assassin Potion",
   "item.lotmcraft.instigator_potion": "Instigator Potion",
   "item.lotmcraft.witch_potion": "Witch Potion",
-  "item.lotmcraft.pleasure_potion": "Pleasure Potion",
-  "item.lotmcraft.affliction_potion": "Affliction Potion",
+  "item.lotmcraft.demoness_of_pleasure_potion": "Demoness of Pleasure Potion",
+  "item.lotmcraft.demoness_of_affliction_potion": "Demoness of Affliction Potion",
 
   "_comment007": "Damage-----------------------------------------------------------------------------",
   "death.attack.loosing_control": "%1$s lost control.",

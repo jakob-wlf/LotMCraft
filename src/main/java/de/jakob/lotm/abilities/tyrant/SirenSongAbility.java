@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.data.LocationSupplier;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -53,18 +54,27 @@ public class SirenSongAbility extends SelectableAbilityItem {
     }
 
     private void dazingSong(ServerLevel level, LivingEntity entity) {
-        LocationSupplier supplier = new LocationSupplier(entity.getEyePosition().add(0, .1, 0));
-        ParticleUtil.createExpandingParticleSpirals(level, ParticleTypes.NOTE, supplier, 1, 10, 2, .5, 5, 20 * 30, 20, 5);
+        Location supplier = new Location(entity.getEyePosition().add(0, .1, 0), level);
+        ParticleUtil.createExpandingParticleSpirals(ParticleTypes.NOTE, supplier, 1, 10, 2, .5, 5, 20 * 30, 20, 5);
 
         //level.playSound(null, BlockPos.containing(entity.position()), ModSounds.DEATH_MELODY.get(), SoundSource.BLOCKS, 1, 1);
 
-        ServerScheduler.scheduleForDuration(0,  2, 20 * 30, () -> supplier.setPos(entity.position()), level);
-        ServerScheduler.scheduleForDuration(0,  18, 20 * 30, () -> AbilityUtil.addPotionEffectToNearbyEntities(level, entity, 25, entity.position(), new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 3, false, false, false), new MobEffectInstance(MobEffects.WEAKNESS, 20, 3, false, false, false), new MobEffectInstance(MobEffects.BLINDNESS, 20, 3, false, false, false)), level);
+        ServerScheduler.scheduleForDuration(0,  2, 20 * 30, () -> {
+            if(entity.level().isClientSide)
+                return;
+            supplier.setPosition(entity.position());
+            supplier.setLevel(entity.level());
+        }, level);
+        ServerScheduler.scheduleForDuration(0,  18, 20 * 30, () -> {
+            if(entity.level().isClientSide)
+                return;
+            AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 25, entity.position(), new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 3, false, false, false), new MobEffectInstance(MobEffects.WEAKNESS, 20, 3, false, false, false), new MobEffectInstance(MobEffects.BLINDNESS, 20, 3, false, false, false));
+        }, level);
     }
 
     private void buffSong(ServerLevel level, LivingEntity entity) {
-        LocationSupplier supplier = new LocationSupplier(entity.getEyePosition().add(0, .1, 0));
-        ParticleUtil.createParticleSpirals(level, ModParticles.GOLDEN_NOTE.get(), supplier, 3, 3, 4, .35, 5, 20 * 30, 15, 8);
+        Location loc = new Location(entity.getEyePosition().add(0, .1, 0), level);
+        ParticleUtil.createParticleSpirals(ModParticles.GOLDEN_NOTE.get(), loc, 3, 3, 4, .35, 5, 20 * 30, 15, 8);
 
         BeyonderData.addModifier(entity, "buff_song", 1.5);
 
@@ -79,17 +89,31 @@ public class SirenSongAbility extends SelectableAbilityItem {
         entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 30, strengthLevel, false, false, false));
         entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 30, speedLevel, false, false, false));
 
-        ServerScheduler.scheduleForDuration(0,  2, 20 * 30, () -> supplier.setPos(entity.position()), level);
+        ServerScheduler.scheduleForDuration(0,  2, 20 * 30, () -> {
+            if(entity.level().isClientSide)
+                return;
+            loc.setPosition(entity.position());
+            loc.setLevel(entity.level());
+        }, level);
         ServerScheduler.scheduleDelayed(20 * 30, () -> BeyonderData.removeModifier(entity, "buff_song"));
     }
 
     private void deathMelody(ServerLevel level, LivingEntity entity) {
-        LocationSupplier supplier = new LocationSupplier(entity.position());
-        ParticleUtil.createExpandingParticleSpirals(level, ModParticles.BLACK_NOTE.get(), supplier, 1, 11, 4, .35, 5, 20 * 30, 40, 10);
+        Location supplier = new Location(entity.position(), level);
+        ParticleUtil.createExpandingParticleSpirals(ModParticles.BLACK_NOTE.get(), supplier, 1, 11, 4, .35, 5, 20 * 30, 40, 10);
 
         level.playSound(null, BlockPos.containing(entity.position()), ModSounds.DEATH_MELODY.get(), SoundSource.BLOCKS, 1, 1);
 
-        ServerScheduler.scheduleForDuration(0,  2, 20 * 30, () -> supplier.setPos(entity.position()), level);
-        ServerScheduler.scheduleForDuration(0,  18, 20 * 30, () -> AbilityUtil.damageNearbyEntities(level, entity, 25, 2.5 * multiplier(entity), entity.position(), true, false, true, 0), level);
+        ServerScheduler.scheduleForDuration(0,  2, 20 * 30, () -> {
+            if(entity.level().isClientSide)
+                return;
+            supplier.setPosition(entity.position());
+            supplier.setLevel(entity.level());
+        }, level);
+        ServerScheduler.scheduleForDuration(0,  18, 20 * 30, () -> {
+            if(entity.level().isClientSide)
+                return;
+            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 25, 2.15 * multiplier(entity), entity.position(), true, false, true, 0);
+        }, level);
     }
 }

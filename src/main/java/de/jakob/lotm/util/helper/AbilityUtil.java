@@ -78,6 +78,30 @@ public class AbilityUtil {
         return BlockPos.containing(targetPosition);
     }
 
+    public static BlockPos getTargetBlock(LivingEntity entity, double radius, boolean oneBlockBefore, boolean includePassableBlocks) {
+        Vec3 lookDirection = entity.getLookAngle().normalize();
+        Vec3 playerPosition = entity.position().add(0, entity.getEyeHeight(), 0);
+
+        Vec3 targetPosition = playerPosition;
+
+        for(int i = 0; i < radius; i++) {
+            targetPosition = playerPosition.add(lookDirection.scale(i));
+
+            BlockState block = entity.level().getBlockState(BlockPos.containing(targetPosition));
+
+            if ((!block.getCollisionShape(entity.level(), BlockPos.containing(targetPosition)).isEmpty() && !includePassableBlocks) || !block.isAir()) {
+                if(oneBlockBefore)
+                    targetPosition = playerPosition.add(lookDirection.scale(i - 1));
+                else
+                    targetPosition = playerPosition.add(lookDirection.scale(i));
+
+                break;
+            }
+        }
+
+        return BlockPos.containing(targetPosition);
+    }
+
     public static BlockPos getTargetBlock(LivingEntity entity, double minRadius, double radius, boolean oneBlockBefore) {
         Vec3 lookDirection = entity.getLookAngle().normalize();
         Vec3 playerPosition = entity.position().add(0, entity.getEyeHeight(), 0);

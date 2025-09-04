@@ -50,8 +50,10 @@ public class HolySongAbility extends AbilityItem {
             entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, duration, 0, false, false, false));
 
             ServerScheduler.scheduleForDuration(0, 5, duration, () -> {
+                if(entity.level().isClientSide)
+                    return;
                 for(int i = 0; i < 6; i++) {
-                    ((ServerLevel) level).sendParticles(
+                    ((ServerLevel) entity.level()).sendParticles(
                             ParticleTypes.NOTE,
                             entity.getX() + random.nextFloat(-1.5f, 1.5f), entity.getY() + entity.getEyeHeight() + random.nextFloat(-.5f, .5f), entity.getZ() + random.nextFloat(-1.5f, 1.5f),
                             1,
@@ -59,7 +61,7 @@ public class HolySongAbility extends AbilityItem {
                     );
                 }
 
-                ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, entity.getEyePosition().subtract(0, entity.getEyeHeight() / 2, 0), 8, .6, .8, .6, 0);
+                ParticleUtil.spawnParticles((ServerLevel) entity.level(), dustOptions, entity.getEyePosition().subtract(0, entity.getEyeHeight() / 2, 0), 8, .6, .8, .6, 0);
             });
 
             level.playSound(null, entity, SoundEvents.MUSIC_DISC_PIGSTEP.value(), entity.getSoundSource(), 1.0f, 1.0f);

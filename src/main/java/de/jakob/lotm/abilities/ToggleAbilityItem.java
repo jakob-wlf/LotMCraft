@@ -117,7 +117,7 @@ public abstract class ToggleAbilityItem extends Item {
                     ToggleAbilityItem ability = entry.getKey();
 
                     // Verify player still has the item and it's still active
-                    if (ability.isActive(player) && ability.getSpiritualityCost() <= BeyonderData.getSpirituality(player)) {
+                    if (ability.isActive(player) && ability.getSpiritualityCost() <= ClientBeyonderCache.getSpirituality(player.getUUID())) {
                         ability.tick(player.level(), player);
                     }
                 }
