@@ -32,24 +32,33 @@ public class TravelersDoorRenderer extends EntityRenderer<TravelersDoorEntity> {
 
         poseStack.pushPose();
 
+        // Position entity correctly
+        poseStack.translate(0.0D, 1.5D, 0.0D);
+
+        // Apply entity yaw and pitch
+        poseStack.mulPose(Axis.YP.rotationDegrees(-entity.getYRot())); // horizontal rotation
+        poseStack.mulPose(Axis.XP.rotationDegrees(entity.getXRot()));  // vertical tilt (if needed)
+
+        // Flip model upright
         poseStack.mulPose(Axis.XP.rotationDegrees(180.0f));
 
-        // Apply 2.5x scaling
+        // Scale up
         poseStack.scale(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR);
 
+        // Render model
         RenderType renderType = RenderType.entityTranslucent(this.getTextureLocation(entity));
         VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
 
-        // Add some transparency and glow effect
         int color = 0xFFFFFFFF;
 
-        // Render the model
-        this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, color);
+        this.model.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, color);
 
         poseStack.popPose();
 
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
+
 
     @Override
     protected int getBlockLightLevel(TravelersDoorEntity entity, BlockPos blockPos) {

@@ -31,6 +31,11 @@ import java.util.UUID;
 
 public class TravelersDoorEntity extends Entity {
     private int duration = 20 * 10;
+    private int spawnAnimationTicks = 0; // Track animation progress
+    private boolean isSpawnAnimationFinished = false;
+
+    // Animation duration in ticks (1 second = 20 ticks)
+    private static final float SPAWN_ANIMATION_DURATION = 20 * 0.6667f; // 1 second to match the animation
 
     private static final Set<UUID> haveTeleported = new HashSet<>();
 
@@ -43,33 +48,66 @@ public class TravelersDoorEntity extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-
+        // You can add synched data here if needed for animation state
     }
 
     // Main constructor for placing the door
-    public TravelersDoorEntity(EntityType<?> entityType, Level level, Direction facing, Vec3 blockCenter) {
-        this(entityType, level);
+    public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing, Vec3 center) {
+        this(type, level);
 
-        // Position the entity based on the block face
-        Vec3 doorPosition = calculateDoorPosition(blockCenter, facing);
-        this.setPos(doorPosition.x, doorPosition.y, doorPosition.z);
+        // Doors usually don't pitch. Zero-out Y so we only compute yaw.
+        Vec3 dir = new Vec3(facing.x, 0.0, facing.z);
+        float yaw = yawFromVector(dir);            // compute yaw from vector
+        float pitch = 0.0F;                        // keep door upright
+
+        // Sets pos + yaw/pitch + "old" fields in one call (important for first-frame render)
+        this.moveTo(center.x, center.y, center.z, yaw, pitch);
     }
 
-    private Vec3 calculateDoorPosition(Vec3 blockCenter, Direction facing) {
-        // Offset from block center to place door on the specified face
-        Vec3 offset = new Vec3(facing.getStepX(), facing.getStepY(), facing.getStepZ()).normalize().multiply(.6, 0, .505); // Slightly offset from block face
 
-        return blockCenter.add(offset);
+    private static float yawFromVector(Vec3 dir) {
+        if (dir.lengthSqr() < 1.0E-6) return 0.0F; // avoid NaN if looking straight up/down
+        // Matches vanilla convention used by vehicles: +yaw clockwise; Z forward
+        return (float)(Math.toDegrees(Math.atan2(-dir.x, dir.z)));
     }
 
-    private final DustParticleOptions blueDust = new DustParticleOptions(
-            new Vector3f(99 / 255f, 255 / 255f, 250 / 255f),
-            1
-    );
 
     @Override
     public void tick() {
         super.tick();
+
+        // Handle spawn animation
+        if (!isSpawnAnimationFinished) {
+            spawnAnimationTicks++;
+
+            if (spawnAnimationTicks >= SPAWN_ANIMATION_DURATION) {
+                isSpawnAnimationFinished = true;
+            }
+        }
+    }
+
+    /**
+     * Returns the animation progress from 0.0 to 1.0
+     */
+    public float getSpawnAnimationProgress() {
+        if (isSpawnAnimationFinished) {
+            return 1.0f;
+        }
+        return Math.min(spawnAnimationTicks / (float) SPAWN_ANIMATION_DURATION, 1.0f);
+    }
+
+    /**
+     * Returns whether the spawn animation is currently playing
+     */
+    public boolean isPlayingSpawnAnimation() {
+        return !isSpawnAnimationFinished;
+    }
+
+    /**
+     * Returns the age in ticks, useful for animations
+     */
+    public int getAnimationAge() {
+        return spawnAnimationTicks;
     }
 
     @Override
@@ -85,12 +123,14 @@ public class TravelersDoorEntity extends Entity {
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compoundTag) {
-
+        this.spawnAnimationTicks = compoundTag.getInt("SpawnAnimationTicks");
+        this.isSpawnAnimationFinished = compoundTag.getBoolean("SpawnAnimationFinished");
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
-
+        compoundTag.putInt("SpawnAnimationTicks", this.spawnAnimationTicks);
+        compoundTag.putBoolean("SpawnAnimationFinished", this.isSpawnAnimationFinished);
     }
 
     @Override
