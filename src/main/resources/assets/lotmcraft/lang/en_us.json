@@ -99,6 +99,7 @@
   "ability.lotmcraft.nightmare.restrict": "Restrict",
   "ability.lotmcraft.nightmare.attack": "Attack",
   "ability.lotmcraft.nightmare.teleport": "Teleport",
+  "item.lotmcraft.requiem_ability": "Requiem",
 
   "item.lotmcraft.mighty_blow_ability": "Mighty Blow",
   "item.lotmcraft.shadow_concealment_ability": "Shadow Concealment",
@@ -259,6 +260,18 @@
   "item.lotmcraft.crystal_sunflower": "Crystal Sunflower",
   "item.lotmcraft.spirit_pact_tree_fruit": "Spirit Pact Tree's Fruit",
   "item.lotmcraft.powder_of_dazzling_soul": "Powder of Dazzling Soul",
+  "item.lotmcraft.siren_vocal_sac": "Siren's vocal sac",
+  "item.lotmcraft.ancient_wraith_artifact": "Artifact of an Ancient Wraith",
+  "item.lotmcraft.blue_shadow_falcon_feathers": "Feathers of a Blue Shadow Falcon",
+  "item.lotmcraft.crystallized_roots": "Crystallized Roots",
+  "item.lotmcraft.dragon_eyed_condor_eyeball": "Eyeball of a Dragon Eyed Condor",
+  "item.lotmcraft.shadowless_demonic_wolf_heart": "Heart of a Shadowless Demonic Wolf",
+  "item.lotmcraft.pure_white_brilliant_rock": "Pure White Brilliant Rock",
+  "item.lotmcraft.thousand_faced_hunter_blood": "Blood of a Thousand Faced Hunter",
+  "item.lotmcraft.ancient_wraith_dust": "Dust of an Ancient Wraith",
+  "item.lotmcraft.black_feather_of_monster_bird": "Black Feather of Monster Bird",
+  "item.lotmcraft.murloc_bladder": "Murloc's Bladder",
+  "item.lotmcraft.ancient_logbook": "Ancient Logbook",
 
 
   "lotm.griefing": "Griefing Enabled",

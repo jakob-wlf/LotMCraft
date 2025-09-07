@@ -30,15 +30,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public class TravelersDoorEntity extends Entity {
-    private int duration = 20 * 10;
-    private int spawnAnimationTicks = 0; // Track animation progress
-    private boolean isSpawnAnimationFinished = false;
-
-    // Animation duration in ticks (1 second = 20 ticks)
-    private static final float SPAWN_ANIMATION_DURATION = 20 * 0.6667f; // 1 second to match the animation
-
-    private static final Set<UUID> haveTeleported = new HashSet<>();
-
     // Required constructors for entity system
     public TravelersDoorEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -75,39 +66,6 @@ public class TravelersDoorEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-
-        // Handle spawn animation
-        if (!isSpawnAnimationFinished) {
-            spawnAnimationTicks++;
-
-            if (spawnAnimationTicks >= SPAWN_ANIMATION_DURATION) {
-                isSpawnAnimationFinished = true;
-            }
-        }
-    }
-
-    /**
-     * Returns the animation progress from 0.0 to 1.0
-     */
-    public float getSpawnAnimationProgress() {
-        if (isSpawnAnimationFinished) {
-            return 1.0f;
-        }
-        return Math.min(spawnAnimationTicks / (float) SPAWN_ANIMATION_DURATION, 1.0f);
-    }
-
-    /**
-     * Returns whether the spawn animation is currently playing
-     */
-    public boolean isPlayingSpawnAnimation() {
-        return !isSpawnAnimationFinished;
-    }
-
-    /**
-     * Returns the age in ticks, useful for animations
-     */
-    public int getAnimationAge() {
-        return spawnAnimationTicks;
     }
 
     @Override
@@ -123,14 +81,10 @@ public class TravelersDoorEntity extends Entity {
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compoundTag) {
-        this.spawnAnimationTicks = compoundTag.getInt("SpawnAnimationTicks");
-        this.isSpawnAnimationFinished = compoundTag.getBoolean("SpawnAnimationFinished");
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
-        compoundTag.putInt("SpawnAnimationTicks", this.spawnAnimationTicks);
-        compoundTag.putBoolean("SpawnAnimationFinished", this.isSpawnAnimationFinished);
     }
 
     @Override

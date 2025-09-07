@@ -157,44 +157,6 @@ public class PyrokinesisAbility extends SelectableAbilityItem {
     }
 
     private void fireball(Level level, LivingEntity entity) {
-        //if(level.isClientSide)
-        //            return;
-        //
-        //        Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(-.65, .65), random.nextDouble(-.1, .6));
-        //        Vec3 direction = AbilityUtil.getTargetLocation(entity, 10, 1.4f).subtract(startPos).normalize();
-        //
-        //        AtomicReference<Vec3> currentPos = new AtomicReference<>(startPos);
-        //
-        //        AtomicBoolean hasHit = new AtomicBoolean(false);
-        //
-        //        level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
-        //
-        //        ServerScheduler.scheduleForDuration(0, 1, 20 * 40, () -> {
-        //            if(hasHit.get())
-        //                return;
-        //
-        //            Vec3 pos = currentPos.get();
-        //
-        //            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, 15 * multiplier(entity), pos, true, false, true, 0, 20 * 5)) {
-        //                hasHit.set(true);
-        //                return;
-        //            }
-        //
-        //            if(!level.getBlockState(BlockPos.containing(pos.x, pos.y, pos.z)).isAir()) {
-        //                if(BeyonderData.isGriefingEnabled(entity)) {
-        //                    pos = pos.subtract(direction);
-        //                    level.setBlockAndUpdate(BlockPos.containing(pos.x, pos.y, pos.z), Blocks.FIRE.defaultBlockState());
-        //                }
-        //                hasHit.set(true);
-        //                return;
-        //            }
-        //
-        //            ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.FLAME, pos, 37, 0.25, 0.02);
-        //            ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SMOKE, pos, 28, 0.25, 0.02);
-        //
-        //            currentPos.set(pos.add(direction));
-        //        }, (ServerLevel) level);
-
         if(level.isClientSide)
             return;
 

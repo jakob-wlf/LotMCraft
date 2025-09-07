@@ -25,6 +25,18 @@ public class ModIngredients {
     public static final DeferredItem<Item> SPIRIT_PACT_TREE_FRUIT = ITEMS.registerItem("spirit_pact_tree_fruit", (properties) -> new PotionIngredient(properties, 8, true), new Item.Properties());
     public static final DeferredItem<Item> CRYSTAL_SUNFLOWER = ITEMS.registerItem("crystal_sunflower", (properties) -> new PotionIngredient(properties, 8, true), new Item.Properties());
     public static final DeferredItem<Item> POWDER_OF_DAZZLING_SOUL = ITEMS.registerItem("powder_of_dazzling_soul", (properties) -> new PotionIngredient(properties, 8, true), new Item.Properties());
+    public static final DeferredItem<Item> ANCIENT_WRAITH_DUST = ITEMS.registerItem("ancient_wraith_dust", (properties) -> new PotionIngredient(properties, 5, true), new Item.Properties());
+    public static final DeferredItem<Item> BLACK_FEATHER_OF_MONSTER_BIRD = ITEMS.registerItem("black_feather_of_monster_bird", (properties) -> new PotionIngredient(properties, 9, true), new Item.Properties());
+    public static final DeferredItem<Item> THOUSAND_FACED_HUNTER_BLOOD = ITEMS.registerItem("thousand_faced_hunter_blood", (properties) -> new PotionIngredient(properties, 8, true), new Item.Properties());
+    public static final DeferredItem<Item> SHADOWLESS_DEMONIC_WOLF_HEART = ITEMS.registerItem("shadowless_demonic_wolf_heart", (properties) -> new PotionIngredient(properties, 5, true), new Item.Properties());
+    public static final DeferredItem<Item> PURE_WHITE_BRILLIANT_ROCK = ITEMS.registerItem("pure_white_brilliant_rock", (properties) -> new PotionIngredient(properties, 5, true), new Item.Properties());
+    public static final DeferredItem<Item> DRAGON_EYED_CONDOR_EYEBALL = ITEMS.registerItem("dragon_eyed_condor_eyeball", (properties) -> new PotionIngredient(properties, 8, true), new Item.Properties());
+    public static final DeferredItem<Item> CRYSTALLIZED_ROOTS = ITEMS.registerItem("crystallized_roots", (properties) -> new PotionIngredient(properties, 6, true), new Item.Properties());
+    public static final DeferredItem<Item> BLUE_SHADOW_FALCON_FEATHERS = ITEMS.registerItem("blue_shadow_falcon_feathers", (properties) -> new PotionIngredient(properties, 6, true), new Item.Properties());
+    public static final DeferredItem<Item> ANCIENT_WRAITH_ARTIFACT = ITEMS.registerItem("ancient_wraith_artifact", (properties) -> new PotionIngredient(properties, 6, true), new Item.Properties());
+    public static final DeferredItem<Item> SIREN_VOCAL_SAC = ITEMS.registerItem("siren_vocal_sac", (properties) -> new PotionIngredient(properties, 5, true), new Item.Properties());
+    public static final DeferredItem<Item> MURLOC_BLADDER = ITEMS.registerItem("murloc_bladder", (properties) -> new PotionIngredient(properties, 9, true), new Item.Properties());
+    public static final DeferredItem<Item> ANCIENT_LOGBOOK = ITEMS.registerItem("ancient_logbook", (properties) -> new PotionIngredient(properties, 7, true), new Item.Properties());
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

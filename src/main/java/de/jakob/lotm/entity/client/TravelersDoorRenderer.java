@@ -67,6 +67,7 @@ public class TravelersDoorRenderer extends EntityRenderer<TravelersDoorEntity> {
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull TravelersDoorEntity entity) {
-        return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/travelers_door/travelers_door.png");
+        int frame = (entity.tickCount / 3) % 7;
+        return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/travelers_door/travelers_door_" + frame + ".png");
     }
 }
