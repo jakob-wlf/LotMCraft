@@ -121,7 +121,7 @@ public class NightmareAbility extends SelectableAbilityItem {
         ServerScheduler.scheduleUntil((ServerLevel) level, () -> {
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, .75f, 12, pos, true, false, true, 0)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1.2f, 12, pos, true, false, true, 0)) {
                 hasHit.set(true);
                 return;
             }

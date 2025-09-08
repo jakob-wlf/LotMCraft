@@ -78,6 +78,9 @@ public class AbilityHandler {
             if(!requirements.containsKey(pathway))
                 return false;
 
+            if(BeyonderData.isAbilityDisabled(player))
+                return false;
+
             // Check if pathway has requirements
             Integer minSeq = requirements.get(pathway);
             if (minSeq == null) {

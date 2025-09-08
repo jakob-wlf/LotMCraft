@@ -16,6 +16,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,6 +32,7 @@ public class BeyonderData {
     private static final double[] multiplier = {5, 3.5, 3, 2.4, 2.0, 1.6, 1.4, 1.2, 1.0, 1.0};
 
     private static final HashMap<UUID, HashMap<String, Double>> multiplierModifier = new HashMap<>();
+    private static final HashMap<UUID, HashSet<String>> disabledBeyonders = new HashMap<>();
 
     public static final List<String> pathways = List.of(
             "fool",
@@ -236,6 +238,26 @@ public class BeyonderData {
 
         multiplierModifier.putIfAbsent(uuid, new HashMap<>());
         multiplierModifier.get(uuid).remove(id);
+    }
+
+    public static boolean isAbilityDisabled(LivingEntity entity) {
+        return disabledBeyonders.containsKey(entity.getUUID());
+    }
+
+    public static void disableAbilityUse(LivingEntity entity, String id) {
+        UUID uuid = entity.getUUID();
+
+        disabledBeyonders.putIfAbsent(uuid, new HashSet<>());
+        disabledBeyonders.get(uuid).add(id);
+    }
+
+    public static void enableAbilityUse(LivingEntity entity, String id) {
+        UUID uuid = entity.getUUID();
+
+        disabledBeyonders.putIfAbsent(uuid, new HashSet<>());
+        disabledBeyonders.get(uuid).remove(id);
+        if(disabledBeyonders.get(uuid).isEmpty())
+            disabledBeyonders.remove(uuid);
     }
 
     public static boolean isGriefingEnabled(Player player) {

@@ -10,6 +10,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
@@ -52,6 +54,15 @@ public class TravelersDoorAbility extends AbilityItem {
         TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(), level, entity.getLookAngle().normalize().scale(-1), targetLoc);
         level.addFreshEntity(door);
 
-        ServerScheduler.scheduleDelayed(20 * 5, door::discard);
+        if(level.getBlockState(BlockPos.containing(targetLoc)).getCollisionShape(level, BlockPos.containing(targetLoc)).isEmpty())
+            level.setBlockAndUpdate(BlockPos.containing(targetLoc), Blocks.LIGHT.defaultBlockState());
+
+        Vec3 finalLoc = new Vec3(targetLoc.x, targetLoc.y, targetLoc.z);
+
+        ServerScheduler.scheduleDelayed(20 * 5, () -> {
+            door.discard();
+            if(level.getBlockState(BlockPos.containing(finalLoc)).getBlock() == Blocks.LIGHT)
+                level.setBlockAndUpdate(BlockPos.containing(finalLoc), Blocks.AIR.defaultBlockState());
+        });
     }
 }
