@@ -21,6 +21,7 @@ import de.jakob.lotm.abilities.red_priest.PyrokinesisAbility;
 import de.jakob.lotm.abilities.red_priest.TrapAbility;
 import de.jakob.lotm.abilities.tyrant.*;
 import de.jakob.lotm.abilities.sun.*;
+import de.jakob.lotm.abilities.visionary.SpectatingAbility;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
@@ -95,6 +96,8 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> RECORDING = ITEMS.registerItem("recording_ability", RecordingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> BLINK = ITEMS.registerItem("blink_ability", BlinkAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> TRAVELERS_DOOR = ITEMS.registerItem("travelers_door_ability", TravelersDoorAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> SPECTATING = ITEMS.registerItem("spectating_ability", SpectatingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static void registerAbilities(IEventBus eventBus) {
         ITEMS.register(eventBus);

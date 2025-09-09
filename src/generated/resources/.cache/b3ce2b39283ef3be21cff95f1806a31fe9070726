@@ -1,4 +1,4 @@
-// 1.21.1	2025-09-09T03:30:56.7603659	Item Models: lotmcraft
+// 1.21.1	2025-09-09T20:27:18.1269412	Item Models: lotmcraft
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/abomination.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/abyss.json
 96494cfdd79ca3a005a680f1a30ae543a6ed1959 assets/lotmcraft/models/item/air_bullet_ability.json
@@ -230,6 +230,7 @@ d663c9b219f3cc0118771ec25a55dadabfae7d62 assets/lotmcraft/models/item/physical_e
 3a5fbf7e8e15ffc50a35725f4e181379c2abc2df assets/lotmcraft/models/item/physical_enhancements_red_priest_ability.json
 a0466dad8680f4cc64ffdad5a59b5a2ac1e3d361 assets/lotmcraft/models/item/physical_enhancements_sun_ability.json
 9d38810e38b8dc2508fffb8d41ed7d766a82e294 assets/lotmcraft/models/item/physical_enhancements_tyrant_ability.json
+08dadf165d0583ca092f76beabc3ef683cb364b0 assets/lotmcraft/models/item/physical_enhancements_visionary_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/planeswalker.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/planter.json
 63285aca4004491d7073c8b9998c3b4c06a54638 assets/lotmcraft/models/item/planter_potion.json
@@ -303,6 +304,7 @@ a82ea42bd09929e5306f7468a431b6afbf4abfe4 assets/lotmcraft/models/item/solar_high
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/soothsayer.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/soul_assurer.json
 f149d6f13f469f04f2d76afa3d30203ed147d0d9 assets/lotmcraft/models/item/soul_assurer_potion.json
+2752f40cfbaa42a10d2986dd9f7b98dc2bd435aa assets/lotmcraft/models/item/spectating_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/spectator.json
 5c794067b3a61cb1a090612d4bd445c90e8af181 assets/lotmcraft/models/item/spells_ability.json
 be194b4d94b3206d981c5aec2704d91d923d3e8f assets/lotmcraft/models/item/spirit_eater_stomach_pouch.json
