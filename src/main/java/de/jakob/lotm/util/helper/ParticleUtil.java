@@ -261,6 +261,80 @@ public class ParticleUtil {
         return stopConditions;
     }
 
+    public static List<AtomicBoolean> createParticleCocoons(ParticleOptions particleType, Location centerPosition, double starRadius, double endRadius, double height, double speed, double density, int duration, int spiralCount, int delayBetweenSpirals) {
+        ArrayList<AtomicBoolean> stopConditions = new ArrayList<>();
+
+        int degreeIncrease = 360 / spiralCount;
+
+        for(int i = 0; i < spiralCount; i++) {
+            stopConditions.add(createParticleCocoon(particleType, centerPosition, starRadius, endRadius, duration, i * degreeIncrease, height, speed, density, delayBetweenSpirals * i));
+        }
+
+        return stopConditions;
+    }
+
+    public static AtomicBoolean createParticleCocoon(ParticleOptions particleType, Location positionSupplier, double starRadius, double maxRadius, int duration, int startingAngle, double height, double speed, double density, int delay) {
+        int particleCount = (int) (((int) Math.round(Math.max(starRadius, maxRadius))) * 5 * density);
+
+        double startRadians = Math.toRadians(startingAngle);
+        double stepSize = (2 * Math.PI) / particleCount;
+        int startingI = (int) Math.round(startRadians / stepSize);
+
+        AtomicBoolean shouldStop = new AtomicBoolean(false);
+
+        AtomicDouble radius = new AtomicDouble(starRadius);
+        AtomicDouble yPosIncrease = new AtomicDouble(0);
+
+        double yIncreaseStep = .15 * speed;
+        double radiusIncreaseStep = (Math.abs(maxRadius - starRadius)) / ((height / 2) / yIncreaseStep);
+
+        AtomicInteger i = new AtomicInteger(startingI);
+        AtomicInteger delayCountdown = new AtomicInteger(delay);
+
+        ServerScheduler.scheduleForDuration(0, 1, duration, () -> {
+            if(shouldStop.get())
+                return;
+
+            if(positionSupplier.getLevel() == null || positionSupplier.getLevel().isClientSide)
+                return;
+
+            ServerLevel level = (ServerLevel) positionSupplier.getLevel();
+
+            Vec3 centerPosition = positionSupplier.getPosition();
+
+            double angle = (2 * Math.PI * i.get()) / particleCount;
+            double x = centerPosition.x + radius.get() * Math.cos(angle);
+            double z = centerPosition.z + radius.get() * Math.sin(angle);
+
+            level.sendParticles(particleType, x, yPosIncrease.get() + centerPosition.y, z,0, 0, 0, 0, 0);
+
+            if(yPosIncrease.get() > height / 2)
+                radius.addAndGet(-radiusIncreaseStep);
+            else
+                radius.addAndGet(radiusIncreaseStep);
+
+
+            if(delayCountdown.get() <= 0)
+                yPosIncrease.addAndGet(yIncreaseStep);
+
+            i.addAndGet(1);
+
+            if(yPosIncrease.get() > height) {
+                yPosIncrease.set(0);
+                radius.set(starRadius);
+            }
+
+            if(delayCountdown.get() > 0)
+                delayCountdown.decrementAndGet();
+
+            if(i.get() > particleCount)
+                i.set(0);
+
+        });
+
+        return shouldStop;
+    }
+
     public static AtomicBoolean createParticleSpiral(ParticleOptions particleType, Location positionSupplier, double starRadius, double endRadius, int duration, int startingAngle, double height, double speed, double density, int delay) {
         int particleCount = (int) (((int) Math.round(Math.max(starRadius, endRadius))) * 5 * density);
 

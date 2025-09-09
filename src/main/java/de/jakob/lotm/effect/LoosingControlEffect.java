@@ -61,9 +61,6 @@ public class LoosingControlEffect extends MobEffect {
                 if(amplifier > 8)
                     shouldKill = true;
 
-                System.out.println("Probability " + getProbability(amplifier));
-                System.out.println("Random Float " + randomFloat);
-                System.out.println("Should kill " + shouldKill);
                 if(shouldKill) {
                     livingEntity.removeEffect(ModEffects.LOOSING_CONTROL);
                     BeyonderData.clearBeyonderData(livingEntity);

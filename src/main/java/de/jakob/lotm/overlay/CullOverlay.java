@@ -65,8 +65,6 @@ public class CullOverlay {
             PoseStack poseStack = event.getPoseStack();
             poseStack.pushPose();
 
-            System.out.println("Test");
-
             RenderSystem.setShaderColor(0.0f, 0.0f, 0.0f, 1.0f);
         }
     }

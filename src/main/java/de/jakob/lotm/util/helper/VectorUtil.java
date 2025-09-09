@@ -21,6 +21,11 @@ public class VectorUtil {
         return createBezierCurve(start, end, perp, step, controlPointNumber);
     }
 
+    public static List<Vec3> createBezierCurve(Vec3 start, Vec3 end, float step, float pointOffset, int controlPointNumber) {
+        Vec3 perp = getRandomPerpendicular(end.subtract(start));
+        return createBezierCurve(start, end, perp, step, pointOffset, controlPointNumber);
+    }
+
     public static Vec3 getRandomPerpendicular(Vec3 v) {
         Vec3 dir = v.normalize();
 
@@ -41,6 +46,11 @@ public class VectorUtil {
     }
 
     public static List<Vec3> createBezierCurve(Vec3 start, Vec3 end, Vec3 pointDirection, float step, int controlPointNumber) {
+        return createBezierCurve(start, end, pointDirection, step, 8, controlPointNumber);
+    }
+
+
+    public static List<Vec3> createBezierCurve(Vec3 start, Vec3 end, Vec3 pointDirection, float step, float pointOffset, int controlPointNumber) {
         if(controlPointNumber <= 0)
             return List.of();
 
@@ -53,16 +63,15 @@ public class VectorUtil {
         points[controlPointNumber + 1] = end;
         for(int i = 1; i < controlPointNumber + 1; i++) {
             boolean right = i % 2 == 0;
-            points[i] = start.add(dir.normalize().scale(distributionStep * i)).add(pointDirection.normalize().scale(right ? 8 : -8));
+            points[i] = start.add(dir.normalize().scale(distributionStep * i)).add(pointDirection.normalize().scale(right ? pointOffset : -pointOffset));
         }
 
         List<Vec3> pointsOnCurve = new ArrayList<>();
 
-        for(float i = 0; i < 1; i+=step) {
+        for(float i = 0; i < (1 + step); i+=step) {
             pointsOnCurve.add(calculatePoint(i, points));
         }
 
-        pointsOnCurve.forEach(p -> System.out.println(p.x + " " + p.y + " " + p.z));
         return pointsOnCurve;
     }
 

@@ -114,6 +114,9 @@
   "item.lotmcraft.invisibility_ability": "Invisibility",
   "item.lotmcraft.mirror_substitution_ability": "Mirror Substitution",
   "item.lotmcraft.thread_manipulation_ability": "Thread Manipulation",
+  "ability.lotmcraft.threads.binding": "Thread Binding",
+  "ability.lotmcraft.threads.cocoon": "Cocoon",
+  "ability.lotmcraft.threads.shoot": "Shoot",
   "item.lotmcraft.charm_ability": "Charm",
   "item.lotmcraft.disease_ability": "Disease",
 
@@ -125,6 +128,9 @@
   "item.lotmcraft.cleanse_ability": "Cleansing",
   "ability.lotmcraft.cleansing.self": "Cleanse Self",
   "ability.lotmcraft.cleansing.others": "Cleanse Others",
+  "item.lotmcraft.plant_controlling_ability": "Plant Nurturing",
+  "ability.lotmcraft.plants.trap": "Ensnare",
+  "ability.lotmcraft.plants.attack": "Attack",
 
   "item.lotmcraft.door_opening_ability": "Door Opening",
   "item.lotmcraft.spells_ability": "Spells",

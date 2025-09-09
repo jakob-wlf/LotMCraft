@@ -93,7 +93,7 @@ public class RequiemAbility extends AbilityItem {
         Location loc = new Location(targetEntity.position(), targetEntity.level());
 
         ServerScheduler.scheduleDelayed(20, () -> {
-            ParticleUtil.createExpandingParticleSpirals(bigDust, loc, .1, 2, targetEntity.getEyeHeight(), 1, .5, duration, 15, 5);
+            ParticleUtil.createParticleSpirals(bigDust, loc, .8, .8, targetEntity.getEyeHeight(), .35, 5, duration, 15, 5);
         });
 
         ServerScheduler.scheduleForDuration(0, 5, duration, () -> {

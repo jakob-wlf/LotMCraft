@@ -20,7 +20,6 @@ public class PotionRecipeItem extends Item {
 
     public void setRecipe(PotionRecipe recipe) {
         this.recipe = recipe;
-        System.out.println(this.recipe.potion().getName(new ItemStack(this.recipe.potion())));
     }
 
     @Override
