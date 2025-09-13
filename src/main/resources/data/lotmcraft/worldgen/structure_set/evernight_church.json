@@ -7,8 +7,13 @@
   ],
   "placement": {
     "type": "minecraft:random_spread",
-    "spacing": 34,
-    "separation": 8,
-    "salt": 1463618457
+
+    "salt": 4367768776,
+
+    "spacing": 18,
+
+    "separation": 7,
+    "heightmap": "WORLD_SURFACE_WG",
+    "max_tries": 10
   }
 }

@@ -4,9 +4,11 @@ import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.gui.custom.CoordinateInputScreen;
 import de.jakob.lotm.gui.custom.UsernameInputScreen;
 import de.jakob.lotm.util.helper.SkinChanger;
+import de.jakob.lotm.util.helper.StructureHelper;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.options.SkinCustomizationScreen;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -37,6 +39,12 @@ public class ShapeShiftingAbility extends AbilityItem {
 
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {
+        if(!level.isClientSide)
+            StructureHelper.placeEvernightChurch((ServerLevel) level, BlockPos.containing(entity.position()));
+
+        if(true)
+            return;
+
         if(level.isClientSide) {
             Minecraft.getInstance().setScreen(new UsernameInputScreen(entity));
             return;

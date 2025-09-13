@@ -97,8 +97,8 @@ public class FireRavenEntity extends Animal {
     public static AttributeSupplier.Builder createAttributes() {
         return Animal.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 20.0)
-                .add(Attributes.MOVEMENT_SPEED, 0.25) // Slightly faster for flying
-                .add(Attributes.FLYING_SPEED, 2) // Flying speed attribute
+                .add(Attributes.MOVEMENT_SPEED, 0.25)
+                .add(Attributes.FLYING_SPEED, 2)
                 .add(Attributes.SCALE, 1.35);
     }
 
