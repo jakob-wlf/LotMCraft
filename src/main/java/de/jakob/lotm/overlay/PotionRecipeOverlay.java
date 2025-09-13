@@ -80,9 +80,9 @@ public class PotionRecipeOverlay {
 
         guiGraphics.pose().popPose();
 
-        guiGraphics.renderOutline(iconX1 - 1, iconY - 1, 25, 25, 0x44000000);
-        guiGraphics.renderOutline(iconX2 - 1, iconY - 1, 25, 25, 0x44000000);
-        guiGraphics.renderOutline(iconX3 - 1, iconY2 - 1, 25, 25, 0x44000000);
+        guiGraphics.renderOutline(iconX1 - 2, iconY - 2, 26, 26, 0x44000000);
+        guiGraphics.renderOutline(iconX2 - 2, iconY - 2, 26, 26, 0x44000000);
+        guiGraphics.renderOutline(iconX3 - 2, iconY2 - 2, 26, 26, 0x44000000);
     }
 
 

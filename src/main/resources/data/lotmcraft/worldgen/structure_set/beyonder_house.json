@@ -1,7 +1,7 @@
 {
   "structures": [
     {
-      "structure": "lotmcraft:evernight_church",
+      "structure": "lotmcraft:beyonder_house",
       "weight": 1
     }
   ],
@@ -10,9 +10,9 @@
 
     "salt": 4367768776,
 
-    "spacing": 32,
+    "spacing": 20,
 
-    "separation": 10,
+    "separation": 8,
     "heightmap": "WORLD_SURFACE_WG",
     "max_tries": 10
   }
