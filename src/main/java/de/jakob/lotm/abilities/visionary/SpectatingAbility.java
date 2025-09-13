@@ -5,6 +5,7 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -38,6 +39,8 @@ public class SpectatingAbility extends ToggleAbilityItem {
     protected void start(Level level, LivingEntity entity) {
         if(!level.isClientSide)
             return;
+
+        entity.playSound(SoundEvents.AMETHYST_BLOCK_BREAK, 3, .01f);
 
         entitiesLookedAtByPlayerWithActiveAbility.put(entity.getUUID(), null);
     }

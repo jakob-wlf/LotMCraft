@@ -52,7 +52,7 @@ public class SpectatingOverlayRenderer {
                 int x = screenWidth / 2 - width / 2;
                 int y = 15;
 
-                guiGraphics.fill(x, y, x + width, y + height, 0x77000000);
+                renderOutLine(guiGraphics, x, y, width, height);
 
                 //Entity name
                 String name = entity.getName().getString();
@@ -81,6 +81,14 @@ public class SpectatingOverlayRenderer {
                 displayStats(guiGraphics, entity, screenWidth);
             }
         }
+    }
+
+    private static void renderOutLine(GuiGraphics guiGraphics, int x, int y, int width, int height) {
+        guiGraphics.fill(x, y, x + width, y + height, 0x77000000);
+        guiGraphics.fill(x, y, x + width, y + 2, 0xFFf7cd83);
+        guiGraphics.fill(x, y + height - 2, x + width, y + height, 0xFFf7cd83);
+        guiGraphics.fill(x, y + 2, x + 2, y + height - 2, 0xFFf7cd83);
+        guiGraphics.fill(x + width - 2, y + 2, x + width, y + height - 2, 0xFFf7cd83);
     }
 
     private static final Attribute[] attributesThatShouldGetDisplayed = new Attribute[]{
@@ -117,6 +125,13 @@ public class SpectatingOverlayRenderer {
                 screenWidth,
                 15 + (attributes.size() * 2 * font.lineHeight),
                 0x77000000);
+
+        int outlineX = startingX - 10;
+        int outlineY = 15;
+        int outlineWidth = screenWidth - outlineX;
+        int outlineHeight = 15 + (attributes.size() * 2 * font.lineHeight) - outlineY;
+
+        renderOutLine(guiGraphics, outlineX, outlineY, outlineWidth, outlineHeight);
 
         for (AttributeInstance attribute : attributes) {
             guiGraphics.drawString(font,

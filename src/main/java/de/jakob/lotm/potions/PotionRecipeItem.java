@@ -24,6 +24,7 @@ public class PotionRecipeItem extends Item {
 
     @Override
     public @NotNull Component getName(ItemStack stack) {
-        return Component.literal(PathwayInfos.getSequenceName(BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath()) + " ").append(Component.translatable("lotm.potion_recipe"));
+        return Component.literal(PathwayInfos.getSequenceName(BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath()) + " ").append(Component.translatable("lotm.potion_recipe")).append(
+                recipe == null ? "" : " (Sequence " + recipe.potion().getSequence() + ")");
     }
 }

@@ -31,7 +31,7 @@ public class GriefingOverlayRenderer {
         int x = screenWidth - 100;
         int y = 10;
 
-        int redColor = 0xFFFF0000; // Red color for text
+        int redColor = 0xFFed5651; // Red color for text
 
         if (BeyonderData.isGriefingEnabled(mc.player)) {
             String text = Component.translatable("lotm.griefing").getString();

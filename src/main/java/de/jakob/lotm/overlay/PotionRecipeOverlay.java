@@ -27,7 +27,7 @@ public class PotionRecipeOverlay {
         });
     }
 
-    private static final int WIDTH = 130;
+    private static final int WIDTH = 180;
     private static final int HEIGHT = 100;
 
     private static void render(GuiGraphics guiGraphics) {
@@ -80,9 +80,9 @@ public class PotionRecipeOverlay {
 
         guiGraphics.pose().popPose();
 
-        guiGraphics.renderOutline(iconX1, iconY, 24, 24, 0x44000000);
-        guiGraphics.renderOutline(iconX2, iconY, 24, 24, 0x44000000);
-        guiGraphics.renderOutline(iconX3, iconY2, 24, 24, 0x44000000);
+        guiGraphics.renderOutline(iconX1 - 1, iconY - 1, 25, 25, 0x44000000);
+        guiGraphics.renderOutline(iconX2 - 1, iconY - 1, 25, 25, 0x44000000);
+        guiGraphics.renderOutline(iconX3 - 1, iconY2 - 1, 25, 25, 0x44000000);
     }
 
 
