@@ -60,7 +60,7 @@ public class BeyonderPotion extends Item {
                                 TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
 
-        tooltipComponents.add(Component.literal(BeyonderData.getSequenceName(pathway, 9) + " Pathway").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.literal(BeyonderData.getSequenceName(pathway, 9) + " Pathway").withStyle(ChatFormatting.DARK_GRAY));
         tooltipComponents.add(Component.literal("Sequence " + sequence).withStyle(ChatFormatting.DARK_GRAY));
     }
 

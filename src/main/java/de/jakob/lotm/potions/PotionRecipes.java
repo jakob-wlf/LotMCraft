@@ -19,19 +19,29 @@ public class PotionRecipes {
                 new ItemStack(Items.FERMENTED_SPIDER_EYE, 1),
                 new ItemStack(ModIngredients.LAVOS_SQUID_BLOOD.get())
         ));
-
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.CLOWN_POTION.get(),
                 new ItemStack(Items.SUNFLOWER, 1),
                 new ItemStack(Items.APPLE, 1),
                 new ItemStack(ModIngredients.HORNACIS_GRAY_MOUNTAIN_GOAT_HORN.get())
         ));
-
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.MAGICIAN_POTION.get(),
                 new ItemStack(Items.PRISMARINE_CRYSTALS, 1),
                 new ItemStack(Items.AMETHYST_SHARD, 1),
                 new ItemStack(ModIngredients.ROOT_OF_MIST_TREANT.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.FACELESS_POTION.get(),
+                new ItemStack(Items.SPIDER_EYE, 1),
+                new ItemStack(Items.GLASS, 1),
+                new ItemStack(ModIngredients.THOUSAND_FACED_HUNTER_BLOOD.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.MARIONETTIST_POTION.get(),
+                new ItemStack(Items.WATER_BUCKET, 1),
+                new ItemStack(Items.MANGROVE_LOG, 1),
+                new ItemStack(ModIngredients.ANCIENT_WRAITH_DUST.get())
         ));
 
 
@@ -41,7 +51,6 @@ public class PotionRecipes {
                 new ItemStack(Items.OAK_DOOR, 1),
                 new ItemStack(ModIngredients.ILLUSION_CRYSTAL.get())
         ));
-
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.TRICKMASTER_POTION.get(),
                 new ItemStack(Items.SHORT_GRASS, 1),
@@ -54,15 +63,26 @@ public class PotionRecipes {
                 new ItemStack(Items.SPIDER_EYE, 1),
                 new ItemStack(ModIngredients.METEORITE_CRYSTAL.get())
         ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.SCRIBE_POTION.get(),
+                new ItemStack(Items.HONEY_BOTTLE, 1),
+                new ItemStack(Items.BOOK, 1),
+                new ItemStack(ModIngredients.ANCIENT_WRAITH_ARTIFACT.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.TRAVELER_POTION.get(),
+                new ItemStack(Items.ENDER_PEARL, 1),
+                new ItemStack(Items.SPIDER_EYE, 1),
+                new ItemStack(ModIngredients.SHADOWLESS_DEMONIC_WOLF_HEART.get())
+        ));
 
 
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.BARD_POTION.get(),
                 new ItemStack(Items.SWEET_BERRIES, 1),
-                new ItemStack(Items.SUNFLOWER, 1),
+                new ItemStack(Items.MAP, 1),
                 new ItemStack(ModIngredients.CRYSTAL_SUNFLOWER.get())
         ));
-
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.LIGHT_SUPPLICANT_POTION.get(),
                 new ItemStack(Items.SUNFLOWER, 1),
@@ -74,6 +94,114 @@ public class PotionRecipes {
                 new ItemStack(Items.MAGMA_BLOCK, 1),
                 new ItemStack(Items.LAVA_BUCKET, 1),
                 new ItemStack(ModIngredients.SPIRIT_PACT_TREE_FRUIT.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.NOTARY_POTION.get(),
+                new ItemStack(Items.SUNFLOWER, 1),
+                new ItemStack(Items.WRITABLE_BOOK, 1),
+                new ItemStack(ModIngredients.CRYSTALLIZED_ROOTS.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.PRIEST_OF_LIGHT_POTION.get(),
+                new ItemStack(Items.BLAZE_POWDER, 1),
+                new ItemStack(Items.LAVA_BUCKET, 1),
+                new ItemStack(ModIngredients.PURE_WHITE_BRILLIANT_ROCK.get())
+        ));
+
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.SAILOR_POTION.get(),
+                new ItemStack(Items.WATER_BUCKET, 1),
+                new ItemStack(Items.COMPASS, 1),
+                new ItemStack(ModIngredients.MURLOC_BLADDER.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.FOLK_OF_RAGE_POTION.get(),
+                new ItemStack(Items.ROTTEN_FLESH, 1),
+                new ItemStack(Items.SEA_PICKLE, 1),
+                new ItemStack(ModIngredients.DRAGON_EYED_CONDOR_EYEBALL.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.SEAFARER_POTION.get(),
+                new ItemStack(Items.PRISMARINE_CRYSTALS, 1),
+                new ItemStack(Items.TROPICAL_FISH_BUCKET, 1),
+                new ItemStack(ModIngredients.ANCIENT_LOGBOOK.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.WIND_BLESSED_POTION.get(),
+                new ItemStack(Items.FEATHER, 1),
+                new ItemStack(Items.PHANTOM_MEMBRANE, 1),
+                new ItemStack(ModIngredients.BLUE_SHADOW_FALCON_FEATHERS.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.OCEAN_SONGSTER_POTION.get(),
+                new ItemStack(Items.LIGHTNING_ROD, 1),
+                new ItemStack(Items.MUSIC_DISC_PIGSTEP, 1),
+                new ItemStack(ModIngredients.SIREN_VOCAL_SAC.get())
+        ));
+
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.SLEEPLESS_POTION.get(),
+                new ItemStack(Items.LILY_OF_THE_VALLEY, 1),
+                new ItemStack(Items.WATER_BUCKET, 1),
+                new ItemStack(ModIngredients.MIDNIGHT_BEAUTY_FLOWER.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.MIDNIGHT_POET_POTION.get(),
+                new ItemStack(Items.SWEET_BERRIES, 1),
+                new ItemStack(Items.SPRUCE_LOG, 1),
+                new ItemStack(ModIngredients.SOUL_SNARING_BELL_FLOWER.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.NIGHTMARE_POTION.get(),
+                new ItemStack(Items.CORNFLOWER, 1),
+                new ItemStack(Items.AMETHYST_SHARD, 1),
+                new ItemStack(ModIngredients.DREAM_EATING_RAVEN_HEART.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.SOUL_ASSURER_POTION.get(),
+                new ItemStack(Items.PURPLE_BED, 1),
+                new ItemStack(Items.GLOWSTONE_DUST, 1),
+                new ItemStack(ModIngredients.DEEP_SLEEPER_SKULL.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.SPIRIT_WARLOCK_POTION.get(),
+                new ItemStack(Items.GHAST_TEAR, 1),
+                new ItemStack(Items.BONE, 1),
+                new ItemStack(ModIngredients.SOURCE_OF_MAD_DREAMS.get())
+        ));
+
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.HUNTER_POTION.get(),
+                new ItemStack(Items.POPPY, 1),
+                new ItemStack(Items.SPRUCE_LEAVES, 1),
+                new ItemStack(ModIngredients.RED_CHESTNUT_FLOWER.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.PROVOKER_POTION.get(),
+                new ItemStack(Items.SWEET_BERRIES, 1),
+                new ItemStack(Items.HONEY_BOTTLE, 1),
+                new ItemStack(ModIngredients.REDCROWN_BALSAM_POWDER.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.PYROMANIAC_POTION.get(),
+                new ItemStack(Items.LAVA_BUCKET, 1),
+                new ItemStack(Items.MAGMA_BLOCK, 1),
+                new ItemStack(ModIngredients.MAGMA_ELF_CORE.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.CONSPIRER_POTION.get(),
+                new ItemStack(Items.GUNPOWDER, 1),
+                new ItemStack(Items.SPIDER_EYE, 1),
+                new ItemStack(ModIngredients.SPHINX_BRAIN.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.REAPER_POTION.get(),
+                new ItemStack(Items.GHAST_TEAR, 1),
+                new ItemStack(Items.BLAZE_POWDER, 1),
+                new ItemStack(ModIngredients.BLACK_HUNTING_SPIDER_COMPOSITE_EYES.get())
         ));
     }
 

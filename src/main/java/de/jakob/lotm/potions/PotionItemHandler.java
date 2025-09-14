@@ -198,12 +198,33 @@ public class PotionItemHandler {
                     new BeyonderPotion(properties, 7, "demoness"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
-    public static DeferredItem<Item> DEMONESS_OF_PLEASURE = ITEMS.registerItem("demoness_of_pleasure_potion", properties ->
+    public static DeferredItem<Item> DEMONESS_OF_PLEASURE_POTION = ITEMS.registerItem("demoness_of_pleasure_potion", properties ->
                     new BeyonderPotion(properties, 6, "demoness"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
-    public static DeferredItem<Item> DEMONESS_OF_AFFLICTION = ITEMS.registerItem("demoness_of_affliction_potion", properties ->
+    public static DeferredItem<Item> DEMONESS_OF_AFFLICTION_POTION = ITEMS.registerItem("demoness_of_affliction_potion", properties ->
                     new BeyonderPotion(properties, 5, "demoness"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+
+    public static DeferredItem<Item> SPECTATOR_POTION = ITEMS.registerItem("spectator_potion", properties ->
+                    new BeyonderPotion(properties, 9, "visionary"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> TELEPATHIST_POTION = ITEMS.registerItem("telepathist_potion", properties ->
+                    new BeyonderPotion(properties, 8, "visionary"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> PSYCHIATRIST_POTION = ITEMS.registerItem("psychiatrist_potion", properties ->
+                    new BeyonderPotion(properties, 7, "visionary"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> HYPNOTIST_POTION = ITEMS.registerItem("hypnotist_potion", properties ->
+                    new BeyonderPotion(properties, 6, "visionary"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> DREAMWALKER_POTION = ITEMS.registerItem("dreamwalker_potion", properties ->
+                    new BeyonderPotion(properties, 5, "visionary"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
 

@@ -252,6 +252,12 @@
   "item.lotmcraft.demoness_of_pleasure_potion": "Demoness of Pleasure Potion",
   "item.lotmcraft.demoness_of_affliction_potion": "Demoness of Affliction Potion",
 
+  "item.lotmcraft.spectator_potion": "Spectator Potion",
+  "item.lotmcraft.telepathist_potion": "Telepathist Potion",
+  "item.lotmcraft.psychiatrist_potion": "Psychiatrist Potion",
+  "item.lotmcraft.hypnotist_potion": "Hypnotist Potion",
+  "item.lotmcraft.dreamwalker_potion": "Dreamwalker Potion",
+
   "_comment007": "Damage-----------------------------------------------------------------------------",
   "death.attack.loosing_control": "%1$s lost control.",
 
@@ -282,6 +288,16 @@
   "item.lotmcraft.black_feather_of_monster_bird": "Black Feather of Monster Bird",
   "item.lotmcraft.murloc_bladder": "Murloc's Bladder",
   "item.lotmcraft.ancient_logbook": "Ancient Logbook",
+  "item.lotmcraft.midnight_beauty_flower": "Midnight Beauty Flower",
+  "item.lotmcraft.soul_snaring_bell_flower": "Soul Snaring Bell Flower",
+  "item.lotmcraft.dream_eating_raven_heart": "Heart of a Dream Eating Raven",
+  "item.lotmcraft.deep_sleeper_skull": "Skull of a Deep Sleeper",
+  "item.lotmcraft.source_of_mad_dreams": "Source of Mad Dreams",
+  "item.lotmcraft.red_chestnut_flower": "Red Chestnut Flower",
+  "item.lotmcraft.redcrown_balsam_powder": "Redcrown Balsam Powder",
+  "item.lotmcraft.magma_elf_core": "Core of a Magma Elf",
+  "item.lotmcraft.sphinx_brain": "Brain of a Sphinx",
+  "item.lotmcraft.black_hunting_spider_composite_eyes": "Composite Eyes of a Black Hunting Spider",
 
 
   "lotm.griefing": "Griefing Enabled",

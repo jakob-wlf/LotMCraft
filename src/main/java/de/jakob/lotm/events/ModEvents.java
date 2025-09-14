@@ -134,10 +134,10 @@ public class ModEvents {
                 int cost = tradeableItems.get(item);
 
                 trades.get(level).add((entity, randomSource) -> new MerchantOffer(
-                        new ItemCost(Items.DIAMOND, random.nextInt(cost - 4, cost + 5)),
+                        new ItemCost(Items.DIAMOND, Math.max(1, random.nextInt(cost - 4, cost + 5))),
                         new ItemStack(item, 1),
                         random.nextInt(1, 2),
-                        20 * level,
+                        30 * level,
                         .2f
                 ));
             }
@@ -151,27 +151,27 @@ public class ModEvents {
             HashMap<Item, Integer> tradeableItems = new HashMap<>();
             for (int i = 0; i < 10; i++) {
                 switch (random.nextInt(3)) {
-//                    case 0 -> {
-//                        PotionRecipeItem recipe = PotionRecipeItemHandler.selectRandomRecipeOfPathway(random, "darkness");
-//                        if (recipe == null)
-//                            return;
-//                        int sequence = recipe.getRecipe().potion().getSequence();
-//                        tradeableItems.put(recipe, costsPerSequenceForRecipes[sequence]);
-//                    }
-                    case 0, 1, 2 -> {
+                    case 0 -> {
+                        PotionRecipeItem recipe = PotionRecipeItemHandler.selectRandomRecipeOfPathway(random, "darkness");
+                        if (recipe == null)
+                            return;
+                        int sequence = recipe.getRecipe().potion().getSequence();
+                        tradeableItems.put(recipe, costsPerSequenceForRecipes[sequence]);
+                    }
+                    case 1 -> {
                         BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfPathway(random, "darkness");
                         if (potion == null)
                             return;
                         int sequence = potion.getSequence();
                         tradeableItems.put(potion, costsPerSequence[sequence]);
                     }
-//                    case 2 -> {
-//                        PotionIngredient ingredient = ModIngredients.selectRandomIngredientOfPathway(random, "darkness");
-//                        if (ingredient == null)
-//                            return;
-//                        int sequence = ingredient.getSequence();
-//                        tradeableItems.put(ingredient, costsPerSequenceForIngredients[sequence]);
-//                    }
+                    case 2 -> {
+                        PotionIngredient ingredient = ModIngredients.selectRandomIngredientOfPathway(random, "darkness");
+                        if (ingredient == null)
+                            return;
+                        int sequence = ingredient.getSequence();
+                        tradeableItems.put(ingredient, costsPerSequenceForIngredients[sequence]);
+                    }
                 }
             }
 
@@ -190,7 +190,7 @@ public class ModEvents {
                 int cost = tradeableItems.get(item);
 
                 trades.get(level).add((entity, randomSource) -> new MerchantOffer(
-                        new ItemCost(Items.DIAMOND, random.nextInt(cost - 4, cost + 5)),
+                        new ItemCost(Items.DIAMOND, Math.max(1, random.nextInt(cost - 4, cost + 5))),
                         new ItemStack(item, 1),
                         random.nextInt(1, 2),
                         20 * level,
