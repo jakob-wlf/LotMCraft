@@ -88,29 +88,27 @@ public class ModEvents {
     @SubscribeEvent
     public static void addCustomTrades(VillagerTradesEvent event) {
         if (event.getType() == ModVillagers.BEYONDER_PROFESSION.value()) {
-            Random random = new Random();
-
             Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
 
             HashMap<Item, Integer> tradeableItems = new HashMap<>();
             for (int i = 0; i < 10; i++) {
-                switch (random.nextInt(3)) {
+                switch ((new Random()).nextInt(3)) {
                     case 0 -> {
-                        PotionRecipeItem recipe = PotionRecipeItemHandler.selectRandomrecipe(random);
+                        PotionRecipeItem recipe = PotionRecipeItemHandler.selectRandomrecipe((new Random()));
                         if (recipe == null)
                             return;
                         int sequence = recipe.getRecipe().potion().getSequence();
                         tradeableItems.put(recipe, costsPerSequenceForRecipes[sequence]);
                     }
                     case 1 -> {
-                        BeyonderPotion potion = PotionItemHandler.selectRandomPotion(random);
+                        BeyonderPotion potion = PotionItemHandler.selectRandomPotion((new Random()));
                         if (potion == null)
                             return;
                         int sequence = potion.getSequence();
                         tradeableItems.put(potion, costsPerSequence[sequence]);
                     }
                     case 2 -> {
-                        PotionIngredient ingredient = ModIngredients.selectRandomIngredient(random);
+                        PotionIngredient ingredient = ModIngredients.selectRandomIngredient((new Random()));
                         if (ingredient == null)
                             return;
                         int sequence = ingredient.getSequence();
@@ -134,9 +132,9 @@ public class ModEvents {
                 int cost = tradeableItems.get(item);
 
                 trades.get(level).add((entity, randomSource) -> new MerchantOffer(
-                        new ItemCost(Items.DIAMOND, Math.max(1, random.nextInt(cost - 4, cost + 5))),
+                        new ItemCost(Items.DIAMOND, Math.max(1, (new Random()).nextInt(cost - 4, cost + 5))),
                         new ItemStack(item, 1),
-                        random.nextInt(1, 2),
+                        (new Random()).nextInt(1, 2),
                         30 * level,
                         .2f
                 ));
@@ -144,29 +142,27 @@ public class ModEvents {
         }
 
         if (event.getType() == ModVillagers.EVERNIGHT_PROFESSION.value()) {
-            Random random = new Random();
-
             Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
 
             HashMap<Item, Integer> tradeableItems = new HashMap<>();
             for (int i = 0; i < 10; i++) {
-                switch (random.nextInt(3)) {
+                switch ((new Random()).nextInt(3)) {
                     case 0 -> {
-                        PotionRecipeItem recipe = PotionRecipeItemHandler.selectRandomRecipeOfPathway(random, "darkness");
+                        PotionRecipeItem recipe = PotionRecipeItemHandler.selectRandomRecipeOfPathway((new Random()), "darkness");
                         if (recipe == null)
                             return;
                         int sequence = recipe.getRecipe().potion().getSequence();
                         tradeableItems.put(recipe, costsPerSequenceForRecipes[sequence]);
                     }
                     case 1 -> {
-                        BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfPathway(random, "darkness");
+                        BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfPathway((new Random()), "darkness");
                         if (potion == null)
                             return;
                         int sequence = potion.getSequence();
                         tradeableItems.put(potion, costsPerSequence[sequence]);
                     }
                     case 2 -> {
-                        PotionIngredient ingredient = ModIngredients.selectRandomIngredientOfPathway(random, "darkness");
+                        PotionIngredient ingredient = ModIngredients.selectRandomIngredientOfPathway((new Random()), "darkness");
                         if (ingredient == null)
                             return;
                         int sequence = ingredient.getSequence();
@@ -190,9 +186,9 @@ public class ModEvents {
                 int cost = tradeableItems.get(item);
 
                 trades.get(level).add((entity, randomSource) -> new MerchantOffer(
-                        new ItemCost(Items.DIAMOND, Math.max(1, random.nextInt(cost - 4, cost + 5))),
+                        new ItemCost(Items.DIAMOND, Math.max(1, (new Random()).nextInt(cost - 4, cost + 5))),
                         new ItemStack(item, 1),
-                        random.nextInt(1, 2),
+                        (new Random()).nextInt(1, 2),
                         20 * level,
                         .2f
                 ));

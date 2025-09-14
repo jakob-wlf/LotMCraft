@@ -102,6 +102,7 @@
   "item.lotmcraft.requiem_ability": "Requiem",
 
   "item.lotmcraft.mighty_blow_ability": "Mighty Blow",
+  "item.lotmcraft.instigation_ability": "Instigation",
   "item.lotmcraft.shadow_concealment_ability": "Shadow Concealment",
   "item.lotmcraft.black_flame_ability": "Black Flame",
   "ability.lotmcraft.black_flame.burn": "Burn",
@@ -258,6 +259,8 @@
   "item.lotmcraft.hypnotist_potion": "Hypnotist Potion",
   "item.lotmcraft.dreamwalker_potion": "Dreamwalker Potion",
 
+  "item.lotmcraft.ability_not_implemented": "Abilities for this Sequence are not yet implemented",
+
   "_comment007": "Damage-----------------------------------------------------------------------------",
   "death.attack.loosing_control": "%1$s lost control.",
 
@@ -306,5 +309,6 @@
   "lotm.beyonder_message.full": "Become a Beyonder of the %s Pathway at Sequence %s",
   "creativetab.lotmcraft.beyonder_ingredients_tab": "Potion Ingredients",
   "creativetab.lotmcraft.beyonder_recipes_tab": "Potion Recipes",
-  "lotm.danger_premonition": "Danger Premonition"
+  "lotm.danger_premonition": "Danger Premonition",
+  "lotm.not_implemented_yet": "Not Implemented Yet"
 }

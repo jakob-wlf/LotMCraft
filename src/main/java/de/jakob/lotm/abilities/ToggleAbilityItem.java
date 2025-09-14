@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+//TODO: Make npc usable
 public abstract class ToggleAbilityItem extends Item {
     private static final Map<UUID, Map<ToggleAbilityItem, ItemStack>> activeAbilities = new ConcurrentHashMap<>();
 
@@ -30,7 +31,7 @@ public abstract class ToggleAbilityItem extends Item {
     }
 
     protected abstract float getSpiritualityCost();
-    protected boolean canBeUsedByNPC = true;
+    protected boolean canBeUsedByNPC = false;
     protected boolean canBeCopied = true;
 
     public abstract Map<String, Integer> getRequirements();
@@ -70,6 +71,18 @@ public abstract class ToggleAbilityItem extends Item {
         }
 
         return InteractionResultHolder.success(player.getItemInHand(hand));
+    }
+
+    public void cancel(Level level, LivingEntity entity) {
+        Map<ToggleAbilityItem, ItemStack> playerAbilities = activeAbilities.get(entity.getUUID());
+        if (playerAbilities != null) {
+            playerAbilities.remove(this);
+            if (playerAbilities.isEmpty()) {
+                activeAbilities.remove(entity.getUUID());
+            }
+        }
+
+        stop(level, entity);
     }
 
     public boolean canUse(Player player) {

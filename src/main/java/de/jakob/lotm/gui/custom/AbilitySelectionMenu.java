@@ -1,5 +1,6 @@
 package de.jakob.lotm.gui.custom;
 
+import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.ReceiveAbilityPacket;
@@ -58,6 +59,8 @@ public class AbilitySelectionMenu extends AbstractContainerMenu {
             @Override
             public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
                 Item item = itemHandler.getStackInSlot(slot).getItem();
+                if(item == AbilityItemHandler.ABILITY_NOT_IMPLEMENTED.get())
+                    return ItemStack.EMPTY;
                 if(item instanceof AbilityItem || item instanceof ToggleAbilityItem)
                     PacketHandler.sendToServer(new ReceiveAbilityPacket(item));
                 return ItemStack.EMPTY;

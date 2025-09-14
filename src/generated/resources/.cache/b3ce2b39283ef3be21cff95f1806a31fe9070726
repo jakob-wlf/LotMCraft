@@ -1,4 +1,5 @@
-// 1.21.1	2025-09-14T20:20:30.8290089	Item Models: lotmcraft
+// 1.21.1	2025-09-15T00:05:19.3030289	Item Models: lotmcraft
+c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/abomination.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/abyss.json
 96494cfdd79ca3a005a680f1a30ae543a6ed1959 assets/lotmcraft/models/item/air_bullet_ability.json
@@ -157,6 +158,7 @@ f67cb0344b01765ec0cdddd1faec8bfb86a45d07 assets/lotmcraft/models/item/hypnotist_
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/illuminator.json
 e48b8b62813963f3a301e8d8d824c23c09044fd5 assets/lotmcraft/models/item/illusion_crystal.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/imperative_mage.json
+6e8154387bdc7883b8c5672857dd92f11e25a613 assets/lotmcraft/models/item/instigation_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/instigator.json
 2928d920d5ef4cb3c42238bcb3c8d45baf7618f2 assets/lotmcraft/models/item/instigator_potion.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/interrogator.json

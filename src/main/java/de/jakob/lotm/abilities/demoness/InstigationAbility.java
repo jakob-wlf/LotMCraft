@@ -1,6 +1,6 @@
-package de.jakob.lotm.abilities.abyss;
+package de.jakob.lotm.abilities.demoness;
 
-import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.AbilityItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -12,9 +12,14 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DevilTransformationAbility extends ToggleAbilityItem {
-    public DevilTransformationAbility(Properties properties) {
-        super(properties);
+public class InstigationAbility extends AbilityItem {
+    public InstigationAbility(Properties properties) {
+        super(properties, 1);
+    }
+
+    @Override
+    public Map<String, Integer> getRequirements() {
+        return new HashMap<>(Map.of("demoness", 8));
     }
 
     @Override
@@ -23,12 +28,7 @@ public class DevilTransformationAbility extends ToggleAbilityItem {
     }
 
     @Override
-    public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("abyss", 6));
-    }
-
-    @Override
-    protected void start(Level level, LivingEntity entity) {
+    protected void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 
@@ -36,17 +36,5 @@ public class DevilTransformationAbility extends ToggleAbilityItem {
             Component message = Component.translatable("lotm.not_implemented_yet").withStyle(ChatFormatting.RED);
             player.sendSystemMessage(message);
         }
-
-        cancel(level, entity);
-    }
-
-    @Override
-    protected void tick(Level level, LivingEntity entity) {
-
-    }
-
-    @Override
-    protected void stop(Level level, LivingEntity entity) {
-
     }
 }

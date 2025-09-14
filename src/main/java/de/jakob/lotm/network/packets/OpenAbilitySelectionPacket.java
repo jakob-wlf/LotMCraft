@@ -62,6 +62,9 @@ public record OpenAbilitySelectionPacket(int sequence, String pathway) implement
 
             passiveAbilities.addAll(abilities);
 
+            if(passiveAbilities.isEmpty())
+                passiveAbilities.add(AbilityItemHandler.ABILITY_NOT_IMPLEMENTED.get().getDefaultInstance());
+
             PathwayInfos pathwayInfo = BeyonderData.pathwayInfos.get(pathway);
 
             Minecraft mc = Minecraft.getInstance();
