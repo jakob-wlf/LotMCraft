@@ -252,4 +252,45 @@ public class PotionItemHandler {
         return potions.get(potions.size() - 1);
     }
 
+    public static BeyonderPotion selectRandomPotionOfPathway(Random random, String pathway) {
+        List<BeyonderPotion> potions = ITEMS.getEntries()
+                .stream()
+                .map(DeferredHolder::get)
+                .filter(i -> i instanceof BeyonderPotion)
+                .map(i -> ((BeyonderPotion) i))
+                .filter(i -> i.getPathway().equals(pathway))
+                .toList();
+
+        if (potions.isEmpty()) {
+            return null;
+        }
+
+        // Calculate weights for each potion
+        // Higher sequence = more common = higher weight
+        // Weight formula: sequence + 1 makes sequence 9 -> weight 10, sequence 0 -> weight 1
+        Map<BeyonderPotion, Integer> potionWeights = new HashMap<>();
+        int totalWeight = 0;
+
+        for (BeyonderPotion potion : potions) {
+            int weight = potion.getSequence() + 1; // Higher sequence = more common = higher weight
+            potionWeights.put(potion, weight);
+            totalWeight += weight;
+        }
+
+        // Generate random number between 0 and totalWeight-1
+        int randomValue = random.nextInt(totalWeight);
+
+        // Find the selected potion based on cumulative weights
+        int cumulativeWeight = 0;
+        for (Map.Entry<BeyonderPotion, Integer> entry : potionWeights.entrySet()) {
+            cumulativeWeight += entry.getValue();
+            if (randomValue < cumulativeWeight) {
+                return entry.getKey();
+            }
+        }
+
+        // Fallback (should never reach here with valid input)
+        return potions.get(potions.size() - 1);
+    }
+
 }

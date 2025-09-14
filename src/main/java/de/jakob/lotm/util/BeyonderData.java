@@ -59,6 +59,17 @@ public class BeyonderData {
             "justiciar"
     );
 
+    public static String getSequenceName(String pathway, int sequence) {
+        if(!pathwayInfos.containsKey(pathway))
+            return "Unknown";
+
+        PathwayInfos infos = pathwayInfos.get(pathway);
+        if(sequence < 0 || sequence >= infos.sequenceNames().length)
+            return "Unknown";
+
+        return infos.sequenceNames()[sequence];
+    }
+
     public static final HashMap<String, PathwayInfos> pathwayInfos = new HashMap<>();
 
     public static void initPathwayInfos() {
