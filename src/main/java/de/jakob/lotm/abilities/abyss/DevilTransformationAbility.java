@@ -29,6 +29,11 @@ public class DevilTransformationAbility extends ToggleAbilityItem {
 
     @Override
     protected void start(Level level, LivingEntity entity) {
+
+    }
+
+    @Override
+    protected void tick(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 
@@ -38,11 +43,6 @@ public class DevilTransformationAbility extends ToggleAbilityItem {
         }
 
         cancel(level, entity);
-    }
-
-    @Override
-    protected void tick(Level level, LivingEntity entity) {
-
     }
 
     @Override

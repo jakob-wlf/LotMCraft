@@ -22,7 +22,7 @@ public class PotionRecipeItemHandler {
         for(String pathway : BeyonderData.pathways) {
             for(String sequence : BeyonderData.pathwayInfos.get(pathway).sequenceNames()) {
                 ITEMS.registerItem(
-                        convertSequenceName(sequence),
+                        sequence,
                         PotionRecipeItem::new,
                         new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
             }
@@ -32,7 +32,7 @@ public class PotionRecipeItemHandler {
 
     public static void initializeRecipes() {
         for(PotionRecipe recipe : PotionRecipes.RECIPES) {
-            String sequenceName = convertSequenceName(BeyonderData.pathwayInfos.get(recipe.potion().getPathway()).sequenceNames()[recipe.potion().getSequence()]);
+            String sequenceName = BeyonderData.pathwayInfos.get(recipe.potion().getPathway()).sequenceNames()[recipe.potion().getSequence()];
             ITEMS.getEntries()
                     .stream()
                     .map(DeferredHolder::get)
@@ -40,10 +40,6 @@ public class PotionRecipeItemHandler {
                             && BuiltInRegistries.ITEM.getKey(item).getPath().equals(sequenceName))
                     .forEach(r -> ((PotionRecipeItem) r).setRecipe(recipe));
         }
-    }
-
-    private static String convertSequenceName(String sequenceName) {
-        return sequenceName.toLowerCase().replace(" ", "_");
     }
 
     public static PotionRecipeItem selectRandomrecipe(Random random) {

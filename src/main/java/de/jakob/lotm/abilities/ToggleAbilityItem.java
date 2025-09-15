@@ -37,7 +37,7 @@ public abstract class ToggleAbilityItem extends Item {
     public abstract Map<String, Integer> getRequirements();
 
     @Override
-    public InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
         if (!canUse(player)) return InteractionResultHolder.fail(player.getItemInHand(hand));
 
         UUID playerUUID = player.getUUID();
@@ -67,6 +67,7 @@ public abstract class ToggleAbilityItem extends Item {
                         activeAbilities.remove(playerUUID);
                     }
                 }
+                activeStates.remove(playerUUID);
             }
         }
 
@@ -81,6 +82,7 @@ public abstract class ToggleAbilityItem extends Item {
                 activeAbilities.remove(entity.getUUID());
             }
         }
+        activeStates.remove(entity.getUUID());
 
         stop(level, entity);
     }

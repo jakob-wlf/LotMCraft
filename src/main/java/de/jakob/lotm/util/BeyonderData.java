@@ -1,19 +1,14 @@
 package de.jakob.lotm.util;
 
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.SyncBeyonderDataPacket;
 import de.jakob.lotm.util.pathways.PathwayInfos;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,35 +62,35 @@ public class BeyonderData {
         if(sequence < 0 || sequence >= infos.sequenceNames().length)
             return "Unknown";
 
-        return infos.sequenceNames()[sequence];
+        return infos.getSequenceName(sequence);
     }
 
     public static final HashMap<String, PathwayInfos> pathwayInfos = new HashMap<>();
 
     public static void initPathwayInfos() {
-        pathwayInfos.put("fool", new PathwayInfos("Fool", "fool", 0xFF864ec7, new String[]{"Fool", "Attendant of Mysteries", "Miracle Invoker", "Scholar of Yore", "Bizarro Sorcerer", "Marionettist", "Faceless", "Magician", "Clown", "Seer"}));
-        pathwayInfos.put("error", new PathwayInfos("Error", "error", 0xFF0018b8, new String[]{"Error", "Worm of Time", "Trojan Horse of Destiny", "Mentor of Deceit", "Parasite", "Dream Stealer", "Prometheus", "Cryptologist", "Swindler", "Marauder"}));
-        pathwayInfos.put("door", new PathwayInfos("Door", "door", 0xFF89f5f5, new String[]{"Door", "Key of Stars", "Planeswalker", "Wanderer", "Secrets Sorcerer", "Traveler", "Scribe", "Astrologer", "Trickmaster", "Apprentice"}));
-        pathwayInfos.put("visionary", new PathwayInfos("Visionary", "visionary", 0xFFe3ffff, new String[]{"Visionary", "Author", "Discerner", "Dream Weaver", "Manipulator", "Dreamwalker", "Hypnotist", "Psychiatrist", "Telepathist", "Spectator"}));
-        pathwayInfos.put("sun", new PathwayInfos("Sun", "sun", 0xFFffad33, new String[]{"Sun", "White Angel", "Lightseeker", "Justice Mentor", "Unshadowed", "Priest of Light", "Notary", "Solar High Priest", "Light Supplicant", "Bard"}));
-        pathwayInfos.put("tyrant", new PathwayInfos("Tyrant", "tyrant", 0xFF336dff, new String[]{"Tyrant", "Thunder God", "Calamity", "Sea King", "Cataclysmic Interrer", "Ocean Songster", "Wind Blessed", "Seafarer", "Folk of Rage", "Sailor"}));
-        pathwayInfos.put("white_tower", new PathwayInfos("White Tower", "white_tower", 0xFF8cadff, new String[]{"White Tower", "Omniscient Eye", "Wisdom Angel", "Cognizer", "Prophet", "Mysticism Magister", "Polymath", "Detective", "Student of Ratiocination", "Reader"}));
-        pathwayInfos.put("hanged_man", new PathwayInfos("Hanged Man", "hanged_man", 0xFF8a0a0a, new String[]{"Hanged Man", "Dark Angel", "Profane Presbyter", "Trinity Templar", "Black Knight", "Shepherd", "Rose Bishop", "Shadow Ascetic", "Listener", "Secrets Supplicant"}));
-        pathwayInfos.put("darkness", new PathwayInfos("Darkness", "darkness", 0xFF3300b5, new String[]{"Darkness", "Knight of Misfortune", "Servant of Concealment", "Horror Bishop", "Nightwatcher", "Spirit Warlock", "Soul Assurer", "Nightmare", "Midnight Poet", "Sleepless"}));
-        pathwayInfos.put("death", new PathwayInfos("Death", "death", 0xFF334f23, new String[]{"Death", "Pale Emperor", "Death Consul", "Ferryman", "Undying", "Gatekeeper", "Spirit Guide", "Spirit Medium", "Gravedigger", "Corpse Collector"}));
-        pathwayInfos.put("twilight_giant", new PathwayInfos("Twilight Giant", "twilight_giant", 0xFF944b16, new String[]{"Twilight Giant", "Hand of God", "Glory", "Silver Knight", "Demon Hunter", "Guardian", "Dawn Paladin", "Weapon Master", "Pugilist", "Warrior"}));
-        pathwayInfos.put("demoness", new PathwayInfos("Demoness", "demoness", 0xFFc014c9, new String[]{"Demoness", "Demoness of Apocalypse", "Demoness of Catastrophe", "Demoness of Unaging", "Demoness of Despair", "Demoness of Affliction", "Demoness of Pleasure", "Witch", "Instigator", "Asassin"}));
-        pathwayInfos.put("red_priest", new PathwayInfos("Red Priest", "red_priest", 0xFFb80000, new String[]{"Red Priest", "Conqueror", "Weather Warlock", "War Bishop", "Iron Blooded Knight", "Reaper", "Conspirer", "Pyromaniac", "Provoker", "Hunter"}));
-        pathwayInfos.put("hermit", new PathwayInfos("Hermit", "hermit", 0xFF832ed9, new String[]{"Hermit", "Knowledge Emperor", "Sage", "Clairvoyant", "Mysticologist", "Constellations Master", "Scrolls Professor", "Warlock", "Melee Scholar", "Mystery Pryer"}));
-        pathwayInfos.put("paragon", new PathwayInfos("Paragon", "paragon", 0xFFf58e40, new String[]{"Paragon", "Illuminator", "Knowledge Master", "Arcane Scholar", "Alchemist", "Astronomer", "Artisan", "Appraiser", "Archeologist", "Savant"}));
-        pathwayInfos.put("wheel_of_fortune", new PathwayInfos("Wheel of Fortune", "wheel_of_fortune", 0xFFbad2f5, new String[]{"Wheel of Fortune", "Snake of Mercury", "Soothsayer", "Chaoswalker", "Misfortune Mage", "Winner", "Calamity Priest", "Lucky One", "Robot", "Monster"}));
-        pathwayInfos.put("mother", new PathwayInfos("Mother", "mother", 0xFF6bdb94, new String[]{"Mother", "Naturewalker", "Desolate Matriarch", "Pallbearer", "Classical Alchemist", "Druid", "Biologist", "Harvest Priest", "Doctor", "Planter"}));
-        pathwayInfos.put("moon", new PathwayInfos("Moon", "moon", 0xFFf5384b, new String[]{"Moon", "Beauty Goddess", "Life-Giver", "High Summoner", "Shaman King", "Scarlet Scholar", "Potions Professor", "Vampire", "Beast Tamer", "Apothecary"}));
-        pathwayInfos.put("abyss", new PathwayInfos("Abyss", "abyss", 0xFFa3070c, new String[]{"Abyss", "Filthy Monarch", "Bloody Archduke", "Blatherer", "Demon", "Desire Apostle", "Devil", "Serial Killer", "Unwinged Angel", "Criminal"}));
-        pathwayInfos.put("chained", new PathwayInfos("Chained", "chained", 0xFFb18fbf, new String[]{"Chained", "Abomination", "Ancient Bane", "Disciple of Silence", "Puppet", "Wraith", "Zombie", "Werewolf", "Lunatic", "Prisoner"}));
-        pathwayInfos.put("black_emperor", new PathwayInfos("Black Emperor", "black_emperor", 0xFF181040, new String[]{"Black Emperor", "Prince of Abolition", "Duke of Entropy", "Frenzied Mage", "Ear of the Fallen", "Mentor of Disorder", "Baron of Corruption", "Briber", "Barbarian", "Lawyer"}));
-        pathwayInfos.put("justiciar", new PathwayInfos("Justiciar", "justiciar", 0xFFfcd99f, new String[]{"Justiciar", "Hand of Order", "Balancer", "Chaos Hunter", "Imperative Mage", "Disciplinary Paladin", "Judge", "Interrogator", "Sheriff", "Arbiter"}));
-        pathwayInfos.put("debug", new PathwayInfos("Debug", "debug", 0xFFf5baba, new String[]{"", "", "", "", "", "", "", "", "", ""}));
+        pathwayInfos.put("fool", new PathwayInfos("fool", 0xFF864ec7, new String[]{"fool", "attendant_of_mysteries", "miracle_invoker", "scholar_of_yore", "bizarro_sorcerer", "marionettist", "faceless", "magician", "clown", "seer"}));
+        pathwayInfos.put("error", new PathwayInfos("error", 0xFF0018b8, new String[]{"error", "worm_of_time", "trojan_horse_of_destiny", "mentor_of_deceit", "parasite", "dream_stealer", "prometheus", "cryptologist", "swindler", "marauder"}));
+        pathwayInfos.put("door", new PathwayInfos("door", 0xFF89f5f5, new String[]{"door", "key_of_stars", "planeswalker", "wanderer", "secrets_sorcerer", "traveler", "scribe", "astrologer", "trickmaster", "apprentice"}));
+        pathwayInfos.put("visionary", new PathwayInfos("visionary", 0xFFe3ffff, new String[]{"visionary", "author", "discerner", "dream_weaver", "manipulator", "dreamwalker", "hypnotist", "psychiatrist", "telepathist", "spectator"}));
+        pathwayInfos.put("sun", new PathwayInfos("sun", 0xFFffad33, new String[]{"sun", "white_angel", "lightseeker", "justice_mentor", "unshadowed", "priest_of_light", "notary", "solar_high_priest", "light_supplicant", "bard"}));
+        pathwayInfos.put("tyrant", new PathwayInfos("tyrant", 0xFF336dff, new String[]{"tyrant", "thunder_god", "calamity", "sea_king", "cataclysmic_interrer", "ocean_songster", "wind_blessed", "seafarer", "folk_of_rage", "sailor"}));
+        pathwayInfos.put("white_tower", new PathwayInfos("white_tower", 0xFF8cadff, new String[]{"white_tower", "omniscient_eye", "wisdom_angel", "cognizer", "prophet", "mysticism_magister", "polymath", "detective", "student_of_ratiocination", "reader"}));
+        pathwayInfos.put("hanged_man", new PathwayInfos("hanged_man", 0xFF8a0a0a, new String[]{"hanged_man", "dark_angel", "profane_presbyter", "trinity_templar", "black_knight", "shepherd", "rose_bishop", "shadow_ascetic", "listener", "secrets_supplicant"}));
+        pathwayInfos.put("darkness", new PathwayInfos("darkness", 0xFF3300b5, new String[]{"darkness", "knight_of_misfortune", "servant_of_concealment", "horror_bishop", "nightwatcher", "spirit_warlock", "soul_assurer", "nightmare", "midnight_poet", "sleepless"}));
+        pathwayInfos.put("death", new PathwayInfos("death", 0xFF334f23, new String[]{"death", "pale_emperor", "death_consul", "ferryman", "undying", "gatekeeper", "spirit_guide", "spirit_medium", "gravedigger", "corpse_collector"}));
+        pathwayInfos.put("twilight_giant", new PathwayInfos("twilight_giant", 0xFF944b16, new String[]{"twilight_giant", "hand_of_god", "glory", "silver_knight", "demon_hunter", "guardian", "dawn_paladin", "weapon_master", "pugilist", "warrior"}));
+        pathwayInfos.put("demoness", new PathwayInfos("demoness", 0xFFc014c9, new String[]{"demoness", "demoness_of_apocalypse", "demoness_of_catastrophe", "demoness_of_unaging", "demoness_of_despair", "demoness_of_affliction", "demoness_of_pleasure", "witch", "instigator", "asassin"}));
+        pathwayInfos.put("red_priest", new PathwayInfos("red_priest", 0xFFb80000, new String[]{"red_priest", "conqueror", "weather_warlock", "war_bishop", "iron_blooded_knight", "reaper", "conspirer", "pyromaniac", "provoker", "hunter"}));
+        pathwayInfos.put("hermit", new PathwayInfos("hermit", 0xFF832ed9, new String[]{"hermit", "knowledge_emperor", "sage", "clairvoyant", "mysticologist", "constellations_master", "scrolls_professor", "warlock", "melee_scholar", "mystery_pryer"}));
+        pathwayInfos.put("paragon", new PathwayInfos("paragon", 0xFFf58e40, new String[]{"paragon", "illuminator", "knowledge_master", "arcane_scholar", "alchemist", "astronomer", "artisan", "appraiser", "archeologist", "savant"}));
+        pathwayInfos.put("wheel_of_fortune", new PathwayInfos("wheel_of_fortune", 0xFFbad2f5, new String[]{"wheel_of_fortune", "snake_of_mercury", "soothsayer", "chaoswalker", "misfortune_mage", "winner", "calamity_priest", "lucky_one", "robot", "monster"}));
+        pathwayInfos.put("mother", new PathwayInfos("mother", 0xFF6bdb94, new String[]{"mother", "naturewalker", "desolate_matriarch", "pallbearer", "classical_alchemist", "druid", "biologist", "harvest_priest", "doctor", "planter"}));
+        pathwayInfos.put("moon", new PathwayInfos("moon", 0xFFf5384b, new String[]{"moon", "beauty_goddess", "life-giver", "high_summoner", "shaman_king", "scarlet_scholar", "potions_professor", "vampire", "beast_tamer", "apothecary"}));
+        pathwayInfos.put("abyss", new PathwayInfos("abyss", 0xFFa3070c, new String[]{"abyss", "filthy_monarch", "bloody_archduke", "blatherer", "demon", "desire_apostle", "devil", "serial_killer", "unwinged_angel", "criminal"}));
+        pathwayInfos.put("chained", new PathwayInfos("chained", 0xFFb18fbf, new String[]{"chained", "abomination", "ancient_bane", "disciple_of_silence", "puppet", "wraith", "zombie", "werewolf", "lunatic", "prisoner"}));
+        pathwayInfos.put("black_emperor", new PathwayInfos("black_emperor", 0xFF181040, new String[]{"black_emperor", "prince_of_abolition", "duke_of_entropy", "frenzied_mage", "ear_of_the_fallen", "mentor_of_disorder", "baron_of_corruption", "briber", "barbarian", "lawyer"}));
+        pathwayInfos.put("justiciar", new PathwayInfos("justiciar", 0xFFfcd99f, new String[]{"justiciar", "hand_of_order", "balancer", "chaos_hunter", "imperative_mage", "disciplinary_paladin", "judge", "interrogator", "sheriff", "arbiter"}));
+
 
     }
 

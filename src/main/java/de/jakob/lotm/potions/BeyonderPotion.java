@@ -54,14 +54,19 @@ public class BeyonderPotion extends Item {
     }
 
     @Override
+    public @NotNull Component getName(ItemStack stack) {
+        return Component.literal(BeyonderData.getSequenceName(pathway, sequence) + " ").append(Component.translatable("lotm.potion"));
+    }
+
+    @Override
     public void appendHoverText(ItemStack stack,
                                 TooltipContext context,
                                 List<Component> tooltipComponents,
                                 TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
 
-        tooltipComponents.add(Component.literal(BeyonderData.getSequenceName(pathway, 9) + " Pathway").withStyle(ChatFormatting.DARK_GRAY));
-        tooltipComponents.add(Component.literal("Sequence " + sequence).withStyle(ChatFormatting.DARK_GRAY));
+        tooltipComponents.add(Component.literal(BeyonderData.getSequenceName(pathway, 9) + " ").append(Component.translatable("lotm.pathway")).withStyle(ChatFormatting.DARK_GRAY));
+        tooltipComponents.add(Component.translatable("lotm.sequence").append(Component.literal(" " + sequence)).withStyle(ChatFormatting.DARK_GRAY));
     }
 
     public int getSequence() {

@@ -10,5 +10,17 @@
     "sounds": [
       "lotmcraft:melody_of_death"
     ]
+  },
+  "dazing_song": {
+    "subtitle": "sounds.lotmcraft.dazing_song",
+    "sounds": [
+      "lotmcraft:dazing_sounds"
+    ]
+  },
+  "song_of_courage": {
+    "subtitle": "sounds.lotmcraft.song_of_courage",
+    "sounds": [
+      "lotmcraft:song_of_courage"
+    ]
   }
 }

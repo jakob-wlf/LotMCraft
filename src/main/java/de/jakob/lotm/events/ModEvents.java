@@ -194,5 +194,58 @@ public class ModEvents {
                 ));
             }
         }
+        if (event.getType() == ModVillagers.BLAZING_SUN_PROFESSION.value()) {
+            Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
+
+            HashMap<Item, Integer> tradeableItems = new HashMap<>();
+            for (int i = 0; i < 10; i++) {
+                switch ((new Random()).nextInt(3)) {
+                    case 0 -> {
+                        PotionRecipeItem recipe = PotionRecipeItemHandler.selectRandomRecipeOfPathway((new Random()), "sun");
+                        if (recipe == null)
+                            return;
+                        int sequence = recipe.getRecipe().potion().getSequence();
+                        tradeableItems.put(recipe, costsPerSequenceForRecipes[sequence]);
+                    }
+                    case 1 -> {
+                        BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfPathway((new Random()), "sun");
+                        if (potion == null)
+                            return;
+                        int sequence = potion.getSequence();
+                        tradeableItems.put(potion, costsPerSequence[sequence]);
+                    }
+                    case 2 -> {
+                        PotionIngredient ingredient = ModIngredients.selectRandomIngredientOfPathway((new Random()), "sun");
+                        if (ingredient == null)
+                            return;
+                        int sequence = ingredient.getSequence();
+                        tradeableItems.put(ingredient, costsPerSequenceForIngredients[sequence]);
+                    }
+                }
+            }
+
+            List<Item> keySet = new ArrayList<>(tradeableItems.keySet().stream().toList());
+            keySet.sort(Comparator.comparing(tradeableItems::get));
+
+            for (int i = 0; i < keySet.size(); i++) {
+                int level = switch (i) {
+                    case 2, 3 -> 2;
+                    case 4, 5 -> 3;
+                    case 6, 7 -> 4;
+                    case 8, 9 -> 5;
+                    default -> 1;
+                };
+                Item item = keySet.get(i);
+                int cost = tradeableItems.get(item);
+
+                trades.get(level).add((entity, randomSource) -> new MerchantOffer(
+                        new ItemCost(Items.DIAMOND, Math.max(1, (new Random()).nextInt(cost - 4, cost + 5))),
+                        new ItemStack(item, 1),
+                        (new Random()).nextInt(1, 2),
+                        20 * level,
+                        .2f
+                ));
+            }
+        }
     }
 }

@@ -36,7 +36,7 @@ public record BecomeBeyonderPacket(String pathway, int sequence) implements Cust
 
             Component message = Component.translatable(
                     "lotm.beyonder_message.full",
-                    Component.literal(BeyonderData.pathwayInfos.get(packet.pathway).name()).withColor(BeyonderData.pathwayInfos.get(packet.pathway).color()),
+                    Component.literal(BeyonderData.pathwayInfos.get(packet.pathway).getName()).withColor(BeyonderData.pathwayInfos.get(packet.pathway).color()),
                     Component.literal(String.valueOf(packet.sequence())).withColor(BeyonderData.pathwayInfos.get(packet.pathway).color())
             ).withColor(0x808080);
             player.displayClientMessage(message, true);

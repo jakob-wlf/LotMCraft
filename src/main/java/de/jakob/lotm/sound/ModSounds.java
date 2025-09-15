@@ -15,6 +15,8 @@ public class ModSounds {
 
     public static final Supplier<SoundEvent> MIDNIGHT_POEM = registerSound("midnight_poem");
     public static final Supplier<SoundEvent> DEATH_MELODY = registerSound("melody_of_death");
+    public static final Supplier<SoundEvent> DAZING_SONG = registerSound("dazing_song");
+    public static final Supplier<SoundEvent> SONG_OF_COURAGE = registerSound("song_of_courage");
 
     private static Supplier<SoundEvent> registerSound(String name) {
         return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, name)));

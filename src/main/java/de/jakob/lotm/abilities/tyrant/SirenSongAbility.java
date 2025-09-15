@@ -57,7 +57,7 @@ public class SirenSongAbility extends SelectableAbilityItem {
         Location supplier = new Location(entity.getEyePosition().add(0, .1, 0), level);
         ParticleUtil.createExpandingParticleSpirals(ParticleTypes.NOTE, supplier, 1, 10, 2, .5, 5, 20 * 30, 20, 5);
 
-        //level.playSound(null, BlockPos.containing(entity.position()), ModSounds.DEATH_MELODY.get(), SoundSource.BLOCKS, 1, 1);
+        level.playSound(null, BlockPos.containing(entity.position()), ModSounds.DAZING_SONG.get(), SoundSource.BLOCKS, 1, 1);
 
         ServerScheduler.scheduleForDuration(0,  2, 20 * 30, () -> {
             if(entity.level().isClientSide)
@@ -78,7 +78,7 @@ public class SirenSongAbility extends SelectableAbilityItem {
 
         BeyonderData.addModifier(entity, "buff_song", 1.5);
 
-        //level.playSound(null, BlockPos.containing(entity.position()), ModSounds.DEATH_MELODY.get(), SoundSource.BLOCKS, 1, 1);
+        level.playSound(null, BlockPos.containing(entity.position()), ModSounds.SONG_OF_COURAGE.get(), SoundSource.BLOCKS, 1, 1);
 
         MobEffectInstance strength = entity.getEffect(MobEffects.DAMAGE_BOOST);
         MobEffectInstance speed = entity.getEffect(MobEffects.MOVEMENT_SPEED);

@@ -1,25 +1,25 @@
 package de.jakob.lotm.util.pathways;
 
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.network.chat.Component;
 
 public record PathwayInfos(
-        String name,
         String id,
         int color,
         String[] sequenceNames
 ) {
-   public static String getSequenceName(String convertedSequenceName) {
-       for(String pathway : BeyonderData.pathways) {
-           for(String s : BeyonderData.pathwayInfos.get(pathway).sequenceNames) {
-               if(convertedSequenceName.equals(convertSequenceName(s)))
-                   return s;
-           }
-       }
+   public static String getSequenceNameByRegisteredItemName(String sequenceName) {
 
-       return convertedSequenceName;
+       return Component.translatable("lotm.sequence." + sequenceName).getString();
    }
 
-    private static String convertSequenceName(String sequenceName) {
-        return sequenceName.toLowerCase().replace(" ", "_");
+   public String getName() {
+       return Component.translatable("lotm.pathway." + id).getString();
+    }
+
+    public String getSequenceName(int sequence) {
+        if(sequence < 0 || sequence > sequenceNames.length)
+            return "";
+        return Component.translatable("lotm.sequence." + sequenceNames[sequence]).getString();
     }
 }

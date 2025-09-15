@@ -8,6 +8,7 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.pathways.PathwayInfos;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -75,7 +76,7 @@ public record OpenAbilitySelectionPacket(int sequence, String pathway) implement
             double[] yPos = new double[1];
             GLFW.glfwGetCursorPos(windowHandle, xPos, yPos);
 
-            player.openMenu(new AbilitySelectionMenuProvider(passiveAbilities, pathwayInfo.name() + " Pathway Sequence " + sequence, pathwayInfo.color(), sequence, pathway));
+            player.openMenu(new AbilitySelectionMenuProvider(passiveAbilities, pathwayInfo.getName() + " " + Component.translatable("lotm.pathway").append(" ").append(Component.translatable("lotm.sequence")).getString() + " " + sequence, pathwayInfo.color(), sequence, pathway));
 
             PacketHandler.sendToPlayer(player, new SyncAbilityMenuPacket(sequence, pathway));
 

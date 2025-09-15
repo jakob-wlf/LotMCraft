@@ -20,6 +20,7 @@ public class ModVillagers {
 
     public static final Holder<PoiType> BEYONDER_POI = POI_TYPES.register("beyonder_poi", () -> new PoiType(ImmutableSet.copyOf(ModBlocks.BREWING_CAULDRON.get().getStateDefinition().getPossibleStates()), 1, 1));
     public static final Holder<PoiType> EVERNIGHT_POI = POI_TYPES.register("evernight_poi", () -> new PoiType(ImmutableSet.copyOf(Blocks.RED_CANDLE.getStateDefinition().getPossibleStates()), 1, 1));
+    public static final Holder<PoiType> SUN_POI = POI_TYPES.register("eternal_blazing_sun_poi", () -> new PoiType(ImmutableSet.copyOf(Blocks.WHITE_CANDLE.getStateDefinition().getPossibleStates()), 1, 1));
     public static final Holder<VillagerProfession> BEYONDER_PROFESSION = VILLAGER_PROFESSIONS
             .register("beyonder_merchant", () -> new VillagerProfession(
                     "beyonder_merchant",
@@ -34,6 +35,15 @@ public class ModVillagers {
                     "evernight_clergymant",
                     (holder) -> holder.value() == EVERNIGHT_POI.value(),
                     (poiHolder) -> poiHolder.value() == EVERNIGHT_POI.value(),
+                    ImmutableSet.of(),
+                    ImmutableSet.of(),
+                    SoundEvents.ENCHANTMENT_TABLE_USE));
+
+    public static final Holder<VillagerProfession> BLAZING_SUN_PROFESSION = VILLAGER_PROFESSIONS
+            .register("eternal_blazing_sun_clergyman", () -> new VillagerProfession(
+                    "eternal_blazing_sun_clergyman",
+                    (holder) -> holder.value() == SUN_POI.value(),
+                    (poiHolder) -> poiHolder.value() == SUN_POI.value(),
                     ImmutableSet.of(),
                     ImmutableSet.of(),
                     SoundEvents.ENCHANTMENT_TABLE_USE));

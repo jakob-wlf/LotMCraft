@@ -8,6 +8,10 @@
     {
       "id": "lotmcraft:evernight_poi",
       "required": false
+    },
+    {
+      "id": "lotmcraft:eternal_blazing_sun_poi",
+      "required": false
     }
   ]
 }

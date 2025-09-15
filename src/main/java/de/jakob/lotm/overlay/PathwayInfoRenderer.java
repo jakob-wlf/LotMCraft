@@ -19,7 +19,6 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
-//TODO: translate Sequence and Pathway Names
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class PathwayInfoRenderer {
     @SubscribeEvent
@@ -109,7 +108,7 @@ public class PathwayInfoRenderer {
             return;
 
         Component sequenceString = Component.translatable("lotm.sequence").append(" " + sequence).append(":").withStyle(ChatFormatting.BOLD);
-        Component sequenceName = Component.literal(BeyonderData.pathwayInfos.get(pathway).sequenceNames()[sequence]);
+        Component sequenceName = Component.literal(BeyonderData.getSequenceName(pathway, sequence));
 
         boolean shouldSplit = mc.font.width(sequenceName) > 80;
         g.drawString(mc.font, sequenceString, textX, iconY + (int) Math.round(iconSize * 1.15), 0xFFf5edff);
@@ -144,7 +143,7 @@ public class PathwayInfoRenderer {
 
     private static void renderPathwayText(GuiGraphics g, Minecraft mc, String pathway,
                                           int iconX, int iconY, int iconSize, int color) {
-        Component pathwayTitle = Component.literal(BeyonderData.pathwayInfos.get(pathway).name() + "-")
+        Component pathwayTitle = Component.literal(BeyonderData.pathwayInfos.get(pathway).getName() + "-")
                 .withStyle(ChatFormatting.BOLD);
         Component pathwayTitle2 = Component.translatable("lotm.pathway").withStyle(ChatFormatting.BOLD);
 
