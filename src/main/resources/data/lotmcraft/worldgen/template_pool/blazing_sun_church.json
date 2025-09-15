@@ -1,0 +1,16 @@
+{
+  "fallback": "minecraft:village/plains/town_centers",
+
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+
+        "location": "lotmcraft:blazing_sun_church",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}

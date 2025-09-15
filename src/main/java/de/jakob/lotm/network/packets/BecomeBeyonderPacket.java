@@ -34,6 +34,10 @@ public record BecomeBeyonderPacket(String pathway, int sequence) implements Cust
             // Server-side logic
             BeyonderData.setBeyonder(player, packet.pathway(), packet.sequence());
 
+            if(BeyonderData.pathwayInfos.get(packet.pathway()) == null) {
+                return;
+            }
+
             Component message = Component.translatable(
                     "lotm.beyonder_message.full",
                     Component.literal(BeyonderData.pathwayInfos.get(packet.pathway).getName()).withColor(BeyonderData.pathwayInfos.get(packet.pathway).color()),

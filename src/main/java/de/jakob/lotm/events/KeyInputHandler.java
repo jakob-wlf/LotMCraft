@@ -32,7 +32,7 @@ public class KeyInputHandler {
             if (player != null) {
                 String currentPathway = ClientBeyonderCache.getPathway(player.getUUID());
                 if (currentPathway.equalsIgnoreCase("none")) {
-                    PacketHandler.sendToServer(new BecomeBeyonderPacket("debug", 1));
+                    PacketHandler.sendToServer(new BecomeBeyonderPacket("fool", 1));
                 } else {
                     int index = BeyonderData.pathways.indexOf(currentPathway) + 1;
                     String pathway;

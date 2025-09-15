@@ -1,13 +1,13 @@
 {
   "type": "lotmcraft:simple_structures",
 
-  "start_pool": "lotmcraft:beyonder_house",
+  "start_pool": "lotmcraft:blazing_sun_church",
 
   "size": 1,
 
   "max_distance_from_center": 80,
 
-  "biomes": "#lotmcraft:has_structure/beyonder_house_biomes",
+  "biomes": "#lotmcraft:has_structure/blazing_sun_church_biomes",
 
 
   "step": "surface_structures",

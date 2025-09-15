@@ -1,0 +1,19 @@
+{
+  "structures": [
+    {
+      "structure": "lotmcraft:blazing_sun_church",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+
+    "salt": 4367768776,
+
+    "spacing": 38,
+
+    "separation": 15,
+    "heightmap": "WORLD_SURFACE_WG",
+    "max_tries": 10
+  }
+}

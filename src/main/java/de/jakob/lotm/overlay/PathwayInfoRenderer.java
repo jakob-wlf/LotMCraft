@@ -110,7 +110,7 @@ public class PathwayInfoRenderer {
         Component sequenceString = Component.translatable("lotm.sequence").append(" " + sequence).append(":").withStyle(ChatFormatting.BOLD);
         Component sequenceName = Component.literal(BeyonderData.getSequenceName(pathway, sequence));
 
-        boolean shouldSplit = mc.font.width(sequenceName) > 80;
+        boolean shouldSplit = mc.font.width(sequenceName) > 85;
         g.drawString(mc.font, sequenceString, textX, iconY + (int) Math.round(iconSize * 1.15), 0xFFf5edff);
 
         if(!shouldSplit) {
@@ -149,7 +149,7 @@ public class PathwayInfoRenderer {
 
         int fontWidth = Math.max(mc.font.width(pathwayTitle), mc.font.width(pathwayTitle2));
         int pathwayTitleY = iconY + iconSize / 2 - mc.font.lineHeight;
-        boolean hasSecondLine = fontWidth > 65;
+        boolean hasSecondLine = fontWidth > 75;
 
         if (!hasSecondLine) {
             if(fontWidth > 55)
