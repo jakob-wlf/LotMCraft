@@ -3,6 +3,7 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.*;
+import de.jakob.lotm.entity.custom.CustomPlayerEntity;
 import de.jakob.lotm.entity.custom.FireRavenEntity;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.PotionIngredient;
@@ -53,6 +54,7 @@ public class ModEvents {
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.FIRE_RAVEN.get(), FireRavenEntity.createAttributes().build());
+        event.put(ModEntities.CUSTOM_PLAYER.get(), CustomPlayerEntity.createAttributes().build());
     }
 
     @SubscribeEvent
