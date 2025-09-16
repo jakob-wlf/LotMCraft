@@ -1,5 +1,6 @@
 package de.jakob.lotm.abilities;
 
+import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -31,6 +32,20 @@ public abstract class SelectableAbilityItem extends AbilityItem{
     };
 
     protected abstract String[] getAbilityNames();
+
+    @Override
+    public void useAsNpcAbility(Level level, BeyonderNPCEntity beyonderNPC) {
+        if(!this.canBeUsedByNPC)
+            return;
+
+        if(cooldown > 0 && cooldowns.containsKey(beyonderNPC.getUUID()) && (System.currentTimeMillis() - cooldowns.get(beyonderNPC.getUUID())) < cooldown) {
+            return;
+        }
+
+        cooldowns.put(beyonderNPC.getUUID(), (int) System.currentTimeMillis());
+
+        useAbility(level, beyonderNPC, random.nextInt(getAbilityNames().length));
+    }
 
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {

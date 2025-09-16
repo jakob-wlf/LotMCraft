@@ -1,5 +1,6 @@
 package de.jakob.lotm.util.helper;
 
+import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -7,7 +8,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -127,6 +127,11 @@ public class AbilityUtil {
     }
 
     public static Vec3 getTargetLocation(LivingEntity entity, int radius, float entityDetectionRadius) {
+        if(entity instanceof BeyonderNPCEntity customPlayer) {
+            if(customPlayer.getCurrentTarget() != null)
+                return customPlayer.getCurrentTarget().getEyePosition().subtract(0, customPlayer.getCurrentTarget().getEyeHeight() / 2, 0);
+        }
+
         Vec3 lookDirection = entity.getLookAngle().normalize();
         Vec3 playerPosition = entity.position().add(0, entity.getEyeHeight(), 0);
 
@@ -159,6 +164,11 @@ public class AbilityUtil {
     }
 
     public static Vec3 getTargetLocation(LivingEntity entity, int radius, float entityDetectionRadius, boolean positionAtEntityFeet) {
+        if(entity instanceof BeyonderNPCEntity customPlayer) {
+            if(customPlayer.getCurrentTarget() != null)
+                return positionAtEntityFeet ? customPlayer.getCurrentTarget().position() : customPlayer.getCurrentTarget().getEyePosition().subtract(0, customPlayer.getCurrentTarget().getEyeHeight() / 2, 0);
+        }
+
         Vec3 lookDirection = entity.getLookAngle().normalize();
         Vec3 playerPosition = entity.position().add(0, entity.getEyeHeight(), 0);
 
@@ -229,6 +239,11 @@ public class AbilityUtil {
 
 
     public static @Nullable LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius) {
+        if(entity instanceof BeyonderNPCEntity customPlayer) {
+            if(customPlayer.getCurrentTarget() != null)
+                return customPlayer.getCurrentTarget();
+        }
+
         Vec3 lookDirection = entity.getLookAngle().normalize();
         Vec3 playerPosition = entity.position().add(0, entity.getEyeHeight(), 0);
 

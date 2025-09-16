@@ -33,10 +33,7 @@ public class AbilitySelectionScreen extends AbstractContainerScreen<AbilitySelec
     }
 
     public void updateScreen(String pathway) {
-        if(BeyonderData.tempImplementedPathwayGUIs.contains(pathway))
-            this.containerBackground = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/ability_selection_gui_" + pathway + ".png");
-        else
-            this.containerBackground = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/ability_selection_gui.png");
+        this.containerBackground = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/ability_selection_gui.png");
     }
     
     @Override

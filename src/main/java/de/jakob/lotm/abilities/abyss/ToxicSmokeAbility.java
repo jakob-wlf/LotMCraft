@@ -21,6 +21,9 @@ import java.util.Map;
 public class ToxicSmokeAbility extends AbilityItem {
     public ToxicSmokeAbility(Properties properties) {
         super(properties, 5.5f);
+
+        hasOptimalDistance = true;
+        optimalDistance = 7;
     }
 
     @Override

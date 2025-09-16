@@ -17,9 +17,6 @@ public class CogitationAbility extends ToggleAbilityItem {
 
     public CogitationAbility(Item.Properties properties) {
         super(properties);
-
-        canBeCopied = false;
-        canBeUsedByNPC = false;
     }
 
     @Override

@@ -21,6 +21,9 @@ import java.util.Map;
 public class CleaveOfPurificationAbility extends AbilityItem {
     public CleaveOfPurificationAbility(Properties properties) {
         super(properties, .8f);
+
+        hasOptimalDistance = true;
+        optimalDistance = 1f;
     }
 
     @Override

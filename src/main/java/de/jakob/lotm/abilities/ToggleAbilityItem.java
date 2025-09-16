@@ -32,7 +32,7 @@ public abstract class ToggleAbilityItem extends Item {
 
     protected abstract float getSpiritualityCost();
     protected boolean canBeUsedByNPC = false;
-    protected boolean canBeCopied = true;
+    protected boolean canBeCopied = false;
 
     public abstract Map<String, Integer> getRequirements();
 

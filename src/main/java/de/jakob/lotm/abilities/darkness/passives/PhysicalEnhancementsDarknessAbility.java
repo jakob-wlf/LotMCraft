@@ -24,6 +24,7 @@ public class PhysicalEnhancementsDarknessAbility extends PassiveAbilityItem {
 
     private void initEffects() {
         effectsPerSequence.put(9, List.of(
+                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 0, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 0, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
@@ -34,7 +35,7 @@ public class PhysicalEnhancementsDarknessAbility extends PassiveAbilityItem {
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 0, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 3, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 6, 1, false, false, false),
+                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 1, false, false, false),
                 new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
         ));
 
@@ -43,7 +44,7 @@ public class PhysicalEnhancementsDarknessAbility extends PassiveAbilityItem {
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 3, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 6, 1, false, false, false),
+                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 1, false, false, false),
                 new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
         ));
 
@@ -52,7 +53,7 @@ public class PhysicalEnhancementsDarknessAbility extends PassiveAbilityItem {
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 4, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 6, 1, false, false, false),
+                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 1, false, false, false),
                 new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
         ));
 
@@ -62,7 +63,7 @@ public class PhysicalEnhancementsDarknessAbility extends PassiveAbilityItem {
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.SATURATION, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 9, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 6, 2, false, false, false),
+                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 2, false, false, false),
                 new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
         ));
 
@@ -72,7 +73,7 @@ public class PhysicalEnhancementsDarknessAbility extends PassiveAbilityItem {
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.SATURATION, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 10, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 6, 2, false, false, false),
+                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 2, false, false, false),
                 new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
         ));
 
@@ -82,7 +83,7 @@ public class PhysicalEnhancementsDarknessAbility extends PassiveAbilityItem {
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.SATURATION, 20 * 6, 5, false, false, false),
                 new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 12, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 6, 3, false, false, false),
+                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 3, false, false, false),
                 new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
         ));
 
@@ -92,7 +93,7 @@ public class PhysicalEnhancementsDarknessAbility extends PassiveAbilityItem {
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 3, false, false, false),
                 new MobEffectInstance(MobEffects.SATURATION, 20 * 6, 5, false, false, false),
                 new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 15, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 6, 3, false, false, false),
+                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 3, false, false, false),
                 new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
         ));
     }

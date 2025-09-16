@@ -5,7 +5,10 @@ import de.jakob.lotm.network.packets.*;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -71,6 +74,13 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncLivingEntityBeyonderDataPacket.TYPE,
+                SyncLivingEntityBeyonderDataPacket.STREAM_CODEC,
+                SyncLivingEntityBeyonderDataPacket::handle
+        );
+
+
+        registrar.playToClient(
                 RingEffectPacket.TYPE,
                 RingEffectPacket.STREAM_CODEC,
                 RingEffectPacket::handle
@@ -110,6 +120,23 @@ public class PacketHandler {
 
         SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled);
         sendToPlayer(player, packet);
+    }
+
+    public static void syncBeyonderDataToEntity(LivingEntity entity) {
+        if (entity instanceof ServerPlayer) return; // handled by the player packet
+
+        String pathway = BeyonderData.getPathway(entity);
+        int sequence = BeyonderData.getSequence(entity);
+
+        SyncLivingEntityBeyonderDataPacket packet =
+                new SyncLivingEntityBeyonderDataPacket(entity.getId(), pathway, sequence, BeyonderData.getMaxSpirituality(sequence));
+
+        sendToTracking(entity, packet); // broadcast to all players tracking this entity
+    }
+
+    public static void sendToTracking(Entity entity, CustomPacketPayload payload) {
+        if (!(entity.level() instanceof ServerLevel)) return;
+        PacketDistributor.sendToPlayersTrackingEntity(entity, payload);
     }
 
     // Helper method to sync to all players (useful for when other players need to see beyonder status)

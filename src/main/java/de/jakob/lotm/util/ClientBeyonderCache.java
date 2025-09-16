@@ -40,27 +40,6 @@ public class ClientBeyonderCache {
         return data != null && !data.pathway().equals("none") && data.sequence() >= 0;
     }
 
-    public static boolean canPlayerUse(Player player, Map<String, Integer> requirements, float spiritualityCost) {
-        UUID playerUUID = player.getUUID();
-        String pathway = getPathway(playerUUID);
-        int sequence = getSequence(playerUUID);
-        float spirituality = getSpirituality(playerUUID);
-
-        // Debug pathway always works
-        if (pathway.equalsIgnoreCase("debug")) {
-            return true;
-        }
-
-        // Check if pathway has requirements
-        Integer minSeq = requirements.get(pathway);
-        if (minSeq == null) {
-            return false;
-        }
-
-        // Check sequence and spirituality requirements
-        return sequence <= minSeq && spirituality >= spiritualityCost;
-    }
-
     public static void clearCache() {
         playerDataCache.clear();
     }

@@ -5,6 +5,8 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.visionary.SpectatingAbility;
+import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -121,15 +123,21 @@ public class SpectatingOverlayRenderer {
         Font font = Minecraft.getInstance().font;
         int y = 15 + (font.lineHeight / 2);
 
-        guiGraphics.fill(startingX - 10, 15,
-                screenWidth,
-                15 + (attributes.size() * 2 * font.lineHeight),
-                0x77000000);
+
 
         int outlineX = startingX - 10;
         int outlineY = 15;
         int outlineWidth = screenWidth - outlineX;
-        int outlineHeight = 15 + (attributes.size() * 2 * font.lineHeight) - outlineY;
+        int parameterCount = attributes.size();
+        if(BeyonderData.isBeyonder(entity))
+            parameterCount += 3;
+
+        guiGraphics.fill(startingX - 10, 15,
+                screenWidth,
+                15 + (parameterCount * 2 * font.lineHeight),
+                0x77000000);
+
+        int outlineHeight = 15 + (parameterCount * 2 * font.lineHeight) - outlineY;
 
         renderOutLine(guiGraphics, outlineX, outlineY, outlineWidth, outlineHeight);
 
@@ -138,6 +146,27 @@ public class SpectatingOverlayRenderer {
                     getAttributeName(attribute.getAttribute()) + ": " + formatValue(attribute.getValue()),
                     startingX, y, 0xFFFFFFFF);
             y += font.lineHeight * 2;
+        }
+
+        if(BeyonderData.isBeyonder(entity)) {
+            String pathway = BeyonderData.getPathway(entity);
+            String pathwayName = BeyonderData.pathwayInfos.get(pathway).getName();
+            int sequence = BeyonderData.getSequence(entity);
+            float spirituality = BeyonderData.getSpirituality(entity);
+
+            guiGraphics.drawString(font,
+                    Component.translatable("lotm.pathway").getString() + ": " + pathwayName,
+                    startingX, y, 0xFFFFFFFF);
+            y += font.lineHeight * 2;
+
+            guiGraphics.drawString(font,
+                    Component.translatable("lotm.sequence").getString() + ": " + sequence,
+                    startingX, y, 0xFFFFFFFF);
+            y += font.lineHeight * 2;
+
+            guiGraphics.drawString(font,
+                    Component.translatable("lotm.spirituality").getString() + ": " + formatValue(spirituality),
+                    startingX, y, 0xFFFFFFFF);
         }
     }
 

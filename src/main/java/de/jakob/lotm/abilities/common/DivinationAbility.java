@@ -26,6 +26,9 @@ public class DivinationAbility extends SelectableAbilityItem {
 
     public DivinationAbility(Properties properties) {
         super(properties, 1);
+
+        canBeCopied = false;
+        canBeUsedByNPC = false;
     }
 
     @Override

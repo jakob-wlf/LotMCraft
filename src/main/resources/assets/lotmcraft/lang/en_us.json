@@ -195,6 +195,7 @@
   "entity.lotmcraft.frost_spear": "Frost Spear",
   "entity.lotmcraft.electric_shock": "Electric Shock",
   "entity.lotmcraft.lightning": "Lightning",
+  "entity.lotmcraft.beyonder_npc": "Rogue Beyonder",
   "entity.minecraft.villager.lotmcraft.beyonder_merchant": "Beyonder Merchant",
   "entity.minecraft.villager.lotmcraft.evernight_clergyman": "Evernight Clergyman",
   "entity.minecraft.villager.lotmcraft.eternal_blazing_sun_clergyman": "Eternal Blazing Sun Clergyman",
@@ -529,5 +530,6 @@
   "lotm.not_implemented_yet": "Not Implemented Yet",
   "lotm.pathway": "Pathway",
   "lotm.sequence": "Sequence",
-  "lotm.potion": "Potion"
+  "lotm.potion": "Potion",
+  "lotm.spirituality": "Spirituality"
 }

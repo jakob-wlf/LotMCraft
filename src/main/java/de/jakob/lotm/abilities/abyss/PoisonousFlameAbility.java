@@ -25,6 +25,9 @@ import java.util.Map;
 public class PoisonousFlameAbility extends AbilityItem {
     public PoisonousFlameAbility(Properties properties) {
         super(properties, .8f);
+
+        hasOptimalDistance = true;
+        optimalDistance = 1.75f;
     }
 
     @Override

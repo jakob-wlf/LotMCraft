@@ -18,6 +18,9 @@ public class MightyBlowAbility extends AbilityItem{
 
     public MightyBlowAbility(Properties properties) {
         super(properties, 2.5f);
+
+        hasOptimalDistance = true;
+        optimalDistance = 1.5f;
     }
 
     @Override

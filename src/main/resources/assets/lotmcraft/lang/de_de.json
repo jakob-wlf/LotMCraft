@@ -194,6 +194,7 @@
   "entity.lotmcraft.frost_spear": "Frost-Speer",
   "entity.lotmcraft.electric_shock": "Elektrischer Schock",
   "entity.lotmcraft.lightning": "Blitz",
+  "entity.lotmcraft.beyonder_npc": "Transzender",
   "entity.minecraft.villager.lotmcraft.beyonder_merchant": "Transzender-Händler",
   "entity.minecraft.villager.lotmcraft.evernight_clergyman": "Priester der Immernachtgöttin",
   "entity.minecraft.villager.lotmcraft.eternal_blazing_sun_clergyman": "Priester der Ewiglodernden Sonne",
@@ -529,5 +530,6 @@
   "lotm.not_implemented_yet": "Noch nicht implementiert",
   "lotm.pathway": "Pfad",
   "lotm.sequence": "Sequenz",
-  "lotm.potion": "Trank"
+  "lotm.potion": "Trank",
+  "lotm.spirituality": "Spiritualität"
 }

@@ -69,12 +69,12 @@ public class ModEntities {
             ENTITY_TYPES.register("fire_raven", () -> EntityType.Builder.<FireRavenEntity>of(FireRavenEntity::new, MobCategory.CREATURE)
                     .sized(.6f, .8f).build("fire_raven"));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<CustomPlayerEntity>> CUSTOM_PLAYER =
-            ENTITY_TYPES.register("custom_player", () -> EntityType.Builder.<CustomPlayerEntity>of(CustomPlayerEntity::new, MobCategory.MONSTER)
-                    .sized(0.6f, 1.95f) // Same size as player
+    public static final DeferredHolder<EntityType<?>, EntityType<BeyonderNPCEntity>> BEYONDER_NPC =
+            ENTITY_TYPES.register("beyonder_npc", () -> EntityType.Builder.<BeyonderNPCEntity>of(BeyonderNPCEntity::new, MobCategory.MONSTER)
+                    .sized(0.6f, 1.95f)
                     .clientTrackingRange(32)
                     .updateInterval(2)
-                    .build("custom_player"));
+                    .build("beyonder_npc"));
 
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);

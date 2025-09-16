@@ -1,8 +1,10 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.SyncBeyonderDataPacket;
+import de.jakob.lotm.network.packets.SyncLivingEntityBeyonderDataPacket;
 import de.jakob.lotm.util.pathways.PathwayInfos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,8 +18,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class BeyonderData {
-    public static final List<String> tempImplementedPathwayGUIs = List.of("");
-
     public static final String NBT_PATHWAY = "beyonder_pathway";
     public static final String NBT_SEQUENCE = "beyonder_sequence";
     public static final String NBT_SPIRITUALITY = "beyonder_spirituality";
@@ -52,6 +52,18 @@ public class BeyonderData {
             "chained",
             "black_emperor",
             "justiciar"
+    );
+
+    public static final List<String> implementedPathways = List.of(
+            "fool",
+            "door",
+            "sun",
+            "tyrant",
+            "darkness",
+            "demoness",
+            "red_priest",
+            "mother",
+            "abyss"
     );
 
     public static String getSequenceName(String pathway, int sequence) {
@@ -105,28 +117,47 @@ public class BeyonderData {
             SpiritualityProgressTracker.setProgress(player, 1.0f);
 
         // Sync to client if this is server-side
-        if (!entity.level().isClientSide() && entity instanceof ServerPlayer serverPlayer) {
-            PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
+        if (!entity.level().isClientSide()) {
+            if(entity instanceof ServerPlayer serverPlayer)
+                PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
+            else
+                PacketHandler.syncBeyonderDataToEntity(entity);
         }
     }
 
     public static String getPathway(LivingEntity entity) {
+        if(entity.level().isClientSide) {
+            return ClientBeyonderCache.getPathway(entity.getUUID());
+        }
+        if(!entity.getPersistentData().contains(NBT_PATHWAY)) {
+            return "none";
+        }
+
         String pathway = entity.getPersistentData().getString(NBT_PATHWAY);
-        if(pathway.isBlank() || pathway.equalsIgnoreCase("") || pathway.isEmpty())
+
+        if(pathway.isBlank() || pathway.isEmpty())
             return "none";
         return pathway;
     }
 
     public static int getSequence(LivingEntity entity) {
+        if(entity.level().isClientSide) {
+            return ClientBeyonderCache.getSequence(entity.getUUID());
+        }
         if (!entity.getPersistentData().contains(NBT_SEQUENCE)) {
             return -1;
         }
         return entity.getPersistentData().getInt(NBT_SEQUENCE);
     }
 
-    public static float getSpirituality(Player player) {
-        float spirituality = player.getPersistentData().getFloat(NBT_SPIRITUALITY);
-        float maxSpirituality = getMaxSpirituality(getSequence(player));
+    public static float getSpirituality(LivingEntity entity) {
+        if(entity.level().isClientSide) {
+            return ClientBeyonderCache.getSpirituality(entity.getUUID());
+        }
+        if(!(entity instanceof Player player))
+            return getMaxSpirituality(getSequence(entity));
+        float spirituality = entity.getPersistentData().getFloat(NBT_SPIRITUALITY);
+        float maxSpirituality = getMaxSpirituality(getSequence(entity));
 
         if(maxSpirituality <= 0) {
             return 0.0f;
@@ -138,11 +169,13 @@ public class BeyonderData {
         return Math.max(0, spirituality);
     }
 
-    public static void reduceSpirituality(Player player, float amount) {
-        float current = getSpirituality(player);
-        player.getPersistentData().putFloat(NBT_SPIRITUALITY, Math.max(0, current - amount));
+    public static void reduceSpirituality(LivingEntity entity, float amount) {
+        if(!(entity instanceof Player player))
+            return;
+        float current = getSpirituality(entity);
+        entity.getPersistentData().putFloat(NBT_SPIRITUALITY, Math.max(0, current - amount));
 
-        float maxSpirituality = getMaxSpirituality(getSequence(player));
+        float maxSpirituality = getMaxSpirituality(getSequence(entity));
 
         if(maxSpirituality <= 0) {
             return;
@@ -152,7 +185,7 @@ public class BeyonderData {
         SpiritualityProgressTracker.setProgress(player, progress);
 
         // Sync to client if this is server-side
-        if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
+        if (!entity.level().isClientSide() && entity instanceof ServerPlayer serverPlayer) {
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
         }
     }
@@ -176,7 +209,10 @@ public class BeyonderData {
         return damageMultiplier;
     }
 
-    public static void incrementSpirituality(Player player, float amount) {
+    public static void incrementSpirituality(LivingEntity entity, float amount) {
+        if(!(entity instanceof Player player))
+            return;
+
         float current = getSpirituality(player);
         float newAmount = Math.min(getMaxSpirituality(getSequence(player)), current + amount);
         player.getPersistentData().putFloat(NBT_SPIRITUALITY, newAmount);
@@ -196,7 +232,10 @@ public class BeyonderData {
         }
     }
 
-    public static void resetSpirituality(Player player) {
+    public static void resetSpirituality(LivingEntity entity) {
+        if(!(entity instanceof Player player))
+            return;
+
         int sequence = getSequence(player);
         player.getPersistentData().putFloat(NBT_SPIRITUALITY, getMaxSpirituality(sequence));
 
@@ -221,15 +260,25 @@ public class BeyonderData {
             SpiritualityProgressTracker.removeProgress(player);
 
         // Sync to client if this is server-side
-        if (!entity.level().isClientSide() && entity instanceof ServerPlayer serverPlayer) {
-            // Send empty data to clear client cache
-            SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", -1, 0.0f, false);
-            PacketHandler.sendToPlayer(serverPlayer, packet);
+        if (!entity.level().isClientSide()) {
+            if(entity instanceof ServerPlayer serverPlayer) {
+                // Send empty data to clear client cache
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", -1, 0.0f, false);
+                PacketHandler.sendToPlayer(serverPlayer, packet);
+            }
+            else {
+                SyncLivingEntityBeyonderDataPacket packet =
+                        new SyncLivingEntityBeyonderDataPacket(entity.getId(), "none", -1, 0.0f);
+                PacketHandler.sendToTracking(entity, packet); // broadcast to all players tracking this entity
+            }
         }
     }
 
     public static boolean isBeyonder(LivingEntity entity) {
-        return entity.getPersistentData().contains(NBT_PATHWAY) && entity.getPersistentData().contains(NBT_SEQUENCE);
+        if (entity.level().isClientSide) {
+            return ClientBeyonderCache.isBeyonder(entity.getUUID());
+        }
+        return (entity.getPersistentData().contains(NBT_PATHWAY) && entity.getPersistentData().contains(NBT_SEQUENCE));
     }
 
     public static void addModifier(LivingEntity entity, String id, double modifier) {
@@ -278,15 +327,18 @@ public class BeyonderData {
         if(!(entity instanceof Player player)) {
             return false;
         }
-        return player.getPersistentData().getBoolean(NBT_GRIEFING_ENABLED);
+        return isGriefingEnabled(player);
     }
 
     public static void setPathway(LivingEntity entity, String pathway) {
         entity.getPersistentData().putString(NBT_PATHWAY, pathway);
 
         // Sync to client if this is server-side
-        if (!entity.level().isClientSide() && entity instanceof ServerPlayer serverPlayer) {
-            PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
+        if (!entity.level().isClientSide()) {
+            if(entity instanceof ServerPlayer serverPlayer)
+                PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
+            else
+                PacketHandler.syncBeyonderDataToEntity(entity);
         }
     }
 
@@ -295,8 +347,11 @@ public class BeyonderData {
         entity.getPersistentData().putFloat(NBT_SPIRITUALITY, getMaxSpirituality(sequence));
 
         // Sync to client if this is server-side
-        if (!entity.level().isClientSide() && entity instanceof ServerPlayer serverPlayer) {
-            PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
+        if (!entity.level().isClientSide()) {
+            if(entity instanceof ServerPlayer serverPlayer)
+                PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
+            else
+                PacketHandler.syncBeyonderDataToEntity(entity);
         }
     }
 
