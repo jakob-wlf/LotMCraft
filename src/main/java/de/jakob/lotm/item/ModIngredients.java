@@ -54,7 +54,17 @@ public class ModIngredients {
     public static final DeferredItem<Item> SPHINX_BRAIN = ITEMS.registerItem("sphinx_brain", (properties) -> new PotionIngredient(properties, 6, true, "red_priest"), new Item.Properties());
     public static final DeferredItem<Item> BLACK_HUNTING_SPIDER_COMPOSITE_EYES = ITEMS.registerItem("black_hunting_spider_composite_eyes", (properties) -> new PotionIngredient(properties, 5, true, "red_priest"), new Item.Properties());
 
-    public static final DeferredItem<Item> BLACK_FEATHER_OF_MONSTER_BIRD = ITEMS.registerItem("black_feather_of_monster_bird", (properties) -> new PotionIngredient(properties, 9, true), new Item.Properties());
+    public static final DeferredItem<Item> GOAT_HORNED_BLACKFISH_BLOOD = ITEMS.registerItem("goat_horned_blackfish_blood", (properties) -> new PotionIngredient(properties, 9, true, "visionary"), new Item.Properties());
+    public static final DeferredItem<Item> RAINBOW_SALAMANDER_PITUITARY_GLAND = ITEMS.registerItem("rainbow_salamander_pituitary_gland", (properties) -> new PotionIngredient(properties, 8, true,"visionary"), new Item.Properties());
+    public static final DeferredItem<Item> TREE_OF_ELDERS_FRUIT = ITEMS.registerItem("tree_of_elders_fruit", (properties) -> new PotionIngredient(properties, 7, true, "visionary"), new Item.Properties());
+    public static final DeferredItem<Item> ILLUSORY_CHIME_TREES_FRUIT = ITEMS.registerItem("illusory_chime_tree_fruit", (properties) -> new PotionIngredient(properties, 6, true, "visionary"), new Item.Properties());
+    public static final DeferredItem<Item> DREAM_CATCHERS_HEART = ITEMS.registerItem("dream_catcher_heart", (properties) -> new PotionIngredient(properties, 5, true, "visionary"), new Item.Properties());
+
+    public static final DeferredItem<Item> BLACK_FEATHER_OF_MONSTER_BIRD = ITEMS.registerItem("black_feather_of_monster_bird", (properties) -> new PotionIngredient(properties, 9, true, "demoness"), new Item.Properties());
+    public static final DeferredItem<Item> ABYSS_DEMONIC_FISH_BLOOD = ITEMS.registerItem("abyss_demonic_fish_blood", (properties) -> new PotionIngredient(properties, 8, true,"demoness"), new Item.Properties());
+    public static final DeferredItem<Item> AGATE_PEACOCK_EGG = ITEMS.registerItem("agate_peacock_egg", (properties) -> new PotionIngredient(properties, 7, true, "demoness"), new Item.Properties());
+    public static final DeferredItem<Item> SUCCUBUS_EYES = ITEMS.registerItem("succubus_eyes", (properties) -> new PotionIngredient(properties, 6, true, "demoness"), new Item.Properties());
+    public static final DeferredItem<Item> SHADOW_LIZARD_SCALES = ITEMS.registerItem("shadow_lizard_scales", (properties) -> new PotionIngredient(properties, 5, true, "demoness"), new Item.Properties());
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

@@ -318,6 +318,10 @@ public class BeyonderData {
     }
 
     public static void advance(LivingEntity entity, String pathway, int sequence) {
+        if(entity instanceof Player player && player.isCreative()) {
+            setBeyonder(entity, pathway, sequence);
+            return;
+        }
         if(!isBeyonder(entity)) {
             setBeyonder(entity, pathway, sequence);
             int difference = 10 - sequence;

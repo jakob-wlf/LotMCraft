@@ -203,6 +203,70 @@ public class PotionRecipes {
                 new ItemStack(Items.BLAZE_POWDER, 1),
                 new ItemStack(ModIngredients.BLACK_HUNTING_SPIDER_COMPOSITE_EYES.get())
         ));
+
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.SPECTATOR_POTION.get(),
+                new ItemStack(Items.WATER_BUCKET, 1),
+                new ItemStack(Items.SUNFLOWER, 1),
+                new ItemStack(ModIngredients.GOAT_HORNED_BLACKFISH_BLOOD.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.TELEPATHIST_POTION.get(),
+                new ItemStack(Items.WATER_BUCKET, 1),
+                new ItemStack(Items.PUMPKIN_SEEDS, 1),
+                new ItemStack(ModIngredients.RAINBOW_SALAMANDER_PITUITARY_GLAND.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.PSYCHIATRIST_POTION.get(),
+                new ItemStack(Items.OAK_LOG, 1),
+                new ItemStack(Items.STRING, 1),
+                new ItemStack(ModIngredients.TREE_OF_ELDERS_FRUIT.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.HYPNOTIST_POTION.get(),
+                new ItemStack(Items.APPLE, 1),
+                new ItemStack(Items.PHANTOM_MEMBRANE, 1),
+                new ItemStack(ModIngredients.ILLUSORY_CHIME_TREES_FRUIT.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DREAMWALKER_POTION.get(),
+                new ItemStack(Items.GHAST_TEAR, 1),
+                new ItemStack(Items.WHITE_BED, 1),
+                new ItemStack(ModIngredients.DREAM_CATCHERS_HEART.get())
+        ));
+
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.ASSASSIN_POTION.get(),
+                new ItemStack(Items.SWEET_BERRIES, 1),
+                new ItemStack(Items.SPIDER_EYE, 1),
+                new ItemStack(ModIngredients.BLACK_FEATHER_OF_MONSTER_BIRD.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.INSTIGATOR_POTION.get(),
+                new ItemStack(Items.WATER_BUCKET, 1),
+                new ItemStack(Items.BONE, 1),
+                new ItemStack(ModIngredients.ABYSS_DEMONIC_FISH_BLOOD.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.WITCH_POTION.get(),
+                new ItemStack(Items.GLOW_BERRIES, 1),
+                new ItemStack(Items.NETHER_WART, 1),
+                new ItemStack(ModIngredients.AGATE_PEACOCK_EGG.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DEMONESS_OF_PLEASURE_POTION.get(),
+                new ItemStack(Items.BONE_MEAL, 1),
+                new ItemStack(Items.STRING, 1),
+                new ItemStack(ModIngredients.SUCCUBUS_EYES.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DEMONESS_OF_AFFLICTION_POTION.get(),
+                new ItemStack(Items.FERMENTED_SPIDER_EYE, 1),
+                new ItemStack(Items.GLOWSTONE_DUST, 1),
+                new ItemStack(ModIngredients.SHADOW_LIZARD_SCALES.get())
+        ));
     }
 
     @Nullable
