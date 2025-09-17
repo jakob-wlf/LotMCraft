@@ -150,5 +150,22 @@ public class ModIngredients {
         // Fallback (should never reach here with valid input)
         return ingredients.get(ingredients.size() - 1);
     }
+
+    public static PotionIngredient selectRandomIngredientOfPathwayAndSequence(Random random, String pathway, int sequence) {
+        List<PotionIngredient> ingredients = ITEMS.getEntries()
+                .stream()
+                .map(DeferredHolder::get)
+                .filter(i -> i instanceof PotionIngredient)
+                .map(i -> ((PotionIngredient) i))
+                .filter(i -> i.getPathways() != null && Arrays.asList(i.getPathways()).contains(pathway))
+                .filter(i -> i.getSequence() == sequence)
+                .toList();
+
+        if (ingredients.isEmpty()) {
+            return null;
+        }
+
+        return ingredients.get(random.nextInt(ingredients.size()));
+    }
 }
 

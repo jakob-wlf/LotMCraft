@@ -38,6 +38,8 @@ public class CleansingAbility extends SelectableAbilityItem {
 
     @Override
     protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+        if(!(entity instanceof Player))
+            abilityIndex = 0;
         switch(abilityIndex) {
             case 0 -> cleanseYourself(level, entity);
             case 1 -> cleanseOthers(level, entity);

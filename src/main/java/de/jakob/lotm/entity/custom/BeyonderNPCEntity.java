@@ -1,13 +1,20 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
 import de.jakob.lotm.entity.custom.goals.AbilityUseGoal;
 import de.jakob.lotm.entity.custom.goals.RangedCombatGoal;
+import de.jakob.lotm.item.ModIngredients;
+import de.jakob.lotm.potions.PotionItemHandler;
+import de.jakob.lotm.potions.PotionRecipeItem;
+import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -17,6 +24,7 @@ import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -30,6 +38,16 @@ public class BeyonderNPCEntity extends PathfinderMob {
     private static final EntityDataAccessor<Boolean> IS_HOSTILE = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<String> SKIN_NAME = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.STRING);
 
+    private static final String[] SKINS = {
+            "amon",
+            "steampunk_1",
+            "steampunk_2",
+            "mage",
+            "sorcerer",
+            "medieval_guy",
+            "gentleman"
+    };
+
     private boolean defaultHostile;
     private ArrayList<AbilityItem> usableAbilities = new ArrayList<>();
 
@@ -38,7 +56,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile) {
-        this(entityType, level, hostile, "default");
+        this(entityType, level, hostile, SKINS[new Random().nextInt(SKINS.length)]);
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String skinName) {
@@ -46,11 +64,12 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String pathway, int sequence) {
-        this(entityType, level, hostile, "default", pathway, sequence);
+        this(entityType, level, hostile, SKINS[new Random().nextInt(SKINS.length)], pathway, sequence);
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String skinName, String pathway, int sequence) {
         super(entityType, level);
+        System.out.println(skinName);
         this.defaultHostile = hostile;
         this.setHostile(hostile);
         this.setSkinName(skinName);
@@ -71,7 +90,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(IS_HOSTILE, false);
-        builder.define(SKIN_NAME, "default");
+        builder.define(SKIN_NAME, "amon");
     }
 
     @Override
@@ -143,7 +162,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
     public ResourceLocation getSkinTexture() {
         String skinName = getSkinName();
-        return ResourceLocation.fromNamespaceAndPath("minecraft", "textures/entity/player/wide/steve.png");
+        return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/npc/" + skinName + ".png");
     }
 
     public String getPathway() {
@@ -168,12 +187,41 @@ public class BeyonderNPCEntity extends PathfinderMob {
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.defaultHostile = compound.getBoolean("DefaultHostile");
-        setHostile(compound.getBoolean("IsHostile"));
-        setSkinName(compound.getString("SkinName"));
+
+        if (compound.contains("IsHostile")) {
+            setHostile(compound.getBoolean("IsHostile"));
+        }
+
+        if (compound.contains("SkinName")) {
+            setSkinName(compound.getString("SkinName"));
+        }
 
         // Reinitialize abilities after loading
         if (!getPathway().isEmpty()) {
             initializeAbilities(getPathway(), getSequence());
+        }
+    }
+
+    @Override
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit) {
+        super.dropCustomDeathLoot(level, damageSource, recentlyHit);
+
+        String pathway = getPathway();
+        int sequence = getSequence();
+
+        Random random = new Random();
+
+        for(int i = 0; i < random.nextInt(0, 3); i++) {
+            Item drop = switch(random.nextInt(0, 12)) {
+                case 0, 1, 2, 3, 4, 9 -> ModIngredients.selectRandomIngredientOfPathwayAndSequence(random, pathway, sequence);
+                case 5 -> PotionItemHandler.selectPotionOfPathwayAndSequence(random, pathway, sequence);
+                case 6, 7, 8, 10, 11 -> PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(random, pathway, sequence);
+                default -> null;
+            };
+
+            if (drop != null) {
+                this.spawnAtLocation(drop);
+            }
         }
     }
 
@@ -230,18 +278,13 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
     public void useAbility(Level level, BeyonderNPCEntity npcEntity) {
 
-        System.out.println("Using ability from pool of " + usableAbilities.size() + " abilities.");
-
         // Get a random ability from the pool
         AbilityItem randomAbility = usableAbilities.get(level.random.nextInt(usableAbilities.size()));
-
-        System.out.println("Selected ability: " + randomAbility);
 
         randomAbility.useAsNpcAbility(level, npcEntity);
     }
 
     public void tryUseAbility() {
-        System.out.println("Trying to use ability...");
         if (usableAbilities.isEmpty() || !isInCombat()) {
             return;
         }

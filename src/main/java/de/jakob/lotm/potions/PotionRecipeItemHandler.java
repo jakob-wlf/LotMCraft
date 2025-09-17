@@ -125,4 +125,22 @@ public class PotionRecipeItemHandler {
         return recipes.getLast();
     }
 
+    public static PotionRecipeItem selectRecipeOfPathwayAndSequence(Random random, String pathway, int sequence) {
+        List<PotionRecipeItem> recipes = ITEMS.getEntries()
+                .stream()
+                .map(DeferredHolder::get)
+                .filter(i -> i instanceof PotionRecipeItem)
+                .map(i -> ((PotionRecipeItem) i))
+                .filter(i -> i.getRecipe() != null && i.getRecipe().potion().getPathway().equals(pathway))
+                .filter(i -> i.getRecipe() != null)
+                .filter(i -> i.getRecipe().potion().getSequence() == sequence)
+                .toList();
+
+        if (recipes.isEmpty()) {
+            return null;
+        }
+
+        return recipes.get(random.nextInt(recipes.size()));
+    }
+
 }

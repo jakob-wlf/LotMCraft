@@ -54,6 +54,9 @@ public abstract class AbilityItem extends Item {
             return;
         }
 
+        if(!level.isClientSide)
+            AbilityHandler.useAbilityInArea(this, new Location(beyonderNPC.position(), level));
+
         cooldowns.put(beyonderNPC.getUUID(), (int) System.currentTimeMillis());
 
         onAbilityUse(level, beyonderNPC);

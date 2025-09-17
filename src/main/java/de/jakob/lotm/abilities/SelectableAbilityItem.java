@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities;
 
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -41,6 +42,9 @@ public abstract class SelectableAbilityItem extends AbilityItem{
         if(cooldown > 0 && cooldowns.containsKey(beyonderNPC.getUUID()) && (System.currentTimeMillis() - cooldowns.get(beyonderNPC.getUUID())) < cooldown) {
             return;
         }
+
+        if(!level.isClientSide)
+            AbilityHandler.useAbilityInArea(this, new Location(beyonderNPC.position(), level));
 
         cooldowns.put(beyonderNPC.getUUID(), (int) System.currentTimeMillis());
 
