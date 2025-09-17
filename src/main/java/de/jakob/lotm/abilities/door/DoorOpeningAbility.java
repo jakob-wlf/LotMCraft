@@ -23,6 +23,8 @@ import java.util.Map;
 public class DoorOpeningAbility extends AbilityItem {
     public DoorOpeningAbility(Properties properties) {
         super(properties, 1);
+
+        canBeUsedByNPC = false;
     }
 
     @Override

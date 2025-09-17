@@ -27,6 +27,9 @@ public class ShapeShiftingAbility extends AbilityItem {
 
     public ShapeShiftingAbility(Properties properties) {
         super(properties, 60);
+
+        canBeCopied = false;
+        canBeUsedByNPC = false;
     }
 
     @Override

@@ -12,10 +12,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class BeyonderData {
     public static final String NBT_PATHWAY = "beyonder_pathway";
@@ -28,6 +25,17 @@ public class BeyonderData {
 
     private static final HashMap<UUID, HashMap<String, Double>> multiplierModifier = new HashMap<>();
     private static final HashMap<UUID, HashSet<String>> disabledBeyonders = new HashMap<>();
+
+    public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>(Map.of(
+            "fool", List.of(new Integer[]{9, 8, 7, 6, 5}),
+            "door", List.of(new Integer[]{9, 8, 7, 6, 5}),
+            "sun", List.of(new Integer[]{9, 8, 7, 6, 5}),
+            "tyrant", List.of(new Integer[]{9, 8, 7, 6, 5}),
+            "darkness", List.of(new Integer[]{9, 8, 7, 6, 5}),
+            "demoness", List.of(new Integer[]{9, 8, 7, 6, 5}),
+            "red_priest", List.of(new Integer[]{9, 8, 7, 6, 5}),
+            "visionary", List.of(new Integer[]{9, 8, 7, 6, 5})
+    ));
 
     public static final List<String> pathways = List.of(
             "fool",

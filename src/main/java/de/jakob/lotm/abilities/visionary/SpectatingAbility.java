@@ -23,6 +23,8 @@ public class SpectatingAbility extends ToggleAbilityItem {
 
     public SpectatingAbility(Properties properties) {
         super(properties);
+
+        canBeUsedByNPC = false;
     }
 
     @Override

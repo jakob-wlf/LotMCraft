@@ -20,11 +20,10 @@ public class AbilityUseGoal extends Goal {
 
     @Override
     public void tick() {
-        if(random.nextInt(100) >= 12) {
+        if(random.nextInt(100) >= 20) {
             return;
         }
-        System.out.println("Attempting to use ability");
-        
+
         entity.tryUseAbility();
     }
 }

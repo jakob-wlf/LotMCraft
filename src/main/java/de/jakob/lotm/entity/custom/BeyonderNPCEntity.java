@@ -23,6 +23,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
@@ -111,7 +112,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
         else
             return;
 
-        // Clear existing combat goals
         this.goalSelector.removeAllGoals(goal -> goal instanceof MeleeAttackGoal ||
                 goal instanceof WaterAvoidingRandomStrollGoal ||
                 goal instanceof MoveThroughVillageGoal ||
@@ -119,26 +119,23 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.targetSelector.removeAllGoals(goal -> goal instanceof NearestAttackableTargetGoal ||
                 goal instanceof HurtByTargetGoal);
 
-        // Always retaliate when hurt (both hostile and neutral)
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
 
-        // Choose combat strategy based on abilities
         if (hasRangedOption()) {
-            // Has ranged abilities - prefer ranged combat with occasional melee
-            this.goalSelector.addGoal(3, new RangedCombatGoal(this, 1.0D, 8.0F, 16.0F)); // Stay 8-16 blocks away
-            this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.2D, false)); // Occasional melee (lower priority)
+            this.goalSelector.addGoal(3, new RangedCombatGoal(this, 1.0D, 8.0F, 16.0F));
+            this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.2D, false));
         } else {
-            // No ranged abilities - focus on melee combat
             this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
         }
 
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0D));
 
         if (isHostile()) {
-            // Hostile behavior - actively seek players
             this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         }
-        // Neutral entities only fight back when attacked (handled by HurtByTargetGoal)
+        else {
+            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Monster.class, true));
+        }
     }
 
     public boolean isHostile() {
@@ -268,6 +265,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
             usableAbilities = new ArrayList<>();
             initializeAbilities(getPathway(), getSequence());
         }
+        if(usableAbilities.isEmpty())
+            return false;
         for (AbilityItem ability : usableAbilities) {
             if (ability.hasOptimalDistance) {
                 return false;
@@ -276,20 +275,25 @@ public class BeyonderNPCEntity extends PathfinderMob {
         return true;
     }
 
-    public void useAbility(Level level, BeyonderNPCEntity npcEntity) {
+    public void useAbility(Level level) {
 
-        // Get a random ability from the pool
-        AbilityItem randomAbility = usableAbilities.get(level.random.nextInt(usableAbilities.size()));
+        List<AbilityItem> usableAbilities = this.getUsableAbilities().stream().filter(a -> a.shouldUseAbility(this)).toList();
 
-        randomAbility.useAsNpcAbility(level, npcEntity);
-    }
-
-    public void tryUseAbility() {
-        if (usableAbilities.isEmpty() || !isInCombat()) {
+        if (usableAbilities.isEmpty()) {
             return;
         }
 
-        useAbility(this.level(), this);
+        AbilityItem randomAbility = usableAbilities.get(level.random.nextInt(usableAbilities.size()));
+
+        randomAbility.useAsNpcAbility(level, this);
+    }
+
+    public void tryUseAbility() {
+        if (usableAbilities == null || usableAbilities.isEmpty()) {
+            return;
+        }
+
+        useAbility(this.level());
     }
     private void initializeAbilities(String pathway, int sequence) {
         if(usableAbilities == null)
@@ -304,6 +308,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
                 .filter(
                         a -> a.getRequirements().containsKey(pathway) && a.getRequirements().get(pathway) >= sequence
                 )
+                .filter(a -> a.canBeUsedByNPC)
                 .forEach(usableAbilities::add);
     }
 

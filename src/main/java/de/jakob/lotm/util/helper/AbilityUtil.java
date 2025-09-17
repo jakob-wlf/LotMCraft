@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -294,7 +295,7 @@ public class AbilityUtil {
         List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
-        );
+        ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative()).toList();
 
         boolean hitAnyEntity = false;
         double radiusSquared = radius * radius; // Avoid sqrt calculations
@@ -354,7 +355,7 @@ public class AbilityUtil {
         List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
-        );
+        ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative()).toList();
 
         boolean hitAnyEntity = false;
         double radiusSquared = maxRadius * maxRadius; // Avoid sqrt calculations
@@ -416,7 +417,7 @@ public class AbilityUtil {
         List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
-        );
+        ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative()).toList();
 
         boolean hitAnyEntity = false;
         double radiusSquared = maxRadius * maxRadius; // Avoid sqrt calculations
@@ -468,14 +469,12 @@ public class AbilityUtil {
 
         double radiusSquared = radius * radius;
 
-        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(
+        return level.getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
-        ).stream().filter(
-                entity -> entity.position().distanceToSqr(center) <= radiusSquared
-        ).filter(entity -> entity != exclude).toList();
-
-        return nearbyEntities;
+        ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative())
+                .filter(entity -> entity.position().distanceToSqr(center) <= radiusSquared)
+                .filter(entity -> entity != exclude).toList();
     }
 
     public static List<LivingEntity> getNearbyEntities(@Nullable LivingEntity exclude,
@@ -490,14 +489,12 @@ public class AbilityUtil {
 
         double radiusSquared = radius * radius;
 
-        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(
+        return level.getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
-        ).stream().filter(
-                entity -> entity.position().distanceToSqr(center) <= radiusSquared
-        ).filter(entity -> entity != exclude).toList();
-
-        return nearbyEntities;
+        ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative())
+                .filter(entity -> entity.position().distanceToSqr(center) <= radiusSquared)
+                .filter(entity -> entity != exclude).toList();
     }
 
     public static boolean damageNearbyEntities(
@@ -518,7 +515,7 @@ public class AbilityUtil {
         List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
-        );
+        ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative()).toList();
 
         boolean hitAnyEntity = false;
         double radiusSquared = radius * radius; // Avoid sqrt calculations
@@ -569,7 +566,7 @@ public class AbilityUtil {
         List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
-        );
+        ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative()).toList();
 
         boolean hitAnyEntity = false;
         double radiusSquared = radius * radius; // Avoid sqrt calculations
@@ -631,7 +628,7 @@ public class AbilityUtil {
         List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
-        );
+        ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative()).toList();
 
         boolean hitAnyEntity = false;
         double radiusSquared = radius * radius; // Avoid sqrt calculations

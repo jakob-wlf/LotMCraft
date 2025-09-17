@@ -20,7 +20,12 @@ public class PotionRecipeItemHandler {
 
     public static void registerRecipes(IEventBus eventBus) {
         for(String pathway : BeyonderData.pathways) {
+            if(!BeyonderData.implementedRecipes.containsKey(pathway))
+                continue;
             for(String sequence : BeyonderData.pathwayInfos.get(pathway).sequenceNames()) {
+                int seq = BeyonderData.pathwayInfos.get(pathway).getSequenceIndex(sequence);
+                if(seq == -1 || !BeyonderData.implementedRecipes.get(pathway).contains(seq))
+                    continue;
                 ITEMS.registerItem(
                         sequence,
                         PotionRecipeItem::new,

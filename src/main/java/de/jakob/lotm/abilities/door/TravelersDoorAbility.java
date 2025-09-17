@@ -20,6 +20,8 @@ import java.util.Map;
 public class TravelersDoorAbility extends AbilityItem {
     public TravelersDoorAbility(Properties properties) {
         super(properties, 3);
+
+        canBeUsedByNPC = false;
     }
 
     @Override

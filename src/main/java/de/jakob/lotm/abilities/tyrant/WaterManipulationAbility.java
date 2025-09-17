@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -69,6 +70,9 @@ public class WaterManipulationAbility extends SelectableAbilityItem {
 
     @Override
     protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+        if(!(entity instanceof Player) && abilityIndex == 1)
+            abilityIndex = 0;
+
         switch(abilityIndex) {
             case 0 -> waterBolt(level, entity);
             case 1 -> aqueousLight(level, entity);

@@ -52,6 +52,10 @@ public class WindManipulationAbility extends SelectableAbilityItem {
 
     @Override
     protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+        if(!(entity instanceof Player) && abilityIndex == 2) {
+            abilityIndex = 0;
+        }
+
         switch (abilityIndex) {
             case 0 -> windBlade(level, entity);
             case 1 -> binding(level, entity);

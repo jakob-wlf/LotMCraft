@@ -56,10 +56,7 @@ public class CleansingAbility extends SelectableAbilityItem {
 
         for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 6)) {
             e.setRemainingFireTicks(0);
-            for(MobEffectInstance effect : e.getActiveEffects()) {
-                if(effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL)
-                    e.removeEffect(effect.getEffect());
-            }
+            e.getActiveEffects().removeIf(effect -> effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL);
 
             if(e instanceof Player player) {
                 player.getFoodData().setSaturation(20);
@@ -79,10 +76,8 @@ public class CleansingAbility extends SelectableAbilityItem {
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
 
         entity.setRemainingFireTicks(0);
-        for(MobEffectInstance effect : entity.getActiveEffects()) {
-            if(effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL)
-                entity.removeEffect(effect.getEffect());
-        }
+
+        entity.getActiveEffects().removeIf(effect -> effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL);
 
         if(entity instanceof Player player) {
             player.getFoodData().setSaturation(20);
