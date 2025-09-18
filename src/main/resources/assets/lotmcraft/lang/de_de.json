@@ -80,6 +80,7 @@
   "item.lotmcraft.devil_transformation_ability": "Teufelsgestalt",
   "item.lotmcraft.avatar_of_desire_ability": "Avatar des Verlangens",
   "item.lotmcraft.defiling_seed_ability": "Samen der Entweihung",
+  "ability.lotmcraft.defiling_seed.no_target": "Kein Ziel gefunden",
 
   "item.lotmcraft.flame_controlling_ability": "Flammenkontrolle",
   "item.lotmcraft.air_bullet_ability": "Luftgeschoss",
@@ -144,6 +145,8 @@
   "item.lotmcraft.travelers_door_ability": "Reisendentor",
 
   "item.lotmcraft.spectating_ability": "Beobachtung",
+  "item.lotmcraft.frenzy_ability": "Raserei",
+  "ability.lotmcraft.frenzy.no_target": "Kein Ziel gefunden",
 
 
   "lotm.ability.cogitation.tick": "Nachsinnen",

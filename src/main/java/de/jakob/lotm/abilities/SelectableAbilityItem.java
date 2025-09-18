@@ -46,7 +46,7 @@ public abstract class SelectableAbilityItem extends AbilityItem{
         if(!level.isClientSide)
             AbilityHandler.useAbilityInArea(this, new Location(beyonderNPC.position(), level));
 
-        cooldowns.put(beyonderNPC.getUUID(), (int) System.currentTimeMillis());
+        cooldowns.put(beyonderNPC.getUUID(), System.currentTimeMillis());
 
         useAbility(level, beyonderNPC, random.nextInt(getAbilityNames().length));
     }

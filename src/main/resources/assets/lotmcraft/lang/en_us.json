@@ -81,6 +81,7 @@
   "item.lotmcraft.devil_transformation_ability": "Devil Transformation",
   "item.lotmcraft.avatar_of_desire_ability": "Avatar of Desire",
   "item.lotmcraft.defiling_seed_ability": "Defiling Seed",
+  "ability.lotmcraft.defiling_seed.no_target": "No Target found",
 
   "item.lotmcraft.flame_controlling_ability": "Flame Controlling",
   "item.lotmcraft.air_bullet_ability": "Air Bullet",
@@ -145,6 +146,8 @@
   "item.lotmcraft.travelers_door_ability": "Travelers Door",
 
   "item.lotmcraft.spectating_ability": "Spectating",
+  "item.lotmcraft.frenzy_ability": "Frenzy",
+  "ability.lotmcraft.frenzy.no_target": "No Target found",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",

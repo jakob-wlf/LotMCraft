@@ -186,7 +186,6 @@ public class RingExpansionRenderer {
                 playersSent++;
             }
         }
-        System.out.println("RingEffect: Sent packet to " + playersSent + " players at " + center);
     }
 
     /**
@@ -227,7 +226,6 @@ public class RingExpansionRenderer {
      * Handle incoming ring effect packet from server (called by packet handler)
      */
     public static void handleRingEffectPacket(RingEffectPacket packet) {
-        System.out.println("RingEffect: Received packet on client at " + packet.x() + ", " + packet.y() + ", " + packet.z());
         Vec3 center = new Vec3(packet.x(), packet.y(), packet.z());
         RingEffect effect = new RingEffect(
                 center, packet.maxRadius(), packet.duration(),
@@ -236,7 +234,6 @@ public class RingExpansionRenderer {
                 packet.expansionSpeed(), packet.smoothExpansion()
         );
         activeEffects.add(effect);
-        System.out.println("RingEffect: Added effect, total active: " + activeEffects.size());
     }
 
     /**

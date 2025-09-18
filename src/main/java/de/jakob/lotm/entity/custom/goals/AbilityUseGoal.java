@@ -15,15 +15,18 @@ public class AbilityUseGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return entity.isInCombat();
+        return random.nextInt(100) < 20;
     }
 
     @Override
     public void tick() {
-        if(random.nextInt(100) >= 20) {
+        if(!entity.isInCombat() && random.nextInt(100) < 99)
             return;
-        }
-
         entity.tryUseAbility();
+    }
+
+    @Override
+    public boolean requiresUpdateEveryTick() {
+        return true;
     }
 }

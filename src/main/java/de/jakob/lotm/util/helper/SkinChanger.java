@@ -83,23 +83,16 @@ public class SkinChanger {
      */
     private static void applySkinToPlayer(ServerPlayer player, Property textureProperty) {
         try {
-            System.out.println("Applying skin to player: " + player.getName().getString());
-
             // Clear existing texture properties
             player.getGameProfile().getProperties().removeAll("textures");
 
             // Add the new texture property
             player.getGameProfile().getProperties().put("textures", textureProperty);
 
-            System.out.println("Applied texture property, updating appearance...");
-
             // Update the player's appearance for all clients
             updatePlayerAppearance(player);
 
-            System.out.println("Skin application completed - about to return from applySkinToPlayer");
         } catch (Exception e) {
-            System.out.println("Error in applySkinToPlayer: " + e.getMessage());
-            e.printStackTrace();
             throw e; // Re-throw to be caught by the main function
         }
     }

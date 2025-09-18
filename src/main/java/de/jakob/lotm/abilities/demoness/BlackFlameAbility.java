@@ -98,7 +98,7 @@ public class BlackFlameAbility extends SelectableAbilityItem {
             Vec3 currentPos = startPos.add(0, ySubtraction, 0);
             double radius = i.get() < .71 ? i.get() : i.get() * 2;
             ParticleUtil.spawnCircleParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), currentPos, radius, (int) (radius * 27));
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius - .3, radius, 15.5 * multiplier(entity), entity.position().add(0, .2, 0), true, false, true, 0, 20 * 5);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius - .3, radius, 15.5 * multiplier(entity), startPos.subtract(0, 1, 0), true, false, true, 0, 20 * 5);
             i.set(i.get() + .1);
         }, (ServerLevel) level);
     }

@@ -62,7 +62,7 @@ public class DefilingSeedAbility extends AbilityItem {
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 25, 2.5f);
         if(target == null || defiledEntities.contains(target.getUUID())) {
             if(entity instanceof ServerPlayer player) {
-                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("No entity to defile found.").withColor(0xFFff124d));
+                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("ability.lotmcraft.defiling_seed.no_target").withColor(0xFFff124d));
                 player.connection.send(packet);
             }
             return;

@@ -70,7 +70,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String skinName, String pathway, int sequence) {
         super(entityType, level);
-        System.out.println(skinName);
         this.defaultHostile = hostile;
         this.setHostile(hostile);
         this.setSkinName(skinName);

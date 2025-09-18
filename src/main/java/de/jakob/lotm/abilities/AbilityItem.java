@@ -22,7 +22,7 @@ public abstract class AbilityItem extends Item {
 
     protected final Random random = new Random();
 
-    static final Map<UUID, Integer> cooldowns = new HashMap<>();
+    static final Map<UUID, Long> cooldowns = new HashMap<>();
 
     protected final int cooldown;
 
@@ -51,24 +51,24 @@ public abstract class AbilityItem extends Item {
         if(!this.canBeUsedByNPC)
             return;
 
-        if(cooldown > 0 && cooldowns.containsKey(beyonderNPC.getUUID()) && (System.currentTimeMillis() - cooldowns.get(beyonderNPC.getUUID())) < cooldown) {
+        if(this.cooldown > 0 && cooldowns.containsKey(beyonderNPC.getUUID()) && (System.currentTimeMillis() - cooldowns.get(beyonderNPC.getUUID())) < (this.cooldown * 50L)) {
             return;
         }
 
         if(!level.isClientSide)
             AbilityHandler.useAbilityInArea(this, new Location(beyonderNPC.position(), level));
 
-        cooldowns.put(beyonderNPC.getUUID(), (int) System.currentTimeMillis());
+        cooldowns.put(beyonderNPC.getUUID(), System.currentTimeMillis());
 
         onAbilityUse(level, beyonderNPC);
-    }
+}
 
     @Override
     public InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
 
         if (!canUse(player) && !isRecorded(player.getItemInHand(hand))) return InteractionResultHolder.fail(player.getItemInHand(hand));
 
-        if(cooldown > 0 && cooldowns.containsKey(player.getUUID()) && (System.currentTimeMillis() - cooldowns.get(player.getUUID())) < cooldown && !level.isClientSide) {
+        if(cooldown > 0 && cooldowns.containsKey(player.getUUID()) && (System.currentTimeMillis() - cooldowns.get(player.getUUID())) < (cooldown * 50L) && !level.isClientSide) {
             return InteractionResultHolder.fail(player.getItemInHand(hand));
         }
 
@@ -77,7 +77,7 @@ public abstract class AbilityItem extends Item {
         }
 
         if (cooldown > 0 && !level.isClientSide) {
-            cooldowns.put(player.getUUID(), (int) System.currentTimeMillis());
+            cooldowns.put(player.getUUID(), System.currentTimeMillis());
             player.getCooldowns().addCooldown(this, cooldown);
         }
 

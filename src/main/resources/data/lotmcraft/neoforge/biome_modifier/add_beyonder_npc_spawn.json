@@ -4,9 +4,9 @@
   "spawners": [
     {
       "type": "lotmcraft:beyonder_npc",
-      "weight": 36,
+      "weight": 31,
       "minCount": 1,
-      "maxCount": 3,
+      "maxCount": 2,
       "category": "creature"
     }
   ]

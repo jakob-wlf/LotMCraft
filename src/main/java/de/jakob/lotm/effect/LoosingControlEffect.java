@@ -49,8 +49,8 @@ public class LoosingControlEffect extends MobEffect {
 
         int effectiveAmplifier = Math.max(1, amplifier + 1);
 
-        if(random.nextInt(8) == 0 && livingEntity.getHealth() > effectiveAmplifier * 2.5) {
-            livingEntity.hurt(createCustomDamageSource(livingEntity), effectiveAmplifier * 2.5f);
+        if(random.nextInt(7) == 0 && livingEntity.getHealth() > effectiveAmplifier) {
+            livingEntity.hurt(createCustomDamageSource(livingEntity), effectiveAmplifier);
         }
 
         MobEffectInstance instance = livingEntity.getEffect(ModEffects.LOOSING_CONTROL);
