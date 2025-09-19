@@ -2,6 +2,8 @@ package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.gui.custom.CoordinateInputScreen;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.OpenCoordinateScreenPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ClientScheduler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -96,7 +98,6 @@ public class DivinationAbility extends SelectableAbilityItem {
 
     private void dreamDivination(Level level, LivingEntity entity) {
         if(level.isClientSide) {
-            Minecraft.getInstance().setScreen(new CoordinateInputScreen(entity));
             return;
         }
 
@@ -105,6 +106,8 @@ public class DivinationAbility extends SelectableAbilityItem {
 
         if(!(entity instanceof ServerPlayer player))
             return;
+
+        PacketHandler.sendToPlayer(player, new OpenCoordinateScreenPacket());
 
         AtomicBoolean hasInputCoordinates = new AtomicBoolean(false);
         ServerScheduler.scheduleForDuration(0, 5, 20 * 60 * 5, () -> {

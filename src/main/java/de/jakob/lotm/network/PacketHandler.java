@@ -74,6 +74,18 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                OpenCoordinateScreenPacket.TYPE,
+                OpenCoordinateScreenPacket.STREAM_CODEC,
+                OpenCoordinateScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                DisplayShadowParticlesPacket.TYPE,
+                DisplayShadowParticlesPacket.STREAM_CODEC,
+                DisplayShadowParticlesPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncLivingEntityBeyonderDataPacket.TYPE,
                 SyncLivingEntityBeyonderDataPacket.STREAM_CODEC,
                 SyncLivingEntityBeyonderDataPacket::handle

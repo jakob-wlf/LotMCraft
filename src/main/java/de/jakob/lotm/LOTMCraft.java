@@ -101,7 +101,6 @@ public class LOTMCraft
         modEventBus.addListener(PacketHandler::register);
 
         ServerScheduler.initialize();
-        ClientScheduler.initialize();
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -120,7 +119,6 @@ public class LOTMCraft
     public void onServerStarting(ServerStartingEvent event) {
     }
 
-    // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
     @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
     public static class ClientModEvents {
         @SubscribeEvent

@@ -1,6 +1,7 @@
 package de.jakob.lotm.network.packets;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -39,18 +40,8 @@ public record SyncLivingEntityBeyonderDataPacket(
 
     public static void handle(SyncLivingEntityBeyonderDataPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            Level level = Minecraft.getInstance().level;
-            if (level == null) return;
-
-            Entity entity = level.getEntity(packet.entityId());
-            if (entity instanceof LivingEntity living) {
-                ClientBeyonderCache.updatePlayerData(
-                        living.getUUID(),
-                        packet.pathway(),
-                        packet.sequence(),
-                        packet.spirituality(),
-                        false
-                );
+            if (context.flow().getReceptionSide().isClient()) {
+                ClientHandler.syncLivingEntityBeyonderData(packet);
             }
         });
     }

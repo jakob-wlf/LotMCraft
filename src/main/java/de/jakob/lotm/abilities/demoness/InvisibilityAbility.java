@@ -24,9 +24,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
-@EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class InvisibilityAbility extends AbilityItem {
-    private static final HashSet<UUID> invisiblePlayers = new HashSet<>();
+    public static final HashSet<UUID> invisiblePlayers = new HashSet<>();
 
     public InvisibilityAbility(Properties properties) {
         super(properties, 180);
@@ -60,22 +60,6 @@ public class InvisibilityAbility extends AbilityItem {
             ServerScheduler.scheduleDelayed(20 * 60, () -> {
                 invisiblePlayers.remove(entity.getUUID());
             }, (ServerLevel) level);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
-        Player player = event.getEntity();
-        if (invisiblePlayers.contains(player.getUUID())) {
-            event.setCanceled(true);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onRenderHand(RenderHandEvent event) {
-        Player player = Minecraft.getInstance().player;
-        if (player != null && invisiblePlayers.contains(player.getUUID())) {
-            event.setCanceled(true);
         }
     }
 
