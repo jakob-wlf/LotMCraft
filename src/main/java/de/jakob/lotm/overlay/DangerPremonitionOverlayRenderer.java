@@ -1,5 +1,6 @@
 package de.jakob.lotm.overlay;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.common.DivinationAbility;
 import net.minecraft.client.Minecraft;
@@ -21,22 +22,21 @@ public class DangerPremonitionOverlayRenderer {
         });
     }
 
+    private static final ResourceLocation iconTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/danger_premonition.png");
+    private static final int x = 2;
+    private static final int y = 120 + 60 + 12;
+
+
     private static void renderText(GuiGraphics guiGraphics) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
 
-        int screenWidth = mc.getWindow().getGuiScaledWidth();
-        int screenHeight = mc.getWindow().getGuiScaledHeight();
-        String text = Component.translatable("lotm.danger_premonition").getString();
-
-        int x = (screenWidth / 2) - (screenWidth / 6) - 30 - mc.font.width(text);
-        int y = screenHeight - mc.font.lineHeight - 2;
-
-        int redColor = 0xFFb47ad6; // Red color for text
-
         if (DivinationAbility.dangerPremonitionActive.contains(mc.player.getUUID())) {
-
-            guiGraphics.drawString(mc.font, text, x, y, redColor);
+            PoseStack poseStack = guiGraphics.pose();
+            poseStack.pushPose();
+            poseStack.scale(24.0f / 64.0f, 24.0f / 64.0f, 1.0f);
+            guiGraphics.blit(iconTexture, (int)(x / (24.0f / 64.0f)), (int)(y / (24.0f / 64.0f)), 0, 0, 64, 64, 64, 64);
+            poseStack.popPose();
         }
     }
 }

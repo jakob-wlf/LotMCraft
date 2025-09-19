@@ -32,6 +32,8 @@
   "item.lotmcraft.cogitation_ability": "Meditieren",
   "item.lotmcraft.divination_ability": "Wahrsagen",
   "item.lotmcraft.spirit_vision_ability": "Geistersicht",
+  "ability.lotmcraft.divination.danger_premonition": "Gefahr Vorahnung",
+  "ability.lotmcraft.divination.dream_divination": "Traumdeutung",
 
   "item.lotmcraft.illuminate_ability": "Erleuchten",
   "item.lotmcraft.holy_song_ability": "Heiliger Gesang",
@@ -529,7 +531,6 @@
   "lotm.selected": "Ausgewählt",
   "lotm.potion_recipe": "Trank Rezept",
   "lotm.beyonder_message.full": "Werde ein Transzender des %s Pfads mit Sequenz %s",
-  "lotm.danger_premonition": "Gefahr Wahrnehmung",
   "lotm.not_implemented_yet": "Noch nicht implementiert",
   "lotm.pathway": "Pfad",
   "lotm.sequence": "Sequenz",

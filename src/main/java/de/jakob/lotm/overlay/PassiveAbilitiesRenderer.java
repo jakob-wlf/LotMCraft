@@ -28,7 +28,7 @@ public class PassiveAbilitiesRenderer {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
 
-        int x = 5;
+        int x = 2;
         int y = 5;
 
         if (LOTMCraft.showPassiveAbilitiesKey != null && LOTMCraft.showPassiveAbilitiesKey.isDown()) {

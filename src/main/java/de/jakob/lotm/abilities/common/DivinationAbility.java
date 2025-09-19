@@ -50,15 +50,14 @@ public class DivinationAbility extends SelectableAbilityItem {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[] {"Dowsing Rod", "Danger Premonition", "Dream Divination"};
+        return new String[] {"ability.lotmcraft.divination.danger_premonition", "ability.lotmcraft.divination.dream_divination"};
     }
 
     @Override
     protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch(abilityIndex) {
-            case 0 -> dowsingRod(level, entity);
-            case 1 -> dangerPremonition(level, entity);
-            case 2 -> dreamDivination(level, entity);
+            case 0 -> dangerPremonition(level, entity);
+            case 1 -> dreamDivination(level, entity);
         }
     }
 

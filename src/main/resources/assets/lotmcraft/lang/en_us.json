@@ -33,6 +33,9 @@
   "item.lotmcraft.cogitation_ability": "Cogitation",
   "item.lotmcraft.divination_ability": "Divination",
   "item.lotmcraft.spirit_vision_ability": "Spirit Vision",
+  "ability.lotmcraft.divination.danger_premonition": "Danger Premonition",
+  "ability.lotmcraft.divination.dream_divination": "Dream Divination",
+
 
   "item.lotmcraft.illuminate_ability": "Illuminate",
   "item.lotmcraft.holy_song_ability": "Holy Song",
@@ -529,7 +532,6 @@
   "lotm.selected": "Selected",
   "lotm.potion_recipe": "Potion Recipe",
   "lotm.beyonder_message.full": "Become a Beyonder of the %s Pathway at Sequence %s",
-  "lotm.danger_premonition": "Danger Premonition",
   "lotm.not_implemented_yet": "Not Implemented Yet",
   "lotm.pathway": "Pathway",
   "lotm.sequence": "Sequence",
