@@ -30,6 +30,7 @@
   "_comment001": "Fähigkeiten------------------------------------------------------------------------------------",
 
   "item.lotmcraft.cogitation_ability": "Meditieren",
+  "item.lotmcraft.cogitation_ability.description": "Meditiere um deine Spiritualität wiederherzustellen.",
   "item.lotmcraft.divination_ability": "Wahrsagen",
   "item.lotmcraft.spirit_vision_ability": "Geistersicht",
   "ability.lotmcraft.divination.danger_premonition": "Gefahr Vorahnung",
@@ -43,13 +44,16 @@
   "item.lotmcraft.cleave_of_purification_ability": "Schlag der Reinigung",
   "item.lotmcraft.holy_oath_ability": "Heiliger Eid",
   "item.lotmcraft.notary_buff_ability": "Gott sagt es ist wirksam",
+  "item.lotmcraft.notary_buff_ability.description": "Stärke deine Angriffe durch das Anrufen deines Gottes.",
   "item.lotmcraft.notary_debuff_ability": "Gott sagt es ist unwirksam",
+  "item.lotmcraft.notary_debuff_ability.description": "Schwäche deine Feinde durch das Anrufen deines Gottes.",
   "item.lotmcraft.light_of_holiness_ability": "Licht der Heiligkeit",
   "item.lotmcraft.purification_halo_ability": "Heiligenschein der Reinigung",
   "item.lotmcraft.unshadowed_spear_ability": "Schattenlose Speer",
 
   "item.lotmcraft.trap_ability": "Falle",
   "item.lotmcraft.provoking_ability": "Provozieren",
+  "item.lotmcraft.provoking_ability.description": "Provoziere und schwäche deine Gegner",
   "item.lotmcraft.pyrokinesis_ability": "Flammenkontrolle",
   "ability.lotmcraft.pyrokinesis.fireball": "Feuerball",
   "ability.lotmcraft.pyrokinesis.wall_of_fire": "Feuerwand",
@@ -87,6 +91,7 @@
   "item.lotmcraft.flame_controlling_ability": "Flammenkontrolle",
   "item.lotmcraft.air_bullet_ability": "Luftgeschoss",
   "item.lotmcraft.paper_figurine_substitute_ability": "Papierfiguren-Ersatz",
+  "item.lotmcraft.paper_figurine_substitute_ability.description": "Erschaffe Papierfiguren, die an deiner Stelle Schaden nehmen.",
   "item.lotmcraft.flaming_jump_ability": "Flammensprung",
   "item.lotmcraft.underwater_breathing_ability": "Unterwasseratmung",
   "item.lotmcraft.shapeshifting_ability": "Gestaltwandlung",
@@ -128,6 +133,7 @@
   "ability.lotmcraft.healing.self": "Selbstheilung",
   "ability.lotmcraft.healing.others": "Andere heilen",
   "item.lotmcraft.cleanse_ability": "Reinigung",
+  "item.lotmcraft.cleanse_ability.description": "Reinige dich selbst oder andere von negativen Effekten.",
   "ability.lotmcraft.cleansing.self": "Selbst reinigen",
   "ability.lotmcraft.cleansing.others": "Andere reinigen",
   "item.lotmcraft.plant_controlling_ability": "Pflanzenkontrolle",
@@ -135,6 +141,7 @@
   "ability.lotmcraft.plants.attack": "Angriff",
 
   "item.lotmcraft.door_opening_ability": "Türöffnung",
+  "item.lotmcraft.door_opening_ability.description": "Nutze es an Wänden um durch sie hindurchzugehen.",
   "item.lotmcraft.spells_ability": "Zauber",
   "ability.lotmcraft.spells.electric_shock": "Stromschlag",
   "ability.lotmcraft.spells.wind": "Wind",
@@ -151,6 +158,7 @@
   "ability.lotmcraft.frenzy.no_target": "Kein Ziel gefunden",
   "item.lotmcraft.awe_ability": "Ehrfurcht",
   "item.lotmcraft.placate_ability": "Beruhigen",
+  "item.lotmcraft.placate_ability.description": "Beruhige dich selbst oder andere um Kontrollverlust zu entfernen.",
   "ability.lotmcraft.placate.self": "Beruhige dich selbst",
   "ability.lotmcraft.placate.others": "Beruhige andere",
 
@@ -532,6 +540,7 @@
 
 
   "lotm.griefing": "Griefing aktiviert",
+  "lotm.description": "Beschreibung",
   "lotm.selected": "Ausgewählt",
   "lotm.potion_recipe": "Trank Rezept",
   "lotm.beyonder_message.full": "Werde ein Transzender des %s Pfads mit Sequenz %s",

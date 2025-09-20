@@ -31,6 +31,7 @@
   "_comment001": "Abilities------------------------------------------------------------------------------------",
 
   "item.lotmcraft.cogitation_ability": "Cogitation",
+  "item.lotmcraft.cogitation_ability.description": "Cogitate to replenish your Spirituality",
   "item.lotmcraft.divination_ability": "Divination",
   "item.lotmcraft.spirit_vision_ability": "Spirit Vision",
   "ability.lotmcraft.divination.danger_premonition": "Danger Premonition",
@@ -45,13 +46,16 @@
   "item.lotmcraft.cleave_of_purification_ability": "Cleave of Purification",
   "item.lotmcraft.holy_oath_ability": "Holy Oath",
   "item.lotmcraft.notary_buff_ability": "God says its effective",
+  "item.lotmcraft.notary_buff_ability.description": "Amplify your attacks by calling upon your god",
   "item.lotmcraft.notary_debuff_ability": "God says its not effective",
+  "item.lotmcraft.notary_debuff_ability.description": "Weaken your enemies by calling upon your god",
   "item.lotmcraft.light_of_holiness_ability": "Light of Holiness",
   "item.lotmcraft.purification_halo_ability": "Purification Halo",
   "item.lotmcraft.unshadowed_spear_ability": "Unshadowed Spear",
 
   "item.lotmcraft.trap_ability": "Trap",
   "item.lotmcraft.provoking_ability": "Provoking",
+  "item.lotmcraft.provoking_ability.description": "Provoke and weaken your enemies",
   "item.lotmcraft.pyrokinesis_ability": "Pyrokinesis",
   "ability.lotmcraft.pyrokinesis.fireball": "Fireball",
   "ability.lotmcraft.pyrokinesis.wall_of_fire": "Wall of Fire",
@@ -89,6 +93,7 @@
   "item.lotmcraft.flame_controlling_ability": "Flame Controlling",
   "item.lotmcraft.air_bullet_ability": "Air Bullet",
   "item.lotmcraft.paper_figurine_substitute_ability": "Paper Figurine Substitute",
+  "item.lotmcraft.paper_figurine_substitute_ability.description": "Create Substitutes out of paper to take your place when damaged",
   "item.lotmcraft.flaming_jump_ability": "Flaming Jump",
   "item.lotmcraft.underwater_breathing_ability": "Underwater Breathing",
   "item.lotmcraft.shapeshifting_ability": "Shapeshifting",
@@ -130,6 +135,7 @@
   "ability.lotmcraft.healing.self": "Heal Self",
   "ability.lotmcraft.healing.others": "Heal Others",
   "item.lotmcraft.cleanse_ability": "Cleansing",
+  "item.lotmcraft.cleanse_ability.description": "Cleanse yourself or others from negative effects",
   "ability.lotmcraft.cleansing.self": "Cleanse Self",
   "ability.lotmcraft.cleansing.others": "Cleanse Others",
   "item.lotmcraft.plant_controlling_ability": "Plant Manipulation",
@@ -137,6 +143,7 @@
   "ability.lotmcraft.plants.attack": "Attack",
 
   "item.lotmcraft.door_opening_ability": "Door Opening",
+  "item.lotmcraft.door_opening_ability.description": "Use on solid walls to pass through them",
   "item.lotmcraft.spells_ability": "Spells",
   "ability.lotmcraft.spells.electric_shock": "Electric Shock",
   "ability.lotmcraft.spells.wind": "Wind",
@@ -153,6 +160,7 @@
   "ability.lotmcraft.frenzy.no_target": "No Target found",
   "item.lotmcraft.awe_ability": "Awe",
   "item.lotmcraft.placate_ability": "Placate",
+  "item.lotmcraft.placate_ability.description": "Placate someone to stop them from loosing control",
   "ability.lotmcraft.placate.self": "Placate Self",
   "ability.lotmcraft.placate.others": "Placate Others",
 
@@ -533,6 +541,7 @@
 
 
   "lotm.griefing": "Griefing Enabled",
+  "lotm.description": "Description",
   "lotm.selected": "Selected",
   "lotm.potion_recipe": "Potion Recipe",
   "lotm.beyonder_message.full": "Become a Beyonder of the %s Pathway at Sequence %s",
