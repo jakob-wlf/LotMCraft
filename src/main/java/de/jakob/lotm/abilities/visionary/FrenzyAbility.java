@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class FrenzyAbility extends AbilityItem {
     public FrenzyAbility(Properties properties) {
-        super(properties, 2.5f);
+        super(properties, 1.5f);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class FrenzyAbility extends AbilityItem {
 
         int amplifier = 0;
         if(!BeyonderData.isBeyonder(target)) {
-            amplifier = 3;
+            amplifier = Math.max(1, 3 + 7 - BeyonderData.getSequence(entity));
         }
         else {
             int sequence = BeyonderData.getSequence(target);
@@ -67,7 +67,7 @@ public class FrenzyAbility extends AbilityItem {
                 amplifier = 2 + difference;
         }
 
-        if(BeyonderData.isBeyonder(target) && BeyonderData.getSequence(target) >= BeyonderData.getSequence(entity)) {
+        if(!BeyonderData.isBeyonder(target) || BeyonderData.getSequence(target) >= BeyonderData.getSequence(entity)) {
             amplifier = (int) Math.round(amplifier * (multiplier(entity) / 2f));
             if (!target.hasEffect(ModEffects.LOOSING_CONTROL) || target.getEffect(ModEffects.LOOSING_CONTROL).getAmplifier() < amplifier)
                 target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 8, amplifier));

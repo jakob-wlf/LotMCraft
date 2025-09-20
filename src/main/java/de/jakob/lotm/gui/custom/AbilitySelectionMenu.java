@@ -13,6 +13,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
@@ -58,11 +59,13 @@ public class AbilitySelectionMenu extends AbstractContainerMenu {
             
             @Override
             public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-                Item item = itemHandler.getStackInSlot(slot).getItem();
+                ItemStack stack = itemHandler.getStackInSlot(slot);
+                Item item = stack.getItem();
                 if(item == AbilityItemHandler.ABILITY_NOT_IMPLEMENTED.get())
                     return ItemStack.EMPTY;
-                if(item instanceof AbilityItem || item instanceof ToggleAbilityItem)
-                    PacketHandler.sendToServer(new ReceiveAbilityPacket(item));
+                if((item instanceof AbilityItem || item instanceof ToggleAbilityItem)) {
+                    return stack.copy();
+                }
                 return ItemStack.EMPTY;
             }
         };
@@ -99,10 +102,57 @@ public class AbilitySelectionMenu extends AbstractContainerMenu {
                 8 + col * 18, playerInvY + 58));
         }
     }
-    
+
+    private long lastShiftClickTime = 0;
+    private static final long SHIFT_CLICK_COOLDOWN = 200; // 200ms cooldown
+
     @Override
     public @NotNull ItemStack quickMoveStack(Player player, int index) {
-        return ItemStack.EMPTY; // Disable shift-clicking
+        // Cooldown check to prevent rapid-fire adding
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastShiftClickTime < SHIFT_CLICK_COOLDOWN) {
+            return ItemStack.EMPTY;
+        }
+
+        // Only handle container slots (0-8), ignore player inventory slots
+        if (index >= 9) {
+            return ItemStack.EMPTY;
+        }
+
+        Slot slot = this.slots.get(index);
+        if (slot == null || !slot.hasItem()) {
+            return ItemStack.EMPTY;
+        }
+
+        ItemStack stackInSlot = slot.getItem();
+        Item item = stackInSlot.getItem();
+
+        // Check if it's a valid ability item
+        if (item == AbilityItemHandler.ABILITY_NOT_IMPLEMENTED.get() ||
+                !(item instanceof AbilityItem || item instanceof ToggleAbilityItem)) {
+            return ItemStack.EMPTY;
+        }
+
+        // Create a single copy of the item to add
+        ItemStack ability = stackInSlot.copy();
+        ability.setCount(1); // Ensure we only add one item
+
+        // Find an empty slot in player inventory manually
+        boolean added = false;
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            if (player.getInventory().getItem(i).isEmpty()) {
+                player.getInventory().setItem(i, ability);
+                added = true;
+                break;
+            }
+        }
+
+        if (added) {
+            lastShiftClickTime = currentTime; // Update cooldown timer
+            player.getInventory().setChanged();
+        }
+
+        return ItemStack.EMPTY; // Always return EMPTY to stop further processing
     }
     
     @Override

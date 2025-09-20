@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.sun;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.helper.RingEffectManager;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.ParticleTypes;
@@ -39,7 +40,7 @@ public class GodSaysItsEffectiveAbility extends AbilityItem {
         BeyonderData.addModifier(entity, "notary_buff", 1.35);
         ServerScheduler.scheduleForDuration(0, 35, 20 * 20, () -> {
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.END_ROD, entity.getEyePosition().subtract(0, .4, 0), 25, 5, 0);
-            RingExpansionRenderer.createRingForAll(entity.getEyePosition().subtract(0, .4, 0), 6, 20 * 2, 252 / 255f, 173 /255f, 3 / 255f, .65f, .5f, 1f, .5f, true, (ServerLevel) level);
+            RingEffectManager.createRingForAll(entity.getEyePosition().subtract(0, .4, 0), 6, 20 * 2, 252 / 255f, 173 /255f, 3 / 255f, .65f, .5f, 1f, .5f, true, (ServerLevel) level);
         }, () -> {
             BeyonderData.removeModifier(entity, "notary_buff");
         }, (ServerLevel) level);

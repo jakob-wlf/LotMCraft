@@ -1,11 +1,14 @@
 package de.jakob.lotm.network.packets;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record RingEffectPacket(
@@ -64,8 +67,8 @@ public record RingEffectPacket(
     public static void handle(RingEffectPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             // Only handle on client side
-            if (context.flow().isClientbound()) {
-                RingExpansionRenderer.handleRingEffectPacket(packet);
+            if (context.flow().isClientbound() && FMLEnvironment.dist == Dist.CLIENT) {
+                ClientHandler.handleRingPacket(packet);
             }
         });
     }

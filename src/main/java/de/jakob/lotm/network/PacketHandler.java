@@ -91,7 +91,6 @@ public class PacketHandler {
                 SyncLivingEntityBeyonderDataPacket::handle
         );
 
-
         registrar.playToClient(
                 RingEffectPacket.TYPE,
                 RingEffectPacket.STREAM_CODEC,

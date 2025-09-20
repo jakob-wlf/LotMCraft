@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.*;
 import de.jakob.lotm.gui.custom.AbilitySelectionMenuProvider;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.pathways.PathwayInfos;
 import net.minecraft.client.Minecraft;
@@ -40,47 +41,39 @@ public record OpenAbilitySelectionPacket(int sequence, String pathway) implement
 
     public static void handle(OpenAbilitySelectionPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            ServerPlayer player = (ServerPlayer) context.player();
-            if(!BeyonderData.isBeyonder(player))
-                return;
+            if (context.flow().getReceptionSide().isServer()) {
+                ServerPlayer player = (ServerPlayer) context.player();
+                if(!BeyonderData.isBeyonder(player))
+                    return;
 
-            int sequence = packet.sequence();
-            String pathway = packet.pathway();
+                int sequence = packet.sequence();
+                String pathway = packet.pathway();
 
-            List<ItemStack> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.ITEMS.getEntries().stream().filter(entry -> {
-                if (!(entry.get() instanceof PassiveAbilityItem abilityItem))
-                    return false;
-                return abilityItem.getRequirements().containsKey(pathway) && sequence == abilityItem.getRequirements().get(pathway);
-            }).map(entry -> new ItemStack(entry.get())).toList());
-
-            List<ItemStack> abilities = AbilityItemHandler.ITEMS.getEntries().stream().filter(entry -> {
-                if(entry.get() instanceof AbilityItem abilityItem)
+                List<ItemStack> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.ITEMS.getEntries().stream().filter(entry -> {
+                    if (!(entry.get() instanceof PassiveAbilityItem abilityItem))
+                        return false;
                     return abilityItem.getRequirements().containsKey(pathway) && sequence == abilityItem.getRequirements().get(pathway);
-                else if(entry.get() instanceof ToggleAbilityItem abilityItem)
-                    return abilityItem.getRequirements().containsKey(pathway) && sequence == abilityItem.getRequirements().get(pathway);
-                else return false;
-            }).map(entry -> new ItemStack(entry.get())).toList();
+                }).map(entry -> new ItemStack(entry.get())).toList());
 
-            passiveAbilities.addAll(abilities);
+                List<ItemStack> abilities = AbilityItemHandler.ITEMS.getEntries().stream().filter(entry -> {
+                    if(entry.get() instanceof AbilityItem abilityItem)
+                        return abilityItem.getRequirements().containsKey(pathway) && sequence == abilityItem.getRequirements().get(pathway);
+                    else if(entry.get() instanceof ToggleAbilityItem abilityItem)
+                        return abilityItem.getRequirements().containsKey(pathway) && sequence == abilityItem.getRequirements().get(pathway);
+                    else return false;
+                }).map(entry -> new ItemStack(entry.get())).toList();
 
-            if(passiveAbilities.isEmpty())
-                passiveAbilities.add(AbilityItemHandler.ABILITY_NOT_IMPLEMENTED.get().getDefaultInstance());
+                passiveAbilities.addAll(abilities);
 
-            PathwayInfos pathwayInfo = BeyonderData.pathwayInfos.get(pathway);
+                if(passiveAbilities.isEmpty())
+                    passiveAbilities.add(AbilityItemHandler.ABILITY_NOT_IMPLEMENTED.get().getDefaultInstance());
 
-            Minecraft mc = Minecraft.getInstance();
-            long windowHandle = mc.getWindow().getWindow();
+                PathwayInfos pathwayInfo = BeyonderData.pathwayInfos.get(pathway);
 
-            // Get current mouse position
-            double[] xPos = new double[1];
-            double[] yPos = new double[1];
-            GLFW.glfwGetCursorPos(windowHandle, xPos, yPos);
+                player.openMenu(new AbilitySelectionMenuProvider(passiveAbilities, pathwayInfo.getName() + " " + Component.translatable("lotm.pathway").append(" ").append(Component.translatable("lotm.sequence")).getString() + " " + sequence, pathwayInfo.color(), sequence, pathway));
 
-            player.openMenu(new AbilitySelectionMenuProvider(passiveAbilities, pathwayInfo.getName() + " " + Component.translatable("lotm.pathway").append(" ").append(Component.translatable("lotm.sequence")).getString() + " " + sequence, pathwayInfo.color(), sequence, pathway));
-
-            PacketHandler.sendToPlayer(player, new SyncAbilityMenuPacket(sequence, pathway));
-
-            GLFW.glfwSetCursorPos(windowHandle, xPos[0], yPos[0]);
+                PacketHandler.sendToPlayer(player, new SyncAbilityMenuPacket(sequence, pathway));
+            }
         });
     }
 

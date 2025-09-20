@@ -132,7 +132,7 @@
   "item.lotmcraft.cleanse_ability": "Cleansing",
   "ability.lotmcraft.cleansing.self": "Cleanse Self",
   "ability.lotmcraft.cleansing.others": "Cleanse Others",
-  "item.lotmcraft.plant_controlling_ability": "Plant Nurturing",
+  "item.lotmcraft.plant_controlling_ability": "Plant Manipulation",
   "ability.lotmcraft.plants.trap": "Ensnare",
   "ability.lotmcraft.plants.attack": "Attack",
 
@@ -151,6 +151,10 @@
   "item.lotmcraft.spectating_ability": "Spectating",
   "item.lotmcraft.frenzy_ability": "Frenzy",
   "ability.lotmcraft.frenzy.no_target": "No Target found",
+  "item.lotmcraft.awe_ability": "Awe",
+  "item.lotmcraft.placate_ability": "Placate",
+  "ability.lotmcraft.placate.self": "Placate Self",
+  "ability.lotmcraft.placate.others": "Placate Others",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",

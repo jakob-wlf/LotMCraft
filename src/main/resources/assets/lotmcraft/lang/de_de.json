@@ -149,6 +149,10 @@
   "item.lotmcraft.spectating_ability": "Beobachtung",
   "item.lotmcraft.frenzy_ability": "Raserei",
   "ability.lotmcraft.frenzy.no_target": "Kein Ziel gefunden",
+  "item.lotmcraft.awe_ability": "Ehrfurcht",
+  "item.lotmcraft.placate_ability": "Beruhigen",
+  "ability.lotmcraft.placate.self": "Beruhige dich selbst",
+  "ability.lotmcraft.placate.others": "Beruhige andere",
 
 
   "lotm.ability.cogitation.tick": "Nachsinnen",

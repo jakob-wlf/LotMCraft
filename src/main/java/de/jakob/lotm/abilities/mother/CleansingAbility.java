@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.RingEffectManager;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -50,7 +51,7 @@ public class CleansingAbility extends SelectableAbilityItem {
         if(level.isClientSide)
             return;
 
-        RingExpansionRenderer.createRingForAll(entity.getEyePosition().subtract(0, .4, 0), 8, 60, 122 / 255f, 235 / 255f, 124 / 255f, 1, 1f, .75f, (ServerLevel) level);
+        RingEffectManager.createRingForAll(entity.getEyePosition().subtract(0, .4, 0), 8, 60, 122 / 255f, 235 / 255f, 124 / 255f, 1, 1f, .75f, (ServerLevel) level);
 
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
 
@@ -69,7 +70,7 @@ public class CleansingAbility extends SelectableAbilityItem {
         if(level.isClientSide)
             return;
 
-        RingExpansionRenderer.createRingForAll(entity.getEyePosition().subtract(0, .4, 0), 2, 60, 122 / 255f, 235 / 255f, 124 / 255f, 1, .5f, .75f, (ServerLevel) level);
+        RingEffectManager.createRingForAll(entity.getEyePosition().subtract(0, .4, 0), 2, 60, 122 / 255f, 235 / 255f, 124 / 255f, 1, .5f, .75f, (ServerLevel) level);
 
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
 
@@ -84,5 +85,4 @@ public class CleansingAbility extends SelectableAbilityItem {
             player.getFoodData().setFoodLevel(20);
         }
     }
-
 }

@@ -21,7 +21,9 @@ import de.jakob.lotm.abilities.red_priest.PyrokinesisAbility;
 import de.jakob.lotm.abilities.red_priest.TrapAbility;
 import de.jakob.lotm.abilities.tyrant.*;
 import de.jakob.lotm.abilities.sun.*;
+import de.jakob.lotm.abilities.visionary.AweAbility;
 import de.jakob.lotm.abilities.visionary.FrenzyAbility;
+import de.jakob.lotm.abilities.visionary.PlacateAbility;
 import de.jakob.lotm.abilities.visionary.SpectatingAbility;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -101,6 +103,8 @@ public class AbilityItemHandler {
 
     public static DeferredItem<Item> SPECTATING = ITEMS.registerItem("spectating_ability", SpectatingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> FRENZY = ITEMS.registerItem("frenzy_ability", FrenzyAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> AWE = ITEMS.registerItem("awe_ability", AweAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> PLACATE = ITEMS.registerItem("placate_ability", PlacateAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> ABILITY_NOT_IMPLEMENTED = ITEMS.registerItem("ability_not_implemented", Item::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 

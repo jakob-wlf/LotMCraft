@@ -1,4 +1,4 @@
-// 1.21.1	2025-09-18T15:57:27.2084116	Item Models: lotmcraft
+// 1.21.1	2025-09-20T00:00:20.1996125	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -13,6 +13,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/asassin.js
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/astrologer.json
 80581ec0e3cf7b979f20878d2aedbf7b3ffff9c7 assets/lotmcraft/models/item/astrologer_potion.json
 9755e100a4e1431dc2a0911ac2eb43ffd6695be8 assets/lotmcraft/models/item/avatar_of_desire_ability.json
+ab4e04a60003716e741e92a9df0dd572883bbbcd assets/lotmcraft/models/item/awe_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/bard.json
 7800b42da67b62cb90699e14aa60a7bc408bd946 assets/lotmcraft/models/item/bard_potion.json
 82727287489addd69560995fcaf2e197eb398144 assets/lotmcraft/models/item/biologist_potion.json
@@ -128,6 +129,7 @@ d663c9b219f3cc0118771ec25a55dadabfae7d62 assets/lotmcraft/models/item/physical_e
 a0466dad8680f4cc64ffdad5a59b5a2ac1e3d361 assets/lotmcraft/models/item/physical_enhancements_sun_ability.json
 9d38810e38b8dc2508fffb8d41ed7d766a82e294 assets/lotmcraft/models/item/physical_enhancements_tyrant_ability.json
 08dadf165d0583ca092f76beabc3ef683cb364b0 assets/lotmcraft/models/item/physical_enhancements_visionary_ability.json
+a84e8f918b2e343ae4831073126c34e6e8447cd7 assets/lotmcraft/models/item/placate_ability.json
 63285aca4004491d7073c8b9998c3b4c06a54638 assets/lotmcraft/models/item/planter_potion.json
 5578269b846a6661a6cab8b42599e160895bb2f9 assets/lotmcraft/models/item/plant_controlling_ability.json
 5fafb77af910b43367941a485ca19204723829d6 assets/lotmcraft/models/item/plant_nurturing_ability.json

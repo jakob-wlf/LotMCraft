@@ -40,37 +40,44 @@ public class PlantNurturingAbility extends AbilityItem {
     protected void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
+        try {
 
-        level.playSound(null, entity, SoundEvents.BONE_MEAL_USE, SoundSource.BLOCKS, 5,1);
-        level.playSound(null, entity, Blocks.GRASS_BLOCK.getSoundType(Blocks.GRASS_BLOCK.defaultBlockState(), level, BlockPos.containing(entity.position().x, entity.position().y, entity.position().z), null).getBreakSound(), SoundSource.BLOCKS, 5,1);
+            level.playSound(null, entity, SoundEvents.BONE_MEAL_USE, SoundSource.BLOCKS, 5,1);
+            level.playSound(null, entity, Blocks.GRASS_BLOCK.getSoundType(Blocks.GRASS_BLOCK.defaultBlockState(), level, BlockPos.containing(entity.position().x, entity.position().y, entity.position().z), null).getBreakSound(), SoundSource.BLOCKS, 5,1);
 
-        AbilityUtil.getBlocksInCircle((ServerLevel) level, entity.position().subtract(0, 1, 0), 4.5, 25).forEach(b -> {
-            BlockState blockState = level.getBlockState(b);
+            AbilityUtil.getBlocksInCircle((ServerLevel) level, entity.position().subtract(0, 1, 0), 4.5, 25).forEach(b -> {
+                BlockState blockState = level.getBlockState(b);
 
-            if(blockState.getBlock() instanceof BonemealableBlock bonemealableBlock) {
-                ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.HAPPY_VILLAGER, b.getCenter().add(0, 1, 0), 4, .2);
-                bonemealableBlock.performBonemeal((ServerLevel) level, RandomSource.create(), b, blockState);
-                bonemealableBlock.performBonemeal((ServerLevel) level, RandomSource.create(), b, blockState);
-            }
-        });
+                if(blockState.getBlock() instanceof BonemealableBlock bonemealableBlock) {
+                    ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.HAPPY_VILLAGER, b.getCenter().add(0, 1, 0), 4, .2);
+                    if(bonemealableBlock.isBonemealSuccess(level, RandomSource.create(), b, blockState))
+                        bonemealableBlock.performBonemeal((ServerLevel) level, RandomSource.create(), b, blockState);
+                    if(bonemealableBlock.isBonemealSuccess(level, RandomSource.create(), b, blockState))
+                        bonemealableBlock.performBonemeal((ServerLevel) level, RandomSource.create(), b, blockState);
+                }
+            });
 
-        AbilityUtil.getBlocksInCircle((ServerLevel) level, entity.position(), 4.5, 25).forEach(b -> {
-            BlockState blockState = level.getBlockState(b);
-            if(blockState.getBlock() instanceof BonemealableBlock bonemealableBlock) {
-                bonemealableBlock.performBonemeal((ServerLevel) level, RandomSource.create(), b, blockState);
-                ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.HAPPY_VILLAGER, b.getCenter().add(0, 1, 0), 4, .2);
-            }
-        });
+            AbilityUtil.getBlocksInCircle((ServerLevel) level, entity.position(), 4.5, 25).forEach(b -> {
+                BlockState blockState = level.getBlockState(b);
+                if(blockState.getBlock() instanceof BonemealableBlock bonemealableBlock) {
+                    if(bonemealableBlock.isBonemealSuccess(level, RandomSource.create(), b, blockState))
+                        bonemealableBlock.performBonemeal((ServerLevel) level, RandomSource.create(), b, blockState);
+                    ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.HAPPY_VILLAGER, b.getCenter().add(0, 1, 0), 4, .2);
+                }
+            });
 
-        AbilityUtil.getBlocksInCircle((ServerLevel) level, entity.position().add(0, 1, 0), 4.5, 25).forEach(b -> {
-            BlockState blockState = level.getBlockState(b);
-            if(blockState.getBlock() instanceof BonemealableBlock bonemealableBlock) {
-                bonemealableBlock.performBonemeal((ServerLevel) level, RandomSource.create(), b, blockState);
-                bonemealableBlock.performBonemeal((ServerLevel) level, RandomSource.create(), b, blockState);
-                ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.HAPPY_VILLAGER, b.getCenter().add(0, 1, 0), 4, .2);
+            AbilityUtil.getBlocksInCircle((ServerLevel) level, entity.position().add(0, 1, 0), 4.5, 25).forEach(b -> {
+                BlockState blockState = level.getBlockState(b);
+                if(blockState.getBlock() instanceof BonemealableBlock bonemealableBlock) {
+                    if(bonemealableBlock.isBonemealSuccess(level, RandomSource.create(), b, blockState))
+                        bonemealableBlock.performBonemeal((ServerLevel) level, RandomSource.create(), b, blockState);
+                    if(bonemealableBlock.isBonemealSuccess(level, RandomSource.create(), b, blockState))
+                        bonemealableBlock.performBonemeal((ServerLevel) level, RandomSource.create(), b, blockState);
+                    ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.HAPPY_VILLAGER, b.getCenter().add(0, 1, 0), 4, .2);
 
-            }
-        });
+                }
+            });
+        }catch (Exception ignored) {}
     }
 
     @Override
