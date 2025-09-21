@@ -16,8 +16,13 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
+import java.util.HashSet;
+import java.util.UUID;
+
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class CullOverlay {
+
+    public static HashSet<UUID> playersWithCullActivated = new HashSet<>();
 
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
@@ -33,7 +38,7 @@ public class CullOverlay {
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
 
-        if (((CullAbility) AbilityItemHandler.CULL.get()).isActive(mc.player)) {
+        if (playersWithCullActivated.contains(mc.player.getUUID())) {
             ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/cull_overlay.png");
             // Push the current pose
             guiGraphics.pose().pushPose();

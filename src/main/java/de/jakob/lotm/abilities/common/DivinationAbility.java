@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.gui.custom.CoordinateInputScreen;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.OpenCoordinateScreenPacket;
+import de.jakob.lotm.network.packets.SyncDangerPremonitionAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ClientScheduler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -79,16 +80,21 @@ public class DivinationAbility extends SelectableAbilityItem {
 
         dangerPremonitionActive.add(entity.getUUID());
 
+        PacketHandler.sendToPlayer(player, new SyncDangerPremonitionAbilityPacket(true));
+
         AtomicBoolean stop = new AtomicBoolean(false);
         ServerScheduler.scheduleUntil((ServerLevel) level,  () -> {
             if(!dangerPremonitionActive.contains(entity.getUUID())) {
                 stop.set(true);
-                return;
             }
 
             if(BeyonderData.getSpirituality(player) < 2) {
+                dangerPremonitionActive.remove(entity.getUUID());
                 stop.set(true);
-                return;
+            }
+
+            if(stop.get()) {
+                PacketHandler.sendToPlayer(player, new SyncDangerPremonitionAbilityPacket(false));
             }
             BeyonderData.reduceSpirituality(player, .5f);
         }, 2, null, stop);

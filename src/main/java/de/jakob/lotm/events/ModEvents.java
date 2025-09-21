@@ -95,7 +95,7 @@ public class ModEvents {
             // Update spirituality progress tracker
             if (getMaxSpirituality(sequence) > 0) {
                 float progress = 1;
-                SpiritualityProgressTracker.setProgress(newPlayer, progress);
+                SpiritualityProgressTracker.setProgress(newPlayer.getUUID(), progress);
             }
         }
     }

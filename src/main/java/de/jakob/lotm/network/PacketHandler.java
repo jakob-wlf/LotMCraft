@@ -10,10 +10,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.registration.NetworkRegistry;
 
 public class PacketHandler {
 
@@ -41,6 +39,12 @@ public class PacketHandler {
                 ReceiveAbilityPacket.TYPE,
                 ReceiveAbilityPacket.STREAM_CODEC,
                 ReceiveAbilityPacket::handle
+        );
+
+        registrar.playToServer(
+                AbilitySelectionPacket.TYPE,
+                AbilitySelectionPacket.STREAM_CODEC,
+                AbilitySelectionPacket::handle
         );
 
         registrar.playToServer(
@@ -89,6 +93,30 @@ public class PacketHandler {
                 SyncLivingEntityBeyonderDataPacket.TYPE,
                 SyncLivingEntityBeyonderDataPacket.STREAM_CODEC,
                 SyncLivingEntityBeyonderDataPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncCullAbilityPacket.TYPE,
+                SyncCullAbilityPacket.STREAM_CODEC,
+                SyncCullAbilityPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncDangerPremonitionAbilityPacket.TYPE,
+                SyncDangerPremonitionAbilityPacket.STREAM_CODEC,
+                SyncDangerPremonitionAbilityPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncSpectatingAbilityPacket.TYPE,
+                SyncSpectatingAbilityPacket.STREAM_CODEC,
+                SyncSpectatingAbilityPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncSpiritVisionAbilityPacket.TYPE,
+                SyncSpiritVisionAbilityPacket.STREAM_CODEC,
+                SyncSpiritVisionAbilityPacket::handle
         );
 
         registrar.playToClient(

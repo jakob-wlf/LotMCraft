@@ -13,8 +13,14 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
+import java.util.HashSet;
+import java.util.UUID;
+
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class DangerPremonitionOverlayRenderer {
+
+    public static HashSet<UUID> playersWithDangerPremonitionActivated = new HashSet<>();
+
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "danger_premonition_overlay"), (guiGraphics, deltaTracker) -> {
@@ -31,7 +37,7 @@ public class DangerPremonitionOverlayRenderer {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
 
-        if (DivinationAbility.dangerPremonitionActive.contains(mc.player.getUUID())) {
+        if (playersWithDangerPremonitionActivated.contains(mc.player.getUUID())) {
             PoseStack poseStack = guiGraphics.pose();
             poseStack.pushPose();
             poseStack.scale(24.0f / 64.0f, 24.0f / 64.0f, 1.0f);

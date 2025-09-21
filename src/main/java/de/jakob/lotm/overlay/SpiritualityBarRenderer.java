@@ -38,8 +38,8 @@ public class SpiritualityBarRenderer {
         int progressColorEnd = 0xFF50E3C2;
 
         // Check if current player has progress
-        if (SpiritualityProgressTracker.hasProgress(mc.player) && (ClientBeyonderCache.isBeyonder(mc.player.getUUID()))) {
-            float progress = SpiritualityProgressTracker.getProgress(mc.player);
+        if (SpiritualityProgressTracker.hasProgress(mc.player.getUUID()) && (ClientBeyonderCache.isBeyonder(mc.player.getUUID()))) {
+            float progress = SpiritualityProgressTracker.getProgress(mc.player.getUUID());
 
             // Draw background
             guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, backgroundColor);

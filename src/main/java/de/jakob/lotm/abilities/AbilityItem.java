@@ -20,12 +20,13 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbilityItem extends Item {
 
     protected final Random random = new Random();
 
-    static final Map<UUID, Long> cooldowns = new HashMap<>();
+    static final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
 
     protected final int cooldown;
 
@@ -67,32 +68,43 @@ public abstract class AbilityItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
+        ItemStack itemStack = player.getItemInHand(hand);
 
-        if (!canUse(player) && !isRecorded(player.getItemInHand(hand))) return InteractionResultHolder.fail(player.getItemInHand(hand));
-
-        if(cooldown > 0 && cooldowns.containsKey(player.getUUID()) && (System.currentTimeMillis() - cooldowns.get(player.getUUID())) < (cooldown * 50L) && !level.isClientSide) {
-            return InteractionResultHolder.fail(player.getItemInHand(hand));
+        if (!canUse(player) && !isRecorded(itemStack)) {
+            return InteractionResultHolder.fail(itemStack);
         }
 
+        // Check cooldown on BOTH client and server sides
+        if(cooldown > 0 && cooldowns.containsKey(player.getUUID()) &&
+                (System.currentTimeMillis() - cooldowns.get(player.getUUID())) < (cooldown * 50L)) {
+            return InteractionResultHolder.fail(itemStack);
+        }
+
+        // Only reduce spirituality on server side
         if (!player.isCreative() && !level.isClientSide) {
             BeyonderData.reduceSpirituality(player, getSpiritualityCost());
         }
 
-        if (cooldown > 0 && !level.isClientSide) {
+        // Set cooldown on both sides, but only add to player cooldowns on server
+        if (cooldown > 0) {
             cooldowns.put(player.getUUID(), System.currentTimeMillis());
-            player.getCooldowns().addCooldown(this, cooldown);
+            if (!level.isClientSide) {
+                player.getCooldowns().addCooldown(this, cooldown);
+            }
         }
 
-        if(!level.isClientSide)
+        if(!level.isClientSide) {
             AbilityHandler.useAbilityInArea(this, new Location(player.position(), level));
+        }
 
         onAbilityUse(level, player);
 
-        if(isRecorded(player.getItemInHand(hand)))
+        if(isRecorded(itemStack)) {
             player.setItemInHand(hand, ItemStack.EMPTY);
+        }
 
-        return InteractionResultHolder.success(player.getItemInHand(hand));
+        return InteractionResultHolder.success(itemStack);
     }
 
     private boolean isRecorded(ItemStack item) {

@@ -32,6 +32,8 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -199,7 +201,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     @Override
-    protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit) {
+    protected void dropCustomDeathLoot(@NotNull ServerLevel level, @NonNull DamageSource damageSource, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, damageSource, recentlyHit);
 
         String pathway = getPathway();
@@ -207,7 +209,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
         Random random = new Random();
 
-        for(int i = 0; i < random.nextInt(0, 3); i++) {
+        for(int i = 0; i < random.nextInt(1, 3); i++) {
             Item drop = switch(random.nextInt(0, 12)) {
                 case 0, 1, 2, 3, 4, 9 -> ModIngredients.selectRandomIngredientOfPathwayAndSequence(random, pathway, sequence);
                 case 5 -> PotionItemHandler.selectPotionOfPathwayAndSequence(random, pathway, sequence);

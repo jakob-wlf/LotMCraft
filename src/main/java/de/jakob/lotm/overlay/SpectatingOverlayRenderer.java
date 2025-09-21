@@ -24,12 +24,12 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Objects;
+import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class SpectatingOverlayRenderer {
+
+    public static HashMap<UUID, LivingEntity> entitiesLookedAtByPlayerWithActiveSpectating = new HashMap<>();
 
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
@@ -43,10 +43,9 @@ public class SpectatingOverlayRenderer {
         if (mc.player == null || mc.level == null) return;
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
-        int screenHeight = mc.getWindow().getGuiScaledHeight();
 
-        if (((ToggleAbilityItem) (AbilityItemHandler.SPECTATING.get())).isActive(mc.player)) {
-            LivingEntity entity = SpectatingAbility.getLookedAtEntityIfActive(mc.player);
+        if (entitiesLookedAtByPlayerWithActiveSpectating.containsKey(mc.player.getUUID())) {
+            LivingEntity entity = entitiesLookedAtByPlayerWithActiveSpectating.get(mc.player.getUUID());
             if(entity != null) {
                 int width =  (screenWidth / 3);
                 int height = 35;

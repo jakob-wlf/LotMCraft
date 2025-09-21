@@ -312,7 +312,8 @@ public class NightmareAbility extends SelectableAbilityItem {
         level.playSound(null, center.pos().x, center.pos().y, center.pos().z, Blocks.GLASS.getSoundType(Blocks.ICE.defaultBlockState(), level, BlockPos.containing(center.pos().x, center.pos().y, center.pos().z), null).getBreakSound(), SoundSource.BLOCKS, 10.0f, 1.0f);
         ParticleUtil.spawnParticles(level, dustBig, center.pos(), 8000, radius, 20, radius, 0);
 
-        storedRegions.get(uuid).restore(level);
+        if(storedRegions.containsKey(uuid))
+            storedRegions.get(uuid).restore(level);
         storedRegions.remove(uuid);
         activeNightmares.remove(uuid);
     }

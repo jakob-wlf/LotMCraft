@@ -122,7 +122,7 @@ public class BeyonderData {
         tag.putBoolean(NBT_GRIEFING_ENABLED, false);
 
         if(entity instanceof Player player)
-            SpiritualityProgressTracker.setProgress(player, 1.0f);
+            SpiritualityProgressTracker.setProgress(player.getUUID(), 1.0f);
 
         // Sync to client if this is server-side
         if (!entity.level().isClientSide()) {
@@ -172,7 +172,7 @@ public class BeyonderData {
         }
 
         float progress = spirituality / maxSpirituality;
-        SpiritualityProgressTracker.setProgress(player, progress);
+        SpiritualityProgressTracker.setProgress(player.getUUID(), progress);
 
         return Math.max(0, spirituality);
     }
@@ -190,7 +190,7 @@ public class BeyonderData {
         }
 
         float progress = (current - amount) / maxSpirituality;
-        SpiritualityProgressTracker.setProgress(player, progress);
+        SpiritualityProgressTracker.setProgress(player.getUUID(), progress);
 
         // Sync to client if this is server-side
         if (!entity.level().isClientSide() && entity instanceof ServerPlayer serverPlayer) {
@@ -232,7 +232,7 @@ public class BeyonderData {
         }
 
         float progress = newAmount / maxSpirituality;
-        SpiritualityProgressTracker.setProgress(player, progress);
+        SpiritualityProgressTracker.setProgress(player.getUUID(), progress);
 
         // Sync to client if this is server-side
         if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
@@ -252,7 +252,7 @@ public class BeyonderData {
         }
 
         float progress = player.getPersistentData().getFloat(NBT_SPIRITUALITY) / getMaxSpirituality(sequence);
-        SpiritualityProgressTracker.setProgress(player, progress);
+        SpiritualityProgressTracker.setProgress(player.getUUID(), progress);
     }
 
     public static float getMaxSpirituality(int sequence) {

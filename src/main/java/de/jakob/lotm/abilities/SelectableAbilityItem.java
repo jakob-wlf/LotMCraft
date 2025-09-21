@@ -1,10 +1,15 @@
 package de.jakob.lotm.abilities;
 
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.AbilitySelectionPacket;
 import de.jakob.lotm.util.data.Location;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +84,6 @@ public abstract class SelectableAbilityItem extends AbilityItem{
 
     protected abstract void useAbility(Level level, LivingEntity entity, int abilityIndex);
 
-    //called client sided
     public void nextAbility(LivingEntity entity) {
         if(getAbilityNames().length == 0)
             return;
@@ -94,9 +98,9 @@ public abstract class SelectableAbilityItem extends AbilityItem{
             selectedAbility = 0;
         }
         selectedAbilities.put(entity.getUUID(), selectedAbility);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(this, selectedAbility));
     }
 
-    //called client sided
     public void previousAbility(LivingEntity entity) {
         if(getAbilityNames().length == 0)
             return;
@@ -111,5 +115,16 @@ public abstract class SelectableAbilityItem extends AbilityItem{
             selectedAbility = getAbilityNames().length - 1;
         }
         selectedAbilities.put(entity.getUUID(), selectedAbility);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(this, selectedAbility));
+    }
+
+    public void setSelectedAbility(ServerPlayer player, int selectedAbility) {
+        if(getAbilityNames().length == 0)
+            return;
+
+        if(selectedAbility < 0 || selectedAbility >= getAbilityNames().length)
+            return;
+
+        selectedAbilities.put(player.getUUID(), selectedAbility);
     }
 }

@@ -7,8 +7,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ClientBeyonderCache {
     private static final Map<UUID, BeyonderClientData> playerDataCache = new ConcurrentHashMap<>();
 
-    public static void updatePlayerData(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled) {
+    public static void updateData(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, boolean isPlayer) {
         playerDataCache.put(playerUUID, new BeyonderClientData(pathway, sequence, spirituality, griefingEnabled));
+
+        if(isPlayer) {
+            float progress = spirituality / BeyonderData.getMaxSpirituality(sequence);
+            SpiritualityProgressTracker.setProgress(playerUUID, progress);
+        }
     }
 
     public static String getPathway(UUID playerUUID) {

@@ -1,6 +1,8 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.SyncCullAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.mixin.EntityAccessor;
@@ -38,6 +40,8 @@ public class CullAbility extends ToggleAbilityItem {
         if(level.isClientSide)
             return;
         BeyonderData.addModifier(entity, "cull", 1.7);
+        if(entity instanceof ServerPlayer player)
+            PacketHandler.sendToPlayer(player, new SyncCullAbilityPacket(true));
     }
 
     @Override
@@ -67,6 +71,8 @@ public class CullAbility extends ToggleAbilityItem {
         if(glowingEntities.containsKey(entity.getUUID()))
             glowingEntities.get(entity.getUUID()).forEach(e -> setGlowingForPlayer(e, player, false));
         glowingEntities.remove(entity.getUUID());
+
+        PacketHandler.sendToPlayer(player, new SyncCullAbilityPacket(false));
     }
 
     public static void setGlowingForPlayer(Entity entity, ServerPlayer player, boolean glowing) {

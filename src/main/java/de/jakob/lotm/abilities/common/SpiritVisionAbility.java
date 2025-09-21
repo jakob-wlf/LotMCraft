@@ -1,6 +1,8 @@
 package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.SyncSpiritVisionAbilityPacket;
 import de.jakob.lotm.util.mixin.EntityAccessor;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -25,7 +27,6 @@ import java.util.*;
 
 public class SpiritVisionAbility extends ToggleAbilityItem {
 
-    private static final HashMap<UUID, LivingEntity> entitiesLookedAtByPlayerWithActiveAbility = new HashMap<>();
 
     public SpiritVisionAbility(Properties properties) {
         super(properties);
@@ -47,10 +48,14 @@ public class SpiritVisionAbility extends ToggleAbilityItem {
 
     @Override
     protected void start(Level level, LivingEntity entity) {
-        if(!level.isClientSide)
+        if(!level.isClientSide) {
+            if(entity instanceof ServerPlayer player) {
+                PacketHandler.sendToPlayer(player,  new SyncSpiritVisionAbilityPacket(true, -1));
+            }
             return;
+        }
+
         entity.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
-        entitiesLookedAtByPlayerWithActiveAbility.put(entity.getUUID(), null);
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(255, 255, 255), 2f);
@@ -69,11 +74,11 @@ public class SpiritVisionAbility extends ToggleAbilityItem {
             }
         }
         else {
-            if(!(entity instanceof ServerPlayer))
+            if(!(entity instanceof ServerPlayer player))
                 return;
 
             LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
-            entitiesLookedAtByPlayerWithActiveAbility.replace(entity.getUUID(), lookedAt);
+            PacketHandler.sendToPlayer(player,  new SyncSpiritVisionAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
 
             entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 10, 1, false, false, false));
 
@@ -116,15 +121,15 @@ public class SpiritVisionAbility extends ToggleAbilityItem {
     protected void stop(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             entity.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
-            return;
         }
         else {
             if(!(entity instanceof ServerPlayer player))
                 return;
-            entitiesLookedAtByPlayerWithActiveAbility.remove(entity.getUUID());
             if(glowingEntities.containsKey(entity.getUUID()))
                 glowingEntities.get(entity.getUUID()).forEach(e -> setGlowingForPlayer(e, player, false));
             glowingEntities.remove(entity.getUUID());
+
+            PacketHandler.sendToPlayer(player,  new SyncSpiritVisionAbilityPacket(false, -1));
         }
     }
 
@@ -141,16 +146,6 @@ public class SpiritVisionAbility extends ToggleAbilityItem {
     @Override
     protected float getSpiritualityCost() {
         return 0;
-    }
-
-    /**
-     * Return the Living Entity the player is looking at, provided Spirit Vision is active
-     */
-    public static @Nullable LivingEntity getLookedAtEntityIfActive(Player player) {
-        if(!entitiesLookedAtByPlayerWithActiveAbility.containsKey(player.getUUID()))
-            return null;
-
-        return entitiesLookedAtByPlayerWithActiveAbility.get(player.getUUID());
     }
 
 }

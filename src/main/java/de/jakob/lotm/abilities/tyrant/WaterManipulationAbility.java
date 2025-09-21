@@ -1,6 +1,8 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
@@ -210,6 +212,7 @@ public class WaterManipulationAbility extends SelectableAbilityItem {
             selectedAbility = 0;
         }
         selectedAbilities.put(entity.getUUID(), selectedAbility);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(this, selectedAbility));
     }
 
     @Override
@@ -227,5 +230,6 @@ public class WaterManipulationAbility extends SelectableAbilityItem {
             selectedAbility = ClientBeyonderCache.getSequence(entity.getUUID()) <= 5 ? getAbilityNames().length - 1 : getAbilityNames().length - 2;
         }
         selectedAbilities.put(entity.getUUID(), selectedAbility);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(this, selectedAbility));
     }
 }

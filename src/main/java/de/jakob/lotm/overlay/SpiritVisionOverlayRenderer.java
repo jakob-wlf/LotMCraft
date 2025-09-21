@@ -15,8 +15,14 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.UUID;
+
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class SpiritVisionOverlayRenderer {
+
+    public static final HashMap<UUID, LivingEntity> entitiesLookedAt = new HashMap<>();
 
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
@@ -32,7 +38,7 @@ public class SpiritVisionOverlayRenderer {
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
 
-        if (((ToggleAbilityItem) (AbilityItemHandler.SPIRIT_VISION.get())).isActive(mc.player)) {
+        if (entitiesLookedAt.containsKey(mc.player.getUUID())) {
             ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/spirit_vision_overlay.png");
             // Push the current pose
             guiGraphics.pose().pushPose();
@@ -51,7 +57,7 @@ public class SpiritVisionOverlayRenderer {
             // Pop the pose to avoid affecting later rendering
             guiGraphics.pose().popPose();
 
-            LivingEntity entity = SpiritVisionAbility.getLookedAtEntityIfActive(mc.player);
+            LivingEntity entity = entitiesLookedAt.get(mc.player.getUUID());
             if(entity != null) {
                 int width =  (screenWidth / 3);
                 int height = 35;

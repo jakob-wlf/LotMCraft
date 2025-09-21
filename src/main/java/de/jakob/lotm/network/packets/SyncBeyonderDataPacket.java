@@ -31,12 +31,13 @@ public record SyncBeyonderDataPacket(String pathway, int sequence, float spiritu
     public static void handle(SyncBeyonderDataPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             // Update client-side cache
-            ClientBeyonderCache.updatePlayerData(
+            ClientBeyonderCache.updateData(
                     context.player().getUUID(),
                     packet.pathway(),
                     packet.sequence(),
                     packet.spirituality(),
-                    packet.griefingEnabled()
+                    packet.griefingEnabled(),
+                    true
             );
         });
     }

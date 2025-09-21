@@ -2,16 +2,11 @@ package de.jakob.lotm.network.packets;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
-import de.jakob.lotm.util.ClientBeyonderCache;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record SyncLivingEntityBeyonderDataPacket(
