@@ -478,6 +478,26 @@ public class AbilityUtil {
     }
 
     public static List<LivingEntity> getNearbyEntities(@Nullable LivingEntity exclude,
+                                                       ServerLevel level,
+                                                       Vec3 center,
+                                                       double radius, boolean allowCreativeMode) {
+        // Create detection box slightly larger than radius for efficiency
+        AABB detectionBox = new AABB(
+                center.subtract(radius, radius, radius),
+                center.add(radius, radius, radius)
+        );
+
+        double radiusSquared = radius * radius;
+
+        return level.getEntitiesOfClass(
+                        LivingEntity.class,
+                        detectionBox
+                ).stream().filter(e -> !(e instanceof Player player) || (!player.isCreative() || allowCreativeMode))
+                .filter(entity -> entity.position().distanceToSqr(center) <= radiusSquared)
+                .filter(entity -> entity != exclude).toList();
+    }
+
+    public static List<LivingEntity> getNearbyEntities(@Nullable LivingEntity exclude,
                                                        ClientLevel level,
                                                        Vec3 center,
                                                        double radius) {

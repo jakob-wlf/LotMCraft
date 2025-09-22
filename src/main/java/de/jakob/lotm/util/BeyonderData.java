@@ -128,8 +128,9 @@ public class BeyonderData {
         if (!entity.level().isClientSide()) {
             if(entity instanceof ServerPlayer serverPlayer)
                 PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
-            else
+            else {
                 PacketHandler.syncBeyonderDataToEntity(entity);
+            }
         }
     }
 
@@ -277,7 +278,7 @@ public class BeyonderData {
             else {
                 SyncLivingEntityBeyonderDataPacket packet =
                         new SyncLivingEntityBeyonderDataPacket(entity.getId(), "none", -1, 0.0f);
-                PacketHandler.sendToTracking(entity, packet); // broadcast to all players tracking this entity
+                PacketHandler.sendToAllPlayers(packet); // broadcast to all players tracking this entity
             }
         }
     }

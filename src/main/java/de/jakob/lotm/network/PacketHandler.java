@@ -150,7 +150,6 @@ public class PacketHandler {
         player.connection.send(packet);
     }
 
-    // Helper method to sync beyonder data to a specific player
     public static void syncBeyonderDataToPlayer(ServerPlayer player) {
         String pathway = BeyonderData.getPathway(player);
         int sequence = BeyonderData.getSequence(player);
@@ -162,7 +161,7 @@ public class PacketHandler {
     }
 
     public static void syncBeyonderDataToEntity(LivingEntity entity) {
-        if (entity instanceof ServerPlayer) return; // handled by the player packet
+        if (entity instanceof ServerPlayer) return;
 
         String pathway = BeyonderData.getPathway(entity);
         int sequence = BeyonderData.getSequence(entity);
@@ -170,12 +169,16 @@ public class PacketHandler {
         SyncLivingEntityBeyonderDataPacket packet =
                 new SyncLivingEntityBeyonderDataPacket(entity.getId(), pathway, sequence, BeyonderData.getMaxSpirituality(sequence));
 
-        sendToTracking(entity, packet); // broadcast to all players tracking this entity
+        sendToAllPlayers(packet);
     }
 
     public static void sendToTracking(Entity entity, CustomPacketPayload payload) {
         if (!(entity.level() instanceof ServerLevel)) return;
         PacketDistributor.sendToPlayersTrackingEntity(entity, payload);
+    }
+
+    public static void sendToAllPlayers(CustomPacketPayload payload) {
+        PacketDistributor.sendToAllPlayers(payload);
     }
 
     // Helper method to sync to all players (useful for when other players need to see beyonder status)

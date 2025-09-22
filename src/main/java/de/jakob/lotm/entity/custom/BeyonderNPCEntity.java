@@ -12,6 +12,7 @@ import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItem;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -40,6 +41,11 @@ import java.util.*;
 public class BeyonderNPCEntity extends PathfinderMob {
     private static final EntityDataAccessor<Boolean> IS_HOSTILE = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<String> SKIN_NAME = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<String> PATHWAY = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Integer> SEQUENCE = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.INT);
+
+    private String pathway = "none";
+    private int sequence = -1;
 
     private static final String[] SKINS = {
             "amon",
@@ -80,7 +86,12 @@ public class BeyonderNPCEntity extends PathfinderMob {
             usableAbilities = new ArrayList<>();
 
         if(!level.isClientSide) {
+            this.pathway = pathway;
+            this.sequence = sequence;
             BeyonderData.setBeyonder(this, pathway, sequence);
+
+            this.entityData.set(PATHWAY, pathway);
+            this.entityData.set(SEQUENCE, sequence);
         }
 
         if (!pathway.isEmpty()) {
@@ -93,6 +104,27 @@ public class BeyonderNPCEntity extends PathfinderMob {
         super.defineSynchedData(builder);
         builder.define(IS_HOSTILE, false);
         builder.define(SKIN_NAME, "amon");
+        builder.define(PATHWAY, "none");
+        builder.define(SEQUENCE, -1);
+    }
+
+    private void syncEntityDataWithBeyonderData() {
+        if (!this.level().isClientSide) {
+            String currentPathway = BeyonderData.getPathway(this);
+            int currentSequence = BeyonderData.getSequence(this);
+
+            this.entityData.set(PATHWAY, currentPathway);
+            this.entityData.set(SEQUENCE, currentSequence);
+        }
+    }
+
+    @Override
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
+        if(!this.level().isClientSide && this.sequence != -1 && !this.pathway.equals("none")) {
+            BeyonderData.setBeyonder(this, this.pathway, sequence);
+            syncEntityDataWithBeyonderData();
+        }
     }
 
     @Override
@@ -164,11 +196,40 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     public String getPathway() {
-        return BeyonderData.getPathway(this);
+        if (this.level().isClientSide) {
+            return this.entityData.get(PATHWAY);
+        } else {
+            return BeyonderData.getPathway(this);
+        }
     }
 
     public int getSequence() {
-        return BeyonderData.getSequence(this);
+        if (this.level().isClientSide) {
+            return this.entityData.get(SEQUENCE);
+        } else {
+            return BeyonderData.getSequence(this);
+        }
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> dataAccessor) {
+        super.onSyncedDataUpdated(dataAccessor);
+
+        if (this.level().isClientSide) {
+            if (dataAccessor.equals(PATHWAY) || dataAccessor.equals(SEQUENCE)) {
+                String pathway = this.entityData.get(PATHWAY);
+                int sequence = this.entityData.get(SEQUENCE);
+
+                ClientBeyonderCache.updateData(
+                        this.getUUID(),
+                        pathway,
+                        sequence,
+                        BeyonderData.getMaxSpirituality(sequence),
+                        false,
+                        false
+                );
+            }
+        }
     }
 
     @Override
@@ -194,7 +255,16 @@ public class BeyonderNPCEntity extends PathfinderMob {
             setSkinName(compound.getString("SkinName"));
         }
 
-        // Reinitialize abilities after loading
+        if (compound.contains("Pathway") && compound.contains("Sequence")) {
+            this.pathway = compound.getString("Pathway");
+            this.sequence = compound.getInt("Sequence");
+
+            if (!this.level().isClientSide) {
+                this.entityData.set(PATHWAY, this.pathway);
+                this.entityData.set(SEQUENCE, this.sequence);
+            }
+        }
+
         if (!getPathway().isEmpty()) {
             initializeAbilities(getPathway(), getSequence());
         }

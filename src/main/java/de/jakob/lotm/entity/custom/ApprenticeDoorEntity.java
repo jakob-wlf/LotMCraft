@@ -101,7 +101,7 @@ public class ApprenticeDoorEntity extends Entity {
         // Prevent the entity from moving
         this.setDeltaMovement(Vec3.ZERO);
 
-        for(LivingEntity e : AbilityUtil.getNearbyEntities(null, (ServerLevel) level(), this.position(), 1)) {
+        for(LivingEntity e : AbilityUtil.getNearbyEntities(null, (ServerLevel) level(), this.position(), 1, true)) {
             if(haveTeleported.contains(e.getUUID()))
                 continue;
 

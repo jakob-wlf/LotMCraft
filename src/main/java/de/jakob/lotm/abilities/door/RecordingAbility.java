@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class RecordingAbility extends SelectableAbilityItem {
+public class RecordingAbility extends AbilityItem {
     public RecordingAbility(Properties properties) {
         super(properties, 8f);
     }
@@ -48,21 +48,10 @@ public class RecordingAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.recording.record", "ability.lotmcraft.recording.get_abilities"};
-    }
-
-    @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
-        if(level.isClientSide)
+    protected void onAbilityUse(Level level, LivingEntity entity) {
+        if(!(level instanceof ServerLevel serverLevel))
             return;
 
-        switch(abilityIndex) {
-            case 0 -> record((ServerLevel) level, entity);
-        }
-    }
-
-    private void record(ServerLevel level, LivingEntity entity) {
         Vec3 playerDir = (new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z)).normalize();
         Vec3 pos = VectorUtil.getRelativePosition(entity.getEyePosition().add(0, -.4, 0), playerDir, 1.2, 0, -.4);
         Vec3 dir = entity.getEyePosition().subtract(pos).normalize();
@@ -98,7 +87,7 @@ public class RecordingAbility extends SelectableAbilityItem {
                     player.connection.send(packet);
                 }
                 level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 1, 1);
-                ParticleUtil.spawnParticles(level, ParticleTypes.PORTAL, pos, 45, .3, .02);
+                ParticleUtil.spawnParticles(serverLevel, ParticleTypes.PORTAL, pos, 45, .3, .02);
                 return;
             }
 
@@ -108,7 +97,7 @@ public class RecordingAbility extends SelectableAbilityItem {
                     player.connection.send(packet);
                 }
                 level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 1, 1);
-                ParticleUtil.spawnParticles(level, ParticleTypes.PORTAL, pos, 45, .3, .02);
+                ParticleUtil.spawnParticles(serverLevel, ParticleTypes.PORTAL, pos, 45, .3, .02);
                 return;
             }
 
@@ -120,8 +109,8 @@ public class RecordingAbility extends SelectableAbilityItem {
                 player.addItem(item);
             }
 
-            ParticleUtil.spawnParticles(level, ParticleTypes.END_ROD, book.position(), 60, .3, .08);
-            ParticleUtil.spawnParticles(level, ParticleTypes.ENCHANT, book.position(), 60, .3, .08);
+            ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, book.position(), 60, .3, .08);
+            ParticleUtil.spawnParticles(serverLevel, ParticleTypes.ENCHANT, book.position(), 60, .3, .08);
         }, () -> {
             if(hasRecordedAbility.get())
                 return;
@@ -130,10 +119,8 @@ public class RecordingAbility extends SelectableAbilityItem {
                 player.connection.send(packet);
             }
             level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 1, 1);
-            ParticleUtil.spawnParticles(level, ParticleTypes.PORTAL, book.position(), 90, .3, .1);
+            ParticleUtil.spawnParticles(serverLevel, ParticleTypes.PORTAL, book.position(), 90, .3, .1);
             book.discard();
-        }, level);
+        }, serverLevel);
     }
-
-
 }

@@ -7,6 +7,7 @@ import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.visionary.SpectatingAbility;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -128,7 +129,7 @@ public class SpectatingOverlayRenderer {
         int outlineY = 15;
         int outlineWidth = screenWidth - outlineX;
         int parameterCount = attributes.size();
-        if(BeyonderData.isBeyonder(entity))
+        if(ClientBeyonderCache.isBeyonder(entity.getUUID()))
             parameterCount += 3;
 
         guiGraphics.fill(startingX - 10, 15,
@@ -147,11 +148,11 @@ public class SpectatingOverlayRenderer {
             y += font.lineHeight * 2;
         }
 
-        if(BeyonderData.isBeyonder(entity)) {
-            String pathway = BeyonderData.getPathway(entity);
+        if(ClientBeyonderCache.isBeyonder(entity.getUUID())) {
+            String pathway = ClientBeyonderCache.getPathway(entity.getUUID());
             String pathwayName = BeyonderData.pathwayInfos.get(pathway).getName();
-            int sequence = BeyonderData.getSequence(entity);
-            float spirituality = BeyonderData.getSpirituality(entity);
+            int sequence = ClientBeyonderCache.getSequence(entity.getUUID());
+            float spirituality = ClientBeyonderCache.getSpirituality(entity.getUUID());
 
             guiGraphics.drawString(font,
                     Component.translatable("lotm.pathway").getString() + ": " + pathwayName,

@@ -75,23 +75,18 @@ public abstract class AbilityItem extends Item {
             return InteractionResultHolder.fail(itemStack);
         }
 
-        // Check cooldown on BOTH client and server sides
-        if(cooldown > 0 && cooldowns.containsKey(player.getUUID()) &&
-                (System.currentTimeMillis() - cooldowns.get(player.getUUID())) < (cooldown * 50L)) {
+        if (player.getCooldowns().isOnCooldown(this)) {
             return InteractionResultHolder.fail(itemStack);
         }
 
-        // Only reduce spirituality on server side
         if (!player.isCreative() && !level.isClientSide) {
-            BeyonderData.reduceSpirituality(player, getSpiritualityCost());
+            float cost = getSpiritualityCost();
+            BeyonderData.reduceSpirituality(player, cost);
         }
 
-        // Set cooldown on both sides, but only add to player cooldowns on server
-        if (cooldown > 0) {
-            cooldowns.put(player.getUUID(), System.currentTimeMillis());
-            if (!level.isClientSide) {
-                player.getCooldowns().addCooldown(this, cooldown);
-            }
+        // Set cooldown only on server
+        if (cooldown > 0 && !level.isClientSide) {
+            player.getCooldowns().addCooldown(this, cooldown);
         }
 
         if(!level.isClientSide) {

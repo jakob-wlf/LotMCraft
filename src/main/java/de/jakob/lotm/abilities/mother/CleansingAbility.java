@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 //TODO: Rework effects using geckolib
@@ -57,7 +58,12 @@ public class CleansingAbility extends SelectableAbilityItem {
 
         for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 6)) {
             e.setRemainingFireTicks(0);
-            e.getActiveEffects().removeIf(effect -> effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL);
+
+            e.getActiveEffects()
+                    .stream()
+                    .filter(effect -> effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL)
+                    .map(MobEffectInstance::getEffect)
+                    .forEach(entity::removeEffect);
 
             if(e instanceof Player player) {
                 player.getFoodData().setSaturation(20);
@@ -78,7 +84,11 @@ public class CleansingAbility extends SelectableAbilityItem {
 
         entity.setRemainingFireTicks(0);
 
-        entity.getActiveEffects().removeIf(effect -> effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL);
+        entity.getActiveEffects()
+                .stream()
+                .filter(effect -> effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL)
+                .map(MobEffectInstance::getEffect)
+                .forEach(entity::removeEffect);
 
         if(entity instanceof Player player) {
             player.getFoodData().setSaturation(20);
