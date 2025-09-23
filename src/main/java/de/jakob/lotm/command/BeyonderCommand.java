@@ -17,7 +17,7 @@ public class BeyonderCommand {
     
     // Suggestion provider for pathways
     private static final SuggestionProvider<CommandSourceStack> PATHWAY_SUGGESTIONS =
-        (context, builder) -> SharedSuggestionProvider.suggest(BeyonderData.pathways, builder);
+        (context, builder) -> SharedSuggestionProvider.suggest(BeyonderData.implementedPathways, builder);
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("beyonder")
