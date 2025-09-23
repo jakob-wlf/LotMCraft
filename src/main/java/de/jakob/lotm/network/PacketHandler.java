@@ -42,6 +42,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                SyncDreamDivinationCoordinatesPacket.TYPE,
+                SyncDreamDivinationCoordinatesPacket.STREAM_CODEC,
+                SyncDreamDivinationCoordinatesPacket::handle
+        );
+
+        registrar.playToServer(
                 AbilitySelectionPacket.TYPE,
                 AbilitySelectionPacket.STREAM_CODEC,
                 AbilitySelectionPacket::handle
@@ -105,6 +111,12 @@ public class PacketHandler {
                 SyncDangerPremonitionAbilityPacket.TYPE,
                 SyncDangerPremonitionAbilityPacket.STREAM_CODEC,
                 SyncDangerPremonitionAbilityPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncNightmareAbilityPacket.TYPE,
+                SyncNightmareAbilityPacket.STREAM_CODEC,
+                SyncNightmareAbilityPacket::handle
         );
 
         registrar.playToClient(

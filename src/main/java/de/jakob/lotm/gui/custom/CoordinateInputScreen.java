@@ -1,6 +1,8 @@
 package de.jakob.lotm.gui.custom;
 
 import de.jakob.lotm.abilities.common.DivinationAbility;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.SyncDreamDivinationCoordinatesPacket;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -71,6 +73,8 @@ public class CoordinateInputScreen extends Screen {
             int x = Integer.parseInt(this.xBox.getValue());
             int y = Integer.parseInt(this.yBox.getValue());
             int z = Integer.parseInt(this.zBox.getValue());
+
+            PacketHandler.sendToServer(new SyncDreamDivinationCoordinatesPacket(x, y, z));
 
             if(!DivinationAbility.dreamDivinationUsers.containsKey(entity.getUUID())) {
                 DivinationAbility.dreamDivinationUsers.put(entity.getUUID(), BlockPos.containing(x, y ,z));

@@ -1,17 +1,18 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.SyncNightmareAbilityPacket;
 import de.jakob.lotm.util.data.Location;
-import de.jakob.lotm.util.data.LocationSupplier;
 import de.jakob.lotm.util.data.NightmareCenter;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.RegionSnapshot;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -21,12 +22,14 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLEnvironment;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -37,7 +40,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class NightmareAbility extends SelectableAbilityItem {
-    private static final HashMap<UUID, NightmareCenter> activeNightmares = new HashMap<>();
+    private static final HashMap<UUID, NightmareCenter> activeNightmaresServer = new HashMap<>();
+    private static final HashMap<UUID, NightmareCenter> activeNightmaresClient = new HashMap<>();
     private static final HashSet<UUID> isReshaping = new HashSet<>();
     private static final HashMap<UUID, RegionSnapshot> storedRegions = new HashMap<>();
 
@@ -75,7 +79,7 @@ public class NightmareAbility extends SelectableAbilityItem {
         if(level.isClientSide)
             return;
 
-        if(!activeNightmares.containsKey(entity.getUUID())) {
+        if(!activeNightmaresServer.containsKey(entity.getUUID())) {
             if(entity instanceof ServerPlayer player) {
                 ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("You need to create a Nightmare first.").withColor(0xFFff124d));
                 player.connection.send(packet);
@@ -94,7 +98,7 @@ public class NightmareAbility extends SelectableAbilityItem {
         if(level.isClientSide)
             return;
 
-        if(!activeNightmares.containsKey(entity.getUUID())) {
+        if(!activeNightmaresServer.containsKey(entity.getUUID())) {
             if(entity instanceof ServerPlayer player) {
                 ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("You need to create a Nightmare first.").withColor(0xFFff124d));
                 player.connection.send(packet);
@@ -140,7 +144,7 @@ public class NightmareAbility extends SelectableAbilityItem {
         if(level.isClientSide)
             return;
 
-        if(!activeNightmares.containsKey(entity.getUUID())) {
+        if(!activeNightmaresServer.containsKey(entity.getUUID())) {
             if(entity instanceof ServerPlayer player) {
                 ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("You need to create a Nightmare first.").withColor(0xFFff124d));
                 player.connection.send(packet);
@@ -183,7 +187,7 @@ public class NightmareAbility extends SelectableAbilityItem {
             return;
         }
 
-        if(!activeNightmares.containsKey(entity.getUUID())) {
+        if(!activeNightmaresServer.containsKey(entity.getUUID())) {
             if(entity instanceof ServerPlayer player) {
                 ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("You need to create a Nightmare first.").withColor(0xFFff124d));
                 player.connection.send(packet);
@@ -209,7 +213,7 @@ public class NightmareAbility extends SelectableAbilityItem {
         AtomicBoolean shouldStop = new AtomicBoolean(false);
 
         ServerScheduler.scheduleUntil((ServerLevel) level, () -> {
-            if(!activeNightmares.containsKey(entity.getUUID())) {
+            if(!activeNightmaresServer.containsKey(entity.getUUID())) {
                 shouldStop.set(true);
                 isReshaping.remove(entity.getUUID());
                 return;
@@ -231,7 +235,7 @@ public class NightmareAbility extends SelectableAbilityItem {
     }
 
     public static void stopNightmare(UUID uuid) {
-        activeNightmares.remove(uuid);
+        activeNightmaresServer.remove(uuid);
     }
 
     public BlockPos getTargetBlock(LivingEntity entity, double radius) {
@@ -258,18 +262,19 @@ public class NightmareAbility extends SelectableAbilityItem {
     private final DustParticleOptions dustVerySmall = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), .7f);
 
     private void nightmare(Level level, LivingEntity entity) {
-        if(level.isClientSide)
+        if(level.isClientSide) {
             return;
+        }
 
-        if(activeNightmares.containsKey(entity.getUUID())) {
-            activeNightmares.remove(entity.getUUID());
+        if(activeNightmaresServer.containsKey(entity.getUUID())) {
+            activeNightmaresServer.remove(entity.getUUID());
             return;
         }
 
         int radius = 40;
-        NightmareCenter center = new NightmareCenter((ServerLevel) level, entity.position(), radius * radius);
+        NightmareCenter center = new NightmareCenter(level, entity.position(), radius * radius);
 
-        for(NightmareCenter c : activeNightmares.values()) {
+        for(NightmareCenter c : activeNightmaresServer.values()) {
             double maxRadius = Math.max(center.radiusSquared(), c.radiusSquared());
             if(c.pos().distanceToSqr(center.pos()) <= maxRadius) {
                 if(entity instanceof ServerPlayer player) {
@@ -280,13 +285,14 @@ public class NightmareAbility extends SelectableAbilityItem {
             }
         }
 
-        activeNightmares.put(entity.getUUID(), center);
+        activeNightmaresServer.put(entity.getUUID(), center);
+        PacketHandler.sendToAllPlayers(new SyncNightmareAbilityPacket(entity.position().x, entity.position().y, entity.position().z, radius, true));
         RegionSnapshot region = new RegionSnapshot(level, BlockPos.containing(center.pos()), radius);
         storedRegions.put(entity.getUUID(), region);
 
         AtomicBoolean shouldStop = new AtomicBoolean(false);
         ServerScheduler.scheduleUntil((ServerLevel) level, () -> {
-            if(!activeNightmares.containsKey(entity.getUUID())) {
+            if(!activeNightmaresServer.containsKey(entity.getUUID())) {
                 shouldStop.set(true);
                 stopNightmare((ServerLevel) level, entity.getUUID(), radius, center);
                 return;
@@ -315,30 +321,46 @@ public class NightmareAbility extends SelectableAbilityItem {
         if(storedRegions.containsKey(uuid))
             storedRegions.get(uuid).restore(level);
         storedRegions.remove(uuid);
-        activeNightmares.remove(uuid);
+        activeNightmaresServer.remove(uuid);
+
+        PacketHandler.sendToAllPlayers(new SyncNightmareAbilityPacket(0, 0, 0, 0, false));
     }
 
     public static boolean hasActiveNightmare(LivingEntity entity) {
-        return activeNightmares.containsKey(entity.getUUID());
+        if(FMLEnvironment.dist == Dist.CLIENT)
+            return activeNightmaresClient.containsKey(entity.getUUID());
+        return activeNightmaresServer.containsKey(entity.getUUID());
     }
 
     public static boolean isAffectedByNightmare(LivingEntity entity) {
-        for(Map.Entry<UUID, NightmareCenter> entry : activeNightmares.entrySet()) {
-            if(entity.getUUID() == entry.getKey())
-                continue;
+        if(FMLEnvironment.dist == Dist.CLIENT) {
+            for(Map.Entry<UUID, NightmareCenter> entry : activeNightmaresClient.entrySet()) {
+                if(entity.getUUID() == entry.getKey())
+                    continue;
 
-            if(entity.position().distanceToSqr(entry.getValue().pos()) <= entry.getValue().radiusSquared())
-                return true;
+                if(entity.position().distanceToSqr(entry.getValue().pos()) <= entry.getValue().radiusSquared())
+                    return true;
+            }
+
         }
+        else {
+            for(Map.Entry<UUID, NightmareCenter> entry : activeNightmaresServer.entrySet()) {
+                if(entity.getUUID() == entry.getKey())
+                    continue;
 
+                if(entity.position().distanceToSqr(entry.getValue().pos()) <= entry.getValue().radiusSquared())
+                    return true;
+            }
+
+        }
         return false;
     }
 
     private boolean isBlockInRadius(Vec3 pos, UUID casterUUID) {
-        if(!activeNightmares.containsKey(casterUUID))
+        if(!activeNightmaresServer.containsKey(casterUUID))
             return false;
 
-        NightmareCenter center = activeNightmares.get(casterUUID);
+        NightmareCenter center = activeNightmaresServer.get(casterUUID);
         return pos.distanceToSqr(center.pos()) <= center.radiusSquared();
     }
 
@@ -366,6 +388,20 @@ public class NightmareAbility extends SelectableAbilityItem {
                 }
             }
         }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void syncToClient(UUID uuid, double x, double y, double z, double radius, boolean active) {
+        if(FMLEnvironment.dist != Dist.CLIENT)
+            return;
+
+        if(!active) {
+            activeNightmaresClient.remove(uuid);
+            return;
+        }
+
+        NightmareCenter center = new NightmareCenter(Minecraft.getInstance().level, new Vec3(x, y, z), radius * radius);
+        activeNightmaresClient.put(uuid, center);
     }
 
 }

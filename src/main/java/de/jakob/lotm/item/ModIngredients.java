@@ -70,6 +70,26 @@ public class ModIngredients {
         ITEMS.register(eventBus);
     }
 
+    public static List<PotionIngredient> getAllOfPathway(String pathway) {
+        return ITEMS.getEntries()
+                .stream()
+                .map(DeferredHolder::get)
+                .filter(i -> i instanceof PotionIngredient)
+                .map(i -> ((PotionIngredient) i))
+                .filter(i -> i.getPathways() != null && Arrays.asList(i.getPathways()).contains(pathway))
+                .toList();
+    }
+
+    public static List<PotionIngredient> getAll() {
+        return ITEMS.getEntries()
+                .stream()
+                .map(DeferredHolder::get)
+                .filter(i -> i instanceof PotionIngredient)
+                .map(i -> ((PotionIngredient) i))
+                .toList();
+    }
+
+
     public static PotionIngredient selectRandomIngredient(Random random) {
         List<PotionIngredient> ingredients = ITEMS.getEntries()
                 .stream()
