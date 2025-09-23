@@ -71,7 +71,8 @@ public class BeyonderData {
             "demoness",
             "red_priest",
             "mother",
-            "abyss"
+            "abyss",
+            "visionary"
     );
 
     public static String getSequenceName(String pathway, int sequence) {

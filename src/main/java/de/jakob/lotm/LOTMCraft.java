@@ -51,16 +51,16 @@ public class LOTMCraft
 {
     public static final String MOD_ID = "lotmcraft";
 
-    public static KeyMapping switchBeyonderKey;
+    //public static KeyMapping switchBeyonderKey;
     public static KeyMapping pathwayInfosKey;
-    public static KeyMapping clearBeyonderKey;
+    //public static KeyMapping clearBeyonderKey;
     public static KeyMapping openAbilitySelectionKey;
     public static KeyMapping toggleGriefingKey;
     public static KeyMapping showPassiveAbilitiesKey;
     public static KeyMapping nextAbilityKey;
     public static KeyMapping previousAbilityKey;
-    public static KeyMapping increaseSequenceKey;
-    public static KeyMapping decreaseSequenceKey;
+    //public static KeyMapping increaseSequenceKey;
+    //public static KeyMapping decreaseSequenceKey;
 
 
     public static final Logger LOGGER = LogUtils.getLogger();

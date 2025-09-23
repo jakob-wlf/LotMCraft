@@ -27,48 +27,48 @@ public class KeyInputHandler {
             }
         }
 
-        if (LOTMCraft.switchBeyonderKey != null && LOTMCraft.switchBeyonderKey.consumeClick()) {
-            Player player = Minecraft.getInstance().player;
-            if (player != null) {
-                String currentPathway = ClientBeyonderCache.getPathway(player.getUUID());
-                if (currentPathway.equalsIgnoreCase("none")) {
-                    PacketHandler.sendToServer(new BecomeBeyonderPacket("fool", 1));
-                } else {
-                    int index = BeyonderData.pathways.indexOf(currentPathway) + 1;
-                    String pathway;
-                    if (index < BeyonderData.pathways.size()) {
-                        pathway = BeyonderData.pathways.get(index);
-                    }
-                    else {
-                        pathway = BeyonderData.pathways.getFirst();
-                    }
+//        if (LOTMCraft.switchBeyonderKey != null && LOTMCraft.switchBeyonderKey.consumeClick()) {
+//            Player player = Minecraft.getInstance().player;
+//            if (player != null) {
+//                String currentPathway = ClientBeyonderCache.getPathway(player.getUUID());
+//                if (currentPathway.equalsIgnoreCase("none")) {
+//                    PacketHandler.sendToServer(new BecomeBeyonderPacket("fool", 1));
+//                } else {
+//                    int index = BeyonderData.pathways.indexOf(currentPathway) + 1;
+//                    String pathway;
+//                    if (index < BeyonderData.pathways.size()) {
+//                        pathway = BeyonderData.pathways.get(index);
+//                    }
+//                    else {
+//                        pathway = BeyonderData.pathways.getFirst();
+//                    }
+//
+//                    PacketHandler.sendToServer(new BecomeBeyonderPacket(pathway, 1));
+//                }
+//            }
+//        }
 
-                    PacketHandler.sendToServer(new BecomeBeyonderPacket(pathway, 1));
-                }
-            }
-        }
-
-        if (LOTMCraft.increaseSequenceKey != null && LOTMCraft.increaseSequenceKey.consumeClick()) {
-            Player player = Minecraft.getInstance().player;
-            if (player != null) {
-                int currentSequence = ClientBeyonderCache.getSequence(player.getUUID());
-                String currentPathway = ClientBeyonderCache.getPathway(player.getUUID());
-                if(currentSequence > 1)
-                    currentSequence--;
-                PacketHandler.sendToServer(new BecomeBeyonderPacket(currentPathway, currentSequence));
-            }
-        }
-
-        if (LOTMCraft.decreaseSequenceKey != null && LOTMCraft.decreaseSequenceKey.consumeClick()) {
-            Player player = Minecraft.getInstance().player;
-            if (player != null) {
-                int currentSequence = ClientBeyonderCache.getSequence(player.getUUID());
-                String currentPathway = ClientBeyonderCache.getPathway(player.getUUID());
-                if(currentSequence < 9)
-                    currentSequence++;
-                PacketHandler.sendToServer(new BecomeBeyonderPacket(currentPathway, currentSequence));
-            }
-        }
+//        if (LOTMCraft.increaseSequenceKey != null && LOTMCraft.increaseSequenceKey.consumeClick()) {
+//            Player player = Minecraft.getInstance().player;
+//            if (player != null) {
+//                int currentSequence = ClientBeyonderCache.getSequence(player.getUUID());
+//                String currentPathway = ClientBeyonderCache.getPathway(player.getUUID());
+//                if(currentSequence > 1)
+//                    currentSequence--;
+//                PacketHandler.sendToServer(new BecomeBeyonderPacket(currentPathway, currentSequence));
+//            }
+//        }
+//
+//        if (LOTMCraft.decreaseSequenceKey != null && LOTMCraft.decreaseSequenceKey.consumeClick()) {
+//            Player player = Minecraft.getInstance().player;
+//            if (player != null) {
+//                int currentSequence = ClientBeyonderCache.getSequence(player.getUUID());
+//                String currentPathway = ClientBeyonderCache.getPathway(player.getUUID());
+//                if(currentSequence < 9)
+//                    currentSequence++;
+//                PacketHandler.sendToServer(new BecomeBeyonderPacket(currentPathway, currentSequence));
+//            }
+//        }
 
         if(LOTMCraft.toggleGriefingKey != null && LOTMCraft.toggleGriefingKey.consumeClick()) {
             Player player = Minecraft.getInstance().player;
@@ -78,13 +78,13 @@ public class KeyInputHandler {
             }
         }
 
-        if(LOTMCraft.clearBeyonderKey != null && LOTMCraft.clearBeyonderKey.consumeClick()) {
-            Player player = Minecraft.getInstance().player;
-            if (player != null) {
-                // Send packet to server instead of directly modifying data
-                PacketHandler.sendToServer(new ClearBeyonderDataPacket());
-            }
-        }
+//        if(LOTMCraft.clearBeyonderKey != null && LOTMCraft.clearBeyonderKey.consumeClick()) {
+//            Player player = Minecraft.getInstance().player;
+//            if (player != null) {
+//                // Send packet to server instead of directly modifying data
+//                PacketHandler.sendToServer(new ClearBeyonderDataPacket());
+//            }
+//        }
 
         if(LOTMCraft.nextAbilityKey != null && LOTMCraft.nextAbilityKey.consumeClick()) {
             Player player = Minecraft.getInstance().player;
