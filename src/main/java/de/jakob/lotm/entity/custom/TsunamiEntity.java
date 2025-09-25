@@ -193,7 +193,7 @@ public class TsunamiEntity extends Entity {
                 for(int side = -16; side < 17; side++) {
                     Vec3 pos = VectorUtil.getRelativePosition(position(), direction, forward, side, up);
                     BlockPos blockPos = BlockPos.containing(pos);
-                    level().setBlockAndUpdate(blockPos, random.nextBoolean() ? Blocks.WATER.defaultBlockState() : Blocks.AIR.defaultBlockState());
+                    level().setBlockAndUpdate(blockPos, random.nextInt(10) == 0 ? Blocks.WATER.defaultBlockState() : Blocks.AIR.defaultBlockState());
                 }
             }
         }

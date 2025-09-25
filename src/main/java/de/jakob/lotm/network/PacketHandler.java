@@ -152,6 +152,25 @@ public class PacketHandler {
                 SyncAbilityMenuPacket.STREAM_CODEC,
                 SyncAbilityMenuPacket::handle
         );
+
+        //Skin Packets
+        registrar.playToServer(
+                SkinChangePacket.TYPE,
+                SkinChangePacket.STREAM_CODEC,
+                SkinChangePacket::handle
+        );
+
+        registrar.playToServer(
+                SkinRestorePacket.TYPE,
+                SkinRestorePacket.STREAM_CODEC,
+                SkinRestorePacket::handle
+        );
+
+        registrar.playToClient(
+                SkinDataPacket.TYPE,
+                SkinDataPacket.STREAM_CODEC,
+                SkinDataPacket::handle
+        );
     }
 
     public static void sendToServer(CustomPacketPayload packet) {
@@ -187,6 +206,11 @@ public class PacketHandler {
     public static void sendToTracking(Entity entity, CustomPacketPayload payload) {
         if (!(entity.level() instanceof ServerLevel)) return;
         PacketDistributor.sendToPlayersTrackingEntity(entity, payload);
+    }
+
+    public static void syncSkinDataToAllPlayers(String playerName, String skinTexture, String skinSignature) {
+        SkinDataPacket packet = new SkinDataPacket(playerName, skinTexture, skinSignature);
+        sendToAllPlayers(packet);
     }
 
     public static void sendToAllPlayers(CustomPacketPayload payload) {

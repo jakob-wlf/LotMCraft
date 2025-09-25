@@ -2,6 +2,7 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.command.BeyonderCommand;
+import de.jakob.lotm.command.SkinChangeCommand;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.*;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
@@ -80,6 +81,7 @@ public class ModEvents {
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         BeyonderCommand.register(event.getDispatcher());
+        SkinChangeCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent
