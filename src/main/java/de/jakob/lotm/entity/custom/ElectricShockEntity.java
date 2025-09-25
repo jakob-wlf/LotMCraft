@@ -9,6 +9,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -176,7 +177,11 @@ public class ElectricShockEntity extends Entity {
     private void onHitEntity(Entity entity) {
         // Handle entity hit - damage, effects, etc.
         if (!level().isClientSide) {
-            entity.hurt(source.damageSources().mobAttack(source), (float) damage);
+            DamageSource dmg = (source != null)
+                    ? level().damageSources().mobAttack(source)
+                    : level().damageSources().generic();
+
+            entity.hurt(dmg, (float) damage);
         }
     }
 

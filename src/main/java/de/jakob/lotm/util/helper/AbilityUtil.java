@@ -31,7 +31,7 @@ public class AbilityUtil {
 
             BlockState block = entity.level().getBlockState(BlockPos.containing(targetPosition));
 
-            if (!block.isAir()) {
+            if (!block.getCollisionShape(entity.level(), BlockPos.containing(targetPosition)).isEmpty()) {
                 targetPosition = playerPosition.add(lookDirection.scale(i - 1));
                 break;
             }
@@ -48,7 +48,8 @@ public class AbilityUtil {
         for(int i = 0; i < 500; i++) {
             Vec3 currentPos = startPos.subtract(0, i * .5, 0);
             pos = BlockPos.containing(currentPos.x, currentPos.y, currentPos.z);
-            if(!level.getBlockState(pos).isAir())
+            BlockState block = level.getBlockState(pos);
+            if(!block.getCollisionShape(entity.level(), pos).isEmpty())
                 break;
         }
 
@@ -114,7 +115,7 @@ public class AbilityUtil {
 
             BlockState block = entity.level().getBlockState(BlockPos.containing(targetPosition));
 
-            if (!block.isAir() && i >= minRadius) {
+            if (!block.getCollisionShape(entity.level(), BlockPos.containing(targetPosition)).isEmpty() && i >= minRadius) {
                 if(oneBlockBefore)
                     targetPosition = playerPosition.add(lookDirection.scale(i - 1));
                 else
@@ -155,7 +156,7 @@ public class AbilityUtil {
             // Check for blocks
             BlockState block = entity.level().getBlockState(BlockPos.containing(targetPosition));
 
-            if (!block.isAir()) {
+            if (!block.getCollisionShape(entity.level(), BlockPos.containing(targetPosition)).isEmpty()) {
                 targetPosition = playerPosition.add(lookDirection.scale(i - 1));
                 break;
             }
@@ -267,7 +268,7 @@ public class AbilityUtil {
             // Check for blocks
             BlockState block = entity.level().getBlockState(BlockPos.containing(targetPosition));
 
-            if (!block.isAir()) {
+            if (!block.getCollisionShape(entity.level(), BlockPos.containing(targetPosition)).isEmpty()) {
                 break;
             }
         }
@@ -314,7 +315,7 @@ public class AbilityUtil {
             if (distanceFalloff) {
                 double distance = Math.sqrt(distanceSquared);
                 double falloffMultiplier = Math.max(0.1, 1.0 - (distance / radius));
-                finalDamage *= falloffMultiplier;
+                finalDamage *= (float) falloffMultiplier;
             }
 
             // Apply damage with appropriate damage source

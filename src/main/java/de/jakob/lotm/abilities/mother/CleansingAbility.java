@@ -79,16 +79,17 @@ public class CleansingAbility extends SelectableAbilityItem {
         RingEffectManager.createRingForAll(entity.getEyePosition().subtract(0, .4, 0), 2, 60, 122 / 255f, 235 / 255f, 124 / 255f, 1, .5f, .75f, (ServerLevel) level);
 
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
-
+        
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
 
         entity.setRemainingFireTicks(0);
 
-        entity.getActiveEffects()
-                .stream()
-                .filter(effect -> effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL)
+        entity.getActiveEffects().stream()
                 .map(MobEffectInstance::getEffect)
+                .filter(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL)
+                .toList()
                 .forEach(entity::removeEffect);
+
 
         if(entity instanceof Player player) {
             player.getFoodData().setSaturation(20);

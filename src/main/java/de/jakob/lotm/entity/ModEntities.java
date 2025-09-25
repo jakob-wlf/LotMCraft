@@ -50,6 +50,13 @@ public class ModEntities {
                     .updateInterval(1)
                     .build("electric_shock"));
 
+    public static final Supplier<EntityType<TsunamiEntity>> TSUNAMI =
+            ENTITY_TYPES.register("tsunami", () -> EntityType.Builder.<TsunamiEntity>of(TsunamiEntity::new, MobCategory.MISC)
+                    .sized(4, 3)
+                    .clientTrackingRange(64)
+                    .updateInterval(1)
+                    .build("tsunami"));
+
     public static final Supplier<EntityType<LightningEntity>> LIGHTNING =
             ENTITY_TYPES.register("lightning", () -> EntityType.Builder.<LightningEntity>of(LightningEntity::new, MobCategory.MISC)
                     .sized(0.1f, 0.1f) // Small hitbox

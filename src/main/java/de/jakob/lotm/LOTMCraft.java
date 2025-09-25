@@ -136,6 +136,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.TRAVELERS_DOOR.get(), TravelersDoorRenderer::new);
             EntityRenderers.register(ModEntities.APPRENTICE_BOOK.get(), ApprenticeBookRenderer::new);
             EntityRenderers.register(ModEntities.BEYONDER_NPC.get(), BeyonderNPCRenderer::new);
+            EntityRenderers.register(ModEntities.TSUNAMI.get(), TsunamiRenderer::new);
         }
 
         @SubscribeEvent

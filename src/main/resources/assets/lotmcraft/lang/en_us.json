@@ -81,6 +81,7 @@
   "ability.lotmcraft.siren_song.death_melody": "Melody of Death",
   "ability.lotmcraft.siren_song.strengthening_melody": "Song of Courage",
   "ability.lotmcraft.siren_song.dazing_song": "Dazing Song",
+  "item.lotmcraft.tsunami_ability": "Tsunami",
 
 
   "item.lotmcraft.toxic_smoke_ability": "Toxic Smoke",
@@ -212,6 +213,7 @@
   "entity.lotmcraft.electric_shock": "Electric Shock",
   "entity.lotmcraft.lightning": "Lightning",
   "entity.lotmcraft.beyonder_npc": "Rogue Beyonder",
+  "entity.lotmcraft.tsunami": "Tsunami",
   "entity.minecraft.villager.lotmcraft.beyonder_merchant": "Beyonder Merchant",
   "entity.minecraft.villager.lotmcraft.evernight_clergyman": "Evernight Clergyman",
   "entity.minecraft.villager.lotmcraft.eternal_blazing_sun_clergyman": "Eternal Blazing Sun Clergyman",
