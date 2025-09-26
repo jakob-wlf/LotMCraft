@@ -39,6 +39,8 @@ public class PlacateAbility extends SelectableAbilityItem {
 
     @Override
     protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+        if(!(entity instanceof Player))
+            abilityIndex = 0;
         switch (abilityIndex) {
             case 0 -> placateYourself(level, entity);
             case 1 -> placateOthers(level, entity);

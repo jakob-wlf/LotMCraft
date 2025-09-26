@@ -98,6 +98,13 @@
   "item.lotmcraft.flaming_jump_ability": "Flaming Jump",
   "item.lotmcraft.underwater_breathing_ability": "Underwater Breathing",
   "item.lotmcraft.shapeshifting_ability": "Shapeshifting",
+  "item.lotmcraft.puppeteering_ability": "Pupeteering",
+  "ability.lotmcraft.puppeteering.no_entity_found": "No Entity to control found",
+  "ability.lotmcraft.puppeteering.entity_turned": "Turned the entity into your marionette",
+  "ability.lotmcraft.puppeteering.entity_turned_failed": "Failed to turn the entity into your marionette",
+  "ability.lotmcraft.puppeteering.entity_teleport": "Moved Entity",
+  "ability.lotmcraft.puppeteering.follow_mode": "Follow Mode",
+
 
   "item.lotmcraft.midnight_poem_ability": "Midnight Poem",
   "ability.lotmcraft.midnight_poem.lullaby": "Lullaby",
@@ -549,5 +556,7 @@
   "lotm.pathway": "Pathway",
   "lotm.sequence": "Sequence",
   "lotm.potion": "Potion",
-  "lotm.spirituality": "Spirituality"
+  "lotm.spirituality": "Spirituality",
+  "lotm.on": "On",
+  "lotm.off": "Off"
 }

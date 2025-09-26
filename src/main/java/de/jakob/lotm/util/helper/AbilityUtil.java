@@ -1,6 +1,8 @@
 package de.jakob.lotm.util.helper;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -147,7 +149,7 @@ public class AbilityUtil {
                     targetPosition.add(entityDetectionRadius, entityDetectionRadius, entityDetectionRadius));
 
             List<Entity> nearbyEntities = entity.level().getEntities(entity, detectionBox).stream().filter(
-                    e -> e instanceof LivingEntity && e != entity
+                    e -> e instanceof LivingEntity && e != entity && mayTarget(entity, (LivingEntity) e)
             ).toList();
             if (!nearbyEntities.isEmpty()) {
                 return nearbyEntities.getFirst().getEyePosition().subtract(0, nearbyEntities.getFirst().getEyeHeight() / 2, 0);
@@ -184,7 +186,7 @@ public class AbilityUtil {
                     targetPosition.add(entityDetectionRadius, entityDetectionRadius, entityDetectionRadius));
 
             List<Entity> nearbyEntities = entity.level().getEntities(entity, detectionBox).stream().filter(
-                    e -> e instanceof LivingEntity && e != entity
+                    e -> e instanceof LivingEntity && e != entity && mayTarget(entity, (LivingEntity) e)
             ).toList();
             if (!nearbyEntities.isEmpty()) {
                 return positionAtEntityFeet ? nearbyEntities.getFirst().position() : nearbyEntities.getFirst().getEyePosition().subtract(0, nearbyEntities.getFirst().getEyeHeight() / 2, 0);
@@ -259,7 +261,7 @@ public class AbilityUtil {
                     targetPosition.add(entityDetectionRadius, entityDetectionRadius, entityDetectionRadius));
 
             List<Entity> nearbyEntities = entity.level().getEntities(entity, detectionBox).stream().filter(
-                    e -> e instanceof LivingEntity && e != entity
+                    e -> e instanceof LivingEntity && e != entity && mayTarget(entity, (LivingEntity) e)
             ).toList();
             if (!nearbyEntities.isEmpty()) {
                 return (LivingEntity) nearbyEntities.get(0);
@@ -296,7 +298,7 @@ public class AbilityUtil {
         List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
-        ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative()).toList();
+        ).stream().filter(e -> mayTarget(source, e)).toList();
 
         boolean hitAnyEntity = false;
         double radiusSquared = radius * radius; // Avoid sqrt calculations
@@ -334,6 +336,29 @@ public class AbilityUtil {
         return hitAnyEntity;
     }
 
+    public static boolean mayDamage(LivingEntity source, LivingEntity target) {
+        if (source == target) return false;
+        if (target instanceof Player player && player.isCreative()) return false;
+        if (!source.canAttack(target)) return false;
+        MarionetteComponent component = source.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+        if(component.isMarionette()) {
+            if(target.getUUID().toString().equals(component.getControllerUUID()))
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean mayTarget(LivingEntity source, LivingEntity target) {
+        if(!mayDamage(source, target)) return false;
+
+        MarionetteComponent component = target.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+        if(component.isMarionette()) {
+            if(source.getUUID().toString().equals(component.getControllerUUID()))
+                return false;
+        }
+        return true;
+    }
+
     public static boolean damageNearbyEntities(
             ServerLevel level,
             LivingEntity source,
@@ -356,7 +381,7 @@ public class AbilityUtil {
         List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
-        ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative()).toList();
+        ).stream().filter(e -> mayTarget(source, e)).toList();
 
         boolean hitAnyEntity = false;
         double radiusSquared = maxRadius * maxRadius; // Avoid sqrt calculations
@@ -418,7 +443,7 @@ public class AbilityUtil {
         List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
-        ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative()).toList();
+        ).stream().filter(e -> mayTarget(source, e)).toList();
 
         boolean hitAnyEntity = false;
         double radiusSquared = maxRadius * maxRadius; // Avoid sqrt calculations
@@ -475,7 +500,8 @@ public class AbilityUtil {
                 detectionBox
         ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative())
                 .filter(entity -> entity.position().distanceToSqr(center) <= radiusSquared)
-                .filter(entity -> entity != exclude).toList();
+                .filter(entity -> entity != exclude)
+                .filter(e -> exclude == null || mayTarget(exclude, e)).toList();
     }
 
     public static List<LivingEntity> getNearbyEntities(@Nullable LivingEntity exclude,
@@ -495,7 +521,8 @@ public class AbilityUtil {
                         detectionBox
                 ).stream().filter(e -> !(e instanceof Player player) || (!player.isCreative() || allowCreativeMode))
                 .filter(entity -> entity.position().distanceToSqr(center) <= radiusSquared)
-                .filter(entity -> entity != exclude).toList();
+                .filter(entity -> entity != exclude)
+                .filter(e -> exclude == null || mayTarget(exclude, e)).toList();
     }
 
     public static List<LivingEntity> getNearbyEntities(@Nullable LivingEntity exclude,
@@ -515,7 +542,8 @@ public class AbilityUtil {
                 detectionBox
         ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative())
                 .filter(entity -> entity.position().distanceToSqr(center) <= radiusSquared)
-                .filter(entity -> entity != exclude).toList();
+                .filter(entity -> entity != exclude)
+                .filter(e -> exclude == null || mayTarget(exclude, e)).toList();
     }
 
     public static boolean damageNearbyEntities(
@@ -536,7 +564,7 @@ public class AbilityUtil {
         List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
-        ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative()).toList();
+        ).stream().filter(e -> mayTarget(source, e)).toList();
 
         boolean hitAnyEntity = false;
         double radiusSquared = radius * radius; // Avoid sqrt calculations
@@ -587,7 +615,7 @@ public class AbilityUtil {
         List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
-        ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative()).toList();
+        ).stream().filter(e -> mayTarget(source, e)).toList();
 
         boolean hitAnyEntity = false;
         double radiusSquared = radius * radius; // Avoid sqrt calculations
@@ -649,7 +677,7 @@ public class AbilityUtil {
         List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
-        ).stream().filter(e -> !(e instanceof Player player) || !player.isCreative()).toList();
+        ).stream().filter(e -> mayTarget(source, e)).toList();
 
         boolean hitAnyEntity = false;
         double radiusSquared = radius * radius; // Avoid sqrt calculations

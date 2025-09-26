@@ -1,4 +1,4 @@
-// 1.21.1	2025-09-25T00:05:07.2725375	Item Models: lotmcraft
+// 1.21.1	2025-09-26T16:02:09.1570496	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -95,6 +95,7 @@ cf66690d443363b2f9806dc5675d21f096959bdb assets/lotmcraft/models/item/lotm_icon.
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/magician.json
 baac0200e2b431405a45877066b8cc81cbfb4b76 assets/lotmcraft/models/item/magician_potion.json
 65d88aacb6ecef55ff277737579876f9afff23c5 assets/lotmcraft/models/item/magma_elf_core.json
+54db213253400068792c55becc2042ac1d24264f assets/lotmcraft/models/item/marionette_controller.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/marionettist.json
 209556629ecc0bb65856a21f54ae15f880bda204 assets/lotmcraft/models/item/marionettist_potion.json
 9518ea379b0f5465b15bb1448430225518a3269a assets/lotmcraft/models/item/meteorite_crystal.json
@@ -142,6 +143,7 @@ d67bcec23c80838c59464d88240d8f5fb53260b8 assets/lotmcraft/models/item/provoker_p
 df644e75a5610413b9cb699977749c11813f4988 assets/lotmcraft/models/item/provoking_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/psychiatrist.json
 cde6a4f8cd1aa8c1b62fdeb95338b5b15bc6a07b assets/lotmcraft/models/item/psychiatrist_potion.json
+863b291ae68895eec32a27e2be5158e0b0be4d11 assets/lotmcraft/models/item/puppeteering_ability.json
 e2e40f0af24a526842e796c6f8781cbe28f1a216 assets/lotmcraft/models/item/pure_white_brilliant_rock.json
 7073990ff0e13035c92792e989d1240bf9592483 assets/lotmcraft/models/item/purification_halo_ability.json
 fb8ad28c292e6aa60e1858d6f638b54a3b706697 assets/lotmcraft/models/item/pyrokinesis_ability.json

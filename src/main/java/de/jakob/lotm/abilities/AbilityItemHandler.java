@@ -75,6 +75,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> FLAMING_JUMP = ITEMS.registerItem("flaming_jump_ability", FlamingJumpAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> UNDERWATER_BREATHING = ITEMS.registerItem("underwater_breathing_ability", UnderWaterBreathingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SHAPESHIFTING = ITEMS.registerItem("shapeshifting_ability", ShapeShiftingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> PUPPETEERING = ITEMS.registerItem("puppeteering_ability", PuppeteeringAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> MIDNIGHT_POEM = ITEMS.registerItem("midnight_poem_ability", MidnightPoemAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> NIGHTMARE = ITEMS.registerItem("nightmare_ability", NightmareAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

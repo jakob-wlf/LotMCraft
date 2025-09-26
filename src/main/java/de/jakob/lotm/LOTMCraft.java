@@ -1,6 +1,7 @@
 package de.jakob.lotm;
 
 import com.mojang.logging.LogUtils;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.data.ModDataComponents;
@@ -92,6 +93,7 @@ public class LOTMCraft
         ModStructures.register(modEventBus);
         ModDataComponents.register(modEventBus);
         PotionRecipeItemHandler.registerRecipes(modEventBus);
+        ModAttachments.register(modEventBus);
 
         AbilityItemHandler.registerAbilities(modEventBus);
         PassiveAbilityHandler.registerAbilities(modEventBus);

@@ -1,8 +1,7 @@
 package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.item.custom.SpacerItem;
-import de.jakob.lotm.potions.BeyonderPotion;
+import de.jakob.lotm.item.custom.MarionetteControllerItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -12,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Supplier;
 
 public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(LOTMCraft.MOD_ID);
@@ -20,6 +20,9 @@ public class ModItems {
     public static final DeferredItem<Item> MOD_ICON = ITEMS.registerItem("lotm_icon", Item::new, new Item.Properties());
     public static final DeferredItem<Item> PAPER_FIGURINE_SUBSTITUTE = ITEMS.registerItem("paper_figurine_substitute", Item::new, new Item.Properties().stacksTo(1));
     public static final DeferredItem<Item> MIRROR = ITEMS.registerItem("mirror", Item::new, new Item.Properties().stacksTo(1));
+
+    public static final Supplier<Item> MARIONETTE_CONTROLLER = ITEMS.register("marionette_controller",
+            () -> new MarionetteControllerItem(new Item.Properties().stacksTo(1)));
 
     public static PotionIngredient selectRandomIngredient(List<PotionIngredient> ingredients, Random random) {
         if (ingredients == null || ingredients.isEmpty()) {
