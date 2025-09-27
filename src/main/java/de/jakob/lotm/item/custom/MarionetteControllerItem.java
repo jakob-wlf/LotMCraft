@@ -13,6 +13,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -70,6 +71,10 @@ public class MarionetteControllerItem extends Item {
             } else {
                 // Toggle follow mode
                 component.setFollowMode(!component.isFollowMode());
+                if(!component.isFollowMode() && livingEntity instanceof Mob mob) {
+                    mob.setTarget(null);
+                    mob.getNavigation().stop();
+                }
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.follow_mode").append(Component.literal(": ")).append(Component.translatable(component.isFollowMode() ? "lotm.on" : "lotm.off")).withColor(0xa26fc9));
             }
         }

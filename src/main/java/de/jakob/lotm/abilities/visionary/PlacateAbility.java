@@ -82,4 +82,9 @@ public class PlacateAbility extends SelectableAbilityItem {
 
         entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 40, 4, false, false, false));
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        return entity.hasEffect(ModEffects.LOOSING_CONTROL);
+    }
 }

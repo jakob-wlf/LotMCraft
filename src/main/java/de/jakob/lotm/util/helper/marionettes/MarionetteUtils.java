@@ -1,7 +1,8 @@
 package de.jakob.lotm.util.helper.marionettes;
 
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.entity.custom.goals.MarionetteGoal;
+import de.jakob.lotm.entity.custom.goals.MarionetteFollowGoal;
+import de.jakob.lotm.entity.custom.goals.MarionetteTargetGoal;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.component.DataComponents;
@@ -9,14 +10,15 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.target.DefendVillageTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemLore;
 
 import java.util.List;
-import java.util.Set;
 
 public class MarionetteUtils {
     
@@ -37,12 +39,18 @@ public class MarionetteUtils {
         
         // Clear existing goals and add marionette goals
         if (entity instanceof Mob mob) {
-            // Clear all existing goals
-            mob.goalSelector.getAvailableGoals().clear();
-            mob.targetSelector.getAvailableGoals().clear();
-            
-            // Add marionette goals
-            mob.goalSelector.addGoal(0, new MarionetteGoal(mob));
+            // Remove hostile targeting goals
+            mob.targetSelector.removeAllGoals(goal ->
+                    goal instanceof NearestAttackableTargetGoal ||
+                            goal instanceof HurtByTargetGoal ||
+                            goal instanceof DefendVillageTargetGoal ||
+                            goal.getClass().getSimpleName().contains("Attack") ||
+                            goal.getClass().getSimpleName().contains("Hurt")
+            );
+
+            mob.goalSelector.addGoal(0, new MarionetteFollowGoal(mob));    // Highest priority for following
+            mob.targetSelector.addGoal(0, new MarionetteTargetGoal(mob));  // Highest priority for targeting
+            mob.setTarget(null);
         }
 
         ItemStack controllerItem = createMarionetteController(entity);
@@ -51,7 +59,7 @@ public class MarionetteUtils {
                 controllerItem.set(
                         DataComponents.LORE,
                         new ItemLore(List.of(
-                                Component.literal("-------------------").withStyle(style -> style.withColor(0xFF5555).withItalic(false)),
+                                Component.literal("-------------------").withStyle(style -> style.withColor(0x555555).withItalic(false)),
                                 Component.translatable("lotm.pathway").append(Component.literal(": ")).append(Component.literal(BeyonderData.pathwayInfos.get(BeyonderData.getPathway(entity)).getSequenceName(9))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
                                 Component.translatable("lotm.sequence").append(Component.literal(": ")).append(Component.literal(BeyonderData.getSequence(entity) + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
                         )));

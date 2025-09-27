@@ -228,6 +228,10 @@ public class PuppeteeringAbility extends AbilityItem {
 
     private void turnIntoMarionette(LivingEntity target, Player player) {
         target.setHealth(target.getMaxHealth());
+        if(target instanceof Mob mob) {
+            mob.setTarget(null);
+            mob.getNavigation().stop();
+        }
         if (MarionetteUtils.turnEntityIntoMarionette(target, player)) {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned").withColor(0xa26fc9));
         } else {

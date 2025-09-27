@@ -196,6 +196,7 @@
   "item.lotmcraft.fire_resistance_ability": "Fire Resistance",
 
   "item.lotmcraft.paper_dagger_ability": "Paper Daggers",
+  "item.lotmcraft.paper_dagger_ability.description": "Right click with paper to throw it as a dagger",
 
   "item.lotmcraft.nocturnality_ability": "Nocturnality",
 
@@ -558,5 +559,6 @@
   "lotm.potion": "Potion",
   "lotm.spirituality": "Spirituality",
   "lotm.on": "On",
-  "lotm.off": "Off"
+  "lotm.off": "Off",
+  "lotm.passive": "Passive"
 }

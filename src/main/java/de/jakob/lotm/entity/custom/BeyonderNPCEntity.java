@@ -156,7 +156,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
         if (hasRangedOption()) {
             this.goalSelector.addGoal(3, new RangedCombatGoal(this, 1.0D, 8.0F, 16.0F));
-            this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.2D, false));
+            this.goalSelector.addGoal(6, new MeleeAttackGoal(this, 1.2D, false));
         } else {
             this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
         }
@@ -303,13 +303,11 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
 
-    int tickCounter = 0;
+    long tickCounter = 0;
 
     @Override
     public void tick() {
         super.tick();
-
-        //TODO: Change to goal based tick
 
         if(this.level().isClientSide)
             return;
@@ -324,10 +322,57 @@ public class BeyonderNPCEntity extends PathfinderMob {
             });
         }
 
+        if(tickCounter % 10 == 0)
+            logActiveGoals();
+
         tickCounter++;
         if(tickCounter == 1) {
             this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20, 255, false, true, true));
         }
+    }
+
+    public void logActiveGoals() {
+        this.goalSelector.getAvailableGoals().forEach(prioritizedGoal -> {
+            Goal goal = prioritizedGoal.getGoal();
+            boolean isRunning = prioritizedGoal.isRunning();
+            int priority = prioritizedGoal.getPriority();
+            boolean canUse = false;
+            boolean canContinue = false;
+
+            try {
+                canUse = goal.canUse();
+                // Only check canContinueToUse if the goal is actually running
+                if (isRunning) {
+                    canContinue = goal.canContinueToUse();
+                }
+            } catch (Exception e) {
+                // Some goals might crash when checked
+            }
+
+            System.out.println("Priority " + priority + ": " + goal.getClass().getSimpleName() +
+                    " - Running: " + isRunning +
+                    " - CanUse: " + canUse +
+                    (isRunning ? " - CanContinue: " + canContinue : ""));
+        });
+
+        this.targetSelector.getAvailableGoals().forEach(prioritizedGoal -> {
+            Goal goal = prioritizedGoal.getGoal();
+            boolean isRunning = prioritizedGoal.isRunning();
+            int priority = prioritizedGoal.getPriority();
+            boolean canUse = false;
+            boolean canContinue = false;
+
+            try {
+                canUse = goal.canUse();
+                // Only check canContinueToUse if the goal is actually running
+                if (isRunning) {
+                    canContinue = goal.canContinueToUse();
+                }
+            } catch (Exception e) {
+                // Some goals might crash when checked
+            }
+
+        });
     }
 
     // Ability system methods

@@ -2,9 +2,13 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.entity.custom.goals.MarionetteGoal;
+import de.jakob.lotm.entity.custom.goals.MarionetteFollowGoal;
+import de.jakob.lotm.entity.custom.goals.MarionetteTargetGoal;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.target.DefendVillageTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -19,7 +23,16 @@ public class MarionetteEventHandler {
             
             // Re-add marionette goals if this entity is a marionette
             if (component.isMarionette()) {
-                mob.goalSelector.addGoal(0, new MarionetteGoal(mob));
+                mob.targetSelector.removeAllGoals(goal ->
+                        goal instanceof NearestAttackableTargetGoal ||
+                                goal instanceof HurtByTargetGoal ||
+                                goal instanceof DefendVillageTargetGoal ||
+                                goal.getClass().getSimpleName().contains("Attack") ||
+                                goal.getClass().getSimpleName().contains("Hurt")
+                );
+
+                mob.goalSelector.addGoal(0, new MarionetteTargetGoal(mob));
+                mob.goalSelector.addGoal(0, new MarionetteFollowGoal(mob));
             }
         }
     }

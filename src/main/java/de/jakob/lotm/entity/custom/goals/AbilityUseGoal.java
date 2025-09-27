@@ -5,6 +5,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.Random;
 
+
 public class AbilityUseGoal extends Goal {
     private final BeyonderNPCEntity entity;
     public AbilityUseGoal(BeyonderNPCEntity entity) {
@@ -15,14 +16,13 @@ public class AbilityUseGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return random.nextInt(100) < 20;
+        return entity.isInCombat() || random.nextInt(100) < 2;
     }
 
     @Override
     public void tick() {
-        if(!entity.isInCombat() && random.nextInt(100) < 99)
-            return;
-        entity.tryUseAbility();
+        if(random.nextInt(100) <= 20)
+            entity.tryUseAbility();
     }
 
     @Override

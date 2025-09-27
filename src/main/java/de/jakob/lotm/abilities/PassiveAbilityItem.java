@@ -3,13 +3,18 @@ package de.jakob.lotm.abilities;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -67,6 +72,25 @@ public abstract class PassiveAbilityItem extends Item {
         }
     }
 
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack,
+                                @NotNull TooltipContext context,
+                                @NotNull List<Component> tooltipComponents,
+                                @NotNull TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+
+        if(Component.translatable(this.getDescriptionId(stack) + ".description").getString().equals(this.getDescriptionId(stack) + ".description"))
+            return;
+
+        tooltipComponents.add(Component.translatable("lotm.description").append(":").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable(this.getDescriptionId(stack) + ".description").withStyle(ChatFormatting.DARK_GRAY));
+    }
+
+    @Override
+    public @NotNull Component getName(ItemStack stack) {
+        return Component.translatable(this.getDescriptionId(stack)).append(Component.literal(" (")).append(Component.translatable("lotm.passive")).append(Component.literal(")"));
+    }
+
     /**
      * Gets called every 5 ticks from BeyonderDataTickHandler
      */
@@ -85,10 +109,5 @@ public abstract class PassiveAbilityItem extends Item {
         }
     }
 
-    public ResourceLocation getIconTexture() {
-        ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(this);
 
-        String texturePath = "textures/gui/passives/" + registryName.getPath();
-        return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, texturePath);
-    }
 }
