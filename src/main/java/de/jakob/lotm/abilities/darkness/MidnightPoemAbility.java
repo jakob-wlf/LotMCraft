@@ -24,7 +24,7 @@ public class MidnightPoemAbility extends SelectableAbilityItem {
     private final DustParticleOptions dustBig = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), 10f);
 
     public MidnightPoemAbility(Properties properties) {
-        super(properties, 8f);
+        super(properties, 12f);
     }
 
     @Override
@@ -50,7 +50,6 @@ public class MidnightPoemAbility extends SelectableAbilityItem {
         }
     }
 
-    //TODO: Improve animation
     private void wilt(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
@@ -77,7 +76,7 @@ public class MidnightPoemAbility extends SelectableAbilityItem {
         level.playSound(null, entity.blockPosition(), ModSounds.MIDNIGHT_POEM.get(), entity.getSoundSource(), 1.0f, 1.0f);
         List<LivingEntity> targets = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 35);
 
-        int duration = (int) (20 * 20 * multiplier(entity));
+        int duration = (int) (20 * 5 * multiplier(entity));
 
         targets.forEach(target -> {
             target.addEffect(new MobEffectInstance(ModEffects.ASLEEP, duration, 1, false, false, true));

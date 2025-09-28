@@ -25,7 +25,7 @@ public class TsunamiAbility extends AbilityItem {
 
     @Override
     protected float getSpiritualityCost() {
-        return 3000;
+        return 500;
     }
 
     @Override

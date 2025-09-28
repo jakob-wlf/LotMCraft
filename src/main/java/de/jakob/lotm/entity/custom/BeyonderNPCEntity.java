@@ -321,58 +321,10 @@ public class BeyonderNPCEntity extends PathfinderMob {
                 }
             });
         }
-
-        if(tickCounter % 10 == 0)
-            logActiveGoals();
-
         tickCounter++;
         if(tickCounter == 1) {
             this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20, 255, false, true, true));
         }
-    }
-
-    public void logActiveGoals() {
-        this.goalSelector.getAvailableGoals().forEach(prioritizedGoal -> {
-            Goal goal = prioritizedGoal.getGoal();
-            boolean isRunning = prioritizedGoal.isRunning();
-            int priority = prioritizedGoal.getPriority();
-            boolean canUse = false;
-            boolean canContinue = false;
-
-            try {
-                canUse = goal.canUse();
-                // Only check canContinueToUse if the goal is actually running
-                if (isRunning) {
-                    canContinue = goal.canContinueToUse();
-                }
-            } catch (Exception e) {
-                // Some goals might crash when checked
-            }
-
-            System.out.println("Priority " + priority + ": " + goal.getClass().getSimpleName() +
-                    " - Running: " + isRunning +
-                    " - CanUse: " + canUse +
-                    (isRunning ? " - CanContinue: " + canContinue : ""));
-        });
-
-        this.targetSelector.getAvailableGoals().forEach(prioritizedGoal -> {
-            Goal goal = prioritizedGoal.getGoal();
-            boolean isRunning = prioritizedGoal.isRunning();
-            int priority = prioritizedGoal.getPriority();
-            boolean canUse = false;
-            boolean canContinue = false;
-
-            try {
-                canUse = goal.canUse();
-                // Only check canContinueToUse if the goal is actually running
-                if (isRunning) {
-                    canContinue = goal.canContinueToUse();
-                }
-            } catch (Exception e) {
-                // Some goals might crash when checked
-            }
-
-        });
     }
 
     // Ability system methods

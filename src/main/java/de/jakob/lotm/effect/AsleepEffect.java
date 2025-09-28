@@ -15,6 +15,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
@@ -56,7 +57,17 @@ public class AsleepEffect extends MobEffect {
     @SubscribeEvent
     public static void jump(LivingEvent.LivingJumpEvent event) {
         if(event.getEntity().hasEffect(ModEffects.ASLEEP)) {
-            event.getEntity().setDeltaMovement(new Vec3(0, -2, 0));
+            event.getEntity().setDeltaMovement(new Vec3(0, 0, 0));
+        }
+    }
+
+    // New event handler for damage - wakes up sleeping entities
+    @SubscribeEvent
+    public static void onLivingDamage(LivingDamageEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (entity.hasEffect(ModEffects.ASLEEP)) {
+            // Remove the asleep effect when the entity takes damage
+            entity.removeEffect(ModEffects.ASLEEP);
         }
     }
 

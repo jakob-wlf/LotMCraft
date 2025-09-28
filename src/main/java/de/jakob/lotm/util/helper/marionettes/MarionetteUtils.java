@@ -2,6 +2,7 @@ package de.jakob.lotm.util.helper.marionettes;
 
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.goals.MarionetteFollowGoal;
+import de.jakob.lotm.entity.custom.goals.MarionetteLifelinkGoal;
 import de.jakob.lotm.entity.custom.goals.MarionetteStayGoal;
 import de.jakob.lotm.entity.custom.goals.MarionetteTargetGoal;
 import de.jakob.lotm.item.ModItems;
@@ -55,6 +56,7 @@ public class MarionetteUtils {
             mob.goalSelector.addGoal(0, new MarionetteFollowGoal(mob));    // Highest priority for following
             mob.goalSelector.addGoal(1, new MarionetteStayGoal(mob));    // Highest priority for following
             mob.targetSelector.addGoal(0, new MarionetteTargetGoal(mob));  // Highest priority for targeting
+            mob.goalSelector.addGoal(10, new MarionetteLifelinkGoal(mob)); // Lifeline goal to handle controller disconnection
             mob.setTarget(null);
         }
 

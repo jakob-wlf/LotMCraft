@@ -34,7 +34,7 @@ public class RequiemAbility extends AbilityItem {
     private static final HashSet<UUID> pacifiedEntities = new HashSet<>();
 
     public RequiemAbility(Properties properties) {
-        super(properties, 1);
+        super(properties, 3);
     }
 
     @Override

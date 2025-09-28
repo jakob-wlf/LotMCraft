@@ -2,11 +2,13 @@ package de.jakob.lotm.abilities.fool;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
+import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.component.DataComponents;
@@ -219,8 +221,10 @@ public class PuppeteeringAbility extends AbilityItem {
             health.set(target.getHealth());
         }, () -> {
             entitiesBeingManipulated.remove(entity.getUUID());
-            if(entity instanceof Player player)
+            MarionetteComponent component = entity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+            if(entity instanceof Player player && !component.isMarionette()) {
                 turnIntoMarionette(target, player);
+            }
             else
                 target.setHealth(0);
         }, (ServerLevel) level);
