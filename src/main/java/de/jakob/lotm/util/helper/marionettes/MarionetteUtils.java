@@ -2,6 +2,7 @@ package de.jakob.lotm.util.helper.marionettes;
 
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.goals.MarionetteFollowGoal;
+import de.jakob.lotm.entity.custom.goals.MarionetteStayGoal;
 import de.jakob.lotm.entity.custom.goals.MarionetteTargetGoal;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
@@ -10,9 +11,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.DefendVillageTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -21,7 +25,6 @@ import net.minecraft.world.item.component.ItemLore;
 import java.util.List;
 
 public class MarionetteUtils {
-    
     public static boolean turnEntityIntoMarionette(LivingEntity entity, Player controller) {
         if (entity instanceof Player) {
             return false; // Players cannot be turned into marionettes
@@ -41,14 +44,16 @@ public class MarionetteUtils {
         if (entity instanceof Mob mob) {
             // Remove hostile targeting goals
             mob.targetSelector.removeAllGoals(goal ->
-                    goal instanceof NearestAttackableTargetGoal ||
-                            goal instanceof HurtByTargetGoal ||
-                            goal instanceof DefendVillageTargetGoal ||
-                            goal.getClass().getSimpleName().contains("Attack") ||
-                            goal.getClass().getSimpleName().contains("Hurt")
+                    goal instanceof StrollThroughVillageGoal ||
+                    goal instanceof BreedGoal ||
+                    goal instanceof MoveToBlockGoal ||
+                    goal instanceof PanicGoal ||
+                    goal instanceof RandomStrollGoal ||
+                    goal instanceof TargetGoal
             );
 
             mob.goalSelector.addGoal(0, new MarionetteFollowGoal(mob));    // Highest priority for following
+            mob.goalSelector.addGoal(1, new MarionetteStayGoal(mob));    // Highest priority for following
             mob.targetSelector.addGoal(0, new MarionetteTargetGoal(mob));  // Highest priority for targeting
             mob.setTarget(null);
         }

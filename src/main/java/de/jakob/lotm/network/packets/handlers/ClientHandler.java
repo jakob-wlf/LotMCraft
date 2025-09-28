@@ -1,5 +1,6 @@
 package de.jakob.lotm.network.packets.handlers;
 
+import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.gui.custom.CoordinateInputScreen;
 import de.jakob.lotm.network.packets.RingEffectPacket;
 import de.jakob.lotm.network.packets.SyncLivingEntityBeyonderDataPacket;
@@ -70,5 +71,9 @@ public class ClientHandler {
 
     public static void handleRingPacket(RingEffectPacket packet) {
         RingExpansionRenderer.handleRingEffectPacket(packet);
+    }
+
+    public static void removeDreamDivinationUser(Player player) {
+        DivinationAbility.dreamDivinationUsers.remove(player.getUUID());
     }
 }

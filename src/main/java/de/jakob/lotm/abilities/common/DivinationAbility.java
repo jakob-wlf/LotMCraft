@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.gui.custom.CoordinateInputScreen;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.OpenCoordinateScreenPacket;
+import de.jakob.lotm.network.packets.RemoveDreamDivinationUserPacket;
 import de.jakob.lotm.network.packets.SyncDangerPremonitionAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ClientScheduler;
@@ -126,20 +127,23 @@ public class DivinationAbility extends SelectableAbilityItem {
                 level.addFreshEntity(entity);
                 final GameType prevGameMode = player.gameMode.getGameModeForPlayer();
                 Vec3 prevPos = player.position();
-                ServerScheduler.scheduleForDuration(0, 1, 20 * 30, () -> {
+                ServerScheduler.scheduleForDuration(0, 1, 20 * 20, () -> {
                     player.setGameMode(GameType.SPECTATOR);
                     player.teleportTo((ServerLevel) level, pos.getX(), pos.getY(), pos.getZ(), player.getYRot() + 1, 0);
                     player.hurtMarked = true;
                 }, () -> {
                     dreamDivinationUsers.remove(entity.getUUID());
+                    PacketHandler.sendToPlayer(player, new RemoveDreamDivinationUserPacket());
                     player.teleportTo(prevPos.x, prevPos.y, prevPos.z);
                     player.setGameMode(prevGameMode);
                     player.hurtMarked = true;
                 }, (ServerLevel) level);
             }
         }, () -> {
-            if(!hasInputCoordinates.get())
+            if(!hasInputCoordinates.get()) {
                 dreamDivinationUsers.remove(entity.getUUID());
+                PacketHandler.sendToPlayer(player, new RemoveDreamDivinationUserPacket());
+            }
         }, (ServerLevel) level);
     }
 }
