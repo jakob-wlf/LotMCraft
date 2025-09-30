@@ -44,7 +44,7 @@ public abstract class SelectableAbilityItem extends AbilityItem{
         if(!this.canBeUsedByNPC)
             return;
 
-        if(cooldown > 0 && cooldowns.containsKey(beyonderNPC.getUUID()) && (System.currentTimeMillis() - cooldowns.get(beyonderNPC.getUUID())) < cooldown) {
+        if(this.cooldown > 0 && cooldowns.containsKey(beyonderNPC.getUUID()) && (System.currentTimeMillis() - cooldowns.get(beyonderNPC.getUUID())) < (this.cooldown * 50L)) {
             return;
         }
 

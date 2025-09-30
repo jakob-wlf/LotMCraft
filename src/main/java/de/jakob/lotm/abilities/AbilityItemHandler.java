@@ -62,6 +62,8 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> LIGHTNING = ITEMS.registerItem("lightning_ability", LightningAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SIREN_SONG = ITEMS.registerItem("siren_song_ability", SirenSongAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> TSUNAMI = ITEMS.registerItem("tsunami_ability", TsunamiAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> EARTHQUAKE = ITEMS.registerItem("earthquake_ability", EarthquakeAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> HURRICANE = ITEMS.registerItem("hurricane_ability", HurricaneAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> TOXIC_SMOKE = ITEMS.registerItem("toxic_smoke_ability", ToxicSmokeAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> POISONOUS_FLAME = ITEMS.registerItem("poisonous_flame_ability", PoisonousFlameAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
@@ -76,6 +78,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> UNDERWATER_BREATHING = ITEMS.registerItem("underwater_breathing_ability", UnderWaterBreathingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SHAPESHIFTING = ITEMS.registerItem("shapeshifting_ability", ShapeShiftingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> PUPPETEERING = ITEMS.registerItem("puppeteering_ability", PuppeteeringAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> MARIONETTE_CONTROLLING = ITEMS.registerItem("marionette_controlling_ability", MarionetteControllingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> MIDNIGHT_POEM = ITEMS.registerItem("midnight_poem_ability", MidnightPoemAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> NIGHTMARE = ITEMS.registerItem("nightmare_ability", NightmareAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

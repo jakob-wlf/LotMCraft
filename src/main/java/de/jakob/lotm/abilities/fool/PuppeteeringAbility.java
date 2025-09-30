@@ -99,7 +99,7 @@ public class PuppeteeringAbility extends AbilityItem {
                 manipulationTime = 20 * 10; // ~10s for seq 3-4 vs 5+
             } else {
                 // Default scaling: faster with bigger difference
-                int reduction = difference * (12 * 20); // ~12s less per level difference
+                int reduction = difference * (5 * 20);
                 manipulationTime = Math.max(baseTime - reduction, 20 * 5); // minimum 5s
             }
         }

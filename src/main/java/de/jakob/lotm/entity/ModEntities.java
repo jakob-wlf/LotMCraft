@@ -31,6 +31,17 @@ public class ModEntities {
             ENTITY_TYPES.register("wind_blade", () -> EntityType.Builder.<WindBladeEntity>of(WindBladeEntity::new, MobCategory.MISC)
                     .sized(.75f, 2f).build("wind_blade"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<TornadoEntity>> TORNADO =
+            ENTITY_TYPES.register("tornado", () -> EntityType.Builder.of(
+                            (EntityType<TornadoEntity> type, net.minecraft.world.level.Level level) ->
+                                    new TornadoEntity(type, level),
+                            MobCategory.MISC)
+                    .sized(4.0f, 8.0f)
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .build("tornado"));
+
     public static final Supplier<EntityType<ApprenticeDoorEntity>> APPRENTICE_DOOR =
             ENTITY_TYPES.register("apprentice_door", () -> EntityType.Builder.<ApprenticeDoorEntity>of(ApprenticeDoorEntity::new, MobCategory.MISC)
                     .sized(.005f, 2f).build("apprentice_door"));

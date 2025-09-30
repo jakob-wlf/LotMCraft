@@ -42,7 +42,7 @@ public class AbilityUtil {
         return BlockPos.containing(targetPosition);
     }
 
-    public static double distanceToGround(Level level, LivingEntity entity) {
+    public static double distanceToGround(Level level, Entity entity) {
         Vec3 startPos = entity.position();
 
         BlockPos pos = BlockPos.containing(startPos.x, startPos.y, startPos.z);
@@ -240,6 +240,33 @@ public class AbilityUtil {
         return blocks;
     }
 
+    public static Set<BlockPos> getBlocksInCircle(ServerLevel level, Vec3 center, double radius) {
+        if (level == null) return Set.of();
+
+        Set<BlockPos> blocks = new HashSet<>();
+
+        double stepSize = 0.5; // distance between points on circumference, tweak for density
+
+        for (double r = 0.2; r < radius + 0.2; r += 0.2) {
+            // Circumference at this radius
+            double circumference = 2 * Math.PI * r;
+
+            // Calculate steps so points are spaced ~stepSize apart
+            int steps = Math.max(6, (int) Math.ceil(circumference / stepSize));
+
+            for (int i = 0; i < steps; i++) {
+                double angle = (2 * Math.PI * i) / steps;
+                double x = center.x + r * Math.cos(angle);
+                double z = center.z + r * Math.sin(angle);
+
+                blocks.add(BlockPos.containing(x, center.y, z));
+            }
+        }
+
+        return blocks;
+    }
+
+
 
 
     public static @Nullable LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius) {
@@ -354,6 +381,10 @@ public class AbilityUtil {
         MarionetteComponent component = target.getData(ModAttachments.MARIONETTE_COMPONENT.get());
         if(component.isMarionette()) {
             if(source.getUUID().toString().equals(component.getControllerUUID()))
+                return false;
+
+            MarionetteComponent sourceComponent = source.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+            if(sourceComponent.isMarionette() && sourceComponent.getControllerUUID().equals(component.getControllerUUID()))
                 return false;
         }
         return true;

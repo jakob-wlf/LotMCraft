@@ -50,12 +50,23 @@ public class MarionetteControllerItem extends Item {
             Entity entity = ((ServerLevel) level).getEntity(UUID.fromString(entityUUID));
             if (!(entity instanceof LivingEntity livingEntity)) {
                 player.sendSystemMessage(Component.literal("Marionette not found!"));
+                stack.consume(1, player);
                 return InteractionResultHolder.fail(stack);
             }
             
             MarionetteComponent component = livingEntity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
             if (!component.isMarionette()) {
+                stack.consume(1, player);
                 return InteractionResultHolder.fail(stack);
+            }
+
+            if(player.isShiftKeyDown()) {
+                component.setMarionette(false);
+                component.setControllerUUID("");
+                ((LivingEntity) entity).setHealth(0);
+                stack.consume(1, player);
+                player.sendSystemMessage(Component.translatable("ability.lotm.puppeteering.entity_released").withColor(0xa26fc9));
+                return InteractionResultHolder.sidedSuccess(stack, false);
             }
             
             // Toggle follow mode or position marionette
@@ -66,7 +77,6 @@ public class MarionetteControllerItem extends Item {
                 
                 // Position the marionette
                 livingEntity.teleportTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
-                component.setFollowMode(false);
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_teleport").withColor(0xa26fc9));
             } else {
                 // Toggle follow mode
@@ -89,6 +99,7 @@ public class MarionetteControllerItem extends Item {
             String entityName = customData.copyTag().getString("MarionetteType");
             tooltip.add(Component.literal("Controls: " + entityName));
             tooltip.add(Component.literal("Right-click: Toggle follow/Position"));
+            tooltip.add(Component.literal("Shift-Right-click: Release"));
         }
     }
 }

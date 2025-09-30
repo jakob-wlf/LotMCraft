@@ -69,7 +69,7 @@ public class TsunamiEntity extends Entity {
     }
 
     @Override
-    public boolean isColliding(BlockPos pos, BlockState state) {
+    public boolean isColliding(@NotNull BlockPos pos, @NotNull BlockState state) {
         return false;
     }
 

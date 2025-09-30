@@ -139,6 +139,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.APPRENTICE_BOOK.get(), ApprenticeBookRenderer::new);
             EntityRenderers.register(ModEntities.BEYONDER_NPC.get(), BeyonderNPCRenderer::new);
             EntityRenderers.register(ModEntities.TSUNAMI.get(), TsunamiRenderer::new);
+            EntityRenderers.register(ModEntities.TORNADO.get(), TornadoRenderer::new);
         }
 
         @SubscribeEvent
@@ -159,6 +160,7 @@ public class LOTMCraft
             event.registerSpriteSet(ModParticles.BLACK_NOTE.get(), BlackNoteParticle.Provider::new);
             event.registerSpriteSet(ModParticles.GOLDEN_NOTE.get(), GoldenNoteParticle.Provider::new);
             event.registerSpriteSet(ModParticles.DISEASE.get(), DiseaseParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.EARTHQUAKE.get(), EarthquakeParticle.Provider::new);
         }
 
         @SubscribeEvent

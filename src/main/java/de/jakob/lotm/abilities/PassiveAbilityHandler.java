@@ -9,6 +9,7 @@ import de.jakob.lotm.abilities.demoness.passives.FeatherFallAbility;
 import de.jakob.lotm.abilities.door.passives.PhysicalEnhancementsDoorAbility;
 import de.jakob.lotm.abilities.fool.passives.PaperDaggersAbility;
 import de.jakob.lotm.abilities.fool.passives.PhysicalEnhancementsFoolAbility;
+import de.jakob.lotm.abilities.fool.passives.PuppeteeringEnhancementsAbility;
 import de.jakob.lotm.abilities.mother.passives.PhysicalEnhancementsMotherAbility;
 import de.jakob.lotm.abilities.red_priest.passive.FireResistanceAbility;
 import de.jakob.lotm.abilities.red_priest.passive.FlamingHitAbility;
@@ -41,6 +42,7 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> FIRE_RESISTANCE = ITEMS.registerItem("fire_resistance_ability", FireResistanceAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     public static final DeferredItem<Item> PAPER_DAGGERS = ITEMS.registerItem("paper_dagger_ability", PaperDaggersAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> PUPPETEERING_ENHANCEMENTS = ITEMS.registerItem("puppeteering_enhancements_ability", PuppeteeringEnhancementsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     public static final DeferredItem<Item> NOCTURNALITY = ITEMS.registerItem("nocturnality_ability", NocturnalityAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 

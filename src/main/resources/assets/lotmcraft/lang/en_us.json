@@ -82,6 +82,8 @@
   "ability.lotmcraft.siren_song.strengthening_melody": "Song of Courage",
   "ability.lotmcraft.siren_song.dazing_song": "Dazing Song",
   "item.lotmcraft.tsunami_ability": "Tsunami",
+  "item.lotmcraft.earthquake_ability": "Earthquake",
+  "item.lotmcraft.hurricane_ability": "Hurricane",
 
 
   "item.lotmcraft.toxic_smoke_ability": "Toxic Smoke",
@@ -104,6 +106,8 @@
   "ability.lotmcraft.puppeteering.entity_turned_failed": "Failed to turn the entity into your marionette",
   "ability.lotmcraft.puppeteering.entity_teleport": "Moved Entity",
   "ability.lotmcraft.puppeteering.follow_mode": "Follow Mode",
+  "ability.lotm.puppeteering.entity_released": "Released the Marionette",
+  "item.lotmcraft.marionette_controlling_ability": "Marionette Controlling",
 
 
   "item.lotmcraft.midnight_poem_ability": "Midnight Poem",
@@ -197,6 +201,8 @@
 
   "item.lotmcraft.paper_dagger_ability": "Paper Daggers",
   "item.lotmcraft.paper_dagger_ability.description": "Right click with paper to throw it as a dagger",
+  "item.lotmcraft.puppeteering_enhancements_ability": "Puppeteering Enhancements",
+  "item.lotmcraft.puppeteering_enhancements_ability.description": "Your range has increased massively and the time it takes was reduced greatly. Your marionettes can now use your abilities. The number of marionettes was increased",
 
   "item.lotmcraft.nocturnality_ability": "Nocturnality",
 

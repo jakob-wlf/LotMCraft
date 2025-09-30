@@ -63,7 +63,7 @@ public class AsleepEffect extends MobEffect {
 
     // New event handler for damage - wakes up sleeping entities
     @SubscribeEvent
-    public static void onLivingDamage(LivingDamageEvent event) {
+    public static void onLivingDamage(LivingDamageEvent.Post event) {
         LivingEntity entity = event.getEntity();
         if (entity.hasEffect(ModEffects.ASLEEP)) {
             // Remove the asleep effect when the entity takes damage
