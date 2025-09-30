@@ -186,9 +186,14 @@ public class TornadoEntity extends Entity {
         AABB boundingBox = this.getBoundingBox().inflate(5.0);
         List<Entity> entities = this.level().getEntities(this, boundingBox);
         Entity caster = getCaster();
-        
+
+        UUID casterUUID = getCasterUUID();
+
         for (Entity entity : entities) {
             if (entity instanceof LivingEntity && entity != caster) {
+                if (casterUUID != null && entity.getUUID().equals(casterUUID)) {
+                    continue; // Skip the caster
+                }
                 float distance = this.distanceTo(entity);
                 if (distance < 6.0f) {
                     float damageAmount = getDamage() * (1.0f - distance / 6.0f);

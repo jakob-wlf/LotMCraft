@@ -32,7 +32,7 @@ public class HurricaneAbility extends AbilityItem {
 
         Vec3 pos = AbilityUtil.getTargetLocation(entity, 12, 2);
 
-        TornadoEntity tornado = new TornadoEntity(ModEntities.TORNADO.get(), level, .75f, 8f, entity);
+        TornadoEntity tornado = new TornadoEntity(ModEntities.TORNADO.get(), level, 1.75f, 8f, entity);
         tornado.setPos(pos);
         level.addFreshEntity(tornado);
     }

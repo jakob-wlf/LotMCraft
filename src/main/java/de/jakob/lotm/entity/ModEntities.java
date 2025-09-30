@@ -36,7 +36,7 @@ public class ModEntities {
                             (EntityType<TornadoEntity> type, net.minecraft.world.level.Level level) ->
                                     new TornadoEntity(type, level),
                             MobCategory.MISC)
-                    .sized(4.0f, 8.0f)
+                    .sized(8.0f, 16.0f)
                     .clientTrackingRange(10)
                     .updateInterval(1)
                     .fireImmune()

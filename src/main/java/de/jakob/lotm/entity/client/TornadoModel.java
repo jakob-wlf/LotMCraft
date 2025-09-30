@@ -41,49 +41,27 @@ public class TornadoModel<T extends Entity> extends EntityModel<T> {
 		MeshDefinition meshdefinition = new MeshDefinition();
 		PartDefinition partdefinition = meshdefinition.getRoot();
 
-		PartDefinition bottom2 = partdefinition.addOrReplaceChild("bottom2",
-				CubeListBuilder.create().texOffs(496, 458).addBox(-9.0F, -17.0F, -9.0F, 18.0F, 10.0F, 17.0F, new CubeDeformation(0.0F)),
-				PartPose.offset(0.0F, 24.0F, 0.0F));
+		PartDefinition bottom2 = partdefinition.addOrReplaceChild("bottom2", CubeListBuilder.create().texOffs(496, 458).addBox(-9.0F, -17.0F, -9.0F, 18.0F, 10.0F, 17.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 24.0F, 0.0F));
 
-		PartDefinition bottom = partdefinition.addOrReplaceChild("bottom",
-				CubeListBuilder.create().texOffs(496, 389).addBox(-12.0F, 70.25F, -9.65F, 24.0F, 9.0F, 23.0F, new CubeDeformation(0.0F)),
-				PartPose.offset(0.0F, -53.25F, -2.35F));
+		PartDefinition bottom = partdefinition.addOrReplaceChild("bottom", CubeListBuilder.create().texOffs(496, 389).addBox(-12.0F, -4.5F, -11.5F, 24.0F, 9.0F, 23.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 21.6F, -0.5F));
 
-		PartDefinition bottom3 = partdefinition.addOrReplaceChild("bottom3",
-				CubeListBuilder.create(),
-				PartPose.offset(0.0F, 24.0F, 0.0F));
+		PartDefinition bottom3 = partdefinition.addOrReplaceChild("bottom3", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
 
-		PartDefinition cube_r1 = bottom3.addOrReplaceChild("cube_r1",
-				CubeListBuilder.create().texOffs(536, 204).addBox(-8.0F, -16.0F, -8.0F, 16.0F, 16.0F, 15.0F, new CubeDeformation(0.0F)),
-				PartPose.offsetAndRotation(0.0F, -16.0F, 0.0F, 0.1309F, 0.0F, 0.0F));
+		PartDefinition cube_r1 = bottom3.addOrReplaceChild("cube_r1", CubeListBuilder.create().texOffs(536, 204).addBox(-8.0F, -16.0F, -8.0F, 16.0F, 16.0F, 15.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -16.0F, 0.0F, 0.1309F, 0.0F, 0.0F));
 
-		PartDefinition bottom5 = partdefinition.addOrReplaceChild("bottom5",
-				CubeListBuilder.create(),
-				PartPose.offset(0.0F, 24.0F, 0.0F));
+		PartDefinition bottom5 = partdefinition.addOrReplaceChild("bottom5", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
 
-		PartDefinition cube_r2 = bottom5.addOrReplaceChild("cube_r2",
-				CubeListBuilder.create().texOffs(496, 421).addBox(-10.0F, -18.0F, -11.0F, 20.0F, 18.0F, 19.0F, new CubeDeformation(0.0F)),
-				PartPose.offsetAndRotation(0.0F, -28.25F, -1.0F, -0.2182F, 0.0F, 0.0F));
+		PartDefinition cube_r2 = bottom5.addOrReplaceChild("cube_r2", CubeListBuilder.create().texOffs(496, 421).addBox(-10.0F, -18.0F, -11.0F, 20.0F, 18.0F, 19.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -28.25F, -1.0F, -0.2182F, 0.0F, 0.0F));
 
-		PartDefinition top3 = partdefinition.addOrReplaceChild("top3",
-				CubeListBuilder.create(),
-				PartPose.offset(0.0F, 24.0F, 0.0F));
+		PartDefinition top3 = partdefinition.addOrReplaceChild("top3", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
 
-		PartDefinition cube_r3 = top3.addOrReplaceChild("cube_r3",
-				CubeListBuilder.create().texOffs(496, 338).addBox(-17.0F, -17.0F, -18.0F, 34.0F, 17.0F, 34.0F, new CubeDeformation(0.0F)),
-				PartPose.offsetAndRotation(0.0F, -44.25F, -1.0F, 0.0436F, 0.0F, 0.0F));
+		PartDefinition cube_r3 = top3.addOrReplaceChild("cube_r3", CubeListBuilder.create().texOffs(496, 338).addBox(-17.0F, -17.0F, -18.0F, 34.0F, 17.0F, 34.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -44.25F, -1.0F, 0.0436F, 0.0F, 0.0F));
 
-		PartDefinition top2 = partdefinition.addOrReplaceChild("top2",
-				CubeListBuilder.create(),
-				PartPose.offset(0.0F, 24.0F, 0.0F));
+		PartDefinition top2 = partdefinition.addOrReplaceChild("top2", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
 
-		PartDefinition cube_r4 = top2.addOrReplaceChild("cube_r4",
-				CubeListBuilder.create().texOffs(0, 491).addBox(-37.0F, -16.0F, -38.0F, 74.0F, 16.0F, 74.0F, new CubeDeformation(0.0F)),
-				PartPose.offsetAndRotation(0.0F, -61.25F, -1.75F, 0.0436F, 0.0F, 0.0F));
+		PartDefinition cube_r4 = top2.addOrReplaceChild("cube_r4", CubeListBuilder.create().texOffs(0, 491).addBox(-37.0F, -16.0F, -38.0F, 74.0F, 16.0F, 74.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -61.25F, -1.75F, 0.0436F, 0.0F, 0.0F));
 
-		PartDefinition top = partdefinition.addOrReplaceChild("top",
-				CubeListBuilder.create().texOffs(0, 338).addBox(-62.0F, -105.25F, -65.35F, 124.0F, 29.0F, 124.0F, new CubeDeformation(0.0F)),
-				PartPose.offset(0.0F, 24.0F, 0.0F));
+		PartDefinition top = partdefinition.addOrReplaceChild("top", CubeListBuilder.create().texOffs(0, 338).addBox(-62.0F, -105.25F, -65.35F, 124.0F, 29.0F, 124.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 24.0F, 0.0F));
 
 		return LayerDefinition.create(meshdefinition, 1024, 1024);
 	}
@@ -91,13 +69,13 @@ public class TornadoModel<T extends Entity> extends EntityModel<T> {
 	@Override
 	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		// Animate using the idle animation from TornadoAnimations
-		animateRotation(bottom, ageInTicks, -810.0f, 3.0f); // Full rotation
-		animateRotation(bottom3, ageInTicks, -360.0f, 3.0f);
-		animateRotation(bottom2, ageInTicks, -360.0f, 3.0f);
-		animateRotation(bottom5, ageInTicks, -360.0f, 3.0f);
-		animateRotation(top3, ageInTicks, -360.0f, 3.0f);
-		animateRotation(top2, ageInTicks, -540.0f, 3.0f);
-		animateRotation(top, ageInTicks, -630.0f, 3.0f);
+		animateRotation(bottom, ageInTicks, -720.0f, 2.0f); // Full rotation
+		animateRotation(bottom3, ageInTicks, -360.0f, 2.0f);
+		animateRotation(bottom2, ageInTicks, -360.0f, 2.0f);
+		animateRotation(bottom5, ageInTicks, -360.0f, 2.0f);
+		animateRotation(top3, ageInTicks, -360.0f, 2.0f);
+		animateRotation(top2, ageInTicks, -540.0f, 2.0f);
+		animateRotation(top, ageInTicks, -540.0f, 2.0f);
 
 		// Position animations for bottom5 and top3 (bobbing effect)
 		// Reset Y position first, then add animation
