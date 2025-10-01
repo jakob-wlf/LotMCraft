@@ -179,7 +179,7 @@ public class LightningEntity extends Entity {
                             startPos.add(0, -d, 0),
                             0,
                             random.nextInt(2),
-                            random.nextInt(12, 20),
+                            random.nextInt(10, 17),
                             (new Vec3(random.nextDouble(-1, 1), random.nextDouble(-3.4, -2), random.nextDouble(-1, 1)).normalize()));
                     level().addFreshEntity(entity);
                     branches.add(entity);

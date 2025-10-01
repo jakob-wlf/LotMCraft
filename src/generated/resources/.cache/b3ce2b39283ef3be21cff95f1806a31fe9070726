@@ -1,4 +1,4 @@
-// 1.21.1	2025-10-01T15:24:49.2003219	Item Models: lotmcraft
+// 1.21.1	2025-10-01T18:20:42.3568909	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -215,6 +215,7 @@ c0f93b03bc3b6cdbbd12076852f083d229f29c92 assets/lotmcraft/models/item/true_root_
 8df1832ea30d267e00fce0ccc983277d06a08ea8 assets/lotmcraft/models/item/unshadowed_spear_ability.json
 e666510632c1525aa90b0b935dd1534f054e0872 assets/lotmcraft/models/item/unwinged_angel_potion.json
 7dd9c46bc70c8c7c4d94be7b583c6c5d4faeaa9f assets/lotmcraft/models/item/water_manipulation_ability.json
+453659d9df7346edf6ad3a1d741986d334f23c00 assets/lotmcraft/models/item/water_mastery_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/wind_blessed.json
 c510228f6532a9f892e976154fbf2e8a9b510261 assets/lotmcraft/models/item/wind_blessed_potion.json
 3b4ecda32926f7a5f13f89e2f6cad9ad02eb974a assets/lotmcraft/models/item/wind_manipulation_ability.json

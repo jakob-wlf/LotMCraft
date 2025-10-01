@@ -65,6 +65,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> EARTHQUAKE = ITEMS.registerItem("earthquake_ability", EarthquakeAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> HURRICANE = ITEMS.registerItem("hurricane_ability", HurricaneAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> ROAR = ITEMS.registerItem("roar_ability", RoarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> WATER_MASTERY = ITEMS.registerItem("water_mastery_ability", WaterMasteryAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> TOXIC_SMOKE = ITEMS.registerItem("toxic_smoke_ability", ToxicSmokeAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> POISONOUS_FLAME = ITEMS.registerItem("poisonous_flame_ability", PoisonousFlameAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

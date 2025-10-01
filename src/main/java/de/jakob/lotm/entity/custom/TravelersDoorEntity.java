@@ -69,6 +69,10 @@ public class TravelersDoorEntity extends Entity {
         this.destX = destX;
         this.destY = destY;
         this.destZ = destZ;
+
+        while(!level.getBlockState(BlockPos.containing(destX, this.destY, destZ)).getCollisionShape(level, BlockPos.containing(destX, this.destY, destZ)).isEmpty()) {
+            this.destY += 1.0;
+        }
     }
 
     private static float yawFromVector(Vec3 dir) {

@@ -45,7 +45,7 @@ public class RoarAbility extends AbilityItem {
 
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 3, 1);
 
-        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 12).forEach(e -> {
+        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 19).forEach(e -> {
             e.hurt(e.damageSources().mobAttack(entity), (float) (16 * multiplier(entity)));
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(1.5);
             e.setDeltaMovement(knockBack);

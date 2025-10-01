@@ -85,6 +85,9 @@
   "item.lotmcraft.earthquake_ability": "Earthquake",
   "item.lotmcraft.hurricane_ability": "Hurricane",
   "item.lotmcraft.roar_ability": "Roar",
+  "item.lotmcraft.water_mastery_ability": "Water Mastery",
+  "ability.lotmcraft.water_mastery.water_wall": "Water Wall",
+  "ability.lotmcraft.water_mastery.flooding": "Flooding",
 
 
   "item.lotmcraft.toxic_smoke_ability": "Toxic Smoke",

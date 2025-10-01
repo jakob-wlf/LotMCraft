@@ -77,9 +77,10 @@ public class TravelersDoorAbility extends AbilityItem {
             if(travelersDoorUsers.containsKey(entity.getUUID())) {
                 hasInputCoordinates.set(true);
 
+                BlockPos pos = travelersDoorUsers.get(entity.getUUID());
+
                 travelersDoorUsers.remove(entity.getUUID());
 
-                BlockPos pos = travelersDoorUsers.get(entity.getUUID());
                 TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(), level, entity.getLookAngle().normalize().scale(-1), finalTargetLoc, pos.getX(), pos.getY(), pos.getZ());
                 level.addFreshEntity(door);
                 level.playSound(null, BlockPos.containing(finalTargetLoc), SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1, 1);
