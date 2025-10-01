@@ -66,7 +66,7 @@ public class FrostSpearProjectileEntity extends AbstractArrow {
     protected void onHitEntity(EntityHitResult result) {
         this.discard();
         LivingEntity target = (LivingEntity) result.getEntity();
-        level.explode(owner, target.position().x, target.position().y, target.position().z, 3.5f, griefing, Level.ExplosionInteraction.NONE);
+        level.explode(owner, target.position().x, target.position().y, target.position().z, 3.5f, false, Level.ExplosionInteraction.NONE);
         target.hurt(this.damageSources().mobAttack(owner), (float) damage);
     }
 
