@@ -48,6 +48,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                SyncTravelersDoorCoordinatesPacket.TYPE,
+                SyncTravelersDoorCoordinatesPacket.STREAM_CODEC,
+                SyncTravelersDoorCoordinatesPacket::handle
+        );
+
+        registrar.playToServer(
                 AbilitySelectionPacket.TYPE,
                 AbilitySelectionPacket.STREAM_CODEC,
                 AbilitySelectionPacket::handle
@@ -87,6 +93,12 @@ public class PacketHandler {
                 OpenCoordinateScreenPacket.TYPE,
                 OpenCoordinateScreenPacket.STREAM_CODEC,
                 OpenCoordinateScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenCoordinateScreenTravelersDoorPacket.TYPE,
+                OpenCoordinateScreenTravelersDoorPacket.STREAM_CODEC,
+                OpenCoordinateScreenTravelersDoorPacket::handle
         );
 
         registrar.playToClient(

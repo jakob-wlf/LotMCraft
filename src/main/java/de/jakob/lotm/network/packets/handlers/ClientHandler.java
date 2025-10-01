@@ -20,8 +20,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientHandler {
-    public static void openCoordinateScreen(Player player) {
-        Minecraft.getInstance().setScreen(new CoordinateInputScreen(player));
+    public static void openCoordinateScreen(Player player, String use) {
+        Minecraft.getInstance().setScreen(new CoordinateInputScreen(player, use));
     }
 
     public static void syncLivingEntityBeyonderData(SyncLivingEntityBeyonderDataPacket packet) {

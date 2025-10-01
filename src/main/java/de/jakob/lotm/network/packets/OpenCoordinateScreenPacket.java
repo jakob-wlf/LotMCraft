@@ -28,7 +28,7 @@ public record OpenCoordinateScreenPacket() implements CustomPacketPayload {
     public static void handle(OpenCoordinateScreenPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.flow().getReceptionSide().isClient()) {
-                ClientHandler.openCoordinateScreen(context.player());
+                ClientHandler.openCoordinateScreen(context.player(), "dream_divination");
             }
         });
     }

@@ -185,7 +185,7 @@ public class TornadoEntity extends Entity {
 
         Vec3 finalMovement = (new Vec3(horizontalMovement.x, yMovement, horizontalMovement.z)).normalize().scale(getSpeed());
         this.setDeltaMovement(finalMovement);
-        this.move(MoverType.SELF, this.getDeltaMovement());  // ADD THIS LINE
+        this.move(MoverType.SELF, this.getDeltaMovement());
         this.hurtMarked = true;
 
         damageNearbyEntities();

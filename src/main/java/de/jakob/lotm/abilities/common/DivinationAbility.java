@@ -124,7 +124,6 @@ public class DivinationAbility extends SelectableAbilityItem {
                 hasInputCoordinates.set(true);
 
                 BlockPos pos = dreamDivinationUsers.get(entity.getUUID());
-                level.addFreshEntity(entity);
                 final GameType prevGameMode = player.gameMode.getGameModeForPlayer();
                 Vec3 prevPos = player.position();
                 ServerScheduler.scheduleForDuration(0, 1, 20 * 20, () -> {

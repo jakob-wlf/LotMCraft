@@ -30,11 +30,19 @@ import java.util.Set;
 import java.util.UUID;
 
 public class TravelersDoorEntity extends Entity {
+    private double destX;
+    private double destY;
+    private double destZ;
+    private static final double TELEPORT_RANGE = 1.0; // Distance at which entities teleport
+
     // Required constructors for entity system
     public TravelersDoorEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
         this.noPhysics = true; // Disable physics
         this.noCulling = true; // Always render regardless of culling
+        this.destX = 0.0;
+        this.destY = 0.0;
+        this.destZ = 0.0;
     }
 
     @Override
@@ -55,6 +63,13 @@ public class TravelersDoorEntity extends Entity {
         this.moveTo(center.x, center.y, center.z, yaw, pitch);
     }
 
+    // Constructor with destination coordinates
+    public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing, Vec3 center, double destX, double destY, double destZ) {
+        this(type, level, facing, center);
+        this.destX = destX;
+        this.destY = destY;
+        this.destZ = destZ;
+    }
 
     private static float yawFromVector(Vec3 dir) {
         if (dir.lengthSqr() < 1.0E-6) return 0.0F; // avoid NaN if looking straight up/down
@@ -62,10 +77,21 @@ public class TravelersDoorEntity extends Entity {
         return (float)(Math.toDegrees(Math.atan2(-dir.x, dir.z)));
     }
 
-
     @Override
     public void tick() {
         super.tick();
+
+        // Only check for nearby entities on the server
+        if (!this.level().isClientSide) {
+            // Get all entities within teleport range
+            for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(TELEPORT_RANGE), e -> e != this && e.isAlive())) {
+                // Teleport the entity to destination coordinates
+                entity.teleportTo(destX, destY, destZ);
+
+                // Optional: Reset fall distance to prevent damage
+                entity.resetFallDistance();
+            }
+        }
     }
 
     @Override
@@ -81,10 +107,22 @@ public class TravelersDoorEntity extends Entity {
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compoundTag) {
+        if (compoundTag.contains("DestX")) {
+            this.destX = compoundTag.getDouble("DestX");
+        }
+        if (compoundTag.contains("DestY")) {
+            this.destY = compoundTag.getDouble("DestY");
+        }
+        if (compoundTag.contains("DestZ")) {
+            this.destZ = compoundTag.getDouble("DestZ");
+        }
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
+        compoundTag.putDouble("DestX", this.destX);
+        compoundTag.putDouble("DestY", this.destY);
+        compoundTag.putDouble("DestZ", this.destZ);
     }
 
     @Override
@@ -100,5 +138,36 @@ public class TravelersDoorEntity extends Entity {
     @Override
     protected boolean canAddPassenger(Entity passenger) {
         return false; // No passengers allowed
+    }
+
+    // Getters and setters for destination coordinates
+    public double getDestX() {
+        return destX;
+    }
+
+    public void setDestX(double destX) {
+        this.destX = destX;
+    }
+
+    public double getDestY() {
+        return destY;
+    }
+
+    public void setDestY(double destY) {
+        this.destY = destY;
+    }
+
+    public double getDestZ() {
+        return destZ;
+    }
+
+    public void setDestZ(double destZ) {
+        this.destZ = destZ;
+    }
+
+    public void setDestination(double x, double y, double z) {
+        this.destX = x;
+        this.destY = y;
+        this.destZ = z;
     }
 }
