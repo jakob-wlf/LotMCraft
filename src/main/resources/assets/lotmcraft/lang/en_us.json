@@ -213,6 +213,9 @@
 
   "item.lotmcraft.feather_fall_ability": "Feather Fall",
 
+  "item.lotmcraft.riptide_ability": "Riptide",
+  "item.lotmcraft.riptide_ability.description": "Your Beyonder Abilities get stronger while you are in water",
+
   "_comment003": "Effects-----------------------------------------------------------------------------",
   "effect.lotmcraft.asleep": "Asleep",
   "effect.lotmcraft.loosing_control": "Loosing Control",
@@ -571,5 +574,6 @@
   "lotm.spirituality": "Spirituality",
   "lotm.on": "On",
   "lotm.off": "Off",
-  "lotm.passive": "Passive"
+  "lotm.passive": "Passive",
+  "lotmcraft.griefing_enabled_required": "Enable griefing for this ability to work"
 }
