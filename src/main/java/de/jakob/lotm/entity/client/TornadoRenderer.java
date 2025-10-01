@@ -34,7 +34,7 @@ public class TornadoRenderer extends EntityRenderer<TornadoEntity> {
         float ageInTicks = entity.tickCount + partialTicks;
 
         // Fix upside-down rendering: scale Y by -1 and adjust position
-        poseStack.scale(2.0f, -2.0f, 2.0f);
+        poseStack.scale(1.85f, -2.1f, 1.85f);
         poseStack.translate(0, -1.5, 0);
 
         VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityTranslucent(TEXTURE));

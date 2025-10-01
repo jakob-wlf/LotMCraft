@@ -38,7 +38,8 @@ public class TornadoEntity extends Entity {
     
     private Vec3 randomDirection = Vec3.ZERO;
     private int directionChangeCooldown = 0;
-    
+
+    private static final float TARGET_HEIGHT_ABOVE_GROUND = 0.5f;
     public TornadoEntity(EntityType<?> entityType, Level level) {
         this(entityType, level, 1.0f, 4.0f, null, null);
     }
@@ -124,61 +125,85 @@ public class TornadoEntity extends Entity {
         }
         return null;
     }
-    
+
+    private double findGroundLevel(BlockPos pos) {
+        for (int y = 0; y < 10; y++) {
+            BlockPos checkPos = pos.below(y);
+            BlockState state = this.level().getBlockState(checkPos);
+            if (!state.isAir() && state.isSolidRender(this.level(), checkPos)) {
+                return checkPos.getY() + 1.0;
+            }
+        }
+        for (int y = 1; y < 10; y++) {
+            BlockPos checkPos = pos.above(y);
+            BlockState stateBelow = this.level().getBlockState(checkPos.below());
+            if (!stateBelow.isAir() && stateBelow.isSolidRender(this.level(), checkPos.below())) {
+                return checkPos.getY();
+            }
+        }
+        return pos.getY();
+    }
+
     @Override
     public void tick() {
         super.tick();
-        
+
         lifeTicks++;
         if (lifeTicks > maxLifeTicks) {
             this.discard();
             return;
         }
-        
-        // Movement logic
+
         Entity target = getTarget();
+        Vec3 horizontalMovement;
+
         if (target != null && target.isAlive()) {
-            // Chase target
-            Vec3 direction = target.position().subtract(this.position()).normalize();
-            this.setDeltaMovement(direction.scale(getSpeed() * 0.2));
+            Vec3 direction = target.position().subtract(this.position());
+            direction = new Vec3(direction.x, 0, direction.z).normalize();
+            horizontalMovement = direction.scale(getSpeed() * 0.2);
         } else {
-            // Random movement
             if (directionChangeCooldown <= 0) {
                 randomDirection = new Vec3(
-                    this.random.nextGaussian() * 0.5,
-                    0,
-                    this.random.nextGaussian() * 0.5
+                        this.random.nextGaussian() * 0.5,
+                        0,
+                        this.random.nextGaussian() * 0.5
                 ).normalize();
                 directionChangeCooldown = 40 + this.random.nextInt(60);
             } else {
                 directionChangeCooldown--;
             }
-            this.setDeltaMovement(randomDirection.scale(getSpeed() * 0.15));
+            horizontalMovement = randomDirection;
         }
-        
-        this.move(MoverType.SELF, this.getDeltaMovement());
-        
-        // Damage entities
+
+        double groundLevel = findGroundLevel(this.blockPosition());
+        double targetY = groundLevel + TARGET_HEIGHT_ABOVE_GROUND;
+        double currentY = this.getY();
+
+        double verticalSpeed = 0.1;
+        double yDiff = targetY - currentY;
+        double yMovement = Mth.clamp(yDiff, -verticalSpeed, verticalSpeed);
+
+        Vec3 finalMovement = (new Vec3(horizontalMovement.x, yMovement, horizontalMovement.z)).normalize().scale(getSpeed());
+        this.setDeltaMovement(finalMovement);
+        this.move(MoverType.SELF, this.getDeltaMovement());  // ADD THIS LINE
+        this.hurtMarked = true;
+
         damageNearbyEntities();
-        
-        // Pick up blocks
-        if (blockPickupCooldown <= 0 && !this.level().isClientSide) {
-            pickupBlocks();
-            blockPickupCooldown = 20;
-        } else {
-            blockPickupCooldown--;
-        }
-        
-        // Update circling blocks
-        updateCirclingBlocks();
-        
-        // Spawn particles
+
+//        if (blockPickupCooldown <= 0 && !this.level().isClientSide) {
+//            pickupBlocks();
+//            blockPickupCooldown = 20;
+//        } else {
+//            blockPickupCooldown--;
+//        }
+//
+//        updateCirclingBlocks();
+
         spawnParticles();
-        
-        // Play sound occasionally
+
         if (this.tickCount % 20 == 0) {
-            this.level().playSound(null, this.blockPosition(), SoundEvents.ELYTRA_FLYING, 
-                SoundSource.HOSTILE, 1.0f, 0.5f + this.random.nextFloat() * 0.3f);
+            this.level().playSound(null, this.blockPosition(), SoundEvents.ELYTRA_FLYING,
+                    SoundSource.HOSTILE, 1.0f, 0.5f + this.random.nextFloat() * 0.3f);
         }
     }
     
@@ -192,14 +217,12 @@ public class TornadoEntity extends Entity {
         for (Entity entity : entities) {
             if (entity instanceof LivingEntity && entity != caster) {
                 if (casterUUID != null && entity.getUUID().equals(casterUUID)) {
-                    continue; // Skip the caster
+                    continue;
                 }
                 float distance = this.distanceTo(entity);
                 if (distance < 6.0f) {
-                    float damageAmount = getDamage() * (1.0f - distance / 6.0f);
-                    entity.hurt(this.damageSources().magic(), damageAmount);
+                    entity.hurt(this.damageSources().magic(), getDamage());
                     
-                    // Pull entities toward center
                     Vec3 direction = this.position().subtract(entity.position()).normalize();
                     entity.push(direction.x * 0.3, 0.3, direction.z * 0.3);
                 }
@@ -208,12 +231,12 @@ public class TornadoEntity extends Entity {
     }
     
     private void pickupBlocks() {
-        if (circlingBlocks.size() >= 12) return; // Max 12 blocks
+        if (circlingBlocks.size() >= 12) return;
         
         BlockPos centerPos = this.blockPosition();
         int radius = 3;
         
-        for (int i = 0; i < 3; i++) { // Try 3 times per pickup cycle
+        for (int i = 0; i < 3; i++) {
             BlockPos targetPos = centerPos.offset(
                 this.random.nextInt(radius * 2) - radius,
                 this.random.nextInt(3) - 1,
@@ -250,7 +273,7 @@ public class TornadoEntity extends Entity {
             block.lifetime++;
             block.angle += 5.0f;
             
-            if (block.lifetime > 100) { // Remove after 5 seconds
+            if (block.lifetime > 100) {
                 iterator.remove();
             }
         }

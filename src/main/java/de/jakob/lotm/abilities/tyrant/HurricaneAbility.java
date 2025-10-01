@@ -30,9 +30,11 @@ public class HurricaneAbility extends AbilityItem {
     protected void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide()) return;
 
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 12, 3);
+
         Vec3 pos = AbilityUtil.getTargetLocation(entity, 12, 2);
 
-        TornadoEntity tornado = new TornadoEntity(ModEntities.TORNADO.get(), level, 1.75f, 8f, entity);
+        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, 17f, entity) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, 17f, entity, target);
         tornado.setPos(pos);
         level.addFreshEntity(tornado);
     }
