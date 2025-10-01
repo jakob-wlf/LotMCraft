@@ -77,6 +77,8 @@ public class TravelersDoorAbility extends AbilityItem {
             if(travelersDoorUsers.containsKey(entity.getUUID())) {
                 hasInputCoordinates.set(true);
 
+                travelersDoorUsers.remove(entity.getUUID());
+
                 BlockPos pos = travelersDoorUsers.get(entity.getUUID());
                 TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(), level, entity.getLookAngle().normalize().scale(-1), finalTargetLoc, pos.getX(), pos.getY(), pos.getZ());
                 level.addFreshEntity(door);

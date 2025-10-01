@@ -41,7 +41,8 @@ public class DivinationAbility extends SelectableAbilityItem {
                 "fool", 9,
                 "door", 7,
                 "hermit", 9,
-                "demoness", 7
+                "demoness", 7,
+                "wheel_of_fortune", 8
         ));
     }
 

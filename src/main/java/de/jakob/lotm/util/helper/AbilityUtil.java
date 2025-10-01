@@ -221,6 +221,28 @@ public class AbilityUtil {
         return blocks;
     }
 
+    public static Set<BlockPos> getBlocksInCircleOutline(ServerLevel level, Vec3 center,
+                                                         double radius) {
+        if (level == null) return Set.of();
+
+        Set<BlockPos> blocks = new HashSet<>();
+
+        double circumference = 2 * Math.PI * radius;
+
+        // Calculate steps so points are spaced ~stepSize apart
+        int steps = Math.max(6, (int) Math.ceil(circumference * 2));
+
+        for (int i = 0; i < steps; i++) {
+            double angle = (2 * Math.PI * i) / steps;
+            double x = center.x + radius * Math.cos(angle);
+            double z = center.z + radius * Math.sin(angle);
+
+            blocks.add(BlockPos.containing(x, center.y, z));
+        }
+
+        return blocks;
+    }
+
     public static Set<BlockPos> getBlocksInCircle(ServerLevel level, Vec3 center,
                                                          double radius, int steps) {
         if (level == null) return Set.of();

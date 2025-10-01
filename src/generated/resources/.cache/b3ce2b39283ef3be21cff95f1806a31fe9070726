@@ -1,4 +1,4 @@
-// 1.21.1	2025-09-30T21:16:21.1038045	Item Models: lotmcraft
+// 1.21.1	2025-10-01T15:24:49.2003219	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -133,6 +133,7 @@ d663c9b219f3cc0118771ec25a55dadabfae7d62 assets/lotmcraft/models/item/physical_e
 a0466dad8680f4cc64ffdad5a59b5a2ac1e3d361 assets/lotmcraft/models/item/physical_enhancements_sun_ability.json
 9d38810e38b8dc2508fffb8d41ed7d766a82e294 assets/lotmcraft/models/item/physical_enhancements_tyrant_ability.json
 08dadf165d0583ca092f76beabc3ef683cb364b0 assets/lotmcraft/models/item/physical_enhancements_visionary_ability.json
+d11beee7232314c4ae9d863211fbf9506fcbeb68 assets/lotmcraft/models/item/physical_enhancements_wheel_of_fortune_ability.json
 a84e8f918b2e343ae4831073126c34e6e8447cd7 assets/lotmcraft/models/item/placate_ability.json
 63285aca4004491d7073c8b9998c3b4c06a54638 assets/lotmcraft/models/item/planter_potion.json
 5578269b846a6661a6cab8b42599e160895bb2f9 assets/lotmcraft/models/item/plant_controlling_ability.json
@@ -161,6 +162,7 @@ a704ca7b9163942be958fe4b8493c101ebd5e5fe assets/lotmcraft/models/item/reaper_pot
 f87acda52ddb81dc800bf18d4a35b4e309bcd885 assets/lotmcraft/models/item/redcrown_balsam_powder.json
 22bcac033250485b8ccd65314821997edffcc4fe assets/lotmcraft/models/item/red_chestnut_flower.json
 45f255a4af176042191ab5c7245144cc9d8465d7 assets/lotmcraft/models/item/requiem_ability.json
+29c99a4ad6e3972adabdc7b1eb7278e8c8b2cfbf assets/lotmcraft/models/item/roar_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/sailor.json
 b17ad3ec7a0bd9b5fb8ea926b63c142f9491297d assets/lotmcraft/models/item/sailor_potion.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/scribe.json
