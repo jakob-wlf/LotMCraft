@@ -105,6 +105,11 @@ public abstract class ToggleAbilityItem extends Item {
         stop(level, entity);
     }
 
+    @Override
+    public @NotNull Component getName(ItemStack stack) {
+        return Component.translatable(this.getDescriptionId(stack)).append(Component.literal(" (")).append(Component.translatable("lotm.toggleable")).append(Component.literal(")"));
+    }
+
     public boolean canUse(Player player) {
         return canUse(player, false);
     }

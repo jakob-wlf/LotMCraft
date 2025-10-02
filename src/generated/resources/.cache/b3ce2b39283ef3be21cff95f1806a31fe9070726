@@ -1,4 +1,4 @@
-// 1.21.1	2025-10-01T23:23:15.5294686	Item Models: lotmcraft
+// 1.21.1	2025-10-02T11:27:29.6000714	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -16,6 +16,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/astrologer
 ab4e04a60003716e741e92a9df0dd572883bbbcd assets/lotmcraft/models/item/awe_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/bard.json
 7800b42da67b62cb90699e14aa60a7bc408bd946 assets/lotmcraft/models/item/bard_potion.json
+265396d83b5b7a0c49a23f8ae5d6caa5a9795501 assets/lotmcraft/models/item/battle_hypnosis_ability.json
 82727287489addd69560995fcaf2e197eb398144 assets/lotmcraft/models/item/biologist_potion.json
 a578b3a6402c4e23b86fea8b0dc8b72968ee4cf2 assets/lotmcraft/models/item/black_feather_of_monster_bird.json
 9b397ef35da6a6009ac197ed9b1fc009412d32e6 assets/lotmcraft/models/item/black_flame_ability.json
@@ -48,6 +49,7 @@ f3399a5bfbec288b790dcfc902ca3cd42e2bb779 assets/lotmcraft/models/item/devil_poti
 2a92cf27f930c351873b3177c3f94b8726fa16a9 assets/lotmcraft/models/item/doctor_potion.json
 15e72a980efd869888ab480120c8513462095a22 assets/lotmcraft/models/item/door_opening_ability.json
 2f4f1eb56203f8705824beffda3c7d29fcc3d3cf assets/lotmcraft/models/item/dragon_eyed_condor_eyeball.json
+5fe22bab4e50af835904b33bf67619a936ed3cd5 assets/lotmcraft/models/item/dragon_scales_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/dreamwalker.json
 b952b1464d2b81738e338feb52c6b7e95d353d88 assets/lotmcraft/models/item/dreamwalker_potion.json
 bec10830c4c5130018c4f2b64c0b75d0d4dc0280 assets/lotmcraft/models/item/dream_catcher_heart.json
@@ -147,6 +149,7 @@ d67bcec23c80838c59464d88240d8f5fb53260b8 assets/lotmcraft/models/item/provoker_p
 df644e75a5610413b9cb699977749c11813f4988 assets/lotmcraft/models/item/provoking_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/psychiatrist.json
 cde6a4f8cd1aa8c1b62fdeb95338b5b15bc6a07b assets/lotmcraft/models/item/psychiatrist_potion.json
+ceca3c3c6e79ceed830e6ed7537a8c61ee5fb47c assets/lotmcraft/models/item/psychological_invisibility_ability.json
 863b291ae68895eec32a27e2be5158e0b0be4d11 assets/lotmcraft/models/item/puppeteering_ability.json
 261c8eb22f4c6ff6fe3b69538c1acd110e1e1a8d assets/lotmcraft/models/item/puppeteering_enhancements_ability.json
 e2e40f0af24a526842e796c6f8781cbe28f1a216 assets/lotmcraft/models/item/pure_white_brilliant_rock.json
@@ -200,6 +203,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/spirit_war
 47500e8e101d09d23113f2683603ff979e913e47 assets/lotmcraft/models/item/succubus_eyes.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/telepathist.json
 d462f6c6ebb337ecf252224a3fcee59071de57bd assets/lotmcraft/models/item/telepathist_potion.json
+18f14ae9a63b58cd5e4e065b5573d559a233c537 assets/lotmcraft/models/item/telepathy_ability.json
 79c58a1bd0e56763d9c9c7920fe9a95d09fd71a4 assets/lotmcraft/models/item/thousand_faced_hunter_blood.json
 5343324b529681f6227f44b0af3cd3ed00e94b79 assets/lotmcraft/models/item/thread_manipulation_ability.json
 4865c763e9760ff402e2011e4f0f41cf9708b91d assets/lotmcraft/models/item/toxic_smoke_ability.json

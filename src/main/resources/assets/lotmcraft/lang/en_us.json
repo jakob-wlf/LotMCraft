@@ -170,6 +170,7 @@
   "item.lotmcraft.travelers_door_ability": "Travelers Door",
 
   "item.lotmcraft.spectating_ability": "Spectating",
+  "item.lotmcraft.telepathy_ability": "Telepathy",
   "item.lotmcraft.frenzy_ability": "Frenzy",
   "ability.lotmcraft.frenzy.no_target": "No Target found",
   "item.lotmcraft.awe_ability": "Awe",
@@ -177,6 +178,9 @@
   "item.lotmcraft.placate_ability.description": "Placate someone to stop them from loosing control",
   "ability.lotmcraft.placate.self": "Placate Self",
   "ability.lotmcraft.placate.others": "Placate Others",
+  "item.lotmcraft.psychological_invisibility_ability": "Psychological Invisibility",
+  "item.lotmcraft.battle_hypnosis_ability": "Battle Hypnosis",
+  "item.lotmcraft.dragon_scales_ability": "Dragon Scales",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",
@@ -575,5 +579,6 @@
   "lotm.on": "On",
   "lotm.off": "Off",
   "lotm.passive": "Passive",
+  "lotm.toggleable": "Toggleable",
   "lotmcraft.griefing_enabled_required": "Enable griefing for this ability to work"
 }

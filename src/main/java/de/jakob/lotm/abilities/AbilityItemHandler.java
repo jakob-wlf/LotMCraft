@@ -21,10 +21,7 @@ import de.jakob.lotm.abilities.red_priest.PyrokinesisAbility;
 import de.jakob.lotm.abilities.red_priest.TrapAbility;
 import de.jakob.lotm.abilities.tyrant.*;
 import de.jakob.lotm.abilities.sun.*;
-import de.jakob.lotm.abilities.visionary.AweAbility;
-import de.jakob.lotm.abilities.visionary.FrenzyAbility;
-import de.jakob.lotm.abilities.visionary.PlacateAbility;
-import de.jakob.lotm.abilities.visionary.SpectatingAbility;
+import de.jakob.lotm.abilities.visionary.*;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
@@ -109,9 +106,13 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> TRAVELERS_DOOR = ITEMS.registerItem("travelers_door_ability", TravelersDoorAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> SPECTATING = ITEMS.registerItem("spectating_ability", SpectatingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> TELEPATHY = ITEMS.registerItem("telepathy_ability", TelepathyAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> FRENZY = ITEMS.registerItem("frenzy_ability", FrenzyAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> AWE = ITEMS.registerItem("awe_ability", AweAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> PLACATE = ITEMS.registerItem("placate_ability", PlacateAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> PSYCHOLOGICAL_INVISIBILITY = ITEMS.registerItem("psychological_invisibility_ability", PsychologicalInvisibilityAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> BATTLE_HYPNOSIS = ITEMS.registerItem("battle_hypnosis_ability", BattleHypnosisAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> DRAGON_SCALES = ITEMS.registerItem("dragon_scales_ability", DragonScalesAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> ABILITY_NOT_IMPLEMENTED = ITEMS.registerItem("ability_not_implemented", Item::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
