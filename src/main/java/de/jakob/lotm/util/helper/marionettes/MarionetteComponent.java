@@ -9,7 +9,8 @@ public class MarionetteComponent {
     private boolean isMarionette = false;
     private String controllerUUID = "";
     private boolean followMode = true;
-    
+    private boolean shouldAttack = false;
+
     public MarionetteComponent() {}
     
     public MarionetteComponent(boolean isMarionette, String controllerUUID) {
@@ -24,6 +25,8 @@ public class MarionetteComponent {
     public void setControllerUUID(String controllerUUID) { this.controllerUUID = controllerUUID; }
     public boolean isFollowMode() { return followMode; }
     public void setFollowMode(boolean followMode) { this.followMode = followMode; }
+    public boolean shouldAttack() { return shouldAttack; }
+    public void setShouldAttack(boolean shouldAttack) { this.shouldAttack = shouldAttack; }
     
     public static final IAttachmentSerializer<CompoundTag, MarionetteComponent> SERIALIZER =
             new IAttachmentSerializer<>() {

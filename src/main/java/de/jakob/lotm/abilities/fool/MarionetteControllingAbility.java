@@ -27,5 +27,7 @@ public class MarionetteControllingAbility extends AbilityItem {
     protected void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
+
+
     }
 }

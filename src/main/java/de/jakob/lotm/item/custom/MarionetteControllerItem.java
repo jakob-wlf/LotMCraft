@@ -1,11 +1,16 @@
 package de.jakob.lotm.item.custom;
 
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.util.mixin.EntityAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -23,6 +28,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,19 +65,15 @@ public class MarionetteControllerItem extends Item {
                 stack.consume(1, player);
                 return InteractionResultHolder.fail(stack);
             }
-
-            if(player.isShiftKeyDown()) {
-                component.setMarionette(false);
-                component.setControllerUUID("");
-                ((LivingEntity) entity).setHealth(0);
-                stack.consume(1, player);
-                player.sendSystemMessage(Component.translatable("ability.lotm.puppeteering.entity_released").withColor(0xa26fc9));
-                return InteractionResultHolder.sidedSuccess(stack, false);
-            }
             
             // Toggle follow mode or position marionette
             HitResult hitResult = player.pick(20.0D, 0.0F, false);
             if (hitResult.getType() == HitResult.Type.BLOCK) {
+                if(player.isShiftKeyDown()) {
+                    component.setShouldAttack(!component.shouldAttack());
+                    player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.attack").append(Component.literal(": ")).append(Component.translatable(component.shouldAttack() ? "lotm.on" : "lotm.off")).withColor(0xa26fc9));
+                    return InteractionResultHolder.sidedSuccess(stack, false);
+                }
                 BlockHitResult blockHit = (BlockHitResult) hitResult;
                 BlockPos pos = blockHit.getBlockPos().above();
                 
@@ -79,6 +81,14 @@ public class MarionetteControllerItem extends Item {
                 livingEntity.teleportTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_teleport").withColor(0xa26fc9));
             } else {
+                if(player.isShiftKeyDown()) {
+                    component.setMarionette(false);
+                    component.setControllerUUID("");
+                    livingEntity.setHealth(0);
+                    stack.consume(1, player);
+                    player.sendSystemMessage(Component.translatable("ability.lotm.puppeteering.entity_released").withColor(0xa26fc9));
+                    return InteractionResultHolder.sidedSuccess(stack, false);
+                }
                 // Toggle follow mode
                 component.setFollowMode(!component.isFollowMode());
                 if(!component.isFollowMode() && livingEntity instanceof Mob mob) {
@@ -91,6 +101,32 @@ public class MarionetteControllerItem extends Item {
         
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }
+
+    public static void onHold(Player player, ItemStack itemStack) {
+
+    }
+
+    public static void setGlowingForPlayer(Entity entity, ServerPlayer player, boolean glowing) {
+        EntityDataAccessor<Byte> FLAGS = EntityAccessor.getSharedFlagsId();
+
+        // Current flags from the entity
+        byte flags = entity.getEntityData().get(FLAGS);
+
+        if (glowing) {
+            flags |= 0x40; // glowing bit
+        } else {
+            flags &= ~0x40; // clear glowing bit
+        }
+
+        // Build a list of data values (only the one we care about)
+        List<SynchedEntityData.DataValue<?>> values = new ArrayList<>();
+        values.add(SynchedEntityData.DataValue.create(FLAGS, flags));
+
+        // Send metadata update ONLY to that player
+        ClientboundSetEntityDataPacket packet =
+                new ClientboundSetEntityDataPacket(entity.getId(), values);
+        player.connection.send(packet);
+    }
     
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
@@ -98,7 +134,9 @@ public class MarionetteControllerItem extends Item {
         if (customData != null) {
             String entityName = customData.copyTag().getString("MarionetteType");
             tooltip.add(Component.literal("Controls: " + entityName));
-            tooltip.add(Component.literal("Right-click: Toggle follow/Position"));
+            tooltip.add(Component.literal("Right-click on Block: Set Position"));
+            tooltip.add(Component.literal("Shift-Right-click on Block: Set Should Attack"));
+            tooltip.add(Component.literal("Right-click: Toggle Follow Mode"));
             tooltip.add(Component.literal("Shift-Right-click: Release"));
         }
     }

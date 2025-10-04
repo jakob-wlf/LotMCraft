@@ -4,6 +4,8 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -216,7 +218,7 @@ public class PuppeteeringAbility extends AbilityItem {
             }
 
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 4, false, false, false));
-            target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20, 5, false, false, false));
+            target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 5, false, false, false));
 
             health.set(target.getHealth());
         }, () -> {
@@ -231,6 +233,22 @@ public class PuppeteeringAbility extends AbilityItem {
     }
 
     private void turnIntoMarionette(LivingEntity target, Player player) {
+        if(target instanceof Player) {
+            Vec3 pos = target.position();
+            if(BeyonderData.isBeyonder(target)) {
+                int sequence = BeyonderData.getSequence(target);
+                String pathway = BeyonderData.getPathway(target);
+                target.setHealth(0);
+                target = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), target.level(), false, pathway, sequence);
+            }
+            else {
+                target.setHealth(0);
+                target = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), target.level(), false);
+            }
+
+            target.setPos(pos);
+            target.level().addFreshEntity(target);
+        }
         target.setHealth(target.getMaxHealth());
         if(target instanceof Mob mob) {
             mob.setTarget(null);

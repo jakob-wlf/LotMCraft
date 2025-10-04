@@ -5,6 +5,7 @@ import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.goals.AbilityUseGoal;
 import de.jakob.lotm.entity.custom.goals.RangedCombatGoal;
 import de.jakob.lotm.item.ModIngredients;
@@ -13,6 +14,8 @@ import de.jakob.lotm.potions.PotionRecipeItem;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -378,6 +381,43 @@ public class BeyonderNPCEntity extends PathfinderMob {
                 )
                 .filter(a -> a.canBeUsedByNPC)
                 .forEach(usableAbilities::add);
+
+        MarionetteComponent component = this.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+        if(component.isMarionette()) {
+            Player controller = getController();
+            if(controller == null)
+                return;
+            if(BeyonderData.isBeyonder(controller) && BeyonderData.getSequence(controller) <= 4) {
+                String controllerPathway = BeyonderData.getPathway(controller);
+                int controllerSequence = BeyonderData.getSequence(controller);
+                AbilityItemHandler.ITEMS.getEntries()
+                        .stream()
+                        .map(DeferredHolder::get)
+                        .filter(a -> a instanceof AbilityItem)
+                        .map(a -> (AbilityItem) a)
+                        .filter(
+                                a -> a.getRequirements().containsKey(controllerPathway) && a.getRequirements().get(controllerPathway) >= controllerSequence
+                        )
+                        .filter(a -> a.canBeUsedByNPC)
+                        .forEach(usableAbilities::add);
+
+            }
+        }
+    }
+
+    private Player getController() {
+        Player controller;
+        MarionetteComponent component = this.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+        if (!component.isMarionette()) return null;
+
+        try {
+            UUID controllerUUID = UUID.fromString(component.getControllerUUID());
+            controller = this.level().getPlayerByUUID(controllerUUID);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+
+        return controller == null || !controller.isAlive() ? null : controller;
     }
 
     public ArrayList<AbilityItem> getUsableAbilities() {

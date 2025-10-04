@@ -31,6 +31,8 @@ public class MarionetteTargetGoal extends TargetGoal {
         // Only target when in follow mode AND don't have a target yet
         if (!component.isFollowMode() || marionette.getTarget() != null) return false;
 
+        if(!component.shouldAttack()) return false;
+
         // Check if there's someone to target
         return findValidTarget() != null;
     }

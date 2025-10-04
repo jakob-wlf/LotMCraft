@@ -1,6 +1,8 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.item.custom.MarionetteControllerItem;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.abilities.AbilityItemHandler;
@@ -37,6 +39,12 @@ public class BeyonderDataTickHandler {
             // Passive abilities
             if(tickCounter % 5 == 0)
                 tickAbilities(player);
+        }
+
+        if(tickCounter % 5 == 0) {
+            if(player.getMainHandItem().is(ModItems.MARIONETTE_CONTROLLER.get()) && player.getMainHandItem().getItem() instanceof MarionetteControllerItem marionetteController) {
+                marionetteController.onHold(player, player.getMainHandItem());
+            }
         }
 
         tickCounter++;
