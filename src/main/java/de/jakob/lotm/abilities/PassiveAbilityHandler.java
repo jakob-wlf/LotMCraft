@@ -18,7 +18,7 @@ import de.jakob.lotm.abilities.sun.passives.PhysicalEnhancementsSunAbility;
 import de.jakob.lotm.abilities.tyrant.passives.PhysicalEnhancementsTyrantAbility;
 import de.jakob.lotm.abilities.tyrant.passives.RiptideAbility;
 import de.jakob.lotm.abilities.visionary.passives.PhysicalEnhancementsVisionaryAbility;
-import de.jakob.lotm.abilities.wheel_of_fortune.PhysicalEnhancementsWheelOfFortuneAbility;
+import de.jakob.lotm.abilities.wheel_of_fortune.passives.PhysicalEnhancementsWheelOfFortuneAbility;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;

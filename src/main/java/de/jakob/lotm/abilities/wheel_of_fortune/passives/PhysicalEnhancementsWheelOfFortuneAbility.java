@@ -1,4 +1,4 @@
-package de.jakob.lotm.abilities.wheel_of_fortune;
+package de.jakob.lotm.abilities.wheel_of_fortune.passives;
 
 import de.jakob.lotm.abilities.PassiveAbilityItem;
 import de.jakob.lotm.util.BeyonderData;

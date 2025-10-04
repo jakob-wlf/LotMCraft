@@ -15,10 +15,7 @@ import de.jakob.lotm.abilities.mother.CleansingAbility;
 import de.jakob.lotm.abilities.mother.HealingAbility;
 import de.jakob.lotm.abilities.mother.PlantControllingAbility;
 import de.jakob.lotm.abilities.mother.PlantNurturingAbility;
-import de.jakob.lotm.abilities.red_priest.CullAbility;
-import de.jakob.lotm.abilities.red_priest.ProvokingAbility;
-import de.jakob.lotm.abilities.red_priest.PyrokinesisAbility;
-import de.jakob.lotm.abilities.red_priest.TrapAbility;
+import de.jakob.lotm.abilities.red_priest.*;
 import de.jakob.lotm.abilities.tyrant.*;
 import de.jakob.lotm.abilities.sun.*;
 import de.jakob.lotm.abilities.visionary.*;
@@ -52,6 +49,13 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> PROVOKING = ITEMS.registerItem("provoking_ability", ProvokingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> PYROKINESIS = ITEMS.registerItem("pyrokinesis_ability", PyrokinesisAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> CULL = ITEMS.registerItem("cull_ability", CullAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> FLAME_MASTERY = ITEMS.registerItem("flame_mastery_ability", FlameMasteryAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> STEEL_MASTERY = ITEMS.registerItem("steel_mastery_ability", SteelMasteryAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> CHAIN_OF_COMMAND = ITEMS.registerItem("chain_of_command_ability", ChainOfCommandAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> WAR_CRY = ITEMS.registerItem("war_cry_ability", WarCryAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> WAR_SONG = ITEMS.registerItem("war_song_ability", WarSongAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> FOG_OF_WAR = ITEMS.registerItem("fog_of_war_ability", FogOfWarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> ESSENCE_OF_WAR = ITEMS.registerItem("essence_of_war_ability", EssenceOfWarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> RAGING_BLOWS = ITEMS.registerItem("raging_blows_ability", RagingBlowsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> WATER_MANIPULATION = ITEMS.registerItem("water_manipulation_ability", WaterManipulationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
@@ -104,6 +108,15 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> RECORDING = ITEMS.registerItem("recording_ability", RecordingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> BLINK = ITEMS.registerItem("blink_ability", BlinkAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> TRAVELERS_DOOR = ITEMS.registerItem("travelers_door_ability", TravelersDoorAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> SPACE_CONCEALMENT = ITEMS.registerItem("space_concealment_ability", SpaceConcealmentAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> EXILE = ITEMS.registerItem("exile_ability", ExileAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> DOOR_SUBSTITUTION = ITEMS.registerItem("door_substitution_ability", DoorSubstitutionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> WANDERING = ITEMS.registerItem("wandering_ability", WanderingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> CONCEPTUALIZATION = ITEMS.registerItem("conceptualization_ability", ConceptualizationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> SEALING = ITEMS.registerItem("sealing_ability", SealingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> SPACE_TEARING = ITEMS.registerItem("space_tearing_ability", SpaceTearingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> BLACK_HOLE = ITEMS.registerItem("black_hole_ability", BlackHoleAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> DISTORTION_FIELD = ITEMS.registerItem("distortion_field_ability", DistortionField::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> SPECTATING = ITEMS.registerItem("spectating_ability", SpectatingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> TELEPATHY = ITEMS.registerItem("telepathy_ability", TelepathyAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
