@@ -52,6 +52,9 @@
   "item.lotmcraft.light_of_holiness_ability": "Light of Holiness",
   "item.lotmcraft.purification_halo_ability": "Purification Halo",
   "item.lotmcraft.unshadowed_spear_ability": "Unshadowed Spear",
+  "item.lotmcraft.unshadowed_domain_ability": "Unshadowed Domain",
+  "item.lotmcraft.flaring_sun_ability": "Flaring Sun",
+  "item.lotmcraft.wall_of_light_ability": "Wall of Light",
 
   "item.lotmcraft.trap_ability": "Trap",
   "item.lotmcraft.provoking_ability": "Provoking",
@@ -95,6 +98,10 @@
   "item.lotmcraft.water_mastery_ability": "Water Mastery",
   "ability.lotmcraft.water_mastery.water_wall": "Water Wall",
   "ability.lotmcraft.water_mastery.flooding": "Flooding",
+  "item.lotmcraft.lightning_branch_ability": "Lightning Branch",
+  "item.lotmcraft.thunderclap_ability": "Thunderclap",
+  "item.lotmcraft.torrential_downpour_ability": "Torrential Downpour",
+  "item.lotmcraft.lightning_storm_ability": "Lightning Storm",
 
 
   "item.lotmcraft.toxic_smoke_ability": "Toxic Smoke",

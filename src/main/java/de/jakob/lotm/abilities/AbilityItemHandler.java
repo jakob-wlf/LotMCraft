@@ -43,7 +43,10 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> NOTARY_DEBUFF = ITEMS.registerItem("notary_debuff_ability",  GodSaysItsNotEffectiveAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> LIGHT_OF_HOLINESS = ITEMS.registerItem("light_of_holiness_ability",  LightOfHolinessAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> PURIFICATION_HALO = ITEMS.registerItem("purification_halo_ability",  PurificationHaloAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> FLARING_SUN = ITEMS.registerItem("flaring_sun_ability",  FlaringSunAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> UNSHADOWED_SPEAR = ITEMS.registerItem("unshadowed_spear_ability",  UnshadowedSpearAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> UNSHADOWED_DOMAIN = ITEMS.registerItem("unshadowed_domain_ability",  UnshadowedDomainAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> WALL_OF_LIGHT = ITEMS.registerItem("wall_of_light_ability",  WallOfLightAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> TRAP = ITEMS.registerItem("trap_ability", TrapAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> PROVOKING = ITEMS.registerItem("provoking_ability", ProvokingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
@@ -67,6 +70,10 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> HURRICANE = ITEMS.registerItem("hurricane_ability", HurricaneAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> ROAR = ITEMS.registerItem("roar_ability", RoarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> WATER_MASTERY = ITEMS.registerItem("water_mastery_ability", WaterMasteryAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> TORRENTIAL_DOWNPOUR = ITEMS.registerItem("torrential_downpour_ability", TorrentialDownpourAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> LIGHTNING_STORM = ITEMS.registerItem("lightning_storm_ability", LightningStormAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> THUNDERCLAP = ITEMS.registerItem("thunderclap_ability", ThunderclapAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> LIGHTNING_BRANCH = ITEMS.registerItem("lightning_branch_ability", LightningStormAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> TOXIC_SMOKE = ITEMS.registerItem("toxic_smoke_ability", ToxicSmokeAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> POISONOUS_FLAME = ITEMS.registerItem("poisonous_flame_ability", PoisonousFlameAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
