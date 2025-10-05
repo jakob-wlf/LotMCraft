@@ -40,7 +40,7 @@ public class LightningAbility extends AbilityItem {
                 targetLoc = targetLoc.subtract(0, 1, 0);
         }
 
-        LightningEntity lightning = new LightningEntity(level, entity, targetLoc, 50, 10, 24 * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 4, 200);
+        LightningEntity lightning = new LightningEntity(level, entity, targetLoc, 50, 6, 24 * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 4, 200, 0x11A8DD);
         level.addFreshEntity(lightning);
     }
 }

@@ -35,6 +35,7 @@ public class LightningEntity extends Entity {
     private static final EntityDataAccessor<Float> DIR_Z = SynchedEntityData.defineId(LightningEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> MAX_DISTANCE = SynchedEntityData.defineId(LightningEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> STEP = SynchedEntityData.defineId(LightningEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> COLOR = SynchedEntityData.defineId(LightningEntity.class, EntityDataSerializers.INT);
 
     private Vec3 startPos;
     private Vec3 direction;
@@ -43,6 +44,7 @@ public class LightningEntity extends Entity {
     private final List<Vec3> lightningPoints = new ArrayList<>();
     private final int updateInterval = 1; // Ticks between path updates
     private float step = 4;
+    private int color = 0x11A8DD;
     private boolean griefing;
     private float explosionPower;
 
@@ -55,13 +57,13 @@ public class LightningEntity extends Entity {
 
     public LightningEntity(EntityType<?> type, Level level) {
         super(type, level);
-        this.noCulling = true; // Prevent culling for visual effects
+        this.noCulling = true;
     }
 
     private final List<Float> distancesAtWhichToSpawnNewBranches = new ArrayList<>();
 
     // Constructor for spawning
-    public LightningEntity(Level level, LivingEntity source, Vec3 start, int height, int branches, double damage, boolean griefing, float explosionPower, float maxDistance) {
+    public LightningEntity(Level level, LivingEntity source, Vec3 start, int height, int branches, double damage, boolean griefing, float explosionPower, float maxDistance, int color) {
         this(ModEntities.LIGHTNING.get(), level);
         this.startPos = start.add(0, height, 0);
         this.direction = new Vec3(0, -1, 0);
@@ -72,6 +74,7 @@ public class LightningEntity extends Entity {
         this.griefing = griefing;
         this.currentDistance = 1.0f; // Start with some initial distance
         this.step = 4f;
+        this.color = color;
         setPos(start.x, start.y, start.z);
 
         // Set synced data
@@ -84,6 +87,7 @@ public class LightningEntity extends Entity {
             entityData.set(DIR_Z, (float) 0);
             entityData.set(MAX_DISTANCE, maxDistance);
             entityData.set(STEP, 4f);
+            entityData.set(COLOR, color);
 
             for(int i = 0; i < branches; i++) {
                 distancesAtWhichToSpawnNewBranches.add((new Random()).nextInt(8) * step + 1);
@@ -94,7 +98,7 @@ public class LightningEntity extends Entity {
 
     }
 
-    public LightningEntity(Level level, LivingEntity source, Vec3 start, double damage, int branches, float maxDistance, Vec3 direction) {
+    public LightningEntity(Level level, LivingEntity source, Vec3 start, double damage, int branches, float maxDistance, Vec3 direction, int color) {
         this(ModEntities.LIGHTNING.get(), level);
         this.startPos = start;
         this.direction = direction;
@@ -103,6 +107,7 @@ public class LightningEntity extends Entity {
         this.source = source;
         this.currentDistance = 1.0f;
         this.step = 1.7f; // Start with some initial distance
+        this.color = color;
         setPos(start.x, start.y, start.z);
 
         // Set synced data
@@ -115,6 +120,7 @@ public class LightningEntity extends Entity {
             entityData.set(DIR_Z, (float) direction.z);
             entityData.set(MAX_DISTANCE, maxDistance);
             entityData.set(STEP, 1.7f);
+            entityData.set(COLOR, color);
 
             for(int i = 0; i < branches; i++) {
                 distancesAtWhichToSpawnNewBranches.add((new Random()).nextInt(1, 3) * step + 1);
@@ -180,7 +186,8 @@ public class LightningEntity extends Entity {
                             0,
                             random.nextInt(2),
                             random.nextInt(10, 17),
-                            (new Vec3(random.nextDouble(-1, 1), random.nextDouble(-3.4, -2), random.nextDouble(-1, 1)).normalize()));
+                            (new Vec3(random.nextDouble(-1, 1), random.nextDouble(-3.4, -2), random.nextDouble(-1, 1)).normalize()),
+                            color);
                     level().addFreshEntity(entity);
                     branches.add(entity);
                 }
@@ -294,6 +301,7 @@ public class LightningEntity extends Entity {
         builder.define(DIR_Z, 0.0f);
         builder.define(MAX_DISTANCE, 10.0f);
         builder.define(STEP, 4f);
+        builder.define(COLOR, 0x11A8DD);
     }
 
     @Override
@@ -304,6 +312,7 @@ public class LightningEntity extends Entity {
             maxDistance = tag.getFloat("maxDistance");
             currentDistance = tag.getFloat("currentDistance");
             step = tag.getInt("step");
+            color = tag.getInt("color");
         }
     }
 
@@ -319,6 +328,7 @@ public class LightningEntity extends Entity {
             tag.putFloat("maxDistance", maxDistance);
             tag.putFloat("currentDistance", currentDistance);
             tag.putFloat("step", step);
+            tag.putInt("color", color);
         }
     }
 
@@ -343,5 +353,9 @@ public class LightningEntity extends Entity {
     @Override
     public boolean shouldRenderAtSqrDistance(double distance) {
         return distance < 16384.0D; // Render up to 128 blocks away
+    }
+
+    public int getColor() {
+        return entityData.get(COLOR);
     }
 }

@@ -1,10 +1,13 @@
 package de.jakob.lotm.entity.client;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import de.jakob.lotm.entity.custom.ElectricShockEntity;
 import de.jakob.lotm.entity.custom.LightningEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -40,7 +43,7 @@ public class LightningRenderer extends EntityRenderer<LightningEntity> {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
 
         // Render main lightning bolt
-        renderLightningBolt(consumer, poseStack, points, 0.2f, 1.0f, 0x11A8DD); // Cyan main bolt
+        renderLightningBolt(consumer, poseStack, points, 0.2f, .5f, entity.getColor());
 
         poseStack.popPose();
     }
@@ -54,6 +57,11 @@ public class LightningRenderer extends EntityRenderer<LightningEntity> {
         int g = (color >> 8) & 0xFF;
         int b = color & 0xFF;
         int a = (int)(255 * alpha);
+
+        float glow = 1.5f; // Boost brightness
+        r = Math.min(255, (int)(r * glow));
+        g = Math.min(255, (int)(g * glow));
+        b = Math.min(255, (int)(b * glow));
 
         Vec3 cameraPos = entityRenderDispatcher.camera.getPosition();
 
