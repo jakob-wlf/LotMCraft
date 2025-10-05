@@ -59,6 +59,13 @@ public class PotionItemHandler {
                     new BeyonderPotion(properties, 5, "sun"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
+    public static DeferredItem<Item> UNSHADOWED = ITEMS.registerItem("unshadowed_potion", properties ->
+                    new BeyonderPotion(properties, 4, "sun"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> JUSTICE_MENTOR_POTION = ITEMS.registerItem("justice_mentor_potion", properties ->
+                    new BeyonderPotion(properties, 3, "sun"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> SAILOR_POTION = ITEMS.registerItem("sailor_potion", properties ->
                     new BeyonderPotion(properties, 9, "tyrant"),
@@ -78,6 +85,14 @@ public class PotionItemHandler {
 
     public static DeferredItem<Item> OCEAN_SONGSTER_POTION = ITEMS.registerItem("ocean_songster_potion", properties ->
                     new BeyonderPotion(properties, 5, "tyrant"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> CATACLYSMIC_INTERRER_POTION = ITEMS.registerItem("cataclysmic_interrer_potion", properties ->
+                    new BeyonderPotion(properties, 4, "tyrant"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> SEA_KING_POTION = ITEMS.registerItem("sea_king_potion", properties ->
+                    new BeyonderPotion(properties, 3, "tyrant"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
 
@@ -101,6 +116,14 @@ public class PotionItemHandler {
                     new BeyonderPotion(properties, 5, "red_priest"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
+    public static DeferredItem<Item> IRON_BLOODED_KNIGHT_POTION = ITEMS.registerItem("iron_blooded_knight_potion", properties ->
+                    new BeyonderPotion(properties, 4, "red_priest"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> WAR_BISHOP_POTION = ITEMS.registerItem("war_bishop_potion", properties ->
+                    new BeyonderPotion(properties, 3, "red_priest"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
 
     public static DeferredItem<Item> APPRENTICE_POTION = ITEMS.registerItem("apprentice_potion", properties ->
                     new BeyonderPotion(properties, 9, "door"),
@@ -121,6 +144,19 @@ public class PotionItemHandler {
     public static DeferredItem<Item> TRAVELER_POTION = ITEMS.registerItem("traveler_potion", properties ->
                     new BeyonderPotion(properties, 5, "door"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> SECRETS_SORCERER_POTION = ITEMS.registerItem("secrets_sorcerer_potion", properties ->
+                    new BeyonderPotion(properties, 4, "door"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> WANDERER_POTION = ITEMS.registerItem("wanderer_potion", properties ->
+                    new BeyonderPotion(properties, 3, "door"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> PLANESWALKER_POTION = ITEMS.registerItem("planeswalker_potion", properties ->
+                    new BeyonderPotion(properties, 2, "door"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
 
 
     public static DeferredItem<Item> CRIMINAL_POTION = ITEMS.registerItem("criminal_potion", properties ->
@@ -206,6 +242,14 @@ public class PotionItemHandler {
                     new BeyonderPotion(properties, 5, "demoness"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
+    public static DeferredItem<Item> DEMONESS_OF_DESPAIR_POTION = ITEMS.registerItem("demoness_of_despair_potion", properties ->
+                    new BeyonderPotion(properties, 4, "demoness"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> DEMONESS_OF_UNAGING_POTION = ITEMS.registerItem("demoness_of_unaging_potion", properties ->
+                    new BeyonderPotion(properties, 3, "demoness"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
 
     public static DeferredItem<Item> SPECTATOR_POTION = ITEMS.registerItem("spectator_potion", properties ->
                     new BeyonderPotion(properties, 9, "visionary"),
@@ -225,6 +269,27 @@ public class PotionItemHandler {
 
     public static DeferredItem<Item> DREAMWALKER_POTION = ITEMS.registerItem("dreamwalker_potion", properties ->
                     new BeyonderPotion(properties, 5, "visionary"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+
+    public static DeferredItem<Item> MONSTER_POTION = ITEMS.registerItem("monster_potion", properties ->
+                    new BeyonderPotion(properties, 9, "wheel_of_fortune"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> ROBOT_POTION = ITEMS.registerItem("robot_potion", properties ->
+                    new BeyonderPotion(properties, 8, "wheel_of_fortune"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> LUCKY_ONE_POTION = ITEMS.registerItem("lucky_one_potion", properties ->
+                    new BeyonderPotion(properties, 7, "wheel_of_fortune"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> CALAMITY_PRIEST_POTION = ITEMS.registerItem("calamity_priest_potion", properties ->
+                    new BeyonderPotion(properties, 6, "wheel_of_fortune"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> WINNER_POTION = ITEMS.registerItem("winner_potion", properties ->
+                    new BeyonderPotion(properties, 5, "wheel_of_fortune"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
 

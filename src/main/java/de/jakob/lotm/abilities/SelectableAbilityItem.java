@@ -53,6 +53,8 @@ public abstract class SelectableAbilityItem extends AbilityItem{
 
         cooldowns.put(beyonderNPC.getUUID(), System.currentTimeMillis());
 
+        if(getAbilityNames().length == 0)
+            return;
         useAbility(level, beyonderNPC, random.nextInt(getAbilityNames().length));
     }
 

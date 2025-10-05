@@ -72,7 +72,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String skinName) {
-        this(entityType, level, hostile, skinName, BeyonderData.implementedPathways.get((new Random()).nextInt(BeyonderData.implementedPathways.size())), (new Random()).nextInt(5, 10));
+        this(entityType, level, hostile, skinName, BeyonderData.implementedPathways.get((new Random()).nextInt(BeyonderData.implementedPathways.size())), (new Random()).nextInt(2, 10));
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String pathway, int sequence) {
@@ -84,6 +84,10 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.defaultHostile = hostile;
         this.setHostile(hostile);
         this.setSkinName(skinName);
+
+        if(sequence < BeyonderData.getHighestImplementedSequence(pathway)) {
+            sequence = (new Random()).nextInt(BeyonderData.getHighestImplementedSequence(pathway), 10);
+        }
 
         if(usableAbilities == null)
             usableAbilities = new ArrayList<>();

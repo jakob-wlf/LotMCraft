@@ -76,6 +76,18 @@ public class BeyonderData {
             "wheel_of_fortune"
     );
 
+    public static int getHighestImplementedSequence(String pathway) {
+        return switch (pathway) {
+            case "mother" -> 7;
+            case "darkness", "visionary" -> 6;
+            case "abyss", "wheel_of_fortune" -> 5;
+            case "fool" -> 4;
+            case "demoness", "red_priest", "sun", "tyrant" -> 3;
+            case "door" -> 2;
+            default -> 9;
+        };
+    }
+
     public static String getSequenceName(String pathway, int sequence) {
         if(!pathwayInfos.containsKey(pathway))
             return "Unknown";
