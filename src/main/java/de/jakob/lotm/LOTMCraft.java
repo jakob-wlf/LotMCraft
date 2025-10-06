@@ -161,6 +161,7 @@ public class LOTMCraft
             event.registerSpriteSet(ModParticles.GOLDEN_NOTE.get(), GoldenNoteParticle.Provider::new);
             event.registerSpriteSet(ModParticles.DISEASE.get(), DiseaseParticle.Provider::new);
             event.registerSpriteSet(ModParticles.EARTHQUAKE.get(), EarthquakeParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.LIGHTNING.get(), LightningParticle.Provider::new);
         }
 
         @SubscribeEvent
