@@ -45,9 +45,10 @@ public class ApprenticeDoorEntity extends Entity {
     }
 
     // Main constructor for placing the door
-    public ApprenticeDoorEntity(EntityType<?> entityType, Level level, Direction facing, Vec3 blockCenter) {
+    public ApprenticeDoorEntity(EntityType<?> entityType, Level level, Direction facing, Vec3 blockCenter, int duration) {
         this(entityType, level);
         this.setFacing(facing);
+        this.duration = duration;
 
         // Position the entity based on the block face
         Vec3 doorPosition = calculateDoorPosition(blockCenter, facing);

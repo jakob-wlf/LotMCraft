@@ -96,7 +96,8 @@ public class DoorOpeningAbility extends AbilityItem {
                 ModEntities.APPRENTICE_DOOR.get(), // Assuming this is your registered entity type
                 level,
                 facingDirection,
-                blockCenter
+                blockCenter,
+                20 * 10
         );
 
         level.addFreshEntity(door);

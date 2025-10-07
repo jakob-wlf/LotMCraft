@@ -1,18 +1,41 @@
 package de.jakob.lotm.abilities.door;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class DoorSubstitutionAbility extends AbilityItem {
+
+    private static final HashMap<UUID, Integer> figurineNumbers = new HashMap<>();
+
     public DoorSubstitutionAbility(Properties properties) {
-        super(properties, 1);
+        super(properties, 5f);
     }
 
     @Override
@@ -22,17 +45,73 @@ public class DoorSubstitutionAbility extends AbilityItem {
 
     @Override
     protected float getSpiritualityCost() {
-        return 0;
+        return 90;
     }
 
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {
-        if(level.isClientSide)
+        if(level.isClientSide) {
+            if(entity instanceof Player player)
+                player.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
+            return;
+        }
+
+        if(figurineNumbers.containsKey(entity.getUUID()) && figurineNumbers.get(entity.getUUID()) >= 5)
             return;
 
-        if(entity instanceof ServerPlayer player) {
-            Component message = Component.translatable("lotm.not_implemented_yet").withStyle(ChatFormatting.RED);
-            player.sendSystemMessage(message);
+        if(!figurineNumbers.containsKey(entity.getUUID()))
+            figurineNumbers.put(entity.getUUID(), 1);
+        else
+            figurineNumbers.replace(entity.getUUID(), figurineNumbers.get(entity.getUUID()) + 1);
+        if(entity instanceof Player player) {
+            player.addItem(new ItemStack(Items.OAK_DOOR));
         }
+    }
+
+    private static final DustParticleOptions dust = new DustParticleOptions(
+            new Vector3f(163 / 255f, 108 / 255f, 51 / 255f),
+            2f
+    );
+
+    @SubscribeEvent
+    public static void takeDamage(LivingDamageEvent.Pre event) {
+        if(!figurineNumbers.containsKey(event.getEntity().getUUID()))
+            return;
+
+        int num = figurineNumbers.get(event.getEntity().getUUID());
+
+        if(num <= 0)
+            return;
+
+        figurineNumbers.put(event.getEntity().getUUID(), num - 1);
+        event.setNewDamage(0);
+
+        LivingEntity entity = event.getEntity();
+        Vec3 pos = entity.position();
+
+        Level level = entity.level();
+
+        ParticleUtil.spawnParticles((ServerLevel) level, dust, entity.getEyePosition().subtract(0, .4, 0), 35, .3, .8, .3, 0);
+
+        Random r = new Random();
+        Vec3 newPos = pos.add(r.nextDouble(-7, 7), r.nextDouble(-1, 3), r.nextDouble(-7, 7));
+
+        for(int i = 0; i < 65; i++) {
+            if(level.getBlockState(BlockPos.containing(newPos.x, newPos.y, newPos.z)).isAir())
+                break;
+
+            newPos = pos.add(r.nextDouble(-7, 7), r.nextDouble(-1, 3), r.nextDouble(-7, 7));
+        }
+
+        entity.teleportTo(newPos.x, newPos.y, newPos.z);
+
+        if(entity instanceof Player player) {
+            int index = player.getInventory().findSlotMatchingItem(new ItemStack(Items.OAK_DOOR));
+            if(index != -1)
+                player.getInventory().removeItem(index, 1);
+        }
+        level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ARMOR_STAND_HIT, SoundSource.BLOCKS, 3, 1);
+        level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .6f, 1);
+
     }
 }

@@ -24,7 +24,7 @@ public class LightningBranchAbility extends AbilityItem {
 
     @Override
     protected float getSpiritualityCost() {
-        return 900;
+        return 450;
     }
 
     @Override

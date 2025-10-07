@@ -108,6 +108,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                DisplaySpaceConcealmentParticlesPacket.TYPE,
+                DisplaySpaceConcealmentParticlesPacket.STREAM_CODEC,
+                DisplaySpaceConcealmentParticlesPacket::handle
+        );
+
+        registrar.playToClient(
                 RemoveDreamDivinationUserPacket.TYPE,
                 RemoveDreamDivinationUserPacket.STREAM_CODEC,
                 RemoveDreamDivinationUserPacket::handle

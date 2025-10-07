@@ -1,6 +1,7 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.entity.custom.ExileDoorsEntity;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.custom.MarionetteControllerItem;
 import de.jakob.lotm.util.BeyonderData;
@@ -9,6 +10,7 @@ import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -31,6 +33,8 @@ public class BeyonderDataTickHandler {
                     tickAbilitiesClientSide(player);
             return;
         }
+
+        ExileDoorsEntity.tickExiledEntities((ServerLevel) player.level());
 
         if (BeyonderData.isBeyonder(player)) {
             float amount = BeyonderData.getMaxSpirituality(BeyonderData.getSequence(player)) * 0.0006f;
