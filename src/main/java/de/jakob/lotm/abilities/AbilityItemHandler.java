@@ -73,7 +73,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> TORRENTIAL_DOWNPOUR = ITEMS.registerItem("torrential_downpour_ability", TorrentialDownpourAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> LIGHTNING_STORM = ITEMS.registerItem("lightning_storm_ability", LightningStormAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> THUNDERCLAP = ITEMS.registerItem("thunderclap_ability", ThunderclapAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> LIGHTNING_BRANCH = ITEMS.registerItem("lightning_branch_ability", LightningStormAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> LIGHTNING_BRANCH = ITEMS.registerItem("lightning_branch_ability", LightningBranchAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> TOXIC_SMOKE = ITEMS.registerItem("toxic_smoke_ability", ToxicSmokeAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> POISONOUS_FLAME = ITEMS.registerItem("poisonous_flame_ability", PoisonousFlameAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

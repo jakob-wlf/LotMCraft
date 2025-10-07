@@ -140,6 +140,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.BEYONDER_NPC.get(), BeyonderNPCRenderer::new);
             EntityRenderers.register(ModEntities.TSUNAMI.get(), TsunamiRenderer::new);
             EntityRenderers.register(ModEntities.TORNADO.get(), TornadoRenderer::new);
+            EntityRenderers.register(ModEntities.LIGHTNING_BRANCH.get(), LightningBranchRenderer::new);
         }
 
         @SubscribeEvent

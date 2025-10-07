@@ -33,7 +33,7 @@ public class ThunderclapAbility extends AbilityItem {
 
     @Override
     protected float getSpiritualityCost() {
-        return 0;
+        return 100;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class ThunderclapAbility extends AbilityItem {
             ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.LIGHTNING.get(), entity.position(), 80, 1, 0.1);
             level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 2, 1);
 
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8, 25, entity.position(), true, false);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8, 37.5 * multiplier(entity), entity.position(), true, false);
 
             entity.setDeltaMovement(new Vec3(dir.x, dir.y * .1, dir.z).scale(7));
             entity.hurtMarked = true;
