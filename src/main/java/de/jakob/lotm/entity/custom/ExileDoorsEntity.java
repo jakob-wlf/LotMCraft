@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -38,9 +39,11 @@ import java.util.UUID;
 import java.util.stream.StreamSupport;
 
 public class ExileDoorsEntity extends Entity {
-    private int duration = 20 * 10;
     private int lifetime = 0;
-    private static final EntityDataAccessor<Optional<UUID>> OWNER = SynchedEntityData.defineId(ExileDoorsEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Optional<UUID>> OWNER =
+            SynchedEntityData.defineId(ExileDoorsEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Integer> DURATION =
+            SynchedEntityData.defineId(ExileDoorsEntity.class, EntityDataSerializers.INT);
 
     // Required constructors for entity system
     public ExileDoorsEntity(EntityType<?> entityType, Level level) {
@@ -52,29 +55,24 @@ public class ExileDoorsEntity extends Entity {
     // Main constructor for placing the door
     public ExileDoorsEntity(EntityType<?> entityType, Level level, int duration, LivingEntity source) {
         this(entityType, level);
-        this.duration = duration;
-        this.noPhysics = true;
-        this.noCulling = true;
-
+        this.setDuration(duration);
         if(source != null) {
             this.setCasterUUID(source.getUUID());
         }
-    }
-
-    public void setCasterUUID(@Nullable UUID uuid) {
-        this.entityData.set(OWNER, Optional.ofNullable(uuid));
     }
 
     @Override
     public void tick() {
         super.tick();
         lifetime++;
-        if (lifetime >= duration) {
+        if (lifetime >= getDuration()) {
             this.remove(RemovalReason.DISCARDED);
             return;
         }
 
         if(!level().isClientSide) {
+            spawnParticles();
+
             Set<LivingEntity> entities = new HashSet<>(this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox()));
             UUID ownerUUID = this.entityData.get(OWNER).orElse(null);
             LivingEntity owner = ownerUUID != null ? (LivingEntity) ((ServerLevel)level()).getEntity(ownerUUID) : null;
@@ -84,7 +82,7 @@ public class ExileDoorsEntity extends Entity {
             int ownerSequence = ownerIsBeyonder ? BeyonderData.getSequence(owner) : 9;
 
             for (LivingEntity entity : entities) {
-                if (entity.getUUID().equals(ownerUUID) || !AbilityUtil.mayTarget(owner, entity) || !AbilityUtil.mayDamage(owner, entity)) {
+                if (owner != null && (entity.getUUID().equals(ownerUUID) || !AbilityUtil.mayTarget(owner, entity) || !AbilityUtil.mayDamage(owner, entity))) {
                     continue; // Skip the owner
                 }
 
@@ -140,6 +138,9 @@ public class ExileDoorsEntity extends Entity {
             }
         }
     }
+    private void spawnParticles() {
+        ParticleUtil.spawnParticles((ServerLevel) level(), ModParticles.STAR.get(), position(), 1, 2, 2, 2, .05);
+    }
 
     public static void tickExiledEntities(ServerLevel level) {
         for (LivingEntity entity : StreamSupport.stream(level.getAllEntities().spliterator(), false)
@@ -185,15 +186,45 @@ public class ExileDoorsEntity extends Entity {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(OWNER, Optional.empty());
+        builder.define(DURATION, 200); // default 10 seconds
     }
 
+    @Override
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        // Store synced fields to disk
+        this.entityData.get(OWNER).ifPresent(uuid -> tag.putUUID("Owner", uuid));
+        tag.putInt("Duration", this.getDuration());
+        tag.putInt("Lifetime", this.lifetime);
+    }
 
-    public int getDuration() {
-        return this.duration;
+    @Override
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        if (tag.hasUUID("Owner")) {
+            this.setCasterUUID(tag.getUUID("Owner"));
+        }
+        if (tag.contains("Duration")) {
+            this.setDuration(tag.getInt("Duration"));
+        }
+        if (tag.contains("Lifetime")) {
+            this.lifetime = tag.getInt("Lifetime");
+        }
+    }
+
+    public void setCasterUUID(@Nullable UUID uuid) {
+        this.entityData.set(OWNER, Optional.ofNullable(uuid));
+    }
+
+    @Nullable
+    public UUID getCasterUUID() {
+        return this.entityData.get(OWNER).orElse(null);
     }
 
     public void setDuration(int duration) {
-        this.duration = duration;
+        this.entityData.set(DURATION, duration);
+    }
+
+    public int getDuration() {
+        return this.entityData.get(DURATION);
     }
 
     @Override
@@ -205,16 +236,6 @@ public class ExileDoorsEntity extends Entity {
     public boolean shouldRenderAtSqrDistance(double distance) {
         // Render from a reasonable distance
         return distance < 4096.0; // 64 block radius
-    }
-
-    @Override
-    protected void readAdditionalSaveData(CompoundTag compoundTag) {
-
-    }
-
-    @Override
-    protected void addAdditionalSaveData(CompoundTag compoundTag) {
-
     }
 
     @Override

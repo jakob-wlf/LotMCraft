@@ -1,11 +1,17 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import org.apache.logging.log4j.core.jmx.Server;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +23,7 @@ public class ConceptualizationAbility extends ToggleAbilityItem {
 
     @Override
     protected float getSpiritualityCost() {
-        return 0;
+        return 2;
     }
 
     @Override
@@ -34,16 +40,24 @@ public class ConceptualizationAbility extends ToggleAbilityItem {
         if(level.isClientSide)
             return;
 
-        if(entity instanceof ServerPlayer player) {
-            Component message = Component.translatable("lotm.not_implemented_yet").withStyle(ChatFormatting.RED);
-            player.sendSystemMessage(message);
-        }
+        entity.setInvisible(true);
+        entity.resetFallDistance();
+        entity.fallDistance = 0;
+        entity.setDeltaMovement(entity.getLookAngle().normalize().scale(.55f));
+        entity.hurtMarked = true;
 
-        cancel(level, entity);
+        ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.ENCHANT, entity.position(), 100, .8, .8, .8, .1);
+        ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.STAR.get(), entity.position(), 5, .4, .4, .4, .1);
     }
 
     @Override
     protected void stop(Level level, LivingEntity entity) {
-
+        if(level.isClientSide)
+            return;
+        entity.setInvisible(false);
+        ServerScheduler.scheduleForDuration(0, 1, 50, () -> {
+            entity.resetFallDistance();
+            entity.fallDistance = 0;
+        });
     }
 }

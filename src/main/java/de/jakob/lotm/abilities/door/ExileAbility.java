@@ -30,7 +30,7 @@ public class ExileAbility extends AbilityItem {
 
     @Override
     protected float getSpiritualityCost() {
-        return 0;
+        return 500;
     }
 
     @Override

@@ -34,7 +34,7 @@ public class PlantControllingAbility extends SelectableAbilityItem {
     private static final HashSet<UUID> boundEntities = new HashSet<>();
 
     public PlantControllingAbility(Properties properties) {
-        super(properties, 1);
+        super(properties, 2);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class PlantControllingAbility extends SelectableAbilityItem {
 
             Vec3 startPos = targetLoc.add(x, -.5, z);
 
-            animateParticleLine(new Location(startPos, level), targetLoc, 2, 0, duration);
+            animateParticleLine(new Location(startPos, level), targetLoc, 3, 0, duration);
         }
 
         level.playSound(null, entity, Blocks.GRASS_BLOCK.getSoundType(Blocks.GRASS_BLOCK.defaultBlockState(), level, BlockPos.containing(entity.position().x, entity.position().y, entity.position().z), null).getBreakSound(), SoundSource.BLOCKS, 5,1);

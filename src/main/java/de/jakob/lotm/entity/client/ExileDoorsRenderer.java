@@ -44,9 +44,9 @@ public class ExileDoorsRenderer extends EntityRenderer<ExileDoorsEntity> {
         poseStack.scale(1.5F, -1.5F, 1.5F);
 
         float flicker = 0.8F + 0.2F * Mth.sin(time * 0.3F + entity.getId() % 10);
-        float alpha = 0.45F + 0.5F * flicker;
+        float alpha = Math.clamp(0.5F + 0.5F * flicker, 0.0F, 1.0F);
 
-        RenderType renderType = RenderType.entityTranslucentCull(this.getTextureLocation(entity));
+        RenderType renderType = RenderType.entityTranslucent(this.getTextureLocation(entity));
         VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
 
         int color = ((int)(alpha * 255) << 24) | 0xFFFFFF; // ARGB format
