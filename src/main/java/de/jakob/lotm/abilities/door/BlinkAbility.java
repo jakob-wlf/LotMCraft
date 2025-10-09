@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class BlinkAbility extends AbilityItem {
     public BlinkAbility(Properties properties) {
-        super(properties, .01f);
+        super(properties, .001f);
     }
 
     @Override

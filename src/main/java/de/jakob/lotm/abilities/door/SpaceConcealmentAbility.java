@@ -5,18 +5,26 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ApprenticeDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.DisplaySpaceConcealmentParticlesPacket;
+import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,13 +51,18 @@ public class SpaceConcealmentAbility extends SelectableAbilityItem {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.space_concealment.other", "ability.lotmcraft.space_concealment.self"};
+        return new String[]{"ability.lotmcraft.space_concealment.other", "ability.lotmcraft.space_concealment.self", "ability.lotmcraft.space_concealment.collapse"};
     }
 
     @Override
     protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(level.isClientSide)
             return;
+
+        if(abilityIndex == 2) {
+            collapseSpaces(level, entity);
+            return;
+        }
 
         ServerLevel serverLevel = (ServerLevel) level;
 
@@ -71,6 +84,23 @@ public class SpaceConcealmentAbility extends SelectableAbilityItem {
 
         // Create the concealed space
         createConcealedSpace(serverLevel, entity, targetPos);
+    }
+
+    private void collapseSpaces(Level level, LivingEntity entity) {
+        List<ConcealedSpace> spaces = playerSpaces.get(entity.getUUID());
+        if(spaces == null || spaces.isEmpty())
+            return;
+
+        // Remove all spaces
+        for(ConcealedSpace space : new ArrayList<>(spaces)) {
+            space.collapse(entity, BeyonderData.getMultiplier(entity));
+            ServerScheduler.cancel(space.getTaskId());
+            if(space.getParticleTaskId() != null) {
+                ServerScheduler.cancel(space.getParticleTaskId());
+            }
+        }
+
+        playerSpaces.remove(entity.getUUID());
     }
 
     private void createConcealedSpace(ServerLevel level, LivingEntity entity, Vec3 center) {
@@ -222,15 +252,7 @@ public class SpaceConcealmentAbility extends SelectableAbilityItem {
                                 }
 
                                 // Determine which solid barrier block to use for door position
-                                BlockPos doorBarrierPos;
-                                if (belowExposed) {
-                                    doorBarrierPos = belowAdjacent; // Use the solid barrier below
-                                } else {
-                                    doorBarrierPos = adjacentPos; // Use the solid barrier at current level
-                                }
-
-                                // Spawn the apprentice door at the solid barrier block
-                                Vec3 blockCenter = new Vec3(doorBarrierPos.getX() + 0.5, doorBarrierPos.getY(), doorBarrierPos.getZ() + 0.5);
+                                Vec3 blockCenter = getCenter(belowExposed, belowAdjacent, adjacentPos);
                                 ApprenticeDoorEntity door = new ApprenticeDoorEntity(
                                         ModEntities.APPRENTICE_DOOR.get(),
                                         level,
@@ -253,6 +275,13 @@ public class SpaceConcealmentAbility extends SelectableAbilityItem {
                                 );
 
                                 level.addFreshEntity(oppositeDoor);
+
+                                LivingEntity owner = level.getEntity(entityUUID) instanceof LivingEntity e ? e : null;
+                                if(owner != null) {
+                                    door.setOnlyVisibleForCertainPlayer(entityUUID);
+                                    oppositeDoor.setOnlyVisibleForCertainPlayer(entityUUID);
+                                }
+
                                 playerDoors.computeIfAbsent(entityUUID, k -> new ArrayList<>()).add(oppositeDoor);
                                 return; // Door spawned successfully, exit
                             }
@@ -260,6 +289,20 @@ public class SpaceConcealmentAbility extends SelectableAbilityItem {
                     }
                 }
             }
+        }
+
+        @NotNull
+        private static Vec3 getCenter(boolean belowExposed, BlockPos belowAdjacent, BlockPos adjacentPos) {
+            BlockPos doorBarrierPos;
+            if (belowExposed) {
+                doorBarrierPos = belowAdjacent; // Use the solid barrier below
+            } else {
+                doorBarrierPos = adjacentPos; // Use the solid barrier at current level
+            }
+
+            // Spawn the apprentice door at the solid barrier block
+            Vec3 blockCenter = new Vec3(doorBarrierPos.getX() + 0.5, doorBarrierPos.getY(), doorBarrierPos.getZ() + 0.5);
+            return blockCenter;
         }
 
         @Nullable
@@ -349,6 +392,49 @@ public class SpaceConcealmentAbility extends SelectableAbilityItem {
                 door.discard();
                 return true;
             });
+        }
+
+        public void collapse(LivingEntity source, double multiplier) {
+            removeBarriers();
+
+            BlockPos centerPos = BlockPos.containing(center);
+
+            // Remove all blocks inside the concealed space
+            for(int x = -(radius - 1); x <= (radius - 1); x++) {
+                for(int y = -(radius - 1); y <= (radius - 1); y++) {
+                    for(int z = -(radius - 1); z <= (radius - 1); z++) {
+                        BlockPos pos = centerPos.offset(x, y, z);
+                        BlockState currentState = level.getBlockState(pos);
+
+                        ParticleUtil.spawnParticles(level, new Random().nextBoolean() ? ModParticles.STAR.get() : new DustParticleOptions(new Vector3f(0, 0, 0), 1.5f), pos.getCenter(), 1, .2, 0);
+
+                        // Replace all blocks with air
+                        if(!currentState.isAir() && BeyonderData.isGriefingEnabled(source)) {
+                            level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+                        }
+                    }
+                }
+            }
+
+            // Deal damage to all entities inside
+            AABB bounds = new AABB(
+                    center.x - radius, center.y - radius, center.z - radius,
+                    center.x + radius, center.y + radius, center.z + radius
+            );
+
+            List<Entity> entitiesInside = level.getEntities((Entity) null, bounds, entity -> true);
+
+            for(Entity entity : entitiesInside) {
+                // Skip the door entities we created
+                if(entity instanceof ApprenticeDoorEntity) {
+                    continue;
+                }
+
+                // Deal damage to living entities
+                if(entity instanceof LivingEntity && AbilityUtil.mayDamage(source, (LivingEntity) entity)) {
+                    entity.hurt(level.damageSources().magic(), (float) (35 * multiplier)); // Adjust damage amount as needed
+                }
+            }
         }
 
         public void showParticlesToPlayer(ServerPlayer player) {

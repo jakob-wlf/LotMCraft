@@ -6,6 +6,7 @@ import com.mojang.math.Axis;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.custom.ApprenticeDoorEntity;
 import de.jakob.lotm.entity.custom.WindBladeEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -16,8 +17,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
+@OnlyIn(Dist.CLIENT)
 public class ApprenticeDoorRenderer extends EntityRenderer<ApprenticeDoorEntity> {
 
     private final ApprenticeDoorModel<ApprenticeDoorEntity> model;
@@ -30,6 +34,10 @@ public class ApprenticeDoorRenderer extends EntityRenderer<ApprenticeDoorEntity>
     @Override
     public void render(ApprenticeDoorEntity entity, float entityYaw, float partialTicks,
                        PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+
+        if(entity.getOwnerUUID() != null && Minecraft.getInstance().player != null && !Minecraft.getInstance().player.getUUID().equals(entity.getOwnerUUID())) {
+            return;
+        }
 
         poseStack.pushPose();
 

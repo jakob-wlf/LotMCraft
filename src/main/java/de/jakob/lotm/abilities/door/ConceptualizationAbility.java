@@ -43,10 +43,13 @@ public class ConceptualizationAbility extends ToggleAbilityItem {
         entity.setInvisible(true);
         entity.resetFallDistance();
         entity.fallDistance = 0;
-        entity.setDeltaMovement(entity.getLookAngle().normalize().scale(.55f));
+        if(!entity.isShiftKeyDown())
+            entity.setDeltaMovement(entity.getLookAngle().normalize().scale(2));
+        else
+            entity.setDeltaMovement(0, 0, 0);
         entity.hurtMarked = true;
 
-        ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.ENCHANT, entity.position(), 100, .8, .8, .8, .1);
+        ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.ENCHANT, entity.position(), 200, .8, .8, .8, .1);
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.STAR.get(), entity.position(), 5, .4, .4, .4, .1);
     }
 

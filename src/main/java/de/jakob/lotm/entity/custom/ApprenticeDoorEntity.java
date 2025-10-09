@@ -26,11 +26,14 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 public class ApprenticeDoorEntity extends Entity {
     private static final EntityDataAccessor<Integer> DATA_FACING = SynchedEntityData.defineId(ApprenticeDoorEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Optional<UUID>> OWNERUUID = SynchedEntityData.defineId(ApprenticeDoorEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+
     private int duration = 20 * 10;
     private Vec3 teleportPos;
 
@@ -59,6 +62,10 @@ public class ApprenticeDoorEntity extends Entity {
         this.setXRot(0);
 
         calculateTeleportPos();
+    }
+
+    public void setOnlyVisibleForCertainPlayer(UUID playerUUID) {
+        this.entityData.set(OWNERUUID, Optional.ofNullable(playerUUID));
     }
 
     final int maxSearchDepth = 100;
@@ -136,23 +143,32 @@ public class ApprenticeDoorEntity extends Entity {
 
     private void spawnAmbientParticles() {
         // Add some ethereal particles around the door
-        ParticleUtil.spawnParticles((ServerLevel) this.level(), ParticleTypes.END_ROD, this.getEyePosition().subtract(0, this.getEyeHeight() / 2, 0), 2, .55, 1, .55, .025);
+        if(this.getOwnerUUID() == null)
+            ParticleUtil.spawnParticles((ServerLevel) this.level(), ParticleTypes.END_ROD, this.getEyePosition().subtract(0, this.getEyeHeight() / 2, 0), 2, .55, 1, .55, .025);
     }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(DATA_FACING, Direction.NORTH.get3DDataValue());
+        builder.define(OWNERUUID, Optional.empty());
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
         this.setFacing(Direction.from3DDataValue(compound.getInt("Facing")));
+        if (compound.hasUUID("Owner")) {
+            this.setOwnerUUID(compound.getUUID("Owner"));
+        }
         this.duration = compound.getInt("Duration");
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag compound) {
         compound.putInt("Facing", this.getFacing().get3DDataValue());
+        UUID owner = this.getOwnerUUID();
+        if (owner != null) {
+            compound.putUUID("Owner", owner);
+        }
         compound.putInt("Duration", this.duration);
     }
 
@@ -171,6 +187,14 @@ public class ApprenticeDoorEntity extends Entity {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public void setOwnerUUID(UUID uuid) {
+        this.entityData.set(OWNERUUID, Optional.ofNullable(uuid));
+    }
+
+    public UUID getOwnerUUID() {
+        return this.entityData.get(OWNERUUID).orElse(null);
     }
 
     @Override

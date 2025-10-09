@@ -5,11 +5,6 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -17,29 +12,22 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.StreamSupport;
+import java.util.*;
 
 public class ExileDoorsEntity extends Entity {
     private int lifetime = 0;
+
+    private final HashSet<UUID> onExileCooldown = new HashSet<>();
+
     private static final EntityDataAccessor<Optional<UUID>> OWNER =
             SynchedEntityData.defineId(ExileDoorsEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Integer> DURATION =
@@ -82,20 +70,11 @@ public class ExileDoorsEntity extends Entity {
             int ownerSequence = ownerIsBeyonder ? BeyonderData.getSequence(owner) : 9;
 
             for (LivingEntity entity : entities) {
-                if (owner != null && (entity.getUUID().equals(ownerUUID) || !AbilityUtil.mayTarget(owner, entity) || !AbilityUtil.mayDamage(owner, entity))) {
-                    continue; // Skip the owner
+                if (owner != null && (entity.getUUID().equals(ownerUUID) || !AbilityUtil.mayTarget(owner, entity) || !AbilityUtil.mayDamage(owner, entity)) || onExileCooldown.contains(entity.getUUID())) {
+                    continue;
                 }
 
-                // Check if entity has exile immunity
-                if (entity.getPersistentData().contains("ExileImmunityUntil")) {
-                    long immunityEnd = entity.getPersistentData().getLong("ExileImmunityUntil");
-                    if (level().getGameTime() < immunityEnd) {
-                        continue; // Skip entities with immunity
-                    }
-                }
-
-                // Calculate exile duration
-                int exileTicks = 120; // Default 6 seconds if owner is not a beyonder
+                int exileTicks;
 
                 if (ownerIsBeyonder && BeyonderData.isBeyonder(entity)) {
                     int targetSequence = BeyonderData.getSequence(entity);
@@ -116,71 +95,36 @@ public class ExileDoorsEntity extends Entity {
                         // Each sequence difference adds ~3 seconds
                         exileTicks = 120 + (sequenceDiff * 60); // 6s + (diff * 3s)
                     }
+                } else {
+                    exileTicks = 120;
                 }
+                final double origX = entity.getX();
+                final double origY = entity.getY();
+                final double origZ = entity.getZ();
+                final ServerLevel origLevel = (ServerLevel) entity.level();
 
-                // Store original position
-                entity.getPersistentData().putDouble("ExileReturnX", entity.getX());
-                entity.getPersistentData().putDouble("ExileReturnY", entity.getY());
-                entity.getPersistentData().putDouble("ExileReturnZ", entity.getZ());
-                entity.getPersistentData().putString("ExileReturnDimension", entity.level().dimension().location().toString());
-                entity.getPersistentData().putLong("ExileReturnTime", level().getGameTime() + exileTicks);
-
-                // Teleport to random location in the End
+                // Teleport to End
                 ServerLevel endLevel = ((ServerLevel)level()).getServer().getLevel(Level.END);
                 if (endLevel != null) {
-                    double randomX = (level().random.nextDouble() - 0.5) * 200; // Random within 100 blocks
+                    double randomX = (level().random.nextDouble() - 0.5) * 200;
                     double randomZ = (level().random.nextDouble() - 0.5) * 200;
-                    double y = 64; // Safe height in the End
+                    double y = 64;
 
                     entity.teleportTo(endLevel, randomX, y, randomZ, Set.of(), entity.getYRot(), entity.getXRot());
-                    entity.getPersistentData().putBoolean("IsExiled", true);
+                    entity.resetFallDistance();
+
+                    ServerScheduler.scheduleDelayed(exileTicks, () -> {
+                        entity.teleportTo(origLevel, origX, origY, origZ, Set.of(), entity.getYRot(), entity.getXRot());
+                        entity.resetFallDistance();
+                        onExileCooldown.add(entity.getUUID());
+                        ServerScheduler.scheduleDelayed(20 * 4, () -> onExileCooldown.remove(entity.getUUID()));
+                    });
                 }
             }
         }
     }
     private void spawnParticles() {
         ParticleUtil.spawnParticles((ServerLevel) level(), ModParticles.STAR.get(), position(), 1, 2, 2, 2, .05);
-    }
-
-    public static void tickExiledEntities(ServerLevel level) {
-        for (LivingEntity entity : StreamSupport.stream(level.getAllEntities().spliterator(), false)
-                .filter(e -> e instanceof LivingEntity)
-                .map(e -> (LivingEntity)e)
-                .filter(e -> e.getPersistentData().getBoolean("IsExiled"))
-                .toList()) {
-
-            if (entity.getPersistentData().contains("ExileReturnTime")) {
-                long returnTime = entity.getPersistentData().getLong("ExileReturnTime");
-
-                if (level.getGameTime() >= returnTime) {
-                    // Return entity to original position
-                    double x = entity.getPersistentData().getDouble("ExileReturnX");
-                    double y = entity.getPersistentData().getDouble("ExileReturnY");
-                    double z = entity.getPersistentData().getDouble("ExileReturnZ");
-                    String dimString = entity.getPersistentData().getString("ExileReturnDimension");
-
-                    ServerLevel returnLevel = level.getServer().getLevel(ResourceKey.create(
-                            Registries.DIMENSION,
-                            ResourceLocation.parse(dimString)
-                    ));
-
-                    if (returnLevel != null) {
-                        entity.teleportTo(returnLevel, x, y, z, Set.of(), entity.getYRot(), entity.getXRot());
-
-                        // Grant 7 seconds of immunity (140 ticks)
-                        entity.getPersistentData().putLong("ExileImmunityUntil", level.getGameTime() + 140);
-
-                        // Clean up exile data
-                        entity.getPersistentData().remove("IsExiled");
-                        entity.getPersistentData().remove("ExileReturnTime");
-                        entity.getPersistentData().remove("ExileReturnX");
-                        entity.getPersistentData().remove("ExileReturnY");
-                        entity.getPersistentData().remove("ExileReturnZ");
-                        entity.getPersistentData().remove("ExileReturnDimension");
-                    }
-                }
-            }
-        }
     }
 
     @Override
