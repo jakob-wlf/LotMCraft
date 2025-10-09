@@ -59,6 +59,9 @@ public abstract class AbilityItem extends Item {
             return;
         }
 
+        if(BeyonderData.isAbilityDisabled(beyonderNPC))
+            return;
+
         if(!level.isClientSide)
             AbilityHandler.useAbilityInArea(this, new Location(beyonderNPC.position(), level));
 

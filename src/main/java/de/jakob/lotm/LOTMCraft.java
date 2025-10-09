@@ -142,6 +142,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.TORNADO.get(), TornadoRenderer::new);
             EntityRenderers.register(ModEntities.LIGHTNING_BRANCH.get(), LightningBranchRenderer::new);
             EntityRenderers.register(ModEntities.EXILE_DOORS.get(), ExileDoorsRenderer::new);
+            EntityRenderers.register(ModEntities.SPACE_RIFT.get(), SpaceRiftRenderer::new);
         }
 
         @SubscribeEvent

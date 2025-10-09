@@ -4,7 +4,9 @@ import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.helper.TemporaryChunkLoader;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -14,6 +16,8 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -49,6 +53,7 @@ public class ExileDoorsEntity extends Entity {
         }
     }
 
+    // Somewhere in your entity or ability class
     @Override
     public void tick() {
         super.tick();
@@ -58,71 +63,80 @@ public class ExileDoorsEntity extends Entity {
             return;
         }
 
-        if(!level().isClientSide) {
+        if (!level().isClientSide) {
             spawnParticles();
 
-            Set<LivingEntity> entities = new HashSet<>(this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox()));
+            ServerLevel serverLevel = (ServerLevel) level();
+            Set<LivingEntity> entities = new HashSet<>(serverLevel.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox()));
             UUID ownerUUID = this.entityData.get(OWNER).orElse(null);
-            LivingEntity owner = ownerUUID != null ? (LivingEntity) ((ServerLevel)level()).getEntity(ownerUUID) : null;
+            LivingEntity owner = ownerUUID != null ? (LivingEntity) serverLevel.getEntity(ownerUUID) : null;
 
-            // Check if owner is a beyonder, if not skip all exile logic
             boolean ownerIsBeyonder = owner != null && BeyonderData.isBeyonder(owner);
             int ownerSequence = ownerIsBeyonder ? BeyonderData.getSequence(owner) : 9;
 
             for (LivingEntity entity : entities) {
-                if (owner != null && (entity.getUUID().equals(ownerUUID) || !AbilityUtil.mayTarget(owner, entity) || !AbilityUtil.mayDamage(owner, entity)) || onExileCooldown.contains(entity.getUUID())) {
-                    continue;
-                }
+                if ((owner != null && (
+                        entity.getUUID().equals(ownerUUID)
+                                || !AbilityUtil.mayTarget(owner, entity)
+                                || !AbilityUtil.mayDamage(owner, entity)))
+                        || onExileCooldown.contains(entity.getUUID())
+                ) continue;
 
                 int exileTicks;
-
                 if (ownerIsBeyonder && BeyonderData.isBeyonder(entity)) {
                     int targetSequence = BeyonderData.getSequence(entity);
                     int sequenceDiff = targetSequence - ownerSequence;
+                    if (sequenceDiff <= -2) continue;
 
-                    // If target is 2+ sequences lower (stronger), exile doesn't work
-                    if (sequenceDiff <= -2) {
-                        continue;
-                    }
-
-                    // Calculate exile time based on sequence difference
-                    if (sequenceDiff == -1) {
-                        exileTicks = 20; // 1 second
-                    } else if (sequenceDiff == 0) {
-                        exileTicks = 120; // 6 seconds
-                    } else {
-                        // For higher sequences (weaker targets), scale up the time
-                        // Each sequence difference adds ~3 seconds
-                        exileTicks = 120 + (sequenceDiff * 60); // 6s + (diff * 3s)
-                    }
+                    if (sequenceDiff == -1) exileTicks = 20;
+                    else if (sequenceDiff == 0) exileTicks = 120;
+                    else exileTicks = 200 + (sequenceDiff * 60);
                 } else {
-                    exileTicks = 120;
+                    exileTicks = 10 * 20;
                 }
-                final double origX = entity.getX();
-                final double origY = entity.getY();
-                final double origZ = entity.getZ();
-                final ServerLevel origLevel = (ServerLevel) entity.level();
 
-                // Teleport to End
-                ServerLevel endLevel = ((ServerLevel)level()).getServer().getLevel(Level.END);
+                exileTicks = (int) Math.round(exileTicks * BeyonderData.getMultiplier(entity));
+
+                ServerLevel origLevel = (ServerLevel) entity.level();
+                double origX = entity.getX();
+                double origY = entity.getY();
+                double origZ = entity.getZ();
+
+                ServerLevel endLevel = serverLevel.getServer().getLevel(Level.END);
                 if (endLevel != null) {
-                    double randomX = (level().random.nextDouble() - 0.5) * 200;
-                    double randomZ = (level().random.nextDouble() - 0.5) * 200;
+                    double randomX = (serverLevel.random.nextDouble() - 0.5) * 200;
+                    double randomZ = (serverLevel.random.nextDouble() - 0.5) * 200;
                     double y = 64;
 
-                    entity.teleportTo(endLevel, randomX, y, randomZ, Set.of(), entity.getYRot(), entity.getXRot());
-                    entity.resetFallDistance();
+                    // Persist exile data
+                    CompoundTag tag = entity.getPersistentData();
+                    tag.putBoolean("Exiled", true);
+                    tag.putLong("ReturnTime", serverLevel.getGameTime() + exileTicks);
+                    tag.putString("ReturnLevel", origLevel.dimension().location().toString());
+                    tag.putDouble("ReturnX", origX);
+                    tag.putDouble("ReturnY", origY);
+                    tag.putDouble("ReturnZ", origZ);
+                    entity.hurtMarked = true;
 
-                    ServerScheduler.scheduleDelayed(exileTicks, () -> {
-                        entity.teleportTo(origLevel, origX, origY, origZ, Set.of(), entity.getYRot(), entity.getXRot());
-                        entity.resetFallDistance();
-                        onExileCooldown.add(entity.getUUID());
-                        ServerScheduler.scheduleDelayed(20 * 4, () -> onExileCooldown.remove(entity.getUUID()));
-                    });
+                    ParticleUtil.spawnParticles((ServerLevel) entity.level(), ModParticles.STAR.get(), entity.position(), 100, 1, 2, 1, .1);
+                    ParticleUtil.spawnParticles((ServerLevel) entity.level(), ParticleTypes.PORTAL, entity.position(), 100, 1, 2, 1, .1);
+                    level().playSound(null, entity.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 2.0f, 0.5f + level().random.nextFloat());
+                    TemporaryChunkLoader.forceChunksTemporarily(endLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
+                    entity.teleportTo(endLevel, randomX, y, randomZ, Set.of(), entity.getYRot(), entity.getXRot());
+                    TemporaryChunkLoader.forceChunksTemporarily(endLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
+                    entity.resetFallDistance();
+                    ParticleUtil.spawnParticles((ServerLevel) entity.level(), ModParticles.STAR.get(), entity.position(), 100, 1, 2, 1, .1);
+                    ParticleUtil.spawnParticles((ServerLevel) entity.level(), ParticleTypes.PORTAL, entity.position(), 100, 1, 2, 1, .1);
+                    entity.level().playSound(null, entity.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 2.0f, 0.5f + entity.level().random.nextFloat());
+
+                    ServerScheduler.scheduleDelayed(exileTicks - 5, () -> onExileCooldown.add(entity.getUUID()));
+                    ServerScheduler.scheduleDelayed(20 * 4 + exileTicks + 5, () -> onExileCooldown.remove(entity.getUUID()));
                 }
             }
         }
     }
+
+
     private void spawnParticles() {
         ParticleUtil.spawnParticles((ServerLevel) level(), ModParticles.STAR.get(), position(), 1, 2, 2, 2, .05);
     }

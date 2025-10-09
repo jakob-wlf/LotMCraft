@@ -56,7 +56,11 @@ public class ModEntities {
 
     public static final Supplier<EntityType<ExileDoorsEntity>> EXILE_DOORS =
             ENTITY_TYPES.register("exile_doors", () -> EntityType.Builder.<ExileDoorsEntity>of(ExileDoorsEntity::new, MobCategory.MISC)
-                    .sized(6.5f, 6.5f).build("exile_doors"));
+                    .sized(7.5f, 8f).build("exile_doors"));
+
+    public static final Supplier<EntityType<SpaceRiftEntity>> SPACE_RIFT =
+            ENTITY_TYPES.register("space_rift", () -> EntityType.Builder.<SpaceRiftEntity>of(SpaceRiftEntity::new, MobCategory.MISC)
+                    .sized(10f, 10f).build("space_rift"));
 
     public static final Supplier<EntityType<ElectricShockEntity>> ELECTRIC_SHOCK =
             ENTITY_TYPES.register("electric_shock", () -> EntityType.Builder.<ElectricShockEntity>of(ElectricShockEntity::new, MobCategory.MISC)

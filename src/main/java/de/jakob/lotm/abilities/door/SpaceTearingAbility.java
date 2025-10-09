@@ -1,18 +1,20 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SpaceTearingAbility extends AbilityItem {
     public SpaceTearingAbility(Properties properties) {
-        super(properties, 1);
+        super(properties, 2);
     }
 
     @Override
@@ -22,7 +24,7 @@ public class SpaceTearingAbility extends AbilityItem {
 
     @Override
     protected float getSpiritualityCost() {
-        return 0;
+        return 800;
     }
 
     @Override
@@ -30,9 +32,7 @@ public class SpaceTearingAbility extends AbilityItem {
         if(level.isClientSide)
             return;
 
-        if(entity instanceof ServerPlayer player) {
-            Component message = Component.translatable("lotm.not_implemented_yet").withStyle(ChatFormatting.RED);
-            player.sendSystemMessage(message);
-        }
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 27, 2);
+
     }
 }

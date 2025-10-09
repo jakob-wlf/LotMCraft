@@ -406,7 +406,7 @@ public class SpaceConcealmentAbility extends SelectableAbilityItem {
                         BlockPos pos = centerPos.offset(x, y, z);
                         BlockState currentState = level.getBlockState(pos);
 
-                        ParticleUtil.spawnParticles(level, new Random().nextBoolean() ? ModParticles.STAR.get() : new DustParticleOptions(new Vector3f(0, 0, 0), 1.5f), pos.getCenter(), 1, .2, 0);
+                        ParticleUtil.spawnParticles(level, new Random().nextBoolean() ? ModParticles.STAR.get() : new DustParticleOptions(new Vector3f(0, 0, 0), 5f), pos.getCenter(), 1, .2, 0);
 
                         // Replace all blocks with air
                         if(!currentState.isAir() && BeyonderData.isGriefingEnabled(source)) {

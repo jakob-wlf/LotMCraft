@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.AbilitySelectionPacket;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -48,6 +49,9 @@ public abstract class SelectableAbilityItem extends AbilityItem{
             return;
         }
 
+        if(BeyonderData.isAbilityDisabled(beyonderNPC))
+            return;
+
         if(!level.isClientSide)
             AbilityHandler.useAbilityInArea(this, new Location(beyonderNPC.position(), level));
 
@@ -55,6 +59,7 @@ public abstract class SelectableAbilityItem extends AbilityItem{
 
         if(getAbilityNames().length == 0)
             return;
+
         useAbility(level, beyonderNPC, random.nextInt(getAbilityNames().length));
     }
 

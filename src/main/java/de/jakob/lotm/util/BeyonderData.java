@@ -214,6 +214,8 @@ public class BeyonderData {
     }
 
     public static double getMultiplier(LivingEntity entity) {
+        if(!BeyonderData.isBeyonder(entity))
+            return 1;
         int sequence = getSequence(entity);
 
         if (sequence < 0 || sequence >= multiplier.length) {

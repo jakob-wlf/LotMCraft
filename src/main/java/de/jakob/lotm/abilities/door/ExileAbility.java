@@ -41,7 +41,7 @@ public class ExileAbility extends AbilityItem {
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 20, 2);
 
         ExileDoorsEntity door = new ExileDoorsEntity(ModEntities.EXILE_DOORS.get(), level, 20 * 20, entity);
-        door.setPos(targetPos);
+        door.setPos(targetPos.x, targetPos.y, targetPos.z);
         level.addFreshEntity(door);
 
         level.playSound(null, BlockPos.containing(targetPos), SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 2.0f, 1.0f);

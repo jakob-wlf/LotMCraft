@@ -36,7 +36,7 @@ public class ExileDoorsRenderer extends EntityRenderer<ExileDoorsEntity> {
         float time = entity.tickCount + partialTicks;
 
         // Gentle motion
-        poseStack.translate(0.0D, 0.05 * Mth.sin(time * 0.1F), 0.0D);
+        poseStack.translate(0.0D, 0.05 * Mth.sin(time * 0.1F) + 1.75, 0.0D);
         poseStack.mulPose(Axis.YP.rotationDegrees(.75F * Mth.sin(time * 0.2F)));
         poseStack.mulPose(Axis.ZP.rotationDegrees(.25F * Mth.cos(time * 0.15F)));
 
