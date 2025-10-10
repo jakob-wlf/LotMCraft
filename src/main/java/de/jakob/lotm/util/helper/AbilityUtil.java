@@ -375,7 +375,7 @@ public class AbilityUtil {
 
             // Apply damage with appropriate damage source
             if (ignoreCooldown || entity.invulnerableTime <= 0) {
-                entity.hurt(source.damageSources().explosion(null, source), finalDamage);
+                entity.hurt(entity.damageSources().mobAttack(source), finalDamage);
 
                 // Set custom invulnerability time if specified
                 if (cooldownTicks >= 0) {
@@ -429,6 +429,74 @@ public class AbilityUtil {
                 double y = center.y + radius * Math.sin(phi) * Math.sin(theta);
                 double z = center.z + radius * Math.cos(phi);
 
+                blocks.add(BlockPos.containing(x, y, z));
+            }
+        }
+
+        return blocks;
+    }
+
+
+    public static List<BlockPos> getBlocksInSphereRadius(ServerLevel level, Vec3 center, double radius, boolean filled, boolean excludeEmptyBlocks, boolean onlyExposed) {
+        if (level == null) return List.of();
+
+        List<BlockPos> blocks = new ArrayList<>();
+
+        int steps = (int) Math.max(20, 4 * Math.PI * radius * radius);
+
+        if (filled) {
+            int minX = Mth.floor(center.x - radius);
+            int maxX = Mth.ceil(center.x + radius);
+            int minY = Mth.floor(center.y - radius);
+            int maxY = Mth.ceil(center.y + radius);
+            int minZ = Mth.floor(center.z - radius);
+            int maxZ = Mth.ceil(center.z + radius);
+
+            double rSq = radius * radius;
+
+            for (int x = minX; x <= maxX; x++) {
+                for (int y = minY; y <= maxY; y++) {
+                    for (int z = minZ; z <= maxZ; z++) {
+                        double dx = x + 0.5 - center.x;
+                        double dy = y + 0.5 - center.y;
+                        double dz = z + 0.5 - center.z;
+                        if (dx * dx + dy * dy + dz * dz <= rSq) {
+                            if(excludeEmptyBlocks) {
+                                BlockPos pos = new BlockPos(x, y, z);
+                                if(level.getBlockState(pos).getCollisionShape(level, pos).isEmpty())
+                                    continue;
+                            }
+                            if(onlyExposed) {
+                                BlockPos pos = new BlockPos(x, y, z);
+                                if(!level.getBlockState(pos.above()).getCollisionShape(level, pos.above()).isEmpty())
+                                    continue;
+                            }
+                            blocks.add(new BlockPos(x, y, z));
+                        }
+                    }
+                }
+            }
+        } else {
+            RandomSource random = level.random;
+
+            for (int i = 0; i < steps; i++) {
+                double theta = 2 * Math.PI * random.nextDouble();
+                double phi = Math.acos(2 * random.nextDouble() - 1);
+
+                double x = center.x + radius * Math.sin(phi) * Math.cos(theta);
+                double y = center.y + radius * Math.sin(phi) * Math.sin(theta);
+                double z = center.z + radius * Math.cos(phi);
+
+                if(excludeEmptyBlocks) {
+                    BlockPos pos = BlockPos.containing(x, y, z);
+                    if(level.getBlockState(pos).getCollisionShape(level, pos).isEmpty())
+                        continue;
+                }
+                if(onlyExposed) {
+                    BlockPos pos = BlockPos.containing(x, y, z);
+                    if(!level.getBlockState(pos.above()).getCollisionShape(level, pos.above()).isEmpty())
+                        continue;
+                }
                 blocks.add(BlockPos.containing(x, y, z));
             }
         }
@@ -512,7 +580,7 @@ public class AbilityUtil {
 
             // Apply damage with appropriate damage source
             if (ignoreCooldown || entity.invulnerableTime <= 0) {
-                entity.hurt(source.damageSources().explosion(null, source), finalDamage);
+                entity.hurt(entity.damageSources().mobAttack(source), finalDamage);
                 entity.setRemainingFireTicks(entity.getRemainingFireTicks() + fireTicks);
 
                 // Set custom invulnerability time if specified
@@ -574,7 +642,7 @@ public class AbilityUtil {
 
             // Apply damage with appropriate damage source
             if (ignoreCooldown || entity.invulnerableTime <= 0) {
-                entity.hurt(source.damageSources().explosion(null, source), finalDamage);
+                entity.hurt(entity.damageSources().mobAttack(source), finalDamage);
 
                 // Set custom invulnerability time if specified
                 if (cooldownTicks >= 0) {
@@ -628,6 +696,27 @@ public class AbilityUtil {
                 .filter(entity -> entity.position().distanceToSqr(center) <= radiusSquared)
                 .filter(entity -> entity != exclude)
                 .filter(e -> exclude == null || mayTarget(exclude, e)).toList();
+    }
+
+    public static List<Entity> getAllNearbyEntities(@Nullable LivingEntity exclude,
+                                                       ServerLevel level,
+                                                       Vec3 center,
+                                                       double radius, boolean allowCreativeMode) {
+        // Create detection box slightly larger than radius for efficiency
+        AABB detectionBox = new AABB(
+                center.subtract(radius, radius, radius),
+                center.add(radius, radius, radius)
+        );
+
+        double radiusSquared = radius * radius;
+
+        return level.getEntitiesOfClass(
+                        Entity.class,
+                        detectionBox
+                ).stream().filter(e -> !(e instanceof Player player) || (!player.isCreative() || allowCreativeMode))
+                .filter(entity -> entity.position().distanceToSqr(center) <= radiusSquared)
+                .filter(entity -> entity != exclude)
+                .filter(e -> exclude == null || (e instanceof LivingEntity le && mayTarget(exclude, le))).toList();
     }
 
     public static List<LivingEntity> getNearbyEntities(@Nullable LivingEntity exclude,

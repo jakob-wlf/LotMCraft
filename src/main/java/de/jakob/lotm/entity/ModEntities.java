@@ -77,8 +77,16 @@ public class ModEntities {
                     .clientTrackingRange(10)
                     .updateInterval(1)
                     .fireImmune()
-                    .noSummon()
                     .build("space_collapse"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<BlackHoleEntity>> BLACK_HOLE =
+            ENTITY_TYPES.register("black_hole", () -> EntityType.Builder.<BlackHoleEntity>of(
+                            BlackHoleEntity::new, MobCategory.MISC)
+                    .sized(1.0F, 1.0F)
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .build("black_hole"));
 
     public static final Supplier<EntityType<SpaceRiftEntity>> SPACE_RIFT =
             ENTITY_TYPES.register("space_rift", () -> EntityType.Builder.<SpaceRiftEntity>of(SpaceRiftEntity::new, MobCategory.MISC)

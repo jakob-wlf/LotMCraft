@@ -144,6 +144,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.SPACE_RIFT.get(), SpaceRiftRenderer::new);
             EntityRenderers.register(ModEntities.SPACE_COLLAPSE_LEGACY.get(), SpaceCollapseRendererLegacy::new);
             EntityRenderers.register(ModEntities.SPACE_COLLAPSE.get(), SpaceCollapseRenderer::new);
+            EntityRenderers.register(ModEntities.BLACK_HOLE.get(), BlackHoleRenderer::new);
         }
 
         @SubscribeEvent
