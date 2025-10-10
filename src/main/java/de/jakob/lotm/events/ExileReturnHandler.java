@@ -39,15 +39,10 @@ public class ExileReturnHandler {
             for (Entity entity : level.getEntities(EntityTypeTest.forClass(LivingEntity.class), e -> true)) {
                 if(level.dimension() != Level.END)
                     continue;
-                if(!(entity instanceof EnderMan))
-                    System.out.println("Checking entity " + entity);
                 CompoundTag tag = entity.getPersistentData();
                 if (tag.getBoolean("Exiled")) {
-                    System.out.println("ExileReturnHandler: Entity " + entity.getUUID() + " is exiled, checking return time...");
                     long returnTime = tag.getLong("ReturnTime");
-                    System.out.println("Current game time: " + gameTime + ", return time: " + returnTime);
                     if (gameTime >= returnTime) {
-                        System.out.println("ExileReturnHandler: Time to return entity " + entity.getUUID() + "!");
                         // Now handle teleport back
                         String returnLevelStr = tag.getString("ReturnLevel");
                         ResourceKey<Level> returnLevelKey =

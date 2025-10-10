@@ -1,5 +1,8 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.helper.ParticleUtil;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -8,11 +11,13 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -50,6 +55,16 @@ public class SpaceRiftEntity extends Entity {
         if (lifetime >= getDuration()) {
             this.remove(RemovalReason.DISCARDED);
             return;
+        }
+
+        if(level().isClientSide)
+            return;
+
+        if(tickCount < 20) {
+            ParticleUtil.spawnParticles((ServerLevel) level(), ModParticles.STAR.get(), position(), 40, 3, 5, 3, .075);
+        }
+        else if(tickCount == 20) {
+            ParticleUtil.spawnParticles((ServerLevel) level(), new DustParticleOptions(new Vector3f(0, 0, 0), 10), position(), 1200, 3, 5, 3, .075);
         }
     }
 

@@ -1,4 +1,4 @@
-// 1.21.1	2025-10-05T14:31:37.6680956	Item Models: lotmcraft
+// 1.21.1	2025-10-10T13:58:51.0044637	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -251,6 +251,7 @@ c66b3c290cfe0cdda503af66bc6a9598dd3acb00 assets/lotmcraft/models/item/unshadowed
 7ccce73dc8adb99f9b4c611fa6c78aa3e1b15c6f assets/lotmcraft/models/item/unshadowed_potion.json
 8df1832ea30d267e00fce0ccc983277d06a08ea8 assets/lotmcraft/models/item/unshadowed_spear_ability.json
 e666510632c1525aa90b0b935dd1534f054e0872 assets/lotmcraft/models/item/unwinged_angel_potion.json
+84debc220c429a5e41a15d6959fc219f3e348191 assets/lotmcraft/models/item/void_immunity_ability.json
 c8c29a275123e6bf90d04f3cd08aa58698974898 assets/lotmcraft/models/item/wall_of_light_ability.json
 3d00c4e00e13175083758a4daf3518447b6a3d5f assets/lotmcraft/models/item/wanderer_potion.json
 0d98c59ac2cba3b671ba57ef2317f8d89254aefd assets/lotmcraft/models/item/wandering_ability.json

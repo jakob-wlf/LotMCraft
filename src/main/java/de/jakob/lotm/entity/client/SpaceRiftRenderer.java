@@ -29,7 +29,8 @@ public class SpaceRiftRenderer extends EntityRenderer<SpaceRiftEntity> {
                        PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         poseStack.pushPose();
 
-        poseStack.scale(1.5f, -1.5f, 1.5f);
+        poseStack.scale(1.5f, -2f, 1.5f);
+        poseStack.translate(0, 1.5, 2);
 
         // Continue rendering
         float time = entity.tickCount + partialTicks;

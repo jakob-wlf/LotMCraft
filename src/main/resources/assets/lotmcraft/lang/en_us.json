@@ -116,6 +116,7 @@
   "item.lotmcraft.paper_figurine_substitute_ability": "Paper Figurine Substitute",
   "item.lotmcraft.paper_figurine_substitute_ability.description": "Create Substitutes out of paper to take your place when damaged",
   "item.lotmcraft.flaming_jump_ability": "Flaming Jump",
+  "item.lotmcraft.flaming_jump_ability.no_fire_found": "No fire found",
   "item.lotmcraft.underwater_breathing_ability": "Underwater Breathing",
   "item.lotmcraft.shapeshifting_ability": "Shapeshifting",
   "item.lotmcraft.puppeteering_ability": "Puppeteering",
@@ -184,12 +185,14 @@
   "item.lotmcraft.blink_ability": "Blink",
   "item.lotmcraft.travelers_door_ability": "Travelers Door",
   "item.lotmcraft.space_concealment_ability": "Space Concealment",
+  "item.lotmcraft.space_concealment_ability.description": "Separate a fixed space. Sneak while using to remove all concealed spaces. Use Collapse spaces to destroy anything inside and hurt entities.",
   "ability.lotmcraft.space_concealment.other": "Target Other",
   "ability.lotmcraft.space_concealment.self": "Target Self",
   "ability.lotmcraft.space_concealment.collapse": "Collapse Spaces",
   "item.lotmcraft.exile_ability": "Exile",
   "item.lotmcraft.door_substitution_ability": "Door Substitution",
   "item.lotmcraft.wandering_ability": "Wandering",
+  "item.lotmcraft.wandering_ability.no_dimension_found": "Found no Dimension to travel to",
   "item.lotmcraft.conceptualization_ability": "Conceptualization",
   "item.lotmcraft.sealing_ability": "Sealing",
   "item.lotmcraft.space_tearing_ability": "Space Tearing",
@@ -234,6 +237,8 @@
 
   "item.lotmcraft.flaming_hit_ability": "Flaming Hit",
   "item.lotmcraft.fire_resistance_ability": "Fire Resistance",
+
+  "item.lotmcraft.void_immunity_ability": "Void Immunity",
 
   "item.lotmcraft.paper_dagger_ability": "Paper Daggers",
   "item.lotmcraft.paper_dagger_ability.description": "Right click with paper to throw it as a dagger",

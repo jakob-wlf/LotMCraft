@@ -1,6 +1,8 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.entity.custom.SpaceCollapseEntity;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -33,6 +35,7 @@ public class SpaceTearingAbility extends AbilityItem {
             return;
 
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 27, 2);
-
+        SpaceCollapseEntity collapse = new SpaceCollapseEntity(level, targetLoc, (float) (30 * multiplier(entity)), BeyonderData.isGriefingEnabled(entity), entity);
+        level.addFreshEntity(collapse);
     }
 }

@@ -26,7 +26,6 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.util.Config;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
-import de.jakob.lotm.util.scheduling.ClientScheduler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.villager.ModVillagers;
 import net.minecraft.client.KeyMapping;
@@ -143,6 +142,8 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.LIGHTNING_BRANCH.get(), LightningBranchRenderer::new);
             EntityRenderers.register(ModEntities.EXILE_DOORS.get(), ExileDoorsRenderer::new);
             EntityRenderers.register(ModEntities.SPACE_RIFT.get(), SpaceRiftRenderer::new);
+            EntityRenderers.register(ModEntities.SPACE_COLLAPSE_LEGACY.get(), SpaceCollapseRendererLegacy::new);
+            EntityRenderers.register(ModEntities.SPACE_COLLAPSE.get(), SpaceCollapseRenderer::new);
         }
 
         @SubscribeEvent

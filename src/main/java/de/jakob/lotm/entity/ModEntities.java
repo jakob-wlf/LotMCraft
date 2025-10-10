@@ -58,6 +58,28 @@ public class ModEntities {
             ENTITY_TYPES.register("exile_doors", () -> EntityType.Builder.<ExileDoorsEntity>of(ExileDoorsEntity::new, MobCategory.MISC)
                     .sized(7.5f, 8f).build("exile_doors"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<SpaceCollapseEntityLegacy>> SPACE_COLLAPSE_LEGACY =
+            ENTITY_TYPES.register("space_collapse_legacy", () -> EntityType.Builder.<SpaceCollapseEntityLegacy>of(
+                            SpaceCollapseEntityLegacy::new, MobCategory.MISC)
+                    .sized(1.0f, 1.0f)
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .noSave()
+                    .build("space_collapse_legacy"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<SpaceCollapseEntity>> SPACE_COLLAPSE =
+            ENTITY_TYPES.register("space_collapse", () -> EntityType.Builder.<SpaceCollapseEntity>of(
+                            SpaceCollapseEntity::new,
+                            MobCategory.MISC
+                    )
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .noSummon()
+                    .build("space_collapse"));
+
     public static final Supplier<EntityType<SpaceRiftEntity>> SPACE_RIFT =
             ENTITY_TYPES.register("space_rift", () -> EntityType.Builder.<SpaceRiftEntity>of(SpaceRiftEntity::new, MobCategory.MISC)
                     .sized(10f, 10f).build("space_rift"));

@@ -5,7 +5,10 @@ import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,6 +19,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -384,6 +388,54 @@ public class AbilityUtil {
 
         return hitAnyEntity;
     }
+
+    public static List<BlockPos> getBlocksInSphereRadius(ServerLevel level, Vec3 center, double radius, boolean filled) {
+        if (level == null) return List.of();
+
+        List<BlockPos> blocks = new ArrayList<>();
+
+        int steps = (int) Math.max(20, 4 * Math.PI * radius * radius);
+
+        if (filled) {
+            int minX = Mth.floor(center.x - radius);
+            int maxX = Mth.ceil(center.x + radius);
+            int minY = Mth.floor(center.y - radius);
+            int maxY = Mth.ceil(center.y + radius);
+            int minZ = Mth.floor(center.z - radius);
+            int maxZ = Mth.ceil(center.z + radius);
+
+            double rSq = radius * radius;
+
+            for (int x = minX; x <= maxX; x++) {
+                for (int y = minY; y <= maxY; y++) {
+                    for (int z = minZ; z <= maxZ; z++) {
+                        double dx = x + 0.5 - center.x;
+                        double dy = y + 0.5 - center.y;
+                        double dz = z + 0.5 - center.z;
+                        if (dx * dx + dy * dy + dz * dz <= rSq) {
+                            blocks.add(new BlockPos(x, y, z));
+                        }
+                    }
+                }
+            }
+        } else {
+            RandomSource random = level.random;
+
+            for (int i = 0; i < steps; i++) {
+                double theta = 2 * Math.PI * random.nextDouble();
+                double phi = Math.acos(2 * random.nextDouble() - 1);
+
+                double x = center.x + radius * Math.sin(phi) * Math.cos(theta);
+                double y = center.y + radius * Math.sin(phi) * Math.sin(theta);
+                double z = center.z + radius * Math.cos(phi);
+
+                blocks.add(BlockPos.containing(x, y, z));
+            }
+        }
+
+        return blocks;
+    }
+
 
     public static boolean mayDamage(LivingEntity source, LivingEntity target) {
         if (source == target) return false;

@@ -49,7 +49,7 @@ public class FlamingJumpAbility extends AbilityItem {
 
         if(!level.getBlockState(block).is(Blocks.FIRE)) {
             if(entity instanceof ServerPlayer player) {
-                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("No fire found.").withColor(0xFFff124d));
+                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("item.lotmcraft.flaming_jump_ability.no_fire_found").withColor(0xFFff124d));
                 player.connection.send(packet);
             }
             return;

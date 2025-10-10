@@ -69,9 +69,9 @@ public class SealingAbility extends AbilityItem {
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1f, 1f);
 
         ServerScheduler.scheduleForDuration(0, 4, 20 * 14, () -> {
-            ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, targetLoc, radius, 100);
-            ParticleUtil.spawnSphereParticles((ServerLevel) level, dustOptions, targetLoc, radius, 80);
-            ParticleUtil.spawnSphereParticles((ServerLevel) level, dustOptions2, targetLoc, radius, 60);
+            ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, targetLoc, radius, 80);
+            ParticleUtil.spawnSphereParticles((ServerLevel) level, dustOptions, targetLoc, radius, 60);
+            ParticleUtil.spawnSphereParticles((ServerLevel) level, dustOptions2, targetLoc, radius, 40);
 
             sealedEntities.forEach(e -> {
                 e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 100, false, false, false));
