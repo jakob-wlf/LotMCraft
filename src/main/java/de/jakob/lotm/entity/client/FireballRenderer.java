@@ -29,6 +29,7 @@ public class FireballRenderer extends EntityRenderer<FireballEntity> {
     public void render(FireballEntity entity, float entityYaw, float partialTicks,
                        PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         poseStack.pushPose();
+        poseStack.scale(entity.getSize(), entity.getSize(), entity.getSize());
         poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F));
         poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.getXRot()) + 90.0F));
         VertexConsumer vertexconsumer = ItemRenderer.getFoilBufferDirect(
