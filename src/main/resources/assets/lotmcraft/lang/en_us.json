@@ -143,6 +143,9 @@
 
   "item.lotmcraft.mighty_blow_ability": "Mighty Blow",
   "item.lotmcraft.instigation_ability": "Instigation",
+  "item.lotmcraft.instigation_ability.description": "Instigate two mobs to attack each other",
+  "item.lotmcraft.instigation_ability.not_valid_mob": "You have to select a target mob first",
+  "item.lotmcraft.instigation_ability.cannot_target_same_mob": "You cannot instigate a mob to attack itself",
   "item.lotmcraft.shadow_concealment_ability": "Shadow Concealment",
   "item.lotmcraft.black_flame_ability": "Black Flame",
   "ability.lotmcraft.black_flame.burn": "Burn",

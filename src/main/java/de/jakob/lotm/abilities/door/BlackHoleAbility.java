@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class BlackHoleAbility extends AbilityItem {
     public BlackHoleAbility(Properties properties) {
-        super(properties, 90);
+        super(properties, 20 * 60 * 2);
     }
 
     @Override

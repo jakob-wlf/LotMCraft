@@ -36,7 +36,7 @@ public class BlackHoleEntity extends Entity {
     private LivingEntity cachedOwner;
     
     private static final double PULL_STRENGTH = 0.5;
-    private static final int duration = 20 * 80;
+    private static final int duration = 20 * 60 * 4;
     private int age = 0;
 
     private List<BlockPos> blocks;
@@ -140,44 +140,7 @@ public class BlackHoleEntity extends Entity {
         pullEntities();
         damageEntities();
 
-        if(shouldSuckBlocks()) {
-            suckUpBlocks();
-        }
-    }
-    
-    private void spawnParticles() {
-        float radius = getRadius();
-        int particleCount = (int) (radius * 10);
-        
-        for (int i = 0; i < particleCount; i++) {
-            double angle = random.nextDouble() * Math.PI * 2;
-            double distance = random.nextDouble() * radius;
-            double spiralHeight = (random.nextDouble() - 0.5) * radius * 0.5;
-            
-            double offsetX = Math.cos(angle) * distance;
-            double offsetZ = Math.sin(angle) * distance;
-            
-            // Swirling effect
-            double speed = 0.1 * (1 - distance / radius);
-            double velX = -Math.sin(angle) * speed;
-            double velZ = Math.cos(angle) * speed;
-            double velY = -0.05;
-            
-            this.level().addParticle(ParticleTypes.PORTAL,
-                    this.getX() + offsetX,
-                    this.getY() + spiralHeight,
-                    this.getZ() + offsetZ,
-                    velX, velY, velZ);
-            
-            // Dark particles for event horizon effect
-            if (distance < radius * 0.3) {
-                this.level().addParticle(ParticleTypes.SMOKE,
-                        this.getX() + offsetX * 0.5,
-                        this.getY() + spiralHeight * 0.5,
-                        this.getZ() + offsetZ * 0.5,
-                        0, 0, 0);
-            }
-        }
+        suckUpBlocks();
     }
     
     private void pullEntities() {
@@ -213,13 +176,14 @@ public class BlackHoleEntity extends Entity {
     private void suckUpBlocks() {
         if(this.blocks == null || this.blocks.isEmpty())
             return;
-        int blocksToSuck = Math.min(100, blocks.size());
+        int blocksToSuck = shouldSuckBlocks() ? Math.min(100, blocks.size()) : 12;
         for (int i = 0; i < blocksToSuck; i++) {
             BlockPos blockPos = blocks.get(random.nextInt(blocks.size()));
             BlockState state = level().getBlockState(blockPos);
-            level().setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
+            if(shouldSuckBlocks())
+                level().setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
 
-            if(random.nextInt(95) != 0)
+            if(random.nextInt(70) != 0 && shouldSuckBlocks())
                 continue;
 
             FallingBlockEntity falling = FallingBlockEntity.fall(
@@ -227,6 +191,7 @@ public class BlackHoleEntity extends Entity {
                     blockPos.above().above(),
                     state
             );
+            falling.disableDrop();
 
             AtomicBoolean cancel = new AtomicBoolean(false);
 
