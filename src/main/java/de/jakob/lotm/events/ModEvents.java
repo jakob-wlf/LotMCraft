@@ -52,6 +52,7 @@ public class ModEvents {
         event.registerLayerDefinition(TornadoModel.LAYER_LOCATION, TornadoModel::createBodyLayer);
         event.registerLayerDefinition(ExileDoorsModel.LAYER_LOCATION, ExileDoorsModel::createBodyLayer);
         event.registerLayerDefinition(SpaceRiftModel.LAYER_LOCATION, SpaceRiftModel::createBodyLayer);
+        event.registerLayerDefinition(WarBannerModel.LAYER_LOCATION, WarBannerModel::createBodyLayer);
     }
 
     @SubscribeEvent

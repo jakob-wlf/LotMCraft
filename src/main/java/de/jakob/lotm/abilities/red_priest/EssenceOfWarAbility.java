@@ -1,9 +1,13 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.entity.custom.WarBannerEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -12,7 +16,7 @@ import java.util.Map;
 
 public class EssenceOfWarAbility extends AbilityItem {
     public EssenceOfWarAbility(Properties properties) {
-        super(properties, 1);
+        super(properties, 180);
     }
 
     @Override
@@ -22,7 +26,7 @@ public class EssenceOfWarAbility extends AbilityItem {
 
     @Override
     protected float getSpiritualityCost() {
-        return 0;
+        return 1000;
     }
 
     @Override
@@ -30,9 +34,10 @@ public class EssenceOfWarAbility extends AbilityItem {
         if(level.isClientSide)
             return;
 
-        if(entity instanceof ServerPlayer player) {
-            Component message = Component.translatable("lotm.not_implemented_yet").withStyle(ChatFormatting.RED);
-            player.sendSystemMessage(message);
-        }
+        WarBannerEntity banner = new WarBannerEntity(ModEntities.WAR_BANNER.get(), level, 20 * 90, entity.getUUID());
+        banner.setPos(entity.getX(), entity.getY() + .75, entity.getZ());
+        level.addFreshEntity(banner);
+
+        level.playSound(null, entity.blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
     }
 }
