@@ -34,14 +34,14 @@ public class UnshadowedSpearAbility extends AbilityItem {
         if(level.isClientSide)
             return;
 
-        Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(1, 2.85f), random.nextDouble(-.1, .6));
+        Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(3.5f, 6f), random.nextDouble(-.1, .6));
         Vec3 direction = AbilityUtil.getTargetLocation(entity, 50, 1.4f).subtract(startPos).normalize();
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 1.0f, 1.0f);
 
         UnshadowedSpearProjectileEntity spear = new UnshadowedSpearProjectileEntity(level, entity, 39 * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
         spear.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
-        spear.shoot(direction.x, direction.y, direction.z, 1.6f, 0);
+        spear.shoot(direction.x, direction.y, direction.z, 3f, 0);
         level.addFreshEntity(spear);
     }
 }

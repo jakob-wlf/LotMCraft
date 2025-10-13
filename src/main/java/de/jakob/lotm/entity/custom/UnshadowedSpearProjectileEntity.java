@@ -64,6 +64,8 @@ public class UnshadowedSpearProjectileEntity extends AbstractArrow {
             this.onHitBlock(new BlockHitResult(this.position(), this.getDirection(), BlockPos.containing(this.position()), false));
             return;
         }
+
+        ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.END_ROD, position(), 5, .3, .3, .3, 0);
     }
 
     @Override
