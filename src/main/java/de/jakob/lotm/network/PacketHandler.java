@@ -150,6 +150,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncTelepathyAbilityPacket.TYPE,
+                SyncTelepathyAbilityPacket.STREAM_CODEC,
+                SyncTelepathyAbilityPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncSpiritVisionAbilityPacket.TYPE,
                 SyncSpiritVisionAbilityPacket.STREAM_CODEC,
                 SyncSpiritVisionAbilityPacket::handle

@@ -146,7 +146,7 @@ public class SpiritVisionAbility extends ToggleAbilityItem {
 
     @Override
     protected float getSpiritualityCost() {
-        return 0;
+        return .5f;
     }
 
 }

@@ -23,7 +23,7 @@ public class DragonScalesAbility extends ToggleAbilityItem {
 
     @Override
     protected float getSpiritualityCost() {
-        return 0;
+        return 2;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class DragonScalesAbility extends ToggleAbilityItem {
     protected void start(Level level, LivingEntity entity) {
     }
 
-    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(255 / 255f, 216 / 255f, 138 / 255f), 1f);
+    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(255 / 255f, 216 / 255f, 138 / 255f), 1.75f);
 
     @Override
     protected void tick(Level level, LivingEntity entity) {
@@ -43,7 +43,7 @@ public class DragonScalesAbility extends ToggleAbilityItem {
             return;
 
         entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 2, false, false, false));
-        ParticleUtil.spawnParticles((ServerLevel) level, dust, entity.getEyePosition(), 8, .45f, 1, .45f, 0);
+        ParticleUtil.spawnParticles((ServerLevel) level, dust, entity.getEyePosition(), 5, .45f, .8, .45f, 0);
     }
 
     @Override

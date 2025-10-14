@@ -2,12 +2,10 @@ package de.jakob.lotm.network.packets.handlers;
 
 import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.gui.custom.CoordinateInputScreen;
-import de.jakob.lotm.network.packets.RingEffectPacket;
-import de.jakob.lotm.network.packets.SyncLivingEntityBeyonderDataPacket;
-import de.jakob.lotm.network.packets.SyncSpectatingAbilityPacket;
-import de.jakob.lotm.network.packets.SyncSpiritVisionAbilityPacket;
+import de.jakob.lotm.network.packets.*;
 import de.jakob.lotm.overlay.SpectatingOverlayRenderer;
 import de.jakob.lotm.overlay.SpiritVisionOverlayRenderer;
+import de.jakob.lotm.overlay.TelepathyOverlayRenderer;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
 import net.minecraft.client.Minecraft;
@@ -55,7 +53,7 @@ public class ClientHandler {
         }
     }
 
-    public static void syncSpectatingAbility(SyncSpiritVisionAbilityPacket packet, Player player) {
+    public static void syncSpiritVisionAbility(SyncSpiritVisionAbilityPacket packet, Player player) {
         if(packet.active()) {
             Level level = Minecraft.getInstance().level;
             if (level == null) return;
@@ -75,5 +73,17 @@ public class ClientHandler {
 
     public static void removeDreamDivinationUser(Player player) {
         DivinationAbility.dreamDivinationUsers.remove(player.getUUID());
+    }
+
+    public static void syncTelepathyAbility(SyncTelepathyAbilityPacket packet, Player player) {
+        if(packet.active()) {
+            Level level = Minecraft.getInstance().level;
+            if (level == null) return;
+
+            TelepathyOverlayRenderer.entitiesLookedAtByPlayerWithActiveTelepathy.put(player.getUUID(), packet.goalNames());
+        }
+        else {
+            TelepathyOverlayRenderer.entitiesLookedAtByPlayerWithActiveTelepathy.remove(player.getUUID(), null);
+        }
     }
 }

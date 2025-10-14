@@ -30,7 +30,7 @@ public record SyncSpiritVisionAbilityPacket(boolean active, int entityId) implem
     public static void handle(SyncSpiritVisionAbilityPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.flow().getReceptionSide().isClient()) {
-                ClientHandler.syncSpectatingAbility(packet, context.player());
+                ClientHandler.syncSpiritVisionAbility(packet, context.player());
             }
         });
     }
