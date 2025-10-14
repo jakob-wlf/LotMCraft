@@ -67,7 +67,7 @@ public class TelepathyAbility extends ToggleAbilityItem {
             goalNames = goals.stream().filter(g -> !(g.getGoal() instanceof FloatGoal)).map(g -> {
                 String name = g.getGoal().toString();
                 String formattedName = formatGoalName(name);
-                if(g.canUse()) {
+                if(g.canUse() || g.isRunning() || g.canContinueToUse()) {
                     formattedName += "%";
                 }
                 return formattedName;
