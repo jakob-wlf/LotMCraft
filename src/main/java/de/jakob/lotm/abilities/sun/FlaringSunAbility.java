@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -37,7 +38,7 @@ public class FlaringSunAbility extends AbilityItem {
         return 500;
     }
 
-    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(1f, 185 / 255f, 3 / 255f), 3.5f);
+    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(1f, 185 / 255f, 3 / 255f), 4f);
 
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {
@@ -53,10 +54,26 @@ public class FlaringSunAbility extends AbilityItem {
             level.setBlockAndUpdate(blockPos, Blocks.LIGHT.defaultBlockState());
         }
 
-        ServerScheduler.scheduleForDuration(0, 4, 20 * 12, () -> {
-            ParticleUtil.spawnSphereParticles((ServerLevel) level, dust, startPos, 4.5f, 90);
-            ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.FLAME, startPos, 4.75f, 90);
-            ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, startPos, 4.75f, 45);
+        if(BeyonderData.isGriefingEnabled(entity)) {
+            AbilityUtil.getBlocksInSphereRadius((ServerLevel) level, targetPos, 7, true, true, false).forEach(
+                    b -> level.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState())
+            );
+
+            AbilityUtil.getBlocksInSphereRadius((ServerLevel) level, targetPos, 7, true).forEach(
+                    b -> level.setBlockAndUpdate(b, Blocks.FIRE.defaultBlockState())
+            );
+
+            AbilityUtil.getBlocksInSphereRadius((ServerLevel) level, targetPos, 8, true, true, false).forEach(
+                    b -> level.setBlockAndUpdate(b, Blocks.BASALT.defaultBlockState())
+            );
+        }
+
+        ServerScheduler.scheduleForDuration(0, 4, 20 * 19, () -> {
+            ParticleUtil.spawnSphereParticles((ServerLevel) level, dust, startPos, 4.5f, 92);
+            ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.FLAME, startPos, 4.75f, 92);
+            ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, startPos, 4.75f, 65);
+
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 17, 10 * multiplier(entity), targetPos, true, false, 20 * 4);
         }, () -> {
             if(level.getBlockState(blockPos).getBlock() == Blocks.LIGHT) {
                 level.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
