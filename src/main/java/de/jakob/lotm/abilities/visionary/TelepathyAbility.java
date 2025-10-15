@@ -67,7 +67,7 @@ public class TelepathyAbility extends ToggleAbilityItem {
             goalNames = goals.stream().filter(g -> !(g.getGoal() instanceof FloatGoal)).map(g -> {
                 String name = g.getGoal().toString();
                 String formattedName = formatGoalName(name);
-                if(g.canUse() || g.isRunning() || g.canContinueToUse()) {
+                if(g.canUse() || g.isRunning()) {
                     formattedName += "%";
                 }
                 return formattedName;
@@ -81,7 +81,6 @@ public class TelepathyAbility extends ToggleAbilityItem {
     protected void stop(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
             if(entity instanceof ServerPlayer player) {
-
                 PacketHandler.sendToPlayer(player, new SyncTelepathyAbilityPacket(false, -1, new ArrayList<>()));
             }
             return;

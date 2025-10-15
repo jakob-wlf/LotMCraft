@@ -53,7 +53,7 @@ public class TelepathyOverlayRenderer {
 
     private static void displayGoals(GuiGraphics guiGraphics, List<String> goalNames, int screenWidth, int screenHeight) {
         int startingX = screenWidth - 10 - goalNames.stream()
-                .map(g -> Minecraft.getInstance().font.width(g))
+                .map(g -> Minecraft.getInstance().font.width(g.replace("%", "")))
                 .max(Comparator.naturalOrder())
                 .orElse(0);
 

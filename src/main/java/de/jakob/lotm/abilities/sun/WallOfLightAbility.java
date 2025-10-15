@@ -27,7 +27,7 @@ import java.util.Map;
 
 public class WallOfLightAbility extends AbilityItem {
     public WallOfLightAbility(Properties properties) {
-        super(properties, 1);
+        super(properties, 5);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class WallOfLightAbility extends AbilityItem {
             }
         }
 
-        ServerScheduler.scheduleForDuration(0, 7, 20 * 30, () -> {
+        ServerScheduler.scheduleForDuration(0, 7, 20 * 20, () -> {
             for(BlockPos pos : blocks) {
                 if(random.nextBoolean())
                     ParticleUtil.spawnParticles((ServerLevel) level, random.nextBoolean() ? dust : ParticleTypes.END_ROD, pos.getCenter(), 1, 0.5, 0.02);
