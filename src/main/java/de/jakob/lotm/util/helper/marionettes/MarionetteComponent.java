@@ -9,7 +9,7 @@ public class MarionetteComponent {
     private boolean isMarionette = false;
     private String controllerUUID = "";
     private boolean followMode = true;
-    private boolean shouldAttack = false;
+    private boolean shouldAttack = true;
 
     public MarionetteComponent() {}
     
@@ -36,6 +36,7 @@ public class MarionetteComponent {
                     component.isMarionette = tag.getBoolean("isMarionette");
                     component.controllerUUID = tag.getString("controllerUUID");
                     component.followMode = tag.getBoolean("followMode");
+                    component.shouldAttack = tag.getBoolean("shouldAttack");
                     return component;
                 }
 
@@ -45,6 +46,7 @@ public class MarionetteComponent {
                     tag.putBoolean("isMarionette", component.isMarionette);
                     tag.putString("controllerUUID", component.controllerUUID);
                     tag.putBoolean("followMode", component.followMode);
+                    tag.putBoolean("shouldAttack", component.shouldAttack);
                     return tag;
                 }
             };

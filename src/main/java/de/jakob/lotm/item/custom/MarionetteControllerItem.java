@@ -4,6 +4,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.mixin.EntityAccessor;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -41,7 +42,7 @@ public class MarionetteControllerItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         
-        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
+        if (!level.isClientSide && player instanceof ServerPlayer) {
             CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
             if (customData == null) {
                 return InteractionResultHolder.pass(stack);
@@ -65,10 +66,10 @@ public class MarionetteControllerItem extends Item {
                 stack.consume(1, player);
                 return InteractionResultHolder.fail(stack);
             }
-            
-            // Toggle follow mode or position marionette
+
             HitResult hitResult = player.pick(20.0D, 0.0F, false);
             if (hitResult.getType() == HitResult.Type.BLOCK) {
+                // Toggle attack mode
                 if(player.isShiftKeyDown()) {
                     component.setShouldAttack(!component.shouldAttack());
                     player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.attack").append(Component.literal(": ")).append(Component.translatable(component.shouldAttack() ? "lotm.on" : "lotm.off")).withColor(0xa26fc9));
@@ -81,6 +82,7 @@ public class MarionetteControllerItem extends Item {
                 livingEntity.teleportTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_teleport").withColor(0xa26fc9));
             } else {
+                // Release marionette
                 if(player.isShiftKeyDown()) {
                     component.setMarionette(false);
                     component.setControllerUUID("");
@@ -103,6 +105,41 @@ public class MarionetteControllerItem extends Item {
     }
 
     public static void onHold(Player player, ItemStack itemStack) {
+        Level level = player.level();
+        if(!(player instanceof ServerPlayer) || level.isClientSide)
+            return;
+
+        CustomData customData = itemStack.get(DataComponents.CUSTOM_DATA);
+        if (customData == null) {
+            return;
+        }
+
+        CompoundTag tag = customData.copyTag();
+        String entityUUID = tag.getString("MarionetteUUID");
+        if (entityUUID.isEmpty()) {
+            return;
+        }
+
+        Entity entity = ((ServerLevel) level).getEntity(UUID.fromString(entityUUID));
+        if (!(entity instanceof LivingEntity livingEntity)) {
+            player.sendSystemMessage(Component.literal("Marionette not found!"));
+            itemStack.consume(1, player);
+            return;
+        }
+
+        MarionetteComponent component = livingEntity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+        if (!component.isMarionette()) {
+            itemStack.consume(1, player);
+            return;
+        }
+
+        setGlowingForPlayer(livingEntity, (ServerPlayer) player, true);
+        ServerScheduler.scheduleDelayed(10, () -> {
+            ItemStack mainHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+            if(mainHand == itemStack && mainHand.getItem() instanceof MarionetteControllerItem)
+                return;
+            setGlowingForPlayer(livingEntity, (ServerPlayer) player, false);
+        });
 
     }
 

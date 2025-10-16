@@ -101,9 +101,9 @@ public class VillagerTradesEventHandler {
         return switch(sequence) {
             default -> 1;
             case 8 -> 2;
-            case 7 -> 3;
-            case 6, 5 -> 4;
-            case 4, 3 -> 5;
+            case 7, 6 -> 3;
+            case 5 -> 4;
+            case 4, 3, 2 -> 5;
         };
     }
 

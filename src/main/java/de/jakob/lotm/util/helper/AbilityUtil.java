@@ -348,7 +348,7 @@ public class AbilityUtil {
                 center.add(radius, radius, radius)
         );
 
-        List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
+        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
         ).stream().filter(e -> mayTarget(source, e)).toList();
@@ -551,7 +551,7 @@ public class AbilityUtil {
                 center.add(maxRadius, maxRadius, maxRadius)
         );
 
-        List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
+        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
         ).stream().filter(e -> mayTarget(source, e)).toList();
@@ -613,7 +613,7 @@ public class AbilityUtil {
                 center.add(maxRadius, maxRadius, maxRadius)
         );
 
-        List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
+        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
         ).stream().filter(e -> mayTarget(source, e)).toList();
@@ -755,7 +755,7 @@ public class AbilityUtil {
                 center.add(radius, radius, radius)
         );
 
-        List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
+        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
         ).stream().filter(e -> mayTarget(source, e)).toList();
@@ -806,7 +806,7 @@ public class AbilityUtil {
                 center.add(radius, radius, radius)
         );
 
-        List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
+        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
         ).stream().filter(e -> mayTarget(source, e)).toList();
@@ -868,7 +868,7 @@ public class AbilityUtil {
                 center.add(radius, radius, radius)
         );
 
-        List<LivingEntity> nearbyEntities = source.level().getEntitiesOfClass(
+        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(
                 LivingEntity.class,
                 detectionBox
         ).stream().filter(e -> mayTarget(source, e)).toList();

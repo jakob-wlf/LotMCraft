@@ -44,8 +44,8 @@ public class BeyonderDataTickHandler {
         }
 
         if(tickCounter % 5 == 0) {
-            if(player.getMainHandItem().is(ModItems.MARIONETTE_CONTROLLER.get()) && player.getMainHandItem().getItem() instanceof MarionetteControllerItem marionetteController) {
-                marionetteController.onHold(player, player.getMainHandItem());
+            if(player.getMainHandItem().is(ModItems.MARIONETTE_CONTROLLER.get()) && player.getMainHandItem().getItem() instanceof MarionetteControllerItem) {
+                MarionetteControllerItem.onHold(player, player.getMainHandItem());
             }
         }
 

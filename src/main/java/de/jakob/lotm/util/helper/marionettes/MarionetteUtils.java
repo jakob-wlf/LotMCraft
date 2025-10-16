@@ -40,6 +40,7 @@ public class MarionetteUtils {
         component.setMarionette(true);
         component.setControllerUUID(controller.getStringUUID());
         component.setFollowMode(true);
+        component.setShouldAttack(true);
         
         // Clear existing goals and add marionette goals
         if (entity instanceof Mob mob) {
