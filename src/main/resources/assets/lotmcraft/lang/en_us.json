@@ -609,6 +609,7 @@
 
   "lotm.griefing": "Griefing Enabled",
   "lotm.description": "Description",
+  "lotm.marionette": "Marionette",
   "lotm.selected": "Selected",
   "lotm.potion_recipe": "Potion Recipe",
   "lotm.beyonder_message.full": "Become a Beyonder of the %s Pathway at Sequence %s",

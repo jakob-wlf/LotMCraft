@@ -156,6 +156,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncSelectedMarionettePacket.TYPE,
+                SyncSelectedMarionettePacket.STREAM_CODEC,
+                SyncSelectedMarionettePacket::handle
+        );
+
+        registrar.playToClient(
                 SyncSpiritVisionAbilityPacket.TYPE,
                 SyncSpiritVisionAbilityPacket.STREAM_CODEC,
                 SyncSpiritVisionAbilityPacket::handle

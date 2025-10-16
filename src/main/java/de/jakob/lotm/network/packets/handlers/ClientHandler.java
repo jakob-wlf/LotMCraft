@@ -3,6 +3,7 @@ package de.jakob.lotm.network.packets.handlers;
 import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.gui.custom.CoordinateInputScreen;
 import de.jakob.lotm.network.packets.*;
+import de.jakob.lotm.overlay.MarionetteOverlayRenderer;
 import de.jakob.lotm.overlay.SpectatingOverlayRenderer;
 import de.jakob.lotm.overlay.SpiritVisionOverlayRenderer;
 import de.jakob.lotm.overlay.TelepathyOverlayRenderer;
@@ -84,6 +85,20 @@ public class ClientHandler {
         }
         else {
             TelepathyOverlayRenderer.entitiesLookedAtByPlayerWithActiveTelepathy.remove(player.getUUID());
+        }
+    }
+
+    public static void syncSelectedMarionette(SyncSelectedMarionettePacket packet, Player player) {
+        if(packet.active()) {
+            Level level = Minecraft.getInstance().level;
+            if (level == null) return;
+
+            Entity entity = packet.entityId() == -1 ? null : level.getEntity(packet.entityId());
+            LivingEntity living = entity instanceof LivingEntity ? (LivingEntity) entity : null;
+            MarionetteOverlayRenderer.currentMarionette.put(player.getUUID(), living);
+        }
+        else {
+            MarionetteOverlayRenderer.currentMarionette.remove(player.getUUID());
         }
     }
 }
