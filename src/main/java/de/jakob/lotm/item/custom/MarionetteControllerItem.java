@@ -1,10 +1,10 @@
 package de.jakob.lotm.item.custom;
 
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.mixin.EntityAccessor;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -15,7 +15,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -55,15 +54,18 @@ public class MarionetteControllerItem extends Item {
             }
 
             Entity entity = ((ServerLevel) level).getEntity(UUID.fromString(entityUUID));
+            if(entity == null) {
+                entity = searchInOtherLevels(player, entityUUID);
+            }
             if (!(entity instanceof LivingEntity livingEntity)) {
                 player.sendSystemMessage(Component.literal("Marionette not found!"));
-                stack.consume(1, player);
+                stack.shrink(1);
                 return InteractionResultHolder.fail(stack);
             }
             
             MarionetteComponent component = livingEntity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
             if (!component.isMarionette()) {
-                stack.consume(1, player);
+                stack.shrink(1);
                 return InteractionResultHolder.fail(stack);
             }
 
@@ -87,7 +89,7 @@ public class MarionetteControllerItem extends Item {
                     component.setMarionette(false);
                     component.setControllerUUID("");
                     livingEntity.setHealth(0);
-                    stack.consume(1, player);
+                    stack.shrink(1);
                     player.sendSystemMessage(Component.translatable("ability.lotm.puppeteering.entity_released").withColor(0xa26fc9));
                     return InteractionResultHolder.sidedSuccess(stack, false);
                 }
@@ -102,6 +104,16 @@ public class MarionetteControllerItem extends Item {
         }
         
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+    }
+
+    private Entity searchInOtherLevels(Player player, String entityUUID) {
+        for(ServerLevel level : player.getServer().getAllLevels()) {
+            Entity entity = level.getEntity(UUID.fromString(entityUUID));
+            if(entity != null) {
+                return entity;
+            }
+        }
+        return null;
     }
 
     public static void onHold(Player player, ItemStack itemStack) {
@@ -170,11 +182,12 @@ public class MarionetteControllerItem extends Item {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData != null) {
             String entityName = customData.copyTag().getString("MarionetteType");
-            tooltip.add(Component.literal("Controls: " + entityName));
-            tooltip.add(Component.literal("Right-click on Block: Set Position"));
-            tooltip.add(Component.literal("Shift-Right-click on Block: Set Should Attack"));
-            tooltip.add(Component.literal("Right-click: Toggle Follow Mode"));
-            tooltip.add(Component.literal("Shift-Right-click: Release"));
+            tooltip.add(Component.literal("--------------------------").withColor(0xFFa742f5));
+            tooltip.add(Component.literal("Controls: " + entityName).withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.literal("Right-click on Block: Set Position").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.literal("Shift-Right-click on Block: Set Should Attack").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.literal("Right-click: Toggle Follow Mode").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.literal("Shift-Right-click: Release").withStyle(ChatFormatting.GRAY));
         }
     }
 }

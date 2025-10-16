@@ -2,9 +2,7 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.entity.custom.goals.MarionetteFollowGoal;
-import de.jakob.lotm.entity.custom.goals.MarionetteStayGoal;
-import de.jakob.lotm.entity.custom.goals.MarionetteTargetGoal;
+import de.jakob.lotm.entity.custom.goals.*;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.*;
@@ -35,9 +33,11 @@ public class MarionetteEventHandler {
                         goal instanceof TargetGoal
                 );
 
-                mob.goalSelector.addGoal(0, new MarionetteFollowGoal(mob));    // Highest priority for following
-                mob.goalSelector.addGoal(1, new MarionetteStayGoal(mob));    // Highest priority for following
-                mob.targetSelector.addGoal(0, new MarionetteTargetGoal(mob));  // Highest priority for targeting
+                mob.goalSelector.addGoal(0, new MarionetteFollowGoal(mob));
+                mob.goalSelector.addGoal(0, new MarionetteLoadChunksGoal(mob));
+                mob.goalSelector.addGoal(1, new MarionetteStayGoal(mob));
+                mob.targetSelector.addGoal(0, new MarionetteTargetGoal(mob));
+                mob.goalSelector.addGoal(10, new MarionetteLifelinkGoal(mob));
                 mob.setTarget(null);
             }
         }

@@ -49,7 +49,7 @@ public class MarionetteOverlayRenderer {
                 int barWidth = (int) (width / 1.3);
                 int barHeight = 14;
 
-                int x = screenWidth - barWidth - 30;
+                int x = screenWidth - barWidth - 40;
                 int y = 15;
 
                 renderOutLine(guiGraphics, x, y, width, height);
@@ -88,10 +88,10 @@ public class MarionetteOverlayRenderer {
 
     private static void renderOutLine(GuiGraphics guiGraphics, int x, int y, int width, int height) {
         guiGraphics.fill(x, y, x + width, y + height, 0x77000000);
-        guiGraphics.fill(x, y, x + width, y + 2, 0xFFf7cd83);
-        guiGraphics.fill(x, y + height - 2, x + width, y + height, 0xFFf7cd83);
-        guiGraphics.fill(x, y + 2, x + 2, y + height - 2, 0xFFf7cd83);
-        guiGraphics.fill(x + width - 2, y + 2, x + width, y + height - 2, 0xFFf7cd83);
+        guiGraphics.fill(x, y, x + width, y + 2, 0xFFa742f5);
+        guiGraphics.fill(x, y + height - 2, x + width, y + height, 0xFFa742f5);
+        guiGraphics.fill(x, y + 2, x + 2, y + height - 2, 0xFFa742f5);
+        guiGraphics.fill(x + width - 2, y + 2, x + width, y + height - 2, 0xFFa742f5);
     }
 
     private static final Attribute[] attributesThatShouldGetDisplayed = new Attribute[]{

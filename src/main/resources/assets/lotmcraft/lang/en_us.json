@@ -134,6 +134,12 @@
   "ability.lotmcraft.puppeteering.attack": "Attack",
   "ability.lotm.puppeteering.entity_released": "Released the Marionette",
   "item.lotmcraft.marionette_controlling_ability": "Marionette Controlling",
+  "ability.lotmcraft.marionette_controlling.damage_auto_swap": "Auto Swap on Damage",
+  "ability.lotmcraft.marionette_controlling.swap": "Swap Places",
+  "ability.lotmcraft.marionette_controlling.control": "Control",
+  "ability.lotmcraft.marionette_controlling.auto_swap": "Auto Swap",
+  "ability.lotmcraft.marionette_controlling.get_item": "Get marionette Item",
+
 
 
   "item.lotmcraft.midnight_poem_ability": "Midnight Poem",

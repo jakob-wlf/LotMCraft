@@ -1,10 +1,7 @@
 package de.jakob.lotm.util.helper.marionettes;
 
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.entity.custom.goals.MarionetteFollowGoal;
-import de.jakob.lotm.entity.custom.goals.MarionetteLifelinkGoal;
-import de.jakob.lotm.entity.custom.goals.MarionetteStayGoal;
-import de.jakob.lotm.entity.custom.goals.MarionetteTargetGoal;
+import de.jakob.lotm.entity.custom.goals.*;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.component.DataComponents;
@@ -54,10 +51,11 @@ public class MarionetteUtils {
                     goal instanceof TargetGoal
             );
 
-            mob.goalSelector.addGoal(0, new MarionetteFollowGoal(mob));    // Highest priority for following
-            mob.goalSelector.addGoal(1, new MarionetteStayGoal(mob));    // Highest priority for following
-            mob.targetSelector.addGoal(0, new MarionetteTargetGoal(mob));  // Highest priority for targeting
-            mob.goalSelector.addGoal(10, new MarionetteLifelinkGoal(mob)); // Lifeline goal to handle controller disconnection
+            mob.goalSelector.addGoal(0, new MarionetteFollowGoal(mob));
+            mob.goalSelector.addGoal(0, new MarionetteLoadChunksGoal(mob));
+            mob.goalSelector.addGoal(1, new MarionetteStayGoal(mob));
+            mob.targetSelector.addGoal(0, new MarionetteTargetGoal(mob));
+            mob.goalSelector.addGoal(10, new MarionetteLifelinkGoal(mob));
             mob.setTarget(null);
         }
 
@@ -67,7 +65,7 @@ public class MarionetteUtils {
                 controllerItem.set(
                         DataComponents.LORE,
                         new ItemLore(List.of(
-                                Component.literal("-------------------").withStyle(style -> style.withColor(0x555555).withItalic(false)),
+                                Component.literal("-------------------").withStyle(style -> style.withColor(0xFFa742f5).withItalic(false)),
                                 Component.translatable("lotm.pathway").append(Component.literal(": ")).append(Component.literal(BeyonderData.pathwayInfos.get(BeyonderData.getPathway(entity)).getSequenceName(9))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
                                 Component.translatable("lotm.sequence").append(Component.literal(": ")).append(Component.literal(BeyonderData.getSequence(entity) + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
                         )));
