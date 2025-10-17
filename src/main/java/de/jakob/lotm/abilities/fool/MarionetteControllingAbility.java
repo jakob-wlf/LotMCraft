@@ -7,15 +7,14 @@ import de.jakob.lotm.network.packets.SyncSelectedMarionettePacket;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-
 import java.util.*;
 import java.util.stream.StreamSupport;
 
@@ -75,6 +74,9 @@ public class MarionetteControllingAbility extends SelectableAbilityItem {
         if(!(marionetteLevel instanceof ServerLevel marionetteServerLevel))
             return;
 
+        // Store the UUID before teleporting
+        UUID marionetteUUID = marionette.getUUID();
+
         //Load chunks
         ChunkPos playerChunkPos = new ChunkPos(player.blockPosition());
         level.setChunkForced(playerChunkPos.x, playerChunkPos.z, true);
@@ -83,14 +85,31 @@ public class MarionetteControllingAbility extends SelectableAbilityItem {
         marionetteServerLevel.setChunkForced(marionetteChunkPos.x, marionetteChunkPos.z, true);
 
         marionette.teleportTo(level, playerPos.x, playerPos.y, playerPos.z, Set.of(), marionette.getYRot(), marionette.getXRot());
-        marionette.hurtMarked = true;
-        //Stop and restart tracking
-        level.getChunkSource().removeEntity(marionette);
-        level.getChunkSource().addEntity(marionette);
 
         player.teleportTo(marionetteServerLevel, marionettePos.x, marionettePos.y, marionettePos.z, Set.of(), player.getYRot(), player.getXRot());
         player.hurtMarked = true;
+
+        // Schedule a task to find and refresh the NEW marionette instance
+        level.getServer().tell(new TickTask(
+                level.getServer().getTickCount() + 2,
+                () -> {
+                    // Find the new entity instance by UUID in the target dimension
+                    Entity newMarionetteEntity = level.getEntity(marionetteUUID);
+
+                    if (newMarionetteEntity instanceof LivingEntity newMarionette) {
+                        // Now force tracking on the NEW instance
+                        newMarionette.hurtMarked = true;
+
+                        // Make sure it's being tracked
+                        level.getChunkSource().addEntity(newMarionette);
+
+                        // Force position update
+                        newMarionette.teleportTo(newMarionette.getX(), newMarionette.getY(), newMarionette.getZ());
+                    }
+                }
+        ));
     }
+
 
     private void toggleAutoSwap(ServerPlayer player) {
         if(swapOnDamageIsActive.contains(player.getUUID())) {

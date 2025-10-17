@@ -30,6 +30,7 @@ import net.minecraft.world.phys.HitResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class MarionetteControllerItem extends Item {
@@ -79,14 +80,45 @@ public class MarionetteControllerItem extends Item {
                 }
                 BlockHitResult blockHit = (BlockHitResult) hitResult;
                 BlockPos pos = blockHit.getBlockPos().above();
-                
-                // Position the marionette
-                livingEntity.teleportTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
-                livingEntity.hurtMarked = true;
 
-                //Stop and restart tracking
-                ((ServerLevel) level).getChunkSource().removeEntity(livingEntity);
-                ((ServerLevel) level).getChunkSource().addEntity(livingEntity);
+                Level entityLevel = livingEntity.level();
+                if(!(entityLevel instanceof ServerLevel entityServerLevel)) {
+                    player.sendSystemMessage(Component.literal("Marionette not in a valid dimension!"));
+                    return InteractionResultHolder.fail(stack);
+                }
+
+                // Store UUID before teleporting
+                UUID marionetteUUID = livingEntity.getUUID();
+                boolean isDimensionChange = entityLevel != level;
+
+                // Position the marionette
+                livingEntity.teleportTo((ServerLevel) level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, Set.of(), livingEntity.getYRot(), livingEntity.getXRot());
+
+                if (isDimensionChange) {
+                    // If dimension changed, find the new instance after teleport
+                    ((ServerLevel) level).getServer().tell(new net.minecraft.server.TickTask(
+                            ((ServerLevel) level).getServer().getTickCount() + 2,
+                            () -> {
+                                // Find the NEW entity instance by UUID
+                                Entity newEntity = ((ServerLevel) level).getEntity(marionetteUUID);
+
+                                if (newEntity instanceof LivingEntity newMarionette) {
+                                    newMarionette.hurtMarked = true;
+
+                                    // Make sure it's being tracked in the new dimension
+                                    ((ServerLevel) level).getChunkSource().addEntity(newMarionette);
+
+                                    // Force position update
+                                    newMarionette.teleportTo(newMarionette.getX(), newMarionette.getY(), newMarionette.getZ());
+                                }
+                            }
+                    ));
+                } else {
+                    // Same dimension, can use the existing reference
+                    livingEntity.hurtMarked = true;
+                    entityServerLevel.getChunkSource().removeEntity(livingEntity);
+                    ((ServerLevel) level).getChunkSource().addEntity(livingEntity);
+                }
 
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_teleport").withColor(0xa26fc9));
             } else {
@@ -112,7 +144,7 @@ public class MarionetteControllerItem extends Item {
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }
 
-    private Entity searchInOtherLevels(Player player, String entityUUID) {
+    private static Entity searchInOtherLevels(Player player, String entityUUID) {
         for(ServerLevel level : player.getServer().getAllLevels()) {
             Entity entity = level.getEntity(UUID.fromString(entityUUID));
             if(entity != null) {
@@ -139,15 +171,18 @@ public class MarionetteControllerItem extends Item {
         }
 
         Entity entity = ((ServerLevel) level).getEntity(UUID.fromString(entityUUID));
+        if(entity == null) {
+            entity = searchInOtherLevels(player, entityUUID);
+        }
         if (!(entity instanceof LivingEntity livingEntity)) {
             player.sendSystemMessage(Component.literal("Marionette not found!"));
-            itemStack.consume(1, player);
+            itemStack.shrink(1);
             return;
         }
 
         MarionetteComponent component = livingEntity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
         if (!component.isMarionette()) {
-            itemStack.consume(1, player);
+            itemStack.shrink(1);
             return;
         }
 
