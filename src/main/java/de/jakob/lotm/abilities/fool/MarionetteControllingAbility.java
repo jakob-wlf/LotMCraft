@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
@@ -74,8 +75,21 @@ public class MarionetteControllingAbility extends SelectableAbilityItem {
         if(!(marionetteLevel instanceof ServerLevel marionetteServerLevel))
             return;
 
+        //Load chunks
+        ChunkPos playerChunkPos = new ChunkPos(player.blockPosition());
+        level.setChunkForced(playerChunkPos.x, playerChunkPos.z, true);
+
+        ChunkPos marionetteChunkPos = new ChunkPos(marionette.blockPosition());
+        marionetteServerLevel.setChunkForced(marionetteChunkPos.x, marionetteChunkPos.z, true);
+
         marionette.teleportTo(level, playerPos.x, playerPos.y, playerPos.z, Set.of(), marionette.getYRot(), marionette.getXRot());
+        marionette.hurtMarked = true;
+        //Stop and restart tracking
+        level.getChunkSource().removeEntity(marionette);
+        level.getChunkSource().addEntity(marionette);
+
         player.teleportTo(marionetteServerLevel, marionettePos.x, marionettePos.y, marionettePos.z, Set.of(), player.getYRot(), player.getXRot());
+        player.hurtMarked = true;
     }
 
     private void toggleAutoSwap(ServerPlayer player) {
@@ -135,7 +149,13 @@ public class MarionetteControllingAbility extends SelectableAbilityItem {
         }
 
         LivingEntity marionette = marionettes.get(index);
-        SyncSelectedMarionettePacket packet = new SyncSelectedMarionettePacket(true, marionette.getId());
+        if(marionette == null) {
+            return null;
+        }
+
+        String name = marionette.getDisplayName() == null ? marionette.getName().getString(): marionette.getDisplayName().getString();
+
+        SyncSelectedMarionettePacket packet = new SyncSelectedMarionettePacket(true, name, marionette.getHealth(), marionette.getMaxHealth());
         PacketHandler.sendToPlayer(player, packet);
 
         return marionette;
@@ -152,7 +172,7 @@ public class MarionetteControllingAbility extends SelectableAbilityItem {
 
         //If no marionette is selected make sure no overlay gets rendered
         if(marionette == null) {
-            SyncSelectedMarionettePacket packet = new SyncSelectedMarionettePacket(false, -1);
+            SyncSelectedMarionettePacket packet = new SyncSelectedMarionettePacket(false, "", 0, 0);
             PacketHandler.sendToPlayer(player, packet);
             return;
         }
@@ -160,7 +180,7 @@ public class MarionetteControllingAbility extends SelectableAbilityItem {
         //Make sure the overlay goes away when the player stops holding the item
         ServerScheduler.scheduleDelayed(10, () -> {
             if(!player.getItemInHand(entity.getUsedItemHand()).getItem().equals(this)) {
-                SyncSelectedMarionettePacket packet1 = new SyncSelectedMarionettePacket(false, -1);
+                SyncSelectedMarionettePacket packet1 = new SyncSelectedMarionettePacket(false, "", 0, 0);
                 PacketHandler.sendToPlayer(player, packet1);
             }
         });

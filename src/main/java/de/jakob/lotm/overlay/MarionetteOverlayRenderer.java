@@ -25,7 +25,7 @@ import java.util.*;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class MarionetteOverlayRenderer {
 
-    public static HashMap<UUID, LivingEntity> currentMarionette = new HashMap<>();
+    public static HashMap<UUID, MarionetteInfos> currentMarionette = new HashMap<>();
 
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
@@ -41,8 +41,8 @@ public class MarionetteOverlayRenderer {
         int screenWidth = mc.getWindow().getGuiScaledWidth();
 
         if (currentMarionette.containsKey(mc.player.getUUID())) {
-            LivingEntity entity = currentMarionette.get(mc.player.getUUID());
-            if(entity != null) {
+            MarionetteInfos infos = currentMarionette.get(mc.player.getUUID());
+            if(infos != null) {
                 int width =  (screenWidth / 3);
                 int height = 45;
 
@@ -61,7 +61,7 @@ public class MarionetteOverlayRenderer {
                 guiGraphics.drawCenteredString(mc.font, label, labelX, labelY, 0xFFFFFFFF);
 
                 //Entity name
-                String name = entity.getName().getString();
+                String name = infos.name();
                 int nameY = y + 5 + mc.font.lineHeight;
                 int nameX = x + (width / 2);
                 guiGraphics.drawCenteredString(mc.font, name, nameX, nameY, 0xFFFFFFFF);
@@ -72,14 +72,14 @@ public class MarionetteOverlayRenderer {
 
                 guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0x88000000);
 
-                double fillPercentage = entity.getHealth() / entity.getMaxHealth();
+                double fillPercentage = infos.health() / infos.maxHealth();
                 int filledBarWidth = (int) (barWidth * fillPercentage);
 
                 if(filledBarWidth > 0)
                     drawHorizontalGradient(guiGraphics, barX, barY, filledBarWidth, barHeight, 0xFFFF0000, 0xFFe43fa3);
 
                 //Health String
-                guiGraphics.drawCenteredString(mc.font, entity.getHealth() + " ❤", barX + (barWidth / 2), barY + 1 + ((barHeight - mc.font.lineHeight) / 2), 0xFFFFFFFF);
+                guiGraphics.drawCenteredString(mc.font, infos.health() + " ❤", barX + (barWidth / 2), barY + 1 + ((barHeight - mc.font.lineHeight) / 2), 0xFFFFFFFF);
 
                 //displayStats(guiGraphics, entity, screenWidth);
             }
@@ -220,4 +220,9 @@ public class MarionetteOverlayRenderer {
 
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
+
+    public record MarionetteInfos(String name, double health, double maxHealth) {
+
+    }
 }
+

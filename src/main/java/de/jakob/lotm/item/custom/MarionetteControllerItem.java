@@ -82,6 +82,12 @@ public class MarionetteControllerItem extends Item {
                 
                 // Position the marionette
                 livingEntity.teleportTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+                livingEntity.hurtMarked = true;
+
+                //Stop and restart tracking
+                ((ServerLevel) level).getChunkSource().removeEntity(livingEntity);
+                ((ServerLevel) level).getChunkSource().addEntity(livingEntity);
+
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_teleport").withColor(0xa26fc9));
             } else {
                 // Release marionette

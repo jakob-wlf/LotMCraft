@@ -90,12 +90,14 @@ public class ClientHandler {
 
     public static void syncSelectedMarionette(SyncSelectedMarionettePacket packet, Player player) {
         if(packet.active()) {
-            Level level = Minecraft.getInstance().level;
-            if (level == null) return;
-
-            Entity entity = packet.entityId() == -1 ? null : level.getEntity(packet.entityId());
-            LivingEntity living = entity instanceof LivingEntity ? (LivingEntity) entity : null;
-            MarionetteOverlayRenderer.currentMarionette.put(player.getUUID(), living);
+            MarionetteOverlayRenderer.currentMarionette.put(
+                    player.getUUID(),
+                    new MarionetteOverlayRenderer.MarionetteInfos(
+                            packet.name(),
+                            packet.health(),
+                            packet.maxHealth()
+                    )
+            );
         }
         else {
             MarionetteOverlayRenderer.currentMarionette.remove(player.getUUID());
