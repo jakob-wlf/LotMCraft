@@ -1,5 +1,7 @@
 package de.jakob.lotm.abilities.fool.passives;
 
+import de.jakob.lotm.abilities.AbilityItemHandler;
+import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
@@ -126,7 +128,7 @@ public class PhysicalEnhancementsFoolAbility extends PassiveAbilityItem {
         if(marionetteComponent.isMarionette() && entity.level() instanceof ServerLevel serverLevel) {
             LivingEntity controller = getControllingEntity(marionetteComponent, serverLevel);
             if (controller != null) {
-                if(BeyonderData.getSequence(controller) <= 4 && BeyonderData.getPathway(controller).equals("fool")) {
+                if(((PuppeteeringEnhancementsAbility) PassiveAbilityHandler.PUPPETEERING_ENHANCEMENTS.get()).shouldApplyTo(controller)) {
                     return true;
                 }
             }

@@ -20,6 +20,10 @@ public class ModEffects {
             () -> new AsleepEffect(MobEffectCategory.HARMFUL, 0x2E2E5C)
                     .addAttributeModifier(Attributes.MOVEMENT_SPEED, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "asleep"), -10f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)); // Dark blue color
 
+    public static final Holder<MobEffect> LUCK = MOB_EFFECTS.register("luck",
+            () -> new AsleepEffect(MobEffectCategory.BENEFICIAL, 0xdaeaf5));
+
+
     public static final Holder<MobEffect> LOOSING_CONTROL = MOB_EFFECTS.register("loosing_control",
             () -> new LoosingControlEffect(MobEffectCategory.HARMFUL, 0x493269)
                     .addAttributeModifier(Attributes.MOVEMENT_SPEED, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "loosing_control"), -.45f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)); // Dark blue color

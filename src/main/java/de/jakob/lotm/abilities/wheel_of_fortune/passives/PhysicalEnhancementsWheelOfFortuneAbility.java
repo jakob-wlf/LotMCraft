@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.wheel_of_fortune.passives;
 
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -36,7 +37,18 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PassiveAbilityIte
                 new MobEffectInstance(MobEffects.JUMP, 20 * 6, 1, false, false, false)
         ));
 
+        effectsPerSequence.put(7, List.of(
+                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 0, false, false, false),
+                new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 0, false, false, false),
+                new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 0, false, false, false),
+                new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 1, false, false, false),
+                new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 3, false, false, false),
+                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 1, false, false, false),
+                new MobEffectInstance(MobEffects.JUMP, 20 * 6, 1, false, false, false)
+        ));
+
         effectsPerSequence.put(6, List.of(
+                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 1, false, false, false),
@@ -46,6 +58,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PassiveAbilityIte
         ));
 
         effectsPerSequence.put(5, List.of(
+                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 2, false, false, false),
@@ -55,6 +68,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PassiveAbilityIte
         ));
 
         effectsPerSequence.put(4, List.of(
+                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 5, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 3, false, false, false),
@@ -65,6 +79,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PassiveAbilityIte
         ));
 
         effectsPerSequence.put(3, List.of(
+                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 7, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 3, false, false, false),
@@ -75,6 +90,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PassiveAbilityIte
         ));
 
         effectsPerSequence.put(2, List.of(
+                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 13, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 3, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 3, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 3, false, false, false),
@@ -85,6 +101,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PassiveAbilityIte
         ));
 
         effectsPerSequence.put(1, List.of(
+                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 19, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 3, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 3, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 4, false, false, false),

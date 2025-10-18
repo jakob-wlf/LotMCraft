@@ -41,7 +41,7 @@ public abstract class SelectableAbilityItem extends AbilityItem{
     protected abstract String[] getAbilityNames();
 
     @Override
-    public void useAsNpcAbility(Level level, BeyonderNPCEntity beyonderNPC) {
+    public void useAsNpcAbility(Level level, LivingEntity beyonderNPC) {
         if(!this.canBeUsedByNPC)
             return;
 

@@ -10,6 +10,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
@@ -51,7 +52,7 @@ public abstract class AbilityItem extends Item {
 
     protected abstract float getSpiritualityCost();
 
-    public void useAsNpcAbility(Level level, BeyonderNPCEntity beyonderNPC) {
+    public void useAsNpcAbility(Level level, LivingEntity beyonderNPC) {
         if(!this.canBeUsedByNPC)
             return;
 
