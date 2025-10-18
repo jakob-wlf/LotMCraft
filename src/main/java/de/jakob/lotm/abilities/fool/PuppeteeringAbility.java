@@ -206,7 +206,7 @@ public class PuppeteeringAbility extends AbilityItem {
                 Vec3 startLoc = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, right, up);
 
                 float distance = (float) end.distanceTo(startLoc);
-                float bezierSteps = .25f / distance;
+                float bezierSteps = .025f;
 
                 int maxPoints = Math.max(2, Math.min(10, (int) Math.ceil(distance * 1.5)));
 

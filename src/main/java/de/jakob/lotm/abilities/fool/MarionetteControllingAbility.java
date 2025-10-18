@@ -1,10 +1,12 @@
 package de.jakob.lotm.abilities.fool;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.SyncSelectedMarionettePacket;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
@@ -12,12 +14,19 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.piglin.Piglin;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+
 import java.util.*;
 import java.util.stream.StreamSupport;
 
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MarionetteControllingAbility extends SelectableAbilityItem {
 
     private static final Map<UUID, Integer> marionetteIndices = new HashMap<>();
@@ -25,7 +34,7 @@ public class MarionetteControllingAbility extends SelectableAbilityItem {
     private static final HashSet<UUID> swapOnDamageIsActive = new HashSet<>();
 
     public MarionetteControllingAbility(Properties properties) {
-        super(properties, 1);
+        super(properties, .5f);
     }
 
     @Override
@@ -51,8 +60,21 @@ public class MarionetteControllingAbility extends SelectableAbilityItem {
         switch (abilityIndex) {
             case 0 -> activateSwap((ServerLevel) level, player);
             case 1 -> toggleAutoSwap(player);
+            case 3  -> getItem(player);
         }
 
+    }
+
+    private void getItem(ServerPlayer player) {
+        LivingEntity marionette = getSelectedMarionette(player);
+        if(marionette == null) {
+            return;
+        }
+
+        ItemStack controller = MarionetteUtils.createMarionetteController(marionette);
+        if(!player.getInventory().add(controller)) {
+            player.drop(controller, false);
+        }
     }
 
     private void activateSwap(ServerLevel level, ServerPlayer player) {
@@ -65,7 +87,7 @@ public class MarionetteControllingAbility extends SelectableAbilityItem {
         swapWithMarionette(level, player, marionette);
     }
 
-    private void swapWithMarionette(ServerLevel level, ServerPlayer player, LivingEntity marionette) {
+    private static void swapWithMarionette(ServerLevel level, ServerPlayer player, LivingEntity marionette) {
         Vec3 playerPos = player.position();
 
         Level marionetteLevel = marionette.level();
@@ -74,7 +96,7 @@ public class MarionetteControllingAbility extends SelectableAbilityItem {
         if(!(marionetteLevel instanceof ServerLevel marionetteServerLevel))
             return;
 
-        // Store the UUID before teleporting
+        //Store the UUID before teleporting
         UUID marionetteUUID = marionette.getUUID();
 
         //Load chunks
@@ -89,21 +111,18 @@ public class MarionetteControllingAbility extends SelectableAbilityItem {
         player.teleportTo(marionetteServerLevel, marionettePos.x, marionettePos.y, marionettePos.z, Set.of(), player.getYRot(), player.getXRot());
         player.hurtMarked = true;
 
-        // Schedule a task to find and refresh the NEW marionette instance
+        //Schedule a task to find and refresh the new marionette instance after it has been reinitialized in the new dimension
         level.getServer().tell(new TickTask(
                 level.getServer().getTickCount() + 2,
                 () -> {
-                    // Find the new entity instance by UUID in the target dimension
                     Entity newMarionetteEntity = level.getEntity(marionetteUUID);
 
                     if (newMarionetteEntity instanceof LivingEntity newMarionette) {
-                        // Now force tracking on the NEW instance
                         newMarionette.hurtMarked = true;
 
-                        // Make sure it's being tracked
                         level.getChunkSource().addEntity(newMarionette);
 
-                        // Force position update
+                        //Force Position Update
                         newMarionette.teleportTo(newMarionette.getX(), newMarionette.getY(), newMarionette.getZ());
                     }
                 }
@@ -120,7 +139,25 @@ public class MarionetteControllingAbility extends SelectableAbilityItem {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.marionette_controlling.auto_swap").append(Component.literal(": ")).append(Component.translatable("lotm.on")).withColor(0xFFa742f5));
         }
     }
-    private ArrayList<LivingEntity> getMarionettesOfPlayerInAllLevelsOrderedById(LivingEntity entity) {
+
+    @SubscribeEvent
+    public static void onLivingDamage(LivingIncomingDamageEvent event) {
+        if(!(event.getEntity() instanceof ServerPlayer player) || !(player.level() instanceof ServerLevel level))
+            return;
+
+        if(!swapOnDamageIsActive.contains(player.getUUID()))
+            return;
+
+        LivingEntity marionette = getSelectedMarionette(player);
+        if(marionette == null)
+            return;
+
+        event.setCanceled(true);
+        swapWithMarionette(level, player, marionette);
+        marionette.hurt(event.getSource(), event.getAmount());
+    }
+
+    private static ArrayList<LivingEntity> getMarionettesOfPlayerInAllLevelsOrderedById(LivingEntity entity) {
         Level level = entity.level();
 
         if(level.isClientSide || !(level instanceof ServerLevel serverLevel)) {
@@ -158,7 +195,7 @@ public class MarionetteControllingAbility extends SelectableAbilityItem {
         return marionettes;
     }
 
-    private LivingEntity getSelectedMarionette(ServerPlayer player) {
+    private static LivingEntity getSelectedMarionette(ServerPlayer player) {
         List<LivingEntity> marionettes = getMarionettesOfPlayerInAllLevelsOrderedById(player);
 
         int index = marionetteIndices.getOrDefault(player.getUUID(), 0);

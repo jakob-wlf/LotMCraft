@@ -1,15 +1,20 @@
 package de.jakob.lotm.abilities.fool.passives;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class PhysicalEnhancementsFoolAbility extends PassiveAbilityItem {
 
@@ -113,6 +118,43 @@ public class PhysicalEnhancementsFoolAbility extends PassiveAbilityItem {
 
         List<MobEffectInstance> effects = getEffectsForSequence(sequence);
         applyPotionEffects(entity, effects);
+    }
+
+    @Override
+    public boolean shouldApplyTo(LivingEntity entity) {
+        MarionetteComponent marionetteComponent = entity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+        if(marionetteComponent.isMarionette() && entity.level() instanceof ServerLevel serverLevel) {
+            LivingEntity controller = getControllingEntity(marionetteComponent, serverLevel);
+            if (controller != null) {
+                if(BeyonderData.getSequence(controller) <= 4 && BeyonderData.getPathway(controller).equals("fool")) {
+                    return true;
+                }
+            }
+        }
+        return super.shouldApplyTo(entity);
+    }
+
+    private LivingEntity getControllingEntity(MarionetteComponent marionetteComponent, ServerLevel level) {
+        if(!marionetteComponent.isMarionette()) {
+            return null;
+        }
+
+        if(marionetteComponent.getControllerUUID().isEmpty()) {
+            return null;
+        }
+
+        UUID controllerUUID = UUID.fromString(marionetteComponent.getControllerUUID());
+        Entity controller = level.getEntity(controllerUUID);
+        if(controller == null) {
+            for(ServerLevel l : level.getServer().getAllLevels()) {
+                if (l == level)
+                    continue;
+
+                controller = l.getEntity(controllerUUID);
+            }
+        }
+
+        return controller instanceof LivingEntity livingEntity ? livingEntity : null;
     }
 
     private List<MobEffectInstance> getEffectsForSequence(int sequence) {

@@ -60,17 +60,7 @@ public class MarionetteUtils {
         }
 
         ItemStack controllerItem = createMarionetteController(entity);
-        if(BeyonderData.isBeyonder(entity)) {
-            if (BeyonderData.isBeyonder(entity)) {
-                controllerItem.set(
-                        DataComponents.LORE,
-                        new ItemLore(List.of(
-                                Component.literal("-------------------").withStyle(style -> style.withColor(0xFFa742f5).withItalic(false)),
-                                Component.translatable("lotm.pathway").append(Component.literal(": ")).append(Component.literal(BeyonderData.pathwayInfos.get(BeyonderData.getPathway(entity)).getSequenceName(9))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
-                                Component.translatable("lotm.sequence").append(Component.literal(": ")).append(Component.literal(BeyonderData.getSequence(entity) + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
-                        )));
-            }
-        }
+
 
         if (!controller.getInventory().add(controllerItem)) {
             controller.drop(controllerItem, false);
@@ -87,7 +77,19 @@ public class MarionetteUtils {
         controller.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         controller.set(DataComponents.CUSTOM_NAME, Component.literal("Marionette Controller (" +
                 marionette.getType().getDescription().getString() + ")"));
-        
+
+        if(BeyonderData.isBeyonder(marionette)) {
+            if (BeyonderData.isBeyonder(marionette)) {
+                controller.set(
+                        DataComponents.LORE,
+                        new ItemLore(List.of(
+                                Component.literal("-------------------").withStyle(style -> style.withColor(0xFFa742f5).withItalic(false)),
+                                Component.translatable("lotm.pathway").append(Component.literal(": ")).append(Component.literal(BeyonderData.pathwayInfos.get(BeyonderData.getPathway(marionette)).getSequenceName(9))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
+                                Component.translatable("lotm.sequence").append(Component.literal(": ")).append(Component.literal(BeyonderData.getSequence(marionette) + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
+                        )));
+            }
+        }
+
         return controller;
     }
     

@@ -34,7 +34,6 @@ public class FlamingJumpAbility extends AbilityItem {
         return new HashMap<>(Map.of("fool", 7));
     }
 
-    //TODO: Fix Flaming Jump
     @Override
     protected float getSpiritualityCost() {
         return 12;
@@ -45,7 +44,7 @@ public class FlamingJumpAbility extends AbilityItem {
         if(level.isClientSide)
             return;
 
-        BlockPos block = AbilityUtil.getTargetBlock(entity, 50, false, true);
+        BlockPos block = AbilityUtil.getTargetBlock(entity, 80, false, true);
 
         if(!level.getBlockState(block).is(Blocks.FIRE)) {
             if(entity instanceof ServerPlayer player) {
