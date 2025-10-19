@@ -506,9 +506,11 @@ public class AbilityUtil {
 
 
     public static boolean mayDamage(LivingEntity source, LivingEntity target) {
+        if(source == null || target == null) return true;
         if (source == target) return false;
         if (target instanceof Player player && player.isCreative()) return false;
         if (!source.canAttack(target)) return false;
+
         MarionetteComponent component = source.getData(ModAttachments.MARIONETTE_COMPONENT.get());
         if(component.isMarionette()) {
             if(target.getUUID().toString().equals(component.getControllerUUID()))
@@ -519,6 +521,8 @@ public class AbilityUtil {
 
     public static boolean mayTarget(LivingEntity source, LivingEntity target) {
         if(!mayDamage(source, target)) return false;
+
+        if(source == null || target == null) return true;
 
         MarionetteComponent component = target.getData(ModAttachments.MARIONETTE_COMPONENT.get());
         if(component.isMarionette()) {
@@ -781,7 +785,10 @@ public class AbilityUtil {
             }
 
             // Apply damage with appropriate damage source
-            entity.hurt(source.damageSources().mobAttack(source), finalDamage);
+            if(source != null)
+                entity.hurt(source.damageSources().mobAttack(source), finalDamage);
+            else
+                entity.hurt(entity.damageSources().generic(), finalDamage);
             hitAnyEntity = true;
         }
 
@@ -833,7 +840,10 @@ public class AbilityUtil {
 
             // Apply damage with appropriate damage source
             if (ignoreCooldown || entity.invulnerableTime <= 0) {
-                entity.hurt(source.damageSources().mobAttack(source), finalDamage);
+                if(source != null)
+                    entity.hurt(source.damageSources().mobAttack(source), finalDamage);
+                else
+                    entity.hurt(entity.damageSources().generic(), finalDamage);
 
                 // Set custom invulnerability time if specified
                 if (cooldownTicks >= 0) {
@@ -894,7 +904,10 @@ public class AbilityUtil {
             }
 
             // Apply damage with appropriate damage source
-            entity.hurt(source.damageSources().mobAttack(source), finalDamage);
+            if(source != null)
+                entity.hurt(source.damageSources().mobAttack(source), finalDamage);
+            else
+                entity.hurt(entity.damageSources().generic(), finalDamage);
 
             // Set entity on fire if fireTicks > 0
             if (fireTicks > 0) {

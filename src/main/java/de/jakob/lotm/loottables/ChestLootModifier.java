@@ -34,17 +34,15 @@ public class ChestLootModifier extends LootModifier {
         super(conditionsIn);
     }
 
-    Random random = new Random();
+    private static final Random random = new Random();
 
     @Override
     protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         if (context.getQueriedLootTableId().getPath().contains("chests/")) {
             if (context.getRandom().nextFloat() < 0.45f) {
-                Item item = switch(random.nextInt(3)) {
-                    case 1 -> ModIngredients.selectRandomIngredient(random);
-                    case 2 -> PotionRecipeItemHandler.selectRandomrecipe(random);
-                    default -> PotionItemHandler.selectRandomPotion(random);
-                };
+
+                Item item = getRandomLoot();
+
                 if (item != null) {
                     generatedLoot.add(new ItemStack(item));
                 }
@@ -52,6 +50,14 @@ public class ChestLootModifier extends LootModifier {
         }
 
         return generatedLoot;
+    }
+
+    public static Item getRandomLoot() {
+        return switch(random.nextInt(3)) {
+            case 1 -> ModIngredients.selectRandomIngredient(random);
+            case 2 -> PotionRecipeItemHandler.selectRandomrecipe(random);
+            default -> PotionItemHandler.selectRandomPotion(random);
+        };
     }
 
     @Override

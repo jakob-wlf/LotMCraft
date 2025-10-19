@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
@@ -13,10 +14,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -131,7 +135,7 @@ public class LuckEventHandler {
 
     }
 
-    // Remove Harmful Effects
+    // Remove Harmful Effects / Add Hero of the Village effect / Random drops
     @SubscribeEvent
     public static void onEntityTick(EntityTickEvent.Post event) {
         if(!(event.getEntity() instanceof LivingEntity entity)) {
@@ -148,6 +152,53 @@ public class LuckEventHandler {
             removeHarmfulEffects(entity, level);
         }
 
+        if(amplifier > 1) {
+            entity.addEffect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, 40, amplifier + 1, false, false, false));
+        }
+
+        if(Math.random() < getChanceForRandomDrop(amplifier)) {
+            dropRandomItem(entity, level);
+        }
+
+    }
+
+    private static final ItemDrop[] possibleDrops = new ItemDrop[] {
+            new ItemDrop(Items.DIAMOND, 1, 0.05),
+            new ItemDrop(Items.GOLD_INGOT, 6, 0.15),
+            new ItemDrop(Items.EMERALD, 12, 0.15),
+            new ItemDrop(Items.LAPIS_LAZULI, 8, 0.12),
+            new ItemDrop(Items.REDSTONE_BLOCK, 10, 0.11),
+            new ItemDrop(Items.IRON_INGOT, 4, 0.15),
+            new ItemDrop(Items.COAL, 5, 0.20),
+            new ItemDrop(Items.QUARTZ, 11, 0.12),
+            new ItemDrop(Items.NETHER_STAR, 1, 0.02),
+            new ItemDrop(Items.GOLDEN_CARROT, 20, 0.45),
+            new ItemDrop(Items.COOKED_BEEF, 18, 0.40)
+    };
+
+    private static void dropRandomItem(Entity entity, ServerLevel level) {
+        Random random = new Random();
+
+        ItemStack randomItemStack = getRandomItemStack();
+        BlockPos pos = entity.blockPosition().offset(random.nextInt(-10, 11), random.nextInt(3), random.nextInt(-10, 11));
+        Block.popResource(level, pos, randomItemStack);
+
+        ParticleUtil.spawnParticles(level, dust, pos.getCenter().add(0, .25, 0), 55, .4, .4, .4, 0);
+    }
+
+    private static ItemStack getRandomItemStack() {
+        double rand = Math.random();
+        double cumulative = 0.0;
+
+        for (ItemDrop drop : possibleDrops) {
+            cumulative += drop.dropChance();
+            if (rand <= cumulative) {
+                return new ItemStack(drop.item(), drop.count());
+            }
+        }
+
+        ItemDrop fallback = possibleDrops[possibleDrops.length - 1];
+        return new ItemStack(fallback.item(), fallback.count());
     }
 
     private static void removeHarmfulEffects(LivingEntity entity, ServerLevel level) {
@@ -193,8 +244,11 @@ public class LuckEventHandler {
         return amplifier >= 19 ? 0.05 : 0.0025 + (0.05 - 0.0025) / 19 * Math.max(amplifier, 0);
     }
 
-    private static double getExtraLootChance(int amplifier) {
-        return Math.min(0.04 * (amplifier + 1), 0.75);
+    private static double getChanceForRandomDrop(int amplifier) {
+        if (amplifier >= 19) return 0.005;
+        return 0.00025 + (0.00025 * amplifier);
     }
+
+    private record ItemDrop(Item item, int count, double dropChance) {}
 
 }

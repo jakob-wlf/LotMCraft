@@ -34,8 +34,9 @@ public class DoubleLootModifier extends LootModifier {
         // Get the player from the loot context
         var player = context.getParamOrNull(LootContextParams.THIS_ENTITY);
 
-        if (player instanceof Player) {
-            var luckEffect = ((Player) player).getEffect(ModEffects.LUCK);
+        // Check if the entity is a player and has the custom Luck effect
+        if (player instanceof Player playerEntity) {
+            var luckEffect = playerEntity.getEffect(ModEffects.LUCK);
 
             if (luckEffect != null) {
                 int amplifier = luckEffect.getAmplifier();
@@ -43,18 +44,35 @@ public class DoubleLootModifier extends LootModifier {
 
                 // Roll for extra loot
                 if (context.getRandom().nextDouble() < chance) {
-                    // Get the loot table location and convert to ResourceKey
-                    var lootTableLocation = context.getQueriedLootTableId();
-                    ResourceKey<LootTable> lootTableKey = ResourceKey.create(Registries.LOOT_TABLE, lootTableLocation);
+                    for(int i = 0; i < 2; i++) {
+                        // Get the loot table location and convert to ResourceKey
+                        var lootTableLocation = context.getQueriedLootTableId();
+                        ResourceKey<LootTable> lootTableKey = ResourceKey.create(Registries.LOOT_TABLE, lootTableLocation);
 
-                    var server = context.getLevel().getServer();
+                        var server = context.getLevel().getServer();
 
-                    // Get the loot table and roll it again
-                    LootTable lootTable = server.reloadableRegistries().getLootTable(lootTableKey);
+                        // Get the loot table
+                        LootTable lootTable = server.reloadableRegistries().getLootTable(lootTableKey);
 
-                    // Generate new loot from the same table with the same context
-                    // Use getRandomItems with a Consumer
-                    lootTable.getRandomItems(context, generatedLoot::add);
+                        // Generate new loot directly without global loot modifiers
+                        // This prevents recursive application of modifiers
+                        ObjectArrayList<ItemStack> extraLoot = new ObjectArrayList<>();
+                        lootTable.getRandomItemsRaw(context, extraLoot::add);
+
+                        // Add the extra loot to the existing loot
+                        generatedLoot.addAll(extraLoot);
+                    }
+
+                    for(int i = 0; i < generatedLoot.size(); i++) {
+                        ItemStack stack = generatedLoot.get(i);
+                        if(stack.getMaxStackSize() > 1) {
+                            int newCount = Math.min(stack.getCount() * 2, stack.getMaxStackSize());
+                            stack.setCount(newCount);
+                            generatedLoot.set(i, stack);
+                        }
+                    }
+
+                    generatedLoot.add(new ItemStack(ChestLootModifier.getRandomLoot()));
                 }
             }
         }
