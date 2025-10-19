@@ -1,6 +1,7 @@
 {
   "replace": false,
   "entries": [
-    "lotmcraft:chest_loot"
+    "lotmcraft:chest_loot",
+    "lotmcraft:double_chest_loot"
   ]
 }

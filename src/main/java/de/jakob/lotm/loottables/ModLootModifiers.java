@@ -17,6 +17,9 @@ public class ModLootModifiers {
     public static final Supplier<MapCodec<ChestLootModifier>> CHEST_LOOT =
             LOOT_MODIFIERS.register("chest_loot", ChestLootModifier.CODEC);
 
+    public static final Supplier<MapCodec<DoubleLootModifier>> DOUBLE_LOOT =
+            LOOT_MODIFIERS.register("double_loot", () -> DoubleLootModifier.CODEC);
+
     public static void register(IEventBus modEventBus) {
         LOOT_MODIFIERS.register(modEventBus);
     }

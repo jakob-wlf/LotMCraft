@@ -1,0 +1,17 @@
+{
+  "type": "lotmcraft:double_loot",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": {
+        "type": "minecraft:any_of",
+        "terms": [
+          {
+            "type": "minecraft:pattern",
+            "pattern": "minecraft:chests/.*"
+          }
+        ]
+      }
+    }
+  ]
+}

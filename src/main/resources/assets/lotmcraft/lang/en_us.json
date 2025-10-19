@@ -255,6 +255,9 @@
   "item.lotmcraft.void_immunity_ability": "Void Immunity",
 
   "item.lotmcraft.passive_luck_ability": "Passive Luck",
+  "ability.lotmcraft.passive_luck.dodge": "Dodged Attack through Luck",
+  "ability.lotmcraft.passive_luck.crit": "Critical Hit through Luck",
+  "ability.lotmcraft.passive_luck.effect_remove": "You were cleansed of negative effects through Luck",
   "item.lotmcraft.passive_luck_ability.description": "Gain Passive Luck that grows with your Sequence",
 
   "item.lotmcraft.paper_dagger_ability": "Paper Daggers",

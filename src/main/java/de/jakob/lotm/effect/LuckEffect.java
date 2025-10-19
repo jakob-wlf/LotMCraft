@@ -14,6 +14,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class LuckEffect extends MobEffect {
 
@@ -21,8 +22,12 @@ public class LuckEffect extends MobEffect {
         super(category, color);
     }
 
+
+    //Luck handled through event handler
     @Override
-    public boolean applyEffectTick(LivingEntity livingEntity, int amplifier) {
-        return false;
+    public boolean applyEffectTick(@NotNull LivingEntity livingEntity, int amplifier) {
+        return true;
     }
+
+
 }
