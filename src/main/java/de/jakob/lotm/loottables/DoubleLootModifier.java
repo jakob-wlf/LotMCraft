@@ -55,7 +55,6 @@ public class DoubleLootModifier extends LootModifier {
                     // Generate new loot from the same table with the same context
                     // Use getRandomItems with a Consumer
                     lootTable.getRandomItems(context, generatedLoot::add);
-                    lootTable.getRandomItems(context, generatedLoot::add);
                 }
             }
         }
