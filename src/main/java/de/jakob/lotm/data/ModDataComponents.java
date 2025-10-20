@@ -17,6 +17,11 @@ public class ModDataComponents {
                     .persistent(Codec.BOOL)
                     .build());
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> IS_REPLICATED =
+            DATA_COMPONENT_TYPES.register("is_replicated", () -> DataComponentType.<Boolean>builder()
+                    .persistent(Codec.BOOL)
+                    .build());
+
 
     public static void register(IEventBus eventBus) {
         DATA_COMPONENT_TYPES.register(eventBus);

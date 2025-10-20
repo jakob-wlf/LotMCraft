@@ -75,7 +75,7 @@ public abstract class AbilityItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
 
-        if (!canUse(player) && !isRecorded(itemStack)) {
+        if (!canUse(player) && !isRecorded(itemStack) && !isReplicated(itemStack)) {
             return InteractionResultHolder.fail(itemStack);
         }
 
@@ -106,6 +106,10 @@ public abstract class AbilityItem extends Item {
         return InteractionResultHolder.success(itemStack);
     }
 
+    private boolean isReplicated(ItemStack itemStack) {
+        return itemStack.getOrDefault(ModDataComponents.IS_REPLICATED, false);
+    }
+
     private boolean isRecorded(ItemStack item) {
         return item.getOrDefault(ModDataComponents.IS_RECORDED, false);
     }
@@ -119,7 +123,7 @@ public abstract class AbilityItem extends Item {
     }
 
     public boolean canUse(Player player, ItemStack itemStack) {
-        return canUse(player, false) || isRecorded(itemStack);
+        return canUse(player, false) || isRecorded(itemStack) || isReplicated(itemStack);
     }
 
     public boolean canUse(Player player, boolean ignoreCreative) {

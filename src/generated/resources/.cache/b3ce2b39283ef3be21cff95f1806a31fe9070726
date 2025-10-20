@@ -1,4 +1,4 @@
-// 1.21.1	2025-10-18T14:15:03.5667742	Item Models: lotmcraft
+// 1.21.1	2025-10-21T00:01:48.2877913	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -186,6 +186,7 @@ a704ca7b9163942be958fe4b8493c101ebd5e5fe assets/lotmcraft/models/item/reaper_pot
 47b544c67cdfddb1af2a2be24143188a8d887c6d assets/lotmcraft/models/item/recording_ability.json
 f87acda52ddb81dc800bf18d4a35b4e309bcd885 assets/lotmcraft/models/item/redcrown_balsam_powder.json
 22bcac033250485b8ccd65314821997edffcc4fe assets/lotmcraft/models/item/red_chestnut_flower.json
+e1b38f11301b9539bb83f73d509763f5a8719d61 assets/lotmcraft/models/item/replicating_ability.json
 45f255a4af176042191ab5c7245144cc9d8465d7 assets/lotmcraft/models/item/requiem_ability.json
 7c911e8ed81a9fe625956c25fa247bcec96c49a8 assets/lotmcraft/models/item/riptide_ability.json
 29c99a4ad6e3972adabdc7b1eb7278e8c8b2cfbf assets/lotmcraft/models/item/roar_ability.json
