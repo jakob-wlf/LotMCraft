@@ -6,6 +6,7 @@ import de.jakob.lotm.effect.ModEffects;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -31,53 +32,66 @@ public class DoubleLootModifier extends LootModifier {
 
     @Override
     protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-        // Get the player from the loot context
         var player = context.getParamOrNull(LootContextParams.THIS_ENTITY);
 
-        // Check if the entity is a player and has the custom Luck effect
-        if (player instanceof Player playerEntity) {
-            var luckEffect = playerEntity.getEffect(ModEffects.LUCK);
+        if (!(player instanceof Player playerEntity)) {
+            return generatedLoot;
+        }
 
-            if (luckEffect != null) {
-                int amplifier = luckEffect.getAmplifier();
-                double chance = getExtraLootChance(amplifier);
+        var luckEffect = playerEntity.getEffect(ModEffects.LUCK);
 
-                // Roll for extra loot
-                if (context.getRandom().nextDouble() < chance) {
-                    for(int i = 0; i < 2; i++) {
-                        // Get the loot table location and convert to ResourceKey
-                        var lootTableLocation = context.getQueriedLootTableId();
-                        ResourceKey<LootTable> lootTableKey = ResourceKey.create(Registries.LOOT_TABLE, lootTableLocation);
+        if (luckEffect == null) {
+            return generatedLoot;
+        }
 
-                        var server = context.getLevel().getServer();
+        if(!isChestLootTable(context.getQueriedLootTableId())) {
+            return generatedLoot;
+        }
 
-                        // Get the loot table
-                        LootTable lootTable = server.reloadableRegistries().getLootTable(lootTableKey);
+        int amplifier = luckEffect.getAmplifier();
+        double chance = getExtraLootChance(amplifier);
 
-                        // Generate new loot directly without global loot modifiers
-                        // This prevents recursive application of modifiers
-                        ObjectArrayList<ItemStack> extraLoot = new ObjectArrayList<>();
-                        lootTable.getRandomItemsRaw(context, extraLoot::add);
+        // Roll for extra loot
+        if (context.getRandom().nextDouble() < chance) {
+            for(int i = 0; i < 2; i++) {
+                // Get the loot table location and convert to ResourceKey
+                var lootTableLocation = context.getQueriedLootTableId();
+                ResourceKey<LootTable> lootTableKey = ResourceKey.create(Registries.LOOT_TABLE, lootTableLocation);
 
-                        // Add the extra loot to the existing loot
-                        generatedLoot.addAll(extraLoot);
-                    }
+                var server = context.getLevel().getServer();
 
-                    for(int i = 0; i < generatedLoot.size(); i++) {
-                        ItemStack stack = generatedLoot.get(i);
-                        if(stack.getMaxStackSize() > 1) {
-                            int newCount = Math.min(stack.getCount() * 2, stack.getMaxStackSize());
-                            stack.setCount(newCount);
-                            generatedLoot.set(i, stack);
-                        }
-                    }
+                // Get the loot table
+                LootTable lootTable = server.reloadableRegistries().getLootTable(lootTableKey);
 
-                    generatedLoot.add(new ItemStack(ChestLootModifier.getRandomLoot()));
+                // Generate new loot directly without global loot modifiers
+                // This prevents recursive application of modifiers
+                ObjectArrayList<ItemStack> extraLoot = new ObjectArrayList<>();
+                lootTable.getRandomItemsRaw(context, extraLoot::add);
+
+                // Add the extra loot to the existing loot
+                generatedLoot.addAll(extraLoot);
+            }
+
+            for(int i = 0; i < generatedLoot.size(); i++) {
+                ItemStack stack = generatedLoot.get(i);
+                if(stack.getMaxStackSize() > 1) {
+                    int newCount = Math.min(stack.getCount() * 2, stack.getMaxStackSize());
+                    stack.setCount(newCount);
+                    generatedLoot.set(i, stack);
                 }
             }
+
+
+            generatedLoot.add(new ItemStack(ChestLootModifier.getRandomLoot()));
         }
 
         return generatedLoot;
+    }
+
+    private boolean isChestLootTable(ResourceLocation lootTableLocation) {
+        String path = lootTableLocation.getPath();
+
+        return path.startsWith("chests/");
     }
 
     @Override

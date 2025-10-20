@@ -37,7 +37,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PassiveAbilityIte
         ));
 
         effectsPerSequence.put(7, List.of(
-                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 0, false, false, false),
+                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 0, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 0, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 1, false, false, false),
@@ -46,7 +46,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PassiveAbilityIte
         ));
 
         effectsPerSequence.put(6, List.of(
-                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 1, false, false, false),
+                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 4, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 1, false, false, false),
@@ -55,7 +55,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PassiveAbilityIte
         ));
 
         effectsPerSequence.put(5, List.of(
-                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 2, false, false, false),
+                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 5, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 2, false, false, false),
@@ -64,7 +64,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PassiveAbilityIte
         ));
 
         effectsPerSequence.put(4, List.of(
-                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 5, false, false, false),
+                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 9, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 3, false, false, false),
@@ -74,7 +74,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PassiveAbilityIte
         ));
 
         effectsPerSequence.put(3, List.of(
-                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 7, false, false, false),
+                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 12, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 3, false, false, false),
@@ -84,7 +84,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PassiveAbilityIte
         ));
 
         effectsPerSequence.put(2, List.of(
-                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 13, false, false, false),
+                new MobEffectInstance(ModEffects.LUCK, 20 * 6, 16, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 3, false, false, false),
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 3, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 3, false, false, false),

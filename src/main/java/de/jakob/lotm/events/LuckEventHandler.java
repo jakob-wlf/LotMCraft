@@ -24,17 +24,18 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.joml.Vector3f;
 
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class LuckEventHandler {
+
+    private static final HashMap<UUID, CombatTarget> combatTargets = new HashMap<>();
 
     // Double Loot handled in DoubleLootModifier
 
@@ -67,6 +68,28 @@ public class LuckEventHandler {
             sendActionBar(player, actionBarText);
         }
 
+    }
+
+    //Check for targets
+    @SubscribeEvent
+    public static void onLivingDamageLiving(LivingDamageEvent.Post event) {
+        LivingEntity entity = event.getEntity();
+        Entity damager = event.getSource().getEntity();
+
+        if(!(damager instanceof LivingEntity livingDamager)) {
+            return;
+        }
+
+        if(entity.hasEffect(ModEffects.LUCK)) {
+            long currentTime = System.currentTimeMillis();
+            CombatTarget combatTarget = new CombatTarget(livingDamager, currentTime);
+            combatTargets.put(entity.getUUID(), combatTarget);
+        }
+        if(livingDamager.hasEffect(ModEffects.LUCK)) {
+            long currentTime = System.currentTimeMillis();
+            CombatTarget combatTarget = new CombatTarget(entity, currentTime);
+            combatTargets.put(livingDamager.getUUID(), combatTarget);
+        }
     }
 
     // Critical Hits
@@ -131,11 +154,12 @@ public class LuckEventHandler {
             ItemStack randomDrop = drops.get(level.getRandom().nextInt(drops.size())).getItem().copy();
 
             Block.popResource(level, event.getPos(), randomDrop);
+            Block.popResource(level, event.getPos(), randomDrop);
         }
 
     }
 
-    // Remove Harmful Effects / Add Hero of the Village effect / Random drops
+    // Remove Harmful Effects / Add Hero of the Village effect / Random drops / Make Enemies trip
     @SubscribeEvent
     public static void onEntityTick(EntityTickEvent.Post event) {
         if(!(event.getEntity() instanceof LivingEntity entity)) {
@@ -160,20 +184,59 @@ public class LuckEventHandler {
             dropRandomItem(entity, level);
         }
 
+        if(Math.random() < getChanceForEntityTrip(amplifier)) {
+            makeEntityTrip(entity, amplifier, level);
+        }
+
+    }
+
+    private static void makeEntityTrip(LivingEntity entity, int amplifier, ServerLevel level) {
+        if(!combatTargets.containsKey(entity.getUUID())) {
+            return;
+        }
+
+        CombatTarget combatTarget = combatTargets.get(entity.getUUID());
+        if(System.currentTimeMillis() - combatTarget.timestamp() > 6000) {
+            combatTargets.remove(entity.getUUID());
+            return;
+        }
+
+        LivingEntity target = combatTarget.target();
+        if(target.isDeadOrDying()) {
+            combatTargets.remove(entity.getUUID());
+            return;
+        }
+
+        if(target.level() != level) {
+            combatTargets.remove(entity.getUUID());
+            return;
+        }
+
+        Random random = new Random();
+
+        target.hurt(target.damageSources().generic(), 2.5f * (amplifier + 1));
+        target.setDeltaMovement(random.nextDouble(-.5, .5), random.nextDouble(0, .2), random.nextDouble(-.5, .5));
+        target.hurtMarked = true;
+
+        ParticleUtil.spawnParticles(level, dust, target.position().add(0, target.getEyeHeight() / 2, 0), 55, .4, target.getEyeHeight() / 2, .4, 0);
+
+        if(entity instanceof ServerPlayer player) {
+            Component actionBarText = Component.translatable("ability.lotmcraft.passive_luck.trip").withColor(0xFFc0f6fc);
+            sendActionBar(player, actionBarText);
+        }
     }
 
     private static final ItemDrop[] possibleDrops = new ItemDrop[] {
-            new ItemDrop(Items.DIAMOND, 1, 0.05),
-            new ItemDrop(Items.GOLD_INGOT, 6, 0.15),
-            new ItemDrop(Items.EMERALD, 12, 0.15),
-            new ItemDrop(Items.LAPIS_LAZULI, 8, 0.12),
-            new ItemDrop(Items.REDSTONE_BLOCK, 10, 0.11),
-            new ItemDrop(Items.IRON_INGOT, 4, 0.15),
-            new ItemDrop(Items.COAL, 5, 0.20),
-            new ItemDrop(Items.QUARTZ, 11, 0.12),
+            new ItemDrop(Items.GOLDEN_CARROT, 32, 0.3),
+            new ItemDrop(Items.DIAMOND, 6, 0.05),
+            new ItemDrop(Items.GOLD_INGOT, 22, 0.15),
+            new ItemDrop(Items.EMERALD, 22, 0.15),
+            new ItemDrop(Items.LAPIS_LAZULI, 22, 0.12),
+            new ItemDrop(Items.REDSTONE_BLOCK, 20, 0.11),
+            new ItemDrop(Items.IRON_INGOT, 28, 0.15),
+            new ItemDrop(Items.COAL, 25, 0.20),
+            new ItemDrop(Items.QUARTZ, 22, 0.12),
             new ItemDrop(Items.NETHER_STAR, 1, 0.02),
-            new ItemDrop(Items.GOLDEN_CARROT, 20, 0.45),
-            new ItemDrop(Items.COOKED_BEEF, 18, 0.40)
     };
 
     private static void dropRandomItem(Entity entity, ServerLevel level) {
@@ -187,18 +250,18 @@ public class LuckEventHandler {
     }
 
     private static ItemStack getRandomItemStack() {
-        double rand = Math.random();
-        double cumulative = 0.0;
-
-        for (ItemDrop drop : possibleDrops) {
-            cumulative += drop.dropChance();
-            if (rand <= cumulative) {
-                return new ItemStack(drop.item(), drop.count());
+        List<ItemDrop> scaledDrops = new ArrayList<>();
+        for(ItemDrop drop : possibleDrops) {
+            int amountInList = (int) (100 * drop.dropChance());
+            for(int i = 0; i < amountInList; i++) {
+                scaledDrops.add(drop);
             }
         }
 
-        ItemDrop fallback = possibleDrops[possibleDrops.length - 1];
-        return new ItemStack(fallback.item(), fallback.count());
+        Random random = new Random();
+        ItemDrop selectedDrop = scaledDrops.get(random.nextInt(scaledDrops.size()));
+
+        return new ItemStack(selectedDrop.item(), random.nextInt(1, selectedDrop.count() + 1));
     }
 
     private static void removeHarmfulEffects(LivingEntity entity, ServerLevel level) {
@@ -244,11 +307,22 @@ public class LuckEventHandler {
         return amplifier >= 19 ? 0.05 : 0.0025 + (0.05 - 0.0025) / 19 * Math.max(amplifier, 0);
     }
 
+    private static double getChanceForEntityTrip(int amplifier) {
+        return lerpClamped(amplifier, 0, 19, 0.002, 0.035);
+    }
+
+    private static double lerpClamped(double amplifier, double minAmplifier, double maxAmplifier, double minValue, double maxValue) {
+        double t = (amplifier - minAmplifier) / (maxAmplifier - minAmplifier);
+        t = Math.max(0.0, Math.min(1.0, t)); // clamp to [0,1]
+        return minValue + t * (maxValue - minValue);
+    }
+
     private static double getChanceForRandomDrop(int amplifier) {
-        if (amplifier >= 19) return 0.005;
-        return 0.00025 + (0.00025 * amplifier);
+        double value = 0.001 * amplifier + 0.001;
+        return Math.min(value, 0.02);
     }
 
     private record ItemDrop(Item item, int count, double dropChance) {}
 
+    private record CombatTarget(LivingEntity target, long timestamp) {}
 }
