@@ -3,17 +3,20 @@ package de.jakob.lotm.abilities.red_priest;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -55,8 +58,38 @@ public class SteelMasteryAbility extends SelectableAbilityItem {
     }
 
     private void steelChains(ServerLevel level, LivingEntity entity) {
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 25, 2);
 
+        if(target == null) {
+            if(entity instanceof ServerPlayer player) {
+                Component actionBar = Component.translatable("ability.lotmcraft.steel_mastery.no_trarget").withColor(0xFF422a2a);
+                sendActionBar(player, actionBar);
+            }
+            return;
+        }
+
+        ServerScheduler.scheduleForDuration(0, 5, 20 * 8, () -> {
+            if(entity.isDeadOrDying())
+                return;
+
+            target.setDeltaMovement(new Vec3(0, 0, 0));
+            target.hurtMarked = true;
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 20, false, false, false));
+
+            Vec3 entityPos = target.position().add(0, 1.25, 0);
+            ParticleUtil.drawParticleLine(level, dust, entityPos, entityPos.add(0, -1.5, 3), .35, 1);
+            ParticleUtil.drawParticleLine(level, dust, entityPos, entityPos.add(0, -1.5, -3), .35, 1);
+            ParticleUtil.drawParticleLine(level, dust, entityPos, entityPos.add(3, -1.5, 0), .35, 1);
+            ParticleUtil.drawParticleLine(level, dust, entityPos, entityPos.add(-3, -1.5, 0), .35, 1);
+
+        });
     }
+
+    private static void sendActionBar(ServerPlayer player, Component message) {
+        ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(message);
+        player.connection.send(packet);
+    }
+
 
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(0.3f, 0.3f, 0.3f), 2.25f);
 
