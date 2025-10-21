@@ -62,7 +62,7 @@ public class DistortionField extends AbilityItem {
         }
 
         barrierBlocks.removeIf(b -> !serverLevel.getBlockState(b).isAir());
-        barrierBlocks.removeIf(b -> random.nextInt(4) != 0);
+        barrierBlocks.removeIf(b -> random.nextInt(2) != 0);
 
         ServerScheduler.scheduleForDuration(0, 6, 20 * 30, () -> {
             if(entity.level() != serverLevel) {
@@ -107,9 +107,7 @@ public class DistortionField extends AbilityItem {
                     });
                 }
 
-                if(random.nextInt(3) == 0) {
-                    e.teleportTo(e.getX() + random.nextDouble(-8, 8), e.getY() + random.nextDouble(-1, 2), e.getZ() + random.nextDouble(-8, 8));
-                }
+                e.teleportTo(e.getX() + random.nextDouble(-8, 8), e.getY() + random.nextDouble(-1, 2), e.getZ() + random.nextDouble(-8, 8));
             });
 
         }, () -> {
