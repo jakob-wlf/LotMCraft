@@ -24,6 +24,9 @@ public class ModItems {
     public static final Supplier<Item> MARIONETTE_CONTROLLER = ITEMS.register("marionette_controller",
             () -> new MarionetteControllerItem(new Item.Properties().stacksTo(1)));
 
+    public static final Supplier<Item> SUBORDINATE_CONTROLLER = ITEMS.register("subordinate_controller",
+            () -> new MarionetteControllerItem(new Item.Properties().stacksTo(1)));
+
     public static PotionIngredient selectRandomIngredient(List<PotionIngredient> ingredients, Random random) {
         if (ingredients == null || ingredients.isEmpty()) {
             return null;

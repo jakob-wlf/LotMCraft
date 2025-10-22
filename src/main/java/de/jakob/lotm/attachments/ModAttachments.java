@@ -2,6 +2,7 @@ package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -17,6 +18,13 @@ public class ModAttachments {
             ATTACHMENT_TYPES.register("marionette_component", () ->
                     AttachmentType.builder(MarionetteComponent::new)
                             .serialize(MarionetteComponent.SERIALIZER)
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<SubordinateComponent>> SUBORDINATE_COMPONENT =
+            ATTACHMENT_TYPES.register("subordinate_component", () ->
+                    AttachmentType.builder(SubordinateComponent::new)
+                            .serialize(SubordinateComponent.SERIALIZER)
                             .build()
             );
 

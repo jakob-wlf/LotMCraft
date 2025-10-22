@@ -54,6 +54,7 @@ public class MarionetteUtils {
             mob.goalSelector.addGoal(0, new MarionetteFollowGoal(mob));
             mob.goalSelector.addGoal(0, new MarionetteLoadChunksGoal(mob));
             mob.goalSelector.addGoal(1, new MarionetteStayGoal(mob));
+            mob.goalSelector.addGoal(1, new MarionetteUseAbilityGoal(mob));
             mob.targetSelector.addGoal(0, new MarionetteTargetGoal(mob));
             mob.goalSelector.addGoal(10, new MarionetteLifelinkGoal(mob));
             mob.setTarget(null);
