@@ -75,6 +75,7 @@
   "ability.lotmcraft.steel_mastery.steel_chains": "Steel Chains",
   "ability.lotmcraft.steel_mastery.no_trarget":"No Target found",
   "item.lotmcraft.chain_of_command_ability": "Chain of Command",
+  "item.lotmcraft.chain_of_command_ability.description": "Make Entities your subordinates. They will fight for you and you can spread your damage among them.",
   "ability.lotmcraft.chain_of_command.entity_teleport": "Moved Entity",
   "ability.lotmcraft.chain_of_command.follow_mode": "Follow Mode",
   "ability.lotmcraft.chain_of_command.attack": "Attack",

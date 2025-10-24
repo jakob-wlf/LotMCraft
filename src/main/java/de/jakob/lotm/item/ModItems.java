@@ -2,6 +2,7 @@ package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.item.custom.MarionetteControllerItem;
+import de.jakob.lotm.item.custom.SubordinateControllerItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -25,7 +26,7 @@ public class ModItems {
             () -> new MarionetteControllerItem(new Item.Properties().stacksTo(1)));
 
     public static final Supplier<Item> SUBORDINATE_CONTROLLER = ITEMS.register("subordinate_controller",
-            () -> new MarionetteControllerItem(new Item.Properties().stacksTo(1)));
+            () -> new SubordinateControllerItem(new Item.Properties().stacksTo(1)));
 
     public static PotionIngredient selectRandomIngredient(List<PotionIngredient> ingredients, Random random) {
         if (ingredients == null || ingredients.isEmpty()) {

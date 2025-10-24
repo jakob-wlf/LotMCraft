@@ -118,16 +118,16 @@ public abstract class AbilityItem extends Item {
         return BeyonderData.getMultiplier(entity);
     }
 
-    public boolean canUse(Player player) {
-        return canUse(player, false);
+    public boolean canUse(LivingEntity entity) {
+        return canUse(entity, false);
     }
 
-    public boolean canUse(Player player, ItemStack itemStack) {
-        return canUse(player, false) || isRecorded(itemStack) || isReplicated(itemStack);
+    public boolean canUse(LivingEntity entity, ItemStack itemStack) {
+        return canUse(entity, false) || isRecorded(itemStack) || isReplicated(itemStack);
     }
 
-    public boolean canUse(Player player, boolean ignoreCreative) {
-        return AbilityHandler.canUse(player, ignoreCreative, getRequirements(), getSpiritualityCost());
+    public boolean canUse(LivingEntity entity, boolean ignoreCreative) {
+        return AbilityHandler.canUse(entity, ignoreCreative, getRequirements(), getSpiritualityCost());
     }
 
     protected abstract void onAbilityUse(Level level, LivingEntity entity);

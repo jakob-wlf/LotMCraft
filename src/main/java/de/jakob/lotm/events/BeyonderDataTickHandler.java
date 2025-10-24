@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.custom.ExileDoorsEntity;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.custom.MarionetteControllerItem;
+import de.jakob.lotm.item.custom.SubordinateControllerItem;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.abilities.AbilityItemHandler;
@@ -47,6 +48,10 @@ public class BeyonderDataTickHandler {
         if(tickCounter % 5 == 0) {
             if(player.getMainHandItem().is(ModItems.MARIONETTE_CONTROLLER.get()) && player.getMainHandItem().getItem() instanceof MarionetteControllerItem) {
                 MarionetteControllerItem.onHold(player, player.getMainHandItem());
+            }
+
+            if(player.getMainHandItem().is(ModItems.SUBORDINATE_CONTROLLER.get()) && player.getMainHandItem().getItem() instanceof SubordinateControllerItem) {
+                SubordinateControllerItem.onHold(player, player.getMainHandItem());
             }
         }
 

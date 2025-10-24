@@ -1,9 +1,13 @@
 package de.jakob.lotm.abilities.red_priest;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -14,14 +18,23 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.StreamSupport;
 
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ChainOfCommandAbility extends AbilityItem {
+
+    private static ChainOfCommandAbility instance;
+
     public ChainOfCommandAbility(Properties properties) {
         super(properties, 5);
+
+        instance = this;
 
         canBeCopied = false;
         canBeUsedByNPC = false;
@@ -69,5 +82,57 @@ public class ChainOfCommandAbility extends AbilityItem {
                 serverPlayer.connection.send(packet);
             }
         }
+    }
+
+    private static ArrayList<LivingEntity> getSubordinatesOfPlayerInAllLevelsOrderedById(LivingEntity entity) {
+        Level level = entity.level();
+
+        if(level.isClientSide || !(level instanceof ServerLevel serverLevel)) {
+            return new ArrayList<>();
+        }
+
+        if(entity.getServer() == null) {
+            return new ArrayList<>();
+        }
+
+        final ArrayList<LivingEntity> subordinates = new ArrayList<>(StreamSupport.stream(serverLevel.getAllEntities().spliterator(), false).filter(e -> e instanceof LivingEntity).map(e -> (LivingEntity) e).toList());
+
+        for(ServerLevel l : entity.getServer().getAllLevels()) {
+            if(l == level)
+                continue;
+            subordinates.addAll(StreamSupport.stream(l.getAllEntities().spliterator(), false).filter(e -> e instanceof LivingEntity).map(e -> (LivingEntity) e).toList());
+        }
+
+        subordinates.removeIf(e -> {
+            if(e == entity)
+                return true;
+            SubordinateComponent component = e.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
+            if (!component.isSubordinate()) {
+                return true;
+            }
+
+            if(!component.getControllerUUID().equals(entity.getStringUUID())) {
+                return true;
+            }
+
+            return false;
+        });
+
+        subordinates.sort(Comparator.comparingInt(LivingEntity::getId));
+        return subordinates;
+    }
+
+    @SubscribeEvent
+    public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
+        LivingEntity entity = event.getEntity();
+
+        if(!instance.canUse(entity, true)) {
+            return;
+        }
+
+        List<LivingEntity> subordinates = getSubordinatesOfPlayerInAllLevelsOrderedById(entity);
+        float damageForEach = event.getAmount() / (subordinates.size() + 1);
+        event.setAmount(damageForEach);
+        subordinates.stream().filter(e -> !instance.canUse(e)).forEach(e -> e.hurt(event.getSource(), damageForEach));
     }
 }

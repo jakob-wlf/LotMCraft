@@ -5,6 +5,8 @@ import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -37,17 +39,17 @@ public class AbilityHandler {
         return null;
     }
 
-    public static boolean canUse(Player player, boolean ignoreCreative, Map<String, Integer> requirements, double spiritualityCost) {
+    public static boolean canUse(LivingEntity entity, boolean ignoreCreative, Map<String, Integer> requirements, double spiritualityCost) {
         // Creative mode always works
-        if (player.isCreative() && !ignoreCreative) {
+        if (entity instanceof Player player && player.isCreative() && !ignoreCreative) {
             return true;
         }
 
-        if (player.level().isClientSide()) {
+        if (entity.level().isClientSide()) {
             // Client-side: use cached data
-            String pathway = ClientBeyonderCache.getPathway(player.getUUID());
-            int sequence = ClientBeyonderCache.getSequence(player.getUUID());
-            float spirituality = ClientBeyonderCache.getSpirituality(player.getUUID());
+            String pathway = ClientBeyonderCache.getPathway(entity.getUUID());
+            int sequence = ClientBeyonderCache.getSequence(entity.getUUID());
+            float spirituality = ClientBeyonderCache.getSpirituality(entity.getUUID());
 
             // Debug pathway always works
             if (pathway.equalsIgnoreCase("debug")) {
@@ -67,8 +69,8 @@ public class AbilityHandler {
             return sequence <= minSeq && spirituality >= spiritualityCost;
         } else {
             // Server-side: use your existing logic
-            String pathway = BeyonderData.getPathway(player);
-            int sequence = BeyonderData.getSequence(player);
+            String pathway = BeyonderData.getPathway(entity);
+            int sequence = BeyonderData.getSequence(entity);
 
             // Debug pathway always works
             if (pathway.equalsIgnoreCase("debug")) {
@@ -78,7 +80,7 @@ public class AbilityHandler {
             if(!requirements.containsKey(pathway))
                 return false;
 
-            if(BeyonderData.isAbilityDisabled(player))
+            if(BeyonderData.isAbilityDisabled(entity))
                 return false;
 
             // Check if pathway has requirements
@@ -88,7 +90,7 @@ public class AbilityHandler {
             }
 
             // Check sequence and spirituality requirements
-            return sequence <= minSeq && BeyonderData.getSpirituality(player) >= spiritualityCost;
+            return sequence <= minSeq && (!(entity instanceof Player player) || BeyonderData.getSpirituality(player) >= spiritualityCost);
         }
     }
 }

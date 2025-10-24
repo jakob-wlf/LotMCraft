@@ -110,12 +110,12 @@ public abstract class ToggleAbilityItem extends Item {
         return Component.translatable(this.getDescriptionId(stack)).append(Component.literal(" (")).append(Component.translatable("lotm.toggleable")).append(Component.literal(")"));
     }
 
-    public boolean canUse(Player player) {
-        return canUse(player, false);
+    public boolean canUse(LivingEntity entity) {
+        return canUse(entity, false);
     }
 
-    public boolean canUse(Player player, boolean ignoreCreative) {
-        return AbilityHandler.canUse(player, ignoreCreative, getRequirements(), getSpiritualityCost());
+    public boolean canUse(LivingEntity entity, boolean ignoreCreative) {
+        return AbilityHandler.canUse(entity, ignoreCreative, getRequirements(), getSpiritualityCost());
     }
 
     public boolean isActive(LivingEntity entity) {

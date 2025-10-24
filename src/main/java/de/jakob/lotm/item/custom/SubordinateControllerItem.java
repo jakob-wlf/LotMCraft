@@ -2,6 +2,7 @@ package de.jakob.lotm.item.custom;
 
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import de.jakob.lotm.util.mixin.EntityAccessor;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.ChatFormatting;
@@ -64,8 +65,8 @@ public class SubordinateControllerItem extends Item {
                 return InteractionResultHolder.fail(stack);
             }
             
-            MarionetteComponent component = livingEntity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
-            if (!component.isMarionette()) {
+            SubordinateComponent component = livingEntity.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
+            if (!component.isSubordinate()) {
                 stack.shrink(1);
                 return InteractionResultHolder.fail(stack);
             }
@@ -124,7 +125,7 @@ public class SubordinateControllerItem extends Item {
             } else {
                 // Release marionette
                 if(player.isShiftKeyDown()) {
-                    component.setMarionette(false);
+                    component.setSubordinate(false);
                     component.setControllerUUID("");
                     livingEntity.setHealth(0);
                     stack.shrink(1);
@@ -180,8 +181,8 @@ public class SubordinateControllerItem extends Item {
             return;
         }
 
-        MarionetteComponent component = livingEntity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
-        if (!component.isMarionette()) {
+        SubordinateComponent component = livingEntity.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
+        if (!component.isSubordinate()) {
             itemStack.shrink(1);
             return;
         }
