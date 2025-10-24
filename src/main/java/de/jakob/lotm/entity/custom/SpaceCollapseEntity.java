@@ -110,22 +110,6 @@ public class SpaceCollapseEntity extends Entity {
 
     private void damageNearbyEntities(float radius) {
         AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner(), radius, getDamage(), this.position(), true, false, 0);
-        AABB bounds = new AABB(
-                this.getX() - radius, this.getY() - radius, this.getZ() - radius,
-                this.getX() + radius, this.getY() + radius, this.getZ() + radius
-        );
-
-        List<Entity> entities = this.level().getEntities(this, bounds);
-        for (Entity entity : entities) {
-            double distance = entity.position().distanceTo(this.position());
-            if (distance <= radius && entity instanceof LivingEntity) {
-                float damage = 2.0F + (this.getAge() / (float) MAX_AGE) * 8.0F;
-                entity.hurt(this.damageSources().magic(), damage);
-
-                Vec3 pullVector = this.position().subtract(entity.position()).normalize().scale(0.3);
-                entity.setDeltaMovement(entity.getDeltaMovement().add(pullVector));
-            }
-        }
     }
 
     private void breakBlocks(float radius) {
@@ -207,7 +191,10 @@ public class SpaceCollapseEntity extends Entity {
     public LivingEntity getOwner() {
         try {
             UUID ownerUUID = this.getOwnerUUID().orElse(null);
-            return ownerUUID == null ? null : this.level().getPlayerByUUID(ownerUUID);
+            if(ownerUUID == null) return null;
+            if(!(level() instanceof ServerLevel serverLevel)) return null;
+            Entity owner = serverLevel.getEntity(ownerUUID);
+            return owner instanceof LivingEntity livingOwner ? livingOwner : null;
         } catch (IllegalArgumentException e) {
             return null;
         }

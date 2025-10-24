@@ -176,7 +176,7 @@ public class BlackHoleEntity extends Entity {
     private void suckUpBlocks() {
         if(this.blocks == null || this.blocks.isEmpty())
             return;
-        int blocksToSuck = shouldSuckBlocks() ? Math.min(100, blocks.size()) : 5;
+        int blocksToSuck = shouldSuckBlocks() ? Math.min(100, blocks.size()) : 2;
         for (int i = 0; i < blocksToSuck; i++) {
             BlockPos blockPos = blocks.get(random.nextInt(blocks.size()));
             BlockState state = level().getBlockState(blockPos);

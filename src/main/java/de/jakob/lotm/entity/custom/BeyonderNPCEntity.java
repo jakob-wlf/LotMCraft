@@ -267,6 +267,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
             this.sequence = compound.getInt("Sequence");
 
             if (!this.level().isClientSide) {
+                BeyonderData.setBeyonder(this, this.pathway, this.sequence);
                 this.entityData.set(PATHWAY, this.pathway);
                 this.entityData.set(SEQUENCE, this.sequence);
             }
@@ -352,15 +353,36 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
     public void useAbility(Level level) {
 
-        List<AbilityItem> usableAbilities = this.getUsableAbilities().stream().filter(a -> a.shouldUseAbility(this)).toList();
+        List<AbilityItem> usableAbilities = this.getUsableAbilities().stream().filter(a -> a.shouldUseAbility(this)).sorted(Comparator.comparing(AbilityItem::lowestSequenceUsable)).toList();
 
         if (usableAbilities.isEmpty()) {
             return;
         }
 
-        AbilityItem randomAbility = usableAbilities.get(level.random.nextInt(usableAbilities.size()));
+        // Calculate weights inversely proportional to sequence position
+        // First item gets highest weight, last item gets weight of 1
+        int size = usableAbilities.size();
+        int totalWeight = (size * (size + 1)) / 2; // Sum of 1+2+3+...+n
 
-        randomAbility.useAsNpcAbility(level, this);
+        // Pick a random number in the weight range
+        int randomValue = level.random.nextInt(totalWeight);
+
+        // Find which ability this corresponds to
+        int cumulativeWeight = 0;
+        AbilityItem selectedAbility = usableAbilities.get(0); // fallback
+
+        for (int i = 0; i < size; i++) {
+            // Weight decreases: first item gets 'size' weight, last gets 1
+            int weight = size - i;
+            cumulativeWeight += weight;
+
+            if (randomValue < cumulativeWeight) {
+                selectedAbility = usableAbilities.get(i);
+                break;
+            }
+        }
+
+        selectedAbility.useAsNpcAbility(level, this);
     }
 
     public void tryUseAbility() {

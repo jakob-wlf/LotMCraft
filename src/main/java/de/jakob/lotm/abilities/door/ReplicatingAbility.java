@@ -30,6 +30,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ReplicatingAbility extends AbilityItem {
     public ReplicatingAbility(Properties properties) {
         super(properties, 8f);
+
+        canBeCopied = false;
+        canBeUsedByNPC = false;
     }
 
     @Override

@@ -125,7 +125,10 @@ public class DistortionField extends AbilityItem {
                 BeyonderData.enableAbilityUse(e, "distortion_field");
             });
         }, serverLevel);
+    }
 
-
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        return random.nextInt(10) == 0;
     }
 }
