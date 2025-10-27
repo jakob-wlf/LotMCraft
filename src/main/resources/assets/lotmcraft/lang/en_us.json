@@ -271,6 +271,8 @@
   "ability.lotmcraft.passive_luck.trip": "Your enemy tripped and took damage",
   "ability.lotmcraft.passive_luck.effect_remove": "You were cleansed of negative effects through Luck",
   "item.lotmcraft.passive_luck_ability.description": "Gain Passive Luck that grows with your Sequence",
+  "ability.lotmcraft.passive_calamity_attraction.approaching_calamity": "A Calamity is approaching",
+  "item.lotmcraft.passive_calamity_attraction_ability": "Calamity Attraction",
 
   "item.lotmcraft.paper_dagger_ability": "Paper Daggers",
   "item.lotmcraft.paper_dagger_ability.description": "Right click with paper to throw it as a dagger",
@@ -630,6 +632,9 @@
   "lotm.sequence.sheriff": "Sheriff",
   "lotm.sequence.arbiter": "Arbiter",
 
+
+  "lotm.calamity.tornado": "Tornado",
+  "lotm.calamity.earthquake": "Earthquake",
 
   "lotm.griefing": "Griefing Enabled",
   "lotm.description": "Description",

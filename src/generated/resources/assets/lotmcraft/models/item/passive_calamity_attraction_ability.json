@@ -1,0 +1,46 @@
+{
+  "parent": "minecraft:item/generated",
+  "display": {
+    "firstperson_lefthand": {
+      "scale": [
+        0.39,
+        0.39,
+        0.39
+      ],
+      "translation": [
+        1.25,
+        4.25,
+        0.75
+      ]
+    },
+    "firstperson_righthand": {
+      "scale": [
+        0.39,
+        0.39,
+        0.39
+      ],
+      "translation": [
+        1.25,
+        4.25,
+        0.75
+      ]
+    },
+    "thirdperson_lefthand": {
+      "scale": [
+        0,
+        0,
+        0
+      ]
+    },
+    "thirdperson_righthand": {
+      "scale": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "textures": {
+    "layer0": "lotmcraft:item/passive_calamity_attraction_ability"
+  }
+}

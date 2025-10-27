@@ -47,7 +47,7 @@ public class PsycheStormAbility extends AbilityItem {
         }
 
         AbilityUtil.damageNearbyEntities(serverLevel, entity, 10, 12 * multiplier(entity), entity.getEyePosition(), true, false);
-        AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 10, entity.getEyePosition(), new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, 3));
+        AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 10, entity.getEyePosition(), new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 7, random.nextInt(1) + 3));
 
         Location loc = new Location(entity.position(), serverLevel);
 
