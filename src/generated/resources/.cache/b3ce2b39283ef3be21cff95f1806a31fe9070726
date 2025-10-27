@@ -1,4 +1,4 @@
-// 1.21.1	2025-10-23T00:07:35.853536	Item Models: lotmcraft
+// 1.21.1	2025-10-27T18:18:45.8056788	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -169,6 +169,7 @@ b05d19a9c01af0dc7f4ccd1405b2b37c8ce8863f assets/lotmcraft/models/item/priest_of_
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/provoker.json
 d67bcec23c80838c59464d88240d8f5fb53260b8 assets/lotmcraft/models/item/provoker_potion.json
 df644e75a5610413b9cb699977749c11813f4988 assets/lotmcraft/models/item/provoking_ability.json
+97be06992ce164f468ceae650073fc0f0e4f85e5 assets/lotmcraft/models/item/psyche_storm_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/psychiatrist.json
 cde6a4f8cd1aa8c1b62fdeb95338b5b15bc6a07b assets/lotmcraft/models/item/psychiatrist_potion.json
 ceca3c3c6e79ceed830e6ed7537a8c61ee5fb47c assets/lotmcraft/models/item/psychological_invisibility_ability.json
