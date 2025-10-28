@@ -181,7 +181,8 @@ public class LuckEventHandler {
         }
 
         if(Math.random() < getChanceForRandomDrop(amplifier)) {
-            dropRandomItem(entity, level);
+            // Remove random drops for now, later add them, maybe when killing enemies
+            // dropRandomItem(entity, level);
         }
 
         if(Math.random() < getChanceForEntityTrip(amplifier)) {

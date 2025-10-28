@@ -27,7 +27,7 @@ public class Earthquake extends Calamity{
     private final Random random = new Random();
 
     @Override
-    public void spawnCalamity(ServerLevel level, Vec3 startPos, float multiplier) {
+    public void spawnCalamity(ServerLevel level, Vec3 startPos, float multiplier, boolean griefing) {
         int radius = 28;
         List<BlockPos> blocks = new ArrayList<>(AbilityUtil.getBlocksInCircle(level, startPos.add(0, -2, 0), 70));
         for(int i = -12; i < 13; i++) {
@@ -85,7 +85,8 @@ public class Earthquake extends Calamity{
                     });
 
                     falling.dropItem = false;
-                    falling.disableDrop();
+                    if(!griefing)
+                        falling.disableDrop();
 
 
                     level.addFreshEntity(falling);

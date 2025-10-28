@@ -6,5 +6,5 @@ import net.minecraft.world.phys.Vec3;
 
 public abstract class Calamity {
     public abstract Component getName();
-    public abstract void spawnCalamity(ServerLevel level, Vec3 position, float multiplier);
+    public abstract void spawnCalamity(ServerLevel level, Vec3 position, float multiplier, boolean griefing);
 }

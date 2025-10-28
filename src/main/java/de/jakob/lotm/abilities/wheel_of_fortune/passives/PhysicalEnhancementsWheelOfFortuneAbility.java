@@ -90,8 +90,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PassiveAbilityIte
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 3, false, false, false),
                 new MobEffectInstance(MobEffects.SATURATION, 20 * 6, 5, false, false, false),
                 new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 12, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 4, false, false, false),
-                new MobEffectInstance(MobEffects.JUMP, 20 * 6, 1, false, false, false)
+                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 4, false, false, false)
         ));
 
         effectsPerSequence.put(1, List.of(

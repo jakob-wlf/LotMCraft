@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.wheel_of_fortune.passives;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
 import de.jakob.lotm.abilities.wheel_of_fortune.calamities.Calamity;
 import de.jakob.lotm.abilities.wheel_of_fortune.calamities.Earthquake;
+import de.jakob.lotm.abilities.wheel_of_fortune.calamities.Meteor;
 import de.jakob.lotm.abilities.wheel_of_fortune.calamities.Tornado;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
@@ -26,7 +27,7 @@ public class PassiveCalamityAttraction extends PassiveAbilityItem {
         return new HashMap<>(Map.of("wheel_of_fortune", 6));
     }
 
-    private final Calamity[] calamities = new Calamity[]{new Tornado(), new Earthquake()};
+    private final Calamity[] calamities = new Calamity[]{new Tornado(), new Earthquake(), new Meteor()};
 
     private final HashMap<UUID, Long> nextCalamity = new HashMap<>();
 
@@ -41,7 +42,7 @@ public class PassiveCalamityAttraction extends PassiveAbilityItem {
         }
 
         if(!nextCalamity.containsKey(entity.getUUID())) {
-            nextCalamity.put(entity.getUUID(), (long) random.nextInt(20 * 60, 20 * 60 * 4));
+            nextCalamity.put(entity.getUUID(), (long) random.nextInt(20 * 20, 20 * 90));
             return;
         }
 
@@ -56,9 +57,9 @@ public class PassiveCalamityAttraction extends PassiveAbilityItem {
 
         if(nextCalamity.get(entity.getUUID()) <= 0) {
             Calamity calamity = calamities[random.nextInt(calamities.length)];
-            calamity.spawnCalamity(serverLevel, entity.position().offsetRandom(serverLevel.random, 6f), (float) BeyonderData.getMultiplier(entity));
+            calamity.spawnCalamity(serverLevel, entity.position().offsetRandom(serverLevel.random, 6f), (float) BeyonderData.getMultiplier(entity), BeyonderData.isGriefingEnabled(entity));
 
-            nextCalamity.put(entity.getUUID(), (long) random.nextInt(20 * 60, 20 * 60 * 4));
+            nextCalamity.put(entity.getUUID(), (long) random.nextInt(20 * 20, 20 * 90));
         }
     }
 

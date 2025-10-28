@@ -32,7 +32,7 @@ public class PsycheStormAbility extends AbilityItem {
 
     @Override
     protected float getSpiritualityCost() {
-        return 45;
+        return 80;
     }
 
     private static final DustParticleOptions dust = new DustParticleOptions(

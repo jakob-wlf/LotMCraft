@@ -42,6 +42,17 @@ public class ModEntities {
                     .fireImmune()
                     .build("tornado"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<MeteorEntity>> Meteor =
+            ENTITY_TYPES.register("meteor", () -> EntityType.Builder.of(
+                            (EntityType<MeteorEntity> type, net.minecraft.world.level.Level level) ->
+                                    new MeteorEntity(type, level),
+                            MobCategory.MISC)
+                    .sized(5.0f, 5.0f)
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .build("meteor"));
+
     public static final Supplier<EntityType<ApprenticeDoorEntity>> APPRENTICE_DOOR =
             ENTITY_TYPES.register("apprentice_door", () -> EntityType.Builder.<ApprenticeDoorEntity>of(ApprenticeDoorEntity::new, MobCategory.MISC)
                     .sized(.005f, 2f).build("apprentice_door"));

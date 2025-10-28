@@ -19,6 +19,7 @@ import de.jakob.lotm.abilities.red_priest.*;
 import de.jakob.lotm.abilities.tyrant.*;
 import de.jakob.lotm.abilities.sun.*;
 import de.jakob.lotm.abilities.visionary.*;
+import de.jakob.lotm.abilities.wheel_of_fortune.CalamityAttractionAbility;
 import de.jakob.lotm.abilities.wheel_of_fortune.PsycheStormAbility;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -137,6 +138,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> DRAGON_SCALES = ITEMS.registerItem("dragon_scales_ability", DragonScalesAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> PSYCHE_STORM = ITEMS.registerItem("psyche_storm_ability", PsycheStormAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> CALAMITY_ATTRACTION = ITEMS.registerItem("calamity_attraction_ability", CalamityAttractionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> ABILITY_NOT_IMPLEMENTED = ITEMS.registerItem("ability_not_implemented", Item::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
