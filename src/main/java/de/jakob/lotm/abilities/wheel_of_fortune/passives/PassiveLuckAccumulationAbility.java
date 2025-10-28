@@ -25,7 +25,5 @@ public class PassiveLuckAccumulationAbility extends PassiveAbilityItem {
     public void tick(Level level, LivingEntity entity) {
         LuckAccumulationComponent component = entity.getData(ModAttachments.LUCK_ACCUMULATION_COMPONENT.get());
         component.setTicksAccumulated(component.getTicksAccumulated() + 5);
-
-        System.out.println(component.getTicksAccumulated());
     }
 }

@@ -63,7 +63,6 @@ public class LuckReleaseAbility extends AbilityItem {
 
     private int getAdditionalLuckByTicks(long ticks) {
         int additionalLuck = Math.round(ticks / (20 * 60 * 4f));
-        System.out.println(additionalLuck + " --- " + (ticks / (20 * 60 * 4f)));
         return Math.clamp(additionalLuck, 1, 8);
     }
 }
