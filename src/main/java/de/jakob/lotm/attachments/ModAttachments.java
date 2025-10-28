@@ -28,6 +28,13 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<LuckAccumulationComponent>> LUCK_ACCUMULATION_COMPONENT =
+            ATTACHMENT_TYPES.register("luck_accumulation_component", () ->
+                    AttachmentType.builder(LuckAccumulationComponent::new)
+                            .serialize(LuckAccumulationComponent.SERIALIZER)
+                            .build()
+            );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

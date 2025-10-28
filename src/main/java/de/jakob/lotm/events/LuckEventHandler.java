@@ -22,9 +22,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -43,6 +45,31 @@ public class LuckEventHandler {
             new Vector3f(192 / 255f, 246 / 255f, 252 / 255f),
             1.5f
     );
+
+    // Randomly drop good items when mining blocks
+    @SubscribeEvent
+    public static void onBreakBlocks(BlockDropsEvent event) {
+        if(!(event.getBreaker() instanceof LivingEntity entity)) {
+            return;
+        }
+
+        if(!entity.hasEffect(ModEffects.LUCK) || !(entity.level() instanceof ServerLevel level)) {
+            return;
+        }
+
+        int amplifier = entity.getEffect(ModEffects.LUCK).getAmplifier();
+        double chance = getChanceForRandomDrop(amplifier);
+
+        if (Math.random() >= chance) {
+            return;
+        }
+
+
+        if(new Random().nextBoolean())
+            ParticleUtil.spawnParticles(level, dust, event.getPos().getCenter(), 12, .6, .6, .6, 0);
+
+        dropRandomItem(event.getPos().getCenter(), level);
+    }
 
     // Dodge Damage
     @SubscribeEvent
@@ -240,11 +267,9 @@ public class LuckEventHandler {
             new ItemDrop(Items.NETHER_STAR, 1, 0.02),
     };
 
-    private static void dropRandomItem(Entity entity, ServerLevel level) {
-        Random random = new Random();
-
+    private static void dropRandomItem(Vec3 startPos, ServerLevel level) {
         ItemStack randomItemStack = getRandomItemStack();
-        BlockPos pos = entity.blockPosition().offset(random.nextInt(-10, 11), random.nextInt(3), random.nextInt(-10, 11));
+        BlockPos pos = BlockPos.containing(startPos);
         Block.popResource(level, pos, randomItemStack);
 
         ParticleUtil.spawnParticles(level, dust, pos.getCenter().add(0, .25, 0), 55, .4, .4, .4, 0);
@@ -319,8 +344,8 @@ public class LuckEventHandler {
     }
 
     private static double getChanceForRandomDrop(int amplifier) {
-        double value = 0.001 * amplifier + 0.001;
-        return Math.min(value, 0.02);
+        double value = 0.01 * amplifier + 0.01;
+        return Math.min(value, 0.2);
     }
 
     private record ItemDrop(Item item, int count, double dropChance) {}

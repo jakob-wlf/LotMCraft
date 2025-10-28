@@ -237,6 +237,8 @@
 
   "item.lotmcraft.psyche_storm_ability": "Psyche Storm",
   "item.lotmcraft.calamity_attraction_ability": "Calamity Attraction",
+  "item.lotmcraft.luck_release_ability": "Luck Release",
+  "item.lotmcraft.luck_release_ability.description": "Release all of your accumulated luck",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",
@@ -274,6 +276,8 @@
   "item.lotmcraft.passive_luck_ability.description": "Gain Passive Luck that grows with your Sequence",
   "ability.lotmcraft.passive_calamity_attraction.approaching_calamity": "A Calamity is approaching",
   "item.lotmcraft.passive_calamity_attraction_ability": "Calamity Attraction",
+  "item.lotmcraft.passive_luck_accumulation_ability": "Passive Luck Accumulation",
+  "item.lotmcraft.passive_luck_accumulation_ability.description": "Passively accumulate luck",
 
   "item.lotmcraft.paper_dagger_ability": "Paper Daggers",
   "item.lotmcraft.paper_dagger_ability.description": "Right click with paper to throw it as a dagger",

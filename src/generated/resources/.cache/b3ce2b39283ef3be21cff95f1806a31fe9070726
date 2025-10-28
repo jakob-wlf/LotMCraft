@@ -1,4 +1,4 @@
-// 1.21.1	2025-10-28T16:21:04.0985713	Item Models: lotmcraft
+// 1.21.1	2025-10-28T23:26:34.2115366	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -116,6 +116,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/light_supp
 2934b87c1f9442be132897fdd7774c3acb15182f assets/lotmcraft/models/item/light_supplicant_potion.json
 cf66690d443363b2f9806dc5675d21f096959bdb assets/lotmcraft/models/item/lotm_icon.json
 43f75ddc08dfca2ccb19724e25e98ec93816c8de assets/lotmcraft/models/item/lucky_one_potion.json
+6c06e4a73468b772431c9be15704239b62ba4ef8 assets/lotmcraft/models/item/luck_release_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/magician.json
 baac0200e2b431405a45877066b8cc81cbfb4b76 assets/lotmcraft/models/item/magician_potion.json
 65d88aacb6ecef55ff277737579876f9afff23c5 assets/lotmcraft/models/item/magma_elf_core.json
@@ -148,6 +149,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/ocean_song
 5ae35b66d24a61311c6415bfe3a10e2eb7536ac8 assets/lotmcraft/models/item/paper_figurine_substitute_ability.json
 45459dd79e3947e3898639759ce6c3c55871520c assets/lotmcraft/models/item/passive_calamity_attraction_ability.json
 d98eed35093f94d6d9c55fdc9d99541ce8e286ad assets/lotmcraft/models/item/passive_luck_ability.json
+9b26df505ebb3201a3efe708ae9d1de0d0da9ba7 assets/lotmcraft/models/item/passive_luck_accumulation_ability.json
 634265d9ec78c3e5323b8c1a2de8384acf0649ca assets/lotmcraft/models/item/physical_enhancements_abyss_ability.json
 d663c9b219f3cc0118771ec25a55dadabfae7d62 assets/lotmcraft/models/item/physical_enhancements_darkness_ability.json
 39333f3978d132b4aebf48a1e3d8994d22766df0 assets/lotmcraft/models/item/physical_enhancements_demoness_ability.json

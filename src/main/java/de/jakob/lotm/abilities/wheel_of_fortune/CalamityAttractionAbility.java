@@ -7,7 +7,11 @@ import de.jakob.lotm.abilities.wheel_of_fortune.calamities.Meteor;
 import de.jakob.lotm.abilities.wheel_of_fortune.calamities.Tornado;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -38,8 +42,18 @@ public class CalamityAttractionAbility extends AbilityItem {
             return;
         }
 
+        if(entity instanceof ServerPlayer player) {
+            Component actionBarText = Component.translatable("ability.lotmcraft.passive_calamity_attraction.approaching_calamity").withColor(0xFFc0f6fc);
+            ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(actionBarText);
+            player.connection.send(packet);
+        }
+
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 14, 2, true);
-        Calamity calamity = calamities[random.nextInt(calamities.length)];
-        calamity.spawnCalamity(serverLevel, targetPos, (float) BeyonderData.getMultiplier(entity), BeyonderData.isGriefingEnabled(entity));
+
+
+        ServerScheduler.scheduleDelayed(random.nextInt(31, 60), () -> {
+            Calamity calamity = calamities[random.nextInt(calamities.length)];
+            calamity.spawnCalamity(serverLevel, targetPos, (float) BeyonderData.getMultiplier(entity), BeyonderData.isGriefingEnabled(entity));
+        }, serverLevel);
     }
 }

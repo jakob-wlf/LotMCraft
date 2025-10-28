@@ -21,6 +21,7 @@ import de.jakob.lotm.abilities.tyrant.passives.RiptideAbility;
 import de.jakob.lotm.abilities.visionary.passives.PhysicalEnhancementsVisionaryAbility;
 import de.jakob.lotm.abilities.wheel_of_fortune.passives.PassiveCalamityAttraction;
 import de.jakob.lotm.abilities.wheel_of_fortune.passives.PassiveLuckAbility;
+import de.jakob.lotm.abilities.wheel_of_fortune.passives.PassiveLuckAccumulationAbility;
 import de.jakob.lotm.abilities.wheel_of_fortune.passives.PhysicalEnhancementsWheelOfFortuneAbility;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -51,6 +52,7 @@ public class PassiveAbilityHandler {
 
     public static final DeferredItem<Item> PASSIVE_LUCK = ITEMS.registerItem("passive_luck_ability", PassiveLuckAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> CALAMITY_ATTRACTION = ITEMS.registerItem("passive_calamity_attraction_ability", PassiveCalamityAttraction::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> PASSIVE_LUCK_ACCUMULATION = ITEMS.registerItem("passive_luck_accumulation_ability", PassiveLuckAccumulationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     public static final DeferredItem<Item> PAPER_DAGGERS = ITEMS.registerItem("paper_dagger_ability", PaperDaggersAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PUPPETEERING_ENHANCEMENTS = ITEMS.registerItem("puppeteering_enhancements_ability", PuppeteeringEnhancementsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
