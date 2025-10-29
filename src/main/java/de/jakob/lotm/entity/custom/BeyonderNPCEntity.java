@@ -47,6 +47,9 @@ public class BeyonderNPCEntity extends PathfinderMob {
     private static final EntityDataAccessor<String> PATHWAY = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Integer> SEQUENCE = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.INT);
 
+    private static final EntityDataAccessor<Boolean> HAS_QUEST = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> QUEST_INDEX = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.INT);
+
     private String pathway = "none";
     private int sequence = -1;
 
@@ -57,7 +60,17 @@ public class BeyonderNPCEntity extends PathfinderMob {
             "mage",
             "sorcerer",
             "medieval_guy",
-            "gentleman"
+            "gentleman",
+            "victorian_1",
+            "victorian_2",
+            "victorian_3",
+            "victorian_4",
+            "victorian_5",
+            "victorian_6",
+            "victorian_7",
+            "victorian_8",
+            "victorian_9",
+            "victorian_10",
     };
 
     private boolean defaultHostile;
@@ -84,6 +97,9 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.defaultHostile = hostile;
         this.setHostile(hostile);
         this.setSkinName(skinName);
+
+        // Add constructor params later
+        setHasQuest(true);
 
         if(sequence < BeyonderData.getHighestImplementedSequence(pathway)) {
             sequence = (new Random()).nextInt(BeyonderData.getHighestImplementedSequence(pathway), 10);
@@ -113,6 +129,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
         builder.define(SKIN_NAME, "amon");
         builder.define(PATHWAY, "none");
         builder.define(SEQUENCE, -1);
+        builder.define(HAS_QUEST, false);
+        builder.define(QUEST_INDEX, 0);
     }
 
     private void syncEntityDataWithBeyonderData() {
@@ -218,6 +236,22 @@ public class BeyonderNPCEntity extends PathfinderMob {
         }
     }
 
+    public boolean hasQuest() {
+        return this.entityData.get(HAS_QUEST);
+    }
+
+    public void setHasQuest(boolean hasQuest) {
+        this.entityData.set(HAS_QUEST, hasQuest);
+    }
+
+    public int getQuestIndex() {
+        return this.entityData.get(QUEST_INDEX);
+    }
+
+    public void setQuestIndex(int index) {
+        this.entityData.set(QUEST_INDEX, index);
+    }
+
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> dataAccessor) {
         super.onSyncedDataUpdated(dataAccessor);
@@ -247,12 +281,16 @@ public class BeyonderNPCEntity extends PathfinderMob {
         compound.putString("SkinName", getSkinName());
         compound.putString("Pathway", getPathway());
         compound.putInt("Sequence", getSequence());
+        compound.putInt("QuestIndex", getQuestIndex());
+        compound.putBoolean("HasQuest", hasQuest());
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.defaultHostile = compound.getBoolean("DefaultHostile");
+        setHasQuest(compound.getBoolean("HasQuest"));
+        setQuestIndex(compound.getInt("QuestIndex"));
 
         if (compound.contains("IsHostile")) {
             setHostile(compound.getBoolean("IsHostile"));
