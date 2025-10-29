@@ -15,7 +15,7 @@ public class Meteor extends Calamity{
 
     @Override
     public void spawnCalamity(ServerLevel level, Vec3 position, float multiplier, boolean griefing) {
-        MeteorEntity meteor = new MeteorEntity(level, 1.2f, 15 * multiplier, 4, null, griefing);
+        MeteorEntity meteor = new MeteorEntity(level, 1.6f, 15 * multiplier, 2, null, griefing);
         meteor.setPos(position);
         level.addFreshEntity(meteor);
     }

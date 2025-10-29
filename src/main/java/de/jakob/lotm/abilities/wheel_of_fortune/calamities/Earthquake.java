@@ -29,14 +29,14 @@ public class Earthquake extends Calamity{
     @Override
     public void spawnCalamity(ServerLevel level, Vec3 startPos, float multiplier, boolean griefing) {
         int radius = 28;
-        List<BlockPos> blocks = new ArrayList<>(AbilityUtil.getBlocksInCircle(level, startPos.add(0, -2, 0), 70));
+        List<BlockPos> blocks = new ArrayList<>(AbilityUtil.getBlocksInCircle(level, startPos.add(0, -2, 0), 30));
         for(int i = -12; i < 13; i++) {
             blocks.addAll(AbilityUtil.getBlocksInCircle(level, startPos.add(0, i, 0), radius));
         }
 
         List<BlockPos> validBlocks = blocks.stream().filter(b -> !level.getBlockState(b).getCollisionShape(level, b).isEmpty() && level.getBlockState(b.above()).getCollisionShape(level, b).isEmpty() && !level.getBlockState(b).is(Blocks.WATER)).toList();
 
-        ServerScheduler.scheduleForDuration(0, 8, 20 * 25, () -> {
+        ServerScheduler.scheduleForDuration(0, 8, 20 * 15, () -> {
             AbilityUtil.getNearbyEntities(null, level, startPos, radius + 6).forEach(e -> {
                 if(AbilityUtil.distanceToGround(level, e) < 1.5) {
                     if(random.nextBoolean())

@@ -239,6 +239,8 @@
   "item.lotmcraft.calamity_attraction_ability": "Calamity Attraction",
   "item.lotmcraft.luck_release_ability": "Luck Release",
   "item.lotmcraft.luck_release_ability.description": "Release all of your accumulated luck",
+  "item.lotmcraft.misfortune_gifting_ability": "Misfortune Gifting",
+  "ability.lotmcraft.misfortune_gifting.no_target": "No Target found",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",
