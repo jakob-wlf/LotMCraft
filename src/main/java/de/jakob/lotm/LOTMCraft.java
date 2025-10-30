@@ -8,6 +8,7 @@ import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.*;
+import de.jakob.lotm.entity.quests.QuestRegistry;
 import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.gui.custom.AbilitySelectionScreen;
 import de.jakob.lotm.gui.custom.BrewingCauldronScreen;
@@ -151,6 +152,7 @@ public class LOTMCraft
 
         @SubscribeEvent
         public static void onCommonSetup(FMLCommonSetupEvent event) {
+            QuestRegistry.registerQuests();
             event.enqueueWork(PotionRecipes::initPotionRecipes);
             event.enqueueWork(PotionRecipeItemHandler::initializeRecipes);
         }

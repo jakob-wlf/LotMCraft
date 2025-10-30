@@ -8,6 +8,10 @@ import de.jakob.lotm.abilities.PassiveAbilityItem;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.goals.AbilityUseGoal;
 import de.jakob.lotm.entity.custom.goals.RangedCombatGoal;
+import de.jakob.lotm.entity.quests.PlayerQuestData;
+import de.jakob.lotm.entity.quests.Quest;
+import de.jakob.lotm.entity.quests.QuestRegistry;
+import de.jakob.lotm.entity.quests.impl.CompoundQuest;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItem;
@@ -16,8 +20,11 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -48,6 +55,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
     private static final EntityDataAccessor<Integer> SEQUENCE = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.INT);
 
     private static final EntityDataAccessor<Boolean> HAS_QUEST = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> QUEST_ACCEPTED = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> QUEST_INDEX = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.INT);
 
     private String pathway = "none";
@@ -98,9 +106,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.setHostile(hostile);
         this.setSkinName(skinName);
 
-        // Add constructor params later
-        setHasQuest(true);
-
         if(sequence < BeyonderData.getHighestImplementedSequence(pathway)) {
             sequence = (new Random()).nextInt(BeyonderData.getHighestImplementedSequence(pathway), 10);
         }
@@ -131,6 +136,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         builder.define(SEQUENCE, -1);
         builder.define(HAS_QUEST, false);
         builder.define(QUEST_INDEX, 0);
+        builder.define(QUEST_ACCEPTED, false);
     }
 
     private void syncEntityDataWithBeyonderData() {
@@ -144,11 +150,88 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     @Override
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if (!this.level().isClientSide) {
+            PlayerQuestData questData = player.getData(ModAttachments.PLAYER_QUEST_DATA.get());
+
+            // Check if player already has a quest from this NPC
+            Quest existingQuest = questData.getQuestByNPC(this.getUUID());
+
+            if (existingQuest != null) {
+                // Player has an active quest from this NPC
+                if (existingQuest.checkCompletion(player, this.level())) {
+                    // Quest is complete, turn it in
+                    existingQuest.onComplete(player);
+                    questData.removeQuest(existingQuest);
+                    setHasQuest(false);
+                    setQuestAccepted(false);
+
+                    player.sendSystemMessage(Component.literal("§a§l[Quest Complete] §r§a" + existingQuest.getTitle()));
+                    player.sendSystemMessage(Component.literal("§eRewards received!"));
+
+                    return InteractionResult.SUCCESS;
+                } else {
+                    // Quest in progress, show status
+                    player.sendSystemMessage(Component.literal("§e[Quest In Progress] §r" + existingQuest.getTitle()));
+                    player.sendSystemMessage(existingQuest.getProgressText());
+
+                    // Show detailed progress for compound quests
+                    if (existingQuest instanceof CompoundQuest compoundQuest) {
+                        for (Component progress : compoundQuest.getDetailedProgress()) {
+                            player.sendSystemMessage(progress);
+                        }
+                    }
+
+                    return InteractionResult.SUCCESS;
+                }
+            } else if (hasQuest() && !wasQuestAccepted()) {
+                // NPC has a quest to offer
+                Quest newQuest = QuestRegistry.getRandomQuest(new Random(), this.blockPosition());
+
+                if (newQuest != null) {
+                    // Assign quest to player
+                    newQuest.onAccept(player);
+                    questData.addQuest(newQuest, this.getUUID());
+                    setQuestAccepted(true);
+
+                    player.sendSystemMessage(Component.literal("§6§l[New Quest] §r§6" + newQuest.getTitle()));
+                    player.sendSystemMessage(Component.literal("§7" + newQuest.getDescription()));
+                    player.sendSystemMessage(newQuest.getProgressText());
+
+                    // Show detailed objectives for compound quests
+                    if (newQuest instanceof CompoundQuest compoundQuest) {
+                        player.sendSystemMessage(Component.literal("§7Objectives:"));
+                        for (Component progress : compoundQuest.getDetailedProgress()) {
+                            player.sendSystemMessage(progress);
+                        }
+                    }
+
+                    return InteractionResult.SUCCESS;
+                }
+            } else {
+                // NPC has no quest
+                player.sendSystemMessage(Component.literal("§7I have nothing for you right now."));
+                return InteractionResult.SUCCESS;
+            }
+        }
+
+        return super.mobInteract(player, hand);
+    }
+
+    @Override
     public void onAddedToLevel() {
         super.onAddedToLevel();
-        if(!this.level().isClientSide && this.sequence != -1 && !this.pathway.equals("none")) {
-            BeyonderData.setBeyonder(this, this.pathway, sequence);
-            syncEntityDataWithBeyonderData();
+        if (!this.level().isClientSide) {
+            // 30% chance to have a quest
+            if (this.random.nextFloat() <= 1f) {
+                setHasQuest(true);
+            }
+
+            // Sync beyonder data
+            if (this.sequence != -1 && !this.pathway.equals("none")) {
+                BeyonderData.setBeyonder(this, this.pathway, sequence);
+                syncEntityDataWithBeyonderData();
+            }
         }
     }
 
@@ -244,6 +327,14 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.entityData.set(HAS_QUEST, hasQuest);
     }
 
+    public boolean wasQuestAccepted() {
+        return this.entityData.get(QUEST_ACCEPTED);
+    }
+
+    public void setQuestAccepted(boolean accepted) {
+        this.entityData.set(QUEST_ACCEPTED, accepted);
+    }
+
     public int getQuestIndex() {
         return this.entityData.get(QUEST_INDEX);
     }
@@ -283,6 +374,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         compound.putInt("Sequence", getSequence());
         compound.putInt("QuestIndex", getQuestIndex());
         compound.putBoolean("HasQuest", hasQuest());
+        compound.putBoolean("QuestAccepted", wasQuestAccepted());
     }
 
     @Override
@@ -291,6 +383,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.defaultHostile = compound.getBoolean("DefaultHostile");
         setHasQuest(compound.getBoolean("HasQuest"));
         setQuestIndex(compound.getInt("QuestIndex"));
+        setQuestAccepted(compound.getBoolean("QuestAccepted"));
 
         if (compound.contains("IsHostile")) {
             setHostile(compound.getBoolean("IsHostile"));
