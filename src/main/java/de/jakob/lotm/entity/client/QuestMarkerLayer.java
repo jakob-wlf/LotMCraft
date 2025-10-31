@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
@@ -36,6 +37,17 @@ public class QuestMarkerLayer extends RenderLayer<BeyonderNPCEntity, PlayerModel
         // Scale the marker (make it bigger for testing)
         poseStack.scale(1.25F, -1.25F, 1.25F);
         poseStack.translate(0, entity.getEyeHeight() - .65, 0);
+
+        poseStack.mulPose(Axis.YP.rotationDegrees(-entity.getYRot()));
+        poseStack.mulPose(Axis.XP.rotationDegrees(-entity.getXRot()));
+
+        Player player = Minecraft.getInstance().player;
+        double dx = player.getX() - entity.getX();
+        double dz = player.getZ() - entity.getZ();
+
+        float yaw = (float)(Math.atan2(dz, dx) * (180.0F / Math.PI)) - 90.0F;
+
+        poseStack.mulPose(Axis.YP.rotationDegrees(yaw + 180.0F));
 
         // Render the texture with bright light
         VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(QUEST_MARKER));
