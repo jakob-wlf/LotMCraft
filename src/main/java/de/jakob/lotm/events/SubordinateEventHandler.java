@@ -2,8 +2,10 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.entity.custom.goals.*;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.entity.custom.goals.SubordinateFollowGoal;
+import de.jakob.lotm.entity.custom.goals.SubordinateLoadChunksGoal;
+import de.jakob.lotm.entity.custom.goals.SubordinateTargetGoal;
+import de.jakob.lotm.entity.custom.goals.SuordinateStayGoal;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;

@@ -1,10 +1,9 @@
 package de.jakob.lotm.abilities.fool.passives;
 
-import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
+import de.jakob.lotm.abilities.PassiveAbilityItem;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.abilities.PassiveAbilityItem;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;

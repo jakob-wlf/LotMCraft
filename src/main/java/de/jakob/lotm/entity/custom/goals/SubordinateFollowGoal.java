@@ -1,7 +1,6 @@
 package de.jakob.lotm.entity.custom.goals;
 
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;

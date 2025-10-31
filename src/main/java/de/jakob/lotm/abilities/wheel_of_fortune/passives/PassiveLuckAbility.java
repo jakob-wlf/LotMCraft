@@ -1,10 +1,7 @@
 package de.jakob.lotm.abilities.wheel_of_fortune.passives;
 
 import de.jakob.lotm.abilities.PassiveAbilityItem;
-import de.jakob.lotm.effect.ModEffects;
-import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 

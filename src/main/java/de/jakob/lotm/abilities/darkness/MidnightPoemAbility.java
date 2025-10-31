@@ -1,9 +1,9 @@
 package de.jakob.lotm.abilities.darkness;
 
+import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.sound.ModSounds;
-import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;

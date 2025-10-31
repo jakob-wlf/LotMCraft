@@ -2,6 +2,7 @@ package de.jakob.lotm.entity.quests.impl;
 
 import de.jakob.lotm.entity.quests.Quest;
 import de.jakob.lotm.entity.quests.QuestUpdateEvent;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -9,7 +10,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.core.registries.BuiltInRegistries;
 
 /**
  * Quest type that requires collecting/giving specific items

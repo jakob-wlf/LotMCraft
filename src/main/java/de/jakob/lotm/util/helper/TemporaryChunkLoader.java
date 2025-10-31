@@ -2,7 +2,6 @@ package de.jakob.lotm.util.helper;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
-import net.neoforged.neoforge.common.world.chunk.ForcedChunkManager;
 
 public class TemporaryChunkLoader {
 

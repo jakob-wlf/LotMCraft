@@ -3,9 +3,9 @@ package de.jakob.lotm.abilities.common;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.SyncSpiritVisionAbilityPacket;
-import de.jakob.lotm.util.mixin.EntityAccessor;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.mixin.EntityAccessor;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
@@ -18,11 +18,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 public class SpiritVisionAbility extends ToggleAbilityItem {

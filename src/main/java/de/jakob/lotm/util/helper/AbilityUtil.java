@@ -5,8 +5,10 @@ import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -47,6 +49,13 @@ public class AbilityUtil {
         return BlockPos.containing(targetPosition);
     }
 
+    public static void sendActionBar(LivingEntity entity, Component message) {
+        if(!(entity instanceof ServerPlayer player)) {
+            return;
+        }
+        ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(message);
+        player.connection.send(packet);
+    }
     public static double distanceToGround(Level level, Entity entity) {
         Vec3 startPos = entity.position();
 

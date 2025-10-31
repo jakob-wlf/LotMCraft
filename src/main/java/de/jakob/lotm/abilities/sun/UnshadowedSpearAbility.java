@@ -1,7 +1,6 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
-import de.jakob.lotm.entity.custom.FlamingSpearProjectileEntity;
 import de.jakob.lotm.entity.custom.UnshadowedSpearProjectileEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;

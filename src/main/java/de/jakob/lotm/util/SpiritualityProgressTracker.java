@@ -1,6 +1,7 @@
 package de.jakob.lotm.util;
 
 import net.minecraft.world.entity.player.Player;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;

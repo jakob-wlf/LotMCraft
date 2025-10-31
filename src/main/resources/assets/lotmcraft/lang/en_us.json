@@ -182,6 +182,9 @@
   "ability.lotmcraft.threads.shoot": "Shoot",
   "item.lotmcraft.charm_ability": "Charm",
   "item.lotmcraft.disease_ability": "Disease",
+  "item.lotmcraft.plague_ability": "Plague",
+  "item.lotmcraft.mirror_world_traversal_ability": "Mirror World Traversal",
+  "ability.lotm.mirror_world_traversal.no_glass": "No suitable glass surface found",
 
 
   "item.lotmcraft.plant_nurturing_ability": "Plant Nurturing",

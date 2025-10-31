@@ -1,7 +1,6 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.effect.ModEffects;
-import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.SyncBeyonderDataPacket;
 import de.jakob.lotm.network.packets.SyncLivingEntityBeyonderDataPacket;
@@ -133,7 +132,7 @@ public class BeyonderData {
         tag.putString(NBT_PATHWAY, pathway);
         tag.putInt(NBT_SEQUENCE, sequence);
         tag.putFloat(NBT_SPIRITUALITY, getMaxSpirituality(sequence));
-        tag.putBoolean(NBT_GRIEFING_ENABLED, false);
+        tag.putBoolean(NBT_GRIEFING_ENABLED, true);
 
         if(entity instanceof Player player)
             SpiritualityProgressTracker.setProgress(player.getUUID(), 1.0f);

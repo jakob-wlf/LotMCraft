@@ -1,7 +1,6 @@
 package de.jakob.lotm.network.packets;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.overlay.CullOverlay;
 import de.jakob.lotm.overlay.DangerPremonitionOverlayRenderer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -9,9 +8,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-import java.util.HashSet;
-import java.util.UUID;
 
 public record SyncDangerPremonitionAbilityPacket(boolean active) implements CustomPacketPayload {
 

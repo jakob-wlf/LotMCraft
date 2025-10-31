@@ -1,11 +1,6 @@
 package de.jakob.lotm.overlay;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.AbilityItemHandler;
-import de.jakob.lotm.abilities.ToggleAbilityItem;
-import de.jakob.lotm.abilities.visionary.SpectatingAbility;
-import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.client.Minecraft;

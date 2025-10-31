@@ -1,11 +1,9 @@
 package de.jakob.lotm.gui.custom;
 
-import de.jakob.lotm.abilities.AbilityItemHandler;
-import de.jakob.lotm.gui.ModMenuTypes;
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.ReceiveAbilityPacket;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.gui.ModMenuTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -13,7 +11,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;

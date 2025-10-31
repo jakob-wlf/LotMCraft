@@ -1,4 +1,4 @@
-// 1.21.1	2025-10-29T14:03:18.0832865	Item Models: lotmcraft
+// 1.21.1	2025-11-01T00:19:00.6407126	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -132,6 +132,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/midnight_p
 2db39f9799f82c69a4142f5bc7fc24e7395d4a8e assets/lotmcraft/models/item/mighty_blow_ability.json
 615c7bc1f92270a9111f69f16d45c600be70b530 assets/lotmcraft/models/item/mirror.json
 958450d9c909422148994820c69a2c2d74dc9cc3 assets/lotmcraft/models/item/mirror_substitution_ability.json
+14952ed98c6fb5c894a57a95ddfa30730f02f9a3 assets/lotmcraft/models/item/mirror_world_traversal_ability.json
 7fb2d2d66476f92db22e3c4c37bb0726e9b6adf8 assets/lotmcraft/models/item/misfortune_gifting_ability.json
 b6fde8a1f9aa8b1badc66efc8e72c1ea21702132 assets/lotmcraft/models/item/monster_potion.json
 f1caa54d29eca7a72716c885546fb828c3eb35d3 assets/lotmcraft/models/item/murloc_bladder.json
@@ -163,6 +164,7 @@ a0466dad8680f4cc64ffdad5a59b5a2ac1e3d361 assets/lotmcraft/models/item/physical_e
 08dadf165d0583ca092f76beabc3ef683cb364b0 assets/lotmcraft/models/item/physical_enhancements_visionary_ability.json
 d11beee7232314c4ae9d863211fbf9506fcbeb68 assets/lotmcraft/models/item/physical_enhancements_wheel_of_fortune_ability.json
 a84e8f918b2e343ae4831073126c34e6e8447cd7 assets/lotmcraft/models/item/placate_ability.json
+55b43adaed6e7f4ecef821c4ee16ad45e5816a61 assets/lotmcraft/models/item/plague_ability.json
 a5ec83bf79581416969ff4c380b65f720ff01cf7 assets/lotmcraft/models/item/planeswalker_potion.json
 63285aca4004491d7073c8b9998c3b4c06a54638 assets/lotmcraft/models/item/planter_potion.json
 5578269b846a6661a6cab8b42599e160895bb2f9 assets/lotmcraft/models/item/plant_controlling_ability.json

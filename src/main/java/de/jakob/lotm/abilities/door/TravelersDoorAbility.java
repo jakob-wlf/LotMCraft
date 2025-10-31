@@ -4,7 +4,6 @@ import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.TravelersDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.OpenCoordinateScreenPacket;
 import de.jakob.lotm.network.packets.OpenCoordinateScreenTravelersDoorPacket;
 import de.jakob.lotm.network.packets.RemoveDreamDivinationUserPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -15,10 +14,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;

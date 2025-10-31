@@ -4,7 +4,6 @@ import de.jakob.lotm.entity.quests.Quest;
 import de.jakob.lotm.entity.quests.QuestUpdateEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;

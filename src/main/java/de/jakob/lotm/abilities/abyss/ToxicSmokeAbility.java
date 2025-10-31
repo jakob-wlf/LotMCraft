@@ -1,7 +1,7 @@
 package de.jakob.lotm.abilities.abyss;
 
-import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;

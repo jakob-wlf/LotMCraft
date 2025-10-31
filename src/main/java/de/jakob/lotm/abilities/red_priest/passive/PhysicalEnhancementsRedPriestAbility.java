@@ -1,7 +1,7 @@
 package de.jakob.lotm.abilities.red_priest.passive;
 
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;

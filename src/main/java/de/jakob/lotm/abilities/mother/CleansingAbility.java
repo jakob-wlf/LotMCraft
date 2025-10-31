@@ -3,7 +3,6 @@ package de.jakob.lotm.abilities.mother;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.RingEffectManager;
-import de.jakob.lotm.util.helper.RingExpansionRenderer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -14,7 +13,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 //TODO: Rework effects using geckolib

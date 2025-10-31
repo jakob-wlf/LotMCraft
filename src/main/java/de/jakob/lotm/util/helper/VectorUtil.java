@@ -3,7 +3,6 @@ package de.jakob.lotm.util.helper;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

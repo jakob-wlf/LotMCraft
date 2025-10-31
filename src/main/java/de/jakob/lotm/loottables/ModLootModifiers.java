@@ -1,6 +1,5 @@
 package de.jakob.lotm.loottables;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import de.jakob.lotm.LOTMCraft;
 import net.neoforged.bus.api.IEventBus;

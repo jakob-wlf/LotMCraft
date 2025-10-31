@@ -2,7 +2,6 @@ package de.jakob.lotm.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.custom.SpaceRiftEntity;
 import net.minecraft.client.renderer.MultiBufferSource;

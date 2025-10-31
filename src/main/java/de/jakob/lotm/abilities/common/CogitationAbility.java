@@ -1,7 +1,7 @@
 package de.jakob.lotm.abilities.common;
 
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;

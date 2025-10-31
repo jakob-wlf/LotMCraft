@@ -1,11 +1,8 @@
 package de.jakob.lotm.loottables;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import de.jakob.lotm.item.ModIngredients;
-import de.jakob.lotm.item.PotionIngredient;
-import de.jakob.lotm.potions.BeyonderPotion;
 import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -17,13 +14,8 @@ import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.function.Supplier;
-
-import static de.jakob.lotm.item.ModItems.selectRandomIngredient;
 
 public class ChestLootModifier extends LootModifier {
 

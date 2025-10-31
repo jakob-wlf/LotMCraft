@@ -1,7 +1,6 @@
 package de.jakob.lotm.item.custom;
 
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import de.jakob.lotm.util.mixin.EntityAccessor;
 import de.jakob.lotm.util.scheduling.ServerScheduler;

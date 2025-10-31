@@ -23,8 +23,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 public class TsunamiEntity extends Entity {
     private static final EntityDataAccessor<Float> DATA_DAMAGE = SynchedEntityData.defineId(TsunamiEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Boolean> DATA_GRIEFING = SynchedEntityData.defineId(TsunamiEntity.class, EntityDataSerializers.BOOLEAN);

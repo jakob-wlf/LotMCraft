@@ -1,6 +1,8 @@
 package de.jakob.lotm;
 
 import com.mojang.logging.LogUtils;
+import de.jakob.lotm.abilities.AbilityItemHandler;
+import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.block.ModBlocks;
@@ -24,9 +26,7 @@ import de.jakob.lotm.potions.PotionRecipes;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.structure.ModStructures;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.util.Config;
-import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.villager.ModVillagers;
 import net.minecraft.client.KeyMapping;

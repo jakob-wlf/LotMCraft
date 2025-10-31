@@ -29,7 +29,6 @@ import org.joml.Vector3f;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SpaceConcealmentAbility extends SelectableAbilityItem {
     private static final Map<UUID, List<ConcealedSpace>> playerSpaces = new ConcurrentHashMap<>();

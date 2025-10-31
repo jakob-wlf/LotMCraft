@@ -1,7 +1,10 @@
 package de.jakob.lotm.util.helper.subordinates;
 
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.entity.custom.goals.*;
+import de.jakob.lotm.entity.custom.goals.SubordinateFollowGoal;
+import de.jakob.lotm.entity.custom.goals.SubordinateLoadChunksGoal;
+import de.jakob.lotm.entity.custom.goals.SubordinateTargetGoal;
+import de.jakob.lotm.entity.custom.goals.SuordinateStayGoal;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.component.DataComponents;

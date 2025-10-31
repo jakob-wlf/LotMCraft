@@ -1,9 +1,9 @@
 package de.jakob.lotm.abilities.fool.passives;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.custom.PaperDaggerProjectileEntity;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.entity.custom.PaperDaggerProjectileEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import net.minecraft.sounds.SoundEvents;

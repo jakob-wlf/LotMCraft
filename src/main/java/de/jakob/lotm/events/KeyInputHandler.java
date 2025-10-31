@@ -1,11 +1,11 @@
 package de.jakob.lotm.events;
 
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.*;
-import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.OpenAbilitySelectionPacket;
+import de.jakob.lotm.network.packets.ToggleGriefingPacket;
+import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;

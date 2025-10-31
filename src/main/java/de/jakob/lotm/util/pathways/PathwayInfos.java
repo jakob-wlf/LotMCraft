@@ -1,6 +1,5 @@
 package de.jakob.lotm.util.pathways;
 
-import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
 
 public record PathwayInfos(

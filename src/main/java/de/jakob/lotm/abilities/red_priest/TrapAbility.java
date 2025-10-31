@@ -1,9 +1,9 @@
 package de.jakob.lotm.abilities.red_priest;
 
+import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.SyncExplodedTrapPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ClientScheduler;

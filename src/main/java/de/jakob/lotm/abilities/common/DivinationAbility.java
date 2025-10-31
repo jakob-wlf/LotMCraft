@@ -1,22 +1,16 @@
 package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
-import de.jakob.lotm.gui.custom.CoordinateInputScreen;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.OpenCoordinateScreenPacket;
 import de.jakob.lotm.network.packets.RemoveDreamDivinationUserPacket;
 import de.jakob.lotm.network.packets.SyncDangerPremonitionAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.scheduling.ClientScheduler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;

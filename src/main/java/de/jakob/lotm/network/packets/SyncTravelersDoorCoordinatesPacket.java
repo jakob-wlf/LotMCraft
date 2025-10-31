@@ -1,7 +1,6 @@
 package de.jakob.lotm.network.packets;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.door.TravelersDoorAbility;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;

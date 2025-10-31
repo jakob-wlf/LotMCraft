@@ -1,13 +1,11 @@
 package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.block.ModBlocks;
-import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
-import de.jakob.lotm.potions.PotionRecipeItem;
+import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
-import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

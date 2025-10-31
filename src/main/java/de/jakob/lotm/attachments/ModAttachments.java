@@ -40,6 +40,13 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<MirrorWorldTraversalComponent>> MIRROR_WORLD_COMPONENT =
+            ATTACHMENT_TYPES.register("mirror_world_component", () ->
+                    AttachmentType.builder(MirrorWorldTraversalComponent::new)
+                            .serialize(MirrorWorldTraversalComponent.SERIALIZER)
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<PlayerQuestData>> PLAYER_QUEST_DATA = ATTACHMENT_TYPES.register(
             "player_quest_data",
             () -> AttachmentType.builder(() -> new PlayerQuestData())

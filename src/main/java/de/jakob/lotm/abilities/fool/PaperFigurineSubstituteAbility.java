@@ -1,8 +1,8 @@
 package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
