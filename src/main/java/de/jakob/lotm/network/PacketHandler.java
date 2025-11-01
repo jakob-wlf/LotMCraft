@@ -114,6 +114,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncMirrorWorldPacket.TYPE,
+                SyncMirrorWorldPacket.STREAM_CODEC,
+                SyncMirrorWorldPacket::handle
+        );
+
+        registrar.playToClient(
                 RemoveDreamDivinationUserPacket.TYPE,
                 RemoveDreamDivinationUserPacket.STREAM_CODEC,
                 RemoveDreamDivinationUserPacket::handle

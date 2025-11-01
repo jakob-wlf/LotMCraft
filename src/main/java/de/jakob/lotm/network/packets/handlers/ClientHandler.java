@@ -1,6 +1,7 @@
 package de.jakob.lotm.network.packets.handlers;
 
 import de.jakob.lotm.abilities.common.DivinationAbility;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gui.custom.CoordinateInputScreen;
 import de.jakob.lotm.network.packets.*;
 import de.jakob.lotm.overlay.MarionetteOverlayRenderer;
@@ -101,6 +102,14 @@ public class ClientHandler {
         }
         else {
             MarionetteOverlayRenderer.currentMarionette.remove(player.getUUID());
+        }
+    }
+
+    public static void handleMirrorWorldPacket(SyncMirrorWorldPacket packet) {
+        Player player = Minecraft.getInstance().player;
+        if (player != null) {
+            player.getData(ModAttachments.MIRROR_WORLD_COMPONENT.get())
+                    .setInMirrorWorld(packet.inMirrorWorld());
         }
     }
 }

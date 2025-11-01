@@ -1,8 +1,8 @@
 package de.jakob.lotm.abilities;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.abyss.*;
 import de.jakob.lotm.abilities.common.CogitationAbility;
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.common.SpiritVisionAbility;
 import de.jakob.lotm.abilities.darkness.MidnightPoemAbility;
@@ -16,8 +16,8 @@ import de.jakob.lotm.abilities.mother.HealingAbility;
 import de.jakob.lotm.abilities.mother.PlantControllingAbility;
 import de.jakob.lotm.abilities.mother.PlantNurturingAbility;
 import de.jakob.lotm.abilities.red_priest.*;
-import de.jakob.lotm.abilities.tyrant.*;
 import de.jakob.lotm.abilities.sun.*;
+import de.jakob.lotm.abilities.tyrant.*;
 import de.jakob.lotm.abilities.visionary.*;
 import de.jakob.lotm.abilities.wheel_of_fortune.CalamityAttractionAbility;
 import de.jakob.lotm.abilities.wheel_of_fortune.LuckReleaseAbility;
@@ -108,6 +108,8 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> THREAD_MANIPULATION = ITEMS.registerItem("thread_manipulation_ability", ThreadManipulationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> CHARM = ITEMS.registerItem("charm_ability", CharmAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> DISEASE = ITEMS.registerItem("disease_ability", DiseaseAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> PLAGUE = ITEMS.registerItem("plague_ability", PlagueAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> MIRROR_WORLD_TRAVERSAL = ITEMS.registerItem("mirror_world_traversal_ability", MirrorWorldTraversalAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> PLANT_NURTURING = ITEMS.registerItem("plant_nurturing_ability", PlantNurturingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> HEALING = ITEMS.registerItem("healing_ability", HealingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

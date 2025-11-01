@@ -37,6 +37,7 @@ public class ModAttachments {
             ATTACHMENT_TYPES.register("luck_accumulation_component", () ->
                     AttachmentType.builder(LuckAccumulationComponent::new)
                             .serialize(LuckAccumulationComponent.SERIALIZER)
+                            .copyOnDeath()
                             .build()
             );
 
