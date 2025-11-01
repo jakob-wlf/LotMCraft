@@ -23,7 +23,10 @@ public class ModEffects {
             () -> new LuckEffect(MobEffectCategory.BENEFICIAL, 0xdaeaf5));
 
     public static final Holder<MobEffect> UNLUCK = MOB_EFFECTS.register("unluck",
-            () -> new UnluckEffect(MobEffectCategory.BENEFICIAL, 0xf0b05d));
+            () -> new UnluckEffect(MobEffectCategory.HARMFUL, 0xf0b05d));
+
+    public static final Holder<MobEffect> PETRIFICATION = MOB_EFFECTS.register("petrification",
+            () -> new PetrificationEffect(MobEffectCategory.HARMFUL, 0x7532a8));
 
 
     public static final Holder<MobEffect> LOOSING_CONTROL = MOB_EFFECTS.register("loosing_control",

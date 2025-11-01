@@ -1,4 +1,4 @@
-package de.jakob.lotm.overlay;
+package de.jakob.lotm.rendering;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.BeyonderData;
@@ -23,13 +23,13 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
-public class MarionetteOverlayRenderer {
+public class SpectatingOverlayRenderer {
 
-    public static HashMap<UUID, MarionetteInfos> currentMarionette = new HashMap<>();
+    public static HashMap<UUID, LivingEntity> entitiesLookedAtByPlayerWithActiveSpectating = new HashMap<>();
 
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.HOTBAR, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "marionette_overlay"), (guiGraphics, deltaTracker) -> {
+        event.registerAbove(VanillaGuiLayers.HOTBAR, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spectating_overlay"), (guiGraphics, deltaTracker) -> {
             renderOverlay(guiGraphics);
         });
     }
@@ -40,58 +40,52 @@ public class MarionetteOverlayRenderer {
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
 
-        if (currentMarionette.containsKey(mc.player.getUUID())) {
-            MarionetteInfos infos = currentMarionette.get(mc.player.getUUID());
-            if(infos != null) {
+        if (entitiesLookedAtByPlayerWithActiveSpectating.containsKey(mc.player.getUUID())) {
+            LivingEntity entity = entitiesLookedAtByPlayerWithActiveSpectating.get(mc.player.getUUID());
+            if(entity != null) {
                 int width =  (screenWidth / 3);
-                int height = 45;
+                int height = 35;
 
-                int barWidth = (int) (width / 1.3);
-                int barHeight = 14;
-
-                int x = screenWidth - barWidth - 40;
+                int x = screenWidth / 2 - width / 2;
                 int y = 15;
 
                 renderOutLine(guiGraphics, x, y, width, height);
 
-                //Marionette Label
-                String label = Component.translatable("lotm.marionette").getString() + ":";
-                int labelY = y + 5;
-                int labelX = x + (width / 2);
-                guiGraphics.drawCenteredString(mc.font, label, labelX, labelY, 0xFFFFFFFF);
-
                 //Entity name
-                String name = infos.name();
-                int nameY = y + 5 + mc.font.lineHeight;
+                String name = entity.getName().getString();
                 int nameX = x + (width / 2);
+                int nameY = y + 5;
                 guiGraphics.drawCenteredString(mc.font, name, nameX, nameY, 0xFFFFFFFF);
 
                 //Health Bar
+                int barWidth = (int) (width / 1.3);
+                int barHeight = 14;
+
+                int barX = x + ((width - barWidth) / 2);
                 int barY = y + height - barHeight - 5;
-                int barX = x + (width / 2) - (barWidth / 2);
 
                 guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0x88000000);
 
-                double fillPercentage = infos.health() / infos.maxHealth();
+                double fillPercentage = entity.getHealth() / entity.getMaxHealth();
                 int filledBarWidth = (int) (barWidth * fillPercentage);
 
                 if(filledBarWidth > 0)
                     drawHorizontalGradient(guiGraphics, barX, barY, filledBarWidth, barHeight, 0xFFFF0000, 0xFFe43fa3);
 
                 //Health String
-                guiGraphics.drawCenteredString(mc.font, infos.health() + " ❤", barX + (barWidth / 2), barY + 1 + ((barHeight - mc.font.lineHeight) / 2), 0xFFFFFFFF);
+                guiGraphics.drawString(mc.font, entity.getHealth() + " ❤", barX + 3, barY + 1 + ((barHeight - mc.font.lineHeight) / 2), 0xFFFFFFFF);
 
-                //displayStats(guiGraphics, entity, screenWidth);
+                displayStats(guiGraphics, entity, screenWidth);
             }
         }
     }
 
     private static void renderOutLine(GuiGraphics guiGraphics, int x, int y, int width, int height) {
         guiGraphics.fill(x, y, x + width, y + height, 0x77000000);
-        guiGraphics.fill(x, y, x + width, y + 2, 0xFFa742f5);
-        guiGraphics.fill(x, y + height - 2, x + width, y + height, 0xFFa742f5);
-        guiGraphics.fill(x, y + 2, x + 2, y + height - 2, 0xFFa742f5);
-        guiGraphics.fill(x + width - 2, y + 2, x + width, y + height - 2, 0xFFa742f5);
+        guiGraphics.fill(x, y, x + width, y + 2, 0xFFf7cd83);
+        guiGraphics.fill(x, y + height - 2, x + width, y + height, 0xFFf7cd83);
+        guiGraphics.fill(x, y + 2, x + 2, y + height - 2, 0xFFf7cd83);
+        guiGraphics.fill(x + width - 2, y + 2, x + width, y + height - 2, 0xFFf7cd83);
     }
 
     private static final Attribute[] attributesThatShouldGetDisplayed = new Attribute[]{
@@ -220,9 +214,4 @@ public class MarionetteOverlayRenderer {
 
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
-
-    public record MarionetteInfos(String name, double health, double maxHealth) {
-
-    }
 }
-

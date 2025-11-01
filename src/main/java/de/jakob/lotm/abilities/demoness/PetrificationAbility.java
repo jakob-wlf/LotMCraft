@@ -2,19 +2,29 @@ package de.jakob.lotm.abilities.demoness;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import org.checkerframework.checker.units.qual.A;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class PetrificationAbility extends AbilityItem {
+public class PetrificationAbility extends SelectableAbilityItem {
     public PetrificationAbility(Properties properties) {
         super(properties, 5);
     }
@@ -29,22 +39,60 @@ public class PetrificationAbility extends AbilityItem {
         return 500;
     }
 
-    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(.35f, .35f, .35f), 3f);
+    @Override
+    protected String[] getAbilityNames() {
+        return new String[]{"ability.lotmcraft.petrification.target", "ability.lotmcraft.petrification.area"};
+    }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }
+        if(!(entity instanceof Player)) {
+            abilityIndex = 0;
+        }
 
-        AtomicDouble radius = new AtomicDouble(.5);
+        switch (abilityIndex) {
+            case 0 -> petrifyTarget(serverLevel, entity);
+            case 1 -> petrifyArea(serverLevel, entity);
+        }
+    }
 
-        ServerScheduler.scheduleForDuration(0, 4, 90, () -> {
-            for(double i = 0; i < radius.get(); i += .4) {
-                ParticleUtil.spawnCircleParticles(serverLevel, dust, entity.position().add(0, .1, 0), i, (int) Math.round(9 * i));
-            }
+    private void petrifyArea(ServerLevel serverLevel, LivingEntity entity) {
+        if(!BeyonderData.isGriefingEnabled(entity)) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.petrification.griefing_disabled").withColor(0x7532a8));
+            return;
+        }
 
-            radius.set(radius.get() + .5);
+        AtomicDouble radius = new AtomicDouble(0.5);
+        Vec3 startPos = entity.position();
+
+        ServerScheduler.scheduleForDuration(0, 1, 120, () -> {
+            AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, radius.get(), true, true, false).forEach(b -> {
+                serverLevel.setBlockAndUpdate(b, Blocks.STONE.defaultBlockState());
+            });
+
+            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, radius.get(), startPos, new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 5, 9, false, false));
+
+            radius.addAndGet(0.5);
         });
     }
+
+    private void petrifyTarget(ServerLevel serverLevel, LivingEntity entity) {
+        ServerScheduler.scheduleForDuration(0, 2, 20 * 4, () -> {
+            LivingEntity target = AbilityUtil.getTargetEntity(entity, 10, 2);
+            if(target != null) {
+                target.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 20, 9, false, false));
+            }
+
+            if(BeyonderData.isGriefingEnabled(entity)) {
+                BlockPos targetPos = AbilityUtil.getTargetBlock(entity, 10);
+                if(!serverLevel.getBlockState(targetPos).isAir()) {
+                    serverLevel.setBlockAndUpdate(targetPos, Blocks.STONE.defaultBlockState());
+                }
+            }
+        });
+    }
+
 }

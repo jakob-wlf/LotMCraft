@@ -1,4 +1,4 @@
-package de.jakob.lotm.overlay;
+package de.jakob.lotm.rendering;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.ClientBeyonderCache;

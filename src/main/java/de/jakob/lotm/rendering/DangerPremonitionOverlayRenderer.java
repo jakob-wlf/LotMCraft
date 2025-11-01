@@ -1,4 +1,4 @@
-package de.jakob.lotm.overlay;
+package de.jakob.lotm.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;

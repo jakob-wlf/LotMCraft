@@ -1,8 +1,8 @@
-package de.jakob.lotm.overlay;
+package de.jakob.lotm.rendering;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.common.DivinationAbility;
+import de.jakob.lotm.effect.ModEffects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -13,11 +13,11 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
-public class DreamDivinationOverlay {
+public class LoosingControlOverlayRenderer {
 
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.HOTBAR, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "dream_divination_overlay"), (guiGraphics, deltaTracker) -> {
+        event.registerAbove(VanillaGuiLayers.HOTBAR, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "loosing_control_overlay"), (guiGraphics, deltaTracker) -> {
             renderOverlay(guiGraphics);
         });
     }
@@ -29,8 +29,8 @@ public class DreamDivinationOverlay {
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
 
-        if (DivinationAbility.dreamDivinationUsers.containsKey(mc.player.getUUID())) {
-            ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/dream_divination_overlay.png");
+        if (mc.player.hasEffect(ModEffects.LOOSING_CONTROL)) {
+            ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/loosing_control_overlay.png");
             // Push the current pose
             guiGraphics.pose().pushPose();
 
@@ -39,7 +39,7 @@ public class DreamDivinationOverlay {
             RenderSystem.defaultBlendFunc();
 
             // Blit the texture with transparency
-            guiGraphics.blit(backgroundTexture, 0, 0, screenWidth, screenHeight, 0, 0, 128, 96, 128, 96);
+            guiGraphics.blit(backgroundTexture, 0, 0, screenWidth, screenHeight, 0, 0, 44, 256, 44, 256);
 
             // Reset blend settings and shader color
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f); // Reset to opaque
