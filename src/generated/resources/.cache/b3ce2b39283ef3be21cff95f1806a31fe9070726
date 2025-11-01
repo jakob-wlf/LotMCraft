@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-01T12:21:57.9105398	Item Models: lotmcraft
+// 1.21.1	2025-11-01T12:55:42.9578164	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -153,6 +153,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/ocean_song
 45459dd79e3947e3898639759ce6c3c55871520c assets/lotmcraft/models/item/passive_calamity_attraction_ability.json
 d98eed35093f94d6d9c55fdc9d99541ce8e286ad assets/lotmcraft/models/item/passive_luck_ability.json
 9b26df505ebb3201a3efe708ae9d1de0d0da9ba7 assets/lotmcraft/models/item/passive_luck_accumulation_ability.json
+82d7f30aba2b82241b004b5b35857ba9e6a7d005 assets/lotmcraft/models/item/petrification_ability.json
 634265d9ec78c3e5323b8c1a2de8384acf0649ca assets/lotmcraft/models/item/physical_enhancements_abyss_ability.json
 d663c9b219f3cc0118771ec25a55dadabfae7d62 assets/lotmcraft/models/item/physical_enhancements_darkness_ability.json
 39333f3978d132b4aebf48a1e3d8994d22766df0 assets/lotmcraft/models/item/physical_enhancements_demoness_ability.json

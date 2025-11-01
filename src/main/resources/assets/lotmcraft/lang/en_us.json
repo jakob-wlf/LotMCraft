@@ -187,6 +187,7 @@
   "ability.lotm.mirror_world_traversal.no_glass": "No suitable glass surface found",
   "item.lotmcraft.curse_ability": "Curse",
   "ability.lotmcraft.curse.target_missing": "You need to move closer to your target",
+  "item.lotmcraft.petrification_ability": "Petrification",
 
   "item.lotmcraft.plant_nurturing_ability": "Plant Nurturing",
   "item.lotmcraft.healing_ability": "Healing",
