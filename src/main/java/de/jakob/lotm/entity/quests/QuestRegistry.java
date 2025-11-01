@@ -162,7 +162,7 @@ public class QuestRegistry {
     /**
      * Create a quest instance from a template, randomizing location-based quests
      */
-    private static Quest createQuestInstance(Quest template, Random random, BlockPos npcPosition) {
+    public static Quest createQuestInstance(Quest template, Random random, BlockPos npcPosition) {
         if (template instanceof VisitLocationQuest visitQuest) {
             // Randomize location near NPC
             int offsetX = random.nextInt(200) - 100;

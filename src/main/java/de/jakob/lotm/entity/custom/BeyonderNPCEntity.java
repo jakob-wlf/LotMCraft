@@ -58,6 +58,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
     private static final EntityDataAccessor<Boolean> HAS_QUEST = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> QUEST_ACCEPTED = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> QUEST_INDEX = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<String> QUEST_ID = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.STRING);
 
     private String pathway = "none";
     private int sequence = -1;
@@ -138,6 +139,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         builder.define(HAS_QUEST, false);
         builder.define(QUEST_INDEX, 0);
         builder.define(QUEST_ACCEPTED, false);
+        builder.define(QUEST_ID, "");
     }
 
     private void syncEntityDataWithBeyonderData() {
@@ -152,68 +154,87 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
-        if (!this.level().isClientSide) {
-            PlayerQuestData questData = player.getData(ModAttachments.PLAYER_QUEST_DATA.get());
+        if (this.level().isClientSide) {
+            return InteractionResult.CONSUME;
+        }
 
-            // Check if player already has a quest from this NPC
-            Quest existingQuest = questData.getQuestByNPC(this.getUUID());
+        PlayerQuestData questData = player.getData(ModAttachments.PLAYER_QUEST_DATA.get());
 
-            if (existingQuest != null) {
-                // Player has an active quest from this NPC
-                if (existingQuest.checkCompletion(player, this.level())) {
-                    // Quest is complete, turn it in
-                    existingQuest.onComplete(player);
-                    questData.removeQuest(existingQuest);
-                    setHasQuest(false);
-                    setQuestAccepted(false);
+        // Check if player already has a quest from this NPC
+        Quest existingQuest = questData.getQuestByNPC(this.getUUID());
 
-                    player.sendSystemMessage(Component.literal("§a§l[Quest Complete] §r§a" + existingQuest.getTitle()));
-                    player.sendSystemMessage(Component.literal("§eRewards received!"));
+        if (existingQuest != null) {
+            // Player has an active quest from this NPC
+            if (existingQuest.checkCompletion(player, this.level())) {
+                // Quest is complete, turn it in
+                existingQuest.onComplete(player);
+                questData.removeQuest(existingQuest);
 
-                    return InteractionResult.SUCCESS;
-                } else {
-                    // Quest in progress, show status
-                    player.sendSystemMessage(Component.literal("§e[Quest In Progress] §r" + existingQuest.getTitle()));
-                    player.sendSystemMessage(existingQuest.getProgressText());
+                // Mark this NPC as having no quest and not having one accepted
+                setHasQuest(false);
+                setQuestAccepted(false);
 
-                    // Show detailed progress for compound quests
-                    if (existingQuest instanceof CompoundQuest compoundQuest) {
-                        for (Component progress : compoundQuest.getDetailedProgress()) {
-                            player.sendSystemMessage(progress);
-                        }
-                    }
+                player.sendSystemMessage(Component.literal("§a§l[Quest Complete] §r§a" + existingQuest.getTitle()));
+                player.sendSystemMessage(Component.literal("§eRewards received!"));
 
-                    return InteractionResult.SUCCESS;
-                }
-            } else if (hasQuest() && !wasQuestAccepted()) {
-                // NPC has a quest to offer
-                Quest newQuest = QuestRegistry.getRandomQuest(new Random(), this.blockPosition());
-
-                if (newQuest != null) {
-                    // Assign quest to player
-                    newQuest.onAccept(player);
-                    questData.addQuest(newQuest, this.getUUID());
-                    setQuestAccepted(true);
-
-                    player.sendSystemMessage(Component.literal("§6§l[New Quest] §r§6" + newQuest.getTitle()));
-                    player.sendSystemMessage(Component.literal("§7" + newQuest.getDescription()));
-                    player.sendSystemMessage(newQuest.getProgressText());
-
-                    // Show detailed objectives for compound quests
-                    if (newQuest instanceof CompoundQuest compoundQuest) {
-                        player.sendSystemMessage(Component.literal("§7Objectives:"));
-                        for (Component progress : compoundQuest.getDetailedProgress()) {
-                            player.sendSystemMessage(progress);
-                        }
-                    }
-
-                    return InteractionResult.SUCCESS;
-                }
+                return InteractionResult.SUCCESS;
             } else {
-                // NPC has no quest
-                player.sendSystemMessage(Component.literal("§7I have nothing for you right now."));
+                // Quest in progress, show status
+                player.sendSystemMessage(Component.literal("§e[Quest In Progress] §r" + existingQuest.getTitle()));
+                player.sendSystemMessage(existingQuest.getProgressText());
+
+                // Show detailed progress for compound quests
+                if (existingQuest instanceof CompoundQuest compoundQuest) {
+                    for (Component progress : compoundQuest.getDetailedProgress()) {
+                        player.sendSystemMessage(progress);
+                    }
+                }
+
                 return InteractionResult.SUCCESS;
             }
+        } else if (hasQuest() && !wasQuestAccepted()) {
+            // NPC has a quest to offer and it hasn't been accepted yet
+            Quest newQuest = QuestRegistry.getQuestById(getQuestId());
+
+            if (newQuest == null) {
+                // Generate a new quest if none exists
+                newQuest = QuestRegistry.getRandomQuest(new Random(), this.blockPosition());
+                if (newQuest != null) {
+                    setQuestId(newQuest.getQuestId());
+                }
+            } else {
+                // Create a new instance from the stored quest ID
+                newQuest = QuestRegistry.createQuestInstance(
+                        QuestRegistry.getQuestById(getQuestId()),
+                        new Random(),
+                        this.blockPosition()
+                );
+            }
+
+            if (newQuest != null) {
+                // Assign quest to player
+                newQuest.onAccept(player);
+                questData.addQuest(newQuest, this.getUUID());
+                setQuestAccepted(true);
+
+                player.sendSystemMessage(Component.literal("§6§l[New Quest] §r§6" + newQuest.getTitle()));
+                player.sendSystemMessage(Component.literal("§7" + newQuest.getDescription()));
+                player.sendSystemMessage(newQuest.getProgressText());
+
+                // Show detailed objectives for compound quests
+                if (newQuest instanceof CompoundQuest compoundQuest) {
+                    player.sendSystemMessage(Component.literal("§7Objectives:"));
+                    for (Component progress : compoundQuest.getDetailedProgress()) {
+                        player.sendSystemMessage(progress);
+                    }
+                }
+
+                return InteractionResult.SUCCESS;
+            }
+        } else {
+            // NPC has no quest or quest was already accepted
+            player.sendSystemMessage(Component.literal("§7I have nothing for you right now."));
+            return InteractionResult.SUCCESS;
         }
 
         return super.mobInteract(player, hand);
@@ -223,9 +244,15 @@ public class BeyonderNPCEntity extends PathfinderMob {
     public void onAddedToLevel() {
         super.onAddedToLevel();
         if (!this.level().isClientSide) {
-            // 30% chance to have a quest
-            if (this.random.nextFloat() <= 1f) {
+            // Only generate a quest if this NPC doesn't already have one
+            if (this.random.nextFloat() <= .2f && !hasQuest()) {
                 setHasQuest(true);
+
+                // Generate and store the quest ID
+                Quest quest = QuestRegistry.getRandomQuest(new Random(), this.blockPosition());
+                if (quest != null) {
+                    setQuestId(quest.getQuestId());
+                }
             }
 
             // Sync beyonder data
@@ -344,6 +371,14 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.entityData.set(QUEST_INDEX, index);
     }
 
+    public String getQuestId() {
+        return this.entityData.get(QUEST_ID);
+    }
+
+    public void setQuestId(String questId) {
+        this.entityData.set(QUEST_ID, questId);
+    }
+
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> dataAccessor) {
         super.onSyncedDataUpdated(dataAccessor);
@@ -376,6 +411,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         compound.putInt("QuestIndex", getQuestIndex());
         compound.putBoolean("HasQuest", hasQuest());
         compound.putBoolean("QuestAccepted", wasQuestAccepted());
+        compound.putString("QuestId", getQuestId());
     }
 
     @Override
@@ -385,6 +421,10 @@ public class BeyonderNPCEntity extends PathfinderMob {
         setHasQuest(compound.getBoolean("HasQuest"));
         setQuestIndex(compound.getInt("QuestIndex"));
         setQuestAccepted(compound.getBoolean("QuestAccepted"));
+
+        if (compound.contains("QuestId")) {
+            setQuestId(compound.getString("QuestId"));
+        }
 
         if (compound.contains("IsHostile")) {
             setHostile(compound.getBoolean("IsHostile"));
