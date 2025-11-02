@@ -55,6 +55,7 @@
   "item.lotmcraft.unshadowed_domain_ability": "Unshadowed Domain",
   "item.lotmcraft.flaring_sun_ability": "Flaring Sun",
   "item.lotmcraft.wall_of_light_ability": "Wall of Light",
+  "item.lotmcraft.sword_of_justice_ability": "Sword of Justice",
 
   "item.lotmcraft.trap_ability": "Trap",
   "item.lotmcraft.provoking_ability": "Provoking",
@@ -297,6 +298,8 @@
   "item.lotmcraft.nocturnality_ability": "Nocturnality",
 
   "item.lotmcraft.feather_fall_ability": "Feather Fall",
+  "item.lotmcraft.mirror_revival_ability": "Mirror Revival",
+  "item.lotmcraft.mirror_revival_ability.description": "If there is glass near you, you will resurrect after death",
 
   "item.lotmcraft.riptide_ability": "Riptide",
   "item.lotmcraft.riptide_ability.description": "Your Beyonder Abilities get stronger while you are in water",

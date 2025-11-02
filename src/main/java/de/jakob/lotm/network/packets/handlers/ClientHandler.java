@@ -1,5 +1,6 @@
 package de.jakob.lotm.network.packets.handlers;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gui.custom.CoordinateInputScreen;
@@ -17,8 +18,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ViewportEvent;
+import org.joml.Random;
 
 @OnlyIn(Dist.CLIENT)
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class ClientHandler {
     public static void openCoordinateScreen(Player player, String use) {
         Minecraft.getInstance().setScreen(new CoordinateInputScreen(player, use));
@@ -86,6 +92,32 @@ public class ClientHandler {
         }
         else {
             TelepathyOverlayRenderer.entitiesLookedAtByPlayerWithActiveTelepathy.remove(player.getUUID());
+        }
+    }
+
+    private static float shakeIntensity = 0;
+    private static int shakeDuration = 0;
+    private static final Random random = new Random();
+
+    public static void applyCameraShake(float intensity, int duration) {
+        shakeIntensity = intensity;
+        shakeDuration = duration;
+    }
+
+    @SubscribeEvent
+    public static void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
+        if (shakeDuration > 0) {
+            float currentIntensity = shakeIntensity * (shakeDuration / 20f); // Fade out
+
+            float shakeX = (random.nextFloat() - 0.5f) * currentIntensity;
+            float shakeY = (random.nextFloat() - 0.5f) * currentIntensity;
+            float shakeZ = (random.nextFloat() - 0.5f) * currentIntensity * 0.5f; // Less roll
+
+            event.setPitch((float) (event.getPitch() + shakeX));
+            event.setYaw((float) (event.getYaw() + shakeY));
+            event.setRoll((float) (event.getRoll() + shakeZ));
+
+            shakeDuration--;
         }
     }
 

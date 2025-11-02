@@ -5,6 +5,7 @@ import de.jakob.lotm.entity.custom.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -52,6 +53,17 @@ public class ModEntities {
                     .updateInterval(1)
                     .fireImmune()
                     .build("meteor"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<JusticeSwordEntity>> JUSTICE_SWORD =
+            ENTITY_TYPES.register("justice_sword", () -> EntityType.Builder.of(
+                            (EntityType<JusticeSwordEntity> type, Level level) ->
+                                    new JusticeSwordEntity(type, level),
+                            MobCategory.MISC)
+                    .sized(2f, 2f)
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .build("justice_sword"));
 
     public static final Supplier<EntityType<ApprenticeDoorEntity>> APPRENTICE_DOOR =
             ENTITY_TYPES.register("apprentice_door", () -> EntityType.Builder.<ApprenticeDoorEntity>of(ApprenticeDoorEntity::new, MobCategory.MISC)

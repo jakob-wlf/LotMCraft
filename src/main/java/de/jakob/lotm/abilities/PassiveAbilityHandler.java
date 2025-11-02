@@ -5,6 +5,7 @@ import de.jakob.lotm.abilities.abyss.passives.PhysicalEnhancementsAbyssAbility;
 import de.jakob.lotm.abilities.darkness.passives.NocturnalityAbility;
 import de.jakob.lotm.abilities.darkness.passives.PhysicalEnhancementsDarknessAbility;
 import de.jakob.lotm.abilities.demoness.passives.FeatherFallAbility;
+import de.jakob.lotm.abilities.demoness.passives.MirrorRevivalAbility;
 import de.jakob.lotm.abilities.demoness.passives.PhysicalEnhancementsDemonessAbility;
 import de.jakob.lotm.abilities.door.passives.PhysicalEnhancementsDoorAbility;
 import de.jakob.lotm.abilities.door.passives.VoidImmunityAbility;
@@ -60,6 +61,7 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> NOCTURNALITY = ITEMS.registerItem("nocturnality_ability", NocturnalityAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     public static final DeferredItem<Item> FEATHER_FALL = ITEMS.registerItem("feather_fall_ability", FeatherFallAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> MIRROR_REVIVAL = ITEMS.registerItem("mirror_revival_ability", MirrorRevivalAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     public static final DeferredItem<Item> RIPTIDE = ITEMS.registerItem("riptide_ability", RiptideAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 

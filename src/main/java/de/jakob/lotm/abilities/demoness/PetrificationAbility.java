@@ -73,24 +73,26 @@ public class PetrificationAbility extends SelectableAbilityItem {
                 serverLevel.setBlockAndUpdate(b, Blocks.STONE.defaultBlockState());
             });
 
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, radius.get(), startPos, new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 5, 9, false, false));
+            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, radius.get(), startPos, new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 45, 9, false, false));
 
             radius.addAndGet(0.5);
         });
     }
 
     private void petrifyTarget(ServerLevel serverLevel, LivingEntity entity) {
-        ServerScheduler.scheduleForDuration(0, 2, 20 * 4, () -> {
-            LivingEntity target = AbilityUtil.getTargetEntity(entity, 10, 2);
+        ServerScheduler.scheduleForDuration(0, 2, 20 * 5, () -> {
+            LivingEntity target = AbilityUtil.getTargetEntity(entity, 15, 2);
             if(target != null) {
-                target.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 20, 9, false, false));
+                target.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 60 * 2, 9, false, false));
             }
 
             if(BeyonderData.isGriefingEnabled(entity)) {
-                BlockPos targetPos = AbilityUtil.getTargetBlock(entity, 10);
-                if(!serverLevel.getBlockState(targetPos).isAir()) {
-                    serverLevel.setBlockAndUpdate(targetPos, Blocks.STONE.defaultBlockState());
-                }
+                BlockPos targetPos = AbilityUtil.getTargetBlock(entity, 15, false);
+                AbilityUtil.getBlocksInSphereRadius(serverLevel, targetPos.getCenter(), 2, true, true, false).forEach(b -> {
+                    if(!serverLevel.getBlockState(b).isAir()) {
+                        serverLevel.setBlockAndUpdate(b, Blocks.STONE.defaultBlockState());
+                    }
+                });
             }
         });
     }
