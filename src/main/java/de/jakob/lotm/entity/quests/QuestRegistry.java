@@ -30,10 +30,10 @@ public class QuestRegistry {
         Quest zombieQuest = new KillMobsQuest(
                 "kill_zombies",
                 "Zombie Hunter",
-                "Kill 10 zombies",
+                "Kill 30 zombies",
                 EntityType.ZOMBIE,
-                10
-        ).addReward(new ItemStack(Items.DIAMOND, 3))
+                30
+        ).addReward(new ItemStack(Items.DIAMOND, 6))
          .setExperienceReward(100);
         
         register(zombieQuest);
@@ -42,10 +42,10 @@ public class QuestRegistry {
         Quest skeletonQuest = new KillMobsQuest(
                 "kill_skeletons",
                 "Bone Collector",
-                "Defeat 5 skeletons",
+                "Defeat 20 skeletons",
                 EntityType.SKELETON,
-                5
-        ).addReward(new ItemStack(Items.EMERALD, 5))
+                20
+        ).addReward(new ItemStack(Items.TOTEM_OF_UNDYING, 2))
          .setExperienceReward(75);
         
         register(skeletonQuest);
@@ -62,30 +62,30 @@ public class QuestRegistry {
          .setExperienceReward(50);
         
         register(collectIronQuest);
-        
-        // Example: Visit location quest (location will be random)
-        Quest visitLocationQuest = new VisitLocationQuest(
-                "visit_location",
-                "Exploration",
-                "Visit the marked location",
-                new BlockPos(0, 64, 0), // This will be randomized when assigned
-                10, // Detection radius
-                true // Place diamond block marker
-        ).addReward(new ItemStack(Items.GOLDEN_APPLE, 2))
-         .setExperienceReward(100);
-        
-        register(visitLocationQuest);
-        
-        // Example: Talk to farmer quest
-        Quest talkToFarmerQuest = new TalkToVillagerQuest(
-                "talk_to_farmer",
-                "Village Gossip",
-                "Talk to a farmer villager",
-                VillagerProfession.FARMER
-        ).addReward(new ItemStack(Items.EMERALD, 3))
-         .setExperienceReward(25);
-        
-        register(talkToFarmerQuest);
+//
+//        // Example: Visit location quest (location will be random)
+//        Quest visitLocationQuest = new VisitLocationQuest(
+//                "visit_location",
+//                "Exploration",
+//                "Visit the marked location",
+//                new BlockPos(0, 64, 0), // This will be randomized when assigned
+//                10, // Detection radius
+//                true // Place diamond block marker
+//        ).addReward(new ItemStack(Items.GOLDEN_APPLE, 2))
+//         .setExperienceReward(100);
+//
+//        register(visitLocationQuest);
+//
+//        // Example: Talk to farmer quest
+//        Quest talkToFarmerQuest = new TalkToVillagerQuest(
+//                "talk_to_farmer",
+//                "Village Gossip",
+//                "Talk to a farmer villager",
+//                VillagerProfession.FARMER
+//        ).addReward(new ItemStack(Items.EMERALD, 3))
+//         .setExperienceReward(25);
+//
+//        register(talkToFarmerQuest);
         
         // Example: Compound quest (kill zombies and collect items)
 //        Quest compoundQuest1 = new CompoundQuest(
@@ -163,67 +163,73 @@ public class QuestRegistry {
      * Create a quest instance from a template, randomizing location-based quests
      */
     public static Quest createQuestInstance(Quest template, Random random, BlockPos npcPosition) {
+        Quest newQuest;
+
         if (template instanceof VisitLocationQuest visitQuest) {
-            // Randomize location near NPC
             int offsetX = random.nextInt(200) - 100;
             int offsetZ = random.nextInt(200) - 100;
             BlockPos newLocation = npcPosition.offset(offsetX, 0, offsetZ);
-            
-            return new VisitLocationQuest(
+
+            newQuest = new VisitLocationQuest(
                     visitQuest.getQuestId(),
                     visitQuest.getTitle(),
                     visitQuest.getDescription(),
                     newLocation,
                     visitQuest.getDetectionRadius(),
                     true
-            ).setExperienceReward(visitQuest.getExperienceReward());
-            
+            );
+
         } else if (template instanceof CompoundQuest compoundQuest) {
             CompoundQuest newCompound = new CompoundQuest(
                     compoundQuest.getQuestId(),
                     compoundQuest.getTitle(),
                     compoundQuest.getDescription()
             );
-            
+
             for (Quest subQuest : compoundQuest.getSubQuests()) {
                 newCompound.addSubQuest(createQuestInstance(subQuest, random, npcPosition));
             }
-            
-            for (ItemStack reward : compoundQuest.getRewards()) {
-                newCompound.addReward(reward.copy());
-            }
-            newCompound.setExperienceReward(compoundQuest.getExperienceReward());
-            
-            return newCompound;
+
+            newQuest = newCompound;
+
         } else if (template instanceof KillMobsQuest killQuest) {
-            return new KillMobsQuest(
+            newQuest = new KillMobsQuest(
                     killQuest.getQuestId(),
                     killQuest.getTitle(),
                     killQuest.getDescription(),
                     killQuest.getTargetMob(),
                     killQuest.getRequiredKills()
-            ).setExperienceReward(killQuest.getExperienceReward());
-            
+            );
+
         } else if (template instanceof CollectItemsQuest collectQuest) {
-            return new CollectItemsQuest(
+            newQuest = new CollectItemsQuest(
                     collectQuest.getQuestId(),
                     collectQuest.getTitle(),
                     collectQuest.getDescription(),
                     collectQuest.getTargetItem(),
                     collectQuest.getRequiredAmount(),
                     collectQuest.shouldConsumeItems()
-            ).setExperienceReward(collectQuest.getExperienceReward());
-            
+            );
+
         } else if (template instanceof TalkToVillagerQuest talkQuest) {
-            return new TalkToVillagerQuest(
+            newQuest = new TalkToVillagerQuest(
                     talkQuest.getQuestId(),
                     talkQuest.getTitle(),
                     talkQuest.getDescription(),
                     talkQuest.getTargetProfession()
-            ).setExperienceReward(talkQuest.getExperienceReward());
+            );
+
+        } else {
+            return template;
         }
-        
-        return template;
+
+        for (ItemStack reward : template.getRewards()) {
+            newQuest.addReward(reward.copy());
+        }
+
+        newQuest.setExperienceReward(template.getExperienceReward());
+
+        return newQuest;
     }
     
     /**

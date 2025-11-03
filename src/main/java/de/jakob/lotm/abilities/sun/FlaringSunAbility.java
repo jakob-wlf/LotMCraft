@@ -1,6 +1,8 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.entity.custom.SunEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -34,8 +36,6 @@ public class FlaringSunAbility extends AbilityItem {
         return 500;
     }
 
-    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(1f, 185 / 255f, 3 / 255f), 4f);
-
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
@@ -64,16 +64,21 @@ public class FlaringSunAbility extends AbilityItem {
             );
         }
 
+        SunEntity sun = new SunEntity(ModEntities.SUN.get(), level);
+        sun.setPos(startPos);
+        level.addFreshEntity(sun);
+
         ServerScheduler.scheduleForDuration(0, 4, 20 * 19, () -> {
-            ParticleUtil.spawnSphereParticles((ServerLevel) level, dust, startPos, 4.5f, 92);
-            ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.FLAME, startPos, 4.75f, 92);
-            ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, startPos, 4.75f, 65);
+            ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.FLAME, startPos, 4.75f, 200);
+            ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, startPos, 4.75f, 180);
 
             AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 17, 10 * multiplier(entity), targetPos, true, false, 20 * 4);
         }, () -> {
             if(level.getBlockState(blockPos).getBlock() == Blocks.LIGHT) {
                 level.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
             }
+
+            sun.discard();
         }, (ServerLevel) level);
     }
 }

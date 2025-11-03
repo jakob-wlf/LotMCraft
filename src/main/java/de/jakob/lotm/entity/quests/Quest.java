@@ -116,7 +116,9 @@ public abstract class Quest {
      * Give rewards to the player
      */
     public void giveRewards(Player player) {
+        System.out.println("Giving rewards to player " + player.getName().getString());
         for (ItemStack reward : rewards) {
+            System.out.println(" - " + reward.getCount() + "x " + reward.getDisplayName());
             player.addItem(reward.copy());
         }
         if (experienceReward > 0) {

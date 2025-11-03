@@ -115,6 +115,15 @@ public class ModEntities {
                     .fireImmune()
                     .build("black_hole"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<SunEntity>> SUN =
+            ENTITY_TYPES.register("sun", () -> EntityType.Builder.<SunEntity>of(
+                            SunEntity::new, MobCategory.MISC)
+                    .sized(1.0F, 1.0F)
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .build("sun"));
+
     public static final Supplier<EntityType<SpaceRiftEntity>> SPACE_RIFT =
             ENTITY_TYPES.register("space_rift", () -> EntityType.Builder.<SpaceRiftEntity>of(SpaceRiftEntity::new, MobCategory.MISC)
                     .sized(10f, 10f).build("space_rift"));
