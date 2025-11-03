@@ -82,6 +82,8 @@ public class AbilityItemHandler {
 
     public static DeferredItem<Item> TOXIC_SMOKE = ITEMS.registerItem("toxic_smoke_ability", ToxicSmokeAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> POISONOUS_FLAME = ITEMS.registerItem("poisonous_flame_ability", PoisonousFlameAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> FLAME_SPELLS = ITEMS.registerItem("flame_spells_ability", FlameSpellsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> LANGUAGE_OF_FOULNESS = ITEMS.registerItem("language_of_foulness_ability", LanguageOfFoulnessAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> DEVIL_TRANSFORMATION = ITEMS.registerItem("devil_transformation_ability", DevilTransformationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> AVATAR_OF_DESIRE = ITEMS.registerItem("avatar_of_desire_ability", AvatarOfDesireAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> DEFILING_SEED = ITEMS.registerItem("defiling_seed_ability", DefilingSeedAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

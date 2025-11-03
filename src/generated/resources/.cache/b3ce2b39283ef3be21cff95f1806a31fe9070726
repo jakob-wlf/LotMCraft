@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-02T23:58:22.3706397	Item Models: lotmcraft
+// 1.21.1	2025-11-03T23:53:48.9105936	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -75,8 +75,10 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/faceless.j
 f92fc1a03cc2ebd5b36e5cd3bd2c61b38eca45aa assets/lotmcraft/models/item/feather_fall_ability.json
 0dbfea078d31fb91a9dc63ce06a2ea4217bd14c1 assets/lotmcraft/models/item/fire_of_light_ability.json
 06cdd43105cdfb172380b556f9944bdc0fa6c43e assets/lotmcraft/models/item/fire_resistance_ability.json
+70f5921e219cc5e778bc9aed592af55a136ba67e assets/lotmcraft/models/item/fire_resistance_abyss_ability.json
 ee63293a6dace669c4e57047d7f4e6b694d7aa0c assets/lotmcraft/models/item/flame_controlling_ability.json
 ea8e6e2dbe3a66f570f72826b51d165bf8dd2f2b assets/lotmcraft/models/item/flame_mastery_ability.json
+d4916058c0781a964fac72fc0d9b4348aafd0640 assets/lotmcraft/models/item/flame_spells_ability.json
 61815b98037fe1098719f17f26709261aff91cde assets/lotmcraft/models/item/flaming_hit_ability.json
 304902be9d9b06af3f488b4158e7047ad197b4dc assets/lotmcraft/models/item/flaming_jump_ability.json
 5b979a8d680bb03046e23006a940a336adeb58ae assets/lotmcraft/models/item/flaring_sun_ability.json
@@ -108,6 +110,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/instigator
 320722eeba394768b4e3181ef37250e09ca696d1 assets/lotmcraft/models/item/invisibility_ability.json
 105236973bbabaccc53fd04829bf2e80423562c8 assets/lotmcraft/models/item/iron_blooded_knight_potion.json
 088bba6e16fff58d0808852a5d888bfc722d4ddb assets/lotmcraft/models/item/justice_mentor_potion.json
+87ecb3951cf1ac1072d7f5bf77030c84c046d602 assets/lotmcraft/models/item/language_of_foulness_ability.json
 982cb650de716fb4ba221451f31d932790086e60 assets/lotmcraft/models/item/lavos_squid_blood.json
 641237b16ae86e43c0ed7951e3d24c2dfaca8828 assets/lotmcraft/models/item/lightning_ability.json
 2a68ecf26b4e23b864c39f3e580ea9d024632e04 assets/lotmcraft/models/item/lightning_branch_ability.json

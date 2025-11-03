@@ -41,6 +41,7 @@ public class PhysicalEnhancementsAbyssAbility extends PassiveAbilityItem {
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 3, false, false, false),
+                new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 20 * 6, 3, false, false, false),
                 new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 1, false, false, false)
         ));
 
@@ -49,6 +50,7 @@ public class PhysicalEnhancementsAbyssAbility extends PassiveAbilityItem {
                 new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 1, false, false, false),
                 new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 4, false, false, false),
+                new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 20 * 6, 3, false, false, false),
                 new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 1, false, false, false)
         ));
 
@@ -58,6 +60,7 @@ public class PhysicalEnhancementsAbyssAbility extends PassiveAbilityItem {
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.SATURATION, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 9, false, false, false),
+                new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 20 * 6, 3, false, false, false),
                 new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 2, false, false, false)
         ));
 
@@ -67,6 +70,7 @@ public class PhysicalEnhancementsAbyssAbility extends PassiveAbilityItem {
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.SATURATION, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 10, false, false, false),
+                new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 20 * 6, 3, false, false, false),
                 new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 2, false, false, false)
         ));
 
@@ -76,6 +80,7 @@ public class PhysicalEnhancementsAbyssAbility extends PassiveAbilityItem {
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 2, false, false, false),
                 new MobEffectInstance(MobEffects.SATURATION, 20 * 6, 5, false, false, false),
                 new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 12, false, false, false),
+                new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 20 * 6, 3, false, false, false),
                 new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 3, false, false, false)
         ));
 
@@ -85,6 +90,7 @@ public class PhysicalEnhancementsAbyssAbility extends PassiveAbilityItem {
                 new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 3, false, false, false),
                 new MobEffectInstance(MobEffects.SATURATION, 20 * 6, 5, false, false, false),
                 new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 15, false, false, false),
+                new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 20 * 6, 3, false, false, false),
                 new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 3, false, false, false)
         ));
 

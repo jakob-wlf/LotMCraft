@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.abyss.passives.FireResistanceAbyssAbility;
 import de.jakob.lotm.abilities.abyss.passives.PhysicalEnhancementsAbyssAbility;
 import de.jakob.lotm.abilities.darkness.passives.NocturnalityAbility;
 import de.jakob.lotm.abilities.darkness.passives.PhysicalEnhancementsDarknessAbility;
@@ -48,6 +49,8 @@ public class PassiveAbilityHandler {
 
     public static final DeferredItem<Item> FLAMING_HIT = ITEMS.registerItem("flaming_hit_ability", FlamingHitAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> FIRE_RESISTANCE = ITEMS.registerItem("fire_resistance_ability", FireResistanceAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
+    public static final DeferredItem<Item> FIRE_RESISTANCE_ABYSS = ITEMS.registerItem("fire_resistance_abyss_ability", FireResistanceAbyssAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     public static final DeferredItem<Item> VOID_IMMUNITY = ITEMS.registerItem("void_immunity_ability", VoidImmunityAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 

@@ -11,6 +11,7 @@ import de.jakob.lotm.rendering.SpiritVisionOverlayRenderer;
 import de.jakob.lotm.rendering.TelepathyOverlayRenderer;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -143,5 +144,18 @@ public class ClientHandler {
             player.getData(ModAttachments.MIRROR_WORLD_COMPONENT.get())
                     .setInMirrorWorld(packet.inMirrorWorld());
         }
+    }
+
+    public static void handleTransformationPacket(SyncTransformationPacket packet) {
+        Player player = Minecraft.getInstance().player;
+        if (player != null) {
+            player.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).setTransformed(packet.isTransformed());
+            player.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).setTransformationIndex(packet.transformationIndex());
+        }
+    }
+
+    public static void changeToThirdPerson() {
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.options.setCameraType(CameraType.THIRD_PERSON_BACK);
     }
 }

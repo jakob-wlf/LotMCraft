@@ -120,6 +120,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncTransformationPacket.TYPE,
+                SyncTransformationPacket.STREAM_CODEC,
+                SyncTransformationPacket::handle
+        );
+
+        registrar.playToClient(
                 RemoveDreamDivinationUserPacket.TYPE,
                 RemoveDreamDivinationUserPacket.STREAM_CODEC,
                 RemoveDreamDivinationUserPacket::handle

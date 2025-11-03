@@ -122,6 +122,10 @@
   "item.lotmcraft.toxic_smoke_ability": "Toxic Smoke",
   "item.lotmcraft.poisonous_flame_ability": "Poisonous Flame",
   "item.lotmcraft.devil_transformation_ability": "Devil Transformation",
+  "item.lotmcraft.flame_spells_ability": "Flame Spells",
+  "ability.lotmcraft.flame_spells.sulfur_fireball": "Sulfur Fireball",
+  "ability.lotmcraft.flame_spells.volcanic_eruption": "Volcanic Eruption",
+  "item.lotmcraft.language_of_foulness_ability": "Language of Foulness",
   "item.lotmcraft.avatar_of_desire_ability": "Avatar of Desire",
   "item.lotmcraft.defiling_seed_ability": "Defiling Seed",
   "ability.lotmcraft.defiling_seed.no_target": "No Target found",
@@ -276,6 +280,8 @@
 
   "item.lotmcraft.flaming_hit_ability": "Flaming Hit",
   "item.lotmcraft.fire_resistance_ability": "Fire Resistance",
+
+  "item.lotmcraft.fire_resistance_abyss_ability": "Fire Resistance",
 
   "item.lotmcraft.void_immunity_ability": "Void Immunity",
 
