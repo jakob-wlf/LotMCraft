@@ -121,42 +121,4 @@ public class TransformationRenderer {
                 .setLight(light)
                 .setNormal(0, 1, 0);
     }
-
-    @SubscribeEvent
-    public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            Minecraft mc = Minecraft.getInstance();
-            Player player = mc.player;
-
-            if (player != null && shouldApplyEffect(player)) {
-                applyShader(mc);
-            } else {
-                removeShader(mc);
-            }
-        }
-    }
-
-    private static boolean shouldApplyEffect(Player player) {
-        return player.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).isTransformed() &&
-               player.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).getTransformationIndex() == TransformationComponent.TransformationType.DESIRE_AVATAR.getIndex();
-    }
-
-    private static void applyShader(Minecraft mc) {
-        if (mc.gameRenderer.currentEffect() == null ||
-                !mc.gameRenderer.currentEffect().getName().equals("abyssal_distortion")) {
-            try {
-                mc.gameRenderer.loadEffect(
-                        ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "shaders/post/abyssal_distortion.json")
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private static void removeShader(Minecraft mc) {
-        if (mc.gameRenderer.currentEffect() != null) {
-            mc.gameRenderer.shutdownEffect();
-        }
-    }
 }

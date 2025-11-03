@@ -13,6 +13,7 @@ import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -147,11 +148,16 @@ public class ClientHandler {
     }
 
     public static void handleTransformationPacket(SyncTransformationPacket packet) {
-        Player player = Minecraft.getInstance().player;
-        if (player != null) {
-            player.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).setTransformed(packet.isTransformed());
-            player.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).setTransformationIndex(packet.transformationIndex());
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if(entity == null) {
+            return;
         }
+
+        entity.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).setTransformed(packet.isTransformed());
+        entity.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).setTransformationIndex(packet.transformationIndex());
     }
 
     public static void changeToThirdPerson() {

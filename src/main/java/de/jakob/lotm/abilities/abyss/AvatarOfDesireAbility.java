@@ -45,8 +45,8 @@ public class AvatarOfDesireAbility extends ToggleAbilityItem {
         }
 
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
-        transformationComponent.setTransformedAndSync(true);
-        transformationComponent.setTransformationIndexAndSync(TransformationComponent.TransformationType.DESIRE_AVATAR);
+        transformationComponent.setTransformedAndSync(true, entity);
+        transformationComponent.setTransformationIndexAndSync(TransformationComponent.TransformationType.DESIRE_AVATAR, entity);
 
         AttributeInstance scale = entity.getAttribute(Attributes.SCALE);
         if (scale != null) {
@@ -83,7 +83,7 @@ public class AvatarOfDesireAbility extends ToggleAbilityItem {
 
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         if(transformationComponent.isTransformed() && transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.DESIRE_AVATAR.getIndex()) {
-            transformationComponent.setTransformedAndSync(false);
+            transformationComponent.setTransformedAndSync(false, entity);
         }
 
         AttributeInstance scale = entity.getAttribute(Attributes.SCALE);

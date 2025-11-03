@@ -4,8 +4,11 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.SyncTransformationPacket;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
+
+import javax.swing.text.html.parser.Entity;
 
 public class TransformationComponent {
 
@@ -23,9 +26,9 @@ public class TransformationComponent {
         isTransformed = transformed;
     }
 
-    public void setTransformedAndSync(boolean transformed) {
+    public void setTransformedAndSync(boolean transformed, LivingEntity entity) {
         isTransformed = transformed;
-        PacketHandler.sendToAllPlayers(new SyncTransformationPacket(isTransformed, transformationIndex));
+        PacketHandler.sendToAllPlayers(new SyncTransformationPacket(entity.getId(), isTransformed, transformationIndex));
     }
 
     public int getTransformationIndex() {
@@ -40,14 +43,14 @@ public class TransformationComponent {
         this.transformationIndex = type.getIndex();
     }
 
-    public void setTransformationIndexAndSync(int transformationIndex) {
+    public void setTransformationIndexAndSync(int transformationIndex, LivingEntity entity) {
         this.transformationIndex = transformationIndex;
-        PacketHandler.sendToAllPlayers(new SyncTransformationPacket(isTransformed, transformationIndex));
+        PacketHandler.sendToAllPlayers(new SyncTransformationPacket(entity.getId(), isTransformed, transformationIndex));
     }
 
-    public void setTransformationIndexAndSync(TransformationType type) {
+    public void setTransformationIndexAndSync(TransformationType type, LivingEntity entity) {
         this.transformationIndex = type.getIndex();
-        PacketHandler.sendToAllPlayers(new SyncTransformationPacket(isTransformed, transformationIndex));
+        PacketHandler.sendToAllPlayers(new SyncTransformationPacket(entity.getId(), isTransformed, transformationIndex));
     }
 
 

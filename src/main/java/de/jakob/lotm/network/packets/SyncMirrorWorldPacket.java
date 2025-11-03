@@ -1,5 +1,6 @@
 package de.jakob.lotm.network.packets;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import io.netty.buffer.ByteBuf;
@@ -13,7 +14,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public record SyncMirrorWorldPacket(boolean inMirrorWorld) implements CustomPacketPayload {
     
     public static final CustomPacketPayload.Type<SyncMirrorWorldPacket> TYPE = 
-        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath("yourmodid", "sync_mirror_world"));
+        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sync_mirror_world"));
     
     public static final StreamCodec<ByteBuf, SyncMirrorWorldPacket> STREAM_CODEC = StreamCodec.composite(
         ByteBufCodecs.BOOL,
