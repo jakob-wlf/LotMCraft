@@ -38,6 +38,10 @@ public class PotionItemHandler {
                     new BeyonderPotion(properties, 5, "fool"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
+    public static DeferredItem<Item> BIZARRO_SORCERER_POTION = ITEMS.registerItem("bizarro_sorcerer_potion", properties ->
+                    new BeyonderPotion(properties, 2, "fool"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
 
     public static DeferredItem<Item> BARD_POTION = ITEMS.registerItem("bard_potion", properties ->
                     new BeyonderPotion(properties, 9, "sun"),
@@ -66,6 +70,11 @@ public class PotionItemHandler {
     public static DeferredItem<Item> JUSTICE_MENTOR_POTION = ITEMS.registerItem("justice_mentor_potion", properties ->
                     new BeyonderPotion(properties, 3, "sun"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> LIGHTSEEKER_POTION = ITEMS.registerItem("lightseeker_potion", properties ->
+                    new BeyonderPotion(properties, 2, "sun"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
 
     public static DeferredItem<Item> SAILOR_POTION = ITEMS.registerItem("sailor_potion", properties ->
                     new BeyonderPotion(properties, 9, "tyrant"),

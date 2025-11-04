@@ -43,6 +43,13 @@ public class TransformationComponent {
         this.transformationIndex = type.getIndex();
     }
 
+    public boolean shouldCancelDefaultRendering() {
+        return switch (transformationIndex) {
+            case 4 -> false;
+            default -> true;
+        };
+    }
+
     public void setTransformationIndexAndSync(int transformationIndex, LivingEntity entity) {
         this.transformationIndex = transformationIndex;
         PacketHandler.sendToAllPlayers(new SyncTransformationPacket(entity.getId(), isTransformed, transformationIndex));
@@ -79,7 +86,8 @@ public class TransformationComponent {
         DEVIL(0),
         DESIRE_AVATAR(1),
         BEAR(2),
-        SOLAR_ENVOY(3);
+        SOLAR_ENVOY(3),
+        WINGS_OF_LIGHT(4);
 
         private final int index;
         TransformationType(int index) {

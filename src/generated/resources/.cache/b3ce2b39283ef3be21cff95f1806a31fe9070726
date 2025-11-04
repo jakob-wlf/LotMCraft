@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-04T14:06:40.2385722	Item Models: lotmcraft
+// 1.21.1	2025-11-04T22:12:48.0125811	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -18,6 +18,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/bard.json
 7800b42da67b62cb90699e14aa60a7bc408bd946 assets/lotmcraft/models/item/bard_potion.json
 265396d83b5b7a0c49a23f8ae5d6caa5a9795501 assets/lotmcraft/models/item/battle_hypnosis_ability.json
 82727287489addd69560995fcaf2e197eb398144 assets/lotmcraft/models/item/biologist_potion.json
+2e412d2889c0826764f1e57a318e7a8bc6a8cdd4 assets/lotmcraft/models/item/bizarro_sorcerer_potion.json
 a578b3a6402c4e23b86fea8b0dc8b72968ee4cf2 assets/lotmcraft/models/item/black_feather_of_monster_bird.json
 9b397ef35da6a6009ac197ed9b1fc009412d32e6 assets/lotmcraft/models/item/black_flame_ability.json
 cbc2462e9dc2d20ebed509db3ac6a27990f77ea2 assets/lotmcraft/models/item/black_hole_ability.json
@@ -115,6 +116,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/instigator
 641237b16ae86e43c0ed7951e3d24c2dfaca8828 assets/lotmcraft/models/item/lightning_ability.json
 2a68ecf26b4e23b864c39f3e580ea9d024632e04 assets/lotmcraft/models/item/lightning_branch_ability.json
 ca33741784f5965b143d72aef2c97d25f0aae45c assets/lotmcraft/models/item/lightning_storm_ability.json
+942c44095fa1582735746e5e2dc4b8825087c492 assets/lotmcraft/models/item/lightseeker_potion.json
 e7223c38a8519ecbc6b9ada373b37931754387e0 assets/lotmcraft/models/item/light_of_holiness_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/light_supplicant.json
 2934b87c1f9442be132897fdd7774c3acb15182f assets/lotmcraft/models/item/light_supplicant_potion.json
@@ -283,6 +285,7 @@ c8c29a275123e6bf90d04f3cd08aa58698974898 assets/lotmcraft/models/item/wall_of_li
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/wind_blessed.json
 c510228f6532a9f892e976154fbf2e8a9b510261 assets/lotmcraft/models/item/wind_blessed_potion.json
 3b4ecda32926f7a5f13f89e2f6cad9ad02eb974a assets/lotmcraft/models/item/wind_manipulation_ability.json
+6ccf07a7a1dfdb67b2c77ef70a0436a13383879a assets/lotmcraft/models/item/wings_of_light_ability.json
 0fd87e62f532a474fea10373f2358baece8e9cb9 assets/lotmcraft/models/item/winner_potion.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/witch.json
 d2b913f5281d1029bd89002fbabcc5d83f098dff assets/lotmcraft/models/item/witch_potion.json
