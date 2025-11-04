@@ -78,7 +78,8 @@ public class TransformationComponent {
     public enum TransformationType {
         DEVIL(0),
         DESIRE_AVATAR(1),
-        BEAR(2);
+        BEAR(2),
+        SOLAR_ENVOY(3);
 
         private final int index;
         TransformationType(int index) {

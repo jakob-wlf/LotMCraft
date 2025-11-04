@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-03T23:53:48.9105936	Item Models: lotmcraft
+// 1.21.1	2025-11-04T14:06:40.2385722	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -225,6 +225,7 @@ a13987d46a84d593c916d3f084c5bba5ced6e766 assets/lotmcraft/models/item/shapeshift
 9b8d6ded2dadf45207aec920edbaf64329bd5da5 assets/lotmcraft/models/item/siren_vocal_sac.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/sleepless.json
 6abac197367ff0a78888aaebd00470b91b15e0a2 assets/lotmcraft/models/item/sleepless_potion.json
+2b948f9f1da933635f21105525e2fe231e77e046 assets/lotmcraft/models/item/solar_envoy_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/solar_high_priest.json
 a82ea42bd09929e5306f7468a431b6afbf4abfe4 assets/lotmcraft/models/item/solar_high_priest_potion.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/soul_assurer.json
@@ -233,6 +234,7 @@ eaa996ad8e9f3a260dacc04bed77cbfb55749ad6 assets/lotmcraft/models/item/soul_snari
 b6ab08d6a23ab634e8ba301f492d7dcece700464 assets/lotmcraft/models/item/source_of_mad_dreams.json
 c28eda6eabed651124912c42de4acadf5467df87 assets/lotmcraft/models/item/space_concealment_ability.json
 3d6f0b540c4db683589286a3bba5e97e4c3de4d7 assets/lotmcraft/models/item/space_tearing_ability.json
+bc4e30b887eedc88b7183b3846ce78031c7d5753 assets/lotmcraft/models/item/spear_of_light_ability.json
 2752f40cfbaa42a10d2986dd9f7b98dc2bd435aa assets/lotmcraft/models/item/spectating_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/spectator.json
 051ec67f777c6a1854888e32e2a0a180288cd691 assets/lotmcraft/models/item/spectator_potion.json

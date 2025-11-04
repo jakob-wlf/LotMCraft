@@ -52,6 +52,8 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> UNSHADOWED_DOMAIN = ITEMS.registerItem("unshadowed_domain_ability",  UnshadowedDomainAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> WALL_OF_LIGHT = ITEMS.registerItem("wall_of_light_ability",  WallOfLightAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SWORD_OF_JUSTICE = ITEMS.registerItem("sword_of_justice_ability",  SwordOfJusticeAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> SPEAR_OF_LIGHT = ITEMS.registerItem("spear_of_light_ability",  SpearOfLightAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> SOLAR_ENVOY = ITEMS.registerItem("solar_envoy_ability",  SolarEnvoyAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> TRAP = ITEMS.registerItem("trap_ability", TrapAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> PROVOKING = ITEMS.registerItem("provoking_ability", ProvokingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
