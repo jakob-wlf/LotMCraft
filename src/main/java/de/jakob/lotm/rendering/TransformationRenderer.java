@@ -23,6 +23,8 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class TransformationRenderer {
@@ -45,125 +47,174 @@ public class TransformationRenderer {
                     event.getPackedLight(), entity, event.getPartialTick());
             case 3 -> renderSolarEnvoy(event.getPoseStack(), event.getMultiBufferSource(),
                     event.getPackedLight(), entity, event.getPartialTick());
-            case 4 -> renderLightWings(event.getPoseStack(), event.getMultiBufferSource(),
+            case 4 -> renderAngelicWings(event.getPoseStack(), event.getMultiBufferSource(),
                     event.getPackedLight(), entity, event.getPartialTick());
         }
     }
 
-    private static void renderLightWings(PoseStack poseStack, MultiBufferSource buffer,
-                                         int packedLight, LivingEntity entity, float partialTick) {
+    private static void renderAngelicWings(PoseStack poseStack, MultiBufferSource buffer,
+                                           int packedLight, LivingEntity entity, float partialTick) {
         poseStack.pushPose();
 
-        // Position wings at the entity's back (upper torso)
-        float backHeight = entity.getBbHeight() * 0.65f;
-        poseStack.translate(0, backHeight, 0);
+        // Position at shoulder height
+        float entityHeight = entity.getBbHeight();
+        poseStack.translate(0, entityHeight * 0.75f, 0);
 
-        // Use additive blending for glowing effect
-        RenderType renderType = RenderType.eyes(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/sun/gold.png"));
-        VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
+        // Apply ONLY the body rotation - no camera adjustments
+        // This keeps wings fixed to the player's back regardless of camera angle
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 - yaw));
+
+        // Move wings behind the player
+        poseStack.translate(0, 0, .3f);
 
         // Animation parameters
         float time = entity.tickCount + partialTick;
-        float flapAngle = Mth.sin(time * 0.1f) * 0.3f; // Gentle wing flapping angle
-        float shimmer = 0.7f + Mth.sin(time * 0.15f) * 0.3f;
+        float flapAngle = Mth.sin(time * 0.08f) * 15f; // Gentle flapping motion
+        float glowPulse = 0.85f + Mth.sin(time * 0.12f) * 0.15f; // Pulsing glow
+
+        // Wing dimensions
+        float wingSpan = 2.2f; // How far out the wing extends
+        float wingHeight = 2.8f; // Height of the wing
+
+        // Use entity translucent emissive for glowing effect
+        RenderType renderType = RenderType.entityTranslucentEmissive(
+                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/sun/gold.png")
+        );
+        VertexConsumer consumer = buffer.getBuffer(renderType);
 
         // Render left wing
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(30 + flapAngle * 20)); // Spread angle + flap
-        poseStack.mulPose(Axis.ZP.rotationDegrees(-10)); // Slight upward tilt
-        renderWingMesh(poseStack, vertexConsumer, packedLight, shimmer, true);
+        poseStack.translate(-0.2f, 0, 0); // Offset from center
+        poseStack.mulPose(Axis.YP.rotationDegrees(-35 - flapAngle)); // Angle outward with flap
+        poseStack.mulPose(Axis.ZP.rotationDegrees(10)); // Slight upward tilt
+        renderDetailedWing(poseStack, consumer, wingSpan, wingHeight, packedLight, glowPulse, false);
         poseStack.popPose();
 
-        // Render right wing
+        // Render right wing (mirrored)
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(-30 - flapAngle * 20));
+        poseStack.translate(0.2f, 0, 0); // Offset from center
+        poseStack.mulPose(Axis.YP.rotationDegrees(35 + flapAngle)); // Angle outward with flap (opposite)
+        poseStack.mulPose(Axis.ZP.rotationDegrees(-10)); // Slight upward tilt (mirrored)
+        renderDetailedWing(poseStack, consumer, wingSpan, wingHeight, packedLight, glowPulse, true);
+        poseStack.popPose();
+
+        // Add outer glow layer for extra radiance
+        RenderType glowType = RenderType.energySwirl(
+                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/sun/gold.png"),
+                0, 0
+        );
+        VertexConsumer glowConsumer = buffer.getBuffer(glowType);
+
+        // Left wing glow (slightly larger)
+        poseStack.pushPose();
+        poseStack.translate(-0.2f, 0, 0);
+        poseStack.mulPose(Axis.YP.rotationDegrees(-35 - flapAngle));
         poseStack.mulPose(Axis.ZP.rotationDegrees(10));
-        renderWingMesh(poseStack, vertexConsumer, packedLight, shimmer, false);
+        poseStack.scale(1.15f, 1.15f, 1.0f);
+        renderDetailedWing(poseStack, glowConsumer, wingSpan, wingHeight, 15728880, glowPulse * 0.5f, false);
+        poseStack.popPose();
+
+        // Right wing glow
+        poseStack.pushPose();
+        poseStack.translate(0.2f, 0, 0);
+        poseStack.mulPose(Axis.YP.rotationDegrees(35 + flapAngle));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(-10));
+        poseStack.scale(1.15f, 1.15f, 1.0f);
+        renderDetailedWing(poseStack, glowConsumer, wingSpan, wingHeight, 15728880, glowPulse * 0.5f, true);
         poseStack.popPose();
 
         poseStack.popPose();
     }
 
-    private static void renderWingMesh(PoseStack poseStack, VertexConsumer consumer,
-                                       int light, float shimmer, boolean isLeft) {
+    private static void renderDetailedWing(PoseStack poseStack, VertexConsumer consumer,
+                                           float span, float height, int light, float glowIntensity, boolean mirror) {
         Matrix4f matrix = poseStack.last().pose();
         Matrix3f normalMat = poseStack.last().normal();
 
-        int segments = 8;
-        float wingLength = 1.8f;
-        float wingWidth = 1.2f;
+        // Create a wing with proper feather-like shape
+        // Wings are wider at the base and taper to a point at the top
+        int horizontalSegments = 12; // More segments for smoother curve
+        int verticalSegments = 16;
 
-        for (int i = 0; i < segments; i++) {
-            float t1 = (float) i / segments;
-            float t2 = (float) (i + 1) / segments;
+        for (int v = 0; v < verticalSegments; v++) {
+            float v1 = (float) v / verticalSegments;
+            float v2 = (float) (v + 1) / verticalSegments;
 
-            // Create wing shape - wider at base, narrowing to tip
-            float width1 = wingWidth * (1.0f - t1 * 0.7f);
-            float width2 = wingWidth * (1.0f - t2 * 0.7f);
+            for (int h = 0; h < horizontalSegments; h++) {
+                float u1 = (float) h / horizontalSegments;
+                float u2 = (float) (h + 1) / horizontalSegments;
 
-            // Wing extends outward (X) and slightly back (Z)
-            float x1 = wingLength * t1;
-            float x2 = wingLength * t2;
-            float z = -t1 * 0.5f; // Slight backward curve
+                // Create wing shape points
+                Vec3 p1 = getWingPoint(u1, v1, span, height, mirror);
+                Vec3 p2 = getWingPoint(u2, v1, span, height, mirror);
+                Vec3 p3 = getWingPoint(u2, v2, span, height, mirror);
+                Vec3 p4 = getWingPoint(u1, v2, span, height, mirror);
 
-            // Calculate alpha - brighter at base, fade to tip
-            int alpha1 = (int) (255 * shimmer * (1.0f - t1 * 0.6f));
-            int alpha2 = (int) (255 * shimmer * (1.0f - t2 * 0.6f));
+                // Calculate alpha fade towards edges
+                float edgeFade = 1.0f - (u1 * 0.3f); // Fade at wing tip
+                float tipFade = 1.0f - (v1 * v1 * 0.4f); // Fade at top
+                float alpha = glowIntensity * edgeFade * tipFade;
+                int alphaValue = (int) (Mth.clamp(alpha, 0, 1) * 255);
 
-            // Create quad for this segment
-            // Bottom edge
-            float y1Bottom = -width1 * 0.3f;
-            float y2Bottom = -width2 * 0.3f;
-            // Top edge
-            float y1Top = width1;
-            float y2Top = width2;
-
-            // Add slight wave pattern
-            float wave1 = Mth.sin(t1 * Mth.PI * 2) * 0.05f;
-            float wave2 = Mth.sin(t2 * Mth.PI * 2) * 0.05f;
-
-            // Render the quad (correct vertex order for proper face culling)
-            addWingVertex(consumer, matrix, normalMat, x1, y1Top + wave1, z, t1, 0, light, alpha1);
-            addWingVertex(consumer, matrix, normalMat, x2, y2Top + wave2, z - (t2 - t1) * 0.5f, t2, 0, light, alpha2);
-            addWingVertex(consumer, matrix, normalMat, x2, y2Bottom, z - (t2 - t1) * 0.5f, t2, 1, light, alpha2);
-            addWingVertex(consumer, matrix, normalMat, x1, y1Bottom, z, t1, 1, light, alpha1);
-        }
-
-        // Add second layer for more volume
-        for (int i = 0; i < segments - 2; i++) {
-            float t1 = (float) i / segments + 0.1f;
-            float t2 = (float) (i + 1) / segments + 0.1f;
-
-            float width1 = wingWidth * 0.8f * (1.0f - t1 * 0.7f);
-            float width2 = wingWidth * 0.8f * (1.0f - t2 * 0.7f);
-
-            float x1 = wingLength * t1;
-            float x2 = wingLength * t2;
-            float z = -t1 * 0.5f - 0.05f;
-
-            int alpha1 = (int) (200 * shimmer * (1.0f - t1 * 0.7f));
-            int alpha2 = (int) (200 * shimmer * (1.0f - t2 * 0.7f));
-
-            float y1Bottom = -width1 * 0.3f;
-            float y2Bottom = -width2 * 0.3f;
-            float y1Top = width1 * 0.9f;
-            float y2Top = width2 * 0.9f;
-
-            addWingVertex(consumer, matrix, normalMat, x1, y1Top, z, t1, 0, light, alpha1);
-            addWingVertex(consumer, matrix, normalMat, x2, y2Top, z - (t2 - t1) * 0.5f, t2, 0, light, alpha2);
-            addWingVertex(consumer, matrix, normalMat, x2, y2Bottom, z - (t2 - t1) * 0.5f, t2, 1, light, alpha2);
-            addWingVertex(consumer, matrix, normalMat, x1, y1Bottom, z, t1, 1, light, alpha1);
+                // Add vertices for this quad
+                addWingVertex(consumer, matrix, normalMat, p1, u1, v1, light, alphaValue);
+                addWingVertex(consumer, matrix, normalMat, p2, u2, v1, light, alphaValue);
+                addWingVertex(consumer, matrix, normalMat, p3, u2, v2, light, alphaValue);
+                addWingVertex(consumer, matrix, normalMat, p4, u1, v2, light, alphaValue);
+            }
         }
     }
 
+    private static Vec3 getWingPoint(float u, float v, float span, float height, boolean mirror) {
+        // u (0 = near back), 1 = wing tip
+        // v (0 = lower feathers), 1 = top taper
+
+        // Quadratic wing taper (keeps thickness at base)
+        float widthAtHeight = 1.0f - (v * v * 0.85f);
+
+        // --- Main silhouette shape --- //
+        // Bold shoulder, sweeping primaries
+        float shoulderCurve = Mth.sin(u * 1.3f) * 0.55f;       // bulge near body
+        float backwardSweep = -(u * u * 0.85f);                // swept primaries
+        float primaryDip = Mth.sin((1 - u) * 1.1f) * 0.25f;    // dip outer feathers slightly
+
+        float xOffset = ((shoulderCurve + u * span * widthAtHeight) * (mirror ? 1 : -1));
+        float yOffset = (v * height) + primaryDip - (height * 0.2f);
+        float zOffset = backwardSweep + v * 0.15f;
+
+        // --- Feather band simulation (3 subtle rows) --- //
+        float band = (float) Math.floor(v * 3f) / 3f;
+        float bandOffset = (v - band) * 0.12f; // Small stagger between layers
+        yOffset -= bandOffset;
+
+        // --- Soft angelic ripple --- //
+        // Much smoother + less noisy than before
+        float ripple = Mth.sin(u * 6f + v * 2.5f) * 0.025f * (1.0f - v);
+        zOffset += ripple;
+
+        // --- Wing twist for organic flow --- //
+        float twistDegrees = (u - 0.4f) * v * 14f;
+        Quaternionf twist = Axis.XP.rotationDegrees(twistDegrees);
+
+        Vector3f pos = new Vector3f(xOffset, yOffset, zOffset);
+        pos.rotate(twist);
+
+        return new Vec3(pos.x(), pos.y(), pos.z());
+    }
+
+
     private static void addWingVertex(VertexConsumer consumer, Matrix4f matrix, Matrix3f normalMat,
-                                      float x, float y, float z, float u, float v, int light, int alpha) {
-        consumer.addVertex(matrix, x, y, z)
-                .setColor(255, 250, 200, alpha)
+                                      Vec3 pos, float u, float v, int light, int alpha) {
+        // Calculate normal based on position for proper lighting
+        Vec3 normal = pos.normalize();
+
+        consumer.addVertex(matrix, (float) pos.x, (float) pos.y, (float) pos.z)
+                .setColor(255, 255, 255, alpha)
                 .setUv(u, v)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(240) // Full brightness for glow
-                .setNormal(0, 0, 1);
+                .setLight(light)
+                .setNormal((float) normal.x, (float) normal.y, (float) normal.z);
     }
 
     private static void renderSolarEnvoy(PoseStack poseStack, MultiBufferSource buffer, int packedLight, LivingEntity entity, float partialTick) {
