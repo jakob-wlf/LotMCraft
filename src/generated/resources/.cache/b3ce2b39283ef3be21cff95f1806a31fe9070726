@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-04T22:12:48.0125811	Item Models: lotmcraft
+// 1.21.1	2025-11-05T08:30:57.3103578	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -26,6 +26,7 @@ ca20fbb1de7097ce9a5195bf530a883e208d142d assets/lotmcraft/models/item/black_hunt
 a80778987f969f2bf0ef323381667f111f36b1a6 assets/lotmcraft/models/item/blink_ability.json
 79e047ec92eb6e14e6460720d4b67273b650fcef assets/lotmcraft/models/item/blue_shadow_falcon_feathers.json
 b4eae0398da7cf1bdd77c02ecf26d12390a2208f assets/lotmcraft/models/item/calamity_attraction_ability.json
+16d4a315974acddc6734fb7574188e5b682ac004 assets/lotmcraft/models/item/calamity_creation_ability.json
 0e71c83311f115a51f164dd80278e0274e644b09 assets/lotmcraft/models/item/calamity_priest_potion.json
 fa1df4c054dc2311a13303198d078bdda8607653 assets/lotmcraft/models/item/cataclysmic_interrer_potion.json
 73ce4c741a8e778afb95b5ca069c4e85afbc87d4 assets/lotmcraft/models/item/chain_of_command_ability.json

@@ -164,4 +164,17 @@ public class ClientHandler {
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.options.setCameraType(CameraType.THIRD_PERSON_BACK);
     }
+
+    public static void handleShaderPacket(SyncShaderPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if(entity == null) {
+            return;
+        }
+
+        entity.getData(ModAttachments.SHADER_COMPONENT.get()).setShaderActive(packet.shaderActive());
+        entity.getData(ModAttachments.SHADER_COMPONENT.get()).setShaderIndex(packet.shaderIndex());
+    }
 }

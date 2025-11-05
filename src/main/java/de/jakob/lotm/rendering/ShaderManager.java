@@ -1,6 +1,7 @@
 package de.jakob.lotm.rendering;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ActiveShaderComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import net.minecraft.client.Minecraft;
@@ -36,6 +37,10 @@ public class ShaderManager {
                 applyShader(mc, "abyssal_distortion");
             } else if (shouldApplyHolyEffect(player)) {
                 applyShader(mc, "holy_effect");
+            } else if (shouldApplyDrought(player)) {
+                applyShader(mc, "drought_effect");
+            } else if (shouldApplyBlizzard(player)) {
+                applyShader(mc, "blizzard_effect");
             } else {
                 removeShader(mc);
             }
@@ -46,7 +51,19 @@ public class ShaderManager {
     private static boolean shouldApplyShatteredGlass(Player player) {
         return player.getData(ModAttachments.MIRROR_WORLD_COMPONENT.get()).isInMirrorWorld();
     }
-    
+
+    private static boolean shouldApplyDrought(Player player) {
+        return player.getData(ModAttachments.SHADER_COMPONENT.get()).isShaderActive() &&
+                player.getData(ModAttachments.SHADER_COMPONENT.get()).getShaderIndex()
+                        == ActiveShaderComponent.SHADERTYPE.DROUGHT.getIndex();
+    }
+
+    private static boolean shouldApplyBlizzard(Player player) {
+        return player.getData(ModAttachments.SHADER_COMPONENT.get()).isShaderActive() &&
+                player.getData(ModAttachments.SHADER_COMPONENT.get()).getShaderIndex()
+                        == ActiveShaderComponent.SHADERTYPE.BLIZZARD.getIndex();
+    }
+
     private static boolean shouldApplyAbyssalDistortion(Player player) {
         return player.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).isTransformed() &&
                player.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).getTransformationIndex() 

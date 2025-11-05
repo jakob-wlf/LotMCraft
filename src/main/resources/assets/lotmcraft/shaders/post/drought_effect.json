@@ -1,0 +1,32 @@
+{
+  "targets": [
+    "swap",
+    "drought_temp"
+  ],
+  "passes": [
+    {
+      "name": "lotmcraft:drought_effect",
+      "intarget": "minecraft:main",
+      "outtarget": "drought_temp",
+      "auxtargets": [
+        {
+          "name": "DiffuseSampler",
+          "id": "minecraft:main"
+        }
+      ],
+      "uniforms": [
+        {
+          "name": "Time",
+          "type": "float",
+          "count": 1,
+          "values": [ 0.0 ]
+        }
+      ]
+    },
+    {
+      "name": "blit",
+      "intarget": "drought_temp",
+      "outtarget": "minecraft:main"
+    }
+  ]
+}

@@ -120,7 +120,12 @@
   "item.lotmcraft.thunderclap_ability": "Thunderclap",
   "item.lotmcraft.torrential_downpour_ability": "Torrential Downpour",
   "item.lotmcraft.lightning_storm_ability": "Lightning Storm",
-
+  "item.lotmcraft.calamity_creation_ability": "Calamity Creation",
+  "ability.lotmcraft.calamity_creation.volcano": "Volcano",
+  "ability.lotmcraft.calamity_creation.snow_storm": "Snow Storm",
+  "ability.lotmcraft.calamity_creation.earthquake": "Earthquake",
+  "ability.lotmcraft.calamity_creation.drought": "Drought",
+  "ability.lotmcraft.calamity_creation.tornados": "Tornados",
 
   "item.lotmcraft.toxic_smoke_ability": "Toxic Smoke",
   "item.lotmcraft.poisonous_flame_ability": "Poisonous Flame",
