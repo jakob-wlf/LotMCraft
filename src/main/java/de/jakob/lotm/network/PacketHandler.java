@@ -132,6 +132,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncFogPacket.TYPE,
+                SyncFogPacket.STREAM_CODEC,
+                SyncFogPacket::handle
+        );
+
+        registrar.playToClient(
                 RemoveDreamDivinationUserPacket.TYPE,
                 RemoveDreamDivinationUserPacket.STREAM_CODEC,
                 RemoveDreamDivinationUserPacket::handle

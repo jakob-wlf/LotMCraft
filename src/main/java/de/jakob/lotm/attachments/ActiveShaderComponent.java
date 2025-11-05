@@ -64,7 +64,7 @@ public class ActiveShaderComponent {
                 public ActiveShaderComponent read(IAttachmentHolder holder, CompoundTag tag, HolderLookup.Provider lookup) {
                     ActiveShaderComponent component = new ActiveShaderComponent();
                     component.shaderStopTime = tag.getLong("shaderStopTime");
-                    component.shaderIndex = tag.getInt("shaderIndex");
+                    component.shaderIndex = tag.getInt("index");
                     return component;
                 }
 
@@ -72,7 +72,7 @@ public class ActiveShaderComponent {
                 public CompoundTag write(ActiveShaderComponent component, HolderLookup.Provider lookup) {
                     CompoundTag tag = new CompoundTag();
                     tag.putLong("shaderStopTime", component.shaderStopTime);
-                    tag.putInt("shaderIndex", component.shaderIndex);
+                    tag.putInt("index", component.shaderIndex);
                     return tag;
                 }
             };

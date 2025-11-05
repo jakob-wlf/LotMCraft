@@ -177,4 +177,17 @@ public class ClientHandler {
         entity.getData(ModAttachments.SHADER_COMPONENT.get()).setShaderActive(packet.shaderActive());
         entity.getData(ModAttachments.SHADER_COMPONENT.get()).setShaderIndex(packet.shaderIndex());
     }
+
+    public static void handleFogPacket(SyncFogPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if(entity == null) {
+            return;
+        }
+
+        entity.getData(ModAttachments.FOG_COMPONENT.get()).setActive(packet.active());
+        entity.getData(ModAttachments.FOG_COMPONENT.get()).setFogIndex(packet.index());
+    }
 }

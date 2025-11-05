@@ -4,18 +4,17 @@ uniform sampler2D DiffuseSampler;
 uniform float Time;
 
 in vec2 texCoord;
-
 out vec4 fragColor;
 
-// Noise function for dust particles
+// Faster lightweight noise
 float hash(vec2 p) {
-    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+    return fract(sin(dot(p, vec2(12.9898,78.233))) * 43758.5453);
 }
 
 float noise(vec2 p) {
     vec2 i = floor(p);
     vec2 f = fract(p);
-    f = f * f * (3.0 - 2.0 * f);
+    f = f*f*(3.0-2.0*f);
 
     float a = hash(i);
     float b = hash(i + vec2(1.0, 0.0));
@@ -25,88 +24,69 @@ float noise(vec2 p) {
     return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
 }
 
-// Fractal noise for dust clouds
 float fbm(vec2 p) {
-    float value = 0.0;
-    float amplitude = 0.5;
-    float frequency = 1.0;
-
-    for (int i = 0; i < 4; i++) {
-        value += amplitude * noise(p * frequency);
-        frequency *= 2.0;
-        amplitude *= 0.5;
+    float v = 0.0;
+    float a = 0.5;
+    for(int i = 0; i < 3; i++){
+        v += a * noise(p);
+        p *= 2.0;
+        a *= 0.5;
     }
-
-    return value;
+    return v;
 }
 
-// Heat haze distortion
-vec2 heatDistortion(vec2 uv, float time) {
-    float distortion = sin(uv.y * 15.0 + time * 2.0) * 0.003;
-    distortion += sin(uv.y * 25.0 - time * 1.5) * 0.002;
-    return vec2(distortion, 0.0);
+// Heat haze simplified (1 trig op)
+vec2 heatDistortion(vec2 uv, float t) {
+    float d = sin(uv.y * 20.0 + t * 1.6) * 0.004;
+    return vec2(d, 0.0);
 }
 
 void main() {
     vec2 uv = texCoord;
 
-    // Apply heat haze distortion
-    vec2 distortion = heatDistortion(uv, Time);
-    vec2 distortedUV = uv + distortion;
+    // Apply heat haze
+    vec2 distortedUV = uv + heatDistortion(uv, Time);
 
-    // Get original color
     vec4 color = texture(DiffuseSampler, distortedUV);
 
-    // Desaturate - remove most color saturation
+    // Desaturate slightly
     float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
-    color.rgb = mix(color.rgb, vec3(gray), 0.5); // 50% desaturation
+    color.rgb = mix(color.rgb, vec3(gray), 0.35);
 
-    // Apply drought color grading (warm, dusty browns and oranges)
-    vec3 droughtTint = vec3(1.2, 0.95, 0.7); // Warm, orange-brown tint
-    color.rgb *= droughtTint;
+    // Stronger warm orange tone
+    color.rgb *= vec3(1.35, 0.85, 0.55);
 
-    // Increase contrast - darker darks, brighter brights
-    color.rgb = (color.rgb - 0.5) * 1.3 + 0.5;
+    // Boost contrast slightly
+    color.rgb = (color.rgb - 0.5) * 1.25 + 0.5;
 
-    // Add harsh sun overexposure to bright areas
-    float brightness = dot(color.rgb, vec3(0.299, 0.587, 0.114));
-    if(brightness > 0.6) {
-        color.rgb += vec3(0.3, 0.25, 0.15) * (brightness - 0.6) * 1.5;
-    }
+    float brightness = dot(color.rgb, vec3(0.4, 0.5, 0.1));
 
-    // Dust particles floating across screen
-    float dust1 = fbm(uv * 50.0 + vec2(Time * 0.3, Time * 0.1));
-    float dust2 = fbm(uv * 80.0 - vec2(Time * 0.2, Time * 0.15));
-    float dustLayer = (dust1 + dust2) * 0.5;
+    // Highlight overexposure without branching
+    color.rgb += vec3(0.25, 0.16, 0.05) *
+    smoothstep(0.55, 0.9, brightness);
 
-    // Create visible dust particles
-    float dustParticles = smoothstep(0.6, 0.8, dustLayer);
-    color.rgb += vec3(0.4, 0.35, 0.25) * dustParticles * 0.15;
+    // Dust clouds + particles (cheaper FBM)
+    float dust = fbm(uv * 60.0 + Time * 0.25);
+    color.rgb += vec3(0.35, 0.25, 0.1) *
+    smoothstep(0.65, 0.8, dust) * 0.12;
 
-    // Hazy atmosphere - add fog/dust overlay
-    float haze = fbm(uv * 3.0 + Time * 0.1);
-    color.rgb = mix(color.rgb, vec3(0.8, 0.7, 0.5) * haze, 0.15);
+    // Hazy overlay
+    float haze = fbm(uv * 2.5 + Time * 0.08);
+    color.rgb = mix(color.rgb, vec3(0.85, 0.7, 0.45) * haze, 0.18);
 
-    // Vignette - darker edges like harsh sun exposure
-    vec2 center = vec2(0.5, 0.5);
-    float distFromCenter = length(uv - center);
-    float vignette = smoothstep(0.8, 0.3, distFromCenter);
-    color.rgb *= mix(0.6, 1.0, vignette);
+    // Vignette
+    float dist = length(uv - 0.5);
+    color.rgb *= smoothstep(0.85, 0.25, dist);
 
-    // Subtle pulsing heat effect
-    float heatPulse = sin(Time * 1.2) * 0.03 + 0.97;
-    color.rgb *= heatPulse;
+    // Heat pulse
+    color.rgb *= sin(Time * 1.15) * 0.025 + 0.98;
 
-    // Add slight color shift towards yellow/orange in hot spots
-    float hotSpots = smoothstep(0.7, 1.0, brightness);
-    color.rgb += vec3(0.1, 0.08, 0.0) * hotSpots;
+    // Grain
+    float grain = hash(uv * 900.0 + Time) * 0.03 - 0.015;
+    color.rgb += grain;
 
-    // Reduce overall brightness slightly for that parched look
-    color.rgb *= 0.95;
-
-    // Film grain for gritty texture
-    float grain = hash(uv * 1000.0 + Time) * 0.03;
-    color.rgb += grain - 0.015;
+    // Final exposure fix
+    color.rgb *= 0.97;
 
     fragColor = vec4(color.rgb, 1.0);
 }

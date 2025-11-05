@@ -67,16 +67,16 @@ public class TransformationComponent {
                 @Override
                 public TransformationComponent read(IAttachmentHolder holder, CompoundTag tag, HolderLookup.Provider lookup) {
                     TransformationComponent component = new TransformationComponent();
-                    component.isTransformed = tag.getBoolean("shaderActive");
-                    component.transformationIndex = tag.getInt("shaderIndex");
+                    component.isTransformed = tag.getBoolean("active");
+                    component.transformationIndex = tag.getInt("index");
                     return component;
                 }
 
                 @Override
                 public CompoundTag write(TransformationComponent component, HolderLookup.Provider lookup) {
                     CompoundTag tag = new CompoundTag();
-                    tag.putBoolean("shaderActive", component.isTransformed);
-                    tag.putInt("shaderIndex", component.transformationIndex);
+                    tag.putBoolean("active", component.isTransformed);
+                    tag.putInt("index", component.transformationIndex);
                     return tag;
                 }
             };

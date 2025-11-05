@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.attachments.ActiveShaderComponent;
+import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.TornadoEntity;
@@ -22,10 +23,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CalamityCreationAbility extends SelectableAbilityItem {
     public CalamityCreationAbility(Properties properties) {
@@ -71,25 +69,44 @@ public class CalamityCreationAbility extends SelectableAbilityItem {
         Vec3 startPos = entity.position();
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
 
-        List<BlockPos> snowLayerPositions = griefing ? AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, 65, true, false, false).stream().filter(b -> serverLevel.getBlockState(b).isAir() && !serverLevel.getBlockState(b.below()).isAir()).toList() : new ArrayList<>();
-        List<BlockPos> snowPositions = griefing ? AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, 65, true, true, true) : new ArrayList<>();
+        List<BlockPos> snowSphereBlocks = griefing
+                ? AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, 60, true, false, false)
+                : Collections.emptyList();
+
+        List<BlockPos> snowLayerPositions = snowSphereBlocks.stream()
+                .filter(b -> serverLevel.getBlockState(b).isAir()
+                        && !serverLevel.getBlockState(b.below()).isAir())
+                .toList();
+
+        List<BlockPos> snowPositions = snowSphereBlocks.stream()
+                .filter(b -> !serverLevel.getBlockState(b).isAir()) // mimic excludeEmpty = true
+                .filter(b -> serverLevel.isEmptyBlock(b.above()))    // mimic onlyExposed = true
+                .toList();
+
+
         ServerScheduler.scheduleForDuration(0, 4, 20 * 30, () -> {
             // Damage and Effects
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 90, 22.5f * (float) multiplier(entity), startPos, true, false);
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 90, startPos,
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60, 22.5f * (float) multiplier(entity), startPos, true, false);
+            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 60, startPos,
                     new MobEffectInstance(MobEffects.BLINDNESS, 20 * 5, 1, false, false, false),
                     new MobEffectInstance(MobEffects.WEAKNESS, 20 * 5, 1, false, false, false),
                     new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 7, false, false, false));
 
             // Particles and shader
-            for(Player player : AbilityUtil.getNearbyEntities(null, serverLevel, startPos, 90, true)
+            for(Player player : AbilityUtil.getNearbyEntities(null, serverLevel, startPos, 60, true)
                     .stream()
                     .filter(e -> e instanceof Player)
                     .map(e -> (Player)e)
                     .toList()) {
 
-                ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SNOWFLAKE, player.position(), 80, 5, 2, 5, .05);
-                ParticleUtil.spawnParticles(serverLevel, blizzardDust, player.position(), 100, 6, 3, 6, .05);
+                if(player == entity) {
+                    FogComponent fogComponent = player.getData(ModAttachments.FOG_COMPONENT);
+                    fogComponent.setActiveAndSync(true, player);
+                    fogComponent.setFogIndexAndSync(FogComponent.FOG_TYPE.BLIZZARD, player);
+                }
+
+                ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SNOWFLAKE, player.position(), 60, 5, 2, 5, .05);
+                ParticleUtil.spawnParticles(serverLevel, blizzardDust, player.position(), 200, 6, 3, 6, .05);
 
                 ActiveShaderComponent component = player.getData(ModAttachments.SHADER_COMPONENT);
                 component.setShaderActiveAndSync(true, player);
@@ -103,7 +120,7 @@ public class CalamityCreationAbility extends SelectableAbilityItem {
 
             // Block Changes
             if(griefing) {
-                for (int i = 0; i < 60; i++) {
+                for (int i = 0; i < 120; i++) {
                     if (!snowLayerPositions.isEmpty()) {
                         BlockPos snowPos = snowLayerPositions.get(serverLevel.random.nextInt(snowLayerPositions.size()));
                         serverLevel.setBlockAndUpdate(snowPos, Blocks.SNOW.defaultBlockState());
@@ -126,8 +143,20 @@ public class CalamityCreationAbility extends SelectableAbilityItem {
         Vec3 startPos = entity.position();
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
 
-        List<BlockPos> firePositions = griefing ? AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, 65, true, false, false).stream().filter(b -> serverLevel.getBlockState(b).isAir() && !serverLevel.getBlockState(b.below()).isAir()).toList() : new ArrayList<>();
-        List<BlockPos> sandPositions = griefing ? AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, 65, true, true, true) : new ArrayList<>();
+        List<BlockPos> sphereBlocks = griefing
+                ? AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, 65, true, false, false)
+                : Collections.emptyList();
+
+        List<BlockPos> firePositions = sphereBlocks.stream()
+                .filter(b -> serverLevel.getBlockState(b).isAir()
+                        && !serverLevel.getBlockState(b.below()).isAir())
+                .toList();
+
+        List<BlockPos> sandPositions = sphereBlocks.stream()
+                .filter(b -> !serverLevel.getBlockState(b).isAir()) // mimic excludeEmpty = true
+                .filter(b -> serverLevel.isEmptyBlock(b.above()))    // mimic onlyExposed = true
+                .toList();
+
         ServerScheduler.scheduleForDuration(0, 4, 20 * 30, () -> {
             // Damage and Effects
             AbilityUtil.damageNearbyEntities(serverLevel, entity, 90, 19.5f * (float) multiplier(entity), startPos, true, false, 20 * 10);
@@ -143,8 +172,14 @@ public class CalamityCreationAbility extends SelectableAbilityItem {
                     .map(e -> (Player)e)
                     .toList()) {
 
-                ParticleUtil.spawnParticles(serverLevel, ParticleTypes.FLAME, player.position(), 60, 6, 3, 6, .05);
-                ParticleUtil.spawnParticles(serverLevel, droughtDust, player.position(), 250, 8, 3, 8, .05);
+                if(player == entity) {
+                    FogComponent fogComponent = player.getData(ModAttachments.FOG_COMPONENT);
+                    fogComponent.setActiveAndSync(true, player);
+                    fogComponent.setFogIndexAndSync(FogComponent.FOG_TYPE.DROUGHT, player);
+                }
+
+                ParticleUtil.spawnParticles(serverLevel, ParticleTypes.FLAME, player.position(), 90, 6, 3, 6, .05);
+                ParticleUtil.spawnParticles(serverLevel, droughtDust, player.position(), 200, 8, 3, 8, .05);
 
                 ActiveShaderComponent component = player.getData(ModAttachments.SHADER_COMPONENT);
                 component.setShaderActiveAndSync(true, player);

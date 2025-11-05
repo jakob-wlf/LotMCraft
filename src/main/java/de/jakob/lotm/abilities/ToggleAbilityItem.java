@@ -125,6 +125,7 @@ public abstract class ToggleAbilityItem extends Item {
 
     public static void cleanupEntity(Level level, LivingEntity entity) {
         Map<ToggleAbilityItem, ItemStack> playerAbilities = activeAbilities.get(entity.getUUID());
+        if(playerAbilities == null) return;
         activeAbilities.remove(entity.getUUID());
         for(ToggleAbilityItem ability : playerAbilities.keySet()) {
             ability.activeStates.remove(entity.getUUID());

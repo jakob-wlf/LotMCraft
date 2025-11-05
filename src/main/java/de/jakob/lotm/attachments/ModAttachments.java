@@ -62,6 +62,13 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<FogComponent>> FOG_COMPONENT =
+            ATTACHMENT_TYPES.register("fog_component", () ->
+                    AttachmentType.builder(FogComponent::new)
+                            .serialize(FogComponent.SERIALIZER)
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<PlayerQuestData>> PLAYER_QUEST_DATA = ATTACHMENT_TYPES.register(
             "player_quest_data",
             () -> AttachmentType.builder(() -> new PlayerQuestData())
