@@ -17,6 +17,7 @@ public class ModIngredients {
     public static final DeferredItem<Item> ROOT_OF_MIST_TREANT = ITEMS.registerItem("true_root_of_mist_treant", (properties) -> new PotionIngredient(properties, 7, true, "fool"), new Item.Properties());
     public static final DeferredItem<Item> THOUSAND_FACED_HUNTER_BLOOD = ITEMS.registerItem("thousand_faced_hunter_blood", (properties) -> new PotionIngredient(properties, 6, true, "fool"), new Item.Properties());
     public static final DeferredItem<Item> ANCIENT_WRAITH_DUST = ITEMS.registerItem("ancient_wraith_dust", (properties) -> new PotionIngredient(properties, 5, true, "fool"), new Item.Properties());
+    public static final DeferredItem<Item> BIZARRO_BANE_EYE = ITEMS.registerItem("bizarro_bane_eye", (properties) -> new PotionIngredient(properties, 4, true, "fool"), new Item.Properties());
 
 
     public static final DeferredItem<Item> CRYSTAL_SUNFLOWER = ITEMS.registerItem("crystal_sunflower", (properties) -> new PotionIngredient(properties, 9, true, "sun"), new Item.Properties());
@@ -24,6 +25,8 @@ public class ModIngredients {
     public static final DeferredItem<Item> SPIRIT_PACT_TREE_FRUIT = ITEMS.registerItem("spirit_pact_tree_fruit", (properties) -> new PotionIngredient(properties, 7, true, "sun"), new Item.Properties());
     public static final DeferredItem<Item> CRYSTALLIZED_ROOTS = ITEMS.registerItem("crystallized_roots", (properties) -> new PotionIngredient(properties, 6, true, "sun"), new Item.Properties());
     public static final DeferredItem<Item> PURE_WHITE_BRILLIANT_ROCK = ITEMS.registerItem("pure_white_brilliant_rock", (properties) -> new PotionIngredient(properties, 5, true, "sun"), new Item.Properties());
+    public static final DeferredItem<Item> GOLDEN_BLOOD = ITEMS.registerItem("golden_blood", (properties) -> new PotionIngredient(properties, 4, true, "sun"), new Item.Properties());
+    public static final DeferredItem<Item> SUN_ORB = ITEMS.registerItem("sun_orb", (properties) -> new PotionIngredient(properties, 3, true, "sun"), new Item.Properties());
 
 
     public static final DeferredItem<Item> ILLUSION_CRYSTAL = ITEMS.registerItem("illusion_crystal", (properties) -> new PotionIngredient(properties, 9, true, "door"), new Item.Properties());
@@ -31,6 +34,8 @@ public class ModIngredients {
     public static final DeferredItem<Item> METEORITE_CRYSTAL = ITEMS.registerItem("meteorite_crystal", (properties) -> new PotionIngredient(properties, 7, true, "door"), new Item.Properties());
     public static final DeferredItem<Item> ANCIENT_WRAITH_ARTIFACT = ITEMS.registerItem("ancient_wraith_artifact", (properties) -> new PotionIngredient(properties, 6, true, "door"), new Item.Properties());
     public static final DeferredItem<Item> SHADOWLESS_DEMONIC_WOLF_HEART = ITEMS.registerItem("shadowless_demonic_wolf_heart", (properties) -> new PotionIngredient(properties, 5, true, "door"), new Item.Properties());
+    public static final DeferredItem<Item> GOLDEN_PHOENIX_EYE = ITEMS.registerItem("golden_phoenix_eyes", (properties) -> new PotionIngredient(properties, 4, true, "door"), new Item.Properties());
+    public static final DeferredItem<Item> MIST_WATCHER_CRYSTAL = ITEMS.registerItem("mist_watcher_crystal", (properties) -> new PotionIngredient(properties, 3, true, "door"), new Item.Properties());
 
 
     public static final DeferredItem<Item> MURLOC_BLADDER = ITEMS.registerItem("murloc_bladder", (properties) -> new PotionIngredient(properties, 9, true, "tyrant"), new Item.Properties());
@@ -38,6 +43,8 @@ public class ModIngredients {
     public static final DeferredItem<Item> ANCIENT_LOGBOOK = ITEMS.registerItem("ancient_logbook", (properties) -> new PotionIngredient(properties, 7, true, "tyrant"), new Item.Properties());
     public static final DeferredItem<Item> BLUE_SHADOW_FALCON_FEATHERS = ITEMS.registerItem("blue_shadow_falcon_feathers", (properties) -> new PotionIngredient(properties, 6, true, "tyrant"), new Item.Properties());
     public static final DeferredItem<Item> SIREN_VOCAL_SAC = ITEMS.registerItem("siren_vocal_sac", (properties) -> new PotionIngredient(properties, 5, true, "tyrant"), new Item.Properties());
+    public static final DeferredItem<Item> WHALE_OF_PUNISHMENT_STOMACH = ITEMS.registerItem("whale_of_punishment_stomach", (properties) -> new PotionIngredient(properties, 4, true, "tyrant"), new Item.Properties());
+    public static final DeferredItem<Item> KING_OF_GREEN_WINGS_EYE = ITEMS.registerItem("king_of_green_wings_eye", (properties) -> new PotionIngredient(properties, 3, true, "tyrant"), new Item.Properties());
 
 
     public static final DeferredItem<Item> MIDNIGHT_BEAUTY_FLOWER = ITEMS.registerItem("midnight_beauty_flower", (properties) -> new PotionIngredient(properties, 9, true, "darkness"), new Item.Properties());
@@ -52,6 +59,8 @@ public class ModIngredients {
     public static final DeferredItem<Item> MAGMA_ELF_CORE = ITEMS.registerItem("magma_elf_core", (properties) -> new PotionIngredient(properties, 7, true, "red_priest"), new Item.Properties());
     public static final DeferredItem<Item> SPHINX_BRAIN = ITEMS.registerItem("sphinx_brain", (properties) -> new PotionIngredient(properties, 6, true, "red_priest"), new Item.Properties());
     public static final DeferredItem<Item> BLACK_HUNTING_SPIDER_COMPOSITE_EYES = ITEMS.registerItem("black_hunting_spider_composite_eyes", (properties) -> new PotionIngredient(properties, 5, true, "red_priest"), new Item.Properties());
+    public static final DeferredItem<Item> MAGMA_GIANT_CORE = ITEMS.registerItem("magma_giant_core", (properties) -> new PotionIngredient(properties, 4, true, "red_priest"), new Item.Properties());
+    public static final DeferredItem<Item> WAR_COMET_CORE = ITEMS.registerItem("war_comet_core", (properties) -> new PotionIngredient(properties, 3, true, "red_priest"), new Item.Properties());
 
     public static final DeferredItem<Item> GOAT_HORNED_BLACKFISH_BLOOD = ITEMS.registerItem("goat_horned_blackfish_blood", (properties) -> new PotionIngredient(properties, 9, true, "visionary"), new Item.Properties());
     public static final DeferredItem<Item> RAINBOW_SALAMANDER_PITUITARY_GLAND = ITEMS.registerItem("rainbow_salamander_pituitary_gland", (properties) -> new PotionIngredient(properties, 8, true,"visionary"), new Item.Properties());

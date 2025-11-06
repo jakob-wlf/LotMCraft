@@ -67,6 +67,14 @@ public class BattleHypnosisAbility extends AbilityItem {
     }
 
     private void stopBeyonderPowersForTarget(ServerLevel level, LivingEntity entity, LivingEntity target) {
+        if(!BeyonderData.isBeyonder(target)) {
+            switch (random.nextInt(2)) {
+                case 0 -> weakenAndMoveAroundTarget(level, entity, target);
+                case 1 -> freezeTarget(level, entity, target);
+            }
+            return;
+        }
+
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.stop_beyonder_powers").withColor(0xf5c56c));
 
         BeyonderData.disableAbilityUse(target, "battle_hypnosis_stop_beyonder_powers");
@@ -82,7 +90,7 @@ public class BattleHypnosisAbility extends AbilityItem {
         ServerScheduler.scheduleForDuration(0, 5, 20 * 8, () -> {
             target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20, 5, false, false, true));
 
-            target.setDeltaMovement(new Vec3((random.nextDouble() - .5) * 2, random.nextDouble() - .5, (random.nextDouble() - .5) * 2).scale(.75));
+            target.setDeltaMovement(new Vec3((random.nextDouble() - .5) * 2, (random.nextDouble() - .5) * .15, (random.nextDouble() - .5) * 2).scale(.75));
             target.hurtMarked = true;
         }, level);
     }

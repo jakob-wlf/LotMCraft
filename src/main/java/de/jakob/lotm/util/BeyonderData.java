@@ -26,13 +26,13 @@ public class BeyonderData {
     private static final HashMap<UUID, HashSet<String>> disabledBeyonders = new HashMap<>();
 
     public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>(Map.of(
-            "fool", List.of(new Integer[]{9, 8, 7, 6, 5}),
-            "door", List.of(new Integer[]{9, 8, 7, 6, 5}),
-            "sun", List.of(new Integer[]{9, 8, 7, 6, 5}),
-            "tyrant", List.of(new Integer[]{9, 8, 7, 6, 5}),
+            "fool", List.of(new Integer[]{9, 8, 7, 6, 5, 4}),
+            "door", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3}),
+            "sun", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3}),
+            "tyrant", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3}),
             "darkness", List.of(new Integer[]{9, 8, 7, 6, 5}),
             "demoness", List.of(new Integer[]{9, 8, 7, 6, 5}),
-            "red_priest", List.of(new Integer[]{9, 8, 7, 6, 5}),
+            "red_priest", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3}),
             "visionary", List.of(new Integer[]{9, 8, 7, 6, 5})
     ));
 
