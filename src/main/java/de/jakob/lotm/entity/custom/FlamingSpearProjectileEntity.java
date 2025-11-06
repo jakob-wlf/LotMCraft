@@ -64,6 +64,9 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
     @Override
     protected void onHitEntity(EntityHitResult result) {
         this.discard();
+        if(!(result.getEntity() instanceof LivingEntity)) {
+            return;
+        }
         LivingEntity target = (LivingEntity) result.getEntity();
         level.explode(owner, target.position().x, target.position().y, target.position().z, 3.5f, griefing, Level.ExplosionInteraction.NONE);
         target.hurt(this.damageSources().mobAttack(owner), (float) damage);

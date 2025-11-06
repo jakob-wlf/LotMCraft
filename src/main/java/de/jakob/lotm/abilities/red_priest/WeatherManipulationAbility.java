@@ -1,4 +1,4 @@
-package de.jakob.lotm.abilities.tyrant;
+package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.attachments.ActiveShaderComponent;
@@ -24,16 +24,19 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class CalamityCreationAbility extends SelectableAbilityItem {
-    public CalamityCreationAbility(Properties properties) {
+public class WeatherManipulationAbility extends SelectableAbilityItem {
+    public WeatherManipulationAbility(Properties properties) {
         super(properties, 25);
     }
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("tyrant", 2));
+        return new HashMap<>(Map.of("red_priest", 2));
     }
 
     @Override
@@ -43,7 +46,7 @@ public class CalamityCreationAbility extends SelectableAbilityItem {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.calamity_creation.volcano", "ability.lotmcraft.calamity_creation.snow_storm", "ability.lotmcraft.calamity_creation.drought", "ability.lotmcraft.calamity_creation.tornados"};
+        return new String[]{"ability.lotmcraft.calamity_creation.snow_storm", "ability.lotmcraft.calamity_creation.drought", "ability.lotmcraft.calamity_creation.tornados"};
     }
 
     @Override
@@ -53,19 +56,10 @@ public class CalamityCreationAbility extends SelectableAbilityItem {
         }
 
         switch (abilityIndex) {
-            case 0 -> createVolcano(serverLevel, entity);
-            case 1 -> createSnowStorm(serverLevel, entity);
-            case 2 -> createDrought(serverLevel, entity);
-            case 3 -> createTornados(serverLevel, entity);
+            case 0 -> createSnowStorm(serverLevel, entity);
+            case 1 -> createDrought(serverLevel, entity);
+            case 2 -> createTornados(serverLevel, entity);
         }
-    }
-
-    private void createVolcano(ServerLevel serverLevel, LivingEntity entity) {
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 60, 2);
-
-        VolcanoEntity volcano = new VolcanoEntity(serverLevel, targetPos, 36.5f * (float) multiplier(entity), entity);
-        serverLevel.addFreshEntity(volcano);
-
     }
 
     private final DustParticleOptions blizzardDust = new DustParticleOptions(new Vector3f(202 / 255f, 232 / 255f, 235 / 255f), 10.0f);

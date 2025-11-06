@@ -1,0 +1,19 @@
+{
+  "structures": [
+    {
+      "structure": "lotmcraft:red_priest_castle",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+
+    "salt": 4367768776,
+
+    "spacing": 32,
+
+    "separation": 10,
+    "heightmap": "WORLD_SURFACE_WG",
+    "max_tries": 10
+  }
+}

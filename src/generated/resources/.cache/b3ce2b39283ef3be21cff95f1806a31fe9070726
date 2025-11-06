@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-05T08:30:57.3103578	Item Models: lotmcraft
+// 1.21.1	2025-11-06T09:58:32.2766536	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -84,6 +84,7 @@ d4916058c0781a964fac72fc0d9b4348aafd0640 assets/lotmcraft/models/item/flame_spel
 61815b98037fe1098719f17f26709261aff91cde assets/lotmcraft/models/item/flaming_hit_ability.json
 304902be9d9b06af3f488b4158e7047ad197b4dc assets/lotmcraft/models/item/flaming_jump_ability.json
 5b979a8d680bb03046e23006a940a336adeb58ae assets/lotmcraft/models/item/flaring_sun_ability.json
+2cb26c057eda8f5e38ce739b73a6a5f596a6b65e assets/lotmcraft/models/item/flight_ability.json
 acc9a05c880f4968c868d872829eaa564d531beb assets/lotmcraft/models/item/fog_of_war_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/folk_of_rage.json
 cd31a2ff8f5df6704d22cd1d35aca7522db5610c assets/lotmcraft/models/item/folk_of_rage_potion.json
@@ -283,6 +284,7 @@ c8c29a275123e6bf90d04f3cd08aa58698974898 assets/lotmcraft/models/item/wall_of_li
 23b099aba95f97ca1c4056e0946b96bb405645b2 assets/lotmcraft/models/item/war_song_ability.json
 7dd9c46bc70c8c7c4d94be7b583c6c5d4faeaa9f assets/lotmcraft/models/item/water_manipulation_ability.json
 453659d9df7346edf6ad3a1d741986d334f23c00 assets/lotmcraft/models/item/water_mastery_ability.json
+d6a68338450901758105531191f331e6856072ce assets/lotmcraft/models/item/weather_manipulation_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/wind_blessed.json
 c510228f6532a9f892e976154fbf2e8a9b510261 assets/lotmcraft/models/item/wind_blessed_potion.json
 3b4ecda32926f7a5f13f89e2f6cad9ad02eb974a assets/lotmcraft/models/item/wind_manipulation_ability.json

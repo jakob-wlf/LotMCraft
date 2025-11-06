@@ -110,8 +110,10 @@ public class VolcanoEntity extends Entity {
         }
 
         if(!level().isClientSide()) {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner((ServerLevel) level()), 3.75f, getDamage(), position(), true, false);
-            spawnFallingBlocks(level(), position().add(0, 13.5, 0), BeyonderData.isGriefingEnabled(getOwner((ServerLevel) level())), getOwner((ServerLevel) level()));
+            AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner((ServerLevel) level()), 12f, getDamage() / 8, position(), true, false, 20 * 10);
+            for(int i = 0; i < 3; i++) {
+                spawnFallingBlocks(level(), position().add(0, 20.5, 0), BeyonderData.isGriefingEnabled(getOwner((ServerLevel) level())), getOwner((ServerLevel) level()));
+            }
         }
     }
 

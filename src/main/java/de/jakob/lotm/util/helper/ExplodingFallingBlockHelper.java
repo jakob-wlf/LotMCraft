@@ -118,7 +118,7 @@ public class ExplodingFallingBlockHelper {
 
                 // Deal direct damage to nearby entities
                 if (data.damage > 0) {
-                    AbilityUtil.damageNearbyEntities((ServerLevel) level, owner, 9f, data.damage, pos.getCenter(), true, false);
+                    AbilityUtil.damageNearbyEntities((ServerLevel) level, owner, 10f, data.damage, pos.getCenter(), true, false);
                 }
                 // Create explosion
                 level.explode(

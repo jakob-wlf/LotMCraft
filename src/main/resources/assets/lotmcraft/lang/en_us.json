@@ -91,6 +91,11 @@
   "item.lotmcraft.war_cry_ability.description": "A deafening cry that damages your enemies and boosts your abilities",
   "item.lotmcraft.war_song_ability": "War Song",
   "item.lotmcraft.essence_of_war_ability": "Essence of War",
+  "item.lotmcraft.flight_ability": "Flight",
+  "item.lotmcraft.weather_manipulation_ability": "Weather Manipulation",
+  "ability.lotmcraft.weather_manipulation.snow_storm": "Snow Storm",
+  "ability.lotmcraft.weather_manipulation.drought": "Drought",
+  "ability.lotmcraft.weather_manipulation.tornados": "Tornados",
 
   "item.lotmcraft.raging_blows_ability": "Raging Blows",
   "item.lotmcraft.water_manipulation_ability": "Water Manipulation",
@@ -123,7 +128,6 @@
   "item.lotmcraft.calamity_creation_ability": "Calamity Creation",
   "ability.lotmcraft.calamity_creation.volcano": "Volcano",
   "ability.lotmcraft.calamity_creation.snow_storm": "Snow Storm",
-  "ability.lotmcraft.calamity_creation.earthquake": "Earthquake",
   "ability.lotmcraft.calamity_creation.drought": "Drought",
   "ability.lotmcraft.calamity_creation.tornados": "Tornados",
 
