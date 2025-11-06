@@ -262,6 +262,9 @@
   "ability.lotmcraft.placate.others": "Placate Others",
   "item.lotmcraft.psychological_invisibility_ability": "Psychological Invisibility",
   "item.lotmcraft.battle_hypnosis_ability": "Battle Hypnosis",
+  "ability.lotmcraft.battle_hypnosis.stop": "Target is unable to move",
+  "ability.lotmcraft.battle_hypnosis.weaken": "Target is distracted and weakened",
+  "ability.lotmcraft.battle_hypnosis.stop_beyonder_powers": "Target cannot use Beyonder Powers",
   "item.lotmcraft.dragon_scales_ability": "Dragon Scales",
 
   "item.lotmcraft.psyche_storm_ability": "Psyche Storm",
