@@ -6,6 +6,7 @@ import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.TornadoEntity;
+import de.jakob.lotm.entity.custom.VolcanoEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -60,6 +61,10 @@ public class CalamityCreationAbility extends SelectableAbilityItem {
     }
 
     private void createVolcano(ServerLevel serverLevel, LivingEntity entity) {
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 60, 2);
+
+        VolcanoEntity volcano = new VolcanoEntity(serverLevel, targetPos, 32.5f * (float) multiplier(entity), entity);
+        serverLevel.addFreshEntity(volcano);
 
     }
 

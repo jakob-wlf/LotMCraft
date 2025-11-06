@@ -151,6 +151,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.JUSTICE_SWORD.get(), JusticeSwordRenderer::new);
             EntityRenderers.register(ModEntities.SUN.get(), SunRenderer::new);
             EntityRenderers.register(ModEntities.SPEAR_OF_LIGHT.get(), SpearOfLightProjectileRenderer::new);
+            EntityRenderers.register(ModEntities.VOLCANO.get(), VolcanoRenderer::new);
         }
 
         @SubscribeEvent

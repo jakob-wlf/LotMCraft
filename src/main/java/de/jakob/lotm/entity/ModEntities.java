@@ -69,6 +69,17 @@ public class ModEntities {
                     .fireImmune()
                     .build("justice_sword"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<VolcanoEntity>> VOLCANO =
+            ENTITY_TYPES.register("volcano", () -> EntityType.Builder.of(
+                            (EntityType<VolcanoEntity> type, Level level) ->
+                                    new VolcanoEntity(type, level),
+                            MobCategory.MISC)
+                    .sized(2f, 2f)
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .build("volcano"));
+
     public static final Supplier<EntityType<ApprenticeDoorEntity>> APPRENTICE_DOOR =
             ENTITY_TYPES.register("apprentice_door", () -> EntityType.Builder.<ApprenticeDoorEntity>of(ApprenticeDoorEntity::new, MobCategory.MISC)
                     .sized(.005f, 2f).build("apprentice_door"));
