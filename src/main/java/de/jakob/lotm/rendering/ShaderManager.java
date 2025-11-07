@@ -41,6 +41,8 @@ public class ShaderManager {
                 applyShader(mc, "drought_effect");
             } else if (shouldApplyBlizzard(player)) {
                 applyShader(mc, "blizzard_effect");
+            } else if (shouldApplyHistoricalVoid(player)) {
+                applyShader(mc, "fog_of_history");
             } else {
                 removeShader(mc);
             }
@@ -68,6 +70,12 @@ public class ShaderManager {
         return player.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).isTransformed() &&
                player.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).getTransformationIndex() 
                    == TransformationComponent.TransformationType.DESIRE_AVATAR.getIndex();
+    }
+
+    private static boolean shouldApplyHistoricalVoid(Player player) {
+        return player.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).isTransformed() &&
+                player.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).getTransformationIndex()
+                        == TransformationComponent.TransformationType.FOG_OF_HISTORY.getIndex();
     }
 
     private static boolean shouldApplyHolyEffect(Player player) {

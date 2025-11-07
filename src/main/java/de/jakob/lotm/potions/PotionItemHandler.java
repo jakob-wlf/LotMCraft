@@ -42,6 +42,10 @@ public class PotionItemHandler {
                     new BeyonderPotion(properties, 4, "fool"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
+    public static DeferredItem<Item> SCHOLAR_OF_YORE_POTION = ITEMS.registerItem("scholar_of_yore_potion", properties ->
+                    new BeyonderPotion(properties, 3, "fool"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
 
     public static DeferredItem<Item> BARD_POTION = ITEMS.registerItem("bard_potion", properties ->
                     new BeyonderPotion(properties, 9, "sun"),

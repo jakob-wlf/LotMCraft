@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-06T16:08:46.5245919	Item Models: lotmcraft
+// 1.21.1	2025-11-07T01:07:24.4562422	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -100,6 +100,7 @@ ba973641ef5550da2597873305b02717284e8659 assets/lotmcraft/models/item/golden_blo
 f07135695348ab8e47f302514f4c413be2656cb1 assets/lotmcraft/models/item/golden_phoenix_eyes.json
 21b9eaa21a54ecc4e368a58c6d64b5d23e99c5e4 assets/lotmcraft/models/item/harvest_priest_potion.json
 e89d72f021d3744ecd047605e1c9f2bf9e0b3b86 assets/lotmcraft/models/item/healing_ability.json
+ac3f80647e7de270d2f16f2cad72d50f575d77c5 assets/lotmcraft/models/item/historical_void_hiding_ability.json
 a5c1bea6a9b88081cd3ff494a64c8359ea41f31b assets/lotmcraft/models/item/holy_light_ability.json
 adaa3e6918e978f71b51baadee8dcac122365a99 assets/lotmcraft/models/item/holy_light_summoning_ability.json
 2198b2577699f0b9b33d70ac7005cbf0583ab8ce assets/lotmcraft/models/item/holy_oath_ability.json
@@ -222,6 +223,7 @@ e1b38f11301b9539bb83f73d509763f5a8719d61 assets/lotmcraft/models/item/replicatin
 0a9152444954d71797a358ece83b26aef69f5e5a assets/lotmcraft/models/item/robot_potion.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/sailor.json
 b17ad3ec7a0bd9b5fb8ea926b63c142f9491297d assets/lotmcraft/models/item/sailor_potion.json
+044e5b5169a76a715e2dca88a298e5159e4d315f assets/lotmcraft/models/item/scholar_of_yore_potion.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/scribe.json
 d1aa9c15583e8299bd23770fad275555cb0a1ae8 assets/lotmcraft/models/item/scribe_potion.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/seafarer.json

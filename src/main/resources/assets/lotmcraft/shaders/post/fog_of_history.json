@@ -1,0 +1,32 @@
+{
+  "targets": [
+    "swap",
+    "mystical_temp"
+  ],
+  "passes": [
+    {
+      "name": "lotmcraft:fog_of_history",
+      "intarget": "minecraft:main",
+      "outtarget": "mystical_temp",
+      "auxtargets": [
+        {
+          "name": "DiffuseSampler",
+          "id": "minecraft:main"
+        }
+      ],
+      "uniforms": [
+        {
+          "name": "Time",
+          "type": "float",
+          "count": 1,
+          "values": [ 0.0 ]
+        }
+      ]
+    },
+    {
+      "name": "blit",
+      "intarget": "mystical_temp",
+      "outtarget": "minecraft:main"
+    }
+  ]
+}

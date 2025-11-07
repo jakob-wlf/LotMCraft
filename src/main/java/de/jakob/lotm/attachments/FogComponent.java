@@ -89,7 +89,8 @@ public class FogComponent {
 
     public enum FOG_TYPE {
         DROUGHT(0, 15f, 24.0f),
-        BLIZZARD(1, 15f, 24.0f);
+        BLIZZARD(1, 15f, 24.0f),
+        FOG_OF_HISTORY(2, 7f, 12.0f);
 
         private final int index;
         private final float nearPlaneDistance;

@@ -102,6 +102,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> SHAPESHIFTING = ITEMS.registerItem("shapeshifting_ability", ShapeShiftingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> PUPPETEERING = ITEMS.registerItem("puppeteering_ability", PuppeteeringAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> MARIONETTE_CONTROLLING = ITEMS.registerItem("marionette_controlling_ability", MarionetteControllingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> HISTORICAL_VOID_HIDING = ITEMS.registerItem("historical_void_hiding_ability", HistoricalVoidHidingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> MIDNIGHT_POEM = ITEMS.registerItem("midnight_poem_ability", MidnightPoemAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> NIGHTMARE = ITEMS.registerItem("nightmare_ability", NightmareAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

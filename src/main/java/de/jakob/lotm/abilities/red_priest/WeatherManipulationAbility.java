@@ -87,7 +87,6 @@ public class WeatherManipulationAbility extends SelectableAbilityItem {
             // Damage and Effects
             AbilityUtil.damageNearbyEntities(serverLevel, entity, 60, 22.5f * (float) multiplier(entity), startPos, true, false);
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 60, startPos,
-                    new MobEffectInstance(MobEffects.BLINDNESS, 20 * 5, 1, false, false, false),
                     new MobEffectInstance(MobEffects.WEAKNESS, 20 * 5, 1, false, false, false),
                     new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 7, false, false, false));
 
@@ -98,11 +97,9 @@ public class WeatherManipulationAbility extends SelectableAbilityItem {
                     .map(e -> (Player)e)
                     .toList()) {
 
-                if(player == entity) {
-                    FogComponent fogComponent = player.getData(ModAttachments.FOG_COMPONENT);
-                    fogComponent.setActiveAndSync(true, player);
-                    fogComponent.setFogIndexAndSync(FogComponent.FOG_TYPE.BLIZZARD, player);
-                }
+                FogComponent fogComponent = player.getData(ModAttachments.FOG_COMPONENT);
+                fogComponent.setActiveAndSync(true, player);
+                fogComponent.setFogIndexAndSync(FogComponent.FOG_TYPE.BLIZZARD, player);
 
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SNOWFLAKE, player.position(), 60, 5, 2, 5, .05);
                 ParticleUtil.spawnParticles(serverLevel, blizzardDust, player.position(), 200, 6, 3, 6, .05);
@@ -160,7 +157,6 @@ public class WeatherManipulationAbility extends SelectableAbilityItem {
             // Damage and Effects
             AbilityUtil.damageNearbyEntities(serverLevel, entity, 90, 19.5f * (float) multiplier(entity), startPos, true, false, 20 * 10);
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 90, startPos,
-                    new MobEffectInstance(MobEffects.BLINDNESS, 20 * 5, 1, false, false, false),
                     new MobEffectInstance(MobEffects.WEAKNESS, 20 * 5, 1, false, false, false),
                     new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 4, false, false, false));
 
@@ -171,11 +167,9 @@ public class WeatherManipulationAbility extends SelectableAbilityItem {
                     .map(e -> (Player)e)
                     .toList()) {
 
-                if(player == entity) {
-                    FogComponent fogComponent = player.getData(ModAttachments.FOG_COMPONENT);
-                    fogComponent.setActiveAndSync(true, player);
-                    fogComponent.setFogIndexAndSync(FogComponent.FOG_TYPE.DROUGHT, player);
-                }
+                FogComponent fogComponent = player.getData(ModAttachments.FOG_COMPONENT);
+                fogComponent.setActiveAndSync(true, player);
+                fogComponent.setFogIndexAndSync(FogComponent.FOG_TYPE.DROUGHT, player);
 
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.FLAME, player.position(), 90, 6, 3, 6, .05);
                 ParticleUtil.spawnParticles(serverLevel, droughtDust, player.position(), 200, 8, 3, 8, .05);
