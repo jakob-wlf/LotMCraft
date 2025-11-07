@@ -76,12 +76,12 @@ void main() {
     vec3 fogColor = mix(fogColor1, fogColor2, colorShift);
     fogColor = mix(fogColor, fogColor3, fog3 * 0.3);
 
-    // Apply fog to scene
-    color.rgb = mix(color.rgb, fogColor, fogDensity * 0.6);
+    // Apply fog to scene - much more intense
+    color.rgb = mix(color.rgb, fogColor, fogDensity * 0.85);
 
     // Add depth - more fog in distance
-    float depthGradient = smoothstep(0.3, 1.0, uv.y);
-    color.rgb = mix(color.rgb, fogColor2, depthGradient * 0.25);
+    float depthGradient = smoothstep(0.1, 1.0, uv.y);
+    color.rgb = mix(color.rgb, fogColor2, depthGradient * 0.5);
 
     // Mysterious floating orbs of light in the fog
     for(float i = 0.0; i < 4.0; i++) {
