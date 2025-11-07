@@ -428,7 +428,7 @@ public class BeyonderData {
 
     private static int getAmplifierBySequenceDifference(int difference) {
         return switch (difference) {
-            case 1 -> 1;
+            case 1 -> 0;
             case 2 -> 4;
             case 3 -> 7;
             case 4 -> 8;

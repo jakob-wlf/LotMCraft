@@ -103,8 +103,11 @@ public class ExplodingFallingBlockHelper {
             // Check distance to ground
             double distanceToGround = AbilityUtil.distanceToGround(level, fallingBlock);
 
+            System.out.println("Distance to ground: " + distanceToGround + ", Threshold: " + IMPACT_DISTANCE_THRESHOLD);
+
             // Explode when close to ground and hasn't exploded yet
             if (distanceToGround <= IMPACT_DISTANCE_THRESHOLD) {
+                System.out.println("Exploding falling block at " + fallingBlock.blockPosition());
                 BlockPos pos = fallingBlock.blockPosition();
 
                 // Get owner entity if exists
@@ -118,8 +121,10 @@ public class ExplodingFallingBlockHelper {
 
                 // Deal direct damage to nearby entities
                 if (data.damage > 0) {
+                    System.out.println("Dealing " + data.damage + " damage to nearby entities.");
                     AbilityUtil.damageNearbyEntities((ServerLevel) level, owner, 10f, data.damage, pos.getCenter(), true, false);
                 }
+                System.out.println("Creating explosion with power " + data.explosionPower + ", griefing: " + data.griefing);
                 // Create explosion
                 level.explode(
                         owner,

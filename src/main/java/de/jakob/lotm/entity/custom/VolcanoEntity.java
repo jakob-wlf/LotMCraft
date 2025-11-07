@@ -110,7 +110,8 @@ public class VolcanoEntity extends Entity {
         }
 
         if(!level().isClientSide()) {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner((ServerLevel) level()), 12f, getDamage() / 8, position(), true, false, 20 * 10);
+            boolean griefing = BeyonderData.isGriefingEnabled(getOwner((ServerLevel) level()));
+            AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner((ServerLevel) level()), griefing ? 16.5f : 34, getDamage() / 4, position(), true, false, 20 * 10);
             for(int i = 0; i < 3; i++) {
                 spawnFallingBlocks(level(), position().add(0, 20.5, 0), BeyonderData.isGriefingEnabled(getOwner((ServerLevel) level())), getOwner((ServerLevel) level()));
             }
@@ -121,7 +122,7 @@ public class VolcanoEntity extends Entity {
         BlockPos blockPos = BlockPos.containing(startPos);
         BlockState state = switch (random.nextInt(5)) {
             default -> Blocks.MAGMA_BLOCK.defaultBlockState();
-            case 1 -> Blocks.LAVA.defaultBlockState();
+            case 1 -> griefing ? Blocks.LAVA.defaultBlockState() : Blocks.MAGMA_BLOCK.defaultBlockState();
             case 2 -> Blocks.OBSIDIAN.defaultBlockState();
         };
 

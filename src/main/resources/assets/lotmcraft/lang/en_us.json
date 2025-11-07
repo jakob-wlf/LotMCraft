@@ -688,6 +688,10 @@
   "lotm.sequence.sheriff": "Sheriff",
   "lotm.sequence.arbiter": "Arbiter",
 
+  "_comment012": "Advancements-----------------------------------------------------------------------------",
+  "advancements.lotmcraft.root.title": "Path of the Divine",
+  "advancements.lotmcraft.root.description": "Begin your journey as a Beyonder",
+
 
   "lotm.calamity.tornado": "Tornado",
   "lotm.calamity.earthquake": "Earthquake",
