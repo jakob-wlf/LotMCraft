@@ -130,6 +130,9 @@
   "ability.lotmcraft.calamity_creation.snow_storm": "Snow Storm",
   "ability.lotmcraft.calamity_creation.drought": "Drought",
   "ability.lotmcraft.calamity_creation.tornados": "Tornados",
+  "item.lotmcraft.energy_transformation_ability": "Energy Transformation",
+  "item.lotmcraft.heavenly_punishment_ability": "Heavenly Punishment",
+  "item.lotmcraft.electromagnetic_tornado_ability": "Electromagnetic Tornado",
 
   "item.lotmcraft.toxic_smoke_ability": "Toxic Smoke",
   "item.lotmcraft.poisonous_flame_ability": "Poisonous Flame",
@@ -268,6 +271,10 @@
   "ability.lotmcraft.battle_hypnosis.weaken": "Target is distracted and weakened",
   "ability.lotmcraft.battle_hypnosis.stop_beyonder_powers": "Target cannot use Beyonder Powers",
   "item.lotmcraft.dragon_scales_ability": "Dragon Scales",
+  "item.lotmcraft.sleep_inducement_ability": "Sleep Inducement",
+  "item.lotmcraft.dream_traversal_ability": "Dream Traversal",
+  "ability.lotmcraft.dream_traversal.must_be_asleep": "Target must be asleep",
+  "item.lotmcraft.nightmare_spectator_ability": "Nightmare",
 
   "item.lotmcraft.psyche_storm_ability": "Psyche Storm",
   "item.lotmcraft.calamity_attraction_ability": "Calamity Attraction",
@@ -275,7 +282,6 @@
   "item.lotmcraft.luck_release_ability.description": "Release all of your accumulated luck",
   "item.lotmcraft.misfortune_gifting_ability": "Misfortune Gifting",
   "ability.lotmcraft.misfortune_gifting.no_target": "No Target found",
-
 
   "lotm.ability.cogitation.tick": "Cogitating",
 

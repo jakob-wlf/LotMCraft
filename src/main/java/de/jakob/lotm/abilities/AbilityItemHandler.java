@@ -85,6 +85,9 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> THUNDERCLAP = ITEMS.registerItem("thunderclap_ability", ThunderclapAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> LIGHTNING_BRANCH = ITEMS.registerItem("lightning_branch_ability", LightningBranchAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> CALAMITY_CREATION = ITEMS.registerItem("calamity_creation_ability", CalamityCreationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> ENERGY_TRANSFORMATION = ITEMS.registerItem("energy_transformation_ability", EnergyTransformationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> HEAVENLY_PUNISHMENT = ITEMS.registerItem("heavenly_punishment_ability", HeavenlyPunishmentAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> ELECTROMAGNETIC_TORNADO = ITEMS.registerItem("electromagnetic_tornado_ability", ElectromagneticTornadoAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> TOXIC_SMOKE = ITEMS.registerItem("toxic_smoke_ability", ToxicSmokeAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> POISONOUS_FLAME = ITEMS.registerItem("poisonous_flame_ability", PoisonousFlameAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
@@ -153,6 +156,9 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> PSYCHOLOGICAL_INVISIBILITY = ITEMS.registerItem("psychological_invisibility_ability", PsychologicalInvisibilityAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> BATTLE_HYPNOSIS = ITEMS.registerItem("battle_hypnosis_ability", BattleHypnosisAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> DRAGON_SCALES = ITEMS.registerItem("dragon_scales_ability", DragonScalesAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> SLEEP_INDUCEMENT = ITEMS.registerItem("sleep_inducement_ability", SleepInducementAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> DREAM_TRAVERSAL = ITEMS.registerItem("dream_traversal_ability", DreamTraversalAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> NIGHTMARE_SPECTATOR = ITEMS.registerItem("nightmare_spectator_ability", NightmareSpectatorAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> PSYCHE_STORM = ITEMS.registerItem("psyche_storm_ability", PsycheStormAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> CALAMITY_ATTRACTION = ITEMS.registerItem("calamity_attraction_ability", CalamityAttractionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

@@ -49,7 +49,129 @@ public class TransformationRenderer {
                     event.getPackedLight(), entity, event.getPartialTick());
             case 4 -> renderAngelicWings(event.getPoseStack(), event.getMultiBufferSource(),
                     event.getPackedLight(), entity, event.getPartialTick());
+            case 6 -> renderEnergyMass(event.getPoseStack(), event.getMultiBufferSource(),
+                    event.getPackedLight(), entity, event.getPartialTick());
         }
+    }
+
+    private static void renderEnergyMass(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        poseStack.pushPose();
+
+        // Get entity dimensions for scaling
+        float entityHeight = entity.getBbHeight();
+        float entityWidth = entity.getBbWidth();
+
+        // Center the effect on the entity
+        poseStack.translate(0, entityHeight / 2, 0);
+
+        // Animation parameters
+        long gameTime = entity.level().getGameTime();
+        float time = (gameTime + partialTick) * 0.05F;
+
+        // Pulsating scale effect
+        float pulseScale = 1.0F + (Mth.sin(time * 2.0F) * 0.1F);
+        poseStack.scale(pulseScale, pulseScale, pulseScale);
+
+        // Rotation for dynamic effect
+        poseStack.mulPose(Axis.YP.rotationDegrees(time * 20.0F));
+
+        // Get vertex consumer for rendering
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.energySwirl(
+                ResourceLocation.withDefaultNamespace("textures/entity/creeper/creeper_armor.png"),
+                time * 0.01F,
+                time * 0.01F
+        ));
+
+        // Render main energy sphere
+        renderEnergySphere(poseStack, vertexConsumer, packedLight, entityWidth * 1.5F, 32, 16);
+
+        // Render orbiting energy particles
+        for (int i = 0; i < 8; i++) {
+            poseStack.pushPose();
+
+            float orbitAngle = (time + i * 45.0F) * (i % 2 == 0 ? 1.0F : -1.0F);
+            float orbitRadius = entityWidth * 1.2F;
+            float orbitHeight = Mth.sin(time + i) * entityHeight * 0.3F;
+
+            poseStack.mulPose(Axis.YP.rotationDegrees(orbitAngle));
+            poseStack.translate(orbitRadius, orbitHeight, 0);
+
+            // Render small energy orbs
+            renderEnergyOrb(poseStack, vertexConsumer, packedLight, 0.15F);
+
+            poseStack.popPose();
+        }
+
+        // Render inner core with different color/glow
+        VertexConsumer coreConsumer = multiBufferSource.getBuffer(RenderType.eyes(
+                ResourceLocation.withDefaultNamespace("textures/entity/enderman/enderman_eyes.png")
+        ));
+        renderEnergySphere(poseStack, coreConsumer, 15728880, entityWidth * 0.8F, 16, 8);
+
+        poseStack.popPose();
+    }
+
+    private static void renderEnergySphere(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, float radius, int longitudeSegments, int latitudeSegments) {
+        Matrix4f matrix = poseStack.last().pose();
+        Matrix3f normal = poseStack.last().normal();
+
+        for (int lat = 0; lat < latitudeSegments; lat++) {
+            float theta1 = (lat * Mth.PI) / latitudeSegments;
+            float theta2 = ((lat + 1) * Mth.PI) / latitudeSegments;
+
+            for (int lon = 0; lon < longitudeSegments; lon++) {
+                float phi1 = (lon * 2.0F * Mth.PI) / longitudeSegments;
+                float phi2 = ((lon + 1) * 2.0F * Mth.PI) / longitudeSegments;
+
+                // Calculate vertices for quad
+                float x1 = radius * Mth.sin(theta1) * Mth.cos(phi1);
+                float y1 = radius * Mth.cos(theta1);
+                float z1 = radius * Mth.sin(theta1) * Mth.sin(phi1);
+
+                float x2 = radius * Mth.sin(theta1) * Mth.cos(phi2);
+                float y2 = radius * Mth.cos(theta1);
+                float z2 = radius * Mth.sin(theta1) * Mth.sin(phi2);
+
+                float x3 = radius * Mth.sin(theta2) * Mth.cos(phi2);
+                float y3 = radius * Mth.cos(theta2);
+                float z3 = radius * Mth.sin(theta2) * Mth.sin(phi2);
+
+                float x4 = radius * Mth.sin(theta2) * Mth.cos(phi1);
+                float y4 = radius * Mth.cos(theta2);
+                float z4 = radius * Mth.sin(theta2) * Mth.sin(phi1);
+
+                // Calculate UVs
+                float u1 = (float) lon / longitudeSegments;
+                float u2 = (float) (lon + 1) / longitudeSegments;
+                float v1 = (float) lat / latitudeSegments;
+                float v2 = (float) (lat + 1) / latitudeSegments;
+
+                // Render quad
+                addVertex(vertexConsumer, matrix, normal, x1, y1, z1, u1, v1, packedLight);
+                addVertex(vertexConsumer, matrix, normal, x2, y2, z2, u2, v1, packedLight);
+                addVertex(vertexConsumer, matrix, normal, x3, y3, z3, u2, v2, packedLight);
+                addVertex(vertexConsumer, matrix, normal, x4, y4, z4, u1, v2, packedLight);
+            }
+        }
+    }
+
+    private static void renderEnergyOrb(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, float radius) {
+        renderEnergySphere(poseStack, vertexConsumer, packedLight, radius, 8, 4);
+    }
+
+    private static void addVertex(VertexConsumer vertexConsumer, Matrix4f matrix, Matrix3f normal, float x, float y, float z, float u, float v, int packedLight) {
+        // Calculate normal vector
+        float length = Mth.sqrt(x * x + y * y + z * z);
+        float nx = x / length;
+        float ny = y / length;
+        float nz = z / length;
+
+        vertexConsumer.addVertex(matrix, x, y, z)
+                .setColor(255, 255, 255, 255)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(packedLight)
+                .setNormal(nx, ny, nz);
     }
 
     private static void renderAngelicWings(PoseStack poseStack, MultiBufferSource buffer,

@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.entity.custom.GiantLightningEntity;
 import de.jakob.lotm.entity.custom.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -46,6 +47,17 @@ public class ModEntities {
                     .updateInterval(1)
                     .fireImmune()
                     .build("tornado"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<ElectromagneticTornadoEntity>> ELECTROMAGNETIC_TORNADO =
+            ENTITY_TYPES.register("electromagnetic_tornado", () -> EntityType.Builder.of(
+                            (EntityType<ElectromagneticTornadoEntity> type, net.minecraft.world.level.Level level) ->
+                                    new ElectromagneticTornadoEntity(type, level),
+                            MobCategory.MISC)
+                    .sized(8.0f, 16.0f)
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .build("electromagnetic_tornado"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<MeteorEntity>> Meteor =
             ENTITY_TYPES.register("meteor", () -> EntityType.Builder.of(
@@ -170,6 +182,13 @@ public class ModEntities {
                     .clientTrackingRange(64)
                     .updateInterval(1)
                     .build("lightning"));
+
+    public static final Supplier<EntityType<GiantLightningEntity>> GIANT_LIGHTNING =
+            ENTITY_TYPES.register("giant_lightning", () -> EntityType.Builder.<GiantLightningEntity>of(GiantLightningEntity::new, MobCategory.MISC)
+                    .sized(0.1f, 0.1f) // Small hitbox
+                    .clientTrackingRange(64)
+                    .updateInterval(1)
+                    .build("giant_lightning"));
 
     public static final Supplier<EntityType<FrostSpearProjectileEntity>> FROST_SPEAR =
             ENTITY_TYPES.register("frost_spear", () -> EntityType.Builder.<FrostSpearProjectileEntity>of(FrostSpearProjectileEntity::new, MobCategory.MISC)

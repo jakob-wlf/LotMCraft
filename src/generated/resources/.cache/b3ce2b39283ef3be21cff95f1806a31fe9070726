@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-07T12:21:44.9833697	Item Models: lotmcraft
+// 1.21.1	2025-11-08T22:50:40.4623581	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -71,9 +71,12 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/dreamwalke
 b952b1464d2b81738e338feb52c6b7e95d353d88 assets/lotmcraft/models/item/dreamwalker_potion.json
 bec10830c4c5130018c4f2b64c0b75d0d4dc0280 assets/lotmcraft/models/item/dream_catcher_heart.json
 6af50cdc1c2923b71cc13e157b87c368a6c6650d assets/lotmcraft/models/item/dream_eating_raven_heart.json
+a3e06e9bff163e9440d66e1e557e04c0e00e956b assets/lotmcraft/models/item/dream_traversal_ability.json
 335e37f89352a7664fa95cd93caf312ca8150d52 assets/lotmcraft/models/item/druid_potion.json
 b8cf5877a5f38956a069845b22b30343e94d4b74 assets/lotmcraft/models/item/earthquake_ability.json
+ed32770dad4db00c4e96990f97b39db87bfdb4ca assets/lotmcraft/models/item/electromagnetic_tornado_ability.json
 b48664f6747f681c6ac1705854a61ddfaa968b02 assets/lotmcraft/models/item/empty_bottle.json
+e7920e0bfe9fe326a762f536d121b2bd638ff479 assets/lotmcraft/models/item/energy_transformation_ability.json
 5ef4ae1000d7df465fdeb9304492be271babdf39 assets/lotmcraft/models/item/essence_of_war_ability.json
 415a56274da525bcdcb8cfdef0a3515c4d1e68eb assets/lotmcraft/models/item/exile_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/faceless.json
@@ -100,6 +103,7 @@ ba973641ef5550da2597873305b02717284e8659 assets/lotmcraft/models/item/golden_blo
 f07135695348ab8e47f302514f4c413be2656cb1 assets/lotmcraft/models/item/golden_phoenix_eyes.json
 21b9eaa21a54ecc4e368a58c6d64b5d23e99c5e4 assets/lotmcraft/models/item/harvest_priest_potion.json
 e89d72f021d3744ecd047605e1c9f2bf9e0b3b86 assets/lotmcraft/models/item/healing_ability.json
+ce37f6112d1b92109d4a034aa2153979bbb11eea assets/lotmcraft/models/item/heavenly_punishment_ability.json
 ac3f80647e7de270d2f16f2cad72d50f575d77c5 assets/lotmcraft/models/item/historical_void_hiding_ability.json
 d594b9f186ecc02e72c407c07a38caeb5a4a91d5 assets/lotmcraft/models/item/historical_void_summoning_ability.json
 a5c1bea6a9b88081cd3ff494a64c8359ea41f31b assets/lotmcraft/models/item/holy_light_ability.json
@@ -161,6 +165,7 @@ f1caa54d29eca7a72716c885546fb828c3eb35d3 assets/lotmcraft/models/item/murloc_bla
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/nightmare.json
 18ab5a8edeb1cb14cffe4b1dda01e63016348bd4 assets/lotmcraft/models/item/nightmare_ability.json
 fcdd6a50e2513fc9c9291e2d65f9afebc8eb73ce assets/lotmcraft/models/item/nightmare_potion.json
+c593244da9f913071f53db5b9c22a24048590f84 assets/lotmcraft/models/item/nightmare_spectator_ability.json
 84c26339e99df8707a320a1831fb33e371155de9 assets/lotmcraft/models/item/nocturnality_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/notary.json
 b71eb9065d7d9c7115bed9ee4b3be60036097a93 assets/lotmcraft/models/item/notary_buff_ability.json
@@ -245,6 +250,7 @@ a13987d46a84d593c916d3f084c5bba5ced6e766 assets/lotmcraft/models/item/shapeshift
 9b8d6ded2dadf45207aec920edbaf64329bd5da5 assets/lotmcraft/models/item/siren_vocal_sac.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/sleepless.json
 6abac197367ff0a78888aaebd00470b91b15e0a2 assets/lotmcraft/models/item/sleepless_potion.json
+b61d3716e0a8c3732117b92a8c5319af23e6e660 assets/lotmcraft/models/item/sleep_inducement_ability.json
 2b948f9f1da933635f21105525e2fe231e77e046 assets/lotmcraft/models/item/solar_envoy_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/solar_high_priest.json
 a82ea42bd09929e5306f7468a431b6afbf4abfe4 assets/lotmcraft/models/item/solar_high_priest_potion.json

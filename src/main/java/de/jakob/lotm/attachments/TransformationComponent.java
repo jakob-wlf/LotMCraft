@@ -88,7 +88,8 @@ public class TransformationComponent {
         BEAR(2),
         SOLAR_ENVOY(3),
         WINGS_OF_LIGHT(4),
-        FOG_OF_HISTORY(5);
+        FOG_OF_HISTORY(5),
+        ENERGY(6),;
 
         private final int index;
         TransformationType(int index) {

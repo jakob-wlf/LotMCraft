@@ -231,10 +231,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
                 return InteractionResult.SUCCESS;
             }
-        } else {
-            // NPC has no quest or quest was already accepted
-            player.sendSystemMessage(Component.literal("§7I have nothing for you right now."));
-            return InteractionResult.SUCCESS;
         }
 
         return super.mobInteract(player, hand);
