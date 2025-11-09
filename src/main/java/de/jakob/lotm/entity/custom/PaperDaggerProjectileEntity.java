@@ -58,6 +58,8 @@ public class PaperDaggerProjectileEntity extends AbstractArrow {
     @Override
     protected void onHitEntity(EntityHitResult result) {
         this.discard();
+        if (!(result.getEntity() instanceof LivingEntity))
+            return;
         LivingEntity target = (LivingEntity) result.getEntity();
         target.hurt(this.damageSources().mobAttack(owner), (float) damage);
         level.addFreshEntity(new ItemEntity(level, result.getLocation().x, result.getLocation().y, result.getLocation().z, new ItemStack(Items.PAPER)));

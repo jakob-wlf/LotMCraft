@@ -72,7 +72,7 @@ public class ExileDoorsEntity extends Entity {
             ServerLevel serverLevel = (ServerLevel) level();
             Set<LivingEntity> entities = new HashSet<>(serverLevel.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox()));
             UUID ownerUUID = this.entityData.get(OWNER).orElse(null);
-            LivingEntity owner = ownerUUID != null ? (LivingEntity) serverLevel.getEntity(ownerUUID) : null;
+            LivingEntity owner = ownerUUID != null && (serverLevel.getEntity(ownerUUID) instanceof LivingEntity livingEntity) ? livingEntity : null;
 
             boolean ownerIsBeyonder = owner != null && BeyonderData.isBeyonder(owner);
             int ownerSequence = ownerIsBeyonder ? BeyonderData.getSequence(owner) : 9;
