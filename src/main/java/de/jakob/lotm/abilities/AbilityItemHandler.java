@@ -55,6 +55,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> SPEAR_OF_LIGHT = ITEMS.registerItem("spear_of_light_ability",  SpearOfLightAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SOLAR_ENVOY = ITEMS.registerItem("solar_envoy_ability",  SolarEnvoyAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> WINGS_OF_LIGHT = ITEMS.registerItem("wings_of_light_ability",  WingsOfLightAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> PURE_WHITE_LIGHT = ITEMS.registerItem("pure_white_light_ability",  PureWhiteLightAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> TRAP = ITEMS.registerItem("trap_ability", TrapAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> PROVOKING = ITEMS.registerItem("provoking_ability", ProvokingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

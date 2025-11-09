@@ -7,17 +7,17 @@ import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class SolarEnvoyAbility extends ToggleAbilityItem {
     private final HashMap<UUID, Vec3> locations = new HashMap<>();
@@ -38,7 +38,7 @@ public class SolarEnvoyAbility extends ToggleAbilityItem {
 
     @Override
     protected void start(Level level, LivingEntity entity) {
-        if(level.isClientSide) {
+        if(!(level instanceof ServerLevel serverLevel)) {
             ClientHandler.changeToThirdPerson();
             return;
         }
@@ -52,16 +52,27 @@ public class SolarEnvoyAbility extends ToggleAbilityItem {
         Random random = new Random();
 
         // Destroy blocks
-        if(BeyonderData.isGriefingEnabled(entity)) {
-            AbilityUtil.getBlocksInSphereRadius((ServerLevel) level, entity.position(), 17, true, true, false).forEach(pos -> {
-                level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-            });
-            AbilityUtil.getBlocksInSphereRadius((ServerLevel) level, entity.position(), 17, true, false, false).forEach(pos -> {
-                if(random.nextInt(3) == 0) {
-                    level.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
+        if (BeyonderData.isGriefingEnabled(entity)) {
+            // Get all blocks once
+            List<BlockPos> sphereBlocks = AbilityUtil.getBlocksInSphereRadius(
+                    serverLevel, entity.position(), 25, true, true, false
+            );
+
+            for (BlockPos pos : sphereBlocks) {
+                BlockState state = serverLevel.getBlockState(pos);
+
+                // Remove all non-air blocks
+                if (!state.isAir()) {
+                    serverLevel.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
                 }
-            });
+
+                // Roughly 1/3 chance to place fire nearby (only if the spot is now empty)
+                if (random.nextInt(3) == 0 && serverLevel.isEmptyBlock(pos)) {
+                    serverLevel.setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
+                }
+            }
         }
+
     }
 
     @Override
@@ -80,7 +91,7 @@ public class SolarEnvoyAbility extends ToggleAbilityItem {
         }
 
         // Damage entities
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 30, 45.5f * multiplier(entity), entity.position(), true, true, 20 * 5);
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 37, 45.5f * multiplier(entity), entity.position(), true, true, 20 * 5);
 
         // Particles
         ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, entity.position(), 2.6, 60);
