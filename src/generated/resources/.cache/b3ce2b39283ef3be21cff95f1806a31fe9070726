@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-08T22:50:40.4623581	Item Models: lotmcraft
+// 1.21.1	2025-11-09T13:45:09.5176445	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -226,6 +226,7 @@ e1b38f11301b9539bb83f73d509763f5a8719d61 assets/lotmcraft/models/item/replicatin
 45f255a4af176042191ab5c7245144cc9d8465d7 assets/lotmcraft/models/item/requiem_ability.json
 7c911e8ed81a9fe625956c25fa247bcec96c49a8 assets/lotmcraft/models/item/riptide_ability.json
 29c99a4ad6e3972adabdc7b1eb7278e8c8b2cfbf assets/lotmcraft/models/item/roar_ability.json
+75f0ad69016951619c5e5251b0cefb7d6f020ec3 assets/lotmcraft/models/item/roar_of_the_thunder_god_ability.json
 0a9152444954d71797a358ece83b26aef69f5e5a assets/lotmcraft/models/item/robot_potion.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/sailor.json
 b17ad3ec7a0bd9b5fb8ea926b63c142f9491297d assets/lotmcraft/models/item/sailor_potion.json

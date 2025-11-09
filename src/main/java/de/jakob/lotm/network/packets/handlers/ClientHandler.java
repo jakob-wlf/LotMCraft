@@ -5,10 +5,8 @@ import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gui.custom.CoordinateInputScreen;
 import de.jakob.lotm.network.packets.*;
-import de.jakob.lotm.rendering.MarionetteOverlayRenderer;
-import de.jakob.lotm.rendering.SpectatingOverlayRenderer;
-import de.jakob.lotm.rendering.SpiritVisionOverlayRenderer;
-import de.jakob.lotm.rendering.TelepathyOverlayRenderer;
+import de.jakob.lotm.rendering.*;
+import de.jakob.lotm.rendering.effectRendering.VFXRenderer;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
 import net.minecraft.client.CameraType;
@@ -189,5 +187,9 @@ public class ClientHandler {
 
         entity.getData(ModAttachments.FOG_COMPONENT.get()).setActive(packet.active());
         entity.getData(ModAttachments.FOG_COMPONENT.get()).setFogIndex(packet.index());
+    }
+
+    public static void addEffect(int index, double x, double y, double z) {
+        VFXRenderer.addActiveEffect(index, x, y, z);
     }
 }

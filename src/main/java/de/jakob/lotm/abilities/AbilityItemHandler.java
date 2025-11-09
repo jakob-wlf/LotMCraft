@@ -88,6 +88,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> ENERGY_TRANSFORMATION = ITEMS.registerItem("energy_transformation_ability", EnergyTransformationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> HEAVENLY_PUNISHMENT = ITEMS.registerItem("heavenly_punishment_ability", HeavenlyPunishmentAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> ELECTROMAGNETIC_TORNADO = ITEMS.registerItem("electromagnetic_tornado_ability", ElectromagneticTornadoAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> ROAR_OF_THE_THUNDER_GOD = ITEMS.registerItem("roar_of_the_thunder_god_ability", RoarOfTheThunderGodAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> TOXIC_SMOKE = ITEMS.registerItem("toxic_smoke_ability", ToxicSmokeAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> POISONOUS_FLAME = ITEMS.registerItem("poisonous_flame_ability", PoisonousFlameAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

@@ -63,6 +63,9 @@ public class ElectromagneticTornadoRenderer extends EntityRenderer<Electromagnet
         // Render core glow
         renderCoreGlow(entity, poseStack, bufferSource, ageInTicks);
 
+        // Render outer swirls for motion effect
+        renderOuterSwirls(entity, poseStack, bufferSource, rotation, ageInTicks);
+
         poseStack.popPose();
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
     }
@@ -143,6 +146,98 @@ public class ElectromagneticTornadoRenderer extends EntityRenderer<Electromagnet
                     addVertex(consumer, pose, normal, x4, y2, z4, 1, 1, r, g, b, alpha);
                     addVertex(consumer, pose, normal, x3, y2, z3, 0, 1, r, g, b, alpha);
                 }
+            }
+
+            poseStack.popPose();
+        }
+    }
+
+    private void renderOuterSwirls(ElectromagneticTornadoEntity entity, PoseStack poseStack,
+                                   MultiBufferSource bufferSource, float rotation, float ageInTicks) {
+        VertexConsumer consumer = bufferSource.getBuffer(TORNADO_TRANSLUCENT);
+
+        int numSwirls = 8; // Number of spiral ribbons
+        float maxHeight = 20.0f;
+        float minHeight = 0.5f;
+        int heightSegments = 40;
+
+        for (int swirl = 0; swirl < numSwirls; swirl++) {
+            poseStack.pushPose();
+
+            // Offset each swirl around the tornado
+            float swirlAngle = (swirl / (float) numSwirls) * 360.0f + rotation * 2.0f;
+            poseStack.mulPose(Axis.YP.rotationDegrees(swirlAngle));
+
+            // Alternate colors for swirls
+            int r, g, b;
+            if (swirl % 2 == 0) {
+                // Bright cyan
+                r = 50;
+                g = 255;
+                b = 255;
+            } else {
+                // Bright purple
+                r = 200;
+                g = 50;
+                b = 255;
+            }
+
+            Matrix4f pose = poseStack.last().pose();
+            Matrix3f normal = poseStack.last().normal();
+
+            float ribbonWidth = 0.4f;
+
+            // Draw spiral ribbon from bottom to top
+            for (int h = 0; h < heightSegments; h++) {
+                float heightRatio = h / (float) heightSegments;
+                float nextHeightRatio = (h + 1) / (float) heightSegments;
+
+                float y1 = minHeight + heightRatio * maxHeight;
+                float y2 = minHeight + nextHeightRatio * maxHeight;
+
+                // Radius increases with height (following tornado shape)
+                float baseRadius = 10.0f * (0.25f + heightRatio * 0.75f);
+                float nextBaseRadius = 10.0f * (0.25f + nextHeightRatio * 0.75f);
+
+                // Add some outward offset and wave motion
+                float offset = 0.5f + Mth.sin(ageInTicks * 0.1f + swirl + heightRatio * Mth.PI * 2) * 0.3f;
+                float radius1 = baseRadius + offset;
+                float radius2 = nextBaseRadius + offset;
+
+                // Spiral twist - this creates the swirling effect
+                float spiralTwist1 = heightRatio * 720.0f + (ageInTicks * 6.0f);
+                float spiralTwist2 = nextHeightRatio * 720.0f + (ageInTicks * 6.0f);
+
+                // Calculate ribbon positions
+                float angle1 = spiralTwist1 * Mth.DEG_TO_RAD;
+                float angle2 = spiralTwist2 * Mth.DEG_TO_RAD;
+
+                // Inner edge of ribbon
+                float x1_inner = Mth.cos(angle1) * radius1;
+                float z1_inner = Mth.sin(angle1) * radius1;
+                float x2_inner = Mth.cos(angle2) * radius2;
+                float z2_inner = Mth.sin(angle2) * radius2;
+
+                // Outer edge of ribbon (slightly further out)
+                float x1_outer = Mth.cos(angle1) * (radius1 + ribbonWidth);
+                float z1_outer = Mth.sin(angle1) * (radius1 + ribbonWidth);
+                float x2_outer = Mth.cos(angle2) * (radius2 + ribbonWidth);
+                float z2_outer = Mth.sin(angle2) * (radius2 + ribbonWidth);
+
+                // Fade alpha based on height for smooth appearance
+                float alpha = 0.6f * (1.0f - heightRatio * 0.3f);
+
+                // Draw ribbon quad (outer face)
+                addVertex(consumer, pose, normal, x1_inner, y1, z1_inner, 0, 0, r, g, b, alpha);
+                addVertex(consumer, pose, normal, x1_outer, y1, z1_outer, 1, 0, r, g, b, alpha);
+                addVertex(consumer, pose, normal, x2_outer, y2, z2_outer, 1, 1, r, g, b, alpha);
+                addVertex(consumer, pose, normal, x2_inner, y2, z2_inner, 0, 1, r, g, b, alpha);
+
+                // Draw ribbon quad (inner face for visibility from all angles)
+                addVertex(consumer, pose, normal, x1_outer, y1, z1_outer, 0, 0, r, g, b, alpha * 0.7f);
+                addVertex(consumer, pose, normal, x1_inner, y1, z1_inner, 1, 0, r, g, b, alpha * 0.7f);
+                addVertex(consumer, pose, normal, x2_inner, y2, z2_inner, 1, 1, r, g, b, alpha * 0.7f);
+                addVertex(consumer, pose, normal, x2_outer, y2, z2_outer, 0, 1, r, g, b, alpha * 0.7f);
             }
 
             poseStack.popPose();

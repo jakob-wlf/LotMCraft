@@ -90,6 +90,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                AddEffectPacket.TYPE,
+                AddEffectPacket.STREAM_CODEC,
+                AddEffectPacket::handle
+        );
+
+        registrar.playToClient(
                 OpenCoordinateScreenPacket.TYPE,
                 OpenCoordinateScreenPacket.STREAM_CODEC,
                 OpenCoordinateScreenPacket::handle
@@ -275,6 +281,10 @@ public class PacketHandler {
 
     public static void sendToAllPlayers(CustomPacketPayload payload) {
         PacketDistributor.sendToAllPlayers(payload);
+    }
+
+    public static void sendToAllPlayersInSameLevel(CustomPacketPayload payload, ServerLevel level) {
+        level.players().forEach(player -> sendToPlayer(player, payload));
     }
 
     // Helper method to sync to all players (useful for when other players need to see beyonder status)
