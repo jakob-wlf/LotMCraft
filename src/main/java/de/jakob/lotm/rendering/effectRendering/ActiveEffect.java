@@ -20,9 +20,14 @@ public abstract class ActiveEffect {
     public void update(PoseStack poseStack, float partialTick) {
         float interpolatedTick = currentTick + partialTick;
         render(poseStack, interpolatedTick);
+    }
+
+
+    public void tick() {
         currentTick++;
     }
-    
+
+
     protected abstract void render(PoseStack poseStack, float tick);
 
     public boolean isFinished() {

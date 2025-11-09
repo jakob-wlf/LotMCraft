@@ -9,6 +9,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 import java.util.HashSet;
@@ -43,6 +44,11 @@ public class VFXRenderer {
 
             poseStack.popPose();
         }
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        activeEffects.forEach(ActiveEffect::tick);
     }
 
     public static void addActiveEffect(int effectIndex, double x, double y, double z) {

@@ -29,7 +29,7 @@ public class HolyLightEffect extends ActiveEffect {
 
 
     public HolyLightEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 18); // 120 ticks = 6 seconds total
+        super(x, y, z, 20 * 9); // 120 ticks = 6 seconds total
 
         this.currentTick = 0;
         this.beamProgress = 0f;
