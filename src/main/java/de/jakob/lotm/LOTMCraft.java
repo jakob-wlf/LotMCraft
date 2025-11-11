@@ -156,6 +156,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.ELECTROMAGNETIC_TORNADO.get(), ElectromagneticTornadoRenderer::new);
             EntityRenderers.register(ModEntities.SUN_KINGDOM.get(), SunKingdomEntityRenderer::new);
             EntityRenderers.register(ModEntities.DISTORTION_FIELD.get(), DistortionFieldRenderer::new);
+            EntityRenderers.register(ModEntities.SPEAR_OF_DESTRUCTION.get(), SpearOfDestructionProjectileRenderer::new);
         }
 
         @SubscribeEvent
@@ -181,6 +182,7 @@ public class LOTMCraft
             event.registerSpriteSet(ModParticles.LIGHTNING.get(), LightningParticle.Provider::new);
             event.registerSpriteSet(ModParticles.STAR.get(), StarParticle.Provider::new);
             event.registerSpriteSet(ModParticles.FOG_OF_WAR.get(), FogOfWarParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.PURPLE_FLAME.get(), PurpleFlameParticle.Provider::new);
         }
 
         @SubscribeEvent

@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-11T10:18:14.9364265	Item Models: lotmcraft
+// 1.21.1	2025-11-11T18:11:20.43164	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -42,6 +42,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/clown.json
 470d6510e866fcca1dfbd095552893bf70f89abc assets/lotmcraft/models/item/clown_potion.json
 f6998e4b31a5d7779f26c81c2124f4de8f9ab3ee assets/lotmcraft/models/item/cogitation_ability.json
 b289f09052474809344460fe5945e7d9db2d3fbb assets/lotmcraft/models/item/conceptualization_ability.json
+48e2092d8d87b9741c22122d4a2dc034b3d35439 assets/lotmcraft/models/item/conquering_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/conspirer.json
 8315db7b9b98b99cebbf665ac16f828b5ef51348 assets/lotmcraft/models/item/conspirer_potion.json
 d8397ae32798711abd27be503264a2d98d3abded assets/lotmcraft/models/item/criminal_potion.json
@@ -88,6 +89,7 @@ f92fc1a03cc2ebd5b36e5cd3bd2c61b38eca45aa assets/lotmcraft/models/item/feather_fa
 0dbfea078d31fb91a9dc63ce06a2ea4217bd14c1 assets/lotmcraft/models/item/fire_of_light_ability.json
 06cdd43105cdfb172380b556f9944bdc0fa6c43e assets/lotmcraft/models/item/fire_resistance_ability.json
 70f5921e219cc5e778bc9aed592af55a136ba67e assets/lotmcraft/models/item/fire_resistance_abyss_ability.json
+c31d1402b214313859eff513540d8cabc7cf38ec assets/lotmcraft/models/item/flame_authority_ability.json
 ee63293a6dace669c4e57047d7f4e6b694d7aa0c assets/lotmcraft/models/item/flame_controlling_ability.json
 ea8e6e2dbe3a66f570f72826b51d165bf8dd2f2b assets/lotmcraft/models/item/flame_mastery_ability.json
 d4916058c0781a964fac72fc0d9b4348aafd0640 assets/lotmcraft/models/item/flame_spells_ability.json

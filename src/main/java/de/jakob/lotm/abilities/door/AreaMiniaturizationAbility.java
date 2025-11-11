@@ -44,7 +44,7 @@ public class AreaMiniaturizationAbility extends AbilityItem {
         if (level.isClientSide) return;
 
         ServerLevel serverLevel = (ServerLevel) level;
-        Vec3 targetLocation = AbilityUtil.getTargetLocation(entity, 50, 2f);
+        Vec3 targetLocation = AbilityUtil.getTargetLocation(entity, 50, 0.1f);
 
         List<BlockPos> blocks = AbilityUtil.getBlocksInEllipsoid(
                 serverLevel,

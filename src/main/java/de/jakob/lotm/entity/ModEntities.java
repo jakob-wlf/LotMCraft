@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.entity.client.SpearOfDestructionProjectileModel;
 import de.jakob.lotm.entity.custom.GiantLightningEntity;
 import de.jakob.lotm.entity.custom.*;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -28,6 +29,9 @@ public class ModEntities {
             ENTITY_TYPES.register("spear_of_light", () -> EntityType.Builder.<SpearOfLightProjectileEntity>of(SpearOfLightProjectileEntity::new, MobCategory.MISC)
                     .sized(.35f, .35f).build("spear_of_light"));
 
+    public static final Supplier<EntityType<SpearOfDestructionProjectileEntity>> SPEAR_OF_DESTRUCTION =
+            ENTITY_TYPES.register("spear_of_destruction", () -> EntityType.Builder.<SpearOfDestructionProjectileEntity>of(SpearOfDestructionProjectileEntity::new, MobCategory.MISC)
+                    .sized(.35f, .35f).build("spear_of_destruction"));
 
     public static final Supplier<EntityType<FireballEntity>> FIREBALL =
             ENTITY_TYPES.register("fireball", () -> EntityType.Builder.<FireballEntity>of(FireballEntity::new, MobCategory.MISC)

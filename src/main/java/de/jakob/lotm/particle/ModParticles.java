@@ -13,6 +13,7 @@ public class ModParticles {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(BuiltInRegistries.PARTICLE_TYPE, LOTMCraft.MOD_ID);
 
     public static final Supplier<SimpleParticleType> HOLY_FLAME = PARTICLE_TYPES.register("holy_flame_particles", () -> new SimpleParticleType(true));
+    public static final Supplier<SimpleParticleType> PURPLE_FLAME = PARTICLE_TYPES.register("purple_flame_particles", () -> new SimpleParticleType(true));
     public static final Supplier<SimpleParticleType> DARKER_FLAME = PARTICLE_TYPES.register("darker_flame_particles", () -> new SimpleParticleType(true));
     public static final Supplier<SimpleParticleType> GREEN_FLAME = PARTICLE_TYPES.register("green_flame_particles", () -> new SimpleParticleType(true));
     public static final Supplier<SimpleParticleType> BLACK_FLAME = PARTICLE_TYPES.register("black_flame_particles", () -> new SimpleParticleType(true));

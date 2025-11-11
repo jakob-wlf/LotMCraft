@@ -28,10 +28,14 @@ public class ModEffects {
     public static final Holder<MobEffect> PETRIFICATION = MOB_EFFECTS.register("petrification",
             () -> new PetrificationEffect(MobEffectCategory.HARMFUL, 0x7532a8));
 
+    public static final Holder<MobEffect> CONQUERED = MOB_EFFECTS.register("conquered",
+            () -> new ConqueredEffect(MobEffectCategory.HARMFUL, 0x701010)
+                    .addAttributeModifier(Attributes.MOVEMENT_SPEED, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "conquered"), -20f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+
 
     public static final Holder<MobEffect> LOOSING_CONTROL = MOB_EFFECTS.register("loosing_control",
             () -> new LoosingControlEffect(MobEffectCategory.HARMFUL, 0x493269)
-                    .addAttributeModifier(Attributes.MOVEMENT_SPEED, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "loosing_control"), -.45f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)); // Dark blue color
+                    .addAttributeModifier(Attributes.MOVEMENT_SPEED, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "loosing_control"), -.45f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
 
     public static void register(IEventBus eventBus) {
         MOB_EFFECTS.register(eventBus);

@@ -12,7 +12,9 @@ public class EffectManager {
 
     public enum Effect {
         THUNDER_EXPLOSION(0),
-        PURE_WHITE_LIGHT(1);
+        PURE_WHITE_LIGHT(1),
+        CONQUERING(2),
+        FIRE_VORTEX(3);
 
         private final int index;
 

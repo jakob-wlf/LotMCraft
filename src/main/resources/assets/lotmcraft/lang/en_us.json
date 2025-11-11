@@ -98,6 +98,12 @@
   "ability.lotmcraft.weather_manipulation.snow_storm": "Snow Storm",
   "ability.lotmcraft.weather_manipulation.drought": "Drought",
   "ability.lotmcraft.weather_manipulation.tornados": "Tornados",
+  "item.lotmcraft.conquering_ability": "Conquering",
+  "item.lotmcraft.conquering_ability.description": "Conquer all entities around you. If their Sequence is lower they will be rendered completely helpless and if not they will still struggle to resist",
+  "item.lotmcraft.flame_authority_ability": "Flame Authority",
+  "ability.lotmcraft.flame_authority.destruction_spear": "Spear of Destruction",
+  "ability.lotmcraft.flame_authority.inferno": "Inferno",
+  "ability.lotmcraft.flame_authority.vortex": "Flaming Vortex",
 
   "item.lotmcraft.raging_blows_ability": "Raging Blows",
   "item.lotmcraft.water_manipulation_ability": "Water Manipulation",
@@ -349,6 +355,7 @@
   "effect.lotmcraft.luck": "Luck",
   "effect.lotmcraft.unluck": "Unluck",
   "effect.lotmcraft.petrification": "Petrification",
+  "effect.lotmcraft.conquered": "Conquered",
 
   "_comment004": "Sounds-----------------------------------------------------------------------------",
   "sounds.lotmcraft.midnight_poem": "Midnight Poem",
