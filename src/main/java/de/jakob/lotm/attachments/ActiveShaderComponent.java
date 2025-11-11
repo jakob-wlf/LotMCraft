@@ -29,8 +29,8 @@ public class ActiveShaderComponent {
         }
     }
 
-    public void setShaderActiveAndSync(boolean transformed, LivingEntity entity) {
-        setShaderActive(transformed);
+    public void setShaderActiveAndSync(boolean shaderActive, LivingEntity entity) {
+        setShaderActive(shaderActive);
         PacketHandler.sendToAllPlayers(new SyncShaderPacket(entity.getId(), isShaderActive(), shaderIndex));
     }
 
@@ -80,7 +80,8 @@ public class ActiveShaderComponent {
 
     public enum SHADERTYPE {
         DROUGHT(0),
-        BLIZZARD(1);
+        BLIZZARD(1),
+        SUN_KINGDOM(2);
 
         private final int index;
         SHADERTYPE(int index) {

@@ -43,13 +43,21 @@ public class ShaderManager {
                 applyShader(mc, "blizzard_effect");
             } else if (shouldApplyHistoricalVoid(player)) {
                 applyShader(mc, "fog_of_history");
-            } else {
+            } else if (shouldApplySunKingdomShader(player)) {
+                applyShader(mc, "holy_effect");
+            }else {
                 removeShader(mc);
             }
         }
     }
 
-    
+    private static boolean shouldApplySunKingdomShader(Player player) {
+        return player.getData(ModAttachments.SHADER_COMPONENT.get()).isShaderActive() &&
+                player.getData(ModAttachments.SHADER_COMPONENT.get()).getShaderIndex()
+                        == ActiveShaderComponent.SHADERTYPE.SUN_KINGDOM.getIndex();
+    }
+
+
     private static boolean shouldApplyShatteredGlass(Player player) {
         return player.getData(ModAttachments.MIRROR_WORLD_COMPONENT.get()).isInMirrorWorld();
     }

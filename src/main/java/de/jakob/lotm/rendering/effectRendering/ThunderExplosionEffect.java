@@ -28,7 +28,7 @@ public class ThunderExplosionEffect extends ActiveEffect {
     private final List<EnergyParticle> energyParticles = new ArrayList<>();
 
     public ThunderExplosionEffect(double x, double y, double z) {
-        super(x, y, z, 80); // 80 ticks = 4 seconds
+        super(x, y, z, 60); // 80 ticks = 4 seconds
 
         // Initialize lightning chains
         for (int i = 0; i < 32; i++) {

@@ -1,6 +1,7 @@
 #version 150
 
 uniform sampler2D DiffuseSampler;
+uniform sampler2D u_WeatherTex;
 
 in vec2 texCoord;
 in vec2 sampleStep;

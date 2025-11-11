@@ -16,16 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HolyLightEffect extends ActiveEffect {
-    private float beamProgress = 0f;
-    private float expansionProgress = 0f;
+
+    private float beamProgress;
+    private float expansionProgress;
     private float radiance = 1f;
     private final RandomSource random = RandomSource.create();
     private final List<LightRay> lightRays = new ArrayList<>();
     private final List<HolyParticle> holyParticles = new ArrayList<>();
     private final List<DivineSpark> divineSparks = new ArrayList<>();
 
-    private static final int BEAM_DURATION = 25; // Beam descends for ~1.25 seconds
-    private static final float MAX_RADIUS = 35f;
+    private static final float MAX_RADIUS = 45f;
 
 
     public HolyLightEffect(double x, double y, double z) {

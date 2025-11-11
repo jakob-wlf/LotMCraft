@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-09T22:11:37.9078346	Item Models: lotmcraft
+// 1.21.1	2025-11-10T16:02:42.0202497	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -62,6 +62,7 @@ f3399a5bfbec288b790dcfc902ca3cd42e2bb779 assets/lotmcraft/models/item/devil_poti
 8b44f65f58349f12864ce58fd0f6d6d998658d26 assets/lotmcraft/models/item/disease_ability.json
 2cddbbebed8d633d92d9da4aec9a92927e07b2d5 assets/lotmcraft/models/item/distortion_field_ability.json
 24b1dfa69ae91e81c6a0a51be301a3835cdc4be8 assets/lotmcraft/models/item/divination_ability.json
+e752497bafcf3c08f3a346f5b95c56c8e790d5dc assets/lotmcraft/models/item/divine_kingdom_manifestation_ability.json
 2a92cf27f930c351873b3177c3f94b8726fa16a9 assets/lotmcraft/models/item/doctor_potion.json
 15e72a980efd869888ab480120c8513462095a22 assets/lotmcraft/models/item/door_opening_ability.json
 080c03af73cf9d6e97758b1149d56326a3dc7d58 assets/lotmcraft/models/item/door_substitution_ability.json

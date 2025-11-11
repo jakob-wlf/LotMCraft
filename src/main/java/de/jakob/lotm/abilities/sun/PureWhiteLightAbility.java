@@ -1,19 +1,25 @@
 package de.jakob.lotm.abilities.sun;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PureWhiteLightAbility extends AbilityItem {
     public PureWhiteLightAbility(Properties properties) {
-        super(properties, 2);
+        super(properties, 4);
     }
 
     @Override
@@ -33,7 +39,22 @@ public class PureWhiteLightAbility extends AbilityItem {
         }
 
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 50, 4);
+        level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 10.0f, 1.0f);
 
         EffectManager.playEffect(EffectManager.Effect.PURE_WHITE_LIGHT, targetLoc.x, targetLoc.y, targetLoc.z, serverLevel);
+
+        AtomicDouble radius = new AtomicDouble(2);
+
+        ServerScheduler.scheduleForDuration(29, 2, 110, () -> {
+            if(BeyonderData.isGriefingEnabled(entity)) {
+                AbilityUtil.getBlocksInSphereRadius(serverLevel, targetLoc, radius.get(), true, true, false).forEach(blockPos -> {
+                    serverLevel.setBlockAndUpdate(blockPos, Blocks.LIGHT.defaultBlockState());
+                });
+            }
+
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get() - 2.1, radius.get() + 2.1, 95.5f * multiplier(entity), targetLoc, true, false, true, 0);
+
+            radius.addAndGet(0.8);
+        });
     }
 }

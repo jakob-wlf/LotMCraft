@@ -104,6 +104,10 @@ public class ModEntities {
             ENTITY_TYPES.register("war_banner", () -> EntityType.Builder.<WarBannerEntity>of(WarBannerEntity::new, MobCategory.MISC)
                     .sized(1.5f, 4f).build("war_banner"));
 
+    public static final Supplier<EntityType<SunKingdomEntity>> SUN_KINGDOM =
+            ENTITY_TYPES.register("sun_kingdom", () -> EntityType.Builder.<SunKingdomEntity>of(SunKingdomEntity::new, MobCategory.MISC)
+                    .sized(1.5f, 4f).build("sun_kingdom"));
+
     public static final Supplier<EntityType<ApprenticeBookEntity>> APPRENTICE_BOOK =
             ENTITY_TYPES.register("apprentice_book", () -> EntityType.Builder.<ApprenticeBookEntity>of(ApprenticeBookEntity::new, MobCategory.MISC)
                     .sized(.8f, .2f).build("apprentice_book"));
