@@ -1,6 +1,7 @@
 package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.item.custom.ExcavatedAreaItem;
 import de.jakob.lotm.item.custom.MarionetteControllerItem;
 import de.jakob.lotm.item.custom.SubordinateControllerItem;
 import net.minecraft.world.item.Item;
@@ -27,6 +28,12 @@ public class ModItems {
 
     public static final Supplier<Item> SUBORDINATE_CONTROLLER = ITEMS.register("subordinate_controller",
             () -> new SubordinateControllerItem(new Item.Properties().stacksTo(1)));
+
+    public static final Supplier<Item> EXCAVATED_AREA_ITEM = ITEMS.register("excavated_area",
+            () -> new ExcavatedAreaItem(new Item.Properties()
+                    .stacksTo(1) // Only allow one per stack since each contains unique data
+            )
+    );
 
     public static PotionIngredient selectRandomIngredient(List<PotionIngredient> ingredients, Random random) {
         if (ingredients == null || ingredients.isEmpty()) {

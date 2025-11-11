@@ -26,6 +26,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.MIRROR.get());
         basicItem(ModItems.MARIONETTE_CONTROLLER.get());
         basicItem(ModItems.SUBORDINATE_CONTROLLER.get());
+        basicItem(ModItems.EXCAVATED_AREA_ITEM.get());
 
         PotionItemHandler.ITEMS.getEntries().forEach(i -> {
             basicItem(i.get());

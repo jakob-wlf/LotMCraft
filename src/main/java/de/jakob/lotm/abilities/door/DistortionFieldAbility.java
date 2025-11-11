@@ -1,14 +1,13 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityItem;
-import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.entity.custom.DistortionFieldEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -21,8 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DistortionField extends AbilityItem {
-    public DistortionField(Properties properties) {
+public class DistortionFieldAbility extends AbilityItem {
+    public DistortionFieldAbility(Properties properties) {
         super(properties, 40);
     }
 
@@ -59,6 +58,10 @@ public class DistortionField extends AbilityItem {
         barrierBlocks.removeIf(b -> !serverLevel.getBlockState(b).isAir());
         barrierBlocks.removeIf(b -> random.nextInt(2) != 0);
 
+        DistortionFieldEntity distortionFieldEntity = new DistortionFieldEntity(ModEntities.DISTORTION_FIELD.get(), level, 20 * 40, entity.getUUID(), false);
+        distortionFieldEntity.setPos(startPos);
+        serverLevel.addFreshEntity(distortionFieldEntity);
+
         ServerScheduler.scheduleForDuration(0, 6, 20 * 30, () -> {
             if(entity.level() != serverLevel) {
                 return;
@@ -76,14 +79,10 @@ public class DistortionField extends AbilityItem {
                 if(random.nextInt(100) != 0) {
                     return;
                 }
-
-                ParticleUtil.spawnParticles(serverLevel, ModParticles.STAR.get(), b.getCenter(), 5, .5, .5, .5, 0);
-                ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, b.getCenter(), 1, .5, .5, .5, 0);
-                ParticleUtil.spawnParticles(serverLevel, dust, b.getCenter(), 5, .5, .5, .5, 0);
             });
 
             // Replace area near caster with air
-            AbilityUtil.getBlocksInSphereRadius(serverLevel, entity.position(), 2.5, true).forEach(b -> {
+            AbilityUtil.getBlocksInSphereRadius(serverLevel, entity.position(), 4.5, true).forEach(b -> {
                 if(serverLevel.getBlockState(b).getBlock() != Blocks.BARRIER) {
                     return;
                 }
@@ -106,6 +105,9 @@ public class DistortionField extends AbilityItem {
             });
 
         }, () -> {
+            // Remove Distortion Field Entity
+            distortionFieldEntity.discard();
+
             // Remove Barriers
             barrierBlocks.forEach(b -> {
                 if(!serverLevel.getBlockState(b).is(Blocks.BARRIER)) {

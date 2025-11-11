@@ -108,6 +108,10 @@ public class ModEntities {
             ENTITY_TYPES.register("sun_kingdom", () -> EntityType.Builder.<SunKingdomEntity>of(SunKingdomEntity::new, MobCategory.MISC)
                     .sized(1.5f, 4f).build("sun_kingdom"));
 
+    public static final Supplier<EntityType<DistortionFieldEntity>> DISTORTION_FIELD =
+            ENTITY_TYPES.register("distortion_field", () -> EntityType.Builder.<DistortionFieldEntity>of(DistortionFieldEntity::new, MobCategory.MISC)
+                    .sized(1.5f, 4f).build("distortion_field"));
+
     public static final Supplier<EntityType<ApprenticeBookEntity>> APPRENTICE_BOOK =
             ENTITY_TYPES.register("apprentice_book", () -> EntityType.Builder.<ApprenticeBookEntity>of(ApprenticeBookEntity::new, MobCategory.MISC)
                     .sized(.8f, .2f).build("apprentice_book"));

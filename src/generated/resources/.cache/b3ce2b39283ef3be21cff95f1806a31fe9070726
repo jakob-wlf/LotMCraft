@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-10T16:02:42.0202497	Item Models: lotmcraft
+// 1.21.1	2025-11-11T10:18:14.9364265	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -8,6 +8,7 @@ ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peac
 666a3e527d02bc0e02eb34f1e1fbe483f1d7f1c1 assets/lotmcraft/models/item/ancient_wraith_dust.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/apprentice.json
 0b76a929c20dfdca7aa8754fac88bb19765e9ec1 assets/lotmcraft/models/item/apprentice_potion.json
+e789985f8d804c3fc0ec03c08cc8693e7eb4fda2 assets/lotmcraft/models/item/area_miniaturization_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/asassin.json
 1f3dfb3555910d997d480765a40aa0831d19a5e7 assets/lotmcraft/models/item/assassin_potion.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/astrologer.json
@@ -79,6 +80,7 @@ ed32770dad4db00c4e96990f97b39db87bfdb4ca assets/lotmcraft/models/item/electromag
 b48664f6747f681c6ac1705854a61ddfaa968b02 assets/lotmcraft/models/item/empty_bottle.json
 e7920e0bfe9fe326a762f536d121b2bd638ff479 assets/lotmcraft/models/item/energy_transformation_ability.json
 5ef4ae1000d7df465fdeb9304492be271babdf39 assets/lotmcraft/models/item/essence_of_war_ability.json
+7043e58c3277a488cd3abbd02f63231812bc9971 assets/lotmcraft/models/item/excavated_area.json
 415a56274da525bcdcb8cfdef0a3515c4d1e68eb assets/lotmcraft/models/item/exile_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/faceless.json
 7cae921d8a6eb45e8be0f9667898e25bada9423b assets/lotmcraft/models/item/faceless_potion.json
