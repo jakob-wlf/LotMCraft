@@ -22,14 +22,14 @@ import net.minecraft.world.item.component.ItemLore;
 import java.util.List;
 
 public class SubordinateUtils {
-    public static boolean turnEntityIntoSubordinate(LivingEntity entity, Player controller) {
+    public static void turnEntityIntoSubordinate(LivingEntity entity, LivingEntity controller) {
         if (entity instanceof Player) {
-            return false; // Players cannot be turned into marionettes
+            return; // Players cannot be turned into marionettes
         }
         
         SubordinateComponent component = entity.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
         if (component.isSubordinate()) {
-            return false; // Already a marionette
+            return; // Already a marionette
         }
         
         // Set marionette data
@@ -59,12 +59,14 @@ public class SubordinateUtils {
 
         ItemStack controllerItem = createController(entity);
 
-
-        if (!controller.getInventory().add(controllerItem)) {
-            controller.drop(controllerItem, false);
+        if(!(controller instanceof Player player)) {
+            return;
         }
-        
-        return true;
+
+        if (!player.getInventory().add(controllerItem)) {
+            player.drop(controllerItem, false);
+        }
+
     }
     
     public static ItemStack createController(LivingEntity marionette) {

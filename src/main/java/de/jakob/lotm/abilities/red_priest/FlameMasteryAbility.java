@@ -57,8 +57,9 @@ public class FlameMasteryAbility extends SelectableAbilityItem {
     protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(level.isClientSide)
             return;
-        if(!(entity instanceof Player))
-            abilityIndex = 0;
+        if(!(entity instanceof Player)) {
+            abilityIndex = 1;
+        }
 
         switch (abilityIndex) {
             case 0 -> fireballBarrage((ServerLevel) level, entity);

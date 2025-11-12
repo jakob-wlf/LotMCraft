@@ -3,9 +3,13 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -27,6 +31,14 @@ public class BeyonderEventHandler {
         }
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+        if(event.getSource().getEntity() instanceof LivingEntity source) {
+            if(!AbilityUtil.mayDamage(source, event.getEntity())) {
+                event.setCanceled(true);
+            }
+        }
+    }
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {

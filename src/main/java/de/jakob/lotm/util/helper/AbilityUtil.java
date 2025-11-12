@@ -3,6 +3,7 @@ package de.jakob.lotm.util.helper;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -620,9 +621,24 @@ public class AbilityUtil {
         if (target instanceof Player player && player.isCreative()) return false;
         if (!source.canAttack(target)) return false;
 
+
         MarionetteComponent component = source.getData(ModAttachments.MARIONETTE_COMPONENT.get());
         if(component.isMarionette()) {
             if(target.getUUID().toString().equals(component.getControllerUUID()))
+                return false;
+
+            MarionetteComponent targetComponent = target.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+            if(targetComponent.isMarionette() && targetComponent.getControllerUUID().equals(component.getControllerUUID()))
+                return false;
+        }
+
+        SubordinateComponent subordinateComponent = source.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
+        if(subordinateComponent.isSubordinate()) {
+            if(target.getUUID().toString().equals(component.getControllerUUID()))
+                return false;
+
+            SubordinateComponent targetSubordinateComponent = target.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
+            if(targetSubordinateComponent.isSubordinate() && targetSubordinateComponent.getControllerUUID().equals(subordinateComponent.getControllerUUID()))
                 return false;
         }
         return true;
@@ -642,6 +658,17 @@ public class AbilityUtil {
             if(sourceComponent.isMarionette() && sourceComponent.getControllerUUID().equals(component.getControllerUUID()))
                 return false;
         }
+
+        SubordinateComponent subordinateComponent = target.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
+        if(subordinateComponent.isSubordinate()) {
+            if(source.getUUID().toString().equals(subordinateComponent.getControllerUUID()))
+                return false;
+
+            SubordinateComponent sourceSubordinateComponent = source.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
+            if(sourceSubordinateComponent.isSubordinate() && sourceSubordinateComponent.getControllerUUID().equals(subordinateComponent.getControllerUUID()))
+                return false;
+        }
+
         return true;
     }
 

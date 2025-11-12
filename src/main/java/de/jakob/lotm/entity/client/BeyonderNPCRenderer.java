@@ -12,6 +12,7 @@ public class BeyonderNPCRenderer extends MobRenderer<BeyonderNPCEntity, PlayerMo
     public BeyonderNPCRenderer(EntityRendererProvider.Context context) {
         super(context, new PlayerModel<>(context.bakeLayer(ModelLayers.PLAYER), false), 0.5F);
         this.addLayer(new QuestMarkerLayer(this));
+        this.addLayer(new PuppetSoldierLayer(this, context.getModelSet()));
     }
 
     @Override

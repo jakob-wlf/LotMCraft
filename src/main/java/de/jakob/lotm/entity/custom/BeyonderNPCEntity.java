@@ -17,6 +17,7 @@ import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -54,6 +55,9 @@ public class BeyonderNPCEntity extends PathfinderMob {
     private static final EntityDataAccessor<String> SKIN_NAME = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<String> PATHWAY = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Integer> SEQUENCE = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.INT);
+
+    private static final EntityDataAccessor<Boolean> IS_PUPPET_WARRIOR = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> MAX_LIFETIME_IF_IS_PUPPET = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.INT);
 
     private static final EntityDataAccessor<Boolean> HAS_QUEST = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> QUEST_ACCEPTED = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
@@ -140,6 +144,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
         builder.define(QUEST_INDEX, 0);
         builder.define(QUEST_ACCEPTED, false);
         builder.define(QUEST_ID, "");
+        builder.define(IS_PUPPET_WARRIOR, false);
+        builder.define(MAX_LIFETIME_IF_IS_PUPPET, 20 * 60 * 4);
     }
 
     private void syncEntityDataWithBeyonderData() {
@@ -375,6 +381,22 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.entityData.set(QUEST_ID, questId);
     }
 
+    public int getMaxLifetimeIfPuppet() {
+        return this.entityData.get(MAX_LIFETIME_IF_IS_PUPPET);
+    }
+
+    public void setMaxLifetimeIfPuppet(int ticks) {
+        this.entityData.set(MAX_LIFETIME_IF_IS_PUPPET, ticks);
+    }
+
+    public boolean isPuppetWarrior() {
+        return this.entityData.get(IS_PUPPET_WARRIOR);
+    }
+
+    public void setPuppetWarrior(boolean isPuppet) {
+        this.entityData.set(IS_PUPPET_WARRIOR, isPuppet);
+    }
+
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> dataAccessor) {
         super.onSyncedDataUpdated(dataAccessor);
@@ -408,6 +430,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
         compound.putBoolean("HasQuest", hasQuest());
         compound.putBoolean("QuestAccepted", wasQuestAccepted());
         compound.putString("QuestId", getQuestId());
+        compound.putBoolean("IsPuppetWarrior", isPuppetWarrior());
+        compound.putInt("MaxLifetimeIfPuppet", getMaxLifetimeIfPuppet());
     }
 
     @Override
@@ -417,6 +441,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
         setHasQuest(compound.getBoolean("HasQuest"));
         setQuestIndex(compound.getInt("QuestIndex"));
         setQuestAccepted(compound.getBoolean("QuestAccepted"));
+        setPuppetWarrior(compound.getBoolean("IsPuppetWarrior"));
+        setMaxLifetimeIfPuppet(compound.getInt("MaxLifetimeIfPuppet"));
 
         if (compound.contains("QuestId")) {
             setQuestId(compound.getString("QuestId"));
@@ -485,8 +511,20 @@ public class BeyonderNPCEntity extends PathfinderMob {
     public void tick() {
         super.tick();
 
-        if(this.level().isClientSide)
+        if(this.level().isClientSide) {
             return;
+        }
+
+        if(isPuppetWarrior() && tickCounter >= getMaxLifetimeIfPuppet()) {
+            this.discard();
+            return;
+        }
+
+        if(getTarget() != null) {
+            if(!AbilityUtil.mayTarget(this, getTarget())) {
+                this.setTarget(null);
+            }
+        }
 
         if(tickCounter % 5 == 0) {
             PassiveAbilityHandler.ITEMS.getEntries().forEach(itemHolder -> {
