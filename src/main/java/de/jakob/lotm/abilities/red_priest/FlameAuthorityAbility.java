@@ -59,22 +59,33 @@ public class FlameAuthorityAbility extends SelectableAbilityItem {
     private void vortex(ServerLevel serverLevel, LivingEntity entity) {
         Vec3 startPos = entity.position();
 
-        EffectManager.playEffect(EffectManager.Effect.FIRE_VORTEX, entity.getX(), entity.getY(), entity.getZ(), serverLevel);
-        ParticleUtil.createParticleSpirals(serverLevel, ParticleTypes.FLAME, startPos, 1.5, 20, 5, .75, 1, 20 * 6, 80, 1);
-        ParticleUtil.createParticleSpirals(serverLevel, ModParticles.PURPLE_FLAME.get(), startPos, 1.5, 20, 5, .75, 1, 20 * 6, 80, 1);
+        EffectManager.playEffect(EffectManager.Effect.FLAME_VORTEX, entity.getX(), entity.getY(), entity.getZ(), serverLevel);
+        ParticleUtil.createParticleSpirals(serverLevel, ParticleTypes.FLAME, startPos, 1.5, 6, 5, .75, 1, 20 * 6, 120, 1);
+        ParticleUtil.createParticleSpirals(serverLevel, ModParticles.PURPLE_FLAME.get(), startPos, 1.5, 6, 5, .75, 1, 20 * 6, 120, 1);
 
         ServerScheduler.scheduleForDuration(0, 5, 20 * 6, () -> {
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 22.5, 60.5f * multiplier(entity), startPos, true, false, 20 * 40);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 9, 60.5f * multiplier(entity), startPos, true, false, 20 * 40);
         });
     }
 
     private void inferno(ServerLevel serverLevel, LivingEntity entity) {
+        Vec3 pos = AbilityUtil.getTargetLocation(entity, 120, 2);
 
+        // Sound
+        serverLevel.playSound(null, pos.x, pos.y, pos.z, SoundEvents.GENERIC_EXPLODE, entity.getSoundSource(), 10.0f, 1.0f);
+        serverLevel.playSound(null, pos.x, pos.y, pos.z, SoundEvents.FIRECHARGE_USE, entity.getSoundSource(), 10.0f, 1.0f);
+        ServerScheduler.scheduleForDuration(0, 5, 20 * 4, () -> serverLevel.playSound(null, pos.x, pos.y, pos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 10.0f, random.nextFloat()));
+
+        // VFX
+        EffectManager.playEffect(EffectManager.Effect.INFERNO, pos.x, pos.y, pos.z, serverLevel);
+
+        // Damage
+        AbilityUtil.damageNearbyEntities(serverLevel, entity, 22.5, 80.5f * multiplier(entity), pos, true, false, 20 * 40);
     }
 
     private void destructionSpear(ServerLevel serverLevel, LivingEntity entity) {
         Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(4.5f, 8f), random.nextDouble(-.1, .6));
-        Vec3 direction = AbilityUtil.getTargetLocation(entity, 50, 1.4f).subtract(startPos).normalize();
+        Vec3 direction = AbilityUtil.getTargetLocation(entity, 120, 1.4f).subtract(startPos).normalize();
 
         serverLevel.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 10.0f, 1.0f);
         serverLevel.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 10.0f, 1.0f);

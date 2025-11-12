@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-11T18:11:20.43164	Item Models: lotmcraft
+// 1.21.1	2025-11-12T13:44:06.2618965	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -215,6 +215,7 @@ cde6a4f8cd1aa8c1b62fdeb95338b5b15bc6a07b assets/lotmcraft/models/item/psychiatri
 ceca3c3c6e79ceed830e6ed7537a8c61ee5fb47c assets/lotmcraft/models/item/psychological_invisibility_ability.json
 863b291ae68895eec32a27e2be5158e0b0be4d11 assets/lotmcraft/models/item/puppeteering_ability.json
 261c8eb22f4c6ff6fe3b69538c1acd110e1e1a8d assets/lotmcraft/models/item/puppeteering_enhancements_ability.json
+b890e6a3ec8df60087a6a439f00600780ac3141d assets/lotmcraft/models/item/puppet_soldier_creation_ability.json
 e2e40f0af24a526842e796c6f8781cbe28f1a216 assets/lotmcraft/models/item/pure_white_brilliant_rock.json
 901dc57ad30c8f8543fdae4b1f5191e8779ef6ea assets/lotmcraft/models/item/pure_white_light_ability.json
 7073990ff0e13035c92792e989d1240bf9592483 assets/lotmcraft/models/item/purification_halo_ability.json

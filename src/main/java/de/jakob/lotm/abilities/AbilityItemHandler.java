@@ -73,6 +73,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> WEATHER_MANIPULATION = ITEMS.registerItem("weather_manipulation_ability", WeatherManipulationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> CONQUERING = ITEMS.registerItem("conquering_ability", ConqueringAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> FLAME_AUTHORITY = ITEMS.registerItem("flame_authority_ability", FlameAuthorityAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> PUPPET_SOLDIER_CREATION = ITEMS.registerItem("puppet_soldier_creation_ability", PuppetSoldierCreationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> RAGING_BLOWS = ITEMS.registerItem("raging_blows_ability", RagingBlowsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> WATER_MANIPULATION = ITEMS.registerItem("water_manipulation_ability", WaterManipulationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

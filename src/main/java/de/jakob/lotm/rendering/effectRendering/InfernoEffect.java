@@ -15,7 +15,7 @@ import org.joml.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FireVortexEffect extends ActiveEffect {
+public class InfernoEffect extends ActiveEffect {
 
     private float vortexProgress = 0f;
     private float intensity = 1f;
@@ -25,7 +25,7 @@ public class FireVortexEffect extends ActiveEffect {
     private final List<FireWave> fireWaves = new ArrayList<>();
     private final List<FlameWisp> flameWisps = new ArrayList<>();
 
-    public FireVortexEffect(double x, double y, double z) {
+    public InfernoEffect(double x, double y, double z) {
         super(x, y, z, 120); // 6 seconds (120 ticks at 20 tps)
 
         // Initialize flame spirals - the main body of the vortex
@@ -74,10 +74,10 @@ public class FireVortexEffect extends ActiveEffect {
         renderFireSpirals(poseStack, vortexProgress, intensity);
         renderFlameSpirals(poseStack, vortexProgress, intensity);
         renderFlameWisps(poseStack, vortexProgress, intensity);
-        renderOuterVortex(poseStack, vortexProgress, intensity);
+        //renderOuterVortex(poseStack, vortexProgress, intensity);
         renderEmberParticles(poseStack, vortexProgress, intensity);
         renderFlameTendrils(poseStack, vortexProgress, intensity);
-        renderVortexColumn(poseStack, vortexProgress, intensity);
+        //renderVortexColumn(poseStack, vortexProgress, intensity);
         renderInfernoRings(poseStack, vortexProgress, intensity);
         renderHeatDistortion(poseStack, vortexProgress, intensity);
         renderFlameColumns(poseStack, vortexProgress, intensity);
