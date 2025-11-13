@@ -9,6 +9,7 @@ public class EffectFactory {
             case 2 -> new ConqueringEffect(x, y, z);
             case 3 -> new InfernoEffect(x, y, z);
             case 4 -> new FlameVortexEffect(x, y, z);
+            case 5 -> new ExplosionEffect(x, y, z);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
     }

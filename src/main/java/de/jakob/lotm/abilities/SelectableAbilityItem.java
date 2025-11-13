@@ -4,10 +4,13 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -120,6 +123,11 @@ public abstract class SelectableAbilityItem extends AbilityItem{
         }
         selectedAbilities.put(entity.getUUID(), selectedAbility);
         PacketHandler.sendToServer(new AbilitySelectionPacket(this, selectedAbility));
+    }
+
+    @Override
+    public @NotNull Component getName(ItemStack stack) {
+        return Component.translatable(this.getDescriptionId(stack)).append(Component.literal(" (")).append(Component.translatable("lotm.selectable")).append(Component.literal(")"));
     }
 
     public void setSelectedAbility(ServerPlayer player, int selectedAbility) {

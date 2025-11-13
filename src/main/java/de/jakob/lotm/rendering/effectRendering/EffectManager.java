@@ -15,7 +15,8 @@ public class EffectManager {
         PURE_WHITE_LIGHT(1),
         CONQUERING(2),
         INFERNO(3),
-        FLAME_VORTEX(4);
+        FLAME_VORTEX(4),
+        EXPLOSION(5);
 
         private final int index;
 

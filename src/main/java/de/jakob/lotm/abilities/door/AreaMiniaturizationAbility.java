@@ -20,8 +20,8 @@ import java.util.Map;
 
 public class AreaMiniaturizationAbility extends AbilityItem {
 
-    private static final double RADIUS = 14.0;
-    private static final double Y_RADIUS = 7.0;
+    private static final double RADIUS = 20.0;
+    private static final double Y_RADIUS = 9.0;
 
     public AreaMiniaturizationAbility(Properties properties) {
         super(properties, 2);

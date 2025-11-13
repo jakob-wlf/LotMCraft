@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity.custom;
 
 import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
@@ -23,6 +24,8 @@ import java.util.UUID;
 public class MeteorEntity extends Entity {
     private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(MeteorEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> DAMAGE = SynchedEntityData.defineId(MeteorEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> EXPLOSION_SIZE = SynchedEntityData.defineId(MeteorEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> RADIUS = SynchedEntityData.defineId(MeteorEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(MeteorEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Boolean> GRIEFING = SynchedEntityData.defineId(MeteorEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Optional<UUID>> CASTER_UUID = SynchedEntityData.defineId(MeteorEntity.class, EntityDataSerializers.OPTIONAL_UUID);
@@ -34,12 +37,14 @@ public class MeteorEntity extends Entity {
         super(type, level);
     }
 
-    public MeteorEntity(Level level, float speed, float damage, float size, @Nullable Entity caster, boolean griefing) {
+    public MeteorEntity(Level level, float speed, float damage, float size, @Nullable Entity caster, boolean griefing, float explosionSize, float radius) {
         super(ModEntities.Meteor.get(), level);
         this.setSpeed(speed);
         this.setDamage(damage);
         this.setSize(size);
         this.setGriefing(griefing);
+        this.setExplosionSize(explosionSize);
+        this.setRadius(radius);
         if (caster != null) {
             this.setCasterUUID(caster.getUUID());
         }
@@ -53,6 +58,8 @@ public class MeteorEntity extends Entity {
         builder.define(SIZE, 1f);
         builder.define(GRIEFING, false);
         builder.define(CASTER_UUID, Optional.empty());
+        builder.define(EXPLOSION_SIZE, 4.0f);
+        builder.define(RADIUS, 12.0f);
     }
     
     public float getSpeed() {
@@ -95,7 +102,23 @@ public class MeteorEntity extends Entity {
     public UUID getCasterUUID() {
         return this.entityData.get(CASTER_UUID).orElse(null);
     }
-    
+
+    public float getExplosionSize() {
+        return this.entityData.get(EXPLOSION_SIZE);
+    }
+
+    public float getRadius() {
+        return this.entityData.get(RADIUS);
+    }
+
+    public void setExplosionSize(float size) {
+        this.entityData.set(EXPLOSION_SIZE, size);
+    }
+
+    public void setRadius(float radius) {
+        this.entityData.set(RADIUS, radius);
+    }
+
     @Nullable
     private Entity getCaster() {
         UUID uuid = getCasterUUID();
@@ -112,19 +135,28 @@ public class MeteorEntity extends Entity {
     @Override
     public void onAddedToLevel() {
         super.onAddedToLevel();
-        Vec3 newPos = position().add(16, 35, 5);
+        Vec3 newPos = position().add((random.nextDouble() - .5) * 80, 60, (random.nextDouble() - .5) * 80);
         targetPos = position();
         direction = position().subtract(0, 2, 0).subtract(newPos);
         setPos(newPos);
+        hasMovedToStartingLocation = true;
     }
 
     Vec3 lastPos;
+
+    public boolean isHasMovedToStartingLocation() {
+        return hasMovedToStartingLocation;
+    }
+
+    public int getLifeTicks() {
+        return lifeTicks;
+    }
 
     @Override
     public void tick() {
         super.tick();
 
-        if(!(level() instanceof ServerLevel)) {
+        if(!(level() instanceof ServerLevel serverLevel)) {
             return;
         }
 
@@ -135,13 +167,11 @@ public class MeteorEntity extends Entity {
         }
 
         setPos(position().add(direction.normalize().scale(getSpeed())));
-        ParticleUtil.spawnParticles((ServerLevel) level(), ParticleTypes.FLAME, position(), 200, getSize() / 2.5f, .01);
-        ParticleUtil.spawnParticles((ServerLevel) level(), ParticleTypes.EXPLOSION, position(), 10, .2, .01);
-        ParticleUtil.spawnParticles((ServerLevel) level(), ParticleTypes.LARGE_SMOKE, position(), 40, getSize() / 2.5f, .01);
 
-        if(position().distanceTo(targetPos) < .5 || (lastPos != null && position().distanceTo(targetPos) > lastPos.distanceTo(targetPos)) || !level().getBlockState(BlockPos.containing(position())).isAir()) {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level(), getCaster() instanceof LivingEntity l ? l : null, getSize() * 2, getDamage(), position(), true, false);
-            level().explode(this, position().x, position().y, position().z, getSize() * 2.5f, isGriefing(), isGriefing() ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE);
+        if(position().distanceTo(targetPos.subtract(0, 1, 0)) < .5 || (lastPos != null && position().distanceTo(targetPos.subtract(0, 1, 0)) > lastPos.distanceTo(targetPos.subtract(0, 1, 0))) || !level().getBlockState(BlockPos.containing(position())).isAir()) {
+            AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), getDamage(), position(), true, false);
+            EffectManager.playEffect(EffectManager.Effect.EXPLOSION, position().x, position().y, position().z, serverLevel);
+            serverLevel.explode(this, position().x, position().y, position().z, getRadius(), isGriefing(), isGriefing() ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE);
             discard();
         }
 
@@ -156,6 +186,8 @@ public class MeteorEntity extends Entity {
         this.setSize(tag.getFloat("Size"));
         this.lifeTicks = tag.getInt("LifeTicks");
         this.maxLifeTicks = tag.getInt("MaxLifeTicks");
+        this.setExplosionSize(tag.getFloat("ExplosionSize"));
+        this.setRadius(tag.getFloat("Radius"));
         
         if (tag.hasUUID("CasterUUID")) {
             this.setCasterUUID(tag.getUUID("CasterUUID"));
@@ -170,6 +202,8 @@ public class MeteorEntity extends Entity {
         tag.putBoolean("Griefing", this.isGriefing());
         tag.putInt("LifeTicks", this.lifeTicks);
         tag.putInt("MaxLifeTicks", this.maxLifeTicks);
+        tag.putFloat("ExplosionSize", this.getExplosionSize());
+        tag.putFloat("Radius", this.getRadius());
         
         UUID casterUUID = getCasterUUID();
         if (casterUUID != null) {

@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-12T13:44:06.2618965	Item Models: lotmcraft
+// 1.21.1	2025-11-12T22:36:52.8415456	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -61,6 +61,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/demoness_o
 30c1dd67ff515309f38a81fb37f90c88955c2520 assets/lotmcraft/models/item/desire_apostle_potion.json
 f3399a5bfbec288b790dcfc902ca3cd42e2bb779 assets/lotmcraft/models/item/devil_potion.json
 33da58870be4006e12f7f4827f7d30e8fedd721e assets/lotmcraft/models/item/devil_transformation_ability.json
+366b04705cd287eb146c124c1f562461065fd7f3 assets/lotmcraft/models/item/disaster_manifestation_ability.json
 8b44f65f58349f12864ce58fd0f6d6d998658d26 assets/lotmcraft/models/item/disease_ability.json
 2cddbbebed8d633d92d9da4aec9a92927e07b2d5 assets/lotmcraft/models/item/distortion_field_ability.json
 24b1dfa69ae91e81c6a0a51be301a3835cdc4be8 assets/lotmcraft/models/item/divination_ability.json

@@ -227,6 +227,11 @@
   "ability.lotmcraft.petrification.target": "Petrify your Targets",
   "ability.lotmcraft.petrification.area": "Petrify the area",
   "ability.lotmcraft.petrification.griefing_disabled": "You need to enable griefing",
+  "item.lotmcraft.disaster_manifestation_ability": "Disaster Manifestation",
+  "ability.lotmcraft.disaster_manifestation.tornados": "Tornados",
+  "ability.lotmcraft.disaster_manifestation.ice_age": "Ice Age",
+  "ability.lotmcraft.disaster_manifestation.meteor": "Meteor",
+  "item.lotmcraft.structural_collapse_ability": "Structural Collapse",
 
   "item.lotmcraft.plant_nurturing_ability": "Plant Nurturing",
   "item.lotmcraft.healing_ability": "Healing",
@@ -731,5 +736,6 @@
   "lotm.off": "Off",
   "lotm.passive": "Passive",
   "lotm.toggleable": "Toggleable",
+  "lotm.selectable": "Selectable",
   "lotmcraft.griefing_enabled_required": "Enable griefing for this ability to work"
 }
