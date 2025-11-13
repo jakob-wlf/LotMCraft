@@ -24,7 +24,7 @@ public class PuppetSoldierLayer extends RenderLayer<BeyonderNPCEntity, PlayerMod
 
     @Override
     public void render(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, BeyonderNPCEntity entity, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (!entity.isInvisible()) {
+        if (!entity.isInvisible() && entity.isPuppetWarrior()) {
             // Copy the parent model's animation state
             this.getParentModel().copyPropertiesTo(this.model);
             this.model.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTick);

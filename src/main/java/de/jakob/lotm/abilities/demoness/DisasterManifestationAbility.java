@@ -34,7 +34,7 @@ import java.util.Map;
 
 public class DisasterManifestationAbility extends SelectableAbilityItem {
     public DisasterManifestationAbility(Properties properties) {
-        super(properties, 1);
+        super(properties, 4);
     }
 
     @Override
@@ -110,8 +110,8 @@ public class DisasterManifestationAbility extends SelectableAbilityItem {
     private void spawnMeteor(ServerLevel serverLevel, LivingEntity entity) {
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 85, 3);
 
-        MeteorEntity meteor = new MeteorEntity(serverLevel, 3.25f, 75.5f * (float) multiplier(entity), 6, entity, BeyonderData.isGriefingEnabled(entity), 25, 30);
-        meteor.setPos(targetLoc);
+        MeteorEntity meteor = new MeteorEntity(serverLevel, 3.25f, 75.5f * (float) multiplier(entity), 6, entity, BeyonderData.isGriefingEnabled(entity), 18, 30);
+        meteor.setPosition(targetLoc);
         serverLevel.addFreshEntity(meteor);
     }
 

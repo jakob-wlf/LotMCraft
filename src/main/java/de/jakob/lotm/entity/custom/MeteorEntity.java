@@ -128,25 +128,17 @@ public class MeteorEntity extends Entity {
         return null;
     }
 
-    boolean hasMovedToStartingLocation = false;
     Vec3 direction;
     Vec3 targetPos;
 
-    @Override
-    public void onAddedToLevel() {
-        super.onAddedToLevel();
-        Vec3 newPos = position().add((random.nextDouble() - .5) * 80, 60, (random.nextDouble() - .5) * 80);
-        targetPos = position();
-        direction = position().subtract(0, 2, 0).subtract(newPos);
-        setPos(newPos);
-        hasMovedToStartingLocation = true;
+    public void setPosition(Vec3 pos) {
+        targetPos = new Vec3(pos.x, pos.y, pos.z);
+        Vec3 newPos = targetPos.add((random.nextDouble() - .5) * 80, 60, (random.nextDouble() - .5) * 80);
+        direction = targetPos.subtract(newPos);
+        this.setPos(newPos);
     }
 
     Vec3 lastPos;
-
-    public boolean isHasMovedToStartingLocation() {
-        return hasMovedToStartingLocation;
-    }
 
     public int getLifeTicks() {
         return lifeTicks;
@@ -156,17 +148,22 @@ public class MeteorEntity extends Entity {
     public void tick() {
         super.tick();
 
+        lifeTicks++;
+
         if(!(level() instanceof ServerLevel serverLevel)) {
             return;
         }
 
-        lifeTicks++;
         if (lifeTicks > maxLifeTicks) {
             this.discard();
             return;
         }
 
-        setPos(position().add(direction.normalize().scale(getSpeed())));
+        if(direction == null || targetPos == null) {
+            return;
+        }
+
+        moveTo(position().add(direction.normalize().scale(getSpeed())));
 
         if(position().distanceTo(targetPos.subtract(0, 1, 0)) < .5 || (lastPos != null && position().distanceTo(targetPos.subtract(0, 1, 0)) > lastPos.distanceTo(targetPos.subtract(0, 1, 0))) || !level().getBlockState(BlockPos.containing(position())).isAir()) {
             AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), getDamage(), position(), true, false);

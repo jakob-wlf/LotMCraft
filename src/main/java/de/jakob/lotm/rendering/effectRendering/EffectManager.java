@@ -16,7 +16,9 @@ public class EffectManager {
         CONQUERING(2),
         INFERNO(3),
         FLAME_VORTEX(4),
-        EXPLOSION(5);
+        EXPLOSION(5),
+        COLLAPSE(6),
+        APOCALYPSE(7);
 
         private final int index;
 

@@ -133,6 +133,8 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> CURSE = ITEMS.registerItem("curse_ability", CurseAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> PETRIFICATION = ITEMS.registerItem("petrification_ability", PetrificationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> DISASTER_MANIFESTATION = ITEMS.registerItem("disaster_manifestation_ability", DisasterManifestationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> STRUCTURAL_COLLAPSE = ITEMS.registerItem("structural_collapse_ability", StructuralCollapseAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> APOCALYPSE = ITEMS.registerItem("apocalypse_ability", ApocalypseAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> PLANT_NURTURING = ITEMS.registerItem("plant_nurturing_ability", PlantNurturingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> HEALING = ITEMS.registerItem("healing_ability", HealingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
