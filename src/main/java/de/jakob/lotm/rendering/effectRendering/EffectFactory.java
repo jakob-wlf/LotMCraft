@@ -12,6 +12,7 @@ public class EffectFactory {
             case 5 -> new ExplosionEffect(x, y, z);
             case 6 -> new CollapseEffect(x, y, z);
             case 7 -> new ApocalypseEffect(x, y, z);
+            case 8 -> new SpaceFragmentationEffect(x, y, z);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
     }

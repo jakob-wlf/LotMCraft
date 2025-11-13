@@ -157,6 +157,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> REPLICATING = ITEMS.registerItem("replicating_ability", ReplicatingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> DISTORTION_FIELD = ITEMS.registerItem("distortion_field_ability", DistortionFieldAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> AREA_MINIATURIZATION = ITEMS.registerItem("area_miniaturization_ability", AreaMiniaturizationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> SPACE_TIME_STORM = ITEMS.registerItem("space_time_storm_ability", SpaceTimeStormAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> SPECTATING = ITEMS.registerItem("spectating_ability", SpectatingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> TELEPATHY = ITEMS.registerItem("telepathy_ability", TelepathyAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

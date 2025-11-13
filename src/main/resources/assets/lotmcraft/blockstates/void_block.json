@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "lotmcraft:block/void_block" }
+  }
+}

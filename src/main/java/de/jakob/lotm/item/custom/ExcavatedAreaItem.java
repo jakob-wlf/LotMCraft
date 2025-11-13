@@ -51,7 +51,7 @@ public class ExcavatedAreaItem extends Item {
         ServerLevel serverLevel = (ServerLevel) level;
 
         // Calculate new center position (where player is looking)
-        Vec3 targetLocation = AbilityUtil.getTargetBlock(player, 20, true).getCenter();
+        Vec3 targetLocation = AbilityUtil.getTargetBlock(player, 55, true).getCenter();
 
         // Parse original center
         String[] originalCenter = centerStr.split(",");

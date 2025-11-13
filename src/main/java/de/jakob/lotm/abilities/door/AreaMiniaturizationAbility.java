@@ -3,9 +3,11 @@ package de.jakob.lotm.abilities.door;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -42,6 +44,11 @@ public class AreaMiniaturizationAbility extends AbilityItem {
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
+
+        if(!BeyonderData.isGriefingEnabled(entity)) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.petrification.griefing_disabled").withColor(0xa0e2fa));
+            return;
+        }
 
         ServerLevel serverLevel = (ServerLevel) level;
         Vec3 targetLocation = AbilityUtil.getTargetLocation(entity, 50, 0.1f);

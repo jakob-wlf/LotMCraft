@@ -18,7 +18,8 @@ public class EffectManager {
         FLAME_VORTEX(4),
         EXPLOSION(5),
         COLLAPSE(6),
-        APOCALYPSE(7);
+        APOCALYPSE(7),
+        SPACE_FRAGMENTATION(8);
 
         private final int index;
 

@@ -274,6 +274,7 @@
   "item.lotmcraft.distortion_field_ability.description": "Create an area where enemies get randomly teleported around and find it hard to use their abilities",
   "item.lotmcraft.area_miniaturization_ability": "Area Miniaturization",
   "item.lotmcraft.excavated_area": "Excavated Area",
+  "item.lotmcraft.space_time_storm_ability": "Space-Time Storm",
 
   "item.lotmcraft.spectating_ability": "Spectating",
   "item.lotmcraft.telepathy_ability": "Telepathy",
@@ -394,6 +395,7 @@
 
   "_comment008": "Blocks-----------------------------------------------------------------------------",
   "block.lotmcraft.brewing_cauldron": "Brewing Cauldron",
+  "block.lotmcraft.void_block": "Void",
 
 
   "_comment009": "Ingredients-----------------------------------------------------------------------------",
