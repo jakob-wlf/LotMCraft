@@ -34,7 +34,7 @@ public class AirBulletAbility extends AbilityItem {
         return 20;
     }
 
-    private final double radius = .6;
+    private final double radius = .3;
 
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {

@@ -51,7 +51,7 @@ public class AbilityHotbarRenderer {
         int hotbarX = screenWidth / 2 - 91; // vanilla hotbar width = 182
         int hotbarY = screenHeight - 22;    // vanilla hotbar height = 22
 
-        int thickness = 2;
+        int thickness = 1;
 
         int purple = 0xFF9B00FF;
 

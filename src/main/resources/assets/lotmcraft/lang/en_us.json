@@ -283,6 +283,9 @@
   "item.lotmcraft.distortion_field_ability": "Distortion Field",
   "item.lotmcraft.distortion_field_ability.description": "Create an area where enemies get randomly teleported around and find it hard to use their abilities",
   "item.lotmcraft.area_miniaturization_ability": "Area Miniaturization",
+  "item.lotmcraft.space_distortion_ability": "Space Distortion",
+  "item.lotmcraft.space_distortion_ability.description": "Create a localized anomaly that pulls in everything.",
+  "item.lotmcraft.pocket_dimension_ability": "Pocket Dimension",
   "item.lotmcraft.excavated_area": "Excavated Area",
   "item.lotmcraft.space_time_storm_ability": "Space-Time Storm",
 

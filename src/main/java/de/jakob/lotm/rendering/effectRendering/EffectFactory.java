@@ -14,6 +14,7 @@ public class EffectFactory {
             case 7 -> new ApocalypseEffect(x, y, z);
             case 8 -> new SpaceFragmentationEffect(x, y, z);
             case 9 -> new WaypointEffect(x, y, z);
+            case 10 -> new SpaceDistortionEffect(x, y, z);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
     }

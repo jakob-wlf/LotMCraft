@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-14T14:42:06.0221788	Item Models: lotmcraft
+// 1.21.1	2025-11-15T23:03:59.1686977	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -204,6 +204,7 @@ a5ec83bf79581416969ff4c380b65f720ff01cf7 assets/lotmcraft/models/item/planeswalk
 63285aca4004491d7073c8b9998c3b4c06a54638 assets/lotmcraft/models/item/planter_potion.json
 5578269b846a6661a6cab8b42599e160895bb2f9 assets/lotmcraft/models/item/plant_controlling_ability.json
 5fafb77af910b43367941a485ca19204723829d6 assets/lotmcraft/models/item/plant_nurturing_ability.json
+51d32b05310e70966b22c685b76885fb470694df assets/lotmcraft/models/item/pocket_dimension_ability.json
 273777b5a47f8e241a497d46ca487ecbbaea4e6c assets/lotmcraft/models/item/poisonous_flame_ability.json
 62c84d7e49b04e11821402edfa98492235a81b90 assets/lotmcraft/models/item/powder_of_dazzling_soul.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/priest_of_light.json
@@ -269,6 +270,7 @@ f149d6f13f469f04f2d76afa3d30203ed147d0d9 assets/lotmcraft/models/item/soul_assur
 eaa996ad8e9f3a260dacc04bed77cbfb55749ad6 assets/lotmcraft/models/item/soul_snaring_bell_flower.json
 b6ab08d6a23ab634e8ba301f492d7dcece700464 assets/lotmcraft/models/item/source_of_mad_dreams.json
 c28eda6eabed651124912c42de4acadf5467df87 assets/lotmcraft/models/item/space_concealment_ability.json
+60250be25a964467fc2d078d57ce1020f67a676a assets/lotmcraft/models/item/space_distortion_ability.json
 3d6f0b540c4db683589286a3bba5e97e4c3de4d7 assets/lotmcraft/models/item/space_tearing_ability.json
 64f4edbef20c475a09c0185650e7ec8ea34e141b assets/lotmcraft/models/item/space_time_storm_ability.json
 bc4e30b887eedc88b7183b3846ce78031c7d5753 assets/lotmcraft/models/item/spear_of_light_ability.json

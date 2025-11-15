@@ -20,7 +20,8 @@ public class EffectManager {
         COLLAPSE(6),
         APOCALYPSE(7),
         SPACE_FRAGMENTATION(8),
-        WAYPOINT(9);
+        WAYPOINT(9),
+        SPACE_DISTORTION(10);
 
         private final int index;
 

@@ -157,6 +157,8 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> REPLICATING = ITEMS.registerItem("replicating_ability", ReplicatingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> DISTORTION_FIELD = ITEMS.registerItem("distortion_field_ability", DistortionFieldAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> AREA_MINIATURIZATION = ITEMS.registerItem("area_miniaturization_ability", AreaMiniaturizationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> SPACE_DISTORTION = ITEMS.registerItem("space_distortion_ability", SpaceDistortionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> POCKET_DIMENSION = ITEMS.registerItem("pocket_dimension_ability", PocketDimensionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SPACE_TIME_STORM = ITEMS.registerItem("space_time_storm_ability", SpaceTimeStormAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> BLACK_HOLE = ITEMS.registerItem("black_hole_ability", BlackHoleAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
