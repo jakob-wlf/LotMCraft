@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-13T23:24:31.6675182	Item Models: lotmcraft
+// 1.21.1	2025-11-14T14:42:06.0221788	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -323,6 +323,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/war_bishop
 23b099aba95f97ca1c4056e0946b96bb405645b2 assets/lotmcraft/models/item/war_song_ability.json
 7dd9c46bc70c8c7c4d94be7b583c6c5d4faeaa9f assets/lotmcraft/models/item/water_manipulation_ability.json
 453659d9df7346edf6ad3a1d741986d334f23c00 assets/lotmcraft/models/item/water_mastery_ability.json
+5c83efceeb04cfbadcd631e60b42975c641aaea8 assets/lotmcraft/models/item/waypoint_ability.json
 d6a68338450901758105531191f331e6856072ce assets/lotmcraft/models/item/weather_manipulation_ability.json
 8a9946993ca70fd5916e42a5aa2b79cbe4709902 assets/lotmcraft/models/item/weather_warlock_potion.json
 b11e45a0af334b9d5ba95766153ff18301c94e7e assets/lotmcraft/models/item/whale_of_punishment_stomach.json

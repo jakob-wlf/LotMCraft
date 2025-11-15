@@ -88,6 +88,25 @@ public class ModAttachments {
                     .build()
     );
 
+    public static final Supplier<AttachmentType<WaypointComponent>> WAYPOINT_COMPONENT = ATTACHMENT_TYPES.register(
+            "waypoint_component",
+            () -> AttachmentType.builder(WaypointComponent::new)
+                    .serialize(new IAttachmentSerializer<CompoundTag, WaypointComponent>() {
+                        @Override
+                        public WaypointComponent read(IAttachmentHolder holder, CompoundTag tag, HolderLookup.Provider provider) {
+                            WaypointComponent data = new WaypointComponent();
+                            data.loadFromNBT(tag, holder);
+                            return data;
+                        }
+
+                        @Override
+                        public CompoundTag write(WaypointComponent attachment, HolderLookup.Provider provider) {
+                            return attachment.saveToNBT();
+                        }
+                    })
+                    .build()
+    );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

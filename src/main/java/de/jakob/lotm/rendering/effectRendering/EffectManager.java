@@ -19,7 +19,8 @@ public class EffectManager {
         EXPLOSION(5),
         COLLAPSE(6),
         APOCALYPSE(7),
-        SPACE_FRAGMENTATION(8);
+        SPACE_FRAGMENTATION(8),
+        WAYPOINT(9);
 
         private final int index;
 

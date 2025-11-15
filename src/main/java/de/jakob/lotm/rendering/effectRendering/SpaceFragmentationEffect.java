@@ -374,7 +374,7 @@ public class SpaceFragmentationEffect extends ActiveEffect {
         // Main vortex - thick, solid, CYLINDRICAL spiraling destruction
         int layers = 4;
         int segments = 48;
-        int heightSegments = 25; // Reduced further
+        int heightSegments = 15; // Reduced further
         float maxHeight = EFFECT_RADIUS * 0.55f; // Even shorter - 60% of radius
         float vortexRadius = EFFECT_RADIUS * 0.55f;
 

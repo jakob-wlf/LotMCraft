@@ -19,7 +19,7 @@ public class BlackHoleAbility extends AbilityItem {
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("door", 2));
+        return new HashMap<>(Map.of("door", 1));
     }
 
     @Override
