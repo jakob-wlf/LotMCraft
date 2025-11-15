@@ -6,6 +6,8 @@ import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.darkness.NightmareAbility;
 import de.jakob.lotm.abilities.red_priest.CullAbility;
+import de.jakob.lotm.attachments.AbilityHotbarManager;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.helper.ExplodingFallingBlockHelper;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.ChatFormatting;
@@ -21,6 +23,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.joml.Vector3f;
 
@@ -33,6 +36,27 @@ public class PlayerEvents {
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             ToggleAbilityItem.cleanupEntity(player.level(), player);
+
+            AbilityHotbarManager manager = player.getData(ModAttachments.ABILITY_HOTBAR);
+
+            if (manager.isAbilityHotbarActive()) {
+                manager.resetToRegularHotbar(player);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerSave(PlayerEvent.SaveToFile event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            AbilityHotbarManager manager = player.getData(ModAttachments.ABILITY_HOTBAR);
+            // Save current state before file write
+            if (manager.isAbilityHotbarActive()) {
+                // Save the current ability hotbar to the attachment
+                manager.saveCurrentAbilityHotbar(player);
+            } else {
+                // Save regular hotbar to the attachment
+                manager.saveCurrentRegularHotbar(player);
+            }
         }
     }
 
@@ -42,6 +66,25 @@ public class PlayerEvents {
             new Vector3f(.05f, 0, 0),
             1.5f
     );
+
+    @SubscribeEvent
+    public static void onPlayerTick(PlayerTickEvent.Post event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            AbilityHotbarManager manager = player.getData(ModAttachments.ABILITY_HOTBAR);
+
+            // Only validate when ability hotbar is active
+            if (manager.isAbilityHotbarActive()) {
+                for (int i = 0; i < 9; i++) {
+                    var stack = player.getInventory().getItem(i);
+                    if (!stack.isEmpty() && !manager.canPlaceInAbilityHotbar(stack)) {
+                        // Remove invalid item and drop it
+                        player.getInventory().setItem(i, net.minecraft.world.item.ItemStack.EMPTY);
+                        player.drop(stack, false);
+                    }
+                }
+            }
+        }
+    }
 
     @SubscribeEvent
     public static void onDamage(LivingIncomingDamageEvent event) {

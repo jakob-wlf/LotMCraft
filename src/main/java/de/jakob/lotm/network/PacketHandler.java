@@ -72,6 +72,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                ToggleAbilityHotbarPacket.TYPE,
+                ToggleAbilityHotbarPacket.STREAM_CODEC,
+                ToggleAbilityHotbarPacket::handle
+        );
+
+        registrar.playToServer(
                 ClearBeyonderDataPacket.TYPE,
                 ClearBeyonderDataPacket.STREAM_CODEC,
                 ClearBeyonderDataPacket::handle
@@ -123,6 +129,12 @@ public class PacketHandler {
                 SyncMirrorWorldPacket.TYPE,
                 SyncMirrorWorldPacket.STREAM_CODEC,
                 SyncMirrorWorldPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncAbilityHotbarPacket.TYPE,
+                SyncAbilityHotbarPacket.STREAM_CODEC,
+                SyncAbilityHotbarPacket::handle
         );
 
         registrar.playToClient(

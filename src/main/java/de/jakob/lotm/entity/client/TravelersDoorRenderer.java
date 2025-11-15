@@ -18,6 +18,7 @@ public class TravelersDoorRenderer extends EntityRenderer<TravelersDoorEntity> {
 
     private final TravelersDoorModel<TravelersDoorEntity> model;
     private static final float SCALE_FACTOR = 2.5f;
+    private static final float OUTLINE_SCALE = 1.02f; // Scale factor for outline (2% larger)
 
     public TravelersDoorRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -34,8 +35,8 @@ public class TravelersDoorRenderer extends EntityRenderer<TravelersDoorEntity> {
         poseStack.translate(0.0D, 1.5D, 0.0D);
 
         // Apply entity yaw and pitch
-        poseStack.mulPose(Axis.YP.rotationDegrees(-entity.getYRot())); // horizontal rotation
-        poseStack.mulPose(Axis.XP.rotationDegrees(entity.getXRot()));  // vertical tilt (if needed)
+        poseStack.mulPose(Axis.YP.rotationDegrees(-entity.getYRot()));
+        poseStack.mulPose(Axis.XP.rotationDegrees(entity.getXRot()));
 
         // Flip model upright
         poseStack.mulPose(Axis.XP.rotationDegrees(180.0f));
@@ -43,7 +44,28 @@ public class TravelersDoorRenderer extends EntityRenderer<TravelersDoorEntity> {
         // Scale up
         poseStack.scale(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR);
 
-        // Render model
+        // === RENDER OUTLINE FIRST (behind the main model) ===
+        poseStack.pushPose();
+        poseStack.scale(OUTLINE_SCALE, OUTLINE_SCALE, OUTLINE_SCALE);
+
+        // Use eyes render type for glowing effect
+        RenderType outlineRenderType = RenderType.eyes(this.getTextureLocation(entity));
+        VertexConsumer outlineConsumer = buffer.getBuffer(outlineRenderType);
+
+        // White glowing color (you can change this to any color)
+        // Format: ARGB - 0xAARRGGBB
+        int outlineColor = 0xFFFFFFFF; // White
+        // Example other colors:
+        // 0xFF00FFFF - Cyan
+        // 0xFFFFFF00 - Yellow
+        // 0xFFFF00FF - Magenta
+
+        this.model.renderToBuffer(poseStack, outlineConsumer, 15, // Full brightness
+                OverlayTexture.NO_OVERLAY, outlineColor);
+
+        poseStack.popPose();
+
+        // === RENDER MAIN MODEL (on top of outline) ===
         RenderType renderType = RenderType.entityTranslucent(this.getTextureLocation(entity));
         VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
 
@@ -56,7 +78,6 @@ public class TravelersDoorRenderer extends EntityRenderer<TravelersDoorEntity> {
 
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
-
 
     @Override
     protected int getBlockLightLevel(TravelersDoorEntity entity, BlockPos blockPos) {

@@ -88,6 +88,26 @@ public class ModAttachments {
                     .build()
     );
 
+    public static final Supplier<AttachmentType<AbilityHotbarManager>> ABILITY_HOTBAR =
+            ATTACHMENT_TYPES.register("ability_hotbar", () ->
+                    AttachmentType.builder(AbilityHotbarManager::new)
+                            .serialize(new IAttachmentSerializer<CompoundTag, AbilityHotbarManager>() {
+                                @Override
+                                public AbilityHotbarManager read(IAttachmentHolder holder, CompoundTag tag, HolderLookup.Provider provider) {
+                                    AbilityHotbarManager manager = new AbilityHotbarManager();
+                                    manager.deserializeNBT(provider, tag);
+                                    return manager;
+                                }
+
+                                @Override
+                                public CompoundTag write(AbilityHotbarManager attachment, HolderLookup.Provider provider) {
+                                    CompoundTag result = attachment.serializeNBT(provider);
+                                    return result;
+                                }
+                            })
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<WaypointComponent>> WAYPOINT_COMPONENT = ATTACHMENT_TYPES.register(
             "waypoint_component",
             () -> AttachmentType.builder(WaypointComponent::new)

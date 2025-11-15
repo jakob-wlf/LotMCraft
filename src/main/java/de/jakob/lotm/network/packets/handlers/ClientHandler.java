@@ -192,4 +192,11 @@ public class ClientHandler {
     public static void addEffect(int index, double x, double y, double z) {
         VFXRenderer.addActiveEffect(index, x, y, z);
     }
+
+    public static void handleHotbarPacket(SyncAbilityHotbarPacket packet) {
+        Player player = Minecraft.getInstance().player;
+        if (player != null) {
+            player.getData(ModAttachments.ABILITY_HOTBAR.get()).setCurrentHotbarIndex(packet.hotbarIndex());
+        }
+    }
 }
