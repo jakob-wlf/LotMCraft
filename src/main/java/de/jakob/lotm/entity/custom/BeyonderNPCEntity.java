@@ -19,6 +19,7 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -247,7 +248,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         super.onAddedToLevel();
         if (!this.level().isClientSide) {
             // Only generate a quest if this NPC doesn't already have one
-            if (this.random.nextFloat() <= .2f && !hasQuest() && !isPuppetWarrior()) {
+            if (this.random.nextFloat() <= .2f && !hasQuest() && !isPuppetWarrior() && !MarionetteUtils.isMarionette(this)) {
                 setHasQuest(true);
 
                 // Generate and store the quest ID

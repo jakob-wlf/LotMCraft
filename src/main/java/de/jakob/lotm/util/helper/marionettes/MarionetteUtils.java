@@ -19,6 +19,12 @@ import net.minecraft.world.item.component.ItemLore;
 import java.util.List;
 
 public class MarionetteUtils {
+
+    public static boolean isMarionette(LivingEntity entity) {
+        MarionetteComponent component = entity.getData(ModAttachments.MARIONETTE_COMPONENT);
+        return component.isMarionette();
+    }
+
     public static boolean turnEntityIntoMarionette(LivingEntity entity, Player controller) {
         if (entity instanceof Player) {
             return false; // Players cannot be turned into marionettes
