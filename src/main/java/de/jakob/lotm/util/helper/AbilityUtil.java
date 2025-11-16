@@ -463,7 +463,7 @@ public class AbilityUtil {
     }
 
 
-    public static List<BlockPos> getBlocksInSphereRadius(ServerLevel level, Vec3 center, double radius, boolean filled, boolean excludeEmptyBlocks, boolean onlyExposed) {
+    public static List<BlockPos> getBlocksInSphereRadius(Level level, Vec3 center, double radius, boolean filled, boolean excludeEmptyBlocks, boolean onlyExposed) {
         if (level == null) return List.of();
 
         List<BlockPos> blocks = new ArrayList<>();
