@@ -168,6 +168,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncGriefingGamerulePacket.TYPE,
+                SyncGriefingGamerulePacket.STREAM_CODEC,
+                SyncGriefingGamerulePacket::handle
+        );
+
+        registrar.playToClient(
                 SyncCullAbilityPacket.TYPE,
                 SyncCullAbilityPacket.STREAM_CODEC,
                 SyncCullAbilityPacket::handle

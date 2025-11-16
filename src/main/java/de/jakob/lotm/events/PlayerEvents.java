@@ -8,6 +8,9 @@ import de.jakob.lotm.abilities.darkness.NightmareAbility;
 import de.jakob.lotm.abilities.red_priest.CullAbility;
 import de.jakob.lotm.attachments.AbilityHotbarManager;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.gamerule.ModGameRules;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.SyncGriefingGamerulePacket;
 import de.jakob.lotm.util.helper.ExplodingFallingBlockHelper;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.ChatFormatting;
@@ -43,6 +46,13 @@ public class PlayerEvents {
             if (manager.isAbilityHotbarActive()) {
                 manager.resetToRegularHotbar(player);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            PacketHandler.sendToPlayer(player, new SyncGriefingGamerulePacket(player.level().getGameRules().getBoolean(ModGameRules.ALLOW_GRIEFING)));
         }
     }
 

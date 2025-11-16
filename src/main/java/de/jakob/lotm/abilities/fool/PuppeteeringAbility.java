@@ -219,6 +219,9 @@ public class PuppeteeringAbility extends AbilityItem {
             health.set(target.getHealth());
         }, () -> {
             entitiesBeingManipulated.remove(entity.getUUID());
+            if(stopped.get()) {
+                return;
+            }
             MarionetteComponent component = entity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
             if(entity instanceof Player player && !component.isMarionette()) {
                 turnIntoMarionette(target, player);

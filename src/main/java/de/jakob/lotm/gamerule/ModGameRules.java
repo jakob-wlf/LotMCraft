@@ -1,5 +1,7 @@
 package de.jakob.lotm.gamerule;
 
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.SyncGriefingGamerulePacket;
 import net.minecraft.world.level.GameRules;
 
 public class ModGameRules {
@@ -16,7 +18,9 @@ public class ModGameRules {
         ALLOW_BEYONDER_SPAWNING = GameRules.register(
                 "allowBeyonderSpawning",
                 GameRules.Category.MISC,
-                GameRules.BooleanValue.create(true)
+                GameRules.BooleanValue.create(true, (server, value) -> {
+                    PacketHandler.sendToAllPlayers(new SyncGriefingGamerulePacket(value.get()));
+                })
         );
     }
 

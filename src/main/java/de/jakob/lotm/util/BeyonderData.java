@@ -1,6 +1,7 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.SyncBeyonderDataPacket;
 import de.jakob.lotm.network.packets.SyncLivingEntityBeyonderDataPacket;
@@ -346,6 +347,11 @@ public class BeyonderData {
             // On client side, read from cache instead of NBT
             return ClientBeyonderCache.isGriefingEnabled(player.getUUID());
         }
+
+        if(!player.level().getGameRules().getBoolean(ModGameRules.ALLOW_GRIEFING)) {
+            return false;
+        }
+
         return player.getPersistentData().getBoolean(NBT_GRIEFING_ENABLED);
     }
 

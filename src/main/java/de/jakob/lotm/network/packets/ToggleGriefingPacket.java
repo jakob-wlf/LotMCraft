@@ -1,6 +1,7 @@
 package de.jakob.lotm.network.packets;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.FriendlyByteBuf;
@@ -27,7 +28,18 @@ public record ToggleGriefingPacket() implements CustomPacketPayload {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
             boolean isGriefingEnabled = BeyonderData.isGriefingEnabled(player);
+
+            if(!player.level().getGameRules().getBoolean(ModGameRules.ALLOW_GRIEFING)) {
+                if(!isGriefingEnabled) {
+                    Component message = Component.literal("Griefing is disabled globally").withStyle(ChatFormatting.RED);
+
+                    player.displayClientMessage(message, true);
+                    return;
+                }
+            }
+
             BeyonderData.setGriefingEnabled(player, !isGriefingEnabled);
+
 
             Component message = isGriefingEnabled ?
                     Component.literal("Griefing disabled").withStyle(ChatFormatting.RED) :

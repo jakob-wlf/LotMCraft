@@ -1,5 +1,7 @@
 package de.jakob.lotm.util;
 
+import de.jakob.lotm.gamerule.ClientGameruleCache;
+
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,6 +34,9 @@ public class ClientBeyonderCache {
     }
 
     public static boolean isGriefingEnabled(UUID playerUUID) {
+        if(!ClientGameruleCache.isGlobalGriefingEnabled) {
+            return false;
+        }
         BeyonderClientData data = dataCache.get(playerUUID);
         return data != null && data.griefingEnabled();
     }
