@@ -29,6 +29,7 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.FOOL_Card.get());
                         output.accept(ModBlocks.BREWING_CAULDRON.get());
                         output.accept(ModBlocks.VOID);
+                        output.accept(ModBlocks.SOLID_VOID);
                     })
                     .build());
 

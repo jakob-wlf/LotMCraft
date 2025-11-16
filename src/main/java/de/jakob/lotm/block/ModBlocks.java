@@ -37,6 +37,12 @@ public class ModBlocks {
                     .strength(-1.0f, 3600000.0F)
             ));
 
+    public static final DeferredBlock<Block> SOLID_VOID = registerBlock("solid_void_block",
+            () -> new VoidBlock(BlockBehaviour.Properties.of()
+                    .noLootTable()
+                    .strength(-1.0f, 3600000.0F)
+            ));
+
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
         DeferredBlock<T> toReturn = BLOCKS.register(name, block);
         registerBlockItem(name, toReturn);

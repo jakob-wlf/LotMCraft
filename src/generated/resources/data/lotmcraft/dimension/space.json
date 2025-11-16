@@ -1,0 +1,10 @@
+{
+  "type": "lotmcraft:space",
+  "generator": {
+    "type": "lotmcraft:empty",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "minecraft:the_void"
+    }
+  }
+}

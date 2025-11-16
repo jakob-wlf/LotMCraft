@@ -29,6 +29,15 @@ public class ModEntities {
             ENTITY_TYPES.register("spear_of_light", () -> EntityType.Builder.<SpearOfLightProjectileEntity>of(SpearOfLightProjectileEntity::new, MobCategory.MISC)
                     .sized(.35f, .35f).build("spear_of_light"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<ReturnPortalEntity>> RETURN_PORTAL =
+            ENTITY_TYPES.register("return_portal", () ->
+                    EntityType.Builder.<ReturnPortalEntity>of(ReturnPortalEntity::new, MobCategory.MISC)
+                            .sized(1.0F, 1.0F)
+                            .clientTrackingRange(10)
+                            .updateInterval(20)
+                            .build("return_portal")
+            );
+
     public static final Supplier<EntityType<SpearOfDestructionProjectileEntity>> SPEAR_OF_DESTRUCTION =
             ENTITY_TYPES.register("spear_of_destruction", () -> EntityType.Builder.<SpearOfDestructionProjectileEntity>of(SpearOfDestructionProjectileEntity::new, MobCategory.MISC)
                     .sized(.35f, .35f).build("spear_of_destruction"));

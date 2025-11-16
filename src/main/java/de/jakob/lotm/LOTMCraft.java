@@ -7,6 +7,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.data.ModDataComponents;
+import de.jakob.lotm.dimesion.ModDimensions;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.*;
@@ -92,6 +93,7 @@ public class LOTMCraft
         ModDataComponents.register(modEventBus);
         PotionRecipeItemHandler.registerRecipes(modEventBus);
         ModAttachments.register(modEventBus);
+        ModDimensions.register(modEventBus);
 
         AbilityItemHandler.registerAbilities(modEventBus);
         PassiveAbilityHandler.registerAbilities(modEventBus);
@@ -155,6 +157,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.SUN_KINGDOM.get(), SunKingdomEntityRenderer::new);
             EntityRenderers.register(ModEntities.DISTORTION_FIELD.get(), DistortionFieldRenderer::new);
             EntityRenderers.register(ModEntities.SPEAR_OF_DESTRUCTION.get(), SpearOfDestructionProjectileRenderer::new);
+            EntityRenderers.register(ModEntities.RETURN_PORTAL.get(), ReturnPortalRenderer::new);
         }
 
         @SubscribeEvent

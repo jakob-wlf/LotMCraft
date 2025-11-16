@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class SpaceDistortionAbility extends AbilityItem {
     public SpaceDistortionAbility(Properties properties) {
-        super(properties, 20 * 30);
+        super(properties, 20);
     }
 
     @Override
@@ -43,9 +43,9 @@ public class SpaceDistortionAbility extends AbilityItem {
 
         ServerScheduler.scheduleForDuration(0, 2, 20 * 60, () -> AbilityUtil.getAllNearbyEntities(entity, serverLevel, targetLoc, 70).forEach(e -> {
             e.setDeltaMovement(targetLoc.subtract(e.position()).scale(.04));
-            BlockPos nextPos = BlockPos.containing(e.position().add(targetLoc.subtract(e.position()).scale(1)));
+            BlockPos nextPos = BlockPos.containing(e.position().add(targetLoc.subtract(e.position()).scale(.4)));
             if(!serverLevel.getBlockState(nextPos).getCollisionShape(serverLevel, nextPos).isEmpty()) {
-                e.teleportTo(e.getX(), e.getY() + .5, e.getZ());
+                e.teleportTo(e.getX(), e.getY() + 1, e.getZ());
             }
             e.hurtMarked = true;
         }));
