@@ -108,8 +108,10 @@ public class SolarEnvoyAbility extends ToggleAbilityItem {
 
     @Override
     protected void stop(Level level, LivingEntity entity) {
-        if(level.isClientSide)
+        if(level.isClientSide) {
+            ClientHandler.changeToFirstPerson();
             return;
+        }
 
         entity.setNoGravity(false);
 

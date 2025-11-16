@@ -2,24 +2,19 @@ package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
-import de.jakob.lotm.util.EffectManager;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.*;
 
 public class PlayerTeleportationAbility extends SelectableAbilityItem {
 
-    public PlayerTeleportationAbility(Properties properties, float cooldown) {
-        super(properties, cooldown);
+    public PlayerTeleportationAbility(Properties properties) {
+        super(properties, 1);
 
         canBeUsedByNPC = false;
     }

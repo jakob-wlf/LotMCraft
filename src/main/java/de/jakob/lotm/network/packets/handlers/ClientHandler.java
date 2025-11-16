@@ -163,6 +163,11 @@ public class ClientHandler {
         minecraft.options.setCameraType(CameraType.THIRD_PERSON_BACK);
     }
 
+    public static void changeToFirstPerson() {
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.options.setCameraType(CameraType.FIRST_PERSON);
+    }
+
     public static void handleShaderPacket(SyncShaderPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;

@@ -78,8 +78,10 @@ public class AvatarOfDesireAbility extends ToggleAbilityItem {
 
     @Override
     protected void stop(Level level, LivingEntity entity) {
-        if(level.isClientSide)
+        if(level.isClientSide) {
+            ClientHandler.changeToFirstPerson();
             return;
+        }
 
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         if(transformationComponent.isTransformed() && transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.DESIRE_AVATAR.getIndex()) {

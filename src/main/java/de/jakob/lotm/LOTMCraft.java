@@ -12,6 +12,7 @@ import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.*;
 import de.jakob.lotm.entity.quests.QuestRegistry;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.gui.custom.AbilitySelectionScreen;
 import de.jakob.lotm.gui.custom.BrewingCauldronScreen;
@@ -94,6 +95,7 @@ public class LOTMCraft
         PotionRecipeItemHandler.registerRecipes(modEventBus);
         ModAttachments.register(modEventBus);
         ModDimensions.register(modEventBus);
+        ModGameRules.register();
 
         AbilityItemHandler.registerAbilities(modEventBus);
         PassiveAbilityHandler.registerAbilities(modEventBus);

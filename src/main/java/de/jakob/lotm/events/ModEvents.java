@@ -7,9 +7,11 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.*;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.entity.custom.FireRavenEntity;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.SpiritualityProgressTracker;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.player.Player;
@@ -63,7 +65,17 @@ public class ModEvents {
                 ModEntities.BEYONDER_NPC.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Mob::checkMobSpawnRules,
+                (entityType, level, spawnType, pos, random) -> {
+                    // Get the ServerLevel to access gamerules
+                    if (level.getLevel() instanceof ServerLevel serverLevel) {
+                        if (!serverLevel.getGameRules().getBoolean(ModGameRules.ALLOW_BEYONDER_SPAWNING)) {
+                            return false;
+                        }
+                    }
+
+                    // Then check the normal mob spawn rules
+                    return Mob.checkMobSpawnRules(entityType, level, spawnType, pos, random);
+                },
                 RegisterSpawnPlacementsEvent.Operation.REPLACE
         );
     }
