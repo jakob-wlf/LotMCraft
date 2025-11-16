@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-15T23:03:59.1686977	Item Models: lotmcraft
+// 1.21.1	2025-11-16T14:07:09.7706332	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -204,6 +204,7 @@ a5ec83bf79581416969ff4c380b65f720ff01cf7 assets/lotmcraft/models/item/planeswalk
 63285aca4004491d7073c8b9998c3b4c06a54638 assets/lotmcraft/models/item/planter_potion.json
 5578269b846a6661a6cab8b42599e160895bb2f9 assets/lotmcraft/models/item/plant_controlling_ability.json
 5fafb77af910b43367941a485ca19204723829d6 assets/lotmcraft/models/item/plant_nurturing_ability.json
+8b2cdac64df65d69b8a65b61ffaac63dafc79e21 assets/lotmcraft/models/item/player_teleportation_ability.json
 51d32b05310e70966b22c685b76885fb470694df assets/lotmcraft/models/item/pocket_dimension_ability.json
 273777b5a47f8e241a497d46ca487ecbbaea4e6c assets/lotmcraft/models/item/poisonous_flame_ability.json
 62c84d7e49b04e11821402edfa98492235a81b90 assets/lotmcraft/models/item/powder_of_dazzling_soul.json

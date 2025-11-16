@@ -161,6 +161,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> POCKET_DIMENSION = ITEMS.registerItem("pocket_dimension_ability", PocketDimensionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SPACE_TIME_STORM = ITEMS.registerItem("space_time_storm_ability", SpaceTimeStormAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> BLACK_HOLE = ITEMS.registerItem("black_hole_ability", BlackHoleAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> PLAYER_TELEPORTATION = ITEMS.registerItem("player_teleportation_ability", PlayerTeleportationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> SPECTATING = ITEMS.registerItem("spectating_ability", SpectatingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> TELEPATHY = ITEMS.registerItem("telepathy_ability", TelepathyAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

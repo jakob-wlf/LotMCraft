@@ -85,7 +85,7 @@ public class TravelersDoorAbility extends AbilityItem {
                 if(level.getBlockState(BlockPos.containing(finalTargetLoc)).getCollisionShape(level, BlockPos.containing(finalTargetLoc)).isEmpty())
                     level.setBlockAndUpdate(BlockPos.containing(finalTargetLoc), Blocks.LIGHT.defaultBlockState());
 
-                ServerScheduler.scheduleDelayed(20 * 5, () -> {
+                ServerScheduler.scheduleDelayed(20 * 10, () -> {
                     door.discard();
                     if(level.getBlockState(BlockPos.containing(finalTargetLoc)).getBlock() == Blocks.LIGHT)
                         level.setBlockAndUpdate(BlockPos.containing(finalTargetLoc), Blocks.AIR.defaultBlockState());
