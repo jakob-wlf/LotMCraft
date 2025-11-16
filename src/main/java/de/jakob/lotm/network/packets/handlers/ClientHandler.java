@@ -2,6 +2,7 @@ package de.jakob.lotm.network.packets.handlers;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.common.DivinationAbility;
+import de.jakob.lotm.abilities.door.PlayerTeleportationAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gui.custom.CoordinateInputScreen;
 import de.jakob.lotm.network.packets.*;
@@ -22,6 +23,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import org.joml.Random;
+
+import java.util.UUID;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
@@ -203,5 +206,9 @@ public class ClientHandler {
         if (player != null) {
             player.getData(ModAttachments.ABILITY_HOTBAR.get()).setCurrentHotbarIndex(packet.hotbarIndex());
         }
+    }
+
+    public static void addPlayerToList(int id, String playerName, UUID playerUUID) {
+        PlayerTeleportationAbility.allPlayers.add(new PlayerTeleportationAbility.PlayerInfo(id, playerName, playerUUID));
     }
 }

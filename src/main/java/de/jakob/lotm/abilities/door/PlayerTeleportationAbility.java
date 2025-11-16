@@ -1,17 +1,31 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.AddPlayerToTeleportationListPacket;
+import de.jakob.lotm.network.packets.ClearPlayerListInTeleportationPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.*;
 
 public class PlayerTeleportationAbility extends SelectableAbilityItem {
+
+    public record PlayerInfo(int id, String name, UUID uuid) implements Comparable<PlayerInfo> {
+        @Override
+        public int compareTo(PlayerInfo other) {
+            return Integer.compare(this.id, other.id);
+        }
+    }
+
+    public static HashSet<PlayerInfo> allPlayers = new HashSet<>();
 
     public PlayerTeleportationAbility(Properties properties) {
         super(properties, 1);
@@ -38,20 +52,21 @@ public class PlayerTeleportationAbility extends SelectableAbilityItem {
     /**
      * Gets the list of available players from ALL dimensions (excluding the entity itself)
      */
-    private List<ServerPlayer> getAvailablePlayers(Level level, LivingEntity excludeEntity) {
-        List<ServerPlayer> players = new ArrayList<>();
+    private List<Player> getAvailablePlayers(Level level, LivingEntity excludeEntity) {
+        List<Player> players = new ArrayList<>();
 
-        if (level.isClientSide())
+        if (level.isClientSide()) {
             return players;
+        }
 
         // Get all players from all dimensions
         for (ServerPlayer player : level.getServer().getPlayerList().getPlayers()) {
-            if (!player.getUUID().equals(excludeEntity.getUUID())) {
+            if (excludeEntity == null || !player.getUUID().equals(excludeEntity.getUUID())) {
                 players.add(player);
             }
         }
 
-        return players;
+        return players.stream().sorted(Comparator.comparing(Entity::getId)).toList();
     }
 
     /**
@@ -78,7 +93,7 @@ public class PlayerTeleportationAbility extends SelectableAbilityItem {
 
     @Override
     public void nextAbility(LivingEntity entity) {
-        List<ServerPlayer> players = getAvailablePlayers(entity.level(), entity);
+        List<Player> players = getAvailablePlayers(entity.level(), entity);
 
         if (players.isEmpty())
             return;
@@ -98,7 +113,7 @@ public class PlayerTeleportationAbility extends SelectableAbilityItem {
 
     @Override
     public void previousAbility(LivingEntity entity) {
-        List<ServerPlayer> players = getAvailablePlayers(entity.level(), entity);
+        List<Player> players = getAvailablePlayers(entity.level(), entity);
 
         if (players.isEmpty())
             return;
@@ -118,20 +133,18 @@ public class PlayerTeleportationAbility extends SelectableAbilityItem {
 
     @Override
     public String getSelectedAbility(LivingEntity entity) {
-        List<ServerPlayer> players = getAvailablePlayers(entity.level(), entity);
-
-        if (players.isEmpty())
+        if (allPlayers.isEmpty())
             return "No Players Available";
 
-        validateSelectedIndex(entity.getUUID(), players.size());
+        List<PlayerInfo> sortedPlayers = allPlayers.stream()
+                .sorted()
+                .toList();
 
-        if (!selectedAbilities.containsKey(entity.getUUID())) {
-            return players.get(0).getName().getString();
-        }
+        validateSelectedIndex(entity.getUUID(), sortedPlayers.size());
 
-        int selectedIndex = selectedAbilities.get(entity.getUUID());
-        if (selectedIndex >= 0 && selectedIndex < players.size()) {
-            return players.get(selectedIndex).getName().getString();
+        int selectedIndex = selectedAbilities.getOrDefault(entity.getUUID(), 0);
+        if (selectedIndex >= 0 && selectedIndex < sortedPlayers.size()) {
+            return sortedPlayers.get(selectedIndex).name();
         }
 
         return "No Players Available";
@@ -142,7 +155,7 @@ public class PlayerTeleportationAbility extends SelectableAbilityItem {
         if (level.isClientSide())
             return;
 
-        List<ServerPlayer> players = getAvailablePlayers(level, entity);
+        List<Player> players = getAvailablePlayers(level, entity);
 
         if (players.isEmpty())
             return;
@@ -156,8 +169,11 @@ public class PlayerTeleportationAbility extends SelectableAbilityItem {
         int selectedIndex = selectedAbilities.get(entity.getUUID());
 
         if (selectedIndex >= 0 && selectedIndex < players.size()) {
-            ServerPlayer targetPlayer = players.get(selectedIndex);
-            ServerLevel targetLevel = targetPlayer.serverLevel();
+            Player targetPlayer = players.get(selectedIndex);
+            if(!(targetPlayer instanceof ServerPlayer)) {
+                return;
+            }
+            ServerLevel targetLevel = ((ServerPlayer) targetPlayer).serverLevel();
 
             // Store origin position and level
             double originX = entity.getX();
@@ -196,6 +212,16 @@ public class PlayerTeleportationAbility extends SelectableAbilityItem {
                     SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0f, 1.0f);
             EffectManager.playEffect(EffectManager.Effect.WAYPOINT,
                     targetPlayer.getX(), targetPlayer.getY(), targetPlayer.getZ(), targetLevel);
+        }
+    }
+
+    @Override
+    public void onHold(Level level, LivingEntity entity) {
+        if(!level.isClientSide && entity instanceof ServerPlayer serverPlayer) {
+            PacketHandler.sendToPlayer(serverPlayer, new ClearPlayerListInTeleportationPacket());
+            for(Player player : getAvailablePlayers(level, null)) {
+                PacketHandler.sendToPlayer(serverPlayer, new AddPlayerToTeleportationListPacket(player.getId(), player.getDisplayName().getString(), player.getUUID()));
+            }
         }
     }
 

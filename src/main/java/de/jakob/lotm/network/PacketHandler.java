@@ -168,6 +168,18 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                ClearPlayerListInTeleportationPacket.TYPE,
+                ClearPlayerListInTeleportationPacket.STREAM_CODEC,
+                ClearPlayerListInTeleportationPacket::handle
+        );
+
+        registrar.playToClient(
+                AddPlayerToTeleportationListPacket.TYPE,
+                AddPlayerToTeleportationListPacket.STREAM_CODEC,
+                AddPlayerToTeleportationListPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncGriefingGamerulePacket.TYPE,
                 SyncGriefingGamerulePacket.STREAM_CODEC,
                 SyncGriefingGamerulePacket::handle
