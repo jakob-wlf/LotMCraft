@@ -1,16 +1,23 @@
 package de.jakob.lotm.abilities.visionary.passives;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class PhysicalEnhancementsVisionaryAbility extends PassiveAbilityItem {
 
     private final HashMap<Integer, List<MobEffectInstance>> effectsPerSequence = new HashMap<>();
@@ -94,6 +101,8 @@ public class PhysicalEnhancementsVisionaryAbility extends PassiveAbilityItem {
         ));
     }
 
+    private static final HashMap<UUID, Long> reducedRegen = new HashMap<>();
+
     @Override
     public void tick(Level level, LivingEntity entity) {
         int sequence = BeyonderData.getSequence(entity);
@@ -102,8 +111,84 @@ public class PhysicalEnhancementsVisionaryAbility extends PassiveAbilityItem {
             return;
         }
 
-        List<MobEffectInstance> effects = getEffectsForSequence(sequence);
+        ArrayList<MobEffectInstance> effects = new ArrayList<>(getEffectsForSequence(sequence));
+
+        if(reducedRegen.containsKey(entity.getUUID())) {
+            applyRegenReduce(effects, entity);
+        }
+
         applyPotionEffects(entity, effects);
+    }
+
+    private void applyRegenReduce(ArrayList<MobEffectInstance> effects, Entity entity) {
+        if(!(entity instanceof Player)) {
+            return;
+        }
+        if(effects == null) {
+            return;
+        }
+        if(!reducedRegen.containsKey(entity.getUUID())) {
+            return;
+        }
+
+        if ((reducedRegen.get(entity.getUUID()) - System.currentTimeMillis()) <= 0) {
+            reducedRegen.remove(entity.getUUID());
+        }
+
+        MobEffectInstance regen = null;
+
+        for (MobEffectInstance effect : effects) {
+            System.out.println(effect);
+            if (effect.getEffect() == MobEffects.REGENERATION) {
+                regen = effect;
+                break;
+            }
+        }
+
+        if (regen != null) {
+            int newAmplifier = regen.getAmplifier() - 2;
+
+            if (newAmplifier < 0) {
+                effects.remove(regen);
+            } else {
+                effects.remove(regen);
+                effects.add(new MobEffectInstance(
+                        MobEffects.REGENERATION,
+                        regen.getDuration(),
+                        newAmplifier,
+                        regen.isAmbient(),
+                        regen.isVisible(),
+                        regen.showIcon()
+                ));
+            }
+        }
+    }
+
+
+
+    @SubscribeEvent
+    public static void onLivingDamageLiving(LivingDamageEvent.Post event) {
+        if(!(event.getEntity().level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        if(!serverLevel.getGameRules().getBoolean(ModGameRules.REDUCE_REGEN_IN_BEYONDER_FIGHT)) {
+            return;
+        }
+
+        if(!(event.getSource().getEntity() instanceof LivingEntity source)) {
+            return;
+        }
+
+        LivingEntity target = event.getEntity();
+        if(!BeyonderData.isBeyonder(target) || !BeyonderData.isBeyonder(source)) {
+            return;
+        }
+
+        if(!reducedRegen.containsKey(target.getUUID()) || (reducedRegen.get(target.getUUID()) - System.currentTimeMillis()) <= 0) {
+            target.removeEffect(MobEffects.REGENERATION);
+        }
+        reducedRegen.put(target.getUUID(), System.currentTimeMillis() + 10000);
     }
 
     private List<MobEffectInstance> getEffectsForSequence(int sequence) {

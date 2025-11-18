@@ -7,10 +7,11 @@ import net.minecraft.world.level.GameRules;
 public class ModGameRules {
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_GRIEFING;
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_BEYONDER_SPAWNING;
+    public static GameRules.Key<GameRules.BooleanValue> REDUCE_REGEN_IN_BEYONDER_FIGHT;
 
     public static void register() {
         ALLOW_GRIEFING = GameRules.register(
-            "allowGriefing",
+            "allowAbilityGriefing",
             GameRules.Category.MISC,
             GameRules.BooleanValue.create(true)
         );
@@ -21,6 +22,12 @@ public class ModGameRules {
                 GameRules.BooleanValue.create(true, (server, value) -> {
                     PacketHandler.sendToAllPlayers(new SyncGriefingGamerulePacket(value.get()));
                 })
+        );
+
+        REDUCE_REGEN_IN_BEYONDER_FIGHT = GameRules.register(
+                "reduceRegenInBeyonderFight",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
         );
     }
 
