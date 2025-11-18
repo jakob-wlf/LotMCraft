@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -48,7 +49,7 @@ public class StructuralCollapseAbility extends AbilityItem {
         }
 
         // Damage entities
-        AbilityUtil.damageNearbyEntities(serverLevel, entity, 35, 75.5f * multiplier(entity), targetLoc, true, true);
+        AbilityUtil.damageNearbyEntities(serverLevel, entity, 35, DamageLookup.lookupDamage(2, .8) * (float) multiplier(entity), targetLoc, true, true);
 
         // Play Effect
         EffectManager.playEffect(EffectManager.Effect.COLLAPSE, targetLoc.x, targetLoc.y - 1.5, targetLoc.z, serverLevel);

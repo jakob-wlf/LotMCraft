@@ -9,6 +9,7 @@ import de.jakob.lotm.entity.custom.TornadoEntity;
 import de.jakob.lotm.entity.custom.VolcanoEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -63,7 +64,7 @@ public class CalamityCreationAbility extends SelectableAbilityItem {
     private void createVolcano(ServerLevel serverLevel, LivingEntity entity) {
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 60, 2);
 
-        VolcanoEntity volcano = new VolcanoEntity(serverLevel, targetPos, 36.5f * (float) multiplier(entity), entity);
+        VolcanoEntity volcano = new VolcanoEntity(serverLevel, targetPos, (float) DamageLookup.lookupDamage(2, .5) * (float) multiplier(entity), entity);
         serverLevel.addFreshEntity(volcano);
 
     }
@@ -91,7 +92,7 @@ public class CalamityCreationAbility extends SelectableAbilityItem {
 
         ServerScheduler.scheduleForDuration(0, 4, 20 * 30, () -> {
             // Damage and Effects
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60, 22.5f * (float) multiplier(entity), startPos, true, false);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60, DamageLookup.lookupDps(2, .8, 4, 30) * (float) multiplier(entity), startPos, true, false);
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 60, startPos,
                     new MobEffectInstance(MobEffects.WEAKNESS, 20 * 5, 1, false, false, false),
                     new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 7, false, false, false));
@@ -161,7 +162,7 @@ public class CalamityCreationAbility extends SelectableAbilityItem {
 
         ServerScheduler.scheduleForDuration(0, 4, 20 * 30, () -> {
             // Damage and Effects
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 90, 19.5f * (float) multiplier(entity), startPos, true, false, 20 * 10);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 90, DamageLookup.lookupDps(2, .8, 4, 30) * (float) multiplier(entity), startPos, true, false, 20 * 10);
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 90, startPos,
                     new MobEffectInstance(MobEffects.WEAKNESS, 20 * 5, 1, false, false, false),
                     new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 4, false, false, false));
@@ -221,7 +222,7 @@ public class CalamityCreationAbility extends SelectableAbilityItem {
 
         Vec3 pos = AbilityUtil.getTargetLocation(entity, 12, 2);
 
-        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f,32.5f * (float) multiplier(entity), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, 32.5f * (float) multiplier(entity), entity, target);
+        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .775) * (float) multiplier(entity), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, 32.5f * (float) multiplier(entity), entity, target);
         tornado.setPos(pos);
         serverLevel.addFreshEntity(tornado);
 

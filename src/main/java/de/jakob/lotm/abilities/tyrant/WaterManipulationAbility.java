@@ -7,6 +7,7 @@ import de.jakob.lotm.network.packets.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -91,7 +92,7 @@ public class WaterManipulationAbility extends SelectableAbilityItem {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.PLAYER_SPLASH_HIGH_SPEED, entity.getSoundSource(), 1.0f, 1.0f);
 
-        ServerScheduler.scheduleDelayed(18, () -> AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, 15.5 * multiplier(entity), entity.position().add(0, .2, 0), true, false, true, 0));
+        ServerScheduler.scheduleDelayed(18, () -> AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, DamageLookup.lookupDamage(7, .875) * multiplier(entity), entity.position().add(0, .2, 0), true, false, true, 0));
 
         AtomicDouble i = new AtomicDouble(0.6);
         ServerScheduler.scheduleForDuration(0, 1, 24, () -> {
@@ -125,7 +126,7 @@ public class WaterManipulationAbility extends SelectableAbilityItem {
         }, () -> castingCorrosiveRain.remove(entity.getUUID()), (ServerLevel) level);
 
         ServerScheduler.scheduleForDuration(0, 10, 20 * 15, () -> {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5, 9 * multiplier(entity), startPos, true, false, true, 0);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5, DamageLookup.lookupDps(7, .775, 10, 20) * multiplier(entity), startPos, true, false, true, 0);
         }, (ServerLevel) level);
     }
 
@@ -149,7 +150,7 @@ public class WaterManipulationAbility extends SelectableAbilityItem {
 
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, 12 * multiplier(entity), pos, true, false, true, 0)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, .825) * multiplier(entity), pos, true, false, true, 0)) {
                 hasHit.set(true);
                 return;
             }

@@ -5,6 +5,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.SyncExplodedTrapPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ClientScheduler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -67,7 +68,7 @@ public class TrapAbility extends AbilityItem {
                         PacketHandler.sendToPlayer(player, new SyncExplodedTrapPacket(trapId));
                     }
 
-                    AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 3, 8 * multiplier(entity), pos, true, false, true, 0);
+                    AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 3, DamageLookup.lookupDamage(9, .95) * multiplier(entity), pos, true, false, true, 0);
 
                     if(BeyonderData.isGriefingEnabled(entity)) {
                         level.explode(entity, pos.x, pos.y, pos.z, 4f, true, Level.ExplosionInteraction.MOB);

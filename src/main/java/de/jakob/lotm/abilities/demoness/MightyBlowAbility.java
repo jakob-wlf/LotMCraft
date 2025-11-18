@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import net.minecraft.core.particles.ParticleTypes;
@@ -44,7 +45,7 @@ public class MightyBlowAbility extends AbilityItem{
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CRIT, pos, 60, 0, 0.325);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.EXPLOSION, pos, 1, 0, 0.115);
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 3.5f, 14 * multiplier(entity), pos, true, false, true, 0);
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 3.5f, DamageLookup.lookupDamage(9, 1.5) * (float) multiplier(entity), pos, true, false, true, 0);
 
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.GENERIC_EXPLODE.value(), entity.getSoundSource(), 1, 1);
     }

@@ -5,6 +5,7 @@ import de.jakob.lotm.entity.custom.GiantLightningEntity;
 import de.jakob.lotm.entity.custom.LightningEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,7 +44,7 @@ public class HeavenlyPunishmentAbility extends AbilityItem {
                 targetLoc = targetLoc.subtract(0, 1, 0);
         }
 
-        GiantLightningEntity lightning = new GiantLightningEntity(level, entity, targetLoc, 50, 6, 100 * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 13, 200, 0x6522a8);
+        GiantLightningEntity lightning = new GiantLightningEntity(level, entity, targetLoc, 50, 6, DamageLookup.lookupDamage(1, .85) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 13, 200, 0x6522a8);
         level.addFreshEntity(lightning);
     }
 }

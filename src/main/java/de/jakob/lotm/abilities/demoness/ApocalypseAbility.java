@@ -5,6 +5,7 @@ import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -58,7 +59,7 @@ public class ApocalypseAbility extends AbilityItem {
                 });
             }
 
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get() - 2.1, radius.get() + 2.1, 95.5f * multiplier(entity), loc, true, false, true, 0);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get() - 2.1, radius.get() + 2.1, DamageLookup.lookupDps(1, 1, 2, 30) * multiplier(entity), loc, true, false, true, 0);
 
             radius.addAndGet(0.8);
         });

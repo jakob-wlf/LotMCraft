@@ -21,7 +21,7 @@ public class BeyonderData {
     public static final String NBT_GRIEFING_ENABLED = "beyonder_griefing_enabled";
 
     private static final int[] spiritualityLookup = {150000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180};
-    private static final double[] multiplier = {5, 3.5, 3, 2.4, 2.0, 1.6, 1.4, 1.2, 1.0, 1.0};
+    private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
 
     private static final HashMap<UUID, HashMap<String, Double>> multiplierModifier = new HashMap<>();
     private static final HashMap<UUID, HashSet<String>> disabledBeyonders = new HashMap<>();

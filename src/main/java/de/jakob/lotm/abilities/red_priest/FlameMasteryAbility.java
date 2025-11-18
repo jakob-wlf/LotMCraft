@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.entity.custom.FireballEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ClientScheduler;
@@ -29,7 +30,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FlameMasteryAbility extends SelectableAbilityItem {
     private final HashSet<UUID> transformedEntities = new HashSet<>();
-
     public FlameMasteryAbility(Properties properties) {
         super(properties, 2.5f);
     }
@@ -106,7 +106,7 @@ public class FlameMasteryAbility extends SelectableAbilityItem {
         ParticleUtil.spawnParticles(level, ParticleTypes.EXPLOSION, targetPos, 90, 2, 6, 2, .02);
         ParticleUtil.spawnParticles(level, dust, targetPos, 400, 2, 6, 2, 0);
 
-        AbilityUtil.damageNearbyEntities(level, entity, 9, 37.5 * multiplier(entity), targetPos, true, false);
+        AbilityUtil.damageNearbyEntities(level, entity, 9, DamageLookup.lookupDamage(4, .85) * multiplier(entity), targetPos, true, false);
 
         for(int i = 0; i < 25; i++) {
             FallingBlockEntity falling = FallingBlockEntity.fall(
@@ -145,8 +145,8 @@ public class FlameMasteryAbility extends SelectableAbilityItem {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
 
-        FireballEntity fireball = new FireballEntity(level, entity, 35 * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 1.75f);
-        fireball.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
+        FireballEntity fireball = new FireballEntity(level, entity, DamageLookup.lookupDamage(4, .4) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 1.75f);
+        fireball.setPos(startPos.x, startPos.y, startPos.z); // Set initial position,
         fireball.shoot(direction.x, direction.y, direction.z, 1.85f, 0);
         level.addFreshEntity(fireball);
     }

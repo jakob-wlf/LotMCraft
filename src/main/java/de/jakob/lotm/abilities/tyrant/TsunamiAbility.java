@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.entity.custom.TsunamiEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.VectorUtil;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
@@ -38,7 +39,7 @@ public class TsunamiAbility extends AbilityItem {
 
         level.playSound(null, entity.blockPosition(), SoundEvents.GENERIC_SPLASH, entity.getSoundSource(), 5, 1.0f);
 
-        TsunamiEntity tsunami = new TsunamiEntity(level, position, direction, (float) (40f * multiplier(entity)), BeyonderData.isGriefingEnabled(entity), entity);
+        TsunamiEntity tsunami = new TsunamiEntity(level, position, direction, (float) (DamageLookup.lookupDamage(4, .6) * multiplier(entity)), BeyonderData.isGriefingEnabled(entity), entity);
         level.addFreshEntity(tsunami);
     }
 }

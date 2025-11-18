@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.registries.Registries;
@@ -62,7 +63,7 @@ public class NightmareSpectatorAbility extends AbilityItem {
                 serverLevel.registryAccess()
                         .registryOrThrow(Registries.DAMAGE_TYPE)
                         .getHolderOrThrow(ModDamageTypes.LOOSING_CONTROL)
-        ), 30.0f * (float) multiplier(entity));
+        ), (float) DamageLookup.lookupDamage(5, 1.1) * (float) multiplier(entity));
 
         // Add effect
         target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, 2));

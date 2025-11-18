@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -135,7 +136,7 @@ public class PlantControllingAbility extends SelectableAbilityItem {
         if(targetEntity == null)
             return;
 
-        targetEntity.hurt(entity.damageSources().mobAttack(entity), (float) (18.5f * multiplier(entity)));
+        targetEntity.hurt(entity.damageSources().mobAttack(entity), (float) DamageLookup.lookupDamage(7, .75) * (float) multiplier(entity));
     }
 
     private void animateParticleLine(Location startLoc, Vec3 end, int step, int interval, int duration) {

@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -41,7 +42,7 @@ public class RagingBlowsAbility extends AbilityItem {
 
                 level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.GENERIC_EXPLODE.value(), entity.getSoundSource(), 1, 1);
 
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75f, 5 * multiplier(entity), pos, true, false, true, 0);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75f, DamageLookup.lookupDamage(8, .8) * multiplier(entity), pos, true, false, true, 0);
             }, (ServerLevel) level);
         }
     }

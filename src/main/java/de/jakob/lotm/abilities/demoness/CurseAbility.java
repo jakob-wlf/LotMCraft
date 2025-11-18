@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.demoness;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
@@ -50,7 +51,7 @@ public class CurseAbility extends AbilityItem {
             }
             switch(random.nextInt(3)) {
                 case 0 -> {
-                    target.hurt(target.damageSources().onFire(), (float) (10.5f * multiplier(entity)));
+                    target.hurt(target.damageSources().onFire(), (float) (DamageLookup.lookupDamage(4, .6) * multiplier(entity)));
                     ParticleUtil.spawnParticles(serverLevel, ModParticles.BLACK_FLAME.get(), target.position().add(0, target.getEyeHeight() / 2, 0), 200, .4, target.getEyeHeight() / 2, .4, 0.01);
                 }
                 case 1 -> {

@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleTypes;
@@ -45,7 +46,7 @@ public class ProvokingAbility extends AbilityItem {
 
                 e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 6, 1, false, false, false));
                 e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20 * 6, 1, false, false, false));
-                e.hurt(entity.damageSources().mobAttack(entity), 6 * (float) multiplier(entity));
+                e.hurt(entity.damageSources().mobAttack(entity), (float) DamageLookup.lookupDamage(8, .65) * (float) multiplier(entity));
             });
         }
         else {

@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -45,7 +46,7 @@ public class PsycheStormAbility extends AbilityItem {
             return;
         }
 
-        AbilityUtil.damageNearbyEntities(serverLevel, entity, 10, 12 * multiplier(entity), entity.getEyePosition(), true, false);
+        AbilityUtil.damageNearbyEntities(serverLevel, entity, 10, DamageLookup.lookupDamage(6, .875) * multiplier(entity), entity.getEyePosition(), true, false);
         AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 10, entity.getEyePosition(), new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 7, random.nextInt(1) + 3));
 
         Location loc = new Location(entity.position(), serverLevel);

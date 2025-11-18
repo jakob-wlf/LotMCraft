@@ -8,6 +8,7 @@ import de.jakob.lotm.network.packets.DisplaySpaceConcealmentParticlesPacket;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -435,7 +436,7 @@ public class SpaceConcealmentAbility extends SelectableAbilityItem {
 
                 // Deal damage to living entities
                 if(entity instanceof LivingEntity && AbilityUtil.mayDamage(source, (LivingEntity) entity)) {
-                    entity.hurt(level.damageSources().magic(), (float) (35 * multiplier)); // Adjust damage amount as needed
+                    entity.hurt(level.damageSources().magic(), (float) (DamageLookup.lookupDamage(4, 1.5) * multiplier));
                 }
             }
         }

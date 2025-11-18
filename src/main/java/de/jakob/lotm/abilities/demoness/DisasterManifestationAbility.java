@@ -11,6 +11,7 @@ import de.jakob.lotm.entity.custom.MeteorEntity;
 import de.jakob.lotm.entity.custom.TornadoEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -83,7 +84,7 @@ public class DisasterManifestationAbility extends SelectableAbilityItem {
                 }
             });
 
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get() - 1.5, radius.get() + 1.5, 50.5f * multiplier(entity), startPos, true, false, false, 0);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get() - 1.5, radius.get() + 1.5, (float) DamageLookup.lookupDamage(2, .6) * (float) multiplier(entity), startPos, true, false, false, 0);
 
             // Particles and shader
             for(Player player : AbilityUtil.getNearbyEntities(null, serverLevel, startPos, radius.get(), true)
@@ -110,7 +111,7 @@ public class DisasterManifestationAbility extends SelectableAbilityItem {
     private void spawnMeteor(ServerLevel serverLevel, LivingEntity entity) {
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 85, 3);
 
-        MeteorEntity meteor = new MeteorEntity(serverLevel, 3.25f, 75.5f * (float) multiplier(entity), 6, entity, BeyonderData.isGriefingEnabled(entity), 18, 30);
+        MeteorEntity meteor = new MeteorEntity(serverLevel, 3.25f,  (float) DamageLookup.lookupDamage(2, 1) * (float) multiplier(entity), 6, entity, BeyonderData.isGriefingEnabled(entity), 18, 30);
         meteor.setPosition(targetLoc);
         serverLevel.addFreshEntity(meteor);
     }
@@ -120,12 +121,12 @@ public class DisasterManifestationAbility extends SelectableAbilityItem {
 
         Vec3 pos = AbilityUtil.getTargetLocation(entity, 12, 2);
 
-        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f,32.5f * (float) multiplier(entity), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, 32.5f * (float) multiplier(entity), entity, target);
+        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f,(float) DamageLookup.lookupDamage(2, .65) * (float) multiplier(entity), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .65) * (float) multiplier(entity), entity, target);
         tornado.setPos(pos);
         serverLevel.addFreshEntity(tornado);
 
         for(int i = 0; i < 30; i++) {
-            TornadoEntity additionalTornado = target == null || random.nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, 17f, entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, 17f, entity, target);
+            TornadoEntity additionalTornado = target == null || random.nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .65) * (float) multiplier(entity), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .65) * (float) multiplier(entity), entity, target);
             Vec3 randomOffset = new Vec3((serverLevel.random.nextDouble() - 0.5) * 120, 3, (serverLevel.random.nextDouble() - 0.5) * 120);
             additionalTornado.setPos(pos.add(randomOffset));
             serverLevel.addFreshEntity(additionalTornado);

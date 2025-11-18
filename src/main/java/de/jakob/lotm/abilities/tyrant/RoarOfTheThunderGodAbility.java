@@ -5,6 +5,7 @@ import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -52,7 +53,7 @@ public class RoarOfTheThunderGodAbility extends AbilityItem {
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);
 
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 50).forEach(e -> {
-            e.hurt(e.damageSources().mobAttack(entity), (float) (75 * multiplier(entity)));
+            e.hurt(e.damageSources().mobAttack(entity), (float) (DamageLookup.lookupDamage(1, .85) * multiplier(entity)));
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(2.75);
             e.setDeltaMovement(knockBack);
         });

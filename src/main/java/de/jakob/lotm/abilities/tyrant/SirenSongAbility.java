@@ -6,6 +6,7 @@ import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -112,7 +113,7 @@ public class SirenSongAbility extends SelectableAbilityItem {
         ServerScheduler.scheduleForDuration(0,  18, 20 * 30, () -> {
             if(entity.level().isClientSide)
                 return;
-            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 25, 2.15 * multiplier(entity), entity.position(), true, false, true, 0);
+            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 25, DamageLookup.lookupDps(5,  .65, 18, 20) * multiplier(entity), entity.position(), true, false, true, 0);
         }, level);
     }
 }

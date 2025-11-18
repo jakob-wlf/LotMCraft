@@ -5,6 +5,7 @@ import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -73,7 +74,7 @@ public class BlackFlameAbility extends SelectableAbilityItem {
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), targetPos.subtract(0, .75, 0), 700, .3, 1.3, .3, .01);
         ParticleUtil.spawnParticles((ServerLevel) level, dust, targetPos.subtract(0, .75, 0), 190, .3, 1.3, .3, .02);
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, 17.5 * multiplier(entity), targetPos, true, false, true, 0, 20 * 2);
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, DamageLookup.lookupDamage(7, .7) * multiplier(entity), targetPos, true, false, true, 0, 20 * 2);
 
         BlockState block = level.getBlockState(BlockPos.containing(targetPos));
         if(block.isAir()) {
@@ -98,7 +99,7 @@ public class BlackFlameAbility extends SelectableAbilityItem {
             Vec3 currentPos = startPos.add(0, ySubtraction, 0);
             double radius = i.get() < .71 ? i.get() : i.get() * 2;
             ParticleUtil.spawnCircleParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), currentPos, radius, (int) (radius * 27));
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius - .3, radius, 15.5 * multiplier(entity), startPos.subtract(0, 1, 0), true, false, true, 0, 20 * 5);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius - .3, radius, DamageLookup.lookupDamage(7, .8) * multiplier(entity), startPos.subtract(0, 1, 0), true, false, true, 0, 20 * 5);
             i.set(i.get() + .1);
         }, (ServerLevel) level);
     }
@@ -122,7 +123,7 @@ public class BlackFlameAbility extends SelectableAbilityItem {
 
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, 15 * multiplier(entity), pos, true, false, true, 0, 20 * 5)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, 1.1) * multiplier(entity), pos, true, false, true, 0, 20 * 5)) {
                 hasHit.set(true);
                 return;
             }

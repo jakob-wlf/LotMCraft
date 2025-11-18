@@ -5,10 +5,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.SyncNightmareAbilityPacket;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.data.NightmareCenter;
-import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.ParticleUtil;
-import de.jakob.lotm.util.helper.RegionSnapshot;
-import de.jakob.lotm.util.helper.VectorUtil;
+import de.jakob.lotm.util.helper.*;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -128,7 +125,7 @@ public class NightmareAbility extends SelectableAbilityItem {
         ServerScheduler.scheduleUntil((ServerLevel) level, () -> {
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1.2f, 12, pos, true, false, true, 0)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1.2f, DamageLookup.lookupDamage(7, 1) * multiplier(entity), pos, true, false, true, 0)) {
                 hasHit.set(true);
                 return;
             }

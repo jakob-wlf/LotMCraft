@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.door;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.entity.custom.ElectricShockEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -60,7 +61,7 @@ public class SpellsAbility extends SelectableAbilityItem {
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 4, 2);
         level.playSound(null, targetPos.x, targetPos.y, targetPos.z, Blocks.ICE.getSoundType(Blocks.ICE.defaultBlockState(), level, BlockPos.containing(targetPos.x, targetPos.y, targetPos.z), null).getBreakSound(), entity.getSoundSource(), 1.0f, 1.0f);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SNOWFLAKE, targetPos, 120, .5, .175);
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, 8 * multiplier(entity), targetPos, true, false);
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, DamageLookup.lookupDamage(8, .8) * (float) multiplier(entity), targetPos, true, false);
         AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, 2.5, targetPos, new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 2, 2, false, false, false));
     }
 
@@ -91,7 +92,7 @@ public class SpellsAbility extends SelectableAbilityItem {
 
         level.playSound(null, start.x, start.y, start.z, Blocks.ICE.getSoundType(Blocks.COPPER_GRATE.defaultBlockState(), level, BlockPos.containing(start.x, start.y, start.z), null).getStepSound(), entity.getSoundSource(), 5.0f, 1.0f);
 
-        ElectricShockEntity shock = new ElectricShockEntity(level, entity, start, direction, 60, 8 * multiplier(entity));
+        ElectricShockEntity shock = new ElectricShockEntity(level, entity, start, direction, 60, DamageLookup.lookupDamage(8, .7) * (float) multiplier(entity));
         level.addFreshEntity(shock);
     }
 

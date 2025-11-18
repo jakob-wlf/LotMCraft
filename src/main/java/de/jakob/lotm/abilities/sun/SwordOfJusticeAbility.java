@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.sun;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.entity.custom.JusticeSwordEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -39,7 +40,7 @@ public class SwordOfJusticeAbility extends AbilityItem {
         if(targetEntity != null) {
             targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 4, false, false, false));
         }
-        JusticeSwordEntity swordEntity = new JusticeSwordEntity(level, targetLoc, (float) (60.0f * multiplier(entity)), entity);
+        JusticeSwordEntity swordEntity = new JusticeSwordEntity(level, targetLoc, (float) (DamageLookup.lookupDamage(3, 1) * multiplier(entity)), entity);
         level.addFreshEntity(swordEntity);
     }
 }

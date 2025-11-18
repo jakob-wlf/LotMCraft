@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.tyrant;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -110,7 +111,7 @@ public class WaterMasteryAbility extends SelectableAbilityItem {
                     if(random.nextBoolean())
                         ParticleUtil.spawnParticles(level, dust, pos, 1, 0.5, 0.02);
 
-                    AbilityUtil.damageNearbyEntities(level, entity, 1.2f, 16 * multiplier(entity), pos, true, false, false, 15);
+                    AbilityUtil.damageNearbyEntities(level, entity, 1.2f, DamageLookup.lookupDamage(4, .35) * multiplier(entity), pos, true, false, false, 15);
 
                     for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, level, pos, 1f)) {
                         Vec3 knockback = target.position().subtract(pos).normalize().add(0, .2, 0).scale(1.4f);

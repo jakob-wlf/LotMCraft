@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -111,7 +112,7 @@ public class ThreadManipulationAbility extends SelectableAbilityItem {
 
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities(level, entity, 2.5f, 14 * multiplier(entity), pos, true, false, true,0)) {
+            if(AbilityUtil.damageNearbyEntities(level, entity, 2.5f, DamageLookup.lookupDamage(6, .5) * (float) multiplier(entity), pos, true, false, true,0)) {
                 hasHit.set(true);
                 AbilityUtil.addPotionEffectToNearbyEntities(level, entity, 2.5, pos, new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 8, 4, false, false, false));
                 return;

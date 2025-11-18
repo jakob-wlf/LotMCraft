@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.entity.custom.LightningEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -40,7 +41,7 @@ public class LightningAbility extends AbilityItem {
                 targetLoc = targetLoc.subtract(0, 1, 0);
         }
 
-        LightningEntity lightning = new LightningEntity(level, entity, targetLoc, 50, 6, 24 * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 4, 200, 0x11A8DD);
+        LightningEntity lightning = new LightningEntity(level, entity, targetLoc, 50, 6, DamageLookup.lookupDamage(5, .8) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 4, 200, 0x11A8DD);
         level.addFreshEntity(lightning);
     }
 }

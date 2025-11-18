@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.entity.custom.SpaceCollapseEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -32,7 +33,7 @@ public class SpaceTearingAbility extends AbilityItem {
             return;
 
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 27, 2);
-        SpaceCollapseEntity collapse = new SpaceCollapseEntity(level, targetLoc, (float) (30 * multiplier(entity)), BeyonderData.isGriefingEnabled(entity), entity);
+        SpaceCollapseEntity collapse = new SpaceCollapseEntity(level, targetLoc, (float) DamageLookup.lookupDps(3, .75, 4, 20) * (float) multiplier(entity), BeyonderData.isGriefingEnabled(entity), entity);
         level.addFreshEntity(collapse);
     }
 }

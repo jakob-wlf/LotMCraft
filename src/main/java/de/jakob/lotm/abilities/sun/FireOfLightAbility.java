@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.sun;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -53,7 +54,7 @@ public class FireOfLightAbility extends AbilityItem {
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.HOLY_FLAME.get(), targetPos, 140, .4, .04);
         ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, targetPos, 90, .75, 0);
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, 17.5 * multiplier(entity), targetPos, true, false, true, 0, 20 * 2);
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, DamageLookup.lookupDamage(7, .75) * multiplier(entity), targetPos, true, false, true, 0, 20 * 2);
 
          BlockState block = level.getBlockState(BlockPos.containing(targetPos));
          if(block.isAir()) {

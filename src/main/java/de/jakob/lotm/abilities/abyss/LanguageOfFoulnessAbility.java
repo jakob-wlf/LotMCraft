@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.abyss;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -65,9 +66,9 @@ public class LanguageOfFoulnessAbility extends SelectableAbilityItem {
     private void castDeath(ServerLevel serverLevel, LivingEntity entity, LivingEntity target) {
         ServerScheduler.scheduleForDuration(0, 1, 20 * 8, () -> {
             if(random.nextInt(8) == 0) {
-                target.hurt(serverLevel.damageSources().wither(), (float) (3.5F * multiplier(entity)));
+                target.hurt(serverLevel.damageSources().wither(), (float) (DamageLookup.lookupDps(6, .8, 8, 20) * multiplier(entity)));
             }
-            target.addEffect(new MobEffectInstance(MobEffects.WITHER, 15, 8, false, false, false));
+            target.addEffect(new MobEffectInstance(MobEffects.WITHER, 15, 3, false, false, false));
         });
     }
 

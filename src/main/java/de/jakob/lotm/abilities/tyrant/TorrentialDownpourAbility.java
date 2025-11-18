@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.tyrant;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -91,7 +92,7 @@ public class TorrentialDownpourAbility extends AbilityItem {
         });
 
         ServerScheduler.scheduleForDuration(0, 10, 20 * 30, () -> {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 25, 12 * multiplier(entity), startPos, true, false, true, 0);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 25, DamageLookup.lookupDps(3, .75, 10, 20) * multiplier(entity), startPos, true, false, true, 0);
         }, (ServerLevel) level);
     }
 }

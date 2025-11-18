@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -67,7 +68,7 @@ public class HolyLightAbility extends AbilityItem {
                     lights.add(blockPos);
                 }
 
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, 14 * multiplier(entity), pos, true, false, false, 10);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(8, .8) * multiplier(entity), pos, true, false, false, 10);
 
                 currentPos.set(pos.subtract(0, 1, 0));
             }, (ServerLevel) level);

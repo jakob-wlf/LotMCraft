@@ -5,6 +5,7 @@ import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -45,7 +46,7 @@ public class SpaceTimeStormAbility extends AbilityItem {
 
         List<BlockPos> blocks = AbilityUtil.getBlocksInSphereRadius(serverLevel, center, 35, true, true, false);
         ServerScheduler.scheduleForDuration(0, 2, 20 * 12, () -> {
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 35, 40f * multiplier(entity), center, true, false);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 35, DamageLookup.lookupDps(1, .75, 2, 20) * (float) multiplier(entity), center, true, false);
 
             if(griefing) {
                 blocks.stream().filter(b -> random.nextInt(175) == 0 && !serverLevel.getBlockState(b).is(ModBlocks.VOID.get())).forEach(b -> serverLevel.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState()));

@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.fool;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -56,7 +57,7 @@ public class AirBulletAbility extends AbilityItem {
 
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, 14 * multiplier(entity), pos, true, false, true, 0)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, .9) * (float) multiplier(entity), pos, true, false, true, 0)) {
                 hasHit.set(true);
                 return;
             }

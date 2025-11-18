@@ -5,6 +5,7 @@ import de.jakob.lotm.entity.custom.WindBladeEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -156,7 +157,7 @@ public class WindManipulationAbility extends SelectableAbilityItem {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BREEZE_WIND_CHARGE_BURST, entity.getSoundSource(), 1.0f, 1.0f);
 
-        WindBladeEntity blade = new WindBladeEntity(level, entity, 19 * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
+        WindBladeEntity blade = new WindBladeEntity(level, entity, DamageLookup.lookupDamage(6, .85) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
         blade.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
         blade.shoot(direction.x, direction.y, direction.z, 1.2f, 0);
         level.addFreshEntity(blade);

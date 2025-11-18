@@ -5,6 +5,7 @@ import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.entity.custom.FireballEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -68,7 +69,7 @@ public class FlameSpellsAbility extends SelectableAbilityItem {
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 3, 1);
 
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 5).forEach(e -> {
-            e.hurt(e.damageSources().mobAttack(entity), (float) (16 * multiplier(entity)));
+            e.hurt(e.damageSources().mobAttack(entity), (float) (DamageLookup.lookupDamage(6, .875) * multiplier(entity)));
             e.setRemainingFireTicks(20 * 3);
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(.5);
             e.setDeltaMovement(knockBack);
@@ -116,7 +117,7 @@ public class FlameSpellsAbility extends SelectableAbilityItem {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
 
-        FireballEntity fireball = new FireballEntity(level, entity, 15 * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
+        FireballEntity fireball = new FireballEntity(level, entity, DamageLookup.lookupDamage(6, .75) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
         fireball.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
         fireball.shoot(direction.x, direction.y, direction.z, 1.2f, 0);
         level.addFreshEntity(fireball);

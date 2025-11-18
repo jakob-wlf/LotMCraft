@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -92,7 +93,7 @@ public class HolyLightSummoningAbility extends AbilityItem {
                 ParticleUtil.spawnCircleParticles((ServerLevel) level, ModParticles.HOLY_FLAME.get(), pos, 1.5, 20);
                 ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.FLAME, pos, 1.5, 21);
 
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 3.5f, 18 * multiplier(entity), pos, true, false, false, 10);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 3.5f, DamageLookup.lookupDamage(7, .8) * multiplier(entity), pos, true, false, false, 10);
 
                 currentPos.set(pos.subtract(0, 1, 0));
             }, (ServerLevel) level);

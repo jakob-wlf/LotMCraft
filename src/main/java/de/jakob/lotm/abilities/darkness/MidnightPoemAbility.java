@@ -5,6 +5,7 @@ import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -59,7 +60,7 @@ public class MidnightPoemAbility extends SelectableAbilityItem {
         ParticleUtil.spawnParticles((ServerLevel) level, dustBig, entity.getEyePosition().subtract(0, .4, 0), 800, 7, 0);
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.CRIMSON_LEAF.get(), entity.position().subtract(0, .2, 0), 500, 7, .01, 7, 0.07);
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 20, 12 * multiplier(entity), entity.getEyePosition(), true, false);
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 20, DamageLookup.lookupDamage(8, 1.1) * multiplier(entity), entity.getEyePosition(), true, false);
     }
 
     private void lullaby(Level level, LivingEntity entity) {

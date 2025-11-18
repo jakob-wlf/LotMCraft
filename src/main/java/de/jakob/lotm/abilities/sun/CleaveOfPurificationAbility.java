@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.sun;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -73,7 +74,7 @@ public class CleaveOfPurificationAbility extends AbilityItem {
                 .5, 12, .4
         );
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75, 15 * multiplier(entity), startPos, true, false, true, 0);
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75, DamageLookup.lookupDamage(7, .9) * multiplier(entity), startPos, true, false, true, 0);
 
         BlockState block = level.getBlockState(BlockPos.containing(startPos));
         if(block.isAir()) {

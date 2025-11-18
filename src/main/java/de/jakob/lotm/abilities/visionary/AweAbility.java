@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.visionary;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -49,7 +50,7 @@ public class AweAbility extends AbilityItem {
         ParticleUtil.spawnParticles((ServerLevel) level, dust, entity.position(), 1300, 17, 3, 17, 0);
 
         AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, 25, entity.position(), new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 10, 11, false, false, false), new MobEffectInstance(MobEffects.WEAKNESS, 20 * 10, 6, false, false, false));
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 25, 5 * multiplier(entity), entity.position(), true, false);
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 25, DamageLookup.lookupDamage(7, .675) * multiplier(entity), entity.position(), true, false);
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 25).forEach(e -> {
             if(BeyonderData.isBeyonder(e)) {
                 BeyonderData.addModifier(e,"awe", .625);
