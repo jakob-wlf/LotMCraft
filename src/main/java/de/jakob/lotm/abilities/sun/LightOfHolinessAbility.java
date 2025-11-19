@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.sun;
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -42,7 +43,7 @@ public class LightOfHolinessAbility extends AbilityItem {
         return 50;
     }
 
-    final int radius = 16;
+    final int radius = 45;
 
     DustParticleOptions dustOptions = new DustParticleOptions(
             new Vector3f(255 / 255f, 180 / 255f, 66 / 255f),
@@ -51,15 +52,16 @@ public class LightOfHolinessAbility extends AbilityItem {
 
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {
-        Vec3 initialPos = AbilityUtil.getTargetLocation(entity, radius, .75f).add(0, 14, 0);
+        Vec3 initialPos = AbilityUtil.getTargetLocation(entity, radius, 1.5f, true).add(0, 18, 0);
 
         List<BlockPos> lights = new ArrayList<>();
 
         if (!level.isClientSide) {
             AtomicReference<Vec3> currentPos = new AtomicReference<>(initialPos);
-            AtomicBoolean hasHitBlock = new AtomicBoolean(false);
 
-            level.playSound(null, initialPos.x, initialPos.y - 14, initialPos.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 3.0f, 1.0f);
+            level.playSound(null, initialPos.x, initialPos.y - 18, initialPos.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 3.0f, 1.0f);
+
+            EffectManager.playEffect(EffectManager.Effect.LIGHT_OF_HOLINESS, initialPos.x, initialPos.y - 18, initialPos.z, (ServerLevel) level);
 
             ServerScheduler.scheduleForDuration(0, 1, 22, () -> {
                 Vec3 pos = currentPos.get();
@@ -70,29 +72,8 @@ public class LightOfHolinessAbility extends AbilityItem {
                     level.setBlockAndUpdate(blockPos, Blocks.LIGHT.defaultBlockState());
                     lights.add(blockPos);
                 }
-                //Animation when hit block
-                else {
-                    if(!hasHitBlock.get()) {
-                        hasHitBlock.set(true);
-                        AtomicDouble i = new AtomicDouble(2);
-                        ServerScheduler.scheduleForDuration(0, 1, 12, () -> {
-                            Vec3 particlePos = currentPos.get().add(0, 1, 0);
 
-                            ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.END_ROD, particlePos, i.get(), (int) Math.round(20 * i.get()));
-                            ParticleUtil.spawnCircleParticles((ServerLevel) level, dustOptions, particlePos, i.get(), (int) Math.round(12 * i.get()));
-                            ParticleUtil.spawnCircleParticles((ServerLevel) level, ModParticles.HOLY_FLAME.get(), particlePos, i.get(), (int) Math.round(12 * i.get()));
-                            i.addAndGet(.5);
-                        }, (ServerLevel) level);
-                    }
-                    return;
-                }
-
-                ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.FIREWORK, pos, 2, 16);
-                ParticleUtil.spawnCircleParticles((ServerLevel) level, dustOptions, pos, 2, 50);
-                ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.END_ROD, pos, 2.25, 80);
-                ParticleUtil.spawnCircleParticles((ServerLevel) level, ModParticles.HOLY_FLAME.get(), pos, 2, 50);
-
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 4.35f, DamageLookup.lookupDamage(5, .8) * multiplier(entity), pos, true, false, false, 10);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8f, DamageLookup.lookupDamage(5, .8) * multiplier(entity), pos, true, false, false, 10);
 
                 currentPos.set(pos.subtract(0, 1, 0));
             }, (ServerLevel) level);

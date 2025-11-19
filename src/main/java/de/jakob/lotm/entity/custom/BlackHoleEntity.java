@@ -158,6 +158,7 @@ public class BlackHoleEntity extends Entity {
                 Vec3 pullVector = diff.normalize().scale(pullStrength);
                 
                 entity.setDeltaMovement(pullVector);
+                entity.hurtMarked = true;
             }
         }
     }

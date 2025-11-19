@@ -15,6 +15,8 @@ public class EffectFactory {
             case 8 -> new SpaceFragmentationEffect(x, y, z);
             case 9 -> new WaypointEffect(x, y, z);
             case 10 -> new SpaceDistortionEffect(x, y, z);
+            case 11 -> new HolyLightSmallEffect(x, y, z);
+            case 12 -> new LightOfHolinessEffect(x, y, z);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
     }

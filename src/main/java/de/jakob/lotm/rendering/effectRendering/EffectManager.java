@@ -21,7 +21,9 @@ public class EffectManager {
         APOCALYPSE(7),
         SPACE_FRAGMENTATION(8),
         WAYPOINT(9),
-        SPACE_DISTORTION(10);
+        SPACE_DISTORTION(10),
+        HOLY_LIGHT_SMALL(11),
+        LIGHT_OF_HOLINESS(12);
 
         private final int index;
 

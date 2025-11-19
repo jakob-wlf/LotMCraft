@@ -105,6 +105,7 @@ public class ModAttachments {
                                     return result;
                                 }
                             })
+                            .copyOnDeath()
                             .build()
             );
 
