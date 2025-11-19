@@ -1,4 +1,4 @@
-package de.jakob.lotm.dimesion;
+package de.jakob.lotm.dimension;
 
 import com.mojang.serialization.MapCodec;
 import de.jakob.lotm.LOTMCraft;

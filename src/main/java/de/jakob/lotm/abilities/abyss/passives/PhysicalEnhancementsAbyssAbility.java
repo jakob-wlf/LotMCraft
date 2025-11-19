@@ -123,57 +123,11 @@ public class PhysicalEnhancementsAbyssAbility extends PassiveAbilityItem {
         ArrayList<MobEffectInstance> effects = new ArrayList<>(getEffectsForSequence(sequence));
 
         if(reducedRegen.containsKey(entity.getUUID())) {
-            applyRegenReduce(effects, entity);
+            applyRegenReduce(effects, entity, reducedRegen);
         }
 
         applyPotionEffects(entity, effects);
     }
-
-    private void applyRegenReduce(ArrayList<MobEffectInstance> effects, Entity entity) {
-        if(!(entity instanceof Player)) {
-            return;
-        }
-        if(effects == null) {
-            return;
-        }
-        if(!reducedRegen.containsKey(entity.getUUID())) {
-            return;
-        }
-
-        if ((reducedRegen.get(entity.getUUID()) - System.currentTimeMillis()) <= 0) {
-            reducedRegen.remove(entity.getUUID());
-        }
-
-        MobEffectInstance regen = null;
-
-        for (MobEffectInstance effect : effects) {
-            System.out.println(effect);
-            if (effect.getEffect() == MobEffects.REGENERATION) {
-                regen = effect;
-                break;
-            }
-        }
-
-        if (regen != null) {
-            int newAmplifier = regen.getAmplifier() - 2;
-
-            if (newAmplifier < 0) {
-                effects.remove(regen);
-            } else {
-                effects.remove(regen);
-                effects.add(new MobEffectInstance(
-                        MobEffects.REGENERATION,
-                        regen.getDuration(),
-                        newAmplifier,
-                        regen.isAmbient(),
-                        regen.isVisible(),
-                        regen.showIcon()
-                ));
-            }
-        }
-    }
-
-
 
     @SubscribeEvent
     public static void onLivingDamageLiving(LivingDamageEvent.Post event) {

@@ -1,5 +1,5 @@
 // 1. Create a custom chunk generator
-package de.jakob.lotm.dimesion;
+package de.jakob.lotm.dimension;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.WorldGenRegion;

@@ -42,8 +42,8 @@ public class DamageLookup {
         SEQUENCES.put(5, new Range(8.3, 17.1));
         SEQUENCES.put(4, new Range(12.4, 24.4));
         SEQUENCES.put(3, new Range(14, 27));
-        SEQUENCES.put(2, new Range(15.38, 32));
-        SEQUENCES.put(1, new Range(15.5, 33));
+        SEQUENCES.put(2, new Range(27, 55));
+        SEQUENCES.put(1, new Range(33, 69.5));
     }
 
     /**

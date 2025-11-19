@@ -1,4 +1,4 @@
-package de.jakob.lotm.dimesion;
+package de.jakob.lotm.dimension;
 
 import de.jakob.lotm.LOTMCraft;
 import net.minecraft.client.renderer.DimensionSpecialEffects;

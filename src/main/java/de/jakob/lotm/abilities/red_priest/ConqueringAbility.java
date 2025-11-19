@@ -46,17 +46,17 @@ public class ConqueringAbility extends AbilityItem {
 
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 3.75, false).forEach(e -> {
             if(AbilityUtil.isTargetSignificantlyWeaker(entity, e)) {
-                e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 60 * 60, 7));
-                return;
+                e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, 20 * 60 * 60, 7));
             }
             else if(AbilityUtil.isTargetSignificantlyStronger(entity, e)) {
-                e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 10, 7));
-                return;
+                e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, 3, 7));
             }
-
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 6, random.nextInt(2, 5)));
+            else if(AbilityUtil.getSequenceDifference(entity, e) <= 0) {
+                e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, 20 * 2, random.nextInt(2, 5)));
+            }
+            else {
+                e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, 20 * 15, random.nextInt(2, 5)));
+            }
         });
-
-        AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, 40).forEach(e -> e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, 20 * 60 * 30, 9, false, false, false)));
     }
 }

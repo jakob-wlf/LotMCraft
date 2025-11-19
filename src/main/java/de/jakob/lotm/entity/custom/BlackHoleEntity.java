@@ -141,13 +141,13 @@ public class BlackHoleEntity extends Entity {
     }
     
     private void pullEntities() {
-        float radius = getRadius() * 6;
+        float radius = getRadius() * 10;
         
-        List<Entity> entities = AbilityUtil.getAllNearbyEntities(getOwner(), (ServerLevel) level(), this.position(), radius, false);
+        List<LivingEntity> entities = AbilityUtil.getNearbyEntities(getOwner(), (ServerLevel) level(), position(), radius, false);
         
         Vec3 blackHolePos = this.position();
         
-        for (Entity entity : entities) {
+        for (LivingEntity entity : entities) {
             Vec3 entityPos = entity.position();
             Vec3 diff = blackHolePos.subtract(entityPos);
             double distance = diff.length();

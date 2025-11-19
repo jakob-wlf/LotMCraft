@@ -1,17 +1,11 @@
 package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.dimesion.EmptyChunkGenerator;
-import de.jakob.lotm.dimesion.ModDimensions;
-import net.minecraft.core.HolderLookup;
+import de.jakob.lotm.dimension.EmptyChunkGenerator;
+import de.jakob.lotm.dimension.ModDimensions;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
-import net.minecraft.data.metadata.PackMetadataGenerator;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.biome.Biomes;
@@ -23,7 +17,6 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 import java.util.OptionalLong;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 public class DimensionProvider {
 

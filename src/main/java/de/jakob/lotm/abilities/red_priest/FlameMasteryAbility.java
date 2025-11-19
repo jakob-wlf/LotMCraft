@@ -135,7 +135,7 @@ public class FlameMasteryAbility extends SelectableAbilityItem {
         Vec3 pos = entity.getEyePosition();
         Vec3 dir = entity.getLookAngle();
         for (int i = 0; i < shots; i++) {
-            ClientScheduler.scheduleDelayed(i * 7, () -> fireball(level, entity, pos, dir, targetPos));
+            ServerScheduler.scheduleDelayed(i * 7, () -> fireball(level, entity, pos, dir, targetPos));
         }
     }
 
