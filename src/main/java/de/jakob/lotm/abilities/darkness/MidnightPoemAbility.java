@@ -73,7 +73,8 @@ public class MidnightPoemAbility extends SelectableAbilityItem {
         int duration = (int) (20 * 5 * multiplier(entity));
 
         targets.forEach(target -> {
-            target.addEffect(new MobEffectInstance(ModEffects.ASLEEP, duration, 1, false, false, true));
+            int actualDuration = AbilityUtil.isTargetSignificantlyStronger(entity, target) ? 35 : AbilityUtil.isTargetSignificantlyWeaker(entity, target) ? 20 * 25 : duration;
+            target.addEffect(new MobEffectInstance(ModEffects.ASLEEP, actualDuration, 1, false, false, true));
         });
 
         ParticleUtil.spawnParticles((ServerLevel) level, dustBig, entity.getEyePosition().subtract(0, .4, 0), 800, 7, 0);

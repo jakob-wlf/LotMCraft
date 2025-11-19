@@ -51,8 +51,11 @@ public class SealingAbility extends AbilityItem {
 
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 20, 2);
 
-        List<LivingEntity> sealedEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, targetLoc, radius, false);
+        List<LivingEntity> sealedEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, targetLoc, radius, false).stream().filter(e -> !AbilityUtil.isTargetSignificantlyStronger(entity, e)).toList();
         sealedEntities.forEach(e -> {
+            if(AbilityUtil.getSequenceDifference(entity, e) <= 0) {
+                return;
+            }
             BeyonderData.addModifier(e, "sealed", .5);
             if(BeyonderData.isBeyonder(e) && BeyonderData.getSequence(e) > BeyonderData.getSequence(entity)) {
                 BeyonderData.disableAbilityUse(e, "sealed");

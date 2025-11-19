@@ -73,13 +73,20 @@ public class LanguageOfFoulnessAbility extends SelectableAbilityItem {
     }
 
     private void castCorruption(ServerLevel serverLevel, LivingEntity entity, LivingEntity target) {
+        if(AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
+            return;
+        }
         target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 20 * 8, 1, false, false, false));
         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20 * 8, 1, false, false, false));
         target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 8, random.nextInt(3), false, false, false));
     }
 
     private void castSlow(ServerLevel serverLevel, LivingEntity entity, LivingEntity target) {
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 8, () -> {
+        int duration = 8 * 20;
+        if(AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
+            duration = 10;
+        }
+        ServerScheduler.scheduleForDuration(0, 1, duration, () -> {
             target.setDeltaMovement(0, 0, 0);
             target.hurtMarked = true;
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 15, 20, false, false, false));

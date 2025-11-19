@@ -68,6 +68,12 @@ public class DefilingSeedAbility extends AbilityItem {
             return;
         }
 
+        if(AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
+            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, 3));
+            entity.hurt(entity.damageSources().generic(), 10);
+            return;
+        }
+
         defiledEntities.add(target.getUUID());
 
         ServerScheduler.scheduleForDuration(0, 8, 20 * 60 * 2, () -> {
@@ -76,8 +82,6 @@ public class DefilingSeedAbility extends AbilityItem {
                 case 1 -> target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, random.nextInt(4)));
                 case 4, 5 ->  target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 9, random.nextInt(2, 7)));
             }
-        }, () -> {
-            ServerScheduler.scheduleDelayed(20 * 5, () -> defiledEntities.remove(target.getUUID()));
-        }, (ServerLevel) level);
+        }, () -> ServerScheduler.scheduleDelayed(20 * 5, () -> defiledEntities.remove(target.getUUID())), (ServerLevel) level);
     }
 }

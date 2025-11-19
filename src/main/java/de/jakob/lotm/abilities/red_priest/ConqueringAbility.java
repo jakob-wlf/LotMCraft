@@ -44,6 +44,19 @@ public class ConqueringAbility extends AbilityItem {
 
         EffectManager.playEffect(EffectManager.Effect.CONQUERING, entity.getX(), entity.getY(), entity.getZ(), serverLevel);
 
+        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 3.75, false).forEach(e -> {
+            if(AbilityUtil.isTargetSignificantlyWeaker(entity, e)) {
+                e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 60 * 60, 7));
+                return;
+            }
+            else if(AbilityUtil.isTargetSignificantlyStronger(entity, e)) {
+                e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 10, 7));
+                return;
+            }
+
+            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 6, random.nextInt(2, 5)));
+        });
+
         AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, 40).forEach(e -> e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, 20 * 60 * 30, 9, false, false, false)));
     }
 }

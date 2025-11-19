@@ -2,6 +2,7 @@ package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -48,6 +49,75 @@ public class AbilityUtil {
         }
 
         return BlockPos.containing(targetPosition);
+    }
+
+    public static int getSequenceDifference(LivingEntity source, LivingEntity target) {
+        if(!BeyonderData.isBeyonder(source) && !BeyonderData.isBeyonder(target)) {
+            return 0;
+        }
+
+        if(BeyonderData.isBeyonder(source) && !BeyonderData.isBeyonder(target)) {
+            return 10 - BeyonderData.getSequence(source);
+        }
+        else if(!BeyonderData.isBeyonder(source) && BeyonderData.isBeyonder(target)) {
+            return 10 - BeyonderData.getSequence(target);
+        }
+
+        return BeyonderData.getSequence(target) - BeyonderData.getSequence(source);
+    }
+
+    public static boolean isTargetSignificantlyWeaker(LivingEntity source, LivingEntity target) {
+        if(!BeyonderData.isBeyonder(source)) {
+            return false;
+        }
+
+        if(!BeyonderData.isBeyonder(target)) {
+            return true;
+        }
+
+        int sourceSequence = BeyonderData.getSequence(source);
+        int targetSequence = BeyonderData.getSequence(target);
+
+        if(sourceSequence <= 4 && targetSequence > 4) {
+            return true;
+        }
+
+        if(sourceSequence <= 2 && targetSequence > 2) {
+            return true;
+        }
+
+        if(sourceSequence == 0 && targetSequence > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean isTargetSignificantlyStronger(LivingEntity source, LivingEntity target) {
+        if(!BeyonderData.isBeyonder(target)) {
+            return false;
+        }
+
+        if(!BeyonderData.isBeyonder(source)) {
+            return true;
+        }
+
+        int sourceSequence = BeyonderData.getSequence(source);
+        int targetSequence = BeyonderData.getSequence(target);
+
+        if(targetSequence <= 4 && sourceSequence > 4) {
+            return true;
+        }
+
+        if(targetSequence <= 2 && sourceSequence > 2) {
+            return true;
+        }
+
+        if(targetSequence == 0 && sourceSequence > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     public static void sendActionBar(LivingEntity entity, Component message) {

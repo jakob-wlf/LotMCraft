@@ -86,7 +86,7 @@ public class RecordingAbility extends AbilityItem {
                 return;
             }
 
-            if(random.nextInt(4) == 0) {
+            if(random.nextBoolean()) {
                 if(entity instanceof ServerPlayer player) {
                     ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("Failed to Record the ability.").withColor(0xFF8ff4ff));
                     player.connection.send(packet);

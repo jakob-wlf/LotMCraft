@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -42,6 +43,12 @@ public class CurseAbility extends AbilityItem {
 
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.curse.target_missing").withColor(0x6d32a8));
+            return;
+        }
+
+        if(AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
+            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, 3));
+            entity.hurt(entity.damageSources().generic(), 10);
             return;
         }
 

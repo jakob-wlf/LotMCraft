@@ -73,7 +73,18 @@ public class PetrificationAbility extends SelectableAbilityItem {
                 serverLevel.setBlockAndUpdate(b, Blocks.STONE.defaultBlockState());
             });
 
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, radius.get(), startPos, new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 45, 9, false, false));
+            AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, radius.get(), false).forEach(e -> {
+                if(AbilityUtil.isTargetSignificantlyWeaker(entity, e)) {
+                    e.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 60 * 10, 9));
+                    return;
+                }
+                else if(AbilityUtil.isTargetSignificantlyStronger(entity, e)) {
+                    e.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20, 9));
+                    return;
+                }
+
+                entity.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 45, 9));
+            });
 
             radius.addAndGet(0.5);
         });
@@ -83,7 +94,14 @@ public class PetrificationAbility extends SelectableAbilityItem {
         ServerScheduler.scheduleForDuration(0, 2, 20 * 5, () -> {
             LivingEntity target = AbilityUtil.getTargetEntity(entity, 15, 2);
             if(target != null) {
-                target.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 60 * 2, 9, false, false));
+                int duration = 20 * 60 * 2;
+                if(AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
+                    duration = 20 * 2;
+                }
+                if(AbilityUtil.isTargetSignificantlyWeaker(entity, target)) {
+                    duration = 20 * 60 * 10;
+                }
+                target.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, duration, 9, false, false));
             }
 
             if(BeyonderData.isGriefingEnabled(entity)) {

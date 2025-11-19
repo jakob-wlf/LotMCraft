@@ -75,7 +75,13 @@ public class RequiemAbility extends AbilityItem {
         }
 
         pacifiedEntities.add(targetEntity.getUUID());
-        int duration = 20 * 20;
+        int duration = 20 * 15;
+        if(AbilityUtil.isTargetSignificantlyStronger(entity, targetEntity)) {
+            duration = 35;
+        }
+        if(AbilityUtil.isTargetSignificantlyWeaker(entity, targetEntity)) {
+            duration = 20 * 65;
+        }
 
         if(!BeyonderData.isBeyonder(targetEntity) || BeyonderData.getSequence(targetEntity) - 1 > BeyonderData.getSequence(entity)) {
             if(targetEntity instanceof Mob) {
@@ -90,8 +96,9 @@ public class RequiemAbility extends AbilityItem {
 
         Location loc = new Location(targetEntity.position(), targetEntity.level());
 
+        int finalDuration = duration;
         ServerScheduler.scheduleDelayed(20, () -> {
-            ParticleUtil.createParticleSpirals(bigDust, loc, .8, .8, targetEntity.getEyeHeight(), .35, 5, duration, 15, 5);
+            ParticleUtil.createParticleSpirals(bigDust, loc, .8, .8, targetEntity.getEyeHeight(), .35, 5, finalDuration, 15, 5);
         });
 
         ServerScheduler.scheduleForDuration(0, 5, duration, () -> {
