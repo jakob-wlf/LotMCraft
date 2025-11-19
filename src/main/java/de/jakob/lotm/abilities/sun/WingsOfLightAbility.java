@@ -67,7 +67,7 @@ public class WingsOfLightAbility extends ToggleAbilityItem {
         // Stop when overridden by another transformation
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         if (!transformationComponent.isTransformed() || transformationComponent.getTransformationIndex() != TransformationComponent.TransformationType.WINGS_OF_LIGHT.getIndex()) {
-            cancel(level, entity);
+            cancel((ServerLevel) level, entity);
             return;
         }
 

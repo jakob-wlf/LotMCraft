@@ -1,10 +1,12 @@
 package de.jakob.lotm.network.packets.handlers;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.door.PlayerTeleportationAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gui.custom.CoordinateInputScreen;
+import de.jakob.lotm.network.ToggleAbilityPacket;
 import de.jakob.lotm.network.packets.*;
 import de.jakob.lotm.rendering.*;
 import de.jakob.lotm.rendering.effectRendering.VFXRenderer;
@@ -13,15 +15,19 @@ import de.jakob.lotm.util.helper.RingExpansionRenderer;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Random;
 
 import java.util.UUID;
@@ -210,5 +216,33 @@ public class ClientHandler {
 
     public static void addPlayerToList(int id, String playerName, UUID playerUUID) {
         PlayerTeleportationAbility.allPlayers.add(new PlayerTeleportationAbility.PlayerInfo(id, playerName, playerUUID));
+    }
+
+    public static void handleToggleAbilityPacket(ToggleAbilityPacket packet, IPayloadContext context) {
+        Minecraft mc = Minecraft.getInstance();
+        if(mc.level == null) return;
+
+        Entity entity = mc.level.getEntity(packet.entityId());
+
+        // Try to find by UUID if hash code lookup fails
+        if(entity == null) {
+            for(Entity e : mc.level.entitiesForRendering()) {
+                if(e.getId() == packet.entityId()) {
+                    entity = e;
+                    break;
+                }
+            }
+        }
+
+        if(!(entity instanceof LivingEntity livingEntity)) return;
+
+        // Get the ability instance from registry
+        ResourceLocation abilityLocation = ResourceLocation.parse(packet.abilityId());
+        Item item = BuiltInRegistries.ITEM.get(abilityLocation);
+
+        if(!(item instanceof ToggleAbilityItem ability)) return;
+
+        // Update client-side state
+        ability.handleClientSync(mc.level, livingEntity, packet.active());
     }
 }

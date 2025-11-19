@@ -40,9 +40,12 @@ public class AvatarOfDesireAbility extends ToggleAbilityItem {
     @Override
     protected void start(Level level, LivingEntity entity) {
         if(level.isClientSide) {
+            System.out.println("1c");
             ClientHandler.changeToThirdPerson();
             return;
         }
+
+        System.out.println("1");
 
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         transformationComponent.setTransformedAndSync(true, entity);
@@ -58,16 +61,19 @@ public class AvatarOfDesireAbility extends ToggleAbilityItem {
     @Override
     protected void tick(Level level, LivingEntity entity) {
         if(level.isClientSide) {
+            System.out.println("2c");
             ClientHandler.changeToThirdPerson();
             return;
         }
+
+        System.out.println("2");
 
         entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20, 7, false, false, false));
 
         // Stop when overridden by another transformation
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         if (!transformationComponent.isTransformed() || transformationComponent.getTransformationIndex() != TransformationComponent.TransformationType.DESIRE_AVATAR.getIndex()) {
-            cancel(level, entity);
+            cancel((ServerLevel) level, entity);
             return;
         }
 
@@ -79,9 +85,12 @@ public class AvatarOfDesireAbility extends ToggleAbilityItem {
     @Override
     protected void stop(Level level, LivingEntity entity) {
         if(level.isClientSide) {
+            System.out.println("3c");
             ClientHandler.changeToFirstPerson();
             return;
         }
+
+        System.out.println("3");
 
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         if(transformationComponent.isTransformed() && transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.DESIRE_AVATAR.getIndex()) {

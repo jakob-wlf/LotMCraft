@@ -249,6 +249,12 @@ public class PacketHandler {
                 SyncAbilityMenuPacket::handle
         );
 
+        registrar.playToClient(
+                de.jakob.lotm.network.ToggleAbilityPacket.TYPE,
+                de.jakob.lotm.network.ToggleAbilityPacket.STREAM_CODEC,
+                de.jakob.lotm.network.ToggleAbilityPacket::handleClient
+        );
+
         //Skin Packets
         registrar.playToServer(
                 SkinChangePacket.TYPE,

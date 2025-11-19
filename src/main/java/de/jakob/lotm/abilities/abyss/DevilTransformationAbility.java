@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.abyss;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -40,7 +41,7 @@ public class DevilTransformationAbility extends ToggleAbilityItem {
             player.sendSystemMessage(message);
         }
 
-        cancel(level, entity);
+        cancel((ServerLevel) level, entity);
     }
 
     @Override

@@ -58,7 +58,7 @@ public class ConceptualizationAbility extends ToggleAbilityItem {
         // Stop when overridden by another transformation
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         if (!transformationComponent.isTransformed() || transformationComponent.getTransformationIndex() != TransformationComponent.TransformationType.CONCEPTUALIZATION.getIndex()) {
-            cancel(level, entity);
+            cancel((ServerLevel) level, entity);
             return;
         }
 

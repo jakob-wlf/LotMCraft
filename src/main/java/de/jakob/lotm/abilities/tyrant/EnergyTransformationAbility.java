@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.tyrant;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -56,7 +57,7 @@ public class EnergyTransformationAbility extends ToggleAbilityItem {
         // Stop when overridden by another transformation
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         if (!transformationComponent.isTransformed() || transformationComponent.getTransformationIndex() != TransformationComponent.TransformationType.ENERGY.getIndex()) {
-            cancel(level, entity);
+            cancel((ServerLevel) level, entity);
             return;
         }
 
