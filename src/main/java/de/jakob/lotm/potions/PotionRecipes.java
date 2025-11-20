@@ -336,10 +336,30 @@ public class PotionRecipes {
             return areSimilar(r.supplementaryIngredient2(), supp2);
         }).findFirst().orElse(null);
 
+        if(recipe != null) {
+            return recipe.potion();
+        }
+
+        recipe = RECIPES.stream().filter(r -> {
+            if((areSimilar(r.supplementaryIngredient1(), supp1) && areSimilar(r.supplementaryIngredient2(), supp2)) || (areSimilar(r.supplementaryIngredient1(), supp2) && areSimilar(r.supplementaryIngredient2(), supp1))) {
+                BeyonderCharacteristicItem characteristicItem = BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(r.potion().getPathway(), r.potion().getSequence());
+                if(characteristicItem == null) {
+                    return false;
+                }
+                return areSimilar(main, new ItemStack(characteristicItem));
+            }
+            return false;
+        }).findFirst().orElse(null);
+
+        System.out.println(recipe == null);
+
         return recipe == null ? null : recipe.potion();
     }
 
     public static boolean areSimilar(ItemStack i1, ItemStack i2) {
+        if(i1 == null || i2 == null) {
+            return false;
+        }
         return i1.is(i2.getItem()) && i1.getCount() == i2.getCount();
     }
 }

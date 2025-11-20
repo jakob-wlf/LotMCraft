@@ -116,7 +116,7 @@ public class BeyonderCharacteristicItemHandler {
         return recipes.getLast();
     }
 
-    public static BeyonderCharacteristicItem selectCharacteristicOfPathwayAndSequence(Random random, String pathway, int sequence) {
+    public static BeyonderCharacteristicItem selectCharacteristicOfPathwayAndSequence(String pathway, int sequence) {
         List<BeyonderCharacteristicItem> recipes = ITEMS.getEntries()
                 .stream()
                 .map(DeferredHolder::get)
@@ -130,7 +130,7 @@ public class BeyonderCharacteristicItemHandler {
             return null;
         }
 
-        return recipes.get(random.nextInt(recipes.size()));
+        return recipes.get(0);
     }
 
     public static List<BeyonderCharacteristicItem> selectAllOfPathway(String pathway) {

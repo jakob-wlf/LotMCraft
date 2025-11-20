@@ -3,10 +3,7 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.PotionIngredient;
-import de.jakob.lotm.potions.BeyonderPotion;
-import de.jakob.lotm.potions.PotionItemHandler;
-import de.jakob.lotm.potions.PotionRecipeItem;
-import de.jakob.lotm.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.potions.*;
 import de.jakob.lotm.villager.ModVillagers;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.world.entity.npc.VillagerTrades;
@@ -68,6 +65,7 @@ public class VillagerTradesEventHandler {
         PotionItemHandler.selectAllPotionsOfPathway(pathway).forEach(p -> tradeableItems.put(p, costsPerSequence[p.getSequence()]));
         ModIngredients.getAllOfPathway(pathway).forEach(i -> tradeableItems.put(i, costsPerSequenceForIngredients[i.getSequence()]));
         PotionRecipeItemHandler.selectAllOfPathway(pathway).forEach(r -> tradeableItems.put(r, costsPerSequenceForRecipes[r.getRecipe().potion().getSequence()]));
+        BeyonderCharacteristicItemHandler.selectAllOfPathway(pathway).forEach(r -> tradeableItems.put(r, costsPerSequenceForRecipes[r.getSequence()]));
 
         for(Map.Entry<Item, Integer> entry : tradeableItems.entrySet()) {
             int level = getLevelForItem(entry.getKey());

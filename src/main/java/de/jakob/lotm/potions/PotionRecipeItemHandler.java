@@ -130,7 +130,7 @@ public class PotionRecipeItemHandler {
         return recipes.getLast();
     }
 
-    public static PotionRecipeItem selectRecipeOfPathwayAndSequence(Random random, String pathway, int sequence) {
+    public static PotionRecipeItem selectRecipeOfPathwayAndSequence(String pathway, int sequence) {
         List<PotionRecipeItem> recipes = ITEMS.getEntries()
                 .stream()
                 .map(DeferredHolder::get)
@@ -145,7 +145,7 @@ public class PotionRecipeItemHandler {
             return null;
         }
 
-        return recipes.get(random.nextInt(recipes.size()));
+        return recipes.get(0);
     }
 
     public static List<PotionRecipeItem> getAllRecipes() {

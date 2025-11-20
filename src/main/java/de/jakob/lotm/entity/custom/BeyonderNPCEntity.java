@@ -13,8 +13,7 @@ import de.jakob.lotm.entity.quests.Quest;
 import de.jakob.lotm.entity.quests.QuestRegistry;
 import de.jakob.lotm.entity.quests.impl.CompoundQuest;
 import de.jakob.lotm.item.ModIngredients;
-import de.jakob.lotm.potions.PotionItemHandler;
-import de.jakob.lotm.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.potions.*;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -475,25 +474,24 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
     @Override
     protected void dropCustomDeathLoot(@NotNull ServerLevel level, @NonNull DamageSource damageSource, boolean recentlyHit) {
-        super.dropCustomDeathLoot(level, damageSource, recentlyHit);
-
         String pathway = getPathway();
         int sequence = getSequence();
 
         Random random = new Random();
 
-        for(int i = 0; i < random.nextInt(1, 3); i++) {
-            Item drop = switch(random.nextInt(0, 12)) {
-                case 0, 1, 2, 3, 4, 9 -> ModIngredients.selectRandomIngredientOfPathwayAndSequence(random, pathway, sequence);
-                case 5 -> PotionItemHandler.selectPotionOfPathwayAndSequence(random, pathway, sequence);
-                case 6, 7, 8, 10, 11 -> PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(random, pathway, sequence);
-                default -> null;
-            };
+        BeyonderCharacteristicItem characteristicItem = BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, sequence);
+        if(characteristicItem != null) {
+            this.spawnAtLocation(characteristicItem);
+        }
 
-            if (drop != null) {
-                this.spawnAtLocation(drop);
+        if(random.nextInt(4) == 0) {
+            PotionRecipeItem recipeItem = PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, sequence);
+            if(characteristicItem != null) {
+                this.spawnAtLocation(recipeItem);
             }
         }
+
+        super.dropCustomDeathLoot(level, damageSource, recentlyHit);
     }
 
     public static AttributeSupplier.Builder createAttributes() {

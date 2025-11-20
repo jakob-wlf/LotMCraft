@@ -3,6 +3,7 @@ package de.jakob.lotm.loottables;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import de.jakob.lotm.item.ModIngredients;
+import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -45,9 +46,10 @@ public class ChestLootModifier extends LootModifier {
     }
 
     public static Item getRandomLoot() {
-        return switch(random.nextInt(3)) {
+        return switch(random.nextInt(4)) {
             case 1 -> ModIngredients.selectRandomIngredient(random);
             case 2 -> PotionRecipeItemHandler.selectRandomrecipe(random);
+            case 3 -> BeyonderCharacteristicItemHandler.selectRandomCharacteristic(random);
             default -> PotionItemHandler.selectRandomPotion(random);
         };
     }
