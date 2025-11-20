@@ -8,6 +8,7 @@ import de.jakob.lotm.entity.client.*;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.entity.custom.FireRavenEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
+import de.jakob.lotm.rendering.models.TyrantMythicalCreatureModel;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.SpiritualityProgressTracker;
 import net.minecraft.nbt.CompoundTag;
@@ -51,6 +52,8 @@ public class ModEvents {
         event.registerLayerDefinition(SpearOfLightProjectileModel.LAYER_LOCATION, SpearOfLightProjectileModel::createBodyLayer);
         event.registerLayerDefinition(VolcanoModel.LAYER_LOCATION, VolcanoModel::createBodyLayer);
         event.registerLayerDefinition(SpearOfDestructionProjectileModel.LAYER_LOCATION, SpearOfDestructionProjectileModel::createBodyLayer);
+        event.registerLayerDefinition(HighSequenceDoorsModel.LAYER_LOCATION, HighSequenceDoorsModel::createBodyLayer);
+        event.registerLayerDefinition(TyrantMythicalCreatureModel.LAYER_LOCATION, TyrantMythicalCreatureModel::createBodyLayer);
     }
 
     @SubscribeEvent

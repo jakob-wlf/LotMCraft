@@ -90,6 +90,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> THUNDERCLAP = ITEMS.registerItem("thunderclap_ability", ThunderclapAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> LIGHTNING_BRANCH = ITEMS.registerItem("lightning_branch_ability", LightningBranchAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> CALAMITY_CREATION = ITEMS.registerItem("calamity_creation_ability", CalamityCreationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> MYTHICAL_CREATURE_TYRANT = ITEMS.registerItem("mythical_creature_tyrant_ability", MythicalCreatureFormTyrantAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> ENERGY_TRANSFORMATION = ITEMS.registerItem("energy_transformation_ability", EnergyTransformationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> HEAVENLY_PUNISHMENT = ITEMS.registerItem("heavenly_punishment_ability", HeavenlyPunishmentAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> ELECTROMAGNETIC_TORNADO = ITEMS.registerItem("electromagnetic_tornado_ability", ElectromagneticTornadoAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

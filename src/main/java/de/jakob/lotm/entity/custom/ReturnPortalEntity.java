@@ -2,6 +2,8 @@ package de.jakob.lotm.entity.custom;
 
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.util.helper.ParticleUtil;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -45,6 +47,8 @@ public class ReturnPortalEntity extends Entity {
         
         if (!level().isClientSide && returnPosition != null && returnDimension != null) {
             tickCount++;
+
+            ParticleUtil.spawnParticles((ServerLevel) level(), ParticleTypes.END_ROD, position(), 1, .6, 1.2, .6, 0);
 
             if(tickCount < 20 * 5) {
                 return;

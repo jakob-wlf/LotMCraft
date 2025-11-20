@@ -32,6 +32,18 @@ public class SpaceDimensionEffects {
         }
 
         @Override
+        public boolean forceBrightLightmap() {
+            return true;
+        }
+
+        @Override
+        public boolean constantAmbientLight() {
+            return true;
+        }
+
+
+
+        @Override
         public boolean isFoggyAt(int x, int y) {
             return false;
         }

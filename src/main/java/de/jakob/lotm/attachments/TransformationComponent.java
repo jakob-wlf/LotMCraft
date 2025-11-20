@@ -90,7 +90,8 @@ public class TransformationComponent {
         WINGS_OF_LIGHT(4),
         FOG_OF_HISTORY(5),
         ENERGY(6),
-        CONCEPTUALIZATION(7);
+        CONCEPTUALIZATION(7),
+        TYRANT_MYTHICAL_CREATURE(101);
 
         private final int index;
         TransformationType(int index) {

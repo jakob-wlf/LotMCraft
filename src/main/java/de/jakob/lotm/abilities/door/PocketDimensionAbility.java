@@ -105,8 +105,7 @@ public class PocketDimensionAbility extends AbilityItem {
             level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         }
 
-        // Add grass floor (10 blocks high from bottom of sphere)
-        int floorHeight = 11;
+        int floorHeight = 10;
         int sphereBottom = center.getY() - radius + 4; // +4 because we have 4 block thick walls
 
         for (int x = -radius + 4; x <= radius - 4; x++) {
@@ -119,11 +118,9 @@ public class PocketDimensionAbility extends AbilityItem {
                         if(level.getBlockState(floorPos).is(ModBlocks.SOLID_VOID)) {
                             continue;
                         }
-                        if (y == sphereBottom + floorHeight - 2) {
+                        if (y == sphereBottom + floorHeight - 1) {
                             level.setBlockAndUpdate(floorPos, Blocks.GRASS_BLOCK.defaultBlockState());
-                        } else if(y == sphereBottom + floorHeight - 1){
-                            level.setBlockAndUpdate(floorPos, Blocks.LIGHT.defaultBlockState());
-                        }else {
+                        } else {
                             level.setBlockAndUpdate(floorPos, Blocks.DIRT.defaultBlockState());
                         }
                     }

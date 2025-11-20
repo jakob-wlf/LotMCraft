@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-20T17:15:51.8361138	Item Models: lotmcraft
+// 1.21.1	2025-11-20T20:25:08.1607081	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -247,6 +247,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/monster.js
 74fed5f94dff2e1561ee7ffea83413071be10ab6 assets/lotmcraft/models/item/monster_characteristic.json
 b6fde8a1f9aa8b1badc66efc8e72c1ea21702132 assets/lotmcraft/models/item/monster_potion.json
 f1caa54d29eca7a72716c885546fb828c3eb35d3 assets/lotmcraft/models/item/murloc_bladder.json
+ad42bda8ef4b6ad6055eed615f6216527a9bc393 assets/lotmcraft/models/item/mythical_creature_tyrant_ability.json
 e90ee5d776f7b0a3fc4cb8dcd0e2d7c499dbff4b assets/lotmcraft/models/item/naturewalker_characteristic.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/nightmare.json
 18ab5a8edeb1cb14cffe4b1dda01e63016348bd4 assets/lotmcraft/models/item/nightmare_ability.json

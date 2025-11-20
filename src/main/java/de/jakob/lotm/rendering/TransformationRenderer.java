@@ -6,12 +6,15 @@ import com.mojang.math.Axis;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.rendering.models.TyrantMythicalCreatureModel;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -28,6 +31,9 @@ import org.joml.Vector3f;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class TransformationRenderer {
+
+    private static TyrantMythicalCreatureModel<Entity> tyrantMythicalCreatureModel;
+    private static final ResourceLocation tyrantMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/tyrant.png");
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?> event) {
@@ -51,7 +57,44 @@ public class TransformationRenderer {
                     event.getPackedLight(), entity, event.getPartialTick());
             case 6 -> renderEnergyMass(event.getPoseStack(), event.getMultiBufferSource(),
                     event.getPackedLight(), entity, event.getPartialTick());
+            case 101 -> renderTyrantMythicalCreature(event.getPoseStack(), event.getMultiBufferSource(),
+                    event.getPackedLight(), entity, event.getPartialTick());
         }
+    }
+
+    private static void renderTyrantMythicalCreature(PoseStack poseStack, MultiBufferSource bufferSource,
+                                                     int packedLight, LivingEntity entity, float partialTick) {
+        // Lazy initialization - only bake the model when first needed
+        if (tyrantMythicalCreatureModel == null) {
+            tyrantMythicalCreatureModel = new TyrantMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(TyrantMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        // Position at entity center
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + .5, 0.0);
+
+        // Rotate with the player's body rotation
+        // Use yBodyRot for smooth rotation, or getYRot() for instant rotation
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - yaw)); // 180.0F to face the correct direction
+
+        // Scale if needed
+        poseStack.scale(1.0F, -1.0F, 1.0F);
+
+        // Get the vertex consumer with your texture
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(tyrantMythicalCreatureTexture));
+
+        // Setup animation
+        tyrantMythicalCreatureModel.setupAnim(entity, 0, 0, entity.tickCount + partialTick, 0, 0);
+
+        // Render the model
+        tyrantMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
     }
 
     private static void renderEnergyMass(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
