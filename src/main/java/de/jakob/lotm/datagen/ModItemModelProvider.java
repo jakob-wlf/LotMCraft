@@ -5,8 +5,11 @@ import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -34,6 +37,13 @@ public class ModItemModelProvider extends ItemModelProvider {
 
         PotionRecipeItemHandler.ITEMS.getEntries().forEach(i -> {
             potionRecipeItem(i.get());
+        });
+
+        BeyonderCharacteristicItemHandler.ITEMS.getEntries().forEach(i -> {
+            if(!(i.get() instanceof BeyonderCharacteristicItem characteristicItem)) {
+                return;
+            }
+            characteristicItem(characteristicItem);
         });
 
         ModIngredients.ITEMS.getEntries().forEach(i -> {
@@ -91,5 +101,14 @@ public class ModItemModelProvider extends ItemModelProvider {
         String itemName = BuiltInRegistries.ITEM.getKey(item).getPath();
         withExistingParent(itemName, "item/generated")
                 .texture("layer0", modLoc("item/potion_recipe")); // All items use the same texture
+    }
+
+    private void characteristicItem(BeyonderCharacteristicItem characteristicItem) {
+        if(!BeyonderData.implementedPathways.contains(characteristicItem.getPathway())) {
+            return;
+        }
+        String itemName = BuiltInRegistries.ITEM.getKey(characteristicItem).getPath();
+        withExistingParent(itemName, "item/generated")
+                .texture("layer0", modLoc("item/beyonder_characteristic_" + characteristicItem.getPathway())); // All items use the same texture
     }
 }

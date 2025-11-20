@@ -22,6 +22,7 @@ import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.loottables.ModLootModifiers;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.particle.*;
+import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.potions.PotionRecipes;
@@ -93,6 +94,7 @@ public class LOTMCraft
         ModStructures.register(modEventBus);
         ModDataComponents.register(modEventBus);
         PotionRecipeItemHandler.registerRecipes(modEventBus);
+        BeyonderCharacteristicItemHandler.registerCharacteristics(modEventBus);
         ModAttachments.register(modEventBus);
         ModDimensions.register(modEventBus);
         ModGameRules.register();

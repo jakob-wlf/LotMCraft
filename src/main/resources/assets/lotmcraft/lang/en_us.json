@@ -11,6 +11,7 @@
   "creativetab.lotmcraft.beyonder_potions_tab": "Beyonder Potions",
   "creativetab.lotmcraft.beyonder_ingredients_tab": "Potion Ingredients",
   "creativetab.lotmcraft.beyonder_recipes_tab": "Potion Recipes",
+  "creativetab.lotmcraft.beyonder_characteristic_tab": "Beyonder Characteristics",
 
   "_comment000": "Key Binds-------------------------------------------------------------------------------------",
   "key.beyonders.become_beyonder_debug": "Become a Beyonder",
@@ -748,6 +749,7 @@
   "lotm.not_implemented_yet": "Not Implemented Yet",
   "lotm.pathway": "Pathway",
   "lotm.sequence": "Sequence",
+  "lotm.beyonder_characteristic": "Beyonder Characteristic",
   "lotm.potion": "Potion",
   "lotm.spirituality": "Spirituality",
   "lotm.on": "On",

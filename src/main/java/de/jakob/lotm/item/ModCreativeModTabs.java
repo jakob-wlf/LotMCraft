@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import net.minecraft.core.registries.Registries;
@@ -89,6 +90,20 @@ public class ModCreativeModTabs {
                     .title(Component.translatable("creativetab.lotmcraft.beyonder_recipes_tab"))
                     .displayItems((parameters, output) -> {
                         PotionRecipeItemHandler.ITEMS.getEntries().forEach(itemHolder -> {
+                            output.accept(itemHolder.get());
+                        });
+                    })
+                    .build());
+
+    public static final Supplier<CreativeModeTab> BEYONDER_CHARACTERISTICS_TAB = CREATIVE_MODE_TABS.register("beyonder_characteristic_tab",
+            () -> CreativeModeTab.builder().icon(() -> {
+                        Optional<DeferredHolder<Item, ? extends Item>> optionalItem = BeyonderCharacteristicItemHandler.ITEMS.getEntries().stream().findFirst();
+                        return optionalItem.map(itemDeferredHolder -> new ItemStack(itemDeferredHolder.get())).orElseGet(() -> new ItemStack(ModItems.FOOL_Card.get()));
+                    })
+                    .withTabsBefore(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "beyonder_recipes_tab"))
+                    .title(Component.translatable("creativetab.lotmcraft.beyonder_characteristic_tab"))
+                    .displayItems((parameters, output) -> {
+                        BeyonderCharacteristicItemHandler.ITEMS.getEntries().forEach(itemHolder -> {
                             output.accept(itemHolder.get());
                         });
                     })

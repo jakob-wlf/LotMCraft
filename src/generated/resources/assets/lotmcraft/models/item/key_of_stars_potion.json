@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lotmcraft:item/key_of_stars_potion"
+  }
+}
