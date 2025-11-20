@@ -86,7 +86,6 @@ public abstract class PassiveAbilityItem extends Item {
         MobEffectInstance regen = null;
 
         for (MobEffectInstance effect : effects) {
-            System.out.println(effect);
             if (effect.getEffect() == MobEffects.REGENERATION) {
                 regen = effect;
                 break;

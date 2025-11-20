@@ -6,6 +6,7 @@ import net.minecraft.world.item.Items;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class PotionRecipes {
@@ -48,6 +49,12 @@ public class PotionRecipes {
                 new ItemStack(Items.GOLD_BLOCK, 1),
                 new ItemStack(Items.GOAT_HORN, 1),
                 new ItemStack(ModIngredients.BIZARRO_BANE_EYE.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.SCHOLAR_OF_YORE_POTION.get(),
+                new ItemStack(Items.WRITABLE_BOOK, 1),
+                new ItemStack(Items.END_STONE, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("fool", 3)))
         ));
 
 
@@ -93,6 +100,18 @@ public class PotionRecipes {
                 new ItemStack(Items.CHORUS_FRUIT, 1),
                 new ItemStack(ModIngredients.MIST_WATCHER_CRYSTAL.get())
         ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.PLANESWALKER_POTION.get(),
+                new ItemStack(Items.NETHER_STAR, 1),
+                new ItemStack(Items.IRON_DOOR, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("door", 2)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.KEY_OF_STARS_POTION.get(),
+                new ItemStack(Items.COMPASS, 1),
+                new ItemStack(Items.NETHER_STAR, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("door", 1)))
+        ));
 
 
         RECIPES.add(new PotionRecipe(
@@ -137,6 +156,18 @@ public class PotionRecipes {
                 new ItemStack(Items.GOLDEN_CHESTPLATE, 1),
                 new ItemStack(ModIngredients.SUN_ORB.get())
         ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.LIGHTSEEKER_POTION.get(),
+                new ItemStack(Items.BOOKSHELF, 1),
+                new ItemStack(Items.YELLOW_CANDLE, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("sun", 2)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.WHITE_ANGEL_POTION.get(),
+                new ItemStack(Items.WHITE_CANDLE, 1),
+                new ItemStack(Items.PURPUR_BLOCK, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("sun", 1)))
+        ));
 
 
         RECIPES.add(new PotionRecipe(
@@ -180,6 +211,18 @@ public class PotionRecipes {
                 new ItemStack(Items.PRISMARINE_BRICKS, 1),
                 new ItemStack(Items.TROPICAL_FISH_BUCKET, 1),
                 new ItemStack(ModIngredients.KING_OF_GREEN_WINGS_EYE.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.CALAMITY_POTION.get(),
+                new ItemStack(Items.LAVA_BUCKET, 1),
+                new ItemStack(Items.PURPUR_BLOCK, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("tyrant", 2)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.THUNDER_GOD_POTION.get(),
+                new ItemStack(Items.DRAGON_BREATH, 1),
+                new ItemStack(Items.LIGHTNING_ROD, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("tyrant", 1)))
         ));
 
 
@@ -258,6 +301,18 @@ public class PotionRecipes {
                 new ItemStack(Items.REDSTONE_ORE, 1),
                 new ItemStack(ModIngredients.WAR_COMET_CORE.get())
         ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.WEATHER_WARLOCK_POTION.get(),
+                new ItemStack(Items.LIGHTNING_ROD, 1),
+                new ItemStack(Items.END_STONE, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("red_priest", 2)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.CONQUEROR_POTION.get(),
+                new ItemStack(Items.DRAGON_HEAD, 1),
+                new ItemStack(Items.FLINT_AND_STEEL, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("red_priest", 1)))
+        ));
 
 
         RECIPES.add(new PotionRecipe(
@@ -322,6 +377,127 @@ public class PotionRecipes {
                 new ItemStack(Items.GLOWSTONE_DUST, 1),
                 new ItemStack(ModIngredients.SHADOW_LIZARD_SCALES.get())
         ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DEMONESS_OF_DESPAIR_POTION.get(),
+                new ItemStack(Items.PUFFERFISH, 1),
+                new ItemStack(Items.WARPED_FUNGUS, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("demoness", 4)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DEMONESS_OF_UNAGING_POTION.get(),
+                new ItemStack(Items.END_STONE, 1),
+                new ItemStack(Items.ENDER_EYE, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("demoness", 3)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DEMONESS_OF_CATASTROPHE_POTION.get(),
+                new ItemStack(Items.LAVA_BUCKET, 1),
+                new ItemStack(Items.WATER_BUCKET, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("demoness", 2)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DEMONESS_OF_APOCALYPSE_POTION.get(),
+                new ItemStack(Items.DRAGON_BREATH, 1),
+                new ItemStack(Items.CHORUS_FRUIT, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("demoness", 1)))
+        ));
+
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.PLANTER_POTION.get(),
+                new ItemStack(Items.SHORT_GRASS, 1),
+                new ItemStack(Items.SHEARS, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("mother", 9)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DOCTOR_POTION.get(),
+                new ItemStack(Items.GOLDEN_APPLE, 1),
+                new ItemStack(Items.WHEAT_SEEDS, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("mother", 8)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.HARVEST_PRIEST_POTION.get(),
+                new ItemStack(Items.OAK_LOG, 1),
+                new ItemStack(Items.WATER_BUCKET, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("mother", 7)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.BIOLOGIST_POTION.get(),
+                new ItemStack(Items.BEEF, 1),
+                new ItemStack(Items.PORKCHOP, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("mother", 6)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DRUID_POTION.get(),
+                new ItemStack(Items.RED_MUSHROOM, 1),
+                new ItemStack(Items.WARPED_STEM, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("mother", 5)))
+        ));
+
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.MONSTER_POTION.get(),
+                new ItemStack(Items.POPPY, 1),
+                new ItemStack(Items.OAK_LEAVES, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("wheel_of_fortune", 9)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.ROBOT_POTION.get(),
+                new ItemStack(Items.BOOK, 1),
+                new ItemStack(Items.FEATHER, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("wheel_of_fortune", 8)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.LUCKY_ONE_POTION.get(),
+                new ItemStack(Items.WATER_BUCKET, 1),
+                new ItemStack(Items.GOLD_INGOT, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("wheel_of_fortune", 7)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.CALAMITY_PRIEST_POTION.get(),
+                new ItemStack(Items.LAVA_BUCKET, 1),
+                new ItemStack(Items.OBSIDIAN, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("wheel_of_fortune", 6)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.WINNER_POTION.get(),
+                new ItemStack(Items.GOLDEN_CARROT, 1),
+                new ItemStack(Items.DIAMOND_PICKAXE, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("wheel_of_fortune", 5)))
+        ));
+
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.CRIMINAL_POTION.get(),
+                new ItemStack(Items.IRON_BARS, 1),
+                new ItemStack(Items.IRON_BLOCK, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 9)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.UNWINGED_ANGEL_POTION.get(),
+                new ItemStack(Items.INK_SAC, 1),
+                new ItemStack(Items.FEATHER, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 8)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.SERIAL_KILLER_POTION.get(),
+                new ItemStack(Items.IRON_SWORD, 1),
+                new ItemStack(Items.ROTTEN_FLESH, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 7)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DEVIL_POTION.get(),
+                new ItemStack(Items.LAVA_BUCKET, 1),
+                new ItemStack(Items.NETHERRACK, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 6)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DESIRE_APOSTLE_POTION.get(),
+                new ItemStack(Items.WITHER_ROSE, 1),
+                new ItemStack(Items.RED_MUSHROOM, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 5)))
+        ));
+
     }
 
     @Nullable
@@ -350,8 +526,6 @@ public class PotionRecipes {
             }
             return false;
         }).findFirst().orElse(null);
-
-        System.out.println(recipe == null);
 
         return recipe == null ? null : recipe.potion();
     }

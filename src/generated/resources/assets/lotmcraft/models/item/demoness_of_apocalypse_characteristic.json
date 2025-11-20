@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "lotmcraft:item/beyonder_characteristic_demoness"
+    "layer0": "lotmcraft:item/beyonder_characteristic_high_demoness"
   }
 }

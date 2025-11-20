@@ -108,7 +108,13 @@ public class ModItemModelProvider extends ItemModelProvider {
             return;
         }
         String itemName = BuiltInRegistries.ITEM.getKey(characteristicItem).getPath();
-        withExistingParent(itemName, "item/generated")
-                .texture("layer0", modLoc("item/beyonder_characteristic_" + characteristicItem.getPathway())); // All items use the same texture
+        if(characteristicItem.getSequence() > 4) {
+            withExistingParent(itemName, "item/generated")
+                    .texture("layer0", modLoc("item/beyonder_characteristic_" + characteristicItem.getPathway()));
+        }
+        else {
+            withExistingParent(itemName, "item/generated")
+                    .texture("layer0", modLoc("item/beyonder_characteristic_high_" + characteristicItem.getPathway()));
+        }
     }
 }
