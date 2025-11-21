@@ -82,13 +82,21 @@ public class TransformationRenderer {
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - yaw)); // 180.0F to face the correct direction
 
         // Scale if needed
-        poseStack.scale(1.0F, -1.0F, 1.0F);
+        poseStack.scale(2F, -2F, 2F);
 
         // Get the vertex consumer with your texture
         VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(tyrantMythicalCreatureTexture));
 
-        // Setup animation
-        tyrantMythicalCreatureModel.setupAnim(entity, 0, 0, entity.tickCount + partialTick, 0, 0);
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        tyrantMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
 
         // Render the model
         tyrantMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
