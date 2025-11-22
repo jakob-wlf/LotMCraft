@@ -160,6 +160,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> AREA_MINIATURIZATION = ITEMS.registerItem("area_miniaturization_ability", AreaMiniaturizationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SPACE_DISTORTION = ITEMS.registerItem("space_distortion_ability", SpaceDistortionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> POCKET_DIMENSION = ITEMS.registerItem("pocket_dimension_ability", PocketDimensionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> MYTHICAL_CREATURE_DOOR = ITEMS.registerItem("mythical_creature_door_ability", MythicalCreatureFormDoorAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SPACE_TIME_STORM = ITEMS.registerItem("space_time_storm_ability", SpaceTimeStormAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> BLACK_HOLE = ITEMS.registerItem("black_hole_ability", BlackHoleAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> PLAYER_TELEPORTATION = ITEMS.registerItem("player_teleportation_ability", PlayerTeleportationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

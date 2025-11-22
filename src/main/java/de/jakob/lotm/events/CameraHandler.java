@@ -26,7 +26,7 @@ public class CameraHandler {
         TransformationComponent transformationComponent = player.getData(ModAttachments.TRANSFORMATION_COMPONENT);
 
         if (transformationComponent.isTransformed() &&
-                transformationComponent.getTransformationIndex() > 100 && transformationComponent.getTransformationIndex() < 200) { // Values between 100 and 200 are reserved for Mythical Creature Forms
+                transformationComponent.getTransformationIndex() == 101) { // Values between 100 and 200 are reserved for Mythical Creature Forms
 
             event.setYaw(event.getYaw() + 45);
         }

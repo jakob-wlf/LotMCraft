@@ -427,6 +427,50 @@ public class AbilityUtil {
         return null;
     }
 
+
+    public static @Nullable LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius, boolean onlyAllowWithLineOfSight) {
+        if(!onlyAllowWithLineOfSight) {
+            if(entity instanceof BeyonderNPCEntity customPlayer) {
+                if(customPlayer.getCurrentTarget() != null && customPlayer.getCurrentTarget().distanceTo(entity) <= radius)
+                    return customPlayer.getCurrentTarget();
+            }
+
+            if(entity instanceof Mob mob) {
+                if(mob.getTarget() != null && mob.getTarget().distanceTo(entity) <= radius)
+                    return mob.getTarget();
+            }
+        }
+
+        Vec3 lookDirection = entity.getLookAngle().normalize();
+        Vec3 playerPosition = entity.position().add(0, entity.getEyeHeight(), 0);
+
+        Vec3 targetPosition;
+
+        for(int i = 0; i < radius; i++) {
+            targetPosition = playerPosition.add(lookDirection.scale(i));
+
+            // Check for entities at this position
+            AABB detectionBox = new AABB(targetPosition.subtract(entityDetectionRadius, entityDetectionRadius, entityDetectionRadius),
+                    targetPosition.add(entityDetectionRadius, entityDetectionRadius, entityDetectionRadius));
+
+            List<Entity> nearbyEntities = entity.level().getEntities(entity, detectionBox).stream().filter(
+                    e -> e instanceof LivingEntity && e != entity && mayTarget(entity, (LivingEntity) e)
+            ).toList();
+            if (!nearbyEntities.isEmpty()) {
+                return (LivingEntity) nearbyEntities.get(0);
+            }
+
+            // Check for blocks
+            BlockState block = entity.level().getBlockState(BlockPos.containing(targetPosition));
+
+            if (!block.getCollisionShape(entity.level(), BlockPos.containing(targetPosition)).isEmpty()) {
+                break;
+            }
+        }
+
+        return null;
+    }
+
     public static boolean damageNearbyEntities(
             ServerLevel level,
             LivingEntity source,
