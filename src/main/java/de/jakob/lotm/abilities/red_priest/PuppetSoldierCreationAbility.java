@@ -39,9 +39,9 @@ public class PuppetSoldierCreationAbility extends AbilityItem {
 
             BeyonderNPCEntity puppetSoldier = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), serverLevel, false, "knight", "red_priest", 4);
             puppetSoldier.setPos(spawnPos);
+            puppetSoldier.setPuppetWarrior(true);
             serverLevel.addFreshEntity(puppetSoldier);
 
-            puppetSoldier.setPuppetWarrior(true);
             SubordinateUtils.turnEntityIntoSubordinate(puppetSoldier, entity);
 
             BeyonderData.addModifier(puppetSoldier, "puppet_soldier", 1.8f);

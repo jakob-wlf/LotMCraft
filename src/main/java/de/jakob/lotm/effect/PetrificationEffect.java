@@ -13,6 +13,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.Vec3;
@@ -52,6 +53,15 @@ public class PetrificationEffect extends MobEffect {
                 BeyonderData.enableAbilityUse(livingEntity, "petrification");
             }
         });
+
+        if(!BeyonderData.isBeyonder(livingEntity) && livingEntity instanceof Mob mob) {
+            mob.setNoAi(true);
+            ServerScheduler.scheduleDelayed(20 * 2, () -> {
+                if(!livingEntity.hasEffect(ModEffects.PETRIFICATION)) {
+                    mob.setNoAi(false);
+                }
+            });
+        }
 
         if(livingEntity.tickCount % 10 == 0) {
             ServerLevel serverLevel = (ServerLevel) livingEntity.level();

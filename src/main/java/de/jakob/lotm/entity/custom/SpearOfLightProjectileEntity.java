@@ -71,6 +71,11 @@ public class SpearOfLightProjectileEntity extends AbstractArrow {
             return;
         }
 
+
+        if(level.getBlockState(BlockPos.containing(position())).is(Blocks.WATER) || level.getBlockState(BlockPos.containing(position())).is(Blocks.LAVA)) {
+            onHitBlock(new BlockHitResult(this.position(), this.getDirection(), BlockPos.containing(this.position()), false));
+        }
+
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.END_ROD, position(), 8, .3, .3, .3, 0);
     }
 

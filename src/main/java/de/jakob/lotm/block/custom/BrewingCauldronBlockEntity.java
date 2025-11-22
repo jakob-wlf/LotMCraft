@@ -125,7 +125,14 @@ public class BrewingCauldronBlockEntity extends BlockEntity implements MenuProvi
     }
 
     public void tick(Level level, BlockPos blockPos, BlockState blockState) {
+        if(level.isClientSide) {
+            return;
+        }
+
+        System.out.println("Ticking blockentity");
+
         if(hasRecipe()) {
+            System.out.println("hasrecipe = true");
             increaseCraftingProgress();
             setChanged(level, blockPos, blockState);
 
@@ -168,6 +175,7 @@ public class BrewingCauldronBlockEntity extends BlockEntity implements MenuProvi
     }
 
     private boolean hasRecipe() {
+        System.out.println("hasrecipe was called");
         BeyonderPotion potion = PotionRecipes.getByIngredients(
                 itemHandler.getStackInSlot(INPUT_SLOT_SUPP_1),
                 itemHandler.getStackInSlot(INPUT_SLOT_SUPP_2),

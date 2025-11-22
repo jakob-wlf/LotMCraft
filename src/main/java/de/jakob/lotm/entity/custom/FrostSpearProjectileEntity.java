@@ -59,6 +59,11 @@ public class FrostSpearProjectileEntity extends AbstractArrow {
             return;
         }
 
+
+        if(level.getBlockState(BlockPos.containing(position())).is(Blocks.WATER) || level.getBlockState(BlockPos.containing(position())).is(Blocks.LAVA)) {
+            onHitBlock(new BlockHitResult(this.position(), this.getDirection(), BlockPos.containing(this.position()), false));
+        }
+
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SNOWFLAKE, position(), random.nextInt(1, 4), .33, .045);
     }
 

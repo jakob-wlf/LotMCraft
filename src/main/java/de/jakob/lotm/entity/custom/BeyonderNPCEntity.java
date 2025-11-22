@@ -6,6 +6,7 @@ import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.custom.goals.AbilityUseGoal;
 import de.jakob.lotm.entity.custom.goals.RangedCombatGoal;
 import de.jakob.lotm.entity.quests.PlayerQuestData;
@@ -486,7 +487,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
         if(random.nextInt(4) == 0) {
             PotionRecipeItem recipeItem = PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, sequence);
-            if(characteristicItem != null) {
+            if(recipeItem != null) {
                 this.spawnAtLocation(recipeItem);
             }
         }
@@ -517,6 +518,10 @@ public class BeyonderNPCEntity extends PathfinderMob {
         if(isPuppetWarrior() && tickCounter >= getMaxLifetimeIfPuppet()) {
             this.discard();
             return;
+        }
+
+        if(this.hasEffect(ModEffects.CONQUERED) || this.hasEffect(ModEffects.PETRIFICATION)){
+            setHasQuest(false);
         }
 
         if(getTarget() != null) {
