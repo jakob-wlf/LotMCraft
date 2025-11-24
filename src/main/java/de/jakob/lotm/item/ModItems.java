@@ -2,6 +2,7 @@ package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.item.custom.ExcavatedAreaItem;
+import de.jakob.lotm.item.custom.GuidingBookItem;
 import de.jakob.lotm.item.custom.MarionetteControllerItem;
 import de.jakob.lotm.item.custom.SubordinateControllerItem;
 import net.minecraft.world.item.Item;
@@ -31,7 +32,12 @@ public class ModItems {
 
     public static final Supplier<Item> EXCAVATED_AREA_ITEM = ITEMS.register("excavated_area",
             () -> new ExcavatedAreaItem(new Item.Properties()
-                    .stacksTo(1) // Only allow one per stack since each contains unique data
+                    .stacksTo(1)
+            )
+    );
+    public static final Supplier<Item> GUIDING_BOOK = ITEMS.register("guiding_book",
+            () -> new GuidingBookItem(new Item.Properties()
+                    .stacksTo(1)
             )
     );
 

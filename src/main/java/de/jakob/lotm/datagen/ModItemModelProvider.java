@@ -30,6 +30,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.MARIONETTE_CONTROLLER.get());
         basicItem(ModItems.SUBORDINATE_CONTROLLER.get());
         basicItem(ModItems.EXCAVATED_AREA_ITEM.get());
+        basicItem(ModItems.GUIDING_BOOK.get());
 
         PotionItemHandler.ITEMS.getEntries().forEach(i -> {
             basicItem(i.get());

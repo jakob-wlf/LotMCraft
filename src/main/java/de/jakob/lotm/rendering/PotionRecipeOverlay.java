@@ -28,7 +28,7 @@ public class PotionRecipeOverlay {
     }
 
     private static final int WIDTH = 180;
-    private static final int HEIGHT = 100;
+    private static final int HEIGHT = 120;
 
     private static void render(GuiGraphics guiGraphics) {
         Minecraft mc = Minecraft.getInstance();
@@ -52,7 +52,7 @@ public class PotionRecipeOverlay {
 
         Component text = Component.literal(recipe.potion().getName(new ItemStack(recipe.potion())).getString()).withStyle(ChatFormatting.BOLD);
 
-        int textY = y + 5;
+        int textY = y + 12;
         int textX = x + (WIDTH / 2) - (mc.font.width(text) / 2);
 
         guiGraphics.drawString(mc.font, text, textX, textY, color);
@@ -68,8 +68,8 @@ public class PotionRecipeOverlay {
         int iconX2 = x + (WIDTH / 2) + 16;
         int iconX3 = x + (WIDTH / 2) - (16/2);
 
-        int iconY = 5 + y + mc.font.lineHeight * 2;
-        int iconY2 = iconY + 32;
+        int iconY = 12 + y + mc.font.lineHeight * 2;
+        int iconY2 = iconY + 39;
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().scale(1.5f, 1.5f, 1.5f);

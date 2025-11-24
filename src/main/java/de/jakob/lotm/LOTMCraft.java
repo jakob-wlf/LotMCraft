@@ -26,6 +26,7 @@ import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.potions.PotionRecipes;
+import de.jakob.lotm.rendering.GuidingBookRenderer;
 import de.jakob.lotm.rendering.TransformationRenderer;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.structure.ModStructures;
@@ -165,6 +166,8 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.DISTORTION_FIELD.get(), DistortionFieldRenderer::new);
             EntityRenderers.register(ModEntities.SPEAR_OF_DESTRUCTION.get(), SpearOfDestructionProjectileRenderer::new);
             EntityRenderers.register(ModEntities.RETURN_PORTAL.get(), ReturnPortalRenderer::new);
+
+            GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);
         }
 
         @SubscribeEvent
