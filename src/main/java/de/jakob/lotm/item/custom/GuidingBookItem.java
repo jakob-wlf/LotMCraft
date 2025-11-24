@@ -23,7 +23,6 @@ public class GuidingBookItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (level.isClientSide) {
-            System.out.println("1");
             GuidingBookRenderer.nextPage();
         }
         return InteractionResultHolder.success(player.getItemInHand(hand));

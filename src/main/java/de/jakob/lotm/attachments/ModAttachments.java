@@ -26,6 +26,13 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<GuidingBookComponent>> BOOK_COMPONENT =
+            ATTACHMENT_TYPES.register("book_component", () ->
+                    AttachmentType.builder(GuidingBookComponent::new)
+                            .serialize(GuidingBookComponent.SERIALIZER)
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<SubordinateComponent>> SUBORDINATE_COMPONENT =
             ATTACHMENT_TYPES.register("subordinate_component", () ->
                     AttachmentType.builder(SubordinateComponent::new)

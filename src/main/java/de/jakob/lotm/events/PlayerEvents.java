@@ -7,8 +7,10 @@ import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.darkness.NightmareAbility;
 import de.jakob.lotm.abilities.red_priest.CullAbility;
 import de.jakob.lotm.attachments.AbilityHotbarManager;
+import de.jakob.lotm.attachments.GuidingBookComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gamerule.ModGameRules;
+import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.SyncGriefingGamerulePacket;
 import de.jakob.lotm.util.helper.ExplodingFallingBlockHelper;
@@ -21,6 +23,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -53,6 +56,12 @@ public class PlayerEvents {
     public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             PacketHandler.sendToPlayer(player, new SyncGriefingGamerulePacket(player.level().getGameRules().getBoolean(ModGameRules.ALLOW_GRIEFING)));
+
+            GuidingBookComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
+            if(!component.isHasReceivedBook()) {
+                player.addItem(new ItemStack(ModItems.GUIDING_BOOK.get()));
+                component.setHasReceivedBook(true);
+            }
         }
     }
 
