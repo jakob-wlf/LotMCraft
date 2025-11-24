@@ -13,9 +13,10 @@ public class PotionRecipes {
 
     public static final Set<PotionRecipe> RECIPES = new HashSet<>();
 
+    private static boolean initialized = false;
+
     public static void initPotionRecipes() {
-        System.out.println("=== INIT POTION RECIPES CALLED ===");
-        System.out.println("Is this the server side? " + !net.neoforged.fml.loading.FMLEnvironment.dist.isClient());
+        initialized = true;
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.SEER_POTION.get(),
                 new ItemStack(Items.SHORT_GRASS, 1),
@@ -500,19 +501,18 @@ public class PotionRecipes {
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 5)))
         ));
 
-        System.out.println("=== RECIPES INITIALIZED: " + RECIPES.size() + " recipes ===");
-
     }
 
     @Nullable
     public static BeyonderPotion getByIngredients(ItemStack supp1, ItemStack supp2, ItemStack main) {
-        System.out.println("getByIngredients was calledd");
+        if(!initialized) {
+            initPotionRecipes();
+            PotionRecipeItemHandler.initializeRecipes();
+        }
+
         PotionRecipe recipe = RECIPES.stream().filter(r -> {
-            System.out.println("checking recipe: " + r.mainIngredient() + " " + r.supplementaryIngredient1() + " " + r.supplementaryIngredient2() + " -------------------");
             if(!areSimilar(r.mainIngredient(), main))
                 return false;
-
-            System.out.println("main ingredients match");
 
             if(!areSimilar(r.supplementaryIngredient1(), supp1)) {
                 return areSimilar(r.supplementaryIngredient1(), supp2) && areSimilar(r.supplementaryIngredient2(), supp1);
@@ -521,11 +521,8 @@ public class PotionRecipes {
         }).findFirst().orElse(null);
 
         if(recipe != null) {
-            System.out.println("recipe found with correct main ingredient");
             return recipe.potion();
         }
-
-        System.out.println("checking for substitution with characteristic");
 
         recipe = RECIPES.stream().filter(r -> {
             if((areSimilar(r.supplementaryIngredient1(), supp1) && areSimilar(r.supplementaryIngredient2(), supp2)) || (areSimilar(r.supplementaryIngredient1(), supp2) && areSimilar(r.supplementaryIngredient2(), supp1))) {
@@ -537,8 +534,6 @@ public class PotionRecipes {
             }
             return false;
         }).findFirst().orElse(null);
-
-        System.out.println(recipe == null ? "Substitution not found" : "Substitution found");
 
         return recipe == null ? null : recipe.potion();
     }

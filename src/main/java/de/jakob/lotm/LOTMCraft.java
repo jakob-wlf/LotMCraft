@@ -170,13 +170,8 @@ public class LOTMCraft
         @SubscribeEvent
         public static void onCommonSetup(FMLCommonSetupEvent event) {
             QuestRegistry.registerQuests();
-        }
-
-        @SubscribeEvent
-        public static void onServerStarting(ServerStartingEvent event) {
-            System.out.println("=== SERVER STARTING - INIT RECIPES ===");
-            PotionRecipes.initPotionRecipes();
-            PotionRecipeItemHandler.initializeRecipes();
+            event.enqueueWork(PotionRecipes::initPotionRecipes);
+            event.enqueueWork(PotionRecipeItemHandler::initializeRecipes);
         }
 
         @SubscribeEvent
