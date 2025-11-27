@@ -1,7 +1,8 @@
 package de.jakob.lotm.network;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.network.packets.*;
+import de.jakob.lotm.network.packets.toClient.*;
+import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -12,6 +13,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class PacketHandler {
 
@@ -22,73 +24,13 @@ public class PacketHandler {
         final var registrar = event.registrar(LOTMCraft.MOD_ID)
                 .versioned(PROTOCOL_VERSION);
 
-        // Register packets
-        registrar.playToServer(
-                BecomeBeyonderPacket.TYPE,
-                BecomeBeyonderPacket.STREAM_CODEC,
-                BecomeBeyonderPacket::handle
-        );
+        registerServerPackets(registrar);
 
-        registrar.playToServer(
-                ReceiveAbilityItemsPacket.TYPE,
-                ReceiveAbilityItemsPacket.STREAM_CODEC,
-                ReceiveAbilityItemsPacket::handle
-        );
+        registerClientPackets(registrar);
 
-        registrar.playToServer(
-                ReceiveAbilityPacket.TYPE,
-                ReceiveAbilityPacket.STREAM_CODEC,
-                ReceiveAbilityPacket::handle
-        );
+    }
 
-        registrar.playToServer(
-                SyncDreamDivinationCoordinatesPacket.TYPE,
-                SyncDreamDivinationCoordinatesPacket.STREAM_CODEC,
-                SyncDreamDivinationCoordinatesPacket::handle
-        );
-
-        registrar.playToServer(
-                SyncTravelersDoorCoordinatesPacket.TYPE,
-                SyncTravelersDoorCoordinatesPacket.STREAM_CODEC,
-                SyncTravelersDoorCoordinatesPacket::handle
-        );
-
-        registrar.playToServer(
-                AbilitySelectionPacket.TYPE,
-                AbilitySelectionPacket.STREAM_CODEC,
-                AbilitySelectionPacket::handle
-        );
-
-        registrar.playToServer(
-                OpenAbilitySelectionPacket.TYPE,
-                OpenAbilitySelectionPacket.STREAM_CODEC,
-                OpenAbilitySelectionPacket::handle
-        );
-
-        registrar.playToServer(
-                ToggleGriefingPacket.TYPE,
-                ToggleGriefingPacket.STREAM_CODEC,
-                ToggleGriefingPacket::handle
-        );
-
-        registrar.playToServer(
-                ToggleAbilityHotbarPacket.TYPE,
-                ToggleAbilityHotbarPacket.STREAM_CODEC,
-                ToggleAbilityHotbarPacket::handle
-        );
-
-        registrar.playToServer(
-                ClearBeyonderDataPacket.TYPE,
-                ClearBeyonderDataPacket.STREAM_CODEC,
-                ClearBeyonderDataPacket::handle
-        );
-
-        registrar.playToServer(
-                DebugButtonPacket.TYPE,
-                DebugButtonPacket.STREAM_CODEC,
-                DebugButtonPacket::handle
-        );
-
+    private static void registerClientPackets(PayloadRegistrar registrar) {
         registrar.playToClient(
                 SyncBeyonderDataPacket.TYPE,
                 SyncBeyonderDataPacket.STREAM_CODEC,
@@ -250,12 +192,67 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                de.jakob.lotm.network.ToggleAbilityPacket.TYPE,
-                de.jakob.lotm.network.ToggleAbilityPacket.STREAM_CODEC,
-                de.jakob.lotm.network.ToggleAbilityPacket::handleClient
+                ToggleAbilityPacket.TYPE,
+                ToggleAbilityPacket.STREAM_CODEC,
+                ToggleAbilityPacket::handleClient
         );
 
-        //Skin Packets
+        registrar.playToClient(
+                SkinDataPacket.TYPE,
+                SkinDataPacket.STREAM_CODEC,
+                SkinDataPacket::handle
+        );
+    }
+
+    private static void registerServerPackets(PayloadRegistrar registrar) {
+        registrar.playToServer(
+                BecomeBeyonderPacket.TYPE,
+                BecomeBeyonderPacket.STREAM_CODEC,
+                BecomeBeyonderPacket::handle
+        );
+
+        registrar.playToServer(
+                TeleportToSefirotPacket.TYPE,
+                TeleportToSefirotPacket.STREAM_CODEC,
+                TeleportToSefirotPacket::handle
+        );
+
+        registrar.playToServer(
+                SyncDreamDivinationCoordinatesPacket.TYPE,
+                SyncDreamDivinationCoordinatesPacket.STREAM_CODEC,
+                SyncDreamDivinationCoordinatesPacket::handle
+        );
+
+        registrar.playToServer(
+                SyncTravelersDoorCoordinatesPacket.TYPE,
+                SyncTravelersDoorCoordinatesPacket.STREAM_CODEC,
+                SyncTravelersDoorCoordinatesPacket::handle
+        );
+
+        registrar.playToServer(
+                AbilitySelectionPacket.TYPE,
+                AbilitySelectionPacket.STREAM_CODEC,
+                AbilitySelectionPacket::handle
+        );
+
+        registrar.playToServer(
+                OpenAbilitySelectionPacket.TYPE,
+                OpenAbilitySelectionPacket.STREAM_CODEC,
+                OpenAbilitySelectionPacket::handle
+        );
+
+        registrar.playToServer(
+                ToggleGriefingPacket.TYPE,
+                ToggleGriefingPacket.STREAM_CODEC,
+                ToggleGriefingPacket::handle
+        );
+
+        registrar.playToServer(
+                ToggleAbilityHotbarPacket.TYPE,
+                ToggleAbilityHotbarPacket.STREAM_CODEC,
+                ToggleAbilityHotbarPacket::handle
+        );
+
         registrar.playToServer(
                 SkinChangePacket.TYPE,
                 SkinChangePacket.STREAM_CODEC,
@@ -266,12 +263,6 @@ public class PacketHandler {
                 SkinRestorePacket.TYPE,
                 SkinRestorePacket.STREAM_CODEC,
                 SkinRestorePacket::handle
-        );
-
-        registrar.playToClient(
-                SkinDataPacket.TYPE,
-                SkinDataPacket.STREAM_CODEC,
-                SkinDataPacket::handle
         );
     }
 

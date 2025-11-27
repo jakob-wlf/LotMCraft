@@ -2,7 +2,7 @@ package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.SyncTelepathyAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncTelepathyAbilityPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;

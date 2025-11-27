@@ -2,7 +2,7 @@ package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.SyncSpectatingAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSpectatingAbilityPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;

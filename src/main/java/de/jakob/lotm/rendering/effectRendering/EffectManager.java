@@ -1,7 +1,7 @@
 package de.jakob.lotm.rendering.effectRendering;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.AddEffectPacket;
+import de.jakob.lotm.network.packets.toClient.AddEffectPacket;
 import net.minecraft.server.level.ServerLevel;
 
 public class EffectManager {

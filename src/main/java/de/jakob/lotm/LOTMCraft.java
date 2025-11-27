@@ -67,6 +67,7 @@ public class LOTMCraft
     public static KeyMapping previousAbilityKey;
     public static KeyMapping toggleAbilityHotbarKey;
     public static KeyMapping cycleAbilityHotbarKey;
+    public static KeyMapping enterSefirotKey;
 
 
     public static final Logger LOGGER = LogUtils.getLogger();

@@ -53,7 +53,7 @@ public class PocketDimensionAbility extends AbilityItem {
         Vec3 returnPos = entity.position();
         ResourceKey<Level> returnDimension = level.dimension();
 
-        // Teleport to Space dimension
+        // Get Space Level
         ResourceKey<Level> spaceDimension = ResourceKey.create(Registries.DIMENSION,
                 ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space"));
         ServerLevel spaceLevel = serverLevel.getServer().getLevel(spaceDimension);
@@ -61,7 +61,7 @@ public class PocketDimensionAbility extends AbilityItem {
             return;
         }
 
-        // Generate the hollow sphere if first time
+        // Generate the hollow sphere
         generateHollowSphere(spaceLevel, pocketCenter, 22, data.isFirstVisit(player.getUUID()));
 
         if (data.isFirstVisit(player.getUUID())) {
@@ -122,7 +122,6 @@ public class PocketDimensionAbility extends AbilityItem {
         for (int x = -radius + 4; x <= radius - 4; x++) {
             for (int z = -radius + 4; z <= radius - 4; z++) {
                 BlockPos checkPos = center.offset(x, 0, z);
-                // Only place floor if position is inside the sphere
                 if (checkPos.distSqr(center) <= (radius - 4) * (radius - 4)) {
                     for (int y = sphereBottom; y < sphereBottom + floorHeight; y++) {
                         BlockPos floorPos = new BlockPos(center.getX() + x, y, center.getZ() + z);

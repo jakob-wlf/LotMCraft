@@ -1,7 +1,7 @@
 package de.jakob.lotm.gamerule;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.SyncGriefingGamerulePacket;
+import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
 import net.minecraft.world.level.GameRules;
 
 public class ModGameRules {

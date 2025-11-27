@@ -3,7 +3,7 @@ package de.jakob.lotm.util.helper;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.network.packets.RingEffectPacket;
+import de.jakob.lotm.network.packets.toClient.RingEffectPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.entity.player.Player;

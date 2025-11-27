@@ -1,7 +1,7 @@
 package de.jakob.lotm.abilities;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.network.ToggleAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.ToggleAbilityPacket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;

@@ -1,7 +1,7 @@
 package de.jakob.lotm.abilities;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.AbilitySelectionPacket;
+import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.network.chat.Component;

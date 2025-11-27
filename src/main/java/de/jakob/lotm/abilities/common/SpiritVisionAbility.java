@@ -2,7 +2,7 @@ package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.SyncSpiritVisionAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSpiritVisionAbilityPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.mixin.EntityAccessor;

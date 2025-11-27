@@ -1,6 +1,6 @@
 package de.jakob.lotm.util.helper;
 
-import de.jakob.lotm.network.packets.RingEffectPacket;
+import de.jakob.lotm.network.packets.toClient.RingEffectPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.AABB;

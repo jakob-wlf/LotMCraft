@@ -4,7 +4,7 @@ import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ApprenticeDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.DisplaySpaceConcealmentParticlesPacket;
+import de.jakob.lotm.network.packets.toClient.DisplaySpaceConcealmentParticlesPacket;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;

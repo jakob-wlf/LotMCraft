@@ -3,9 +3,10 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.OpenAbilitySelectionPacket;
-import de.jakob.lotm.network.packets.ToggleAbilityHotbarPacket;
-import de.jakob.lotm.network.packets.ToggleGriefingPacket;
+import de.jakob.lotm.network.packets.toServer.OpenAbilitySelectionPacket;
+import de.jakob.lotm.network.packets.toServer.TeleportToSefirotPacket;
+import de.jakob.lotm.network.packets.toServer.ToggleAbilityHotbarPacket;
+import de.jakob.lotm.network.packets.toServer.ToggleGriefingPacket;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -13,7 +14,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class KeyInputHandler {
@@ -32,8 +32,14 @@ public class KeyInputHandler {
         if(LOTMCraft.toggleGriefingKey != null && LOTMCraft.toggleGriefingKey.consumeClick()) {
             Player player = Minecraft.getInstance().player;
             if (player != null) {
-                // Send packet to server instead of directly modifying data
                 PacketHandler.sendToServer(new ToggleGriefingPacket());
+            }
+        }
+
+        if(LOTMCraft.enterSefirotKey != null && LOTMCraft.enterSefirotKey.consumeClick()) {
+            Player player = Minecraft.getInstance().player;
+            if (player != null) {
+                PacketHandler.sendToServer(new TeleportToSefirotPacket());
             }
         }
 

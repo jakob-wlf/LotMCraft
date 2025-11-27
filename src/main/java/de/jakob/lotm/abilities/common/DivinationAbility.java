@@ -2,9 +2,9 @@ package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.OpenCoordinateScreenPacket;
-import de.jakob.lotm.network.packets.RemoveDreamDivinationUserPacket;
-import de.jakob.lotm.network.packets.SyncDangerPremonitionAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.OpenCoordinateScreenPacket;
+import de.jakob.lotm.network.packets.toClient.RemoveDreamDivinationUserPacket;
+import de.jakob.lotm.network.packets.toClient.SyncDangerPremonitionAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;

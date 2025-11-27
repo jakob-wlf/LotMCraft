@@ -2,8 +2,8 @@ package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.AddPlayerToTeleportationListPacket;
-import de.jakob.lotm.network.packets.ClearPlayerListInTeleportationPacket;
+import de.jakob.lotm.network.packets.toClient.AddPlayerToTeleportationListPacket;
+import de.jakob.lotm.network.packets.toClient.ClearPlayerListInTeleportationPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

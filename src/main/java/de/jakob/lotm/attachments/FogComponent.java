@@ -1,8 +1,7 @@
 package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.SyncFogPacket;
-import de.jakob.lotm.network.packets.SyncShaderPacket;
+import de.jakob.lotm.network.packets.toClient.SyncFogPacket;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;

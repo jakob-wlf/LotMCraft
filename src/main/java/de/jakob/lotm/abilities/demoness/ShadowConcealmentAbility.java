@@ -3,7 +3,7 @@ package de.jakob.lotm.abilities.demoness;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.DisplayShadowParticlesPacket;
+import de.jakob.lotm.network.packets.toClient.DisplayShadowParticlesPacket;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;

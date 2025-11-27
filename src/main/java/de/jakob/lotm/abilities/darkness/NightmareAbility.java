@@ -2,7 +2,7 @@ package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.SyncNightmareAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncNightmareAbilityPacket;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.data.NightmareCenter;
 import de.jakob.lotm.util.helper.*;

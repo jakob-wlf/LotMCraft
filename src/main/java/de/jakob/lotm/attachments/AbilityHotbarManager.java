@@ -3,7 +3,7 @@ package de.jakob.lotm.attachments;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.SyncAbilityHotbarPacket;
+import de.jakob.lotm.network.packets.toClient.SyncAbilityHotbarPacket;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -12,7 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-import org.jetbrains.annotations.UnknownNullability;
 
 public class AbilityHotbarManager implements INBTSerializable<CompoundTag> {
     private static final int HOTBAR_SIZE = 9;

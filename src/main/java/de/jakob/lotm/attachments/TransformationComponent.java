@@ -1,14 +1,12 @@
 package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.SyncTransformationPacket;
+import de.jakob.lotm.network.packets.toClient.SyncTransformationPacket;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
-
-import javax.swing.text.html.parser.Entity;
 
 public class TransformationComponent {
 
