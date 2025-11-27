@@ -62,8 +62,9 @@ public class PocketDimensionAbility extends AbilityItem {
         }
 
         // Generate the hollow sphere if first time
+        generateHollowSphere(spaceLevel, pocketCenter, 22, data.isFirstVisit(player.getUUID()));
+
         if (data.isFirstVisit(player.getUUID())) {
-            generateHollowSphere(spaceLevel, pocketCenter, 22);
             data.markVisited(player.getUUID());
         }
 
@@ -83,11 +84,13 @@ public class PocketDimensionAbility extends AbilityItem {
         spaceLevel.addFreshEntity(portalEntity);
     }
 
-    private void generateHollowSphere(ServerLevel level, BlockPos center, int radius) {
+    private void generateHollowSphere(ServerLevel level, BlockPos center, int radius, boolean isFirstVisit) {
         List<BlockPos> sphereBlocks = AbilityUtil.getBlocksInSphereRadius(level,
                 Vec3.atCenterOf(center), radius, true);
 
         for (BlockPos pos : sphereBlocks) {
+            if(!isFirstVisit && !level.getBlockState(pos).isAir())
+                continue;
             level.setBlockAndUpdate(pos, ModBlocks.SOLID_VOID.get().defaultBlockState());
         }
 
@@ -95,6 +98,8 @@ public class PocketDimensionAbility extends AbilityItem {
                 Vec3.atCenterOf(center), radius - 2, true);
 
         for (BlockPos pos : lightBlocks) {
+            if(!isFirstVisit && !level.getBlockState(pos).is(ModBlocks.SOLID_VOID))
+                continue;
             level.setBlockAndUpdate(pos, Blocks.LIGHT.defaultBlockState());
         }
 
@@ -102,7 +107,13 @@ public class PocketDimensionAbility extends AbilityItem {
                 Vec3.atCenterOf(center), radius - 4, true);
 
         for (BlockPos pos : airBlocks) {
+            if(!isFirstVisit && !level.getBlockState(pos).is(Blocks.LIGHT))
+                continue;
             level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+        }
+
+        if(!isFirstVisit) {
+            return;
         }
 
         int floorHeight = 10;

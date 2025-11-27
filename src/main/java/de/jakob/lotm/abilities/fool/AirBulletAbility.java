@@ -35,8 +35,6 @@ public class AirBulletAbility extends AbilityItem {
         return 20;
     }
 
-    private final double radius = .3;
-
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
@@ -51,27 +49,49 @@ public class AirBulletAbility extends AbilityItem {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.SNOWBALL_THROW, entity.getSoundSource(), 1.0f, 1.0f);
 
+        double rawDamage = Math.min(DamageLookup.lookupDamage(BeyonderData.getSequence(entity), .9), DamageLookup.lookupDamage(3, .9));
+
         ServerScheduler.scheduleForDuration(0, 1, 20 * 10, () -> {
             if(hasHit.get())
                 return;
 
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, .9) * (float) multiplier(entity), pos, true, false, true, 0)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, rawDamage * multiplier(entity), pos, true, false, true, 0)) {
                 hasHit.set(true);
                 return;
             }
 
             if(!level.getBlockState(BlockPos.containing(pos.x, pos.y, pos.z)).isAir()) {
                 pos = pos.subtract(direction);
-                level.explode(null, pos.x, pos.y, pos.z, 1.3f, BeyonderData.isGriefingEnabled(entity) ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE);
+                level.explode(null, pos.x, pos.y, pos.z, getExplosionPowerForSequence(BeyonderData.getSequence(entity)), BeyonderData.isGriefingEnabled(entity) ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE);
                 hasHit.set(true);
                 return;
             }
 
-            ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.EFFECT, pos, direction, radius, 25);
+            ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.EFFECT, pos, direction, getRadiusForSequence(BeyonderData.getSequence(entity)), 25);
 
             currentPos.set(pos.add(direction));
         }, (ServerLevel) level);
+    }
+
+    private static float getExplosionPowerForSequence(int sequence) {
+        return switch (sequence) {
+            default -> 1.3f;
+            case 6 -> 1.65f;
+            case 5 -> 2f;
+            case 4 -> 3.25f;
+            case 3, 2, 1 -> 5.5f;
+        };
+    }
+
+    private static float getRadiusForSequence(int sequence) {
+        return switch (sequence) {
+            default -> .2f;
+            case 6 -> .3f;
+            case 5 -> .45f;
+            case 4 -> .75f;
+            case 3, 2, 1 -> 1.0f;
+        };
     }
 }

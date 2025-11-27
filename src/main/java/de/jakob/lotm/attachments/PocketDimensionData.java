@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public class PocketDimensionData extends SavedData {
     private static final String DATA_NAME = "pocket_dimension_data";
-    private static final int SPACING = 100; // Space between pocket dimensions
+    private static final int SPACING = 10000; // Space between pocket dimensions
     
     private final Map<UUID, BlockPos> playerPocketLocations = new HashMap<>();
     private final Set<UUID> visitedPlayers = new HashSet<>();

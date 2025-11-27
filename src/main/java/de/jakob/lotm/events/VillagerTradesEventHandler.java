@@ -86,7 +86,7 @@ public class VillagerTradesEventHandler {
             case 8 -> 2;
             case 7, 6 -> 3;
             case 5 -> 4;
-            case 4, 3, 2 -> 5;
+            case 4, 3, 2, 1 -> 5;
         };
     }
 

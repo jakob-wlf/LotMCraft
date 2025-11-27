@@ -38,7 +38,7 @@ public class SpiritualityBarRenderer {
         int progressColorEnd = 0xFF50E3C2;
 
         // Check if current player has progress
-        if (SpiritualityProgressTracker.hasProgress(mc.player.getUUID()) && (ClientBeyonderCache.isBeyonder(mc.player.getUUID()))) {
+        if (SpiritualityProgressTracker.hasProgress(mc.player.getUUID()) && (ClientBeyonderCache.isBeyonder(mc.player.getUUID())) && !mc.options.hideGui) {
             float progress = SpiritualityProgressTracker.getProgress(mc.player.getUUID());
 
             // Draw background
