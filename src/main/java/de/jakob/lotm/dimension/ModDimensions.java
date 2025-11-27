@@ -27,8 +27,8 @@ public class ModDimensions {
     public static final Supplier<MapCodec<SpiritWorldChunkGenerator>> SPIRIT_WORLD_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("spirit_world", () -> SpiritWorldChunkGenerator.CODEC);
 
-    public static final Supplier<MapCodec<SpiritWorldChunkGenerator>> SEFIRAH_CASTLE_CHUNK_GENERATOR =
-            CHUNK_GENERATORS.register("sefirah_castle", () -> SpiritWorldChunkGenerator.CODEC);
+    public static final Supplier<MapCodec<PreGeneratedChunkGenerator>> PREGENERATED_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("pregenerated", () -> PreGeneratedChunkGenerator.CODEC);
 
 
 
@@ -61,6 +61,17 @@ public class ModDimensions {
     public static final ResourceKey<Biome> SPIRIT_WORLD_BIOME_KEY =
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world_biome"));
+
+    public static final ResourceKey<LevelStem> SEFIRAH_CASTLE_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<DimensionType> SEFIRAH_CASTLE_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+    public static final ResourceKey<Biome> SEFIRAH_CASTLE_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle_biome"));
 
     public static void register(IEventBus eventBus) {
         CHUNK_GENERATORS.register(eventBus);

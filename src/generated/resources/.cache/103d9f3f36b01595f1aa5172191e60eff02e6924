@@ -1,7 +1,10 @@
-// 1.21.1	2025-11-27T12:36:42.8232618	Registries
+// 1.21.1	2025-11-27T16:36:31.68035	Registries
+39fb1ccb874d73bc88489ed601724591b8d5a491 data/lotmcraft/dimension/sefirah_castle.json
 d6506f9996732ef9e64030ded2b68f435269ae84 data/lotmcraft/dimension/space.json
-4237e1d71d19f20ca522667f310eb195c8e12020 data/lotmcraft/dimension/spirit_world.json
+e488df81b76c00be105a7c368ad04bc331335014 data/lotmcraft/dimension/spirit_world.json
+a0fc1fedca1cf3bbdb139457f4cd907af4be4e92 data/lotmcraft/dimension_type/sefirah_castle.json
 178500223b85fe18060b25f0a0f770d04f529123 data/lotmcraft/dimension_type/space.json
 b4de84f7dcb1749b55a0d35ea1418899424d5a55 data/lotmcraft/dimension_type/spirit_world.json
-e6f1fc435f1fe56df29f88744db84b503c900c4a data/lotmcraft/worldgen/biome/space_biome.json
+29b94866cbdb6bf9dded74109e04469896b5a116 data/lotmcraft/worldgen/biome/sefirah_castle_biome.json
+3119f86dbafc0f4c9ad0be8b76851a1e51e92a4b data/lotmcraft/worldgen/biome/space_biome.json
 fd7983c759ed531b8151c69bee8442f14ebd02ff data/lotmcraft/worldgen/biome/spirit_world_biome.json

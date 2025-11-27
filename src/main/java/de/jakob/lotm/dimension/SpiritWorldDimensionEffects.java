@@ -21,7 +21,7 @@ public class SpiritWorldDimensionEffects{
     @SubscribeEvent
     public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
         event.register(
-                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space"),
+                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world"),
                 new SpiritWorldDimensionEffects.SpiritWorldEffects()
         );
     }
@@ -29,7 +29,7 @@ public class SpiritWorldDimensionEffects{
     public static class SpiritWorldEffects extends DimensionSpecialEffects {
 
         public SpiritWorldEffects() {
-            super(Float.NaN, true, SkyType.NONE, false, false);
+            super(Float.NaN, true, SkyType.END, false, false);
         }
 
         @Override

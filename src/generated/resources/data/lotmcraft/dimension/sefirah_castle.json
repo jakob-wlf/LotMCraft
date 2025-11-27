@@ -1,0 +1,10 @@
+{
+  "type": "lotmcraft:sefirah_castle",
+  "generator": {
+    "type": "lotmcraft:pregenerated",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "lotmcraft:sefirah_castle_biome"
+    }
+  }
+}
