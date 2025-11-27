@@ -27,6 +27,10 @@ public class ModDimensions {
     public static final Supplier<MapCodec<SpiritWorldChunkGenerator>> SPIRIT_WORLD_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("spirit_world", () -> SpiritWorldChunkGenerator.CODEC);
 
+    public static final Supplier<MapCodec<SpiritWorldChunkGenerator>> SEFIRAH_CASTLE_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("sefirah_castle", () -> SpiritWorldChunkGenerator.CODEC);
+
+
 
     // Dimension Keys
     public static final ResourceKey<LevelStem> SPACE_LEVEL_KEY =

@@ -31,6 +31,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.SUBORDINATE_CONTROLLER.get());
         basicItem(ModItems.EXCAVATED_AREA_ITEM.get());
         basicItem(ModItems.GUIDING_BOOK.get());
+        basicItem(ModItems.SEALED_ARTIFACT.get());
+        basicItem(ModItems.SEALED_ARTIFACT_BELL.get());
+        basicItem(ModItems.SEALED_ARTIFACT_CHAIN.get());
+        basicItem(ModItems.SEALED_ARTIFACT_GEM.get());
+        basicItem(ModItems.SEALED_ARTIFACT_STAR.get());
 
         PotionItemHandler.ITEMS.getEntries().forEach(i -> {
             basicItem(i.get());

@@ -18,7 +18,7 @@ public class SpiritWorldFogHandler {
         if (camera.getEntity().level() instanceof ClientLevel level) {
             if (level.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
                 // Set very close fog distance for disorienting effect
-                event.setNearPlaneDistance(15.0f);
+                event.setNearPlaneDistance(13.0f);
                 event.setFarPlaneDistance(32.0f);
                 event.setCanceled(true);
             }
@@ -34,7 +34,7 @@ public class SpiritWorldFogHandler {
                 long time = System.currentTimeMillis();
                 
                 // Primary fast cycle
-                float hue1 = ((time / 10) % 360) / 360.0f;
+                float hue1 = ((time / 5) % 360) / 360.0f;
                 
                 // Secondary slower cycle, offset
                 float hue2 = ((time / 80 + 180) % 360) / 360.0f;

@@ -64,6 +64,33 @@ public abstract class SelectableAbilityItem extends AbilityItem{
     }
 
     @Override
+    public boolean useAsArtifactAbility(Level level, Player player) {
+        if(level.isClientSide) {
+            if(this.cooldown > 0 && cooldownsClient.containsKey(player.getUUID()) && (System.currentTimeMillis() - cooldownsClient.get(player.getUUID())) < (this.cooldown * 50L)) {
+                return false;
+            }
+        }
+        else {
+            if(this.cooldown > 0 && cooldowns.containsKey(player.getUUID()) && (System.currentTimeMillis() - cooldowns.get(player.getUUID())) < (this.cooldown * 50L)) {
+                return false;
+            }
+        }
+
+        if(getAbilityNames().length == 0) {
+            return false;
+        }
+
+        if(!level.isClientSide)
+            AbilityHandler.useAbilityInArea(this, new Location(player.position(), level));
+
+        if(level.isClientSide) cooldownsClient.put(player.getUUID(), System.currentTimeMillis());
+        else cooldowns.put(player.getUUID(), System.currentTimeMillis());
+
+        useAbility(level, player, random.nextInt(getAbilityNames().length));
+        return true;
+    }
+
+    @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {
         if(!(entity instanceof Player)) {
             useAbility(level, entity, random.nextInt(getAbilityNames().length));

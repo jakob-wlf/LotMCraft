@@ -27,6 +27,7 @@ public abstract class AbilityItem extends Item {
     protected final Random random = new Random();
 
     static final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
+    static final Map<UUID, Long> cooldownsClient = new ConcurrentHashMap<>();
 
     protected final int cooldown;
 
@@ -55,8 +56,15 @@ public abstract class AbilityItem extends Item {
         if(!this.canBeUsedByNPC)
             return;
 
-        if(this.cooldown > 0 && cooldowns.containsKey(beyonderNPC.getUUID()) && (System.currentTimeMillis() - cooldowns.get(beyonderNPC.getUUID())) < (this.cooldown * 50L)) {
-            return;
+        if(level.isClientSide) {
+            if(this.cooldown > 0 && cooldownsClient.containsKey(beyonderNPC.getUUID()) && (System.currentTimeMillis() - cooldownsClient.get(beyonderNPC.getUUID())) < (this.cooldown * 50L)) {
+                return;
+            }
+        }
+        else {
+            if(this.cooldown > 0 && cooldowns.containsKey(beyonderNPC.getUUID()) && (System.currentTimeMillis() - cooldowns.get(beyonderNPC.getUUID())) < (this.cooldown * 50L)) {
+                return;
+            }
         }
 
         if(BeyonderData.isAbilityDisabled(beyonderNPC))
@@ -65,9 +73,32 @@ public abstract class AbilityItem extends Item {
         if(!level.isClientSide)
             AbilityHandler.useAbilityInArea(this, new Location(beyonderNPC.position(), level));
 
-        cooldowns.put(beyonderNPC.getUUID(), System.currentTimeMillis());
+        if(level.isClientSide) cooldownsClient.put(beyonderNPC.getUUID(), System.currentTimeMillis());
+        else cooldowns.put(beyonderNPC.getUUID(), System.currentTimeMillis());
 
         onAbilityUse(level, beyonderNPC);
+    }
+
+    public boolean useAsArtifactAbility(Level level, Player player) {
+        if(level.isClientSide) {
+            if(this.cooldown > 0 && cooldownsClient.containsKey(player.getUUID()) && (System.currentTimeMillis() - cooldownsClient.get(player.getUUID())) < (this.cooldown * 50L)) {
+                return false;
+            }
+        }
+        else {
+            if(this.cooldown > 0 && cooldowns.containsKey(player.getUUID()) && (System.currentTimeMillis() - cooldowns.get(player.getUUID())) < (this.cooldown * 50L)) {
+                return false;
+            }
+        }
+
+        if(!level.isClientSide)
+            AbilityHandler.useAbilityInArea(this, new Location(player.position(), level));
+
+        if(level.isClientSide) cooldownsClient.put(player.getUUID(), System.currentTimeMillis());
+        else cooldowns.put(player.getUUID(), System.currentTimeMillis());
+
+        onAbilityUse(level, player);
+        return true;
     }
 
     @Override
@@ -127,6 +158,10 @@ public abstract class AbilityItem extends Item {
 
     public boolean canUse(LivingEntity entity, boolean ignoreCreative) {
         return AbilityHandler.canUse(entity, ignoreCreative, getRequirements(), getSpiritualityCost());
+    }
+
+    public int getCooldown() {
+        return cooldown;
     }
 
     protected abstract void onAbilityUse(Level level, LivingEntity entity);

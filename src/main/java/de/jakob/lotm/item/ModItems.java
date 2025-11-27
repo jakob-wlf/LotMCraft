@@ -1,12 +1,14 @@
 package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.artifacts.SealedArtifactItem;
 import de.jakob.lotm.item.custom.ExcavatedAreaItem;
 import de.jakob.lotm.item.custom.GuidingBookItem;
 import de.jakob.lotm.item.custom.MarionetteControllerItem;
 import de.jakob.lotm.item.custom.SubordinateControllerItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -40,6 +42,27 @@ public class ModItems {
                     .stacksTo(1)
             )
     );
+
+    public static final DeferredHolder<Item, Item> SEALED_ARTIFACT = ITEMS.register("sealed_artifact",
+            () -> new SealedArtifactItem(new Item.Properties()
+                    .stacksTo(1)
+                    .fireResistant()));
+    public static final DeferredHolder<Item, Item> SEALED_ARTIFACT_BELL = ITEMS.register("sealed_artifact_bell",
+            () -> new SealedArtifactItem(new Item.Properties()
+                    .stacksTo(1)
+                    .fireResistant()));
+    public static final DeferredHolder<Item, Item> SEALED_ARTIFACT_STAR = ITEMS.register("sealed_artifact_star",
+            () -> new SealedArtifactItem(new Item.Properties()
+                    .stacksTo(1)
+                    .fireResistant()));
+    public static final DeferredHolder<Item, Item> SEALED_ARTIFACT_CHAIN = ITEMS.register("sealed_artifact_chain",
+            () -> new SealedArtifactItem(new Item.Properties()
+                    .stacksTo(1)
+                    .fireResistant()));
+    public static final DeferredHolder<Item, Item> SEALED_ARTIFACT_GEM = ITEMS.register("sealed_artifact_gem",
+            () -> new SealedArtifactItem(new Item.Properties()
+                    .stacksTo(1)
+                    .fireResistant()));
 
     public static PotionIngredient selectRandomIngredient(List<PotionIngredient> ingredients, Random random) {
         if (ingredients == null || ingredients.isEmpty()) {

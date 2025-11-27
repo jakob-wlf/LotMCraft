@@ -417,7 +417,6 @@
   "block.lotmcraft.void_block": "Void",
   "block.lotmcraft.solid_void_block": "Solid Void",
 
-
   "_comment009": "Ingredients-----------------------------------------------------------------------------",
   "item.lotmcraft.lavos_squid_blood": "Lavos Squid Blood",
   "item.lotmcraft.hornacis_gray_mountain_goat_horn": "Horn of a Gray Hornacis Mountain Goat",
@@ -739,6 +738,56 @@
   "_comment012": "Advancements-----------------------------------------------------------------------------",
   "advancements.lotmcraft.root.title": "Path of the Divine",
   "advancements.lotmcraft.root.description": "Begin your journey as a Beyonder",
+
+  "_comment013": "Sealed Artifacts-------------------------------------------------------------------------",
+  "item.lotm.sealed_artifact": "Sealed Artifact",
+  "lotm.sealed_artifact.generic": "%s of %s",
+
+  "lotm.sealed_artifact.type.bell": "Bell",
+  "lotm.sealed_artifact.type.chain": "Chain",
+  "lotm.sealed_artifact.type.sword": "Sword",
+  "lotm.sealed_artifact.type.diamond": "Diamond",
+  "lotm.sealed_artifact.type.gem": "Gem",
+  "lotm.sealed_artifact.type.star": "Star",
+  "lotm.sealed_artifact.type.item": "Item",
+
+  "lotm.sealed_artifact.pathway.fool_1": "Mysteries",
+  "lotm.sealed_artifact.pathway.error_1": "Deception",
+  "lotm.sealed_artifact.pathway.door_1": "Stars",
+  "lotm.sealed_artifact.pathway.sun_1": "the Sun",
+  "lotm.sealed_artifact.pathway.visionary_1": "the Mind",
+  "lotm.sealed_artifact.pathway.hanged_man_1": "Corruption",
+  "lotm.sealed_artifact.pathway.tyrant_1": "the Storm",
+  "lotm.sealed_artifact.pathway.white_tower_1": "Wisdom",
+  "lotm.sealed_artifact.pathway.demoness_1": "Chaos",
+  "lotm.sealed_artifact.pathway.red_priest_1": "Flames",
+  "lotm.sealed_artifact.pathway.wheel_of_fortune_1": "Luck",
+  "lotm.sealed_artifact.pathway.darkness_1": "Dreams",
+  "lotm.sealed_artifact.pathway.death_1": "Death",
+  "lotm.sealed_artifact.pathway.twilight_giant_1": "Twilight",
+  "lotm.sealed_artifact.pathway.justiciar_1": "Order",
+  "lotm.sealed_artifact.pathway.black_emperor_1": "Disorder",
+  "lotm.sealed_artifact.pathway.mother_1": "Nature",
+  "lotm.sealed_artifact.pathway.moon_1": "Life",
+  "lotm.sealed_artifact.pathway.abyss_1": "Demons",
+  "lotm.sealed_artifact.pathway.chained_1": "the Bound",
+  "lotm.sealed_artifact.pathway.savant_1": "Craftsmanship",
+  "lotm.sealed_artifact.pathway.hermit_1": "Knowledge",
+
+  "lotm.sealed_artifact.abilities": "Abilities",
+  "lotm.sealed_artifact.negative_effect": "Negative Effect",
+
+  "lotm.negative_effect.hearing_whispers": "Hearing Whispers",
+  "lotm.negative_effect.drain_health": "Draining Health",
+  "lotm.negative_effect.drain_hunger": "Draining Hunger",
+  "lotm.negative_effect.random_teleport": "Random Teleport",
+
+  "lotm.whisper.0": "§4They're watching...",
+  "lotm.whisper.1": "§4The voices never stop...",
+  "lotm.whisper.2": "§4You shouldn't have touched this...",
+  "lotm.whisper.3": "§4It's inside you now...",
+  "lotm.whisper.4": "§4There's no escape...",
+
 
 
   "lotm.calamity.tornado": "Tornado",

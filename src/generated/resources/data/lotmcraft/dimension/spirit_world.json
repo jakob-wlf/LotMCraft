@@ -1,7 +1,7 @@
 {
   "type": "lotmcraft:spirit_world",
   "generator": {
-    "type": "lotmcraft:spirit_world",
+    "type": "lotmcraft:sefirah_castle",
     "biome_source": {
       "type": "minecraft:fixed",
       "biome": "lotmcraft:spirit_world_biome"

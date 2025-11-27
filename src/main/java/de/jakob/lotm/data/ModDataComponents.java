@@ -2,6 +2,7 @@ package de.jakob.lotm.data;
 
 import com.mojang.serialization.Codec;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.artifacts.SealedArtifactData;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -37,6 +38,24 @@ public class ModDataComponents {
                             ))
                             .build()
             );
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<SealedArtifactData>> SEALED_ARTIFACT_DATA =
+            DATA_COMPONENT_TYPES.register("sealed_artifact_data",
+                    () -> DataComponentType.<SealedArtifactData>builder()
+                            .persistent(SealedArtifactData.CODEC)
+                            .build());
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> SEALED_ARTIFACT_SELECTED =
+            DATA_COMPONENT_TYPES.register("sealed_artifact_selected",
+                    () -> DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .build());
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> SEALED_ARTIFACT_BASE_TYPE =
+            DATA_COMPONENT_TYPES.register("sealed_artifact_base_type",
+                    () -> DataComponentType.<String>builder()
+                            .persistent(Codec.STRING)
+                            .build());
 
     // Data component for storing the center position of excavation
     public static final Supplier<DataComponentType<String>> EXCAVATION_CENTER =
