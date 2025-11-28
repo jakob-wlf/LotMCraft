@@ -73,6 +73,10 @@ public class ModDimensions {
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle_biome"));
 
+    public static final ResourceKey<Level> SEFIRAH_CASTLE_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
     public static void register(IEventBus eventBus) {
         CHUNK_GENERATORS.register(eventBus);
     }

@@ -43,6 +43,7 @@ public class SefirotData extends SavedData {
         }
 
         claimedSefirah.put(uuid, sefirot);
+        setDirty();
         return true;
     }
 
@@ -57,6 +58,8 @@ public class SefirotData extends SavedData {
         else {
             isInSefirot.add(uuid);
         }
+
+        setDirty();
     }
 
     public boolean isInSefirot(ServerPlayer player) {
@@ -65,6 +68,7 @@ public class SefirotData extends SavedData {
 
     public void setLastReturnLocation(ServerPlayer player) {
         returnLocations.put(player.getUUID(), new LocationWithLevelKey(new Vec3(player.getX(), player.getY(), player.getZ()), player.level().dimension().location().toString()));
+        setDirty();
     }
 
     public ServerLocation getReturnLocationForPlayer(ServerPlayer player) {

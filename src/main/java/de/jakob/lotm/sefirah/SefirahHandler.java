@@ -17,6 +17,10 @@ public class SefirahHandler {
     private static final String[] implementedSefirah = new String[]{"sefirah_castle"};
 
     public static boolean claimSefirot(ServerPlayer player, String sefirot) {
+        return claimSefirot(player, sefirot, false);
+    }
+
+    public static boolean claimSefirot(ServerPlayer player, String sefirot, boolean playClaimEffect) {
         if(!Arrays.asList(implementedSefirah).contains(sefirot)) {
             return false;
         }
@@ -29,6 +33,18 @@ public class SefirahHandler {
     }
 
     public static void teleportToSefirot(ServerPlayer player) {
+        teleportToSefirot(player, false);
+    }
+
+    /**
+     * @param player The player to get the claimed Sefirot for
+     * @return the id of the claimed Sefirot or an empty String if none is claimed
+     */
+    public static String getClaimedSefirot(ServerPlayer player) {
+        return SefirotData.get(player.server).getClaimedSefirot(player.getUUID());
+    }
+
+    public static void teleportToSefirot(ServerPlayer player, boolean playTeleportEffect) {
         if(!hasSefirot(player)) {
             return;
         }
@@ -64,10 +80,10 @@ public class SefirahHandler {
 
                 player.teleportTo(sefirotLevel,
                         24,
-                        59,
+                        -57,
                         0,
-                        player.getYRot(),
-                        player.getXRot());
+                        90,
+                        0);
             }
         }
     }

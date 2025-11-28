@@ -24,6 +24,7 @@ public class BeyonderData {
     private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
 
     private static final HashMap<UUID, HashMap<String, Double>> multiplierModifier = new HashMap<>();
+    private static final HashMap<UUID, HashMap<String, Long>> abilityDisablingTimeouts = new HashMap<>();
     private static final HashMap<UUID, HashSet<String>> disabledBeyonders = new HashMap<>();
 
     public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>();
@@ -321,6 +322,7 @@ public class BeyonderData {
         multiplierModifier.get(uuid).put(id, modifier);
     }
 
+
     public static void removeModifier(LivingEntity entity, String id) {
         UUID uuid = entity.getUUID();
 
@@ -329,6 +331,26 @@ public class BeyonderData {
     }
 
     public static boolean isAbilityDisabled(LivingEntity entity) {
+        final HashSet<String> idsToRemoveDueToTimeLimit = new HashSet<>();
+        if(abilityDisablingTimeouts.containsKey(entity.getUUID())) {
+            for(Map.Entry<String, Long> entry : abilityDisablingTimeouts.get(entity.getUUID()).entrySet()) {
+                if(System.currentTimeMillis() >= entry.getValue()) {
+                    idsToRemoveDueToTimeLimit.add(entry.getKey());
+                }
+            }
+
+            for (String id : idsToRemoveDueToTimeLimit) {
+                abilityDisablingTimeouts.get(entity.getUUID()).remove(id);
+                if(disabledBeyonders.containsKey(entity.getUUID())) {
+                    disabledBeyonders.get(entity.getUUID()).remove(id);
+                }
+            }
+
+            if(disabledBeyonders.containsKey(entity.getUUID()) && disabledBeyonders.get(entity.getUUID()).isEmpty()) {
+                disabledBeyonders.remove(entity.getUUID());
+            }
+        }
+
         return disabledBeyonders.containsKey(entity.getUUID());
     }
 
@@ -339,6 +361,16 @@ public class BeyonderData {
         disabledBeyonders.get(uuid).add(id);
     }
 
+    public static void disableAbilityUseWithTimeLimit(LivingEntity entity, String id, long millis) {
+        UUID uuid = entity.getUUID();
+
+        disabledBeyonders.putIfAbsent(uuid, new HashSet<>());
+        disabledBeyonders.get(uuid).add(id);
+
+        abilityDisablingTimeouts.putIfAbsent(uuid, new HashMap<>());
+        abilityDisablingTimeouts.get(uuid).put(id, System.currentTimeMillis() + millis);
+    }
+
     public static void enableAbilityUse(LivingEntity entity, String id) {
         UUID uuid = entity.getUUID();
 
@@ -346,6 +378,11 @@ public class BeyonderData {
         disabledBeyonders.get(uuid).remove(id);
         if(disabledBeyonders.get(uuid).isEmpty())
             disabledBeyonders.remove(uuid);
+
+        abilityDisablingTimeouts.putIfAbsent(uuid, new HashMap<>());
+        abilityDisablingTimeouts.get(uuid).remove(id);
+        if(abilityDisablingTimeouts.get(uuid).isEmpty())
+            abilityDisablingTimeouts.remove(uuid);
     }
 
     public static boolean isGriefingEnabled(Player player) {

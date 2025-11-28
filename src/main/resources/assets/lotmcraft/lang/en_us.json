@@ -790,9 +790,11 @@
   "lotm.whisper.4": "§4There's no escape...",
 
 
-
   "lotm.calamity.tornado": "Tornado",
   "lotm.calamity.earthquake": "Earthquake",
+
+  "lotm.sefirot.no_sefirot": "You don't have a Sefirot",
+  "lotm.sefirot.sefirah_castle_already_occupied": "Sefirah Castle is occupied already",
 
   "lotm.griefing": "Griefing Enabled",
   "lotm.description": "Description",

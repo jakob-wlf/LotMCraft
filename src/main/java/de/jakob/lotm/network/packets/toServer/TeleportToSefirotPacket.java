@@ -7,6 +7,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityMenuPacket;
 import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.pathways.PathwayInfos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -37,11 +38,12 @@ public record TeleportToSefirotPacket() implements CustomPacketPayload {
     public static void handle(TeleportToSefirotPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.flow().getReceptionSide().isServer() && context.player() instanceof ServerPlayer serverPlayer) {
-
                 if(!SefirahHandler.hasSefirot(serverPlayer)) {
-                    SefirahHandler.claimSefirot(serverPlayer, "sefirah_castle");
+                    AbilityUtil.sendActionBar(serverPlayer, Component.translatable("lotm.sefirot.no_sefirot").withColor(0x942de3));
+                    return;
                 }
-                SefirahHandler.teleportToSefirot(serverPlayer);
+
+                SefirahHandler.teleportToSefirot(serverPlayer, true);
             }
         });
     }

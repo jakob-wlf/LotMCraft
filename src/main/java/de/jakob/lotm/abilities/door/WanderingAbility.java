@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
@@ -48,6 +49,7 @@ public class WanderingAbility extends AbilityItem {
 
 
         List<ServerLevel> dimensions = StreamSupport.stream(serverLevel.getServer().getAllLevels().spliterator(), false)
+                .filter(s -> !s.dimension().equals(ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY))
                 .toList();
 
         if(dimensions.size() <= 1) {
