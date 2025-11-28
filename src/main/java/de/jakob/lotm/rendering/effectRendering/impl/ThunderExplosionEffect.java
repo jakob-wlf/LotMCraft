@@ -1,11 +1,15 @@
-package de.jakob.lotm.rendering.effectRendering;
+package de.jakob.lotm.rendering.effectRendering.impl;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
+import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -16,31 +20,25 @@ import org.joml.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConqueringEffect extends ActiveEffect {
+public class ThunderExplosionEffect extends ActiveEffect {
 
     private float expansionProgress = 0f;
-    private float dominanceIntensity = 1f;
+    private float flashIntensity = 1f;
     private final RandomSource random = RandomSource.create();
-    private final List<DominanceChain> dominanceChains = new ArrayList<>();
-    private final List<ConquestParticle> conquestParticles = new ArrayList<>();
-    private final List<CrushingWave> crushingWaves = new ArrayList<>();
+    private final List<LightningChain> lightningChains = new ArrayList<>();
+    private final List<EnergyParticle> energyParticles = new ArrayList<>();
 
-    public ConqueringEffect(double x, double y, double z) {
-        super(x, y, z, 70); // 3.5 seconds of absolute dominance
+    public ThunderExplosionEffect(double x, double y, double z) {
+        super(x, y, z, 60); // 80 ticks = 4 seconds
 
-        // Initialize dominance chains
-        for (int i = 0; i < 40; i++) {
-            dominanceChains.add(new DominanceChain());
+        // Initialize lightning chains
+        for (int i = 0; i < 32; i++) {
+            lightningChains.add(new LightningChain());
         }
 
-        // Initialize conquest particles
-        for (int i = 0; i < 120; i++) {
-            conquestParticles.add(new ConquestParticle());
-        }
-
-        // Initialize crushing waves
-        for (int i = 0; i < 8; i++) {
-            crushingWaves.add(new CrushingWave(i * 0.125f));
+        // Initialize energy particles
+        for (int i = 0; i < 100; i++) {
+            energyParticles.add(new EnergyParticle());
         }
     }
 
@@ -52,47 +50,46 @@ public class ConqueringEffect extends ActiveEffect {
 
         // Update animation state
         float progress = getProgress();
-        expansionProgress = Mth.clamp(progress * 1.15f, 0f, 1f);
-        dominanceIntensity = (float) Math.max(0f, 1f - Math.pow(progress, 0.35));
+        expansionProgress = Mth.clamp(progress * 1.1f, 0f, 1f);
+        flashIntensity = (float) Math.max(0f, 1f - Math.pow(progress, 0.4));
 
         poseStack.pushPose();
         poseStack.translate(x, y, z);
 
-        // Render all effect layers - from core to outer elements
-        renderDominantCore(poseStack, expansionProgress, dominanceIntensity);
-        renderBloodSphere(poseStack, expansionProgress, dominanceIntensity);
-        renderDarknessShell(poseStack, expansionProgress, dominanceIntensity);
-        renderConquestSpikes(poseStack, expansionProgress, dominanceIntensity);
-        renderDominanceChains(poseStack, expansionProgress, dominanceIntensity);
-        renderCrushingWaves(poseStack, expansionProgress, dominanceIntensity);
-        renderAbyssalRings(poseStack, expansionProgress, dominanceIntensity);
-        renderBloodTendrils(poseStack, expansionProgress, dominanceIntensity);
-        renderOppressiveAura(poseStack, expansionProgress, dominanceIntensity);
-        renderConquestParticles(poseStack, expansionProgress, dominanceIntensity);
-        renderDarknessVortex(poseStack, expansionProgress, dominanceIntensity);
-        renderCrimsonPulse(poseStack, expansionProgress, dominanceIntensity);
-        renderDominationSpirals(poseStack, expansionProgress, dominanceIntensity);
-        renderVoidCracks(poseStack, expansionProgress, dominanceIntensity);
-        renderSupremacyCorona(poseStack, expansionProgress, dominanceIntensity);
+        // Render all effect layers
+        renderMainSphere(poseStack, expansionProgress, flashIntensity);
+        renderInnerCore(poseStack, expansionProgress, flashIntensity);
+        renderSecondaryShell(poseStack, expansionProgress, flashIntensity);
+        renderLightningBolts(poseStack, expansionProgress, flashIntensity);
+        renderLightningChains(poseStack, expansionProgress, flashIntensity);
+        renderShockwave(poseStack, expansionProgress, flashIntensity);
+        renderGroundCracks(poseStack, expansionProgress, flashIntensity);
+        renderElectricArcs(poseStack, expansionProgress, flashIntensity);
+        renderEnergyRings(poseStack, expansionProgress, flashIntensity);
+        renderEnergyParticles(poseStack, expansionProgress, flashIntensity);
+        renderPurpleEnergyWaves(poseStack, expansionProgress, flashIntensity);
+        renderElectricSpirals(poseStack, expansionProgress, flashIntensity);
+        renderCorona(poseStack, expansionProgress, flashIntensity);
 
         poseStack.popPose();
     }
 
-    private void renderBloodSphere(PoseStack poseStack, float expansion, float intensity) {
+    private void renderMainSphere(PoseStack poseStack, float expansion, float intensity) {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.depthMask(false);
         RenderSystem.disableCull();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        float radius = 3f + expansion * 22f;
-        int segments = 32;
+        float radius = 3f + expansion * 20f; // Increased from 2f + 12f
+        int segments = 32; // More segments for smoother look
+
         Matrix4f matrix = poseStack.last().pose();
 
-        // Multiple layers for deep crimson appearance
+        // 3 solid layers for more opaque purple
         for (int layer = 0; layer < 3; layer++) {
-            float layerRadius = radius * (1f + layer * 0.1f);
-            float layerAlpha = intensity * (1f - layer * 0.3f) * 0.7f;
+            float layerRadius = radius * (1f + layer * 0.08f);
+            float layerAlpha = intensity * (1f - layer * 0.25f) * 0.75f; // Much higher alpha
 
             Tesselator tesselator = Tesselator.getInstance();
 
@@ -108,18 +105,18 @@ public class ConqueringEffect extends ActiveEffect {
                     Vec3 v1 = spherePoint(layerRadius, theta1, phi);
                     Vec3 v2 = spherePoint(layerRadius, theta2, phi);
 
-                    // Deep crimson red with dark undertones
-                    float r = 0.7f + intensity * 0.25f;
-                    float g = 0.05f + intensity * 0.05f;
-                    float b = 0.08f + intensity * 0.05f;
+                    // Solid deep purple color
+                    float r = 0.35f + intensity * 0.15f;
+                    float g = 0.15f + intensity * 0.2f;
+                    float b = 0.85f + intensity * 0.1f;
                     float a = layerAlpha;
 
-                    // Occasional dark pulses
-                    if (random.nextFloat() < 0.04f) {
-                        r *= 0.4f;
-                        g *= 0.3f;
-                        b *= 0.3f;
-                        a *= 1.3f;
+                    // Rare electric flashes
+                    if (random.nextFloat() < 0.03f) {
+                        r = 0.65f;
+                        g = 0.5f;
+                        b = 1f;
+                        a *= 1.2f;
                     }
 
                     a = Mth.clamp(a, 0f, 1f);
@@ -138,15 +135,16 @@ public class ConqueringEffect extends ActiveEffect {
         RenderSystem.disableBlend();
     }
 
-    private void renderDarknessShell(PoseStack poseStack, float expansion, float intensity) {
+    private void renderSecondaryShell(PoseStack poseStack, float expansion, float intensity) {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.depthMask(false);
         RenderSystem.disableCull();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        float radius = 4.5f + expansion * 24f;
-        int segments = 28;
+        float radius = 4f + expansion * 22f; // Increased from 3f + 15f
+        int segments = 24; // More segments
+
         Matrix4f matrix = poseStack.last().pose();
         Tesselator tesselator = Tesselator.getInstance();
 
@@ -162,16 +160,11 @@ public class ConqueringEffect extends ActiveEffect {
                 Vec3 v1 = spherePoint(radius, theta1, phi);
                 Vec3 v2 = spherePoint(radius, theta2, phi);
 
-                float a = intensity * 0.5f * (1f - expansion * 0.4f);
+                float a = intensity * 0.55f * (1f - expansion * 0.5f); // More opaque
 
-                // Dark gray-black shell with red highlights
-                float noise = random.nextFloat();
-                float r = 0.15f + noise * 0.1f;
-                float g = 0.12f + noise * 0.05f;
-                float b = 0.12f + noise * 0.05f;
-
-                buffer.addVertex(matrix, (float) v1.x, (float) v1.y, (float) v1.z).setColor(r, g, b, a);
-                buffer.addVertex(matrix, (float) v2.x, (float) v2.y, (float) v2.z).setColor(r, g, b, a);
+                // Solid purple outer shell
+                buffer.addVertex(matrix, (float) v1.x, (float) v1.y, (float) v1.z).setColor(0.45f, 0.25f, 0.9f, a);
+                buffer.addVertex(matrix, (float) v2.x, (float) v2.y, (float) v2.z).setColor(0.45f, 0.25f, 0.9f, a);
             }
 
             BufferUploader.drawWithShader(buffer.buildOrThrow());
@@ -183,8 +176,8 @@ public class ConqueringEffect extends ActiveEffect {
         RenderSystem.disableBlend();
     }
 
-    private void renderDominantCore(PoseStack poseStack, float expansion, float intensity) {
-        if (intensity < 0.15f) return;
+    private void renderInnerCore(PoseStack poseStack, float expansion, float intensity) {
+        if (intensity < 0.2f) return;
 
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -192,11 +185,12 @@ public class ConqueringEffect extends ActiveEffect {
         RenderSystem.disableCull();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        float radius = 2.5f + expansion * 7f;
-        float pulseRadius = radius + (float) Math.sin(currentTick * 0.6f) * 0.7f;
+        float radius = 2f + expansion * 6f; // Increased from 1.2f + 4f
+        float pulseRadius = radius + (float) Math.sin(currentTick * 0.5f) * 0.5f; // Bigger pulse
         Matrix4f matrix = poseStack.last().pose();
+
         Tesselator tesselator = Tesselator.getInstance();
-        int segments = 24;
+        int segments = 20; // More segments
 
         for (int lat = 0; lat < segments; lat++) {
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
@@ -210,12 +204,12 @@ public class ConqueringEffect extends ActiveEffect {
                 Vec3 v1 = spherePoint(pulseRadius, theta1, phi);
                 Vec3 v2 = spherePoint(pulseRadius, theta2, phi);
 
-                // Intense blood-red core
-                float a = intensity * intensity * 0.7f;
+                // Solid purple core
+                float a = intensity * intensity * 0.65f; // More opaque
                 a = Mth.clamp(a, 0f, 1f);
 
-                buffer.addVertex(matrix, (float) v1.x, (float) v1.y, (float) v1.z).setColor(0.95f, 0.1f, 0.15f, a);
-                buffer.addVertex(matrix, (float) v2.x, (float) v2.y, (float) v2.z).setColor(0.95f, 0.1f, 0.15f, a);
+                buffer.addVertex(matrix, (float) v1.x, (float) v1.y, (float) v1.z).setColor(0.7f, 0.5f, 0.95f, a);
+                buffer.addVertex(matrix, (float) v2.x, (float) v2.y, (float) v2.z).setColor(0.7f, 0.5f, 0.95f, a);
             }
 
             BufferUploader.drawWithShader(buffer.buildOrThrow());
@@ -227,23 +221,23 @@ public class ConqueringEffect extends ActiveEffect {
         RenderSystem.disableBlend();
     }
 
-    private void renderConquestSpikes(PoseStack poseStack, float expansion, float intensity) {
+    private void renderLightningBolts(PoseStack poseStack, float expansion, float intensity) {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
         RenderSystem.depthMask(false);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Matrix4f matrix = poseStack.last().pose();
-        float radius = 4.5f + expansion * 24f;
+        float radius = 4f + expansion * 22f; // Increased from 3f + 15f
 
-        // Jagged spikes radiating outward
-        for (int i = 0; i < 60; i++) {
+        // 50 lightning bolts (increased from 40)
+        for (int i = 0; i < 50; i++) {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-            float angle = (float) (i * Math.PI * 2 / 60);
-            float verticalAngle = (float) ((i % 12) * Math.PI / 6 - Math.PI / 2);
-            float width = 0.2f + intensity * 0.15f;
+            float angle = (float) (i * Math.PI * 2 / 50);
+            float verticalAngle = (float) ((i % 10) * Math.PI / 5 - Math.PI / 2); // More variation
+            float width = 0.15f + intensity * 0.12f; // Slightly thicker
 
             Vec3 start = Vec3.ZERO;
             Vec3 direction = new Vec3(
@@ -252,28 +246,28 @@ public class ConqueringEffect extends ActiveEffect {
                     Math.sin(angle) * Math.cos(verticalAngle)
             ).normalize();
 
-            int segments = 14;
+            int segments = 12;
             Vec3 current = start;
 
             for (int seg = 0; seg < segments; seg++) {
                 float segProgress = (float) seg / segments;
                 Vec3 next = direction.scale(radius * (segProgress + 1f / segments))
                         .add(
-                                (random.nextDouble() - 0.5) * 0.5,
-                                (random.nextDouble() - 0.5) * 0.5,
-                                (random.nextDouble() - 0.5) * 0.5
+                                (random.nextDouble() - 0.5) * 0.8,
+                                (random.nextDouble() - 0.5) * 0.8,
+                                (random.nextDouble() - 0.5) * 0.8
                         );
 
                 Vec3 segDir = next.subtract(current).normalize();
                 Vec3 perp = new Vec3(-segDir.z, 0, segDir.x).normalize().scale(width);
 
-                float alpha1 = intensity * (1f - segProgress * 0.3f) * 0.55f;
-                float alpha2 = intensity * (1f - (segProgress + 1f / segments) * 0.3f) * 0.55f;
+                float alpha1 = intensity * (1f - segProgress * 0.4f) * 0.5f;
+                float alpha2 = intensity * (1f - (segProgress + 1f / segments) * 0.4f) * 0.5f;
 
-                // Dark red spikes with black edges
-                float r = 0.6f - segProgress * 0.2f;
-                float g = 0.05f;
-                float b = 0.08f;
+                // Deep purple lightning
+                float r = 0.5f + random.nextFloat() * 0.2f;
+                float g = 0.3f + random.nextFloat() * 0.2f;
+                float b = 0.95f + random.nextFloat() * 0.05f;
 
                 buffer.addVertex(matrix,
                                 (float)(current.x + perp.x),
@@ -291,13 +285,13 @@ public class ConqueringEffect extends ActiveEffect {
                                 (float)(next.x - perp.x),
                                 (float)(next.y - perp.y),
                                 (float)(next.z - perp.z))
-                        .setColor(r * 0.5f, g, b, alpha2);
+                        .setColor(r, g, b, alpha2);
 
                 buffer.addVertex(matrix,
                                 (float)(next.x + perp.x),
                                 (float)(next.y + perp.y),
                                 (float)(next.z + perp.z))
-                        .setColor(r * 0.5f, g, b, alpha2);
+                        .setColor(r, g, b, alpha2);
 
                 current = next;
             }
@@ -310,7 +304,7 @@ public class ConqueringEffect extends ActiveEffect {
         RenderSystem.disableBlend();
     }
 
-    private void renderDominanceChains(PoseStack poseStack, float expansion, float intensity) {
+    private void renderLightningChains(PoseStack poseStack, float expansion, float intensity) {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
         RenderSystem.depthMask(false);
@@ -318,7 +312,7 @@ public class ConqueringEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        for (DominanceChain chain : dominanceChains) {
+        for (LightningChain chain : lightningChains) {
             chain.update(expansion, intensity);
 
             Tesselator tesselator = Tesselator.getInstance();
@@ -329,38 +323,34 @@ public class ConqueringEffect extends ActiveEffect {
                 Vec3 next = chain.points.get(i + 1);
 
                 Vec3 dir = next.subtract(current).normalize();
-                Vec3 perp = new Vec3(-dir.z, 0, dir.x).normalize().scale(0.14f);
+                Vec3 perp = new Vec3(-dir.z, 0, dir.x).normalize().scale(0.12f);
 
-                float alpha = chain.alpha * (1f - (float) i / chain.points.size()) * 0.65f;
+                float alpha = chain.alpha * (1f - (float) i / chain.points.size()) * 0.6f; // Reduced
 
-                // Dark crimson chains
-                float r = 0.5f + (float) i / chain.points.size() * 0.3f;
-                float g = 0.08f;
-                float b = 0.1f;
-
+                // More purple tint
                 buffer.addVertex(matrix,
                                 (float)(current.x + perp.x),
                                 (float)(current.y + perp.y),
                                 (float)(current.z + perp.z))
-                        .setColor(r, g, b, alpha);
+                        .setColor(0.8f, 0.85f, 1f, alpha);
 
                 buffer.addVertex(matrix,
                                 (float)(current.x - perp.x),
                                 (float)(current.y - perp.y),
                                 (float)(current.z - perp.z))
-                        .setColor(r, g, b, alpha);
+                        .setColor(0.8f, 0.85f, 1f, alpha);
 
                 buffer.addVertex(matrix,
                                 (float)(next.x - perp.x),
                                 (float)(next.y - perp.y),
                                 (float)(next.z - perp.z))
-                        .setColor(r * 0.7f, g, b, alpha * 0.7f);
+                        .setColor(0.8f, 0.85f, 1f, alpha * 0.7f);
 
                 buffer.addVertex(matrix,
                                 (float)(next.x + perp.x),
                                 (float)(next.y + perp.y),
                                 (float)(next.z + perp.z))
-                        .setColor(r * 0.7f, g, b, alpha * 0.7f);
+                        .setColor(0.8f, 0.85f, 1f, alpha * 0.7f);
             }
 
             BufferUploader.drawWithShader(buffer.buildOrThrow());
@@ -371,7 +361,7 @@ public class ConqueringEffect extends ActiveEffect {
         RenderSystem.disableBlend();
     }
 
-    private void renderCrushingWaves(PoseStack poseStack, float expansion, float intensity) {
+    private void renderShockwave(PoseStack poseStack, float expansion, float intensity) {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
         RenderSystem.depthMask(false);
@@ -380,14 +370,14 @@ public class ConqueringEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        for (CrushingWave wave : crushingWaves) {
-            wave.update(expansion, intensity);
-            
-            if (wave.progress < 0 || wave.progress > 1f) continue;
+        // Multiple expanding rings
+        for (int ring = 0; ring < 3; ring++) {
+            float ringProgress = expansion - ring * 0.15f;
+            if (ringProgress < 0) continue;
 
-            float innerRadius = wave.progress * 26f;
-            float outerRadius = innerRadius + 3.5f;
-            int segments = 72;
+            float innerRadius = ringProgress * 24f; // Increased from 16f
+            float outerRadius = innerRadius + 3f; // Thicker rings
+            int segments = 64; // More segments for smoother look
 
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
@@ -402,11 +392,11 @@ public class ConqueringEffect extends ActiveEffect {
                 float x2 = cos * outerRadius;
                 float z2 = sin * outerRadius;
 
-                float alpha = wave.alpha * (1f - wave.progress) * 0.7f;
+                float alpha = intensity * (1f - ringProgress) * 0.6f; // Reduced
 
-                // Dark red crushing wave
-                buffer.addVertex(matrix, x1, 0.15f, z1).setColor(0.6f, 0.1f, 0.12f, alpha);
-                buffer.addVertex(matrix, x2, 0.15f, z2).setColor(0.3f, 0.05f, 0.06f, 0f);
+                // Add purple tint
+                buffer.addVertex(matrix, x1, 0.1f, z1).setColor(0.5f, 0.7f, 1f, alpha);
+                buffer.addVertex(matrix, x2, 0.1f, z2).setColor(0.5f, 0.7f, 1f, 0f);
             }
 
             BufferUploader.drawWithShader(buffer.buildOrThrow());
@@ -418,22 +408,140 @@ public class ConqueringEffect extends ActiveEffect {
         RenderSystem.disableBlend();
     }
 
-    private void renderAbyssalRings(PoseStack poseStack, float expansion, float intensity) {
+    private void renderGroundCracks(PoseStack poseStack, float expansion, float intensity) {
+        if (intensity < 0.6f) return;
+
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+        RenderSystem.depthMask(false);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
+        Matrix4f matrix = poseStack.last().pose();
+
+        // Radial cracks on the ground - more cracks
+        for (int i = 0; i < 24; i++) { // Increased from 16
+            float angle = (float) (i * Math.PI * 2 / 24);
+            float length = expansion * 18f; // Longer cracks
+
+            Tesselator tesselator = Tesselator.getInstance();
+            BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
+            float cos = (float) Math.cos(angle);
+            float sin = (float) Math.sin(angle);
+            float width = 0.2f; // Wider cracks
+
+            float perpX = -sin * width;
+            float perpZ = cos * width;
+
+            float alpha = intensity * 0.5f; // Reduced
+
+            // More purple
+            buffer.addVertex(matrix, perpX, 0.05f, perpZ).setColor(0.6f, 0.75f, 1f, alpha);
+            buffer.addVertex(matrix, -perpX, 0.05f, -perpZ).setColor(0.6f, 0.75f, 1f, alpha);
+            buffer.addVertex(matrix, cos * length - perpX, 0.05f, sin * length - perpZ).setColor(0.6f, 0.75f, 1f, 0f);
+            buffer.addVertex(matrix, cos * length + perpX, 0.05f, sin * length + perpZ).setColor(0.6f, 0.75f, 1f, 0f);
+
+            BufferUploader.drawWithShader(buffer.buildOrThrow());
+        }
+
+        RenderSystem.depthMask(true);
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableBlend();
+    }
+
+    private void renderElectricArcs(PoseStack poseStack, float expansion, float intensity) {
+        if (intensity < 0.4f) return;
+
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+        RenderSystem.depthMask(false);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
+        Matrix4f matrix = poseStack.last().pose();
+        float radius = 3f + expansion * 16f; // Increased from 2f + 10f
+
+        // More arcs between points
+        for (int i = 0; i < 32; i++) { // Increased from 24
+            Tesselator tesselator = Tesselator.getInstance();
+            BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
+            float theta1 = random.nextFloat() * (float) Math.PI;
+            float phi1 = random.nextFloat() * (float) Math.PI * 2;
+            float theta2 = random.nextFloat() * (float) Math.PI;
+            float phi2 = random.nextFloat() * (float) Math.PI * 2;
+
+            Vec3 start = spherePoint(radius, theta1, phi1);
+            Vec3 end = spherePoint(radius, theta2, phi2);
+
+            int arcSegments = 8;
+            Vec3 current = start;
+
+            for (int seg = 0; seg < arcSegments; seg++) {
+                float t = (float) (seg + 1) / arcSegments;
+                Vec3 next = start.lerp(end, t)
+                        .add(
+                                (random.nextDouble() - 0.5) * 1.2,
+                                (random.nextDouble() - 0.5) * 1.2,
+                                (random.nextDouble() - 0.5) * 1.2
+                        );
+
+                Vec3 dir = next.subtract(current).normalize();
+                Vec3 perp = new Vec3(-dir.z, 0, dir.x).normalize().scale(0.1f);
+
+                float alpha = intensity * 0.6f; // Reduced
+
+                // More purple
+                buffer.addVertex(matrix,
+                                (float)(current.x + perp.x),
+                                (float)(current.y + perp.y),
+                                (float)(current.z + perp.z))
+                        .setColor(0.75f, 0.85f, 1f, alpha);
+
+                buffer.addVertex(matrix,
+                                (float)(current.x - perp.x),
+                                (float)(current.y - perp.y),
+                                (float)(current.z - perp.z))
+                        .setColor(0.75f, 0.85f, 1f, alpha);
+
+                buffer.addVertex(matrix,
+                                (float)(next.x - perp.x),
+                                (float)(next.y - perp.y),
+                                (float)(next.z - perp.z))
+                        .setColor(0.75f, 0.85f, 1f, alpha * 0.6f);
+
+                buffer.addVertex(matrix,
+                                (float)(next.x + perp.x),
+                                (float)(next.y + perp.y),
+                                (float)(next.z + perp.z))
+                        .setColor(0.75f, 0.85f, 1f, alpha * 0.6f);
+
+                current = next;
+            }
+
+            BufferUploader.drawWithShader(buffer.buildOrThrow());
+        }
+
+        RenderSystem.depthMask(true);
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableBlend();
+    }
+
+    private void renderEnergyRings(PoseStack poseStack, float expansion, float intensity) {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.depthMask(false);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        // Rotating dark rings with red highlights
-        for (int ring = 0; ring < 9; ring++) {
+        // More rings at different angles
+        for (int ring = 0; ring < 7; ring++) { // Increased from 5
             poseStack.pushPose();
 
-            float angle = currentTick * 3.5f + ring * 40f;
+            float angle = currentTick * 4f + ring * 51.4f; // Adjusted for 7 rings
             poseStack.mulPose(Axis.YP.rotationDegrees(angle));
-            poseStack.mulPose(Axis.XP.rotationDegrees(35f + 20f * ring));
+            poseStack.mulPose(Axis.XP.rotationDegrees(45f + 25f * ring));
 
-            float radius = 5f + expansion * 14f;
-            int segments = 72;
+            float radius = 4f + expansion * 12f; // Larger rings
+            int segments = 64; // More segments
 
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
@@ -449,15 +557,11 @@ public class ConqueringEffect extends ActiveEffect {
                 float x = cos * radius;
                 float y = sin * radius;
 
-                float alpha = intensity * 0.45f * (float) Math.sin(t * Math.PI);
+                float alpha = intensity * 0.55f * (float) Math.sin(t * Math.PI); // More opaque
 
-                // Dark rings with crimson highlights
-                float r = 0.25f + (float) Math.sin(t * Math.PI * 4) * 0.3f;
-                float g = 0.1f;
-                float b = 0.12f;
-
-                buffer.addVertex(ringMatrix, x, y - 0.25f, 0).setColor(r, g, b, alpha);
-                buffer.addVertex(ringMatrix, x, y + 0.25f, 0).setColor(r, g, b, alpha);
+                // Solid purple rings
+                buffer.addVertex(ringMatrix, x, y - 0.2f, 0).setColor(0.55f, 0.35f, 0.95f, alpha); // Thicker
+                buffer.addVertex(ringMatrix, x, y + 0.2f, 0).setColor(0.55f, 0.35f, 0.95f, alpha);
             }
 
             BufferUploader.drawWithShader(buffer.buildOrThrow());
@@ -469,78 +573,33 @@ public class ConqueringEffect extends ActiveEffect {
         RenderSystem.disableBlend();
     }
 
-    private void renderBloodTendrils(PoseStack poseStack, float expansion, float intensity) {
-        if (intensity < 0.3f) return;
-
+    private void renderEnergyParticles(PoseStack poseStack, float expansion, float intensity) {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
         RenderSystem.depthMask(false);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Matrix4f matrix = poseStack.last().pose();
-        float radius = 3.5f + expansion * 18f;
 
-        // Writhing tendrils between distant points
-        for (int i = 0; i < 40; i++) {
+        for (EnergyParticle particle : energyParticles) {
+            particle.update(expansion, intensity);
+
+            if (particle.alpha <= 0) continue;
+
+            float size = particle.size;
+
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-            float theta1 = random.nextFloat() * (float) Math.PI;
-            float phi1 = random.nextFloat() * (float) Math.PI * 2;
-            float theta2 = random.nextFloat() * (float) Math.PI;
-            float phi2 = random.nextFloat() * (float) Math.PI * 2;
-
-            Vec3 start = spherePoint(radius, theta1, phi1);
-            Vec3 end = spherePoint(radius, theta2, phi2);
-
-            int arcSegments = 10;
-            Vec3 current = start;
-
-            for (int seg = 0; seg < arcSegments; seg++) {
-                float t = (float) (seg + 1) / arcSegments;
-                Vec3 next = start.lerp(end, t)
-                        .add(
-                                (random.nextDouble() - 0.5) * 1.4,
-                                (random.nextDouble() - 0.5) * 1.4,
-                                (random.nextDouble() - 0.5) * 1.4
-                        );
-
-                Vec3 dir = next.subtract(current).normalize();
-                Vec3 perp = new Vec3(-dir.z, 0, dir.x).normalize().scale(0.12f);
-
-                float alpha = intensity * 0.6f * (1f - t * 0.4f);
-
-                // Blood-red tendrils
-                float r = 0.7f + random.nextFloat() * 0.2f;
-                float g = 0.08f;
-                float b = 0.1f;
-
-                buffer.addVertex(matrix,
-                                (float)(current.x + perp.x),
-                                (float)(current.y + perp.y),
-                                (float)(current.z + perp.z))
-                        .setColor(r, g, b, alpha);
-
-                buffer.addVertex(matrix,
-                                (float)(current.x - perp.x),
-                                (float)(current.y - perp.y),
-                                (float)(current.z - perp.z))
-                        .setColor(r, g, b, alpha);
-
-                buffer.addVertex(matrix,
-                                (float)(next.x - perp.x),
-                                (float)(next.y - perp.y),
-                                (float)(next.z - perp.z))
-                        .setColor(r * 0.6f, g, b, alpha * 0.6f);
-
-                buffer.addVertex(matrix,
-                                (float)(next.x + perp.x),
-                                (float)(next.y + perp.y),
-                                (float)(next.z + perp.z))
-                        .setColor(r * 0.6f, g, b, alpha * 0.6f);
-
-                current = next;
-            }
+            // Billboard quad with more purple
+            buffer.addVertex(matrix, (float)(particle.pos.x - size), (float)(particle.pos.y - size), (float)(particle.pos.z - size))
+                    .setColor(0.65f, 0.8f, 1f, particle.alpha);
+            buffer.addVertex(matrix, (float)(particle.pos.x - size), (float)(particle.pos.y + size), (float)(particle.pos.z + size))
+                    .setColor(0.65f, 0.8f, 1f, particle.alpha);
+            buffer.addVertex(matrix, (float)(particle.pos.x + size), (float)(particle.pos.y + size), (float)(particle.pos.z + size))
+                    .setColor(0.65f, 0.8f, 1f, particle.alpha);
+            buffer.addVertex(matrix, (float)(particle.pos.x + size), (float)(particle.pos.y - size), (float)(particle.pos.z - size))
+                    .setColor(0.65f, 0.8f, 1f, particle.alpha);
 
             BufferUploader.drawWithShader(buffer.buildOrThrow());
         }
@@ -550,7 +609,7 @@ public class ConqueringEffect extends ActiveEffect {
         RenderSystem.disableBlend();
     }
 
-    private void renderOppressiveAura(PoseStack poseStack, float expansion, float intensity) {
+    private void renderPurpleEnergyWaves(PoseStack poseStack, float expansion, float intensity) {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.depthMask(false);
@@ -559,11 +618,11 @@ public class ConqueringEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        // Pulsing waves of dominance
-        for (int wave = 0; wave < 6; wave++) {
-            float waveProgress = (expansion + wave * 0.16f) % 1f;
-            float radius = 3.5f + waveProgress * 20f;
-            int segments = 48;
+        // Pulsing purple energy waves - solid and vibrant
+        for (int wave = 0; wave < 5; wave++) { // More waves
+            float waveProgress = (expansion + wave * 0.18f) % 1f;
+            float radius = 3f + waveProgress * 18f; // Larger waves
+            int segments = 40; // More segments
 
             Tesselator tesselator = Tesselator.getInstance();
 
@@ -579,11 +638,11 @@ public class ConqueringEffect extends ActiveEffect {
                     Vec3 v1 = spherePoint(radius, theta1, phi);
                     Vec3 v2 = spherePoint(radius, theta2, phi);
 
-                    // Dark red to black gradient
-                    float r = 0.5f - waveProgress * 0.3f;
-                    float g = 0.05f;
-                    float b = 0.08f;
-                    float a = intensity * (1f - waveProgress) * 0.55f;
+                    // Deep vibrant purple - more opaque
+                    float r = 0.75f;
+                    float g = 0.2f + waveProgress * 0.15f;
+                    float b = 0.95f;
+                    float a = intensity * (1f - waveProgress) * 0.6f; // More opaque
 
                     buffer.addVertex(matrix, (float) v1.x, (float) v1.y, (float) v1.z).setColor(r, g, b, a);
                     buffer.addVertex(matrix, (float) v2.x, (float) v2.y, (float) v2.z).setColor(r, g, b, a);
@@ -599,7 +658,7 @@ public class ConqueringEffect extends ActiveEffect {
         RenderSystem.disableBlend();
     }
 
-    private void renderConquestParticles(PoseStack poseStack, float expansion, float intensity) {
+    private void renderElectricSpirals(PoseStack poseStack, float expansion, float intensity) {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
         RenderSystem.depthMask(false);
@@ -607,160 +666,25 @@ public class ConqueringEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        for (ConquestParticle particle : conquestParticles) {
-            particle.update(expansion, intensity);
-
-            if (particle.alpha <= 0) continue;
-
-            float size = particle.size;
-
+        // Spiraling energy streams
+        for (int spiral = 0; spiral < 8; spiral++) { // More spirals
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-            // Dark particles with red highlights
-            float r = particle.isRed ? 0.8f : 0.2f;
-            float g = particle.isRed ? 0.1f : 0.15f;
-            float b = particle.isRed ? 0.12f : 0.18f;
-
-            buffer.addVertex(matrix, (float)(particle.pos.x - size), (float)(particle.pos.y - size), (float)(particle.pos.z - size))
-                    .setColor(r, g, b, particle.alpha);
-            buffer.addVertex(matrix, (float)(particle.pos.x - size), (float)(particle.pos.y + size), (float)(particle.pos.z + size))
-                    .setColor(r, g, b, particle.alpha);
-            buffer.addVertex(matrix, (float)(particle.pos.x + size), (float)(particle.pos.y + size), (float)(particle.pos.z + size))
-                    .setColor(r, g, b, particle.alpha);
-            buffer.addVertex(matrix, (float)(particle.pos.x + size), (float)(particle.pos.y - size), (float)(particle.pos.z - size))
-                    .setColor(r, g, b, particle.alpha);
-
-            BufferUploader.drawWithShader(buffer.buildOrThrow());
-        }
-
-        RenderSystem.depthMask(true);
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
-    }
-
-    private void renderDarknessVortex(PoseStack poseStack, float expansion, float intensity) {
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.depthMask(false);
-        RenderSystem.disableCull();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
-        Matrix4f matrix = poseStack.last().pose();
-
-        // Swirling vortex of darkness
-        for (int vortex = 0; vortex < 4; vortex++) {
-            float vortexOffset = vortex * 0.25f;
-            int segments = 48;
-
-            Tesselator tesselator = Tesselator.getInstance();
-
-            for (int lat = 0; lat < segments / 2; lat++) {
-                BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
-
-                float theta1 = (float) (lat * Math.PI / segments);
-                float theta2 = (float) ((lat + 1) * Math.PI / segments);
-
-                for (int lon = 0; lon <= segments; lon++) {
-                    float phi = (float) (lon * 2 * Math.PI / segments);
-                    float spiralOffset = (float) Math.sin(expansion * Math.PI * 2 + vortexOffset) * 0.3f;
-                    
-                    float radius = (2f + expansion * 16f) * (1f + spiralOffset);
-
-                    Vec3 v1 = spherePoint(radius, theta1, phi + currentTick * 0.05f);
-                    Vec3 v2 = spherePoint(radius, theta2, phi + currentTick * 0.05f);
-
-                    // Dark swirling mass
-                    float r = 0.12f;
-                    float g = 0.1f;
-                    float b = 0.11f;
-                    float a = intensity * 0.35f * (1f - expansion * 0.6f);
-
-                    buffer.addVertex(matrix, (float) v1.x, (float) v1.y, (float) v1.z).setColor(r, g, b, a);
-                    buffer.addVertex(matrix, (float) v2.x, (float) v2.y, (float) v2.z).setColor(r, g, b, a);
-                }
-
-                BufferUploader.drawWithShader(buffer.buildOrThrow());
-            }
-        }
-
-        RenderSystem.enableCull();
-        RenderSystem.depthMask(true);
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
-    }
-
-    private void renderCrimsonPulse(PoseStack poseStack, float expansion, float intensity) {
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
-        RenderSystem.depthMask(false);
-        RenderSystem.disableCull();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
-        Matrix4f matrix = poseStack.last().pose();
-        float pulseIntensity = (float) Math.abs(Math.sin(currentTick * 0.15f));
-
-        // Pulsing red energy layer
-        float radius = 3.2f + expansion * 19f + pulseIntensity * 1.5f;
-        int segments = 36;
-
-        Tesselator tesselator = Tesselator.getInstance();
-
-        for (int lat = 0; lat < segments; lat++) {
-            BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
-
-            float theta1 = (float) (lat * Math.PI / segments);
-            float theta2 = (float) ((lat + 1) * Math.PI / segments);
-
-            for (int lon = 0; lon <= segments; lon++) {
-                float phi = (float) (lon * 2 * Math.PI / segments);
-
-                Vec3 v1 = spherePoint(radius, theta1, phi);
-                Vec3 v2 = spherePoint(radius, theta2, phi);
-
-                float a = intensity * pulseIntensity * 0.4f;
-
-                // Pulsing crimson
-                buffer.addVertex(matrix, (float) v1.x, (float) v1.y, (float) v1.z).setColor(0.85f, 0.12f, 0.15f, a);
-                buffer.addVertex(matrix, (float) v2.x, (float) v2.y, (float) v2.z).setColor(0.85f, 0.12f, 0.15f, a);
-            }
-
-            BufferUploader.drawWithShader(buffer.buildOrThrow());
-        }
-
-        RenderSystem.enableCull();
-        RenderSystem.depthMask(true);
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
-    }
-
-    private void renderDominationSpirals(PoseStack poseStack, float expansion, float intensity) {
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
-        RenderSystem.depthMask(false);
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
-        Matrix4f matrix = poseStack.last().pose();
-
-        // Spiraling dominance energy
-        for (int spiral = 0; spiral < 10; spiral++) {
-            Tesselator tesselator = Tesselator.getInstance();
-            BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-
-            float startAngle = spiral * 36f;
-            int points = 90;
+            float startAngle = spiral * 45f; // Adjusted for 8 spirals
+            int points = 80; // More points for longer spirals
 
             for (int i = 0; i < points - 1; i++) {
                 float t = (float) i / points;
                 float nextT = (float) (i + 1) / points;
 
-                float angle1 = (float) Math.toRadians(startAngle + t * 900f + currentTick * 7f);
-                float angle2 = (float) Math.toRadians(startAngle + nextT * 900f + currentTick * 7f);
+                float angle1 = (float) Math.toRadians(startAngle + t * 720f + currentTick * 8f);
+                float angle2 = (float) Math.toRadians(startAngle + nextT * 720f + currentTick * 8f);
 
-                float radius1 = (1f + t * expansion * 17f);
-                float radius2 = (1f + nextT * expansion * 17f);
-                float height1 = (t - 0.5f) * expansion * 14f;
-                float height2 = (nextT - 0.5f) * expansion * 14f;
+                float radius1 = (0.8f + t * expansion * 15f); // Larger spiral radius
+                float radius2 = (0.8f + nextT * expansion * 15f);
+                float height1 = (t - 0.5f) * expansion * 12f; // Taller spirals
+                float height2 = (nextT - 0.5f) * expansion * 12f;
 
                 Vec3 pos1 = new Vec3(
                         Math.cos(angle1) * radius1,
@@ -775,38 +699,34 @@ public class ConqueringEffect extends ActiveEffect {
                 );
 
                 Vec3 dir = pos2.subtract(pos1).normalize();
-                Vec3 perp = new Vec3(-dir.z, 0, dir.x).normalize().scale(0.2f);
+                Vec3 perp = new Vec3(-dir.z, 0, dir.x).normalize().scale(0.18f); // Thicker spirals
 
-                float alpha = intensity * (1f - t * 0.4f) * 0.6f;
+                float alpha = intensity * (1f - t * 0.5f) * 0.6f; // Reduced
 
-                // Dark red spirals
-                float r = 0.6f - t * 0.2f;
-                float g = 0.08f;
-                float b = 0.1f;
-
+                // More purple in spirals
                 buffer.addVertex(matrix,
                                 (float)(pos1.x + perp.x),
                                 (float)(pos1.y + perp.y),
                                 (float)(pos1.z + perp.z))
-                        .setColor(r, g, b, alpha);
+                        .setColor(0.65f, 0.75f, 1f, alpha);
 
                 buffer.addVertex(matrix,
                                 (float)(pos1.x - perp.x),
                                 (float)(pos1.y - perp.y),
                                 (float)(pos1.z - perp.z))
-                        .setColor(r, g, b, alpha);
+                        .setColor(0.65f, 0.75f, 1f, alpha);
 
                 buffer.addVertex(matrix,
                                 (float)(pos2.x - perp.x),
                                 (float)(pos2.y - perp.y),
                                 (float)(pos2.z - perp.z))
-                        .setColor(r * 0.6f, g, b, alpha);
+                        .setColor(0.65f, 0.75f, 1f, alpha);
 
                 buffer.addVertex(matrix,
                                 (float)(pos2.x + perp.x),
                                 (float)(pos2.y + perp.y),
                                 (float)(pos2.z + perp.z))
-                        .setColor(r * 0.6f, g, b, alpha);
+                        .setColor(0.65f, 0.75f, 1f, alpha);
             }
 
             BufferUploader.drawWithShader(buffer.buildOrThrow());
@@ -817,7 +737,7 @@ public class ConqueringEffect extends ActiveEffect {
         RenderSystem.disableBlend();
     }
 
-    private void renderVoidCracks(PoseStack poseStack, float expansion, float intensity) {
+    private void renderCorona(PoseStack poseStack, float expansion, float intensity) {
         if (intensity < 0.5f) return;
 
         RenderSystem.enableBlend();
@@ -827,51 +747,10 @@ public class ConqueringEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        // Radiating cracks of oppression
-        for (int i = 0; i < 30; i++) {
-            float angle = (float) (i * Math.PI * 2 / 30);
-            float length = expansion * 22f;
-
-            Tesselator tesselator = Tesselator.getInstance();
-            BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-
-            float cos = (float) Math.cos(angle);
-            float sin = (float) Math.sin(angle);
-            float width = 0.25f;
-
-            float perpX = -sin * width;
-            float perpZ = cos * width;
-
-            float alpha = intensity * 0.65f;
-
-            // Dark cracks with red glow
-            buffer.addVertex(matrix, perpX, 0.08f, perpZ).setColor(0.5f, 0.08f, 0.1f, alpha);
-            buffer.addVertex(matrix, -perpX, 0.08f, -perpZ).setColor(0.5f, 0.08f, 0.1f, alpha);
-            buffer.addVertex(matrix, cos * length - perpX, 0.08f, sin * length - perpZ).setColor(0.15f, 0.05f, 0.06f, 0f);
-            buffer.addVertex(matrix, cos * length + perpX, 0.08f, sin * length + perpZ).setColor(0.15f, 0.05f, 0.06f, 0f);
-
-            BufferUploader.drawWithShader(buffer.buildOrThrow());
-        }
-
-        RenderSystem.depthMask(true);
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
-    }
-
-    private void renderSupremacyCorona(PoseStack poseStack, float expansion, float intensity) {
-        if (intensity < 0.4f) return;
-
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
-        RenderSystem.depthMask(false);
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
-        Matrix4f matrix = poseStack.last().pose();
-
-        // Crown-like flares of domination
-        for (int i = 0; i < 60; i++) {
-            float angle = (float) (i * Math.PI * 2 / 60);
-            float length = (3.5f + expansion * 16f) * (1f + (float) Math.sin(currentTick * 0.25f + i) * 0.5f);
+        // Corona flares radiating outward
+        for (int i = 0; i < 48; i++) { // More corona flares
+            float angle = (float) (i * Math.PI * 2 / 48);
+            float length = (3f + expansion * 14f) * (1f + (float) Math.sin(currentTick * 0.3f + i) * 0.4f); // Longer flares
 
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -879,24 +758,24 @@ public class ConqueringEffect extends ActiveEffect {
             float cos = (float) Math.cos(angle);
             float sin = (float) Math.sin(angle);
 
-            float width = 0.32f * intensity;
+            float width = 0.28f * intensity; // Wider corona
             float perpX = -sin * width;
             float perpZ = cos * width;
 
-            float startDist = 2f;
+            float startDist = 1.5f; // Start further out
 
-            float alpha1 = intensity * 0.6f;
+            float alpha1 = intensity * 0.5f;
             float alpha2 = 0f;
 
-            // Blood-red corona
+            // Purple corona
             buffer.addVertex(matrix, cos * startDist + perpX, 0, sin * startDist + perpZ)
-                    .setColor(0.8f, 0.15f, 0.18f, alpha1);
+                    .setColor(0.75f, 0.5f, 1f, alpha1);
             buffer.addVertex(matrix, cos * startDist - perpX, 0, sin * startDist - perpZ)
-                    .setColor(0.8f, 0.15f, 0.18f, alpha1);
+                    .setColor(0.75f, 0.5f, 1f, alpha1);
             buffer.addVertex(matrix, cos * length - perpX, 0, sin * length - perpZ)
-                    .setColor(0.3f, 0.08f, 0.1f, alpha2);
+                    .setColor(0.5f, 0.3f, 0.9f, alpha2);
             buffer.addVertex(matrix, cos * length + perpX, 0, sin * length + perpZ)
-                    .setColor(0.3f, 0.08f, 0.1f, alpha2);
+                    .setColor(0.5f, 0.3f, 0.9f, alpha2);
 
             BufferUploader.drawWithShader(buffer.buildOrThrow());
         }
@@ -914,14 +793,14 @@ public class ConqueringEffect extends ActiveEffect {
     }
 
     // Helper classes for animated elements
-    private class DominanceChain {
+    private class LightningChain {
         List<Vec3> points = new ArrayList<>();
         float alpha = 0f;
         float targetRadius;
         float currentRadius = 0f;
 
-        DominanceChain() {
-            targetRadius = 3.5f + random.nextFloat() * 9f;
+        LightningChain() {
+            targetRadius = 3f + random.nextFloat() * 8f;
             regeneratePoints();
         }
 
@@ -938,14 +817,14 @@ public class ConqueringEffect extends ActiveEffect {
                     Math.sin(theta) * Math.sin(phi)
             ).normalize();
 
-            int segments = 12;
+            int segments = 10;
             for (int i = 1; i <= segments; i++) {
                 float t = (float) i / segments;
                 Vec3 point = direction.scale(currentRadius * t)
                         .add(
-                                (random.nextDouble() - 0.5) * 0.7,
-                                (random.nextDouble() - 0.5) * 0.7,
-                                (random.nextDouble() - 0.5) * 0.7
+                                (random.nextDouble() - 0.5) * 0.6,
+                                (random.nextDouble() - 0.5) * 0.6,
+                                (random.nextDouble() - 0.5) * 0.6
                         );
                 points.add(point);
             }
@@ -953,31 +832,30 @@ public class ConqueringEffect extends ActiveEffect {
 
         void update(float expansion, float intensity) {
             currentRadius = expansion * targetRadius;
-            alpha = intensity * (0.5f + random.nextFloat() * 0.5f);
+            alpha = intensity * (0.6f + random.nextFloat() * 0.4f);
 
-            if (random.nextFloat() < 0.06f) {
+            if (random.nextFloat() < 0.05f) {
                 regeneratePoints();
             }
         }
     }
 
-    private class ConquestParticle {
+    private class EnergyParticle {
         Vec3 pos;
         Vec3 velocity;
         float alpha;
         float size;
         float lifetime;
         float maxLifetime;
-        boolean isRed;
 
-        ConquestParticle() {
+        EnergyParticle() {
             reset();
         }
 
         void reset() {
             float theta = random.nextFloat() * (float) Math.PI;
             float phi = random.nextFloat() * (float) Math.PI * 2;
-            float dist = random.nextFloat() * 2.5f;
+            float dist = random.nextFloat() * 2f;
 
             pos = new Vec3(
                     Math.sin(theta) * Math.cos(phi) * dist,
@@ -986,16 +864,15 @@ public class ConqueringEffect extends ActiveEffect {
             );
 
             velocity = new Vec3(
-                    (random.nextDouble() - 0.5) * 0.35,
-                    (random.nextDouble() - 0.5) * 0.35,
-                    (random.nextDouble() - 0.5) * 0.35
+                    (random.nextDouble() - 0.5) * 0.3,
+                    (random.nextDouble() - 0.5) * 0.3,
+                    (random.nextDouble() - 0.5) * 0.3
             );
 
-            size = 0.1f + random.nextFloat() * 0.15f;
-            maxLifetime = 25f + random.nextFloat() * 45f;
+            size = 0.08f + random.nextFloat() * 0.12f;
+            maxLifetime = 20f + random.nextFloat() * 40f;
             lifetime = 0f;
             alpha = 0f;
-            isRed = random.nextFloat() < 0.6f; // 60% red, 40% dark
         }
 
         void update(float expansion, float intensity) {
@@ -1008,25 +885,10 @@ public class ConqueringEffect extends ActiveEffect {
                 return;
             }
 
-            pos = pos.add(velocity.scale(expansion * 0.6));
-            velocity = velocity.add(pos.normalize().scale(-0.025));
+            pos = pos.add(velocity.scale(expansion * 0.5));
+            velocity = velocity.add(pos.normalize().scale(-0.02));
 
-            alpha = intensity * (float) Math.sin(progress * Math.PI) * 0.7f;
-        }
-    }
-
-    private class CrushingWave {
-        float progress = 0f;
-        float alpha = 0f;
-        float offset;
-
-        CrushingWave(float offset) {
-            this.offset = offset;
-        }
-
-        void update(float expansion, float intensity) {
-            progress = expansion - offset;
-            alpha = intensity;
+            alpha = intensity * (float) Math.sin(progress * Math.PI) * 0.6f; // Reduced from 0.8
         }
     }
 }

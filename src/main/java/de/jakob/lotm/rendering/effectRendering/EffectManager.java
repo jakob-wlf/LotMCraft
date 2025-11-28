@@ -23,7 +23,9 @@ public class EffectManager {
         WAYPOINT(9),
         SPACE_DISTORTION(10),
         HOLY_LIGHT_SMALL(11),
-        LIGHT_OF_HOLINESS(12);
+        LIGHT_OF_HOLINESS(12),
+        SEFIRAH_CASTLE_PARTICLES(13),
+        SEFIRAH_CASTLE(14);
 
         private final int index;
 

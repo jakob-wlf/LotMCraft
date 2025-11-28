@@ -2,6 +2,7 @@ package de.jakob.lotm.sefirah;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.SefirotData;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.data.ServerLocation;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -61,6 +62,11 @@ public class SefirahHandler {
             player.teleportTo(returnLocation.getLevel(), returnLocation.getPosition().x, returnLocation.getPosition().y, returnLocation.getPosition().z, 0, 0);
 
             sefirotData.setIsInSefirot(player.getUUID(), false);
+
+            if(playTeleportEffect) {
+                EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, returnLocation.getPosition().x, returnLocation.getPosition().y, returnLocation.getPosition().z, returnLocation.getLevel());
+            }
+
             return;
         }
 
@@ -68,6 +74,7 @@ public class SefirahHandler {
         sefirotData.setLastReturnLocation(player);
         sefirotData.setIsInSefirot(player.getUUID(), true);
 
+        // Teleport to Sefirot
         String sefirot = sefirotData.getClaimedSefirot(player.getUUID());
         switch (sefirot) {
             case "sefirah_castle" -> {
@@ -84,6 +91,10 @@ public class SefirahHandler {
                         0,
                         90,
                         0);
+
+                if(playTeleportEffect) {
+                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 24, -57, 0, sefirotLevel);
+                }
             }
         }
     }

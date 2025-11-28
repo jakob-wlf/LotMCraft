@@ -8,7 +8,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gui.custom.CoordinateInputScreen;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.rendering.*;
-import de.jakob.lotm.rendering.effectRendering.VFXRenderer;
+import de.jakob.lotm.rendering.effectRendering.impl.VFXRenderer;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
 import net.minecraft.client.CameraType;

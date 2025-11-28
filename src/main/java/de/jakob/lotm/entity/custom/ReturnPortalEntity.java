@@ -1,7 +1,6 @@
 package de.jakob.lotm.entity.custom;
 
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;

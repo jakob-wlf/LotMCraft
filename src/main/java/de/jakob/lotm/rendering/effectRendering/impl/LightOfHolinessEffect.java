@@ -1,7 +1,8 @@
-package de.jakob.lotm.rendering.effectRendering;
+package de.jakob.lotm.rendering.effectRendering.impl;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.MultiBufferSource;

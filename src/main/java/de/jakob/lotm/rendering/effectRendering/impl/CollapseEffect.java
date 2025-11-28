@@ -1,9 +1,10 @@
-package de.jakob.lotm.rendering.effectRendering;
+package de.jakob.lotm.rendering.effectRendering.impl;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
+import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;

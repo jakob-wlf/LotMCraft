@@ -1,5 +1,8 @@
 package de.jakob.lotm.rendering.effectRendering;
 
+import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.rendering.effectRendering.impl.*;
+
 public class EffectFactory {
     
     public static ActiveEffect createEffect(int effectIndex, double x, double y, double z) {
@@ -17,6 +20,8 @@ public class EffectFactory {
             case 10 -> new SpaceDistortionEffect(x, y, z);
             case 11 -> new HolyLightSmallEffect(x, y, z);
             case 12 -> new LightOfHolinessEffect(x, y, z);
+            case 13 -> new SefirahCastleParticlesEffect(x, y, z);
+            case 14 -> new SefirahCastleEffect(x, y, z);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
     }

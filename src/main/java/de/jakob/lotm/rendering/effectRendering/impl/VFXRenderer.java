@@ -1,8 +1,9 @@
-package de.jakob.lotm.rendering.effectRendering;
+package de.jakob.lotm.rendering.effectRendering.impl;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.rendering.effectRendering.EffectFactory;
 import net.minecraft.client.Camera;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;

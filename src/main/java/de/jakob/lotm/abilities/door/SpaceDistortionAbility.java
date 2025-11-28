@@ -1,10 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityItem;
-import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.custom.BlackHoleEntity;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
