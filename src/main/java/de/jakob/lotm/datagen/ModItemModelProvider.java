@@ -36,6 +36,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.SEALED_ARTIFACT_CHAIN.get());
         basicItem(ModItems.SEALED_ARTIFACT_GEM.get());
         basicItem(ModItems.SEALED_ARTIFACT_STAR.get());
+        basicItem(ModItems.BLOOD.get());
 
         PotionItemHandler.ITEMS.getEntries().forEach(i -> {
             basicItem(i.get());

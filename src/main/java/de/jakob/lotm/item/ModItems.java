@@ -25,6 +25,7 @@ public class ModItems {
     public static final DeferredItem<Item> MOD_ICON = ITEMS.registerItem("lotm_icon", Item::new, new Item.Properties());
     public static final DeferredItem<Item> PAPER_FIGURINE_SUBSTITUTE = ITEMS.registerItem("paper_figurine_substitute", Item::new, new Item.Properties().stacksTo(1));
     public static final DeferredItem<Item> MIRROR = ITEMS.registerItem("mirror", Item::new, new Item.Properties().stacksTo(1));
+    public static final DeferredItem<Item> BLOOD = ITEMS.registerItem("blood", Item::new, new Item.Properties().stacksTo(1));
 
     public static final Supplier<Item> MARIONETTE_CONTROLLER = ITEMS.register("marionette_controller",
             () -> new MarionetteControllerItem(new Item.Properties().stacksTo(1)));

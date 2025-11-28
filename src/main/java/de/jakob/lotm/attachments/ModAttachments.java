@@ -26,10 +26,10 @@ public class ModAttachments {
                             .build()
             );
 
-    public static final Supplier<AttachmentType<GuidingBookComponent>> BOOK_COMPONENT =
+    public static final Supplier<AttachmentType<NewPlayerComponent>> BOOK_COMPONENT =
             ATTACHMENT_TYPES.register("book_component", () ->
-                    AttachmentType.builder(GuidingBookComponent::new)
-                            .serialize(GuidingBookComponent.SERIALIZER)
+                    AttachmentType.builder(NewPlayerComponent::new)
+                            .serialize(NewPlayerComponent.SERIALIZER)
                             .build()
             );
 

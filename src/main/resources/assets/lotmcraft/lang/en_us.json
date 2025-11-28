@@ -1,6 +1,7 @@
 {
   "item.lotmcraft.fool_card": "Fool Card",
   "item.lotmcraft.guiding_book": "Guiding Book",
+  "item.lotmcraft.blood": "Blood",
   "item.lotmcraft.lotm_icon": "LotM Icon",
   "item.lotmcraft.paper_figurine_substitute": "Paper Figurine Substitute",
   "item.lotmcraft.mirror": "Mirror",
@@ -48,11 +49,13 @@
 
   "item.lotmcraft.illuminate_ability": "Illuminate",
   "item.lotmcraft.holy_song_ability": "Holy Song",
+  "item.lotmcraft.holy_song_ability.description": "Play a holy tune to buff yourself",
   "item.lotmcraft.holy_light_ability": "Holy Light",
   "item.lotmcraft.fire_of_light_ability": "Fire of Light",
   "item.lotmcraft.holy_light_summoning_ability": "Holy Light Summoning",
   "item.lotmcraft.cleave_of_purification_ability": "Cleave of Purification",
   "item.lotmcraft.holy_oath_ability": "Holy Oath",
+  "item.lotmcraft.holy_oath_ability.description": "Strengthen your own attacks",
   "item.lotmcraft.notary_buff_ability": "God says its effective",
   "item.lotmcraft.notary_buff_ability.description": "Amplify your attacks by calling upon your god",
   "item.lotmcraft.notary_debuff_ability": "God says its not effective",
@@ -69,6 +72,7 @@
   "item.lotmcraft.wings_of_light_ability": "Wings of Light",
   "item.lotmcraft.pure_white_light_ability": "Pure White Light",
   "item.lotmcraft.divine_kingdom_manifestation_ability": "Divine Kingdom Manifestation",
+  "item.lotmcraft.divine_kingdom_manifestation_ability.description": "Manifest an embryonic Divine Kingdom to immediately scorch all non beyonders and weaken other Beyonders to the point of helplessness",
 
   "item.lotmcraft.trap_ability": "Trap",
   "item.lotmcraft.provoking_ability": "Provoking",
@@ -97,6 +101,7 @@
   "ability.lotmcraft.chain_of_command.no_entity_found": "Found no entity",
   "ability.lotmcraft.chain_of_command.no_consent": "The entity did not want to become your subordinate",
   "item.lotmcraft.fog_of_war_ability": "Fog of War",
+  "item.lotmcraft.fog_of_war_ability.description": "Create a dense fog to hinder your enemies and advantage yourself",
   "item.lotmcraft.war_cry_ability": "War Cry",
   "item.lotmcraft.war_cry_ability.description": "A deafening cry that damages your enemies and boosts your abilities",
   "item.lotmcraft.war_song_ability": "War Song",
@@ -230,7 +235,9 @@
   "item.lotmcraft.mirror_world_traversal_ability": "Mirror World Traversal",
   "ability.lotm.mirror_world_traversal.no_glass": "No suitable glass surface found",
   "item.lotmcraft.curse_ability": "Curse",
-  "ability.lotmcraft.curse.target_missing": "You need to move closer to your target",
+  "ability.lotmcraft.curse.no_target": "The owner of the blood could not be found",
+  "ability.lotmcraft.curse.cursed_target": "You cursed the target",
+  "ability.lotmcraft.curse.no_blood": "You need to have blood in your offhand",
   "item.lotmcraft.petrification_ability": "Petrification",
   "ability.lotmcraft.petrification.target": "Petrify your Targets",
   "ability.lotmcraft.petrification.area": "Petrify the area",
@@ -371,6 +378,8 @@
   "item.lotmcraft.nocturnality_ability": "Nocturnality",
 
   "item.lotmcraft.feather_fall_ability": "Feather Fall",
+  "item.lotmcraft.blood_loss_ability": "Blood Loss",
+  "item.lotmcraft.blood_loss_ability.description": "Targets you hit have a chance to loose their blood when attacked. You can use the blood for curses or rituals.",
   "item.lotmcraft.mirror_revival_ability": "Mirror Revival",
   "item.lotmcraft.mirror_revival_ability.description": "If there is glass near you, you will resurrect after death",
 

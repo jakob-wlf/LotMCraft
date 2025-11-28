@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-27T12:43:21.296234	Item Models: lotmcraft
+// 1.21.1	2025-11-28T19:06:33.5017512	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -38,7 +38,9 @@ cbc2462e9dc2d20ebed509db3ac6a27990f77ea2 assets/lotmcraft/models/item/black_hole
 ca20fbb1de7097ce9a5195bf530a883e208d142d assets/lotmcraft/models/item/black_hunting_spider_composite_eyes.json
 cd1ba193d2729afb68f30d5b059c8907dfa4fb96 assets/lotmcraft/models/item/blatherer_characteristic.json
 a80778987f969f2bf0ef323381667f111f36b1a6 assets/lotmcraft/models/item/blink_ability.json
+008b83a2e342498a20e0a129eb581e8377a6d4ab assets/lotmcraft/models/item/blood.json
 cd1ba193d2729afb68f30d5b059c8907dfa4fb96 assets/lotmcraft/models/item/bloody_archduke_characteristic.json
+3ceff404b0172c0cb7554a1a60de463e435b7634 assets/lotmcraft/models/item/blood_loss_ability.json
 79e047ec92eb6e14e6460720d4b67273b650fcef assets/lotmcraft/models/item/blue_shadow_falcon_feathers.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/calamity.json
 b4eae0398da7cf1bdd77c02ecf26d12390a2208f assets/lotmcraft/models/item/calamity_attraction_ability.json

@@ -27,6 +27,11 @@ public class ModDataComponents {
                     .persistent(Codec.BOOL)
                     .build());
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> BLOOD_OWNER =
+            DATA_COMPONENT_TYPES.register("blood_owner", () -> DataComponentType.<String>builder()
+                    .persistent(Codec.STRING)
+                    .build());
+
     public static final Supplier<DataComponentType<Map<String, String>>> EXCAVATED_BLOCKS =
             DATA_COMPONENT_TYPES.register("excavated_blocks",
                     () -> DataComponentType.<Map<String, String>>builder()

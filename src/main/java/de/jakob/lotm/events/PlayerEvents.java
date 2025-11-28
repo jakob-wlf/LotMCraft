@@ -7,12 +7,16 @@ import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.darkness.NightmareAbility;
 import de.jakob.lotm.abilities.red_priest.CullAbility;
 import de.jakob.lotm.attachments.AbilityHotbarManager;
-import de.jakob.lotm.attachments.GuidingBookComponent;
+import de.jakob.lotm.attachments.NewPlayerComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
+import de.jakob.lotm.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ExplodingFallingBlockHelper;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.ChatFormatting;
@@ -23,6 +27,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -57,10 +62,20 @@ public class PlayerEvents {
         if (event.getEntity() instanceof ServerPlayer player) {
             PacketHandler.sendToPlayer(player, new SyncGriefingGamerulePacket(player.level().getGameRules().getBoolean(ModGameRules.ALLOW_GRIEFING)));
 
-            GuidingBookComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
-            if(!component.isHasReceivedBook()) {
+            NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
+            if(!component.isHasReceivedNewPlayerPerks()) {
                 player.addItem(new ItemStack(ModItems.GUIDING_BOOK.get()));
-                component.setHasReceivedBook(true);
+
+                String pathway = BeyonderData.implementedPathways.get(random.nextInt(BeyonderData.implementedPathways.size()));
+                Item characteristic = BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, 9);
+                Item recipe = PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, 9);
+
+                if(characteristic != null && recipe != null) {
+                    player.addItem(new ItemStack(characteristic));
+                    player.addItem(new ItemStack(recipe));
+                }
+
+                component.setHasReceivedNewPlayerPerks(true);
             }
         }
     }
