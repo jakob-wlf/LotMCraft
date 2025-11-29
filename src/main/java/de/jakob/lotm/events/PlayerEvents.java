@@ -120,13 +120,17 @@ public class PlayerEvents {
         if (event.getEntity() instanceof ServerPlayer player) {
             AbilityHotbarManager manager = player.getData(ModAttachments.ABILITY_HOTBAR);
 
-            // Only validate when ability hotbar is active
             if (manager.isAbilityHotbarActive()) {
                 for (int i = 0; i < 9; i++) {
                     var stack = player.getInventory().getItem(i);
                     if (!stack.isEmpty() && !manager.canPlaceInAbilityHotbar(stack)) {
-                        // Remove invalid item and drop it
-                        player.getInventory().setItem(i, net.minecraft.world.item.ItemStack.EMPTY);
+                        player.getInventory().setItem(i, ItemStack.EMPTY);
+                        for(int j = 9; j < 36; j++) {
+                            if(player.getInventory().getItem(j).isEmpty()) {
+                                player.getInventory().setItem(j, stack);
+                                return;
+                            }
+                        }
                         player.drop(stack, false);
                     }
                 }

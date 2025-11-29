@@ -2,6 +2,8 @@ package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.artifacts.SealedArtifactItem;
+import de.jakob.lotm.item.custom.ExcavatedAreaItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityHotbarPacket;
 import net.minecraft.core.HolderLookup;
@@ -183,7 +185,7 @@ public class AbilityHotbarManager implements INBTSerializable<CompoundTag> {
 
     // Validate that only ability items can be placed in ability hotbars
     public boolean canPlaceInAbilityHotbar(ItemStack stack) {
-        return stack.getItem() instanceof AbilityItem || stack.getItem() instanceof ToggleAbilityItem;
+        return stack.getItem() instanceof AbilityItem || stack.getItem() instanceof ToggleAbilityItem || stack.getItem() instanceof ExcavatedAreaItem || stack.getItem() instanceof SealedArtifactItem;
     }
 
     @Override
