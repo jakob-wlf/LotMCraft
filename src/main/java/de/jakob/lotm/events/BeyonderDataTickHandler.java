@@ -19,16 +19,13 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderDataTickHandler {
 
-    private static long tickCounter = 0;
-
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
 
-        // Only run on server side
         if (player.level().isClientSide) {
             if(ClientBeyonderCache.isBeyonder(player.getUUID()))
-                if(tickCounter % 5 == 0)
+                if(player.tickCount % 5 == 0)
                     tickAbilitiesClientSide(player);
             return;
         }
@@ -38,11 +35,11 @@ public class BeyonderDataTickHandler {
             BeyonderData.incrementSpirituality(player, amount);
 
             // Passive abilities
-            if(tickCounter % 5 == 0)
+            if(player.tickCount % 5 == 0)
                 tickAbilities(player);
         }
 
-        if(tickCounter % 5 == 0) {
+        if(player.tickCount % 5 == 0) {
             if(player.getMainHandItem().is(ModItems.MARIONETTE_CONTROLLER.get()) && player.getMainHandItem().getItem() instanceof MarionetteControllerItem) {
                 MarionetteControllerItem.onHold(player, player.getMainHandItem());
             }
@@ -51,10 +48,6 @@ public class BeyonderDataTickHandler {
                 SubordinateControllerItem.onHold(player, player.getMainHandItem());
             }
         }
-
-        tickCounter++;
-        if(tickCounter > 2000000000)
-            tickCounter = 0;
     }
 
     private static void tickAbilities(Player player) {

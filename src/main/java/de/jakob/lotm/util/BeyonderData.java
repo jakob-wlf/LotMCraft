@@ -243,6 +243,10 @@ public class BeyonderData {
         return damageMultiplier;
     }
 
+    public static double getMultiplierForSequence(int sequence) {
+        return multiplier[sequence];
+    }
+
     public static void incrementSpirituality(LivingEntity entity, float amount) {
         if(!(entity instanceof Player player))
             return;

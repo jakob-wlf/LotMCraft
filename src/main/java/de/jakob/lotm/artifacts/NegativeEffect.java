@@ -2,12 +2,13 @@ package de.jakob.lotm.artifacts;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.Random;
 
@@ -17,7 +18,7 @@ import java.util.Random;
 public class NegativeEffect {
     
     private final NegativeEffectType type;
-    private final int strength; // 0-9, where higher is more severe
+    private final int sequence; // 0-9, where higher is more severe
     private final Holder<MobEffect> mobEffect; // Can be null for non-potion effects
     private final int effectAmplifier;
 
@@ -25,7 +26,7 @@ public class NegativeEffect {
             instance.group(
                     Codec.STRING.xmap(NegativeEffectType::valueOf, NegativeEffectType::name)
                             .fieldOf("type").forGetter(e -> e.type),
-                    Codec.INT.fieldOf("strength").forGetter(e -> e.strength),
+                    Codec.INT.fieldOf("strength").forGetter(e -> e.sequence),
                     Codec.STRING.optionalFieldOf("mob_effect", "").forGetter(e -> 
                             e.mobEffect != null ? e.mobEffect.toString() : ""),
                     Codec.INT.fieldOf("effect_amplifier").forGetter(e -> e.effectAmplifier)
@@ -33,9 +34,9 @@ public class NegativeEffect {
                     new NegativeEffect(type, strength, null, amplifier))
     );
 
-    public NegativeEffect(NegativeEffectType type, int strength, Holder<MobEffect> mobEffect, int effectAmplifier) {
+    public NegativeEffect(NegativeEffectType type, int sequence, Holder<MobEffect> mobEffect, int effectAmplifier) {
         this.type = type;
-        this.strength = Math.max(0, Math.min(9, strength));
+        this.sequence = Math.max(0, Math.min(9, sequence));
         this.mobEffect = mobEffect;
         this.effectAmplifier = effectAmplifier;
     }
@@ -53,34 +54,55 @@ public class NegativeEffect {
                 }
                 break;
             case DRAIN_HEALTH:
-                if (player.tickCount % (60 - strength * 5) == 0) {
-                    player.hurt(player.damageSources().magic(), 0.5f + strength * 2f);
+                if (player.tickCount % 20 == 0) {
+                    player.hurt(player.damageSources().magic(), (float) DamageLookup.lookupDamage(sequence - 1, 1f) * (float) BeyonderData.getMultiplierForSequence(sequence));
                 }
                 break;
             case DRAIN_HUNGER:
-                if (player.tickCount % (80 - strength * 6) == 0) {
-                    player.getFoodData().addExhaustion(0.2f + strength * 5f);
+                if (player.tickCount % 20 == 0) {
+                    player.getFoodData().setFoodLevel(player.getFoodData().getFoodLevel() - 1);
                 }
                 break;
             case ATTRACT_MOBS:
-                // This would need custom implementation in a tick handler
-                // to spawn mobs or make nearby mobs aggressive
                 break;
             case RANDOM_TELEPORT:
-                if (player.tickCount % Math.max((1200 - strength * 200), 1) == 0 && player.getRandom().nextFloat() < 0.6f) {
-                    // Teleport logic would go here
-                    double range = 5 + strength * 2;
+                if (player.tickCount % getTeleportIntervalForSequence(sequence) == 0) {
+                    double range = 5 + (10 - sequence) * 2;
                     double x = player.getX() + (player.getRandom().nextDouble() - 0.5) * range * 2;
                     double z = player.getZ() + (player.getRandom().nextDouble() - 0.5) * range * 2;
                     player.teleportTo(x, player.getY(), z);
                 }
                 break;
             case HEARING_WHISPERS:
-                if (player.tickCount % (200 - strength * 15) == 0) {
+                if (player.tickCount % getWhisperIntervalForSequence(sequence) == 0) {
                     player.displayClientMessage(Component.translatable("lotm.whisper." + player.getRandom().nextInt(5)), true);
                 }
                 break;
         }
+    }
+
+    private int getTeleportIntervalForSequence(int sequence) {
+        return switch (sequence) {
+            case 8 -> 20 * 25;
+            case 7 -> 20 * 22;
+            case 6, 5 -> 20 * 20;
+            case 4, 3 -> 20 * 9;
+            case 2 -> 20 * 4;
+            case 1 -> 50;
+            default -> 20 * 30;
+        };
+    }
+
+    private int getWhisperIntervalForSequence(int sequence) {
+        return switch (sequence) {
+            case 8 -> 20 * 8;
+            case 7 -> 20 * 7;
+            case 6, 5 -> 20 * 5;
+            case 4, 3 -> 20;
+            case 2 -> 10;
+            case 1 -> 5;
+            default -> 20 * 10;
+        };
     }
 
     public Component getDisplayName() {
@@ -91,8 +113,8 @@ public class NegativeEffect {
         return type;
     }
 
-    public int getStrength() {
-        return strength;
+    public int getSequence() {
+        return sequence;
     }
 
     /**
@@ -100,8 +122,7 @@ public class NegativeEffect {
      */
     public static NegativeEffect createRandom(String pathway, int sequence, Random random) {
         // Lower sequence = stronger negative effect
-        int strength = 9 - sequence;
-        
+
         // Pathway-specific effects
         NegativeEffectType[] pathwayEffects = getPathwayEffects(pathway);
         
@@ -113,7 +134,7 @@ public class NegativeEffect {
             chosenType = NegativeEffectType.getGenericEffect(random);
         }
 
-        return new NegativeEffect(chosenType, strength, null, strength / 3);
+        return new NegativeEffect(chosenType, sequence, null, sequence);
     }
 
     private static NegativeEffectType[] getPathwayEffects(String pathway) {
@@ -144,7 +165,7 @@ public class NegativeEffect {
         HEARING_WHISPERS;
 
         public static NegativeEffectType getGenericEffect(Random random) {
-            NegativeEffectType[] generic = {DRAIN_HEALTH, DRAIN_HUNGER, POTION_EFFECT};
+            NegativeEffectType[] generic = {DRAIN_HEALTH, DRAIN_HUNGER, HEARING_WHISPERS};
             return generic[random.nextInt(generic.length)];
         }
     }
