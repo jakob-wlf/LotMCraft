@@ -271,6 +271,8 @@
   "item.lotmcraft.recording_ability": "Recording",
   "item.lotmcraft.blink_ability": "Blink",
   "item.lotmcraft.travelers_door_ability": "Travelers Door",
+  "ability.lotmcraft.travelers_door.coordinates": "Set Coordinates",
+  "ability.lotmcraft.travelers_door.spirit_world": "Spirit World",
   "item.lotmcraft.space_concealment_ability": "Space Concealment",
   "item.lotmcraft.space_concealment_ability.description": "Separate a fixed space. Sneak while using to remove all concealed spaces. Use Collapse spaces to destroy anything inside and hurt entities.",
   "ability.lotmcraft.space_concealment.other": "Target Other",
@@ -357,6 +359,8 @@
 
   "item.lotmcraft.fire_resistance_abyss_ability": "Fire Resistance",
 
+  "item.lotmcraft.spirit_world_awareness_ability": "Spirit World Awareness",
+  "ability.lotmcraft.spirit_world_awareness.overworld_coordinates": "Coordinates in Overworld",
   "item.lotmcraft.void_immunity_ability": "Void Immunity",
 
   "item.lotmcraft.passive_luck_ability": "Passive Luck",
@@ -804,6 +808,7 @@
 
   "lotm.sefirot.no_sefirot": "You don't have a Sefirot",
   "lotm.sefirot.sefirah_castle_already_occupied": "Sefirah Castle is occupied already",
+  "lotm.sefirot.wrong_pathway": "Your Pathway does not align with the Sefirot",
 
   "lotm.griefing": "Griefing Enabled",
   "lotm.description": "Description",

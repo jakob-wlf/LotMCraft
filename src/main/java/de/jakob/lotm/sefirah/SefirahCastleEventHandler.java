@@ -47,6 +47,15 @@ public class SefirahCastleEventHandler {
         timeoutForRitual.remove(playerUUID);
         luckRitualProgress.remove(playerUUID);
 
+        // Check for pathway requirement
+        if(!BeyonderData.isBeyonder(event.getPlayer()) ||
+                (!BeyonderData.getPathway(event.getPlayer()).equalsIgnoreCase("fool") &&
+                        !BeyonderData.getPathway(event.getPlayer()).equalsIgnoreCase("door") &&
+                        !BeyonderData.getPathway(event.getPlayer()).equalsIgnoreCase("error"))) {
+            AbilityUtil.sendActionBar(event.getPlayer(), Component.translatable("lotm.sefirot.wrong_pathway").withColor(0x942de3));
+            return;
+        }
+
         // Claim Sefirah Castle
         if (!SefirahHandler.claimSefirot(event.getPlayer(), "sefirah_castle") && !SefirahHandler.getClaimedSefirot(event.getPlayer()).equalsIgnoreCase("sefirah_castle")) {
             AbilityUtil.sendActionBar(event.getPlayer(), Component.translatable("lotm.sefirot.sefirah_castle_already_occupied").withColor(0x942de3));

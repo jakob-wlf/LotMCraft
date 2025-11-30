@@ -1,6 +1,6 @@
 package de.jakob.lotm.abilities.door;
 
-import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.TravelersDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
@@ -23,9 +23,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class TravelersDoorAbility extends AbilityItem {
-    public static final HashMap<UUID, BlockPos> travelersDoorUsers = new HashMap<>();
+public class TravelersDoorAbility extends SelectableAbilityItem {
 
+    public static final HashMap<UUID, BlockPos> travelersDoorUsers = new HashMap<>();
 
     public TravelersDoorAbility(Properties properties) {
         super(properties, 3);
@@ -40,13 +40,20 @@ public class TravelersDoorAbility extends AbilityItem {
 
     @Override
     protected float getSpiritualityCost() {
-        return 65;
+        return 70;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
-        if(level.isClientSide)
+    protected String[] getAbilityNames() {
+        return new String[] {"ability.lotmcraft.travelers_door.coordinates",
+                "ability.lotmcraft.travelers_door.spirit_world"};
+    }
+
+    @Override
+    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+        if(!(level instanceof ServerLevel serverLevel) || !(entity instanceof ServerPlayer player)) {
             return;
+        }
 
         Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, 5, true).getBottomCenter();
         if(!level.getBlockState(BlockPos.containing(targetLoc)).getCollisionShape(entity.level(), BlockPos.containing(targetLoc)).isEmpty()) {
@@ -60,43 +67,62 @@ public class TravelersDoorAbility extends AbilityItem {
             break;
         }
 
-        if(!(entity instanceof ServerPlayer player))
-            return;
+        if(abilityIndex == 0) {
+            createDoorWithCoordinates(serverLevel, player, targetLoc);
+        }
+        else if (abilityIndex == 1) {
+            createSpiritWorldDoor(serverLevel, player, targetLoc);
+        }
+    }
 
+    private void createSpiritWorldDoor(ServerLevel serverLevel, ServerPlayer player, Vec3 targetLoc) {
+        TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(), serverLevel, player.getLookAngle().normalize().scale(-1), targetLoc, 2);
+        serverLevel.addFreshEntity(door);
+        serverLevel.playSound(null, BlockPos.containing(targetLoc), SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1, 1);
+
+        if(serverLevel.getBlockState(BlockPos.containing(targetLoc)).getCollisionShape(serverLevel, BlockPos.containing(targetLoc)).isEmpty())
+            serverLevel.setBlockAndUpdate(BlockPos.containing(targetLoc), Blocks.LIGHT.defaultBlockState());
+
+        ServerScheduler.scheduleDelayed(20 * 10, () -> {
+            door.discard();
+            if(serverLevel.getBlockState(BlockPos.containing(targetLoc)).getBlock() == Blocks.LIGHT)
+                serverLevel.setBlockAndUpdate(BlockPos.containing(targetLoc), Blocks.AIR.defaultBlockState());
+        });
+    }
+
+    private void createDoorWithCoordinates(ServerLevel serverLevel, ServerPlayer player, Vec3 targetLoc) {
         PacketHandler.sendToPlayer(player, new OpenCoordinateScreenTravelersDoorPacket());
 
         AtomicBoolean hasInputCoordinates = new AtomicBoolean(false);
-        Vec3 finalTargetLoc = targetLoc;
         ServerScheduler.scheduleForDuration(0, 5, 20 * 60 * 5, () -> {
             if(hasInputCoordinates.get())
                 return;
 
-            if(travelersDoorUsers.containsKey(entity.getUUID())) {
+            if(travelersDoorUsers.containsKey(player.getUUID())) {
                 hasInputCoordinates.set(true);
 
-                BlockPos pos = travelersDoorUsers.get(entity.getUUID());
+                BlockPos pos = travelersDoorUsers.get(player.getUUID());
 
-                travelersDoorUsers.remove(entity.getUUID());
+                travelersDoorUsers.remove(player.getUUID());
 
-                TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(), level, entity.getLookAngle().normalize().scale(-1), finalTargetLoc, pos.getX(), pos.getY(), pos.getZ());
-                level.addFreshEntity(door);
-                level.playSound(null, BlockPos.containing(finalTargetLoc), SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1, 1);
+                TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(), serverLevel, player.getLookAngle().normalize().scale(-1), targetLoc, pos.getX(), pos.getY(), pos.getZ());
+                serverLevel.addFreshEntity(door);
+                serverLevel.playSound(null, BlockPos.containing(targetLoc), SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1, 1);
 
-                if(level.getBlockState(BlockPos.containing(finalTargetLoc)).getCollisionShape(level, BlockPos.containing(finalTargetLoc)).isEmpty())
-                    level.setBlockAndUpdate(BlockPos.containing(finalTargetLoc), Blocks.LIGHT.defaultBlockState());
+                if(serverLevel.getBlockState(BlockPos.containing(targetLoc)).getCollisionShape(serverLevel, BlockPos.containing(targetLoc)).isEmpty())
+                    serverLevel.setBlockAndUpdate(BlockPos.containing(targetLoc), Blocks.LIGHT.defaultBlockState());
 
                 ServerScheduler.scheduleDelayed(20 * 10, () -> {
                     door.discard();
-                    if(level.getBlockState(BlockPos.containing(finalTargetLoc)).getBlock() == Blocks.LIGHT)
-                        level.setBlockAndUpdate(BlockPos.containing(finalTargetLoc), Blocks.AIR.defaultBlockState());
+                    if(serverLevel.getBlockState(BlockPos.containing(targetLoc)).getBlock() == Blocks.LIGHT)
+                        serverLevel.setBlockAndUpdate(BlockPos.containing(targetLoc), Blocks.AIR.defaultBlockState());
                 });
             }
         }, () -> {
             if(!hasInputCoordinates.get()) {
-                travelersDoorUsers.remove(entity.getUUID());
+                travelersDoorUsers.remove(player.getUUID());
                 PacketHandler.sendToPlayer(player, new RemoveDreamDivinationUserPacket());
             }
-        }, (ServerLevel) level);
-
+        }, serverLevel);
     }
 }

@@ -48,53 +48,15 @@ public class PotionRecipeItemHandler {
     }
 
     public static PotionRecipeItem selectRandomrecipe(Random random) {
+        if(!PotionRecipes.initialized) {
+            PotionRecipes.initPotionRecipes();
+            initializeRecipes();
+        }
         List<PotionRecipeItem> recipes = ITEMS.getEntries()
                 .stream()
                 .map(DeferredHolder::get)
                 .filter(i -> i instanceof PotionRecipeItem)
                 .map(i -> ((PotionRecipeItem) i))
-                .filter(i -> i.getRecipe() != null)
-                .toList();
-
-        if (recipes.isEmpty()) {
-            return null;
-        }
-
-        // Calculate weights for each potion
-        // Higher sequence = more common = higher weight
-        // Weight formula: sequence + 1 makes sequence 9 -> weight 10, sequence 0 -> weight 1
-        Map<PotionRecipeItem, Integer> weights = new HashMap<>();
-        int totalWeight = 0;
-
-        for (PotionRecipeItem recipeItem : recipes) {
-            int weight = recipeItem.getRecipe().potion().getSequence() + 1; // Higher sequence = more common = higher weight
-            weights.put(recipeItem, weight);
-            totalWeight += weight;
-        }
-
-        // Generate random number between 0 and totalWeight-1
-        int randomValue = random.nextInt(totalWeight);
-
-        // Find the selected potion based on cumulative weights
-        int cumulativeWeight = 0;
-        for (Map.Entry<PotionRecipeItem, Integer> entry : weights.entrySet()) {
-            cumulativeWeight += entry.getValue();
-            if (randomValue < cumulativeWeight) {
-                return entry.getKey();
-            }
-        }
-
-        // Fallback (should never reach here with valid input)
-        return recipes.getLast();
-    }
-
-    public static PotionRecipeItem selectRandomRecipeOfPathway(Random random, String pathway) {
-        List<PotionRecipeItem> recipes = ITEMS.getEntries()
-                .stream()
-                .map(DeferredHolder::get)
-                .filter(i -> i instanceof PotionRecipeItem)
-                .map(i -> ((PotionRecipeItem) i))
-                .filter(i -> i.getRecipe() != null && i.getRecipe().potion().getPathway().equals(pathway))
                 .filter(i -> i.getRecipe() != null)
                 .toList();
 
@@ -131,6 +93,11 @@ public class PotionRecipeItemHandler {
     }
 
     public static PotionRecipeItem selectRecipeOfPathwayAndSequence(String pathway, int sequence) {
+        if(!PotionRecipes.initialized) {
+            PotionRecipes.initPotionRecipes();
+            initializeRecipes();
+        }
+
         List<PotionRecipeItem> recipes = ITEMS.getEntries()
                 .stream()
                 .map(DeferredHolder::get)
@@ -149,6 +116,10 @@ public class PotionRecipeItemHandler {
     }
 
     public static List<PotionRecipeItem> getAllRecipes() {
+        if(!PotionRecipes.initialized) {
+            PotionRecipes.initPotionRecipes();
+            initializeRecipes();
+        }
         return ITEMS.getEntries()
                 .stream()
                 .map(DeferredHolder::get)
@@ -159,6 +130,10 @@ public class PotionRecipeItemHandler {
     }
 
     public static List<PotionRecipeItem> selectAllOfPathway(String pathway) {
+        if(!PotionRecipes.initialized) {
+            PotionRecipes.initPotionRecipes();
+            initializeRecipes();
+        }
         return ITEMS.getEntries()
                 .stream()
                 .map(DeferredHolder::get)

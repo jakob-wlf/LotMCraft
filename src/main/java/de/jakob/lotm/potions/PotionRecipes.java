@@ -13,7 +13,7 @@ public class PotionRecipes {
 
     public static final Set<PotionRecipe> RECIPES = new HashSet<>();
 
-    private static boolean initialized = false;
+    public static boolean initialized = false;
 
     public static void initPotionRecipes() {
         initialized = true;

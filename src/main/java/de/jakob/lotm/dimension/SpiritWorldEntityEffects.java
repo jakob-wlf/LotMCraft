@@ -63,7 +63,7 @@ public class SpiritWorldEntityEffects {
         // Randomly choose which effect to apply
         int effectChoice = entity.getRandom().nextInt(100);
         
-        if (effectChoice < 40) {
+        if (effectChoice < 3) {
             // 40% chance - Levitation
             int duration = 30;
             int amplifier = entity.getRandom().nextInt(2); // 0-1 amplifier

@@ -29,9 +29,7 @@ public record SyncTravelersDoorCoordinatesPacket(double x, double y, double z) i
 
     public static void handle(SyncTravelersDoorCoordinatesPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            if(!TravelersDoorAbility.travelersDoorUsers.containsKey(context.player().getUUID())) {
-                TravelersDoorAbility.travelersDoorUsers.put(context.player().getUUID(), BlockPos.containing(packet.x, packet.y, packet.z));
-            }
+            TravelersDoorAbility.travelersDoorUsers.put(context.player().getUUID(), BlockPos.containing(packet.x, packet.y, packet.z));
         });
     }
 }

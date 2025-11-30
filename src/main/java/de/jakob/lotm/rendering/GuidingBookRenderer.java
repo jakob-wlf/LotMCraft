@@ -36,18 +36,12 @@ public class GuidingBookRenderer {
 
         pages.clear();
 
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= 5; i++) {
             pages.add(ResourceLocation.fromNamespaceAndPath(modId, "textures/guiding_book/page_" + i + ".png"));
         }
 
         pagesLoaded = true;
     }
-
-    // Alternative method if you want to manually register pages
-    public static void registerPage(ResourceLocation pageTexture) {
-        pages.add(pageTexture);
-    }
-
     public static void nextPage() {
         if (pages.isEmpty()) return;
 

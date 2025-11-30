@@ -1,54 +1,72 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.dimension.ModDimensions;
+import de.jakob.lotm.dimension.SpiritWorldHandler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerEntity;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.Set;
 
 public class TravelersDoorEntity extends Entity {
     private double destX;
     private double destY;
     private double destZ;
-    private static final double TELEPORT_RANGE = 1.0; // Distance at which entities teleport
 
-    // Required constructors for entity system
+    /**
+     * 0 = coordinates
+     * 1 = spectating
+     * 2 = spirit world
+     */
+    private int use = 0;
+
+    private static final double TELEPORT_RANGE = 1.0;
+
+
     public TravelersDoorEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
-        this.noPhysics = true; // Disable physics
-        this.noCulling = true; // Always render regardless of culling
+        this.noPhysics = true;
+        this.noCulling = true;
         this.destX = 0.0;
         this.destY = 0.0;
         this.destZ = 0.0;
+        this.use = 0;
     }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        // You can add synched data here if needed for animation state
     }
 
-    // Main constructor for placing the door
-    public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing, Vec3 center) {
+    public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing, Vec3 center, int use) {
         this(type, level);
 
-        // Doors usually don't pitch. Zero-out Y so we only compute yaw.
         Vec3 dir = new Vec3(facing.x, 0.0, facing.z);
-        float yaw = yawFromVector(dir);            // compute yaw from vector
-        float pitch = 0.0F;                        // keep door upright
+        float yaw = yawFromVector(dir);
+        float pitch = 0.0F;
 
-        // Sets pos + yaw/pitch + "old" fields in one call (important for first-frame render)
         this.moveTo(center.x, center.y, center.z, yaw, pitch);
+
+        this.use = use;
     }
 
     // Constructor with destination coordinates
     public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing, Vec3 center, double destX, double destY, double destZ) {
-        this(type, level, facing, center);
+        this(type, level, facing, center, 0);
         this.destX = destX;
         this.destY = destY;
         this.destZ = destZ;
@@ -59,8 +77,7 @@ public class TravelersDoorEntity extends Entity {
     }
 
     private static float yawFromVector(Vec3 dir) {
-        if (dir.lengthSqr() < 1.0E-6) return 0.0F; // avoid NaN if looking straight up/down
-        // Matches vanilla convention used by vehicles: +yaw clockwise; Z forward
+        if (dir.lengthSqr() < 1.0E-6) return 0.0F;
         return (float)(Math.toDegrees(Math.atan2(-dir.x, dir.z)));
     }
 
@@ -68,14 +85,81 @@ public class TravelersDoorEntity extends Entity {
     public void tick() {
         super.tick();
 
-        // Only check for nearby entities on the server
-        if (!this.level().isClientSide) {
-            // Get all entities within teleport range
+        if(!(level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        serverLevel.setChunkForced(chunkPosition().x, chunkPosition().z, true);
+
+
+        if(tickCount > 20 * 6) {
+            this.discard();
+            return;
+        }
+
+        switch(use) {
+            case 0 -> teleportNearbyEntities();
+            case 2 -> spiritWorldHandling();
+        }
+    }
+
+    private void spiritWorldHandling() {
+        if (this.level() instanceof ServerLevel serverLevel) {
             for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(TELEPORT_RANGE), e -> e != this && e.isAlive())) {
-                // Teleport the entity to destination coordinates
+                ResourceKey<Level> spiritWorld = ResourceKey.create(Registries.DIMENSION,
+                        ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world"));
+                ServerLevel spiritWorldLevel = serverLevel.getServer().getLevel(spiritWorld);
+                if (spiritWorldLevel == null) return;
+
+                if (!serverLevel.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
+
+                    Vec3 coords = SpiritWorldHandler.getCoordinatesInSpiritWorld(entity.position());
+                    BlockPos pos = BlockPos.containing(coords);
+
+                    // elevate until not inside a block
+                    while (!spiritWorldLevel.getBlockState(pos).isAir()) {
+                        pos = pos.above();
+                    }
+
+                    // ensure block beneath exists
+                    BlockPos below = pos.below();
+                    if (spiritWorldLevel.getBlockState(below).isAir()) {
+                        spiritWorldLevel.setBlockAndUpdate(below, Blocks.END_STONE.defaultBlockState());
+                    }
+
+                    entity.teleportTo(spiritWorldLevel, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5,
+                            Set.of(), entity.getYRot(), entity.getXRot());
+
+                } else {
+                    ResourceKey<Level> OVERWORLD = Level.OVERWORLD;
+                    ServerLevel overworldLevel = serverLevel.getServer().getLevel(OVERWORLD);
+                    if (overworldLevel == null) return;
+
+                    Vec3 coords = SpiritWorldHandler.getCoordinatesInOverworld(entity.position());
+                    BlockPos pos = BlockPos.containing(coords);
+
+                    while (!overworldLevel.getBlockState(pos).isAir()) {
+                        pos = pos.above();
+                    }
+
+                    BlockPos below = pos.below();
+                    if (overworldLevel.getBlockState(below).isAir()) {
+                        overworldLevel.setBlockAndUpdate(below, Blocks.STONE.defaultBlockState());
+                    }
+
+                    entity.teleportTo(overworldLevel, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5,
+                            Set.of(), entity.getYRot(), entity.getXRot());
+                }
+            }
+        }
+    }
+
+
+    private void teleportNearbyEntities() {
+        if (!this.level().isClientSide) {
+            for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(TELEPORT_RANGE), e -> e != this && e.isAlive())) {
                 entity.teleportTo(destX, destY, destZ);
 
-                // Optional: Reset fall distance to prevent damage
                 entity.resetFallDistance();
             }
         }
@@ -88,8 +172,7 @@ public class TravelersDoorEntity extends Entity {
 
     @Override
     public boolean shouldRenderAtSqrDistance(double distance) {
-        // Render from a reasonable distance
-        return distance < 4096.0; // 64 block radius
+        return distance < 4096.0;
     }
 
     @Override
@@ -103,6 +186,9 @@ public class TravelersDoorEntity extends Entity {
         if (compoundTag.contains("DestZ")) {
             this.destZ = compoundTag.getDouble("DestZ");
         }
+        if(compoundTag.contains("Use")) {
+            this.use = compoundTag.getInt("Use");
+        }
     }
 
     @Override
@@ -110,24 +196,24 @@ public class TravelersDoorEntity extends Entity {
         compoundTag.putDouble("DestX", this.destX);
         compoundTag.putDouble("DestY", this.destY);
         compoundTag.putDouble("DestZ", this.destZ);
+        compoundTag.putInt("Use", this.use);
     }
 
     @Override
     public boolean isPickable() {
-        return false; // Players can't interact with it directly
+        return false;
     }
 
     @Override
     public boolean isPushable() {
-        return false; // Can't be pushed by other entities
+        return false;
     }
 
     @Override
     protected boolean canAddPassenger(Entity passenger) {
-        return false; // No passengers allowed
+        return false;
     }
 
-    // Getters and setters for destination coordinates
     public double getDestX() {
         return destX;
     }

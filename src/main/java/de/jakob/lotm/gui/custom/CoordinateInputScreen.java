@@ -1,7 +1,6 @@
 package de.jakob.lotm.gui.custom;
 
 import de.jakob.lotm.abilities.common.DivinationAbility;
-import de.jakob.lotm.abilities.door.TravelersDoorAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.SyncDreamDivinationCoordinatesPacket;
 import de.jakob.lotm.network.packets.toServer.SyncTravelersDoorCoordinatesPacket;
@@ -52,19 +51,6 @@ public class CoordinateInputScreen extends Screen {
                 .build();
         this.addRenderableWidget(confirmButton);
 
-        switch (use) {
-            case "dream_divination" -> {
-                if(DivinationAbility.dreamDivinationUsers.containsKey(entity.getUUID())) {
-                    this.onClose();
-                }
-            }
-            case "travelers_door" -> {
-                if(TravelersDoorAbility.travelersDoorUsers.containsKey(entity.getUUID())) {
-                    this.onClose();
-                }
-            }
-        }
-
     }
 
     @Override
@@ -86,15 +72,8 @@ public class CoordinateInputScreen extends Screen {
             int y = Integer.parseInt(this.yBox.getValue());
             int z = Integer.parseInt(this.zBox.getValue());
 
-
-
             switch (use) {
-                case "travelers_door" -> {
-                    PacketHandler.sendToServer(new SyncTravelersDoorCoordinatesPacket(x, y, z));
-                    if(!TravelersDoorAbility.travelersDoorUsers.containsKey(entity.getUUID())) {
-                        TravelersDoorAbility.travelersDoorUsers.put(entity.getUUID(), BlockPos.containing(x, y ,z));
-                    }
-                }
+                case "travelers_door" -> PacketHandler.sendToServer(new SyncTravelersDoorCoordinatesPacket(x, y, z));
                 case "dream_divination" -> {
                     PacketHandler.sendToServer(new SyncDreamDivinationCoordinatesPacket(x, y, z));
                     if(!DivinationAbility.dreamDivinationUsers.containsKey(entity.getUUID())) {

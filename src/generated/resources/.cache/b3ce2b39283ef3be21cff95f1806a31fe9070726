@@ -1,4 +1,4 @@
-// 1.21.1	2025-11-28T19:06:33.5017512	Item Models: lotmcraft
+// 1.21.1	2025-11-30T22:26:34.4283375	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -408,6 +408,7 @@ be194b4d94b3206d981c5aec2704d91d923d3e8f assets/lotmcraft/models/item/spirit_eat
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/spirit_warlock.json
 aead00c0cbf8318fb0fdbbd5810f017ec9162924 assets/lotmcraft/models/item/spirit_warlock_characteristic.json
 1b5a218fb1a05d73cda366281616402ee2350606 assets/lotmcraft/models/item/spirit_warlock_potion.json
+50858c856bbcab3857887208e0a30559cd7d4732 assets/lotmcraft/models/item/spirit_world_awareness_ability.json
 73484a41f9ac6f71df6df344181ac28f6f243ab6 assets/lotmcraft/models/item/steel_mastery_ability.json
 9f81231b6c6d24dbc7be98ab1f5ad7e2858d96d4 assets/lotmcraft/models/item/structural_collapse_ability.json
 dfe01c91dea4f4857afed973d309c798da878c2f assets/lotmcraft/models/item/subordinate_controller.json
