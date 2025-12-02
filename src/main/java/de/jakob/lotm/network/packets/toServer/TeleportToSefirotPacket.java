@@ -2,7 +2,6 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.*;
-import de.jakob.lotm.gui.custom.AbilitySelectionMenuProvider;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityMenuPacket;
 import de.jakob.lotm.sefirah.SefirahHandler;

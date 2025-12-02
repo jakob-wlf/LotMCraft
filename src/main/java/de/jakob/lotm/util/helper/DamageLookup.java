@@ -35,6 +35,7 @@ public class DamageLookup {
     private static final TreeMap<Integer, Range> SEQUENCES = new TreeMap<>();
 
     static {
+        SEQUENCES.put(-1, new Range(3, 8));
         SEQUENCES.put(9, new Range(3, 8));
         SEQUENCES.put(8, new Range(4, 9));
         SEQUENCES.put(7, new Range(6.35, 13.2));
@@ -44,6 +45,7 @@ public class DamageLookup {
         SEQUENCES.put(3, new Range(14, 27));
         SEQUENCES.put(2, new Range(27, 55));
         SEQUENCES.put(1, new Range(33, 69.5));
+        SEQUENCES.put(0, new Range(33, 69.5));
     }
 
     /**

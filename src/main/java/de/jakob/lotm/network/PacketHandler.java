@@ -38,6 +38,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncIntrospectMenuPacket.TYPE,
+                SyncIntrospectMenuPacket.STREAM_CODEC,
+                SyncIntrospectMenuPacket::handle
+        );
+
+        registrar.playToClient(
                 AddEffectPacket.TYPE,
                 AddEffectPacket.STREAM_CODEC,
                 AddEffectPacket::handle
@@ -212,6 +218,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                OpenIntrospectMenuPacket.TYPE,
+                OpenIntrospectMenuPacket.STREAM_CODEC,
+                OpenIntrospectMenuPacket::handle
+        );
+
+        registrar.playToServer(
                 TeleportToSefirotPacket.TYPE,
                 TeleportToSefirotPacket.STREAM_CODEC,
                 TeleportToSefirotPacket::handle
@@ -279,8 +291,9 @@ public class PacketHandler {
         int sequence = BeyonderData.getSequence(player);
         float spirituality = BeyonderData.getSpirituality(player);
         boolean griefingEnabled = BeyonderData.isGriefingEnabled(player);
+        float digestionProgress = BeyonderData.getDigestionProgress(player);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress);
         sendToPlayer(player, packet);
     }
 
@@ -320,10 +333,10 @@ public class PacketHandler {
         int sequence = BeyonderData.getSequence(targetPlayer);
         float spirituality = BeyonderData.getSpirituality(targetPlayer);
         boolean griefingEnabled = BeyonderData.isGriefingEnabled(targetPlayer);
+        float digestionProgress = BeyonderData.getDigestionProgress(targetPlayer);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress);
 
-        // Send to all players on the server
         targetPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
             sendToPlayer(player, packet);
         });

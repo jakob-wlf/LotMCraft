@@ -3,10 +3,7 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.OpenAbilitySelectionPacket;
-import de.jakob.lotm.network.packets.toServer.TeleportToSefirotPacket;
-import de.jakob.lotm.network.packets.toServer.ToggleAbilityHotbarPacket;
-import de.jakob.lotm.network.packets.toServer.ToggleGriefingPacket;
+import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -33,6 +30,13 @@ public class KeyInputHandler {
             Player player = Minecraft.getInstance().player;
             if (player != null) {
                 PacketHandler.sendToServer(new ToggleGriefingPacket());
+            }
+        }
+
+        if(LOTMCraft.pathwayInfosKey != null && LOTMCraft.pathwayInfosKey.consumeClick()) {
+            Player player = Minecraft.getInstance().player;
+            if (player != null) {
+                PacketHandler.sendToServer(new OpenIntrospectMenuPacket(ClientBeyonderCache.getSequence(player.getUUID()), ClientBeyonderCache.getPathway(player.getUUID())));
             }
         }
 

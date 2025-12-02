@@ -28,7 +28,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PlantControllingAbility extends SelectableAbilityItem {
-    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(40 / 255f, 200 / 255f, 130 / 255f), .7f);
+    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(33 / 255f, 163 / 255f, 52 / 255f), .7f);
     private static final HashSet<UUID> boundEntities = new HashSet<>();
 
     public PlantControllingAbility(Properties properties) {
@@ -54,20 +54,6 @@ public class PlantControllingAbility extends SelectableAbilityItem {
         if(level.isClientSide)
             return;
 
-        int duration = 20 * 20;
-
-        for(int i = 0; i < 12; i++) {
-            Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 16, 1.4f);
-
-            double x = random.nextBoolean() ? random.nextDouble(-4.5, -2) : random.nextDouble(2, 4.5);
-            double z = random.nextBoolean() ? random.nextDouble(-4.5, -2) : random.nextDouble(2, 4.5);
-
-            Vec3 startPos = targetLoc.add(x, -.5, z);
-
-            animateParticleLine(new Location(startPos, level), targetLoc, 3, 0, duration);
-        }
-
-        level.playSound(null, entity, Blocks.GRASS_BLOCK.getSoundType(Blocks.GRASS_BLOCK.defaultBlockState(), level, BlockPos.containing(entity.position().x, entity.position().y, entity.position().z), null).getBreakSound(), SoundSource.BLOCKS, 5,1);
         LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 16, 2);
         if(targetEntity == null)
             return;
@@ -79,6 +65,22 @@ public class PlantControllingAbility extends SelectableAbilityItem {
             }
             return;
         }
+
+        int duration = 20 * 20;
+
+        for(int i = 0; i < 12; i++) {
+            Vec3 targetLoc = targetEntity.position().add(0, .4, 0);
+
+            double x = random.nextBoolean() ? random.nextDouble(-4.5, -2) : random.nextDouble(2, 4.5);
+            double z = random.nextBoolean() ? random.nextDouble(-4.5, -2) : random.nextDouble(2, 4.5);
+
+            Vec3 startPos = targetLoc.add(x, -.5, z);
+
+            animateParticleLine(new Location(startPos, level), targetLoc, 3, 0, duration);
+        }
+
+        level.playSound(null, entity, Blocks.GRASS_BLOCK.getSoundType(Blocks.GRASS_BLOCK.defaultBlockState(), level, BlockPos.containing(entity.position().x, entity.position().y, entity.position().z), null).getBreakSound(), SoundSource.BLOCKS, 5,1);
+
 
         boundEntities.add(targetEntity.getUUID());
 

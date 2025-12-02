@@ -9,8 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ClientBeyonderCache {
     private static final Map<UUID, BeyonderClientData> dataCache = new ConcurrentHashMap<>();
 
-    public static void updateData(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, boolean isPlayer) {
-        dataCache.put(playerUUID, new BeyonderClientData(pathway, sequence, spirituality, griefingEnabled));
+    public static void updateData(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, boolean isPlayer, float digestionProgress) {
+        dataCache.put(playerUUID, new BeyonderClientData(pathway, sequence, spirituality, griefingEnabled, digestionProgress));
 
         if(isPlayer) {
             float progress = spirituality / BeyonderData.getMaxSpirituality(sequence);
@@ -26,6 +26,14 @@ public class ClientBeyonderCache {
     public static int getSequence(UUID playerUUID) {
         BeyonderClientData data = dataCache.get(playerUUID);
         return data != null ? data.sequence() : -1;
+    }
+
+    public static float getDigestionProgress(UUID playerUUID) {
+        if(true)
+            return .6f;
+
+        BeyonderClientData data = dataCache.get(playerUUID);
+        return data != null ? data.digestionProgress() : 0.0f;
     }
 
     public static float getSpirituality(UUID playerUUID) {
@@ -55,5 +63,5 @@ public class ClientBeyonderCache {
     }
 
     // Inner record to store client-side beyonder data
-    private record BeyonderClientData(String pathway, int sequence, float spirituality, boolean griefingEnabled) {}
+    private record BeyonderClientData(String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress) {}
 }

@@ -23,9 +23,9 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 public class PathwayInfoRenderer {
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.EFFECTS, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "pathway_infos"), (guiGraphics, deltaTracker) -> {
-            renderAbilities(guiGraphics);
-        });
+//        event.registerAbove(VanillaGuiLayers.EFFECTS, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "pathway_infos"), (guiGraphics, deltaTracker) -> {
+//            renderAbilities(guiGraphics);
+//        });
     }
 
     @SubscribeEvent

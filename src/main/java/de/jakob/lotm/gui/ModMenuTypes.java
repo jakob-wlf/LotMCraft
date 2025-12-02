@@ -3,6 +3,7 @@ package de.jakob.lotm.gui;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.AbilitySelectionMenu;
 import de.jakob.lotm.gui.custom.BrewingCauldronMenu;
+import de.jakob.lotm.gui.custom.IntrospectMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.bus.api.IEventBus;
@@ -17,6 +18,10 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<AbilitySelectionMenu>> ABILITY_SELECTION_MENU =
             MENU_TYPES.register("ability_selection_menu", () ->
                     IMenuTypeExtension.create(AbilitySelectionMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<IntrospectMenu>> INTROSPECT_MENU =
+            MENU_TYPES.register("introspect_menu", () ->
+                    IMenuTypeExtension.create(IntrospectMenu::new));
 
     public static final DeferredHolder<MenuType<?>, MenuType<BrewingCauldronMenu>> BREWING_CAULDRON_MENU =
             MENU_TYPES.register("brewing_cauldron_menu", () ->

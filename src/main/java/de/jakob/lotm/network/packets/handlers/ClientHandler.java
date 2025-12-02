@@ -50,7 +50,8 @@ public class ClientHandler {
                     packet.sequence(),
                     packet.spirituality(),
                     false,
-                    false
+                    false,
+                    0.0f
             );
         }
     }

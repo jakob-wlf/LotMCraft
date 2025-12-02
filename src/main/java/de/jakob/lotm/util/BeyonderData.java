@@ -19,6 +19,7 @@ public class BeyonderData {
     public static final String NBT_SEQUENCE = "beyonder_sequence";
     public static final String NBT_SPIRITUALITY = "beyonder_spirituality";
     public static final String NBT_GRIEFING_ENABLED = "beyonder_griefing_enabled";
+    public static final String NBT_DIGESTION_PROGRESS = "beyonder_digestion_progress";
 
     private static final int[] spiritualityLookup = {150000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180};
     private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
@@ -143,6 +144,7 @@ public class BeyonderData {
         tag.putInt(NBT_SEQUENCE, sequence);
         tag.putFloat(NBT_SPIRITUALITY, getMaxSpirituality(sequence));
         tag.putBoolean(NBT_GRIEFING_ENABLED, griefing);
+        tag.putFloat(NBT_DIGESTION_PROGRESS, 0.0f);
 
         if(entity instanceof Player player)
             SpiritualityProgressTracker.setProgress(player.getUUID(), 1.0f);
@@ -294,6 +296,7 @@ public class BeyonderData {
         entity.getPersistentData().remove(NBT_SEQUENCE);
         entity.getPersistentData().remove(NBT_SPIRITUALITY);
         entity.getPersistentData().remove(NBT_GRIEFING_ENABLED);
+        entity.getPersistentData().remove(NBT_DIGESTION_PROGRESS);
         if(entity instanceof Player player)
             SpiritualityProgressTracker.removeProgress(player);
 
@@ -301,7 +304,7 @@ public class BeyonderData {
         if (!entity.level().isClientSide()) {
             if(entity instanceof ServerPlayer serverPlayer) {
                 // Send empty data to clear client cache
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", -1, 0.0f, false);
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", -1, 0.0f, false, 0.0f);
                 PacketHandler.sendToPlayer(serverPlayer, packet);
             }
             else {
@@ -400,6 +403,20 @@ public class BeyonderData {
         }
 
         return player.getPersistentData().getBoolean(NBT_GRIEFING_ENABLED);
+    }
+
+    public static float getDigestionProgress(Player player) {
+        if(true)
+            return .6f;
+
+        if(player.level().isClientSide) {
+            return ClientBeyonderCache.getDigestionProgress(player.getUUID());
+        }
+
+        if(!player.getPersistentData().contains(NBT_DIGESTION_PROGRESS)) {
+            return 0.0f;
+        }
+        return player.getPersistentData().getFloat(NBT_DIGESTION_PROGRESS);
     }
 
     public static boolean isGriefingEnabled(LivingEntity entity) {

@@ -10,7 +10,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SyncBeyonderDataPacket(String pathway, int sequence, float spirituality, boolean griefingEnabled) implements CustomPacketPayload {
+public record SyncBeyonderDataPacket(String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress) implements CustomPacketPayload {
     public static final Type<SyncBeyonderDataPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sync_beyonder_data"));
 
@@ -20,6 +20,7 @@ public record SyncBeyonderDataPacket(String pathway, int sequence, float spiritu
                     ByteBufCodecs.VAR_INT, SyncBeyonderDataPacket::sequence,
                     ByteBufCodecs.FLOAT, SyncBeyonderDataPacket::spirituality,
                     ByteBufCodecs.BOOL, SyncBeyonderDataPacket::griefingEnabled,
+                    ByteBufCodecs.FLOAT, SyncBeyonderDataPacket::digestionProgress,
                     SyncBeyonderDataPacket::new
             );
 
@@ -37,7 +38,8 @@ public record SyncBeyonderDataPacket(String pathway, int sequence, float spiritu
                     packet.sequence(),
                     packet.spirituality(),
                     packet.griefingEnabled(),
-                    true
+                    true,
+                    packet.digestionProgress()
             );
         });
     }

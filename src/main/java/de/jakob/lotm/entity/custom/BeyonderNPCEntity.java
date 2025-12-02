@@ -423,7 +423,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
                         sequence,
                         BeyonderData.getMaxSpirituality(sequence),
                         false,
-                        false
+                        false,
+                        0.0f
                 );
             }
         }

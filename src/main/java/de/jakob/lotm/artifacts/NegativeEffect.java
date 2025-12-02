@@ -55,7 +55,7 @@ public class NegativeEffect {
                 break;
             case DRAIN_HEALTH:
                 if (player.tickCount % 20 == 0) {
-                    player.hurt(player.damageSources().magic(), (float) DamageLookup.lookupDamage(sequence - 1, 1f) * (float) BeyonderData.getMultiplierForSequence(sequence));
+                    player.hurt(player.damageSources().magic(), (float) DamageLookup.lookupDamage(sequence >= 0 ? Math.clamp(sequence - 1, 0, 9) : -1, 1f) * (float) BeyonderData.getMultiplierForSequence(sequence));
                 }
                 break;
             case DRAIN_HUNGER:
