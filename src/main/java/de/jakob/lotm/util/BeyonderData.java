@@ -73,6 +73,7 @@ public class BeyonderData {
     public static final List<String> implementedPathways = List.of(
             "fool",
             "door",
+            "error",
             "sun",
             "tyrant",
             "darkness",
@@ -89,9 +90,8 @@ public class BeyonderData {
             case "mother" -> 7;
             case "darkness", "visionary" -> 6;
             case "abyss", "wheel_of_fortune" -> 5;
-            case "fool" -> 4;
-            case "demoness", "red_priest", "sun", "tyrant" -> 3;
-            case "door" -> 2;
+            case "fool" -> 3;
+            case "demoness", "red_priest", "sun", "tyrant", "door" -> 1;
             default -> 9;
         };
     }

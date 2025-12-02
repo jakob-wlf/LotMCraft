@@ -38,6 +38,19 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SendPassiveTheftEffectPacket.TYPE,
+                SendPassiveTheftEffectPacket.STREAM_CODEC,
+                SendPassiveTheftEffectPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncDecryptionLookedAtEntitiesAbilityPacket.TYPE,
+                SyncDecryptionLookedAtEntitiesAbilityPacket.STREAM_CODEC,
+                SyncDecryptionLookedAtEntitiesAbilityPacket::handle
+        );
+
+
+        registrar.playToClient(
                 SyncIntrospectMenuPacket.TYPE,
                 SyncIntrospectMenuPacket.STREAM_CODEC,
                 SyncIntrospectMenuPacket::handle

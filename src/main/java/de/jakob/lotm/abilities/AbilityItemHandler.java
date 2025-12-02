@@ -10,6 +10,8 @@ import de.jakob.lotm.abilities.darkness.NightmareAbility;
 import de.jakob.lotm.abilities.darkness.RequiemAbility;
 import de.jakob.lotm.abilities.demoness.*;
 import de.jakob.lotm.abilities.door.*;
+import de.jakob.lotm.abilities.error.DecryptionAbility;
+import de.jakob.lotm.abilities.error.TheftAbility;
 import de.jakob.lotm.abilities.fool.*;
 import de.jakob.lotm.abilities.mother.CleansingAbility;
 import de.jakob.lotm.abilities.mother.HealingAbility;
@@ -181,6 +183,9 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> CALAMITY_ATTRACTION = ITEMS.registerItem("calamity_attraction_ability", CalamityAttractionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> LUCK_ACCUMULATION = ITEMS.registerItem("luck_release_ability", LuckReleaseAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> MISFORTUNE_GIFTING = ITEMS.registerItem("misfortune_gifting_ability", MisfortuneGiftingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> THEFT = ITEMS.registerItem("theft_ability", TheftAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> DECRYPTION = ITEMS.registerItem("decryption_ability", DecryptionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> ABILITY_NOT_IMPLEMENTED = ITEMS.registerItem("ability_not_implemented", Item::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 

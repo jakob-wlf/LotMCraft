@@ -141,22 +141,6 @@ public abstract class ToggleAbilityItem extends AbilityItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack,
-                                TooltipContext context,
-                                List<Component> tooltipComponents,
-                                TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-
-        if(Component.translatable(this.getDescriptionId(stack) + ".description").getString()
-                .equals(this.getDescriptionId(stack) + ".description"))
-            return;
-
-        tooltipComponents.add(Component.translatable("lotm.description").append(":").withStyle(ChatFormatting.GRAY));
-        tooltipComponents.add(Component.translatable(this.getDescriptionId(stack) + ".description")
-                .withStyle(ChatFormatting.DARK_GRAY));
-    }
-
-    @Override
     public @NotNull Component getName(ItemStack stack) {
         return Component.translatable(this.getDescriptionId(stack))
                 .append(Component.literal(" ("))

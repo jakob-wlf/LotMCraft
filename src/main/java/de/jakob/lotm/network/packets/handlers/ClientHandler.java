@@ -245,4 +245,20 @@ public class ClientHandler {
         // Update client-side state
         ability.handleClientSync(mc.level, livingEntity, packet.active());
     }
+
+    public static void syncDecryptionAbility(SyncDecryptionLookedAtEntitiesAbilityPacket packet, Player player) {
+        if(packet.active()) {
+            DecryptionRenderLayer.activeDecryption.add(player.getUUID());
+            Level level = Minecraft.getInstance().level;
+            if (level == null) return;
+
+            Entity entity = packet.entityId() == -1 ? null : level.getEntity(packet.entityId());
+            LivingEntity living = entity instanceof LivingEntity ? (LivingEntity) entity : null;
+            DecryptionOverlayRenderer.entitiesLookedAtByPlayerWithActiveDecryption.put(player.getUUID(), living);
+        }
+        else {
+            DecryptionRenderLayer.activeDecryption.remove(player.getUUID());
+            DecryptionOverlayRenderer.entitiesLookedAtByPlayerWithActiveDecryption.remove(player.getUUID());
+        }
+    }
 }

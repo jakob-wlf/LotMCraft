@@ -332,6 +332,12 @@
   "item.lotmcraft.misfortune_gifting_ability": "Misfortune Gifting",
   "ability.lotmcraft.misfortune_gifting.no_target": "No Target found",
 
+  "item.lotmcraft.theft_ability": "Theft",
+  "ability.lotmcraft.theft.no_target": "No Target found",
+  "item.lotmcraft.decryption_ability": "Decryption",
+  "item.lotmcraft.decryption_ability.description": "gain insight into you enemies",
+
+
   "lotm.ability.cogitation.tick": "Cogitating",
 
   "item.lotmcraft.ability_not_implemented": "Abilities for this Sequence are not yet implemented",
@@ -343,6 +349,7 @@
   "item.lotmcraft.physical_enhancements_death_ability": "Physical Enhancements",
   "item.lotmcraft.physical_enhancements_door_ability": "Physical Enhancements",
   "item.lotmcraft.physical_enhancements_fool_ability": "Physical Enhancements",
+  "item.lotmcraft.physical_enhancements_error_ability": "Physical Enhancements",
   "item.lotmcraft.physical_enhancements_hermit_ability": "Physical Enhancements",
   "item.lotmcraft.physical_enhancements_moon_ability": "Physical Enhancements",
   "item.lotmcraft.physical_enhancements_sun_ability": "Physical Enhancements",
@@ -358,6 +365,9 @@
   "item.lotmcraft.fire_resistance_ability": "Fire Resistance",
 
   "item.lotmcraft.fire_resistance_abyss_ability": "Fire Resistance",
+
+  "item.lotmcraft.passive_theft_ability": "Passive Theft",
+  "item.lotmcraft.passive_theft_ability.description": "You have a chance to steal items from mobs or players you hit",
 
   "item.lotmcraft.spirit_world_awareness_ability": "Spirit World Awareness",
   "ability.lotmcraft.spirit_world_awareness.overworld_coordinates": "Coordinates in Overworld",
