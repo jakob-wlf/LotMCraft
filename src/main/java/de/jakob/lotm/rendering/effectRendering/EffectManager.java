@@ -3,11 +3,16 @@ package de.jakob.lotm.rendering.effectRendering;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.AddEffectPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 
 public class EffectManager {
 
     public static void playEffect(Effect effect, double x, double y, double z, ServerLevel level) {
         PacketHandler.sendToAllPlayersInSameLevel(new AddEffectPacket(effect.getIndex(), x, y, z), level);
+    }
+
+    public static void playEffect(Effect effect, double x, double y, double z, ServerPlayer player) {
+        PacketHandler.sendToPlayer(player, new AddEffectPacket(effect.getIndex(), x, y, z));
     }
 
     public enum Effect {
@@ -25,7 +30,9 @@ public class EffectManager {
         HOLY_LIGHT_SMALL(11),
         LIGHT_OF_HOLINESS(12),
         SEFIRAH_CASTLE_PARTICLES(13),
-        SEFIRAH_CASTLE(14);
+        SEFIRAH_CASTLE(14),
+        GIFTING_PARTICLES(15),
+        ABILITY_THEFT(16);
 
         private final int index;
 

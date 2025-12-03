@@ -335,7 +335,16 @@
   "item.lotmcraft.theft_ability": "Theft",
   "ability.lotmcraft.theft.no_target": "No Target found",
   "item.lotmcraft.decryption_ability": "Decryption",
-  "item.lotmcraft.decryption_ability.description": "gain insight into you enemies",
+  "item.lotmcraft.decryption_ability.description": "Gain insight into you enemies and what items they posses",
+  "item.lotmcraft.gift_ability": "Gift",
+  "item.lotmcraft.gift_ability.description": "Gift the item in your offhand to your target. Some items may have different effects, like tnt or anvils",
+  "ability.lotmcraft.gift.no_item": "You need to hold an item in your offhand to gift it",
+  "ability.lotmcraft.gift.no_target": "No Target found",
+  "item.lotmcraft.ability_theft_ability": "Ability Theft",
+  "item.lotmcraft.ability_theft_ability.description": "Steal an ability from your opponent making them unable to use it for a short time. This ability will grow stronger with your Sequence",
+  "ability.lotmcraft.ability_theft.no_target": "No Target found",
+  "ability.lotmcraft.ability_theft.not_beyonder": "The target is not a Beyonder",
+  "ability.lotmcraft.ability_theft.no_abilities": "Failed to steal an ability",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",

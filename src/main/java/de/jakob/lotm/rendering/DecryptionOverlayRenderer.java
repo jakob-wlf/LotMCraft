@@ -1,6 +1,9 @@
 package de.jakob.lotm.rendering;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.client.Minecraft;
@@ -14,14 +17,20 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
 import java.util.*;
 
+@OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class DecryptionOverlayRenderer {
 
@@ -34,13 +43,50 @@ public class DecryptionOverlayRenderer {
         });
     }
 
+    @SubscribeEvent
+    public static void onRenderLevelStage(RenderLevelStageEvent event) {
+        Minecraft mc = Minecraft.getInstance();
+        Player player = mc.player;
+
+        if (player == null) {
+            removeShader(mc);
+            return;
+        }
+
+//        if (entitiesLookedAtByPlayerWithActiveDecryption.containsKey(mc.player.getUUID())) {
+//            applyShader(mc, "decryption");
+//        }
+    }
+
+    private static void applyShader(Minecraft mc, String shaderName) {
+        if (mc.gameRenderer.currentEffect() == null ||
+                !mc.gameRenderer.currentEffect().getName().equals(shaderName)) {
+            try {
+                mc.gameRenderer.loadEffect(
+                        ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "shaders/post/" + shaderName + ".json")
+                );
+            } catch (Exception e) {
+                LOTMCraft.LOGGER.error("Failed to load shader: " + shaderName, e);
+            }
+        }
+    }
+
+    private static void removeShader(Minecraft mc) {
+        if (mc.gameRenderer.currentEffect() != null) {
+            mc.gameRenderer.shutdownEffect();
+        }
+    }
+
     private static void renderOverlay(GuiGraphics guiGraphics) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
+        int screenHeight = mc.getWindow().getGuiScaledHeight();
 
         if (entitiesLookedAtByPlayerWithActiveDecryption.containsKey(mc.player.getUUID())) {
+            renderDecryptionOverlay(guiGraphics, screenWidth, screenHeight);
+
             LivingEntity entity = entitiesLookedAtByPlayerWithActiveDecryption.get(mc.player.getUUID());
             if(entity != null) {
                 int width =  (screenWidth / 3);
@@ -74,8 +120,58 @@ public class DecryptionOverlayRenderer {
 
                 //Health String
                 guiGraphics.drawString(mc.font, entity.getHealth() + " ❤", barX + 3, barY + 1 + ((barHeight - mc.font.lineHeight) / 2), 0xFFFFFFFF);
+
+                renderStealableItems(guiGraphics, entity, screenWidth);
             }
         }
+    }
+
+    private static void renderDecryptionOverlay(GuiGraphics guiGraphics, int screenWidth, int screenHeight) {
+        ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/decryption_overlay.png");
+        // Push the current pose
+        guiGraphics.pose().pushPose();
+
+        // Set up alpha blending
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+
+        // Blit the texture with transparency
+        guiGraphics.blit(backgroundTexture, 0, 0, screenWidth, screenHeight, 0, 0, 128, 96, 128, 96);
+
+        // Reset blend settings and shader color
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f); // Reset to opaque
+        RenderSystem.disableBlend();
+
+        // Pop the pose to avoid affecting later rendering
+        guiGraphics.pose().popPose();
+    }
+
+    private static void renderStealableItems(GuiGraphics guiGraphics, LivingEntity entity, int width) {
+        List<Item> stealableItems = TheftHandler.getStealableItemsForEntity(entity);
+        if(stealableItems.isEmpty()) {
+            return;
+        }
+
+        int x = width - 24;
+        int y = 15;
+
+        for(Item item : stealableItems) {
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().scale(1.5f, 1.5f, 1.5f);
+
+            int scaledX = (int) (x / 1.5f);
+            int scaledY = (int) (y / 1.5f);
+
+            guiGraphics.renderItem(
+                    new ItemStack(item),
+                    scaledX, scaledY
+            );
+
+            guiGraphics.pose().popPose();
+
+            y += 24;
+        }
+
     }
 
     private static void renderOutLine(GuiGraphics guiGraphics, int x, int y, int width, int height) {

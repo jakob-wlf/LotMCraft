@@ -27,6 +27,16 @@ public class ModDataComponents {
                     .persistent(Codec.BOOL)
                     .build());
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> IS_STOLEN =
+            DATA_COMPONENT_TYPES.register("is_stolen", () -> DataComponentType.<Boolean>builder()
+                    .persistent(Codec.BOOL)
+                    .build());
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ABILITY_USES =
+            DATA_COMPONENT_TYPES.register("ability_uses", () -> DataComponentType.<Integer>builder()
+                    .persistent(Codec.INT)
+                    .build());
+
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> BLOOD_OWNER =
             DATA_COMPONENT_TYPES.register("blood_owner", () -> DataComponentType.<String>builder()
                     .persistent(Codec.STRING)

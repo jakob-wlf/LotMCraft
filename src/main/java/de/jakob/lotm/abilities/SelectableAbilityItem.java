@@ -52,6 +52,10 @@ public abstract class SelectableAbilityItem extends AbilityItem{
         if(BeyonderData.isAbilityDisabled(beyonderNPC))
             return;
 
+        if(BeyonderData.isSpecificAbilityDisabled(beyonderNPC, this.getDescriptionId())) {
+            return;
+        }
+
         if(!level.isClientSide)
             AbilityHandler.useAbilityInArea(this, new Location(beyonderNPC.position(), level));
 

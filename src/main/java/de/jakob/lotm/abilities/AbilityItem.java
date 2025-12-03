@@ -70,6 +70,10 @@ public abstract class AbilityItem extends Item {
         if(BeyonderData.isAbilityDisabled(beyonderNPC))
             return;
 
+        if(BeyonderData.isSpecificAbilityDisabled(beyonderNPC, this.getDescriptionId())) {
+            return;
+        }
+
         if(!level.isClientSide)
             AbilityHandler.useAbilityInArea(this, new Location(beyonderNPC.position(), level));
 
@@ -105,7 +109,11 @@ public abstract class AbilityItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
 
-        if (!canUse(player) && !isRecorded(itemStack) && !isReplicated(itemStack)) {
+        if (!canUse(player) && !isRecorded(itemStack) && !isReplicated(itemStack) && !isStolen(itemStack)) {
+            return InteractionResultHolder.fail(itemStack);
+        }
+
+        if(BeyonderData.isSpecificAbilityDisabled(player, itemStack.getDescriptionId())) {
             return InteractionResultHolder.fail(itemStack);
         }
 
@@ -133,6 +141,16 @@ public abstract class AbilityItem extends Item {
             player.setItemInHand(hand, ItemStack.EMPTY);
         }
 
+        if(isStolen(itemStack)) {
+            int usesLeft = itemStack.getOrDefault(ModDataComponents.ABILITY_USES, 0);
+            usesLeft--;
+            if(usesLeft <= 0) {
+                player.setItemInHand(hand, ItemStack.EMPTY);
+            } else {
+                itemStack.set(ModDataComponents.ABILITY_USES, usesLeft);
+            }
+        }
+
         return InteractionResultHolder.success(itemStack);
     }
 
@@ -144,6 +162,10 @@ public abstract class AbilityItem extends Item {
         return item.getOrDefault(ModDataComponents.IS_RECORDED, false);
     }
 
+    private boolean isStolen(ItemStack item) {
+        return item.getOrDefault(ModDataComponents.IS_STOLEN, false);
+    }
+
     protected double multiplier(LivingEntity entity) {
         return BeyonderData.getMultiplier(entity);
     }
@@ -153,7 +175,7 @@ public abstract class AbilityItem extends Item {
     }
 
     public boolean canUse(LivingEntity entity, ItemStack itemStack) {
-        return canUse(entity, false) || isRecorded(itemStack) || isReplicated(itemStack);
+        return canUse(entity, false) || isRecorded(itemStack) || isReplicated(itemStack) || isStolen(itemStack);
     }
 
     public boolean canUse(LivingEntity entity, boolean ignoreCreative) {

@@ -1,5 +1,7 @@
 package de.jakob.lotm.util;
 
+import de.jakob.lotm.abilities.PassiveAbilityHandler;
+import de.jakob.lotm.abilities.PassiveAbilityItem;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
@@ -7,10 +9,12 @@ import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncLivingEntityBeyonderDataPacket;
 import de.jakob.lotm.util.pathways.PathwayInfos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
 
@@ -137,6 +141,10 @@ public class BeyonderData {
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence) {
+        if(entity.level() instanceof ServerLevel serverLevel) {
+            callPassiveEffectsOnRemoved(entity, serverLevel);
+        }
+
         boolean griefing = !BeyonderData.isBeyonder(entity) || BeyonderData.isGriefingEnabled(entity);
 
         CompoundTag tag = entity.getPersistentData();
@@ -150,12 +158,39 @@ public class BeyonderData {
             SpiritualityProgressTracker.setProgress(player.getUUID(), 1.0f);
 
         // Sync to client if this is server-side
-        if (!entity.level().isClientSide()) {
+        if (entity.level() instanceof ServerLevel serverLevel) {
+            callPassiveEffectsOnAdd(entity, serverLevel);
             if(entity instanceof ServerPlayer serverPlayer)
                 PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
             else {
                 PacketHandler.syncBeyonderDataToEntity(entity);
             }
+        }
+
+
+    }
+
+    private static void callPassiveEffectsOnRemoved(LivingEntity entity, ServerLevel serverLevel) {
+        List<PassiveAbilityItem> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.ITEMS.getEntries().stream().filter(entry -> {
+            if (!(entry.get() instanceof PassiveAbilityItem abilityItem))
+                return false;
+            return abilityItem.shouldApplyTo(entity);
+        }).map(entry -> (PassiveAbilityItem) entry.get()).toList());
+
+        for (PassiveAbilityItem ability : passiveAbilities) {
+            ability.onPassiveAbilityRemoved(entity, serverLevel);
+        }
+    }
+
+    private static void callPassiveEffectsOnAdd(LivingEntity entity, ServerLevel serverLevel) {
+        List<PassiveAbilityItem> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.ITEMS.getEntries().stream().filter(entry -> {
+            if (!(entry.get() instanceof PassiveAbilityItem abilityItem))
+                return false;
+            return abilityItem.shouldApplyTo(entity);
+        }).map(entry -> (PassiveAbilityItem) entry.get()).toList());
+
+        for (PassiveAbilityItem ability : passiveAbilities) {
+            ability.onPassiveAbilityGained(entity, serverLevel);
         }
     }
 
@@ -496,6 +531,152 @@ public class BeyonderData {
 
         setBeyonder(entity, pathway, sequence);
         entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, getAmplifierBySequenceDifference(difference)));
+    }
+
+    // Add these fields after the existing disabledBeyonders field
+    private static final HashMap<UUID, HashMap<String, HashSet<String>>> disabledAbilities = new HashMap<>();
+    private static final HashMap<UUID, HashMap<String, HashMap<String, Long>>> abilitySpecificDisablingTimeouts = new HashMap<>();
+// Structure: UUID -> abilityId -> reasonId -> timeout
+
+    // Method to check if a specific ability is disabled
+    public static boolean isSpecificAbilityDisabled(LivingEntity entity, String abilityId) {
+        System.out.println("Checking if ability " + abilityId + " is disabled for entity " + entity.getUUID());
+        UUID uuid = entity.getUUID();
+
+        // Clean up expired timeouts first
+        if(abilitySpecificDisablingTimeouts.containsKey(uuid)) {
+            System.out.println("Found timeouts for entity " + uuid);
+            HashMap<String, HashMap<String, Long>> abilitiesMap = abilitySpecificDisablingTimeouts.get(uuid);
+
+            if(abilitiesMap.containsKey(abilityId)) {
+                HashMap<String, Long> reasonTimeouts = abilitiesMap.get(abilityId);
+                final HashSet<String> reasonIdsToRemove = new HashSet<>();
+
+                for(Map.Entry<String, Long> entry : reasonTimeouts.entrySet()) {
+                    if(System.currentTimeMillis() >= entry.getValue()) {
+                        reasonIdsToRemove.add(entry.getKey());
+                    }
+                }
+
+                for(String reasonId : reasonIdsToRemove) {
+                    reasonTimeouts.remove(reasonId);
+                    if(disabledAbilities.containsKey(uuid) && disabledAbilities.get(uuid).containsKey(reasonId)) {
+                        disabledAbilities.get(uuid).get(reasonId).remove(abilityId);
+                        if(disabledAbilities.get(uuid).get(reasonId).isEmpty()) {
+                            disabledAbilities.get(uuid).remove(reasonId);
+                        }
+                    }
+                }
+
+                if(reasonTimeouts.isEmpty()) {
+                    abilitiesMap.remove(abilityId);
+                }
+            }
+
+            if(abilitiesMap.isEmpty()) {
+                abilitySpecificDisablingTimeouts.remove(uuid);
+            }
+        }
+
+        System.out.println("After cleanup, checking disabled abilities for entity " + uuid);
+
+        if(disabledAbilities.containsKey(uuid) && disabledAbilities.get(uuid).isEmpty()) {
+            System.out.println("No disabled abilities left for entity " + uuid);
+            disabledAbilities.remove(uuid);
+        }
+
+        // Check if ability is disabled
+        if(!disabledAbilities.containsKey(uuid)) {
+            System.out.println("Entity " + uuid + " has no disabled abilities.");
+            return false;
+        }
+
+        System.out.println("Entity " + uuid + " has disabled abilities: " + disabledAbilities.get(uuid));
+        for(HashSet<String> abilities : disabledAbilities.get(uuid).values()) {
+            System.out.println("Checking abilities set: " + abilities);
+            if(abilities.contains(abilityId)) {
+                System.out.println("Ability " + abilityId + " is disabled for entity " + uuid);
+                return true;
+            }
+        }
+
+        System.out.println("Ability " + abilityId + " is not disabled for entity " + uuid);
+
+        return false;
+    }
+
+    // Disable a specific ability with a reason ID
+    public static void disableSpecificAbility(LivingEntity entity, String reasonId, String abilityId) {
+        UUID uuid = entity.getUUID();
+
+        disabledAbilities.putIfAbsent(uuid, new HashMap<>());
+        disabledAbilities.get(uuid).putIfAbsent(reasonId, new HashSet<>());
+        disabledAbilities.get(uuid).get(reasonId).add(abilityId);
+    }
+
+    // Disable specific abilities with a reason ID and time limit
+    public static void disableSpecificAbilityWithTimeLimit(LivingEntity entity, String reasonId, String abilityId, long millis) {
+        disableSpecificAbility(entity, reasonId, abilityId);
+
+        UUID uuid = entity.getUUID();
+        abilitySpecificDisablingTimeouts.putIfAbsent(uuid, new HashMap<>());
+        abilitySpecificDisablingTimeouts.get(uuid).putIfAbsent(abilityId, new HashMap<>());
+        abilitySpecificDisablingTimeouts.get(uuid).get(abilityId).put(reasonId, System.currentTimeMillis() + millis);
+    }
+
+    // Disable multiple abilities at once with a reason ID
+    public static void disableSpecificAbilities(LivingEntity entity, String reasonId, String... abilityIds) {
+        UUID uuid = entity.getUUID();
+
+        disabledAbilities.putIfAbsent(uuid, new HashMap<>());
+        disabledAbilities.get(uuid).putIfAbsent(reasonId, new HashSet<>());
+
+        for(String abilityId : abilityIds) {
+            disabledAbilities.get(uuid).get(reasonId).add(abilityId);
+        }
+    }
+
+    // Disable multiple abilities with a reason ID and time limit
+    public static void disableSpecificAbilitiesWithTimeLimit(LivingEntity entity, String reasonId, long millis, String... abilityIds) {
+        disableSpecificAbilities(entity, reasonId, abilityIds);
+
+        UUID uuid = entity.getUUID();
+        abilitySpecificDisablingTimeouts.putIfAbsent(uuid, new HashMap<>());
+
+        for(String abilityId : abilityIds) {
+            abilitySpecificDisablingTimeouts.get(uuid).putIfAbsent(abilityId, new HashMap<>());
+            abilitySpecificDisablingTimeouts.get(uuid).get(abilityId).put(reasonId, System.currentTimeMillis() + millis);
+        }
+    }
+
+    // Enable specific ability by removing a reason ID
+    public static void enableSpecificAbility(LivingEntity entity, String reasonId) {
+        UUID uuid = entity.getUUID();
+
+        if(disabledAbilities.containsKey(uuid) && disabledAbilities.get(uuid).containsKey(reasonId)) {
+            HashSet<String> abilitiesToRemove = new HashSet<>(disabledAbilities.get(uuid).get(reasonId));
+            disabledAbilities.get(uuid).remove(reasonId);
+
+            if(disabledAbilities.get(uuid).isEmpty()) {
+                disabledAbilities.remove(uuid);
+            }
+
+            // Remove the timeouts for this reason ID from all affected abilities
+            if(abilitySpecificDisablingTimeouts.containsKey(uuid)) {
+                for(String abilityId : abilitiesToRemove) {
+                    if(abilitySpecificDisablingTimeouts.get(uuid).containsKey(abilityId)) {
+                        abilitySpecificDisablingTimeouts.get(uuid).get(abilityId).remove(reasonId);
+                        if(abilitySpecificDisablingTimeouts.get(uuid).get(abilityId).isEmpty()) {
+                            abilitySpecificDisablingTimeouts.get(uuid).remove(abilityId);
+                        }
+                    }
+                }
+
+                if(abilitySpecificDisablingTimeouts.get(uuid).isEmpty()) {
+                    abilitySpecificDisablingTimeouts.remove(uuid);
+                }
+            }
+        }
     }
 
     private static int getAmplifierBySequenceDifference(int difference) {

@@ -22,6 +22,8 @@ public class EffectFactory {
             case 12 -> new LightOfHolinessEffect(x, y, z);
             case 13 -> new SefirahCastleParticlesEffect(x, y, z);
             case 14 -> new SefirahCastleEffect(x, y, z);
+            case 15 -> new GiftingParticlesEffect(x, y, z);
+            case 16 -> new AbilityTheftEffect(x, y, z);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
     }

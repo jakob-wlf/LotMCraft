@@ -1,5 +1,6 @@
-// 1.21.1	2025-12-03T00:26:51.1264694	Item Models: lotmcraft
+// 1.21.1	2025-12-03T12:19:48.3788249	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
+b46fafcef24e66e85c39645e39df0ec0b12c3447 assets/lotmcraft/models/item/ability_theft_ability.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
 96494cfdd79ca3a005a680f1a30ae543a6ed1959 assets/lotmcraft/models/item/air_bullet_ability.json
@@ -161,6 +162,7 @@ cd31a2ff8f5df6704d22cd1d35aca7522db5610c assets/lotmcraft/models/item/folk_of_ra
 cd79fc5e60945eafffb8c09e443d2b816d106570 assets/lotmcraft/models/item/fool_card.json
 df24a9c1ec10191a2ae8630ab097755c42ac1044 assets/lotmcraft/models/item/frenzy_ability.json
 ef6c3378da422c33b0cd107482cff036c0f50de2 assets/lotmcraft/models/item/frost_ability.json
+99a858d0336edc051ecf3841159292ee10313436 assets/lotmcraft/models/item/gift_ability.json
 6148244133fc734e585cc01fe7d729baa49b80bc assets/lotmcraft/models/item/goat_horned_blackfish_blood.json
 ba973641ef5550da2597873305b02717284e8659 assets/lotmcraft/models/item/golden_blood.json
 f07135695348ab8e47f302514f4c413be2656cb1 assets/lotmcraft/models/item/golden_phoenix_eyes.json

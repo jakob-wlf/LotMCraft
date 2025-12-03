@@ -4,10 +4,12 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -134,6 +136,13 @@ public abstract class PassiveAbilityItem extends Item {
      * Gets called every 5 ticks from BeyonderDataTickHandler
      */
     public abstract void tick(Level level, LivingEntity entity);
+
+    public void onPassiveAbilityGained(LivingEntity entity, ServerLevel serverLevel) {
+    }
+
+    public void onPassiveAbilityRemoved(LivingEntity entity, ServerLevel serverLevel) {
+
+    }
 
     protected void applyPotionEffects(LivingEntity entity, List<MobEffectInstance> effects) {
         for (MobEffectInstance effect : effects) {

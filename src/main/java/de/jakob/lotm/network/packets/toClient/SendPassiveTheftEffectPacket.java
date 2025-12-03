@@ -42,7 +42,7 @@ public record SendPassiveTheftEffectPacket(double x, double y, double z) impleme
     public static void handle(SendPassiveTheftEffectPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.flow().isClientbound()) {
-                ParticleUtil.spawnParticles((ClientLevel) context.player().level(), dust, new Vec3(packet.x, packet.y, packet.z), 35, .8, 0);
+                ParticleUtil.spawnParticles((ClientLevel) context.player().level(), dust, new Vec3(packet.x, packet.y, packet.z), 80, .8, 0);
 
                 context.player().playSound(SoundEvents.NOTE_BLOCK_BELL.value(), 1, 1);
             }
