@@ -79,6 +79,11 @@ public class AbilityTheftAbility extends AbilityItem {
             return;
         }
 
+        if(doesTheftFail(BeyonderData.getSequence(entity), BeyonderData.getSequence(target))) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_abilities").withColor(0x6d32a8));
+            return;
+        }
+
         List<AbilityItem> stolenItems = new ArrayList<>();
         int sequence = BeyonderData.getSequence(entity);
         int abilityCount = getAbilityCountForSequence(sequence);
@@ -117,14 +122,32 @@ public class AbilityTheftAbility extends AbilityItem {
 
     private static int getDisablingTimeForSequenceInSeconds(int sequence) {
         return switch (sequence) {
-            default -> 25;
-            case 5 -> 30;
-            case 4 -> 80;
-            case 3 -> 120;
+            default -> 35;
+            case 5 -> 60;
+            case 4 -> 120;
+            case 3 -> 240;
             case 2 -> 480;
             case 1 -> 800;
         };
     }
+
+
+    private boolean doesTheftFail(int userSeq, int targetSeq) {
+        if (targetSeq > userSeq) {
+            return false;
+        }
+
+        int difference = userSeq - targetSeq;
+
+        double baseFailPerStep = 0.15;
+
+        double failChance = difference * baseFailPerStep;
+
+        failChance = Math.min(Math.max(failChance, 0.0), 0.95);
+
+        return random.nextDouble() < failChance;
+    }
+
 
     private static int getAbilityUsesForSequence(int sequence) {
         return switch (sequence) {

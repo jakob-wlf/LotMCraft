@@ -333,6 +333,8 @@
   "ability.lotmcraft.misfortune_gifting.no_target": "No Target found",
 
   "item.lotmcraft.theft_ability": "Theft",
+  "item.lotmcraft.mental_disruption_ability": "Mental Disruption",
+  "item.lotmcraft.mental_disruption_ability.description": "Briefly stun your target",
   "ability.lotmcraft.theft.no_target": "No Target found",
   "item.lotmcraft.decryption_ability": "Decryption",
   "item.lotmcraft.decryption_ability.description": "Gain insight into you enemies and what items they posses",
@@ -345,6 +347,14 @@
   "ability.lotmcraft.ability_theft.no_target": "No Target found",
   "ability.lotmcraft.ability_theft.not_beyonder": "The target is not a Beyonder",
   "ability.lotmcraft.ability_theft.no_abilities": "Failed to steal an ability",
+  "item.lotmcraft.mundane_conceptual_theft_ability": "Mundane Conceptual Theft",
+  "item.lotmcraft.mundane_conceptual_theft_ability.description": "Steal mundane abilities from your target",
+  "ability.lotmcraft.mundane_conceptual_theft.no_target": "No Target found",
+  "ability.lotmcraft.mundane_conceptual_theft.steal_walk": "Steal Walking Ability",
+  "ability.lotmcraft.mundane_conceptual_theft.steal_sight": "Steal Sight",
+  "ability.lotmcraft.mundane_conceptual_theft.steal_health": "Steal Health",
+  "ability.lotmcraft.mundane_conceptual_theft.steal_thoughts": "Steal Thoughts",
+  "ability.lotmcraft.mundane_conceptual_theft.theft_failed": "Theft Failed",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",

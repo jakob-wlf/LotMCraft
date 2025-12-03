@@ -133,6 +133,7 @@ public abstract class AbilityItem extends Item {
 
         if(!level.isClientSide) {
             AbilityHandler.useAbilityInArea(this, new Location(player.position(), level));
+            BeyonderData.digest(player, getDigestionProgressForUse(player));
         }
 
         onAbilityUse(level, player);
@@ -153,6 +154,35 @@ public abstract class AbilityItem extends Item {
 
         return InteractionResultHolder.success(itemStack);
     }
+
+    private float getDigestionProgressForUse(LivingEntity entity) {
+        int sequence = BeyonderData.getSequence(entity);
+
+        if (!getRequirements().containsKey(BeyonderData.getPathway(entity))) {
+            return 0f;
+        }
+
+        int requiredSequence = getRequirements().get(BeyonderData.getPathway(entity));
+
+        // If user is below the requirement (numerically higher = weaker), still digest but less
+        // If user is equal, digestion = 1/50
+        // If user is stronger (numerically lower), digestion increases
+
+        float baseProgress = 1f / 50f; // equal sequence digestion
+        int diff = requiredSequence - sequence;
+        // diff > 0: user stronger → more digestion
+        // diff = 0: equal
+        // diff < 0: user weaker → less digestion
+
+        float progress = baseProgress * (1f + diff);
+
+        // Prevent negative or excessive progress
+        if (progress < 0f) progress = 0f;
+        if (progress > 1f) progress = 1f;
+
+        return progress;
+    }
+
 
     private boolean isReplicated(ItemStack itemStack) {
         return itemStack.getOrDefault(ModDataComponents.IS_REPLICATED, false);

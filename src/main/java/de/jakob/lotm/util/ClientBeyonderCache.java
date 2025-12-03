@@ -29,9 +29,6 @@ public class ClientBeyonderCache {
     }
 
     public static float getDigestionProgress(UUID playerUUID) {
-        if(true)
-            return .6f;
-
         BeyonderClientData data = dataCache.get(playerUUID);
         return data != null ? data.digestionProgress() : 0.0f;
     }

@@ -1,4 +1,4 @@
-// 1.21.1	2025-12-03T12:19:48.3788249	Item Models: lotmcraft
+// 1.21.1	2025-12-03T21:16:18.585169	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 b46fafcef24e66e85c39645e39df0ec0b12c3447 assets/lotmcraft/models/item/ability_theft_ability.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
@@ -234,6 +234,7 @@ bc6df0e8880ecf18ac66253837cb2a23bffe81df assets/lotmcraft/models/item/manipulato
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/marionettist.json
 f5f82cd2d74d4f90d50a94802a8b7ebfbb039142 assets/lotmcraft/models/item/marionettist_characteristic.json
 209556629ecc0bb65856a21f54ae15f880bda204 assets/lotmcraft/models/item/marionettist_potion.json
+45920ee7b9a88521a45ea5fec1c3f3cc7bfccb86 assets/lotmcraft/models/item/mental_disruption_ability.json
 9518ea379b0f5465b15bb1448430225518a3269a assets/lotmcraft/models/item/meteorite_crystal.json
 69b334c6c265489944694142ddedb3250bd81507 assets/lotmcraft/models/item/midnight_beauty_flower.json
 fc08f3e1a6c0f422e87a97265f0d70abb25dacf0 assets/lotmcraft/models/item/midnight_poem_ability.json
@@ -252,6 +253,7 @@ e08d20b16c942db02247c09b39c672309cce3213 assets/lotmcraft/models/item/mist_watch
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/monster.json
 74fed5f94dff2e1561ee7ffea83413071be10ab6 assets/lotmcraft/models/item/monster_characteristic.json
 b6fde8a1f9aa8b1badc66efc8e72c1ea21702132 assets/lotmcraft/models/item/monster_potion.json
+1e57b8d5c836865fbc918019f7a01151e9414068 assets/lotmcraft/models/item/mundane_conceptual_theft_ability.json
 f1caa54d29eca7a72716c885546fb828c3eb35d3 assets/lotmcraft/models/item/murloc_bladder.json
 1169222dd9903d4902ec1f3739f02c22f78edc25 assets/lotmcraft/models/item/mythical_creature_door_ability.json
 ad42bda8ef4b6ad6055eed615f6216527a9bc393 assets/lotmcraft/models/item/mythical_creature_tyrant_ability.json

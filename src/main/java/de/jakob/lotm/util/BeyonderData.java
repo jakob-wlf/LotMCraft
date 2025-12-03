@@ -7,10 +7,17 @@ import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncLivingEntityBeyonderDataPacket;
+import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.pathways.PathwayInfos;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -441,9 +448,6 @@ public class BeyonderData {
     }
 
     public static float getDigestionProgress(Player player) {
-        if(true)
-            return .6f;
-
         if(player.level().isClientSide) {
             return ClientBeyonderCache.getDigestionProgress(player.getUUID());
         }
@@ -452,6 +456,26 @@ public class BeyonderData {
             return 0.0f;
         }
         return player.getPersistentData().getFloat(NBT_DIGESTION_PROGRESS);
+    }
+
+    public static void digest(Player player, float amount) {
+        float current = getDigestionProgress(player);
+        float newAmount = Math.min(1.0f, current + amount);
+        if(newAmount == 1.0f) {
+            AbilityUtil.sendActionBar(player, Component.translatable("lotm.digested").withColor(0xbd64d1));
+            if(player.level() instanceof ServerLevel serverLevel) {
+                ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, player.position().add(0, player.getEyeHeight() / 2, 0), 30, .5, player.getEyeHeight() / 2, .5, 0.06);
+            }
+            else {
+                player.playSound(SoundEvents.NOTE_BLOCK_BELL.value(), 1, 1);
+            }
+        }
+        player.getPersistentData().putFloat(NBT_DIGESTION_PROGRESS, newAmount);
+
+        // Sync to client if this is server-side
+        if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
+            PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
+        }
     }
 
     public static boolean isGriefingEnabled(LivingEntity entity) {
@@ -521,6 +545,12 @@ public class BeyonderData {
             return;
         }
 
+        if(entity instanceof Player player && BeyonderData.getDigestionProgress(player) < .95) {
+            setBeyonder(entity, pathway, sequence);
+            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, 9));
+            return;
+        }
+
         int prevSequence = getSequence(entity);
         if(prevSequence <= sequence) {
             entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, 2));
@@ -540,12 +570,10 @@ public class BeyonderData {
 
     // Method to check if a specific ability is disabled
     public static boolean isSpecificAbilityDisabled(LivingEntity entity, String abilityId) {
-        System.out.println("Checking if ability " + abilityId + " is disabled for entity " + entity.getUUID());
         UUID uuid = entity.getUUID();
 
         // Clean up expired timeouts first
         if(abilitySpecificDisablingTimeouts.containsKey(uuid)) {
-            System.out.println("Found timeouts for entity " + uuid);
             HashMap<String, HashMap<String, Long>> abilitiesMap = abilitySpecificDisablingTimeouts.get(uuid);
 
             if(abilitiesMap.containsKey(abilityId)) {
@@ -578,30 +606,20 @@ public class BeyonderData {
             }
         }
 
-        System.out.println("After cleanup, checking disabled abilities for entity " + uuid);
-
         if(disabledAbilities.containsKey(uuid) && disabledAbilities.get(uuid).isEmpty()) {
-            System.out.println("No disabled abilities left for entity " + uuid);
             disabledAbilities.remove(uuid);
         }
 
         // Check if ability is disabled
         if(!disabledAbilities.containsKey(uuid)) {
-            System.out.println("Entity " + uuid + " has no disabled abilities.");
             return false;
         }
 
-        System.out.println("Entity " + uuid + " has disabled abilities: " + disabledAbilities.get(uuid));
         for(HashSet<String> abilities : disabledAbilities.get(uuid).values()) {
-            System.out.println("Checking abilities set: " + abilities);
             if(abilities.contains(abilityId)) {
-                System.out.println("Ability " + abilityId + " is disabled for entity " + uuid);
                 return true;
             }
         }
-
-        System.out.println("Ability " + abilityId + " is not disabled for entity " + uuid);
-
         return false;
     }
 
