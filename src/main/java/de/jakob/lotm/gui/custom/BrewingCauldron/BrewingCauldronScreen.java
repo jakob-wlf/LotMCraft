@@ -1,4 +1,4 @@
-package de.jakob.lotm.gui.custom;
+package de.jakob.lotm.gui.custom.BrewingCauldron;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;

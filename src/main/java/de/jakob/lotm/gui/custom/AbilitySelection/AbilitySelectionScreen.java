@@ -1,4 +1,4 @@
-package de.jakob.lotm.gui.custom;
+package de.jakob.lotm.gui.custom.AbilitySelection;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;

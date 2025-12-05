@@ -2,15 +2,11 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.*;
-import de.jakob.lotm.gui.custom.AbilitySelectionMenuProvider;
-import de.jakob.lotm.gui.custom.IntrospectMenuProvider;
+import de.jakob.lotm.gui.custom.Introspect.IntrospectMenuProvider;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncAbilityMenuPacket;
 import de.jakob.lotm.network.packets.toClient.SyncIntrospectMenuPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.pathways.PathwayInfos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;

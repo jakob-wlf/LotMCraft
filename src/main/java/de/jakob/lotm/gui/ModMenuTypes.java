@@ -1,9 +1,9 @@
 package de.jakob.lotm.gui;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.gui.custom.AbilitySelectionMenu;
-import de.jakob.lotm.gui.custom.BrewingCauldronMenu;
-import de.jakob.lotm.gui.custom.IntrospectMenu;
+import de.jakob.lotm.gui.custom.AbilitySelection.AbilitySelectionMenu;
+import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
+import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.bus.api.IEventBus;

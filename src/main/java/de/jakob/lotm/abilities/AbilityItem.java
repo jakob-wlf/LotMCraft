@@ -164,24 +164,21 @@ public abstract class AbilityItem extends Item {
 
         int requiredSequence = getRequirements().get(BeyonderData.getPathway(entity));
 
-        // If user is below the requirement (numerically higher = weaker), still digest but less
-        // If user is equal, digestion = 1/50
-        // If user is stronger (numerically lower), digestion increases
+        // If user's sequence is numerically higher (weaker) → cannot digest at all
+        if (sequence > requiredSequence) {
+            return 0f;
+        }
 
-        float baseProgress = 1f / 50f; // equal sequence digestion
-        int diff = requiredSequence - sequence;
-        // diff > 0: user stronger → more digestion
-        // diff = 0: equal
-        // diff < 0: user weaker → less digestion
+        // If same sequence → requires ~100 uses
+        if (sequence == requiredSequence) {
+            return 1f / 100f;
+        }
 
-        float progress = baseProgress * (1f + diff);
-
-        // Prevent negative or excessive progress
-        if (progress < 0f) progress = 0f;
-        if (progress > 1f) progress = 1f;
-
-        return progress;
+        // Ability sequence is stronger (numerically lower) → digestion is slower
+        int diff = requiredSequence - sequence; // always >= 1 here
+        return 1f / (100f * (diff + 1));
     }
+
 
 
     private boolean isReplicated(ItemStack itemStack) {

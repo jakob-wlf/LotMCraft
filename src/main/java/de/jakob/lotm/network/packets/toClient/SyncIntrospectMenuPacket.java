@@ -1,8 +1,7 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.gui.custom.AbilitySelectionScreen;
-import de.jakob.lotm.gui.custom.IntrospectScreen;
+import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;

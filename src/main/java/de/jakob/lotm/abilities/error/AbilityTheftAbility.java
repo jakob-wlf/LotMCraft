@@ -89,6 +89,9 @@ public class AbilityTheftAbility extends AbilityItem {
         int abilityCount = getAbilityCountForSequence(sequence);
         int abilityUses = getAbilityUsesForSequence(sequence);
         for(int i = 0; i < abilityCount; i++) {
+            if(stealableAbilities.isEmpty()) {
+                break;
+            }
             int index = random.nextInt(stealableAbilities.size());
             AbilityItem stolenAbility = stealableAbilities.get(index);
             stealableAbilities.remove(index);

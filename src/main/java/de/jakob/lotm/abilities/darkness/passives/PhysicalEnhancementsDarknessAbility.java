@@ -1,107 +1,18 @@
 package de.jakob.lotm.abilities.darkness.passives;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.PassiveAbilityItem;
-import de.jakob.lotm.gamerule.ModGameRules;
+import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
 import de.jakob.lotm.util.BeyonderData;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class PhysicalEnhancementsDarknessAbility extends PassiveAbilityItem {
-
-    private final HashMap<Integer, List<MobEffectInstance>> effectsPerSequence = new HashMap<>();
+public class PhysicalEnhancementsDarknessAbility extends PhysicalEnhancementsAbility {
 
     public PhysicalEnhancementsDarknessAbility(Properties properties) {
         super(properties);
-
-        initEffects();
-    }
-
-    private void initEffects() {
-        effectsPerSequence.put(9, List.of(
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 0, false, false, false),
-                new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 0, false, false, false),
-                new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 1, false, false, false),
-                new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
-        ));
-
-        effectsPerSequence.put(7, List.of(
-                new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 1, false, false, false),
-                new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 0, false, false, false),
-                new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 1, false, false, false),
-                new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 3, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 1, false, false, false),
-                new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
-        ));
-
-        effectsPerSequence.put(6, List.of(
-                new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 1, false, false, false),
-                new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 1, false, false, false),
-                new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 1, false, false, false),
-                new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 3, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 1, false, false, false),
-                new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
-        ));
-
-        effectsPerSequence.put(5, List.of(
-                new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 1, false, false, false),
-                new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 1, false, false, false),
-                new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 1, false, false, false),
-                new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 4, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 1, false, false, false),
-                new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
-        ));
-
-        effectsPerSequence.put(4, List.of(
-                new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 2, false, false, false),
-                new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 2, false, false, false),
-                new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 2, false, false, false),
-                new MobEffectInstance(MobEffects.SATURATION, 20 * 6, 2, false, false, false),
-                new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 9, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 2, false, false, false),
-                new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
-        ));
-
-        effectsPerSequence.put(3, List.of(
-                new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 2, false, false, false),
-                new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 2, false, false, false),
-                new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 2, false, false, false),
-                new MobEffectInstance(MobEffects.SATURATION, 20 * 6, 2, false, false, false),
-                new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 10, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 2, false, false, false),
-                new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
-        ));
-
-        effectsPerSequence.put(2, List.of(
-                new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 3, false, false, false),
-                new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 3, false, false, false),
-                new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 2, false, false, false),
-                new MobEffectInstance(MobEffects.SATURATION, 20 * 6, 5, false, false, false),
-                new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 12, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 3, false, false, false),
-                new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
-        ));
-
-        effectsPerSequence.put(1, List.of(
-                new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 3, false, false, false),
-                new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, 3, false, false, false),
-                new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 3, false, false, false),
-                new MobEffectInstance(MobEffects.SATURATION, 20 * 6, 5, false, false, false),
-                new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 15, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 20 * 30, 3, false, false, false),
-                new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false)
-        ));
     }
 
     @Override
@@ -111,81 +22,108 @@ public class PhysicalEnhancementsDarknessAbility extends PassiveAbilityItem {
         ));
     }
 
-    private static final HashMap<UUID, Long> reducedRegen = new HashMap<>();
-
-
+    @Override
+    public List<PhysicalEnhancement> getEnhancements() {
+        return List.of();
+    }
 
     @Override
-    public void tick(Level level, LivingEntity entity) {
-        int sequence = BeyonderData.getSequence(entity);
+    protected List<PhysicalEnhancement> getEnhancementsForSequence(int sequenceLevel, LivingEntity entity) {
 
-        if (sequence < 0 || sequence > 9) {
-            return;
+        int strengthModifier = 0;
+        int resistanceModifier = 0;
+        int speedModifier = 0;
+
+        if(entity.level().isNight()) {
+            strengthModifier = 1;
+            resistanceModifier = 1;
+            speedModifier = 2;
         }
 
-        ArrayList<MobEffectInstance> effects = new ArrayList<>(getEffectsForSequence(sequence));
+        return switch (sequenceLevel) {
+            case 9 -> List.of(
+                    new PhysicalEnhancement(EnhancementType.STRENGTH, 1 + strengthModifier),
+                    new PhysicalEnhancement(EnhancementType.SPEED, 2 + speedModifier),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1)
+            );
 
-        if(reducedRegen.containsKey(entity.getUUID())) {
-            applyRegenReduce(effects, entity, reducedRegen);
-        }
+            case 8, 7 -> List.of(
+                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2 + strengthModifier),
+                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 1 + resistanceModifier),
+                    new PhysicalEnhancement(EnhancementType.SPEED, 2 + speedModifier),
+                    new PhysicalEnhancement(EnhancementType.HEALTH, 4),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2)
+            );
 
-        if(level.isNight()) {
-            ArrayList<MobEffectInstance> nightEffects = new ArrayList<>();
-            for(MobEffectInstance effect : effects) {
-                if(effect.getEffect() != MobEffects.DAMAGE_RESISTANCE || effect.getAmplifier() < 3) {
-                    nightEffects.add(new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier() + 1, effect.isAmbient(), effect.isVisible(), effect.showIcon()));
-                }
-                else nightEffects.add(new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), effect.showIcon()));
-            }
+            case 6 -> List.of(
+                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2 + strengthModifier),
+                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 2 + resistanceModifier),
+                    new PhysicalEnhancement(EnhancementType.SPEED, 2 + speedModifier),
+                    new PhysicalEnhancement(EnhancementType.HEALTH, 4),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
+                    new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 1)
+            );
 
-            if(reducedRegen.containsKey(entity.getUUID())) {
-                applyRegenReduce(nightEffects, entity, reducedRegen);
-            }
+            case 5 -> List.of(
+                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2 + strengthModifier),
+                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 2 + resistanceModifier),
+                    new PhysicalEnhancement(EnhancementType.SPEED, 2 + speedModifier),
+                    new PhysicalEnhancement(EnhancementType.HEALTH, 5),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
+                    new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 2)
+            );
 
-            applyPotionEffects(entity, nightEffects);
-            return;
-        }
+            case 4 -> List.of(
+                    new PhysicalEnhancement(EnhancementType.STRENGTH, 3 + strengthModifier),
+                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 3 + resistanceModifier),
+                    new PhysicalEnhancement(EnhancementType.SPEED, 4 + speedModifier),
+                    new PhysicalEnhancement(EnhancementType.HEALTH, 10),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
+                    new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 2)
+            );
 
-        applyPotionEffects(entity, effects);
+            case 3 -> List.of(
+                    new PhysicalEnhancement(EnhancementType.STRENGTH, 3 + strengthModifier),
+                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 3 + resistanceModifier),
+                    new PhysicalEnhancement(EnhancementType.SPEED, 4 + speedModifier),
+                    new PhysicalEnhancement(EnhancementType.HEALTH, 11),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
+                    new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 3)
+            );
+
+            case 2 -> List.of(
+                    new PhysicalEnhancement(EnhancementType.STRENGTH, 4 + strengthModifier),
+                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 4 + resistanceModifier),
+                    new PhysicalEnhancement(EnhancementType.SPEED, 5 + speedModifier),
+                    new PhysicalEnhancement(EnhancementType.HEALTH, 13),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
+                    new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 3)
+            );
+
+            case 1 -> List.of(
+                    new PhysicalEnhancement(EnhancementType.STRENGTH, 4 + strengthModifier),
+                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 4 + resistanceModifier),
+                    new PhysicalEnhancement(EnhancementType.SPEED, 5 + speedModifier),
+                    new PhysicalEnhancement(EnhancementType.HEALTH, 16),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
+                    new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 4)
+            );
+
+            case 0 -> List.of(
+                    new PhysicalEnhancement(EnhancementType.STRENGTH, 5 + strengthModifier),
+                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 5 + resistanceModifier),
+                    new PhysicalEnhancement(EnhancementType.SPEED, 5 + speedModifier),
+                    new PhysicalEnhancement(EnhancementType.HEALTH, 20),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 5),
+                    new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 5)
+            );
+
+            default -> List.of();
+        };
     }
 
-    @SubscribeEvent
-    public static void onLivingDamageLiving(LivingDamageEvent.Post event) {
-        if(!(event.getEntity().level() instanceof ServerLevel serverLevel)) {
-            return;
-        }
-
-        if(!serverLevel.getGameRules().getBoolean(ModGameRules.REDUCE_REGEN_IN_BEYONDER_FIGHT)) {
-            return;
-        }
-
-        if(!(event.getSource().getEntity() instanceof LivingEntity source)) {
-            return;
-        }
-
-        LivingEntity target = event.getEntity();
-        if(!BeyonderData.isBeyonder(target) || !BeyonderData.isBeyonder(source)) {
-            return;
-        }
-
-        if(!reducedRegen.containsKey(target.getUUID()) || (reducedRegen.get(target.getUUID()) - System.currentTimeMillis()) <= 0) {
-            target.removeEffect(MobEffects.REGENERATION);
-        }
-        reducedRegen.put(target.getUUID(), System.currentTimeMillis() + 10000);
-    }
-
-
-    private List<MobEffectInstance> getEffectsForSequence(int sequence) {
-        if (effectsPerSequence.containsKey(sequence)) {
-            return effectsPerSequence.get(sequence);
-        } else {
-            for (int i = sequence; i < 10; i++) {
-                if (effectsPerSequence.containsKey(i)) {
-                    return effectsPerSequence.get(i);
-                }
-            }
-
-            return List.of();
-        }
+    @Override
+    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
+        return BeyonderData.getSequence(entity);
     }
 }

@@ -1,4 +1,4 @@
-package de.jakob.lotm.gui.custom;
+package de.jakob.lotm.gui.custom.CoordinateInput;
 
 import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.network.PacketHandler;

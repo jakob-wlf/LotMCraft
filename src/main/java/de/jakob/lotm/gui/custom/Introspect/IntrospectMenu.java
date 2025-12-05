@@ -1,4 +1,4 @@
-package de.jakob.lotm.gui.custom;
+package de.jakob.lotm.gui.custom.Introspect;
 
 import de.jakob.lotm.abilities.*;
 import de.jakob.lotm.gui.ModMenuTypes;

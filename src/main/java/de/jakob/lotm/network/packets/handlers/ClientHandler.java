@@ -5,7 +5,7 @@ import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.door.PlayerTeleportationAbility;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.gui.custom.CoordinateInputScreen;
+import de.jakob.lotm.gui.custom.CoordinateInput.CoordinateInputScreen;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.rendering.*;
 import de.jakob.lotm.rendering.effectRendering.impl.VFXRenderer;

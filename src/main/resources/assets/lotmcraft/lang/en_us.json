@@ -841,6 +841,7 @@
 
   "lotm.griefing": "Griefing Enabled",
   "lotm.description": "Description",
+  "lotm.digested": "Digested the Potion",
   "lotm.marionette": "Marionette",
   "lotm.selected": "Selected",
   "lotm.potion_recipe": "Potion Recipe",

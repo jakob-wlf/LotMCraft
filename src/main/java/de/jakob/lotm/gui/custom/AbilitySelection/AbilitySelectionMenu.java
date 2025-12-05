@@ -1,4 +1,4 @@
-package de.jakob.lotm.gui.custom;
+package de.jakob.lotm.gui.custom.AbilitySelection;
 
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.AbilityItemHandler;

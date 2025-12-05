@@ -1,4 +1,4 @@
-package de.jakob.lotm.gui.custom;
+package de.jakob.lotm.gui.custom.UsernameInput;
 
 import de.jakob.lotm.abilities.fool.ShapeShiftingAbility;
 import net.minecraft.client.gui.components.Button;

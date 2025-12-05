@@ -1,7 +1,7 @@
 package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.abilities.AbilityItem;
-import de.jakob.lotm.gui.custom.UsernameInputScreen;
+import de.jakob.lotm.gui.custom.UsernameInput.UsernameInputScreen;
 import de.jakob.lotm.util.helper.SkinChanger;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.ChatFormatting;

@@ -37,6 +37,10 @@ public class BeyonderDataTickHandler {
             // Passive abilities
             if(player.tickCount % 5 == 0)
                 tickAbilities(player);
+
+            if(player.tickCount % 20 == 0) {
+                BeyonderData.digest(player, 1 / (20 * 60 * 60f));
+            }
         }
 
         if(player.tickCount % 5 == 0) {

@@ -1,4 +1,4 @@
-package de.jakob.lotm.gui.custom;
+package de.jakob.lotm.gui.custom.Introspect;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
@@ -10,29 +10,27 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class AbilitySelectionMenuProvider implements MenuProvider {
-    private final List<ItemStack> items;
-    private final String title;
-    private final int color;
+public class IntrospectMenuProvider implements MenuProvider {
     private final int sequence;
     private final String pathway;
+    private final float digestionProgress;
+    private final List<ItemStack> passiveAbilities;
 
-    public AbilitySelectionMenuProvider(List<ItemStack> items, String title, int color, int sequence, String pathway) {
-        this.items = items;
-        this.title = title;
-        this.color = color;
+
+    public IntrospectMenuProvider(List<ItemStack> passiveAbilities, int sequence, String pathway, float digestionProgress) {
         this.sequence = sequence;
         this.pathway = pathway;
+        this.digestionProgress = digestionProgress;
+        this.passiveAbilities = passiveAbilities;
     }
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Component.literal(title)
-                .withStyle(style -> style.withColor(0x111111));
+        return Component.empty();
     }
 
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-        return new AbilitySelectionMenu(containerId, playerInventory, items, sequence, pathway);
+        return new IntrospectMenu(passiveAbilities, containerId, playerInventory, sequence, pathway, digestionProgress);
     }
 }

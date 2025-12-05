@@ -1,4 +1,4 @@
-package de.jakob.lotm.gui.custom;
+package de.jakob.lotm.gui.custom.BrewingCauldron;
 
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.block.custom.BrewingCauldronBlockEntity;

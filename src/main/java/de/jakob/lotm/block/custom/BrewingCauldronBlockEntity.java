@@ -1,7 +1,7 @@
 package de.jakob.lotm.block.custom;
 
 import de.jakob.lotm.block.ModBlockEntities;
-import de.jakob.lotm.gui.custom.BrewingCauldronMenu;
+import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
 import de.jakob.lotm.potions.BeyonderPotion;
 import de.jakob.lotm.potions.PotionRecipes;
 import net.minecraft.core.BlockPos;
