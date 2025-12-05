@@ -13,7 +13,9 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -64,6 +66,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
         applyNightVision(entity);
         applyConduit(entity);
         applyDolphinsGrace(entity);
+        applySaturation(entity);
         applyWaterBreathing(entity);
         applyFireRes(entity);
         applyRegeneration(entity);
@@ -231,6 +234,38 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
         }
     }
 
+    private void applySaturation(LivingEntity entity) {
+        // Check if entity has night vision enhancement
+        boolean hasEffect = false;
+
+        // Check permanent enhancements
+        Map<EnhancementType, Integer> enhancements = entityEnhancements.get(entity.getUUID());
+        if (enhancements != null && enhancements.containsKey(EnhancementType.SATURATION)) {
+            hasEffect = true;
+        }
+
+        // Check temporary enhancements
+        if (!hasEffect) {
+            Map<String, TemporaryEnhancement> temps = temporaryEnhancements.get(entity.getUUID());
+            if (temps != null) {
+                for (TemporaryEnhancement temp : temps.values()) {
+                    if (temp.enhancement.getType() == EnhancementType.SATURATION) {
+                        hasEffect = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Apply night vision effect if needed
+        if (hasEffect || (BeyonderData.isBeyonder(entity) && BeyonderData.getSequence(entity) <= 4)) {
+            if(entity instanceof Player player) {
+                player.getFoodData().setSaturation(20);
+                player.getFoodData().setFoodLevel(20);
+            }
+        }
+    }
+
     private void applyDolphinsGrace(LivingEntity entity) {
         // Check if entity has night vision enhancement
         boolean hasEffect = false;
@@ -290,16 +325,8 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             }
         }
 
-        // Apply night vision effect if needed
         if (hasEffect) {
-            entity.addEffect(new MobEffectInstance(
-                    MobEffects.WATER_BREATHING,
-                    300, // 15 seconds (300 ticks), since tick is called every 5 ticks
-                    0,
-                    false,
-                    false,
-                    false
-            ));
+            entity.setAirSupply(entity.getMaxAirSupply());
         }
     }
 
@@ -604,7 +631,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
 
     @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
     public static class EnhancementEventHandler {
-        @SubscribeEvent
+        @SubscribeEvent(priority = EventPriority.LOWEST)
         public static void onLivingDamage(LivingIncomingDamageEvent event) {
             if (event.getEntity() instanceof LivingEntity entity) {
                 int resistanceLevel = getResistanceLevel(entity.getUUID());
@@ -712,7 +739,8 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
         REGENERATION(null, null, 0), // Special: handled via effects with combat reduction
         CONDUIT(null, null, 0),
         DOLPHINS_GRACE(null, null, 0),
-        UNDERWATER_BREATHING(null, null, 0);
+        UNDERWATER_BREATHING(null, null, 0),
+        SATURATION(null, null, 0);
 
         private final Holder<Attribute> attribute;
         private final AttributeModifier.Operation operation;

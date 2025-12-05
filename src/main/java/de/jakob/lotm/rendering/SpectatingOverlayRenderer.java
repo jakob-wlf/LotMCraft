@@ -145,6 +145,8 @@ public class SpectatingOverlayRenderer {
 
         if(ClientBeyonderCache.isBeyonder(entity.getUUID())) {
             String pathway = ClientBeyonderCache.getPathway(entity.getUUID());
+            if(!BeyonderData.pathwayInfos.containsKey(pathway))
+                return;
             String pathwayName = BeyonderData.pathwayInfos.get(pathway).getName();
             int sequence = ClientBeyonderCache.getSequence(entity.getUUID());
             float spirituality = ClientBeyonderCache.getSpirituality(entity.getUUID());
