@@ -7,7 +7,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.*;
 
-@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
+
 public class PhysicalEnhancementsMotherAbility extends PhysicalEnhancementsAbility {
 
     public PhysicalEnhancementsMotherAbility(Properties properties) {

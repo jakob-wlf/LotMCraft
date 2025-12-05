@@ -18,7 +18,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 import java.util.*;
 
-@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
+
 public class PhysicalEnhancementsDemonessAbility extends PhysicalEnhancementsAbility {
 
     public PhysicalEnhancementsDemonessAbility(Properties properties) {

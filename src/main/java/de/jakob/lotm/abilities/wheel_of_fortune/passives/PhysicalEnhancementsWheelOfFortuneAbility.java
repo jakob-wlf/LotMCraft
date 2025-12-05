@@ -7,7 +7,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.*;
 
-@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
+
 public class PhysicalEnhancementsWheelOfFortuneAbility extends PhysicalEnhancementsAbility {
 
     public PhysicalEnhancementsWheelOfFortuneAbility(Properties properties) {

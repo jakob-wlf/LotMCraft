@@ -1,14 +1,11 @@
 package de.jakob.lotm.abilities.darkness.passives;
 
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.*;
 
-@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class PhysicalEnhancementsDarknessAbility extends PhysicalEnhancementsAbility {
 
     public PhysicalEnhancementsDarknessAbility(Properties properties) {
