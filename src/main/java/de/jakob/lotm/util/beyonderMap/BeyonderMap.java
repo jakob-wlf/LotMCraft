@@ -1,8 +1,10 @@
 package de.jakob.lotm.util.beyonderMap;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -10,16 +12,24 @@ import net.minecraft.world.level.saveddata.SavedData;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 
 public class BeyonderMap extends SavedData {
     public static final String NBT_BEYONDER_MAP = "beyonder_map";
 
-    private HashMap<UUID, StoredData> map = new HashMap<>(300);
+    public HashMap<UUID, StoredData> map;
+
+    public BeyonderMap() {
+        super();
+
+        map = new HashMap<>(300);
+    }
+
 
     public void put(LivingEntity entity) {
         if(!(entity instanceof ServerPlayer)) return;
 
-        if(!BeyonderData.isBeyonder(entity)) return;
+        LOTMCraft.LOGGER.info("in map: pathway: {}, seq: {}", BeyonderData.getPathway(entity), BeyonderData.getSequence(entity));
 
         map.put(entity.getUUID(), new StoredData(BeyonderData.getPathway(entity),
                 BeyonderData.getSequence(entity)));
@@ -28,9 +38,18 @@ public class BeyonderMap extends SavedData {
     public Optional<StoredData> get(LivingEntity entity){
         if(!(entity instanceof ServerPlayer)) return Optional.empty();
 
-        if(!BeyonderData.isBeyonder(entity)) return Optional.empty();
-
         return Optional.of(map.get(entity.getUUID()));
+    }
+
+    public int count(String path, int seq){
+        int res = 0;
+
+        for(var obj : map.values()){
+            if(obj.pathway().equals(path) && obj.sequence() == seq)
+                res++;
+        }
+
+        return res;
     }
 
     @Override
@@ -45,7 +64,7 @@ public class BeyonderMap extends SavedData {
         return compoundTag;
     }
 
-    public static BeyonderMap load(CompoundTag compoundTag) {
+    public static BeyonderMap load(CompoundTag compoundTag, HolderLookup.Provider provider) {
         BeyonderMap data = new BeyonderMap();
 
         CompoundTag tag = compoundTag.getCompound(NBT_BEYONDER_MAP);
@@ -56,4 +75,18 @@ public class BeyonderMap extends SavedData {
 
         return data;
     }
+
+
+    private static final SavedData.Factory<BeyonderMap> BEYONDER_MAP_FACTORY =
+            new SavedData.Factory<>(
+                    BeyonderMap::new,
+                    BeyonderMap::load
+            );
+
+    public static BeyonderMap get(ServerLevel level) {
+        return level.getDataStorage().computeIfAbsent(
+                BEYONDER_MAP_FACTORY,
+                "beyonder_map_str"
+        );
+        }
 }

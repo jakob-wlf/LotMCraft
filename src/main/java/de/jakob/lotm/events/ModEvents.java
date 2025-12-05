@@ -25,6 +25,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
 
 import static de.jakob.lotm.util.BeyonderData.*;
 
@@ -115,6 +116,13 @@ public class ModEvents {
                 float progress = 1;
                 SpiritualityProgressTracker.setProgress(newPlayer.getUUID(), progress);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onWorldLoad(LevelEvent.Load event) {
+        if (event.getLevel() instanceof ServerLevel serverLevel) {
+            BeyonderData.initBeyonderMap(serverLevel);
         }
     }
 }

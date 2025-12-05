@@ -1,5 +1,6 @@
 package de.jakob.lotm.util;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
 import de.jakob.lotm.effect.ModEffects;
@@ -7,6 +8,7 @@ import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncLivingEntityBeyonderDataPacket;
+import de.jakob.lotm.util.beyonderMap.BeyonderMap;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.pathways.PathwayInfos;
@@ -40,6 +42,8 @@ public class BeyonderData {
     private static final HashMap<UUID, HashSet<String>> disabledBeyonders = new HashMap<>();
 
     public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>();
+
+    public static BeyonderMap beyonderMap;
 
     static {
         implementedRecipes.put("fool", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3}));
@@ -120,6 +124,10 @@ public class BeyonderData {
 
     public static final HashMap<String, PathwayInfos> pathwayInfos = new HashMap<>();
 
+    public static void initBeyonderMap(ServerLevel level){
+        beyonderMap = BeyonderMap.get(level);
+    }
+
     public static void initPathwayInfos() {
         pathwayInfos.put("fool", new PathwayInfos("fool", 0xFF864ec7, new String[]{"fool", "attendant_of_mysteries", "miracle_invoker", "scholar_of_yore", "bizarro_sorcerer", "marionettist", "faceless", "magician", "clown", "seer"}));
         pathwayInfos.put("error", new PathwayInfos("error", 0xFF0018b8, new String[]{"error", "worm_of_time", "trojan_horse_of_destiny", "mentor_of_deceit", "parasite", "dream_stealer", "prometheus", "cryptologist", "swindler", "marauder"}));
@@ -151,6 +159,26 @@ public class BeyonderData {
         if(entity.level() instanceof ServerLevel serverLevel) {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
+
+        int seq_0 = beyonderMap.count(pathway, 0),
+                seq_1 = beyonderMap.count(pathway, 1),
+                seq_2 = beyonderMap.count(pathway, 2);
+
+        LOTMCraft.LOGGER.info("Seq 1: {}, needed Seq: {}, map size: {}, pathway: {}", seq_1, sequence, beyonderMap.map.size(), pathway);
+
+        switch(sequence){
+            case 2:
+                if(seq_2 + seq_1 >= 9) return;
+                break;
+            case 1:
+                if(seq_0 != 0 || seq_1 >= 1) return;
+                break;
+            case 0:
+                if(seq_0 != 0) return;
+                break;
+        }
+
+        beyonderMap.put(entity);
 
         boolean griefing = !BeyonderData.isBeyonder(entity) || BeyonderData.isGriefingEnabled(entity);
 
