@@ -4,6 +4,7 @@ import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
 import de.jakob.lotm.potions.BeyonderPotion;
 import de.jakob.lotm.potions.PotionRecipes;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -155,7 +156,9 @@ public class BrewingCauldronBlockEntity extends BlockEntity implements MenuProvi
         itemHandler.setStackInSlot(INPUT_SLOT_SUPP_1, ItemStack.EMPTY);
         itemHandler.setStackInSlot(INPUT_SLOT_SUPP_2, ItemStack.EMPTY);
         itemHandler.setStackInSlot(INPUT_SLOT_MAIN, ItemStack.EMPTY);
-        itemHandler.setStackInSlot(OUTPUT_SLOT, new ItemStack(potion, 1));
+
+        if(BeyonderData.beyonderMap.check(potion.getPathway(), potion.getSequence()))
+            itemHandler.setStackInSlot(OUTPUT_SLOT, new ItemStack(potion, 1));
     }
 
     private void resetProgress() {

@@ -1,5 +1,6 @@
 package de.jakob.lotm.util;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
 import de.jakob.lotm.effect.ModEffects;
@@ -7,9 +8,11 @@ import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncLivingEntityBeyonderDataPacket;
+import de.jakob.lotm.util.beyonderMap.BeyonderMap;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.pathways.PathwayInfos;
+import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -40,6 +43,8 @@ public class BeyonderData {
     private static final HashMap<UUID, HashSet<String>> disabledBeyonders = new HashMap<>();
 
     public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>();
+
+    public static BeyonderMap beyonderMap;
 
     static {
         implementedRecipes.put("fool", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3}));
@@ -120,6 +125,10 @@ public class BeyonderData {
 
     public static final HashMap<String, PathwayInfos> pathwayInfos = new HashMap<>();
 
+    public static void initBeyonderMap(ServerLevel level){
+        beyonderMap = BeyonderMap.get(level);
+    }
+
     public static void initPathwayInfos() {
         pathwayInfos.put("fool", new PathwayInfos("fool", 0xFF864ec7, new String[]{"fool", "attendant_of_mysteries", "miracle_invoker", "scholar_of_yore", "bizarro_sorcerer", "marionettist", "faceless", "magician", "clown", "seer"}));
         pathwayInfos.put("error", new PathwayInfos("error", 0xFF0018b8, new String[]{"error", "worm_of_time", "trojan_horse_of_destiny", "mentor_of_deceit", "parasite", "dream_stealer", "prometheus", "cryptologist", "swindler", "marauder"}));
@@ -152,6 +161,10 @@ public class BeyonderData {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
 
+        if(entity instanceof ServerPlayer) {
+            if(!beyonderMap.check(pathway, sequence)) return;
+        }
+
         boolean griefing = !BeyonderData.isBeyonder(entity) || BeyonderData.isGriefingEnabled(entity);
 
         CompoundTag tag = entity.getPersistentData();
@@ -167,8 +180,11 @@ public class BeyonderData {
         // Sync to client if this is server-side
         if (entity.level() instanceof ServerLevel serverLevel) {
             callPassiveEffectsOnAdd(entity, serverLevel);
-            if(entity instanceof ServerPlayer serverPlayer)
+
+            if(entity instanceof ServerPlayer serverPlayer) {
                 PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
+                beyonderMap.put(serverPlayer);
+            }
             else {
                 PacketHandler.syncBeyonderDataToEntity(entity);
             }
@@ -339,8 +355,10 @@ public class BeyonderData {
         entity.getPersistentData().remove(NBT_SPIRITUALITY);
         entity.getPersistentData().remove(NBT_GRIEFING_ENABLED);
         entity.getPersistentData().remove(NBT_DIGESTION_PROGRESS);
-        if(entity instanceof Player player)
+        if(entity instanceof Player player) {
             SpiritualityProgressTracker.removeProgress(player);
+            beyonderMap.put(player);
+        }
 
         // Sync to client if this is server-side
         if (!entity.level().isClientSide()) {

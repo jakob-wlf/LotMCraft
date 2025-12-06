@@ -1,5 +1,6 @@
 package de.jakob.lotm.abilities.common;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenCoordinateScreenPacket;
@@ -17,6 +18,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 public class DivinationAbility extends SelectableAbilityItem {
     public static final HashMap<UUID, BlockPos> dreamDivinationUsers = new HashMap<>();

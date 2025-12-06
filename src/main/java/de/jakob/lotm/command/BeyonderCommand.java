@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.beyonderMap.StoredData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -70,7 +71,22 @@ public class BeyonderCommand {
             
             // Call the setBeyonder method
             BeyonderData.setBeyonder(target, pathway, sequence);
-            
+
+            if(target instanceof Player player) {
+                var optional = BeyonderData.beyonderMap.get(player);
+
+                if(optional.isPresent()) {
+                    StoredData data = optional.get();
+
+                    if (data.sequence() != sequence || (!data.pathway().equals(pathway)
+                            && !data.pathway().equals("none"))) {
+                        source.sendFailure(Component.literal(
+                                "Failed to advance because of insufficient amount of characteristics"));
+                        return 0;
+                    }
+                }
+            }
+
             // Send success message
             String targetName = target instanceof Player player ? player.getGameProfile().getName() : target.getDisplayName().getString();
             source.sendSuccess(() -> Component.literal("Set " + targetName + " to " + pathway + " sequence " + sequence), true);
