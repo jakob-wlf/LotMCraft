@@ -33,6 +33,8 @@ public class ShaderManager {
             // Check in priority order - shattered glass takes precedence
             if (shouldApplyShatteredGlass(player)) {
                 applyShader(mc, "shattered_glass");
+            } else if (shouldApplySanityShader(player)) {
+                applyShader(mc, "sanity_loss");
             } else if (shouldApplyAbyssalDistortion(player)) {
                 applyShader(mc, "abyssal_distortion");
             } else if (shouldApplyHolyEffect(player)) {
@@ -55,6 +57,10 @@ public class ShaderManager {
         return player.getData(ModAttachments.SHADER_COMPONENT.get()).isShaderActive() &&
                 player.getData(ModAttachments.SHADER_COMPONENT.get()).getShaderIndex()
                         == ActiveShaderComponent.SHADERTYPE.SUN_KINGDOM.getIndex();
+    }
+
+    private static boolean shouldApplySanityShader(Player player) {
+        return player.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity() < .4f;
     }
 
 

@@ -32,8 +32,6 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
     private static final Map<UUID, Map<String, EnhancementBoost>> enhancementBoosts = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> reducedRegen = new ConcurrentHashMap<>();
 
-    // Track last calculated enhancements to detect changes
-    private static final Map<UUID, Map<EnhancementType, Double>> lastCalculatedValues = new ConcurrentHashMap<>();
 
     public PhysicalEnhancementsAbility(Properties properties) {
         super(properties);
@@ -76,54 +74,24 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
         updateEnhancementBoosts(entity);
     }
 
-    /**
-     * Recalculates all enhancements and updates them if they've changed
-     * This allows for dynamic scaling based on sequence level
-     */
     private void recalculateEnhancements(LivingEntity entity) {
         int sequenceLevel = getCurrentSequenceLevel(entity);
         List<PhysicalEnhancement> currentEnhancements = getEnhancementsForSequence(sequenceLevel, entity);
 
-        Map<EnhancementType, Double> newValues = new HashMap<>();
         Map<EnhancementType, Integer> enhancementMap = new HashMap<>();
 
-        // Calculate new values
+        // Simply apply all enhancements
         for (PhysicalEnhancement enhancement : currentEnhancements) {
-            double value = enhancement.calculateValue();
-            newValues.put(enhancement.getType(), value);
+            applyEnhancement(entity, enhancement);
             enhancementMap.put(enhancement.getType(), enhancement.getLevel());
         }
 
-        // Check if values have changed
-        Map<EnhancementType, Double> lastValues = lastCalculatedValues.get(entity.getUUID());
-        boolean hasChanged = lastValues == null || !newValues.equals(lastValues);
-
-        if (hasChanged) {
-            // Remove old enhancements
-            if (lastValues != null) {
-                for (EnhancementType type : lastValues.keySet()) {
-                    removeEnhancement(entity, type);
-                }
-            }
-
-            // Apply new enhancements
-            for (PhysicalEnhancement enhancement : currentEnhancements) {
-                applyEnhancement(entity, enhancement);
-            }
-
-            // Update tracking maps
-            lastCalculatedValues.put(entity.getUUID(), newValues);
-            entityEnhancements.put(entity.getUUID(), enhancementMap);
-        }
+        // Update tracking map (still useful for resistance and other queries)
+        entityEnhancements.put(entity.getUUID(), enhancementMap);
     }
 
-    /**
-     * Override this to provide the current sequence level
-     * Default implementation returns 0
-     */
     protected int getCurrentSequenceLevel(LivingEntity entity) {
-        // Default implementation - override in subclasses
-        return 0;
+        return BeyonderData.getSequence(entity);
     }
 
     private void applyNightVision(LivingEntity entity) {
@@ -412,7 +380,6 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             }
         }
         entityEnhancements.remove(entity.getUUID());
-        lastCalculatedValues.remove(entity.getUUID());
         temporaryEnhancements.remove(entity.getUUID());
         enhancementBoosts.remove(entity.getUUID());
         reducedRegen.remove(entity.getUUID());
@@ -424,7 +391,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             if (instance != null) {
                 String modifierId = BASE_MODIFIER_ID + "_" + enhancement.getType().name().toLowerCase();
 
-                // Remove existing modifier if present
+                // Remove existing modifier if present (this line makes constant reapplication safe)
                 instance.removeModifier(ResourceLocation.parse(modifierId));
 
                 // Calculate and apply new modifier

@@ -265,6 +265,11 @@ public class ClientHandler {
     public static void handleSanityPacket(SyncSanityPacket packet) {
         Player player = Minecraft.getInstance().player;
 
+        if (player != null) {
+            return;
+        }
+
+
         player.getData(ModAttachments.SANITY_COMPONENT.get()).setSanity(packet.sanity());
     }
 }

@@ -17,7 +17,7 @@ public class PhysicalEnhancementsVisionaryAbility extends PhysicalEnhancementsAb
     @Override
     public Map<String, Integer> getRequirements() {
         return new HashMap<>(Map.of(
-                "visonary", 9
+                "visionary", 9
         ));
     }
 
@@ -103,8 +103,4 @@ public class PhysicalEnhancementsVisionaryAbility extends PhysicalEnhancementsAb
         };
     }
 
-    @Override
-    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
-    }
 }
