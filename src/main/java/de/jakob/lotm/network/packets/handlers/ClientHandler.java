@@ -263,13 +263,13 @@ public class ClientHandler {
     }
 
     public static void handleSanityPacket(SyncSanityPacket packet) {
-        Player player = Minecraft.getInstance().player;
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
 
-        if (player != null) {
+        Entity entity = level.getEntity(packet.entityId());
+        if(entity == null) {
             return;
         }
-
-
-        player.getData(ModAttachments.SANITY_COMPONENT.get()).setSanity(packet.sanity());
+        entity.getData(ModAttachments.SANITY_COMPONENT.get()).setSanity(packet.sanity());
     }
 }

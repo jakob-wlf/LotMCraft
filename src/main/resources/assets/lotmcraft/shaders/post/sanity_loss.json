@@ -6,15 +6,12 @@
     {
       "name": "lotmcraft:sanity_loss",
       "intarget": "minecraft:main",
-      "outtarget": "swap",
-      "uniforms": [
-        {
-          "name": "Time",
-          "type": "float",
-          "count": 1,
-          "values": [0.0]
-        }
-      ]
+      "outtarget": "swap"
+    },
+    {
+      "name": "minecraft:blit",
+      "intarget": "swap",
+      "outtarget": "minecraft:main"
     }
   ]
 }

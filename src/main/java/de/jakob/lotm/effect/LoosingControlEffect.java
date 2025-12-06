@@ -53,26 +53,30 @@ public class LoosingControlEffect extends MobEffect {
             livingEntity.hurt(createCustomDamageSource(livingEntity), effectiveAmplifier);
         }
 
-        MobEffectInstance instance = livingEntity.getEffect(ModEffects.LOOSING_CONTROL);
-        if(instance != null) {
-            if(instance.getDuration() == 25) {
-                float randomFloat = random.nextFloat();
-                boolean shouldKill = (randomFloat <= getProbability(amplifier));
-                if(amplifier > 8)
-                    shouldKill = true;
+        float totalProbability = getProbability(amplifier);
 
-                if(shouldKill) {
-                    livingEntity.removeEffect(ModEffects.LOOSING_CONTROL);
-                    BeyonderData.clearBeyonderData(livingEntity);
-                    livingEntity.hurt(createCustomDamageSource(livingEntity), Math.max(livingEntity.getMaxHealth() + 5, 10000));
-                }
-
-            }
+        if (amplifier > 8 || shouldKillThisTick(totalProbability)) {
+            livingEntity.removeEffect(ModEffects.LOOSING_CONTROL);
+            BeyonderData.clearBeyonderData(livingEntity);
+            livingEntity.hurt(
+                    createCustomDamageSource(livingEntity),
+                    Math.max(livingEntity.getMaxHealth() + 5, 10000)
+            );
         }
-
 
         return true;
     }
+
+    private boolean shouldKillThisTick(float totalProbability) {
+        // Effect is designed to last 5 seconds = 100 ticks
+        int ticks = 100;
+
+        // Correct probability distribution:
+        float perTickChance = 1f - (float) Math.pow(1f - totalProbability, 1f / ticks);
+
+        return random.nextFloat() <= perTickChance;
+    }
+
 
     private float getProbability(int amplifier) {
         return switch(amplifier) {

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -66,7 +67,10 @@ public class NightmareSpectatorAbility extends AbilityItem {
         ), (float) DamageLookup.lookupDamage(5, 1.1) * (float) multiplier(entity));
 
         // Add effect
-        target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, 2));
+        target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, 1));
+
+        // Decrease Sanity
+        target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync((float) (-0.165f * multiplier(entity)), target);
 
         // Particles
         ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, target.getEyeHeight() / 2, 0), 200, .35, target.getEyeHeight() / 2, .35, 0);

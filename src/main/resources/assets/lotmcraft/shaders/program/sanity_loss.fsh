@@ -8,45 +8,50 @@ in vec2 oneTexel;
 
 out vec4 fragColor;
 
-// Simple noise function for subtle distortion
+// Simple noise function
 float noise(vec2 p) {
     return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 void main() {
-    // Subtle vignette effect from edges
-    vec2 center = texCoord - 0.5;
-    float vignette = 1.0 - dot(center, center) * 0.3;
+    vec2 uv = texCoord;
 
-    // Very subtle chromatic aberration (color separation)
-    float aberration = 0.001;
-    vec2 distortion = center * aberration;
+    // Subtle wavy distortion
+    float distortAmount = 0.003;
+    float wavyX = sin(uv.y * 15.0 + Time * 2.0) * distortAmount;
+    float wavyY = cos(uv.x * 12.0 + Time * 1.5) * distortAmount;
 
-    float r = texture(DiffuseSampler, texCoord + distortion).r;
-    float g = texture(DiffuseSampler, texCoord).g;
-    float b = texture(DiffuseSampler, texCoord - distortion).b;
+    uv += vec2(wavyX, wavyY);
 
-    vec3 color = vec3(r, g, b);
+    // Clamp UV to prevent sampling outside texture
+    uv = clamp(uv, vec2(0.0), vec2(1.0));
 
-    // Apply vignette
-    color *= vignette;
+    // Sample texture
+    vec3 col = texture(DiffuseSampler, uv).rgb;
 
-    // Yellowish/golden/egg-white tint
-    // Subtle warm overlay
-    vec3 tint = vec3(1.0, 0.96, 0.85); // Warm egg-white/pale yellow
-    color = mix(color, color * tint, 0.25); // 25% tint strength
+    // Yellowish/golden/egg-white color grading
+    vec3 sanityTint = vec3(1.05, 0.98, 0.82);
+    col *= sanityTint;
 
-    // Slight desaturation for unsettling feel
-    float gray = dot(color, vec3(0.299, 0.587, 0.114));
-    color = mix(color, vec3(gray), 0.15);
+    // Slightly desaturate
+    float gray = dot(col, vec3(0.299, 0.587, 0.114));
+    col = mix(col, vec3(gray), 0.15);
 
-    // Very subtle noise/grain
-    float noiseVal = noise(texCoord * Time * 0.5) * 0.02;
-    color += noiseVal;
+    // Vignette effect
+    vec2 vigUV = uv * 2.0 - 1.0;
+    float dist = length(vigUV);
+    float vignette = smoothstep(0.8, 0.3, dist);
+    vignette = mix(0.75, 1.0, vignette);
+    col *= vignette;
 
-    // Subtle pulsing effect (very gentle)
-    float pulse = sin(Time * 0.5) * 0.02 + 1.0;
-    color *= pulse;
+    // Very subtle film grain
+    float grainAmount = 0.02;
+    float grain = (noise(uv * 1000.0 + Time * 0.1) - 0.5) * grainAmount;
+    col += grain;
 
-    fragColor = vec4(color, 1.0);
+    // Subtle pulsing effect
+    float pulse = sin(Time * 0.8) * 0.02 + 1.0;
+    col *= pulse;
+
+    fragColor = vec4(col, 1.0);
 }

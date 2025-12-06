@@ -60,7 +60,7 @@ public class ShaderManager {
     }
 
     private static boolean shouldApplySanityShader(Player player) {
-        return player.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity() < .4f;
+        return player.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity() < .5f;
     }
 
 

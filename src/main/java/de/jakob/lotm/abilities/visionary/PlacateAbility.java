@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.RingEffectManager;
@@ -77,9 +78,8 @@ public class PlacateAbility extends SelectableAbilityItem {
     }
 
     private void placateEntity(LivingEntity entity) {
+        entity.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(.25f, entity);
         entity.removeEffect(ModEffects.LOOSING_CONTROL);
-
-        entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 40, 4, false, false, false));
     }
 
     @Override

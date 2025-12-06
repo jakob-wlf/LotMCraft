@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
@@ -75,6 +76,8 @@ public class FrenzyAbility extends AbilityItem {
         }
 
         target.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), (float) (DamageLookup.lookupDamage(7, .85) * multiplier(entity)));
+
+        target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync((float) (-0.1f * multiplier(entity)), target);
 
         ParticleUtil.spawnParticles((ServerLevel) level, dust, target.getEyePosition(), 80, 0.5f);
     }

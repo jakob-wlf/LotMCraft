@@ -353,8 +353,12 @@
   "ability.lotmcraft.mundane_conceptual_theft.steal_walk": "Steal Walking Ability",
   "ability.lotmcraft.mundane_conceptual_theft.steal_sight": "Steal Sight",
   "ability.lotmcraft.mundane_conceptual_theft.steal_health": "Steal Health",
+  "ability.lotmcraft.mundane_conceptual_theft.steal_distance": "Steal Distance",
   "ability.lotmcraft.mundane_conceptual_theft.steal_thoughts": "Steal Thoughts",
   "ability.lotmcraft.mundane_conceptual_theft.theft_failed": "Theft Failed",
+  "item.lotmcraft.parasitation_ability": "Parasitation",
+  "item.lotmcraft.avatar_creation_ability": "Avatar Creation",
+  "item.lotmcraft.deceit_ability": "Deceit",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",

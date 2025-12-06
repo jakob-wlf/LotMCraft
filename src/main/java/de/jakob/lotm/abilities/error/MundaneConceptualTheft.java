@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,6 +21,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +45,8 @@ public class MundaneConceptualTheft extends SelectableAbilityItem {
     protected String[] getAbilityNames() {
         return new String[]{"ability.lotmcraft.mundane_conceptual_theft.steal_walk",
                 "ability.lotmcraft.mundane_conceptual_theft.steal_sight",
-                "ability.lotmcraft.mundane_conceptual_theft.steal_health"
+                "ability.lotmcraft.mundane_conceptual_theft.steal_health",
+                "ability.lotmcraft.mundane_conceptual_theft.steal_distance"
                 //"ability.lotmcraft.mundane_conceptual_theft.steal_thoughts"
         };
     }
@@ -91,6 +94,10 @@ public class MundaneConceptualTheft extends SelectableAbilityItem {
             return;
         }
 
+        if(abilityIndex == 3) {
+            stealDistance(serverLevel, entity);
+        }
+
         LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * multiplier(entity)), 1.5f);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mundane_conceptual_theft.no_target").withColor(0x4742c9));
@@ -108,7 +115,15 @@ public class MundaneConceptualTheft extends SelectableAbilityItem {
             case 0 -> stealWalk(target, getTheftDuration(BeyonderData.getSequence(entity), BeyonderData.getSequence(target)));
             case 1 -> stealSight(target, getTheftDuration(BeyonderData.getSequence(entity), BeyonderData.getSequence(target)));
             case 2 -> stealHealth(entity, target);
+
         }
+    }
+
+    private void stealDistance(ServerLevel level, LivingEntity entity) {
+        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, 8, true).getCenter().add(0, 1, 0);
+        level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
+
+        entity.teleportTo(targetLoc.x, targetLoc.y, targetLoc.z);
     }
 
     private void stealHealth(LivingEntity entity, LivingEntity target) {

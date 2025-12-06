@@ -177,6 +177,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> SLEEP_INDUCEMENT = ITEMS.registerItem("sleep_inducement_ability", SleepInducementAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> DREAM_TRAVERSAL = ITEMS.registerItem("dream_traversal_ability", DreamTraversalAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> NIGHTMARE_SPECTATOR = ITEMS.registerItem("nightmare_spectator_ability", NightmareSpectatorAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> TEST = ITEMS.registerItem("test", SanityTestAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> PSYCHE_STORM = ITEMS.registerItem("psyche_storm_ability", PsycheStormAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> CALAMITY_ATTRACTION = ITEMS.registerItem("calamity_attraction_ability", CalamityAttractionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

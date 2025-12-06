@@ -29,6 +29,6 @@ public class SanityTestAbility extends AbilityItem {
     protected void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel)) return;
 
-        entity.getData(ModAttachments.SANITY_COMPONENT).setSanity(entity.getData(ModAttachments.SANITY_COMPONENT).getSanity() - 0.1f);
+        entity.getData(ModAttachments.SANITY_COMPONENT).setSanityAndSync(entity.getData(ModAttachments.SANITY_COMPONENT).getSanity() - 0.1f, entity);
     }
 }

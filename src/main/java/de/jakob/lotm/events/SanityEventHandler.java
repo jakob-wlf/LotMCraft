@@ -3,6 +3,7 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -14,6 +15,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.Random;
+import java.util.UUID;
 
 @EventBusSubscriber
 public class SanityEventHandler {
@@ -31,19 +33,71 @@ public class SanityEventHandler {
 
         SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
 
+        // Add sanity back over time
+        sanityComp.increaseSanityAndSync(0.0025f, entity);
+
         float sanity = sanityComp.getSanity();
         int sanityValue = (int)(sanity * 100); // Convert to 0-100 scale
 
         // Clear all sanity effects if above threshold
-        if(sanityValue >= 64) {
-            entity.removeEffect(MobEffects.CONFUSION);
-            entity.removeEffect(MobEffects.BLINDNESS);
-            entity.removeEffect(MobEffects.WEAKNESS);
-            entity.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
-            entity.removeEffect(MobEffects.DARKNESS);
-            entity.removeEffect(ModEffects.LOOSING_CONTROL);
-            return;
+
+        // ---------------- SANITY → BEYONDER INSTABILITY ----------------
+        if (BeyonderData.isBeyonder(entity)) {
+            Random random = new Random();
+            float sanityLoss = 1.0f - sanity;
+            UUID uuid = entity.getUUID();
+
+            // ----- MULTIPLIER SCALING -----
+            double sanityMultiplier;
+
+            if (sanityValue >= 64) {
+                sanityMultiplier = 1.0;
+            } else if (sanityValue >= 50) {
+                sanityMultiplier = 0.95;
+            } else if (sanityValue >= 35) {
+                sanityMultiplier = 0.85;
+            } else if (sanityValue >= 20) {
+                sanityMultiplier = 0.7;
+            } else {
+                sanityMultiplier = Math.max(0.2, 0.5 - sanityLoss);
+            }
+
+            // Always refresh for 2000 ms
+            BeyonderData.addModifier(entity, "sanity_loss", sanityMultiplier);
+
+            // ----- RANDOM ABILITY DISABLING -----
+            if (!entity.level().isClientSide) {
+
+                int disableChance; // lower = more frequent
+                int disableDuration = 20;
+
+                if (sanityValue >= 64) {
+                    disableChance = -1; // disabled
+                } else if (sanityValue >= 50) {
+                    disableChance = 120;
+                    disableDuration = 1500;
+                } else if (sanityValue >= 35) {
+                    disableChance = 80;
+                    disableDuration = 2500;
+                } else if (sanityValue >= 20) {
+                    disableChance = 40;
+                    disableDuration = 3500;
+                } else {
+                    disableChance = 15;
+                    disableDuration = 5000;
+                }
+
+                if (disableChance > 0 && random.nextInt(disableChance) == 0) {
+                    BeyonderData.disableAbilityUseWithTimeLimit(
+                            entity,
+                            "sanity_instability",
+                            disableDuration
+                    );
+                }
+            }
         }
+// ---------------------------------------------------------------
+
 
         Random random = new Random();
 

@@ -1,14 +1,6 @@
 {
-  "blend": {
-    "func": "add",
-    "srcrgb": "one",
-    "dstrgb": "zero"
-  },
   "vertex": "lotmcraft:sanity_loss",
   "fragment": "lotmcraft:sanity_loss",
-  "attributes": [
-    "Position"
-  ],
   "samplers": [
     {
       "name": "DiffuseSampler"
@@ -25,12 +17,6 @@
         0.0, 0.0, 1.0, 0.0,
         0.0, 0.0, 0.0, 1.0
       ]
-    },
-    {
-      "name": "InSize",
-      "type": "float",
-      "count": 2,
-      "values": [1.0, 1.0]
     },
     {
       "name": "OutSize",
