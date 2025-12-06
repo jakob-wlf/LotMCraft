@@ -1,6 +1,7 @@
 package de.jakob.lotm.util.beyonderMap;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -55,8 +56,28 @@ public class BeyonderMap extends SavedData {
         return res;
     }
 
+    public boolean check(String path, int seq){
+        int seq_0 = count(path, 0),
+                seq_1 = count(path, 1),
+                seq_2 = count(path, 2);
+
+        switch (seq) {
+            case 2:
+                if (seq_2 + seq_1 >= 9) return false;
+                break;
+            case 1:
+                if (seq_0 != 0 || seq_1 >= 3) return false;
+                break;
+            case 0:
+                if (seq_0 != 0) return false;
+                break;
+        }
+
+        return true;
+    }
+
     public boolean contains(LivingEntity entity){
-        return  map.containsKey(entity.getUUID());
+        return map.containsKey(entity.getUUID());
     }
 
     @Override
@@ -83,17 +104,10 @@ public class BeyonderMap extends SavedData {
         return data;
     }
 
-
-    private static final SavedData.Factory<BeyonderMap> BEYONDER_MAP_FACTORY =
-            new SavedData.Factory<>(
-                    BeyonderMap::new,
-                    BeyonderMap::load
-            );
-
     public static BeyonderMap get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(
-                BEYONDER_MAP_FACTORY,
-                "beyonder_map_str"
+        return level.getDataStorage().computeIfAbsent(new Factory<BeyonderMap>(
+                BeyonderMap::new, BeyonderMap::load),
+                NBT_BEYONDER_MAP
         );
-        }
+    }
 }

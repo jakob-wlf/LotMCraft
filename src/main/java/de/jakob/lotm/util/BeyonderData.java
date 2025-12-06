@@ -161,25 +161,8 @@ public class BeyonderData {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
 
-        if(entity instanceof ServerPlayer player) {
-            int seq_0 = beyonderMap.count(pathway, 0),
-                    seq_1 = beyonderMap.count(pathway, 1),
-                    seq_2 = beyonderMap.count(pathway, 2);
-
-            LOTMCraft.LOGGER.info("Seq 1: {}, needed Seq: {}, map size: {}, pathway: {}, name: {}",
-                    seq_1, sequence, beyonderMap.map.size(), pathway, player.getDisplayName());
-
-            switch (sequence) {
-                case 2:
-                    if (seq_2 + seq_1 >= 9) return;
-                    break;
-                case 1:
-                    if (seq_0 != 0 || seq_1 >= 3) return;
-                    break;
-                case 0:
-                    if (seq_0 != 0) return;
-                    break;
-            }
+        if(entity instanceof ServerPlayer) {
+            if(!beyonderMap.check(pathway, sequence)) return;
         }
 
         boolean griefing = !BeyonderData.isBeyonder(entity) || BeyonderData.isGriefingEnabled(entity);

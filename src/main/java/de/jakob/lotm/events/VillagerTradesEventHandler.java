@@ -4,16 +4,20 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.PotionIngredient;
 import de.jakob.lotm.potions.*;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.villager.ModVillagers;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.item.trading.MerchantOffers;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 
 import java.util.HashMap;
@@ -102,4 +106,36 @@ public class VillagerTradesEventHandler {
 
         return level;
     }
+
+    @SubscribeEvent
+    public static void onVillagerInteract(PlayerInteractEvent.EntityInteract event) {
+        if (!(event.getTarget() instanceof Villager villager)) return;
+        if (event.getLevel().isClientSide()) return;
+
+        MerchantOffers offers = villager.getOffers();
+
+        if(offers.isEmpty()) return;
+
+        offers.removeIf(offer -> {
+            var item = offer.getResult().getItem();
+
+            if(item instanceof PotionIngredient obj){
+                for(var path : obj.getPathways()){
+                    return !BeyonderData.beyonderMap.check(path,obj.getSequence());
+                }
+            }
+
+            if(item instanceof BeyonderPotion potion){
+                return !BeyonderData.beyonderMap.check(potion.getPathway(), potion.getSequence());
+            }
+
+            if(item instanceof BeyonderCharacteristicItem cha){
+                return !BeyonderData.beyonderMap.check(cha.getPathway(), cha.getSequence());
+            }
+
+            return false;
+            }
+        );
+    }
+
 }

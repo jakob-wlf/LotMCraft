@@ -12,6 +12,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
+import static de.jakob.lotm.util.BeyonderData.beyonderMap;
+
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderEventHandler {
 
@@ -20,6 +22,9 @@ public class BeyonderEventHandler {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             // Sync beyonder data when player joins
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
+
+            if(!beyonderMap.contains(serverPlayer))
+                beyonderMap.put(serverPlayer);
         }
     }
 

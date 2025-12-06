@@ -118,18 +118,4 @@ public class ModEvents {
             }
         }
     }
-
-    @SubscribeEvent
-    public static void onWorldLoad(LevelEvent.Load event) {
-        if (event.getLevel() instanceof ServerLevel serverLevel) {
-            BeyonderData.initBeyonderMap(serverLevel);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        var player = event.getEntity();
-        if(!beyonderMap.contains(player))
-            beyonderMap.put(player);
-    }
 }
