@@ -38,6 +38,13 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncSanityPacket.TYPE,
+                SyncSanityPacket.STREAM_CODEC,
+                SyncSanityPacket::handle
+        );
+
+
+        registrar.playToClient(
                 SendPassiveTheftEffectPacket.TYPE,
                 SendPassiveTheftEffectPacket.STREAM_CODEC,
                 SendPassiveTheftEffectPacket::handle

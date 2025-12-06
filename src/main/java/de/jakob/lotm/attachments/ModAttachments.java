@@ -33,6 +33,13 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<SanityComponent>> SANITY_COMPONENT =
+            ATTACHMENT_TYPES.register("sanity_component", () ->
+                    AttachmentType.builder(SanityComponent::new)
+                            .serialize(SanityComponent.SERIALIZER)
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<SubordinateComponent>> SUBORDINATE_COMPONENT =
             ATTACHMENT_TYPES.register("subordinate_component", () ->
                     AttachmentType.builder(SubordinateComponent::new)

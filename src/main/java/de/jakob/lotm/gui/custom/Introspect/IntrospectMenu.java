@@ -24,25 +24,28 @@ public class IntrospectMenu extends AbstractContainerMenu {
     private int sequence;
     private String pathway;
     private float digestionProgress;
+    private float sanity;
 
     // Client-side constructor
     public IntrospectMenu(int containerId, Inventory playerInventory, FriendlyByteBuf ignored) {
-        this(new ArrayList<>(List.of()), containerId, playerInventory, 9, "fool", 0.0f);
+        this(new ArrayList<>(List.of()), containerId, playerInventory, 9, "fool", 0.0f, 1.0f);
     }
 
-    public void updateData(int sequence, String pathway, float digestionProgress) {
+    public void updateData(int sequence, String pathway, float digestionProgress, float sanity) {
         this.sequence = sequence;
         this.pathway = pathway;
         this.digestionProgress = digestionProgress;
+        this.sanity = sanity;
     }
 
     // Server-side constructor
-    public IntrospectMenu(List<ItemStack> passiveAbilities, int containerId, Inventory playerInventory, int sequence, String pathway, float digestionProgress) {
+    public IntrospectMenu(List<ItemStack> passiveAbilities, int containerId, Inventory playerInventory, int sequence, String pathway, float digestionProgress, float sanity) {
         super(ModMenuTypes.INTROSPECT_MENU.get(), containerId);
 
         this.sequence = sequence;
         this.pathway = pathway;
         this.digestionProgress = digestionProgress;
+        this.sanity = sanity;
         this.itemHandler = new ItemStackHandler(9) {
             @Override
             public boolean isItemValid(int slot, ItemStack stack) {
@@ -57,7 +60,7 @@ public class IntrospectMenu extends AbstractContainerMenu {
 
         for (int i = 0; i < 9; i++) {
             int x = 7 + (i * 18);
-            int y = 139;
+            int y = 178;
             this.addSlot(new SlotItemHandler(itemHandler, i, x, y));
         }
 
@@ -71,9 +74,6 @@ public class IntrospectMenu extends AbstractContainerMenu {
         }
     }
 
-    private long lastShiftClickTime = 0;
-    private static final long SHIFT_CLICK_COOLDOWN = 200; // 200ms cooldown
-
     @Override
     public @NotNull ItemStack quickMoveStack(Player player, int index) {
         return ItemStack.EMPTY;
@@ -83,10 +83,6 @@ public class IntrospectMenu extends AbstractContainerMenu {
     public boolean stillValid(Player player) {
         return true;
     }
-    
-//    public ItemStackHandler getItemHandler() {
-//        return itemHandler;
-//    }
 
     public int getSequence() {
         return sequence;
@@ -98,5 +94,9 @@ public class IntrospectMenu extends AbstractContainerMenu {
 
     public float getDigestionProgress() {
         return digestionProgress;
+    }
+
+    public float getSanity() {
+        return sanity;
     }
 }

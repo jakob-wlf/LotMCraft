@@ -14,14 +14,16 @@ public class IntrospectMenuProvider implements MenuProvider {
     private final int sequence;
     private final String pathway;
     private final float digestionProgress;
+    private final float sanity;
     private final List<ItemStack> passiveAbilities;
 
 
-    public IntrospectMenuProvider(List<ItemStack> passiveAbilities, int sequence, String pathway, float digestionProgress) {
+    public IntrospectMenuProvider(List<ItemStack> passiveAbilities, int sequence, String pathway, float digestionProgress, float sanity) {
         this.sequence = sequence;
         this.pathway = pathway;
         this.digestionProgress = digestionProgress;
         this.passiveAbilities = passiveAbilities;
+        this.sanity = sanity;
     }
 
     @Override
@@ -31,6 +33,6 @@ public class IntrospectMenuProvider implements MenuProvider {
 
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-        return new IntrospectMenu(passiveAbilities, containerId, playerInventory, sequence, pathway, digestionProgress);
+        return new IntrospectMenu(passiveAbilities, containerId, playerInventory, sequence, pathway, digestionProgress, sanity);
     }
 }

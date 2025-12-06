@@ -261,4 +261,10 @@ public class ClientHandler {
             DecryptionOverlayRenderer.entitiesLookedAtByPlayerWithActiveDecryption.remove(player.getUUID());
         }
     }
+
+    public static void handleSanityPacket(SyncSanityPacket packet) {
+        Player player = Minecraft.getInstance().player;
+
+        player.getData(ModAttachments.SANITY_COMPONENT.get()).setSanity(packet.sanity());
+    }
 }

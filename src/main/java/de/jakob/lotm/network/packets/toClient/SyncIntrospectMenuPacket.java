@@ -11,12 +11,13 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SyncIntrospectMenuPacket(int sequence, String pathway) implements CustomPacketPayload {
+public record SyncIntrospectMenuPacket(int sequence, String pathway, float sanity) implements CustomPacketPayload {
     public static final Type<SyncIntrospectMenuPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sync_introspect_menu"));
     
     public static final StreamCodec<FriendlyByteBuf, SyncIntrospectMenuPacket> STREAM_CODEC = StreamCodec.composite(
         ByteBufCodecs.INT, SyncIntrospectMenuPacket::sequence,
         ByteBufCodecs.STRING_UTF8, SyncIntrospectMenuPacket::pathway,
+        ByteBufCodecs.FLOAT, SyncIntrospectMenuPacket::sanity,
         SyncIntrospectMenuPacket::new
     );
     
@@ -28,7 +29,7 @@ public record SyncIntrospectMenuPacket(int sequence, String pathway) implements 
     public static void handle(SyncIntrospectMenuPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (Minecraft.getInstance().screen instanceof IntrospectScreen screen) {
-                screen.updateMenuData(packet.sequence(), packet.pathway(), ClientBeyonderCache.getDigestionProgress(context.player().getUUID()));
+                screen.updateMenuData(packet.sequence(), packet.pathway(), ClientBeyonderCache.getDigestionProgress(context.player().getUUID()), packet.sanity);
             }
         });
     }

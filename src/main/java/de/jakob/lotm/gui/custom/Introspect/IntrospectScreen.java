@@ -18,7 +18,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         this.containerBackground = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/introspect.png");
 
-        this.imageHeight = 192;
+        this.imageHeight = 231;
         this.imageWidth = 192;
     }
 
@@ -35,8 +35,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         updateScreen(menu.getPathway(), menu.getSequence());
     }
 
-    public void updateMenuData(int sequence, String pathway, float digestionProgress) {
-        this.menu.updateData(sequence, pathway, digestionProgress);
+    public void updateMenuData(int sequence, String pathway, float digestionProgress, float sanity) {
+        this.menu.updateData(sequence, pathway, digestionProgress, sanity);
     }
 
     
@@ -69,6 +69,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         renderSequenceName(guiGraphics, x, y);
         renderDigestionLabel(guiGraphics, x, y);
         renderDigestionProgress(guiGraphics, x, y);
+        renderSanityLabel(guiGraphics, x, y);
+        renderSanityProgress(guiGraphics, x, y);
         renderPassiveAbilitiesText(guiGraphics, x, y);
         RenderSystem.disableBlend();
     }
@@ -78,10 +80,34 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         int color = 0xDDDDDD;
 
-        int textY = 123;
+        int textY = 162;
         int textX = 7;
 
         guiGraphics.drawString(this.font, passiveAbilitiesText, x + textX, y + textY, color, true);
+    }
+
+    private void renderSanityLabel(GuiGraphics guiGraphics, int x, int y) {
+        Component digestionText = Component.translatable("lotm.sanity").withStyle(ChatFormatting.BOLD);
+
+        int color = 0xDDDDDD;
+
+        int textY = 115;
+        int textX = 7;
+
+        guiGraphics.drawString(this.font, digestionText, x + textX, y + textY, color, true);
+    }
+
+    private void renderSanityProgress(GuiGraphics guiGraphics, int x, int y) {
+        int barStartY = 132;
+        int barEndY = 143;
+
+        int barStartX = 3;
+        int barEndX = (int) (115 * menu.getSanity()) + barStartX;
+
+        int color = 0xFFe8bb68;
+        int color2 = 0xFFF5ad2a;
+
+        guiGraphics.fillGradient(barStartX + x, barStartY + y, barEndX + x, barEndY + y, color, color2);
     }
 
     private void renderDigestionLabel(GuiGraphics guiGraphics, int x, int y) {
@@ -102,8 +128,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int barStartX = 3;
         int barEndX = (int) (115 * menu.getDigestionProgress()) + barStartX;
 
-        int color = 0xFFe8bb68;
-        int color2 = 0xFFF5ad2a;
+        int color = 0xFFe36c54;
+        int color2 = 0xFFa8422d;
 
         guiGraphics.fillGradient(barStartX + x, barStartY + y, barEndX + x, barEndY + y, color, color2);
     }

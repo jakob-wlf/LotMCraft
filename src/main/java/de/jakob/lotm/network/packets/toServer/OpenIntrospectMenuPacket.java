@@ -2,6 +2,8 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.*;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectMenuProvider;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncIntrospectMenuPacket;
@@ -52,9 +54,14 @@ public record OpenIntrospectMenuPacket(int sequence, String pathway) implements 
                     return abilityItem.shouldApplyTo(context.player());
                 }).map(entry -> new ItemStack(entry.get())).toList());
 
-                player.openMenu(new IntrospectMenuProvider(passiveAbilities, sequence, pathway, digestionProgress));
+                SanityComponent sanityComponent = player.getData(ModAttachments.SANITY_COMPONENT);
+                float sanity = sanityComponent.getSanity();
 
-                PacketHandler.sendToPlayer(player, new SyncIntrospectMenuPacket(sequence, pathway));
+                player.openMenu(new IntrospectMenuProvider(passiveAbilities, sequence, pathway, digestionProgress, sanity));
+
+
+
+                PacketHandler.sendToPlayer(player, new SyncIntrospectMenuPacket(sequence, pathway, sanity));
             }
         });
     }
