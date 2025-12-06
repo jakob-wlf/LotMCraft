@@ -12,7 +12,6 @@ import net.minecraft.world.level.saveddata.SavedData;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
 
 public class BeyonderMap extends SavedData {
     public static final String NBT_BEYONDER_MAP = "beyonder_map";
@@ -25,14 +24,18 @@ public class BeyonderMap extends SavedData {
         map = new HashMap<>(300);
     }
 
-
     public void put(LivingEntity entity) {
         if(!(entity instanceof ServerPlayer)) return;
 
-        LOTMCraft.LOGGER.info("in map: pathway: {}, seq: {}", BeyonderData.getPathway(entity), BeyonderData.getSequence(entity));
+        LOTMCraft.LOGGER.info("in map: pathway: {}, seq: {}, name: {}",
+                BeyonderData.getPathway(entity), BeyonderData.getSequence(entity), entity.getDisplayName());
 
         map.put(entity.getUUID(), new StoredData(BeyonderData.getPathway(entity),
                 BeyonderData.getSequence(entity)));
+    }
+
+    public void remove(LivingEntity entity){
+        map.remove(entity.getUUID());
     }
 
     public Optional<StoredData> get(LivingEntity entity){
@@ -50,6 +53,10 @@ public class BeyonderMap extends SavedData {
         }
 
         return res;
+    }
+
+    public boolean contains(LivingEntity entity){
+        return  map.containsKey(entity.getUUID());
     }
 
     @Override

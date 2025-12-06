@@ -12,6 +12,7 @@ import de.jakob.lotm.util.beyonderMap.BeyonderMap;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.pathways.PathwayInfos;
+import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -160,25 +161,26 @@ public class BeyonderData {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
 
-        int seq_0 = beyonderMap.count(pathway, 0),
-                seq_1 = beyonderMap.count(pathway, 1),
-                seq_2 = beyonderMap.count(pathway, 2);
+        if(entity instanceof ServerPlayer player) {
+            int seq_0 = beyonderMap.count(pathway, 0),
+                    seq_1 = beyonderMap.count(pathway, 1),
+                    seq_2 = beyonderMap.count(pathway, 2);
 
-        LOTMCraft.LOGGER.info("Seq 1: {}, needed Seq: {}, map size: {}, pathway: {}", seq_1, sequence, beyonderMap.map.size(), pathway);
+            LOTMCraft.LOGGER.info("Seq 1: {}, needed Seq: {}, map size: {}, pathway: {}, name: {}",
+                    seq_1, sequence, beyonderMap.map.size(), pathway, player.getDisplayName());
 
-        switch(sequence){
-            case 2:
-                if(seq_2 + seq_1 >= 9) return;
-                break;
-            case 1:
-                if(seq_0 != 0 || seq_1 >= 1) return;
-                break;
-            case 0:
-                if(seq_0 != 0) return;
-                break;
+            switch (sequence) {
+                case 2:
+                    if (seq_2 + seq_1 >= 9) return;
+                    break;
+                case 1:
+                    if (seq_0 != 0 || seq_1 >= 3) return;
+                    break;
+                case 0:
+                    if (seq_0 != 0) return;
+                    break;
+            }
         }
-
-        beyonderMap.put(entity);
 
         boolean griefing = !BeyonderData.isBeyonder(entity) || BeyonderData.isGriefingEnabled(entity);
 
@@ -195,8 +197,11 @@ public class BeyonderData {
         // Sync to client if this is server-side
         if (entity.level() instanceof ServerLevel serverLevel) {
             callPassiveEffectsOnAdd(entity, serverLevel);
-            if(entity instanceof ServerPlayer serverPlayer)
+
+            if(entity instanceof ServerPlayer serverPlayer) {
                 PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
+                beyonderMap.put(serverPlayer);
+            }
             else {
                 PacketHandler.syncBeyonderDataToEntity(entity);
             }
@@ -367,8 +372,10 @@ public class BeyonderData {
         entity.getPersistentData().remove(NBT_SPIRITUALITY);
         entity.getPersistentData().remove(NBT_GRIEFING_ENABLED);
         entity.getPersistentData().remove(NBT_DIGESTION_PROGRESS);
-        if(entity instanceof Player player)
+        if(entity instanceof Player player) {
             SpiritualityProgressTracker.removeProgress(player);
+            beyonderMap.put(player);
+        }
 
         // Sync to client if this is server-side
         if (!entity.level().isClientSide()) {
