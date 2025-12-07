@@ -32,10 +32,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
@@ -45,6 +42,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
@@ -489,6 +487,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
         String pathway = getPathway();
         int sequence = getSequence();
 
+        if(!BeyonderData.beyonderMap.check(pathway, sequence)) return;
+
         Random random = new Random();
 
         BeyonderCharacteristicItem characteristicItem = BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, sequence);
@@ -504,6 +504,13 @@ public class BeyonderNPCEntity extends PathfinderMob {
         }
 
         super.dropCustomDeathLoot(level, damageSource, recentlyHit);
+    }
+
+    @Override
+    protected void dropFromLootTable(DamageSource damageSource, boolean attackedRecently) {
+        if(!BeyonderData.beyonderMap.check(pathway, sequence)) return;
+
+        super.dropFromLootTable(damageSource, attackedRecently);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
