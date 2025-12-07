@@ -28,9 +28,6 @@ public class BeyonderMap extends SavedData {
     public void put(LivingEntity entity) {
         if(!(entity instanceof ServerPlayer)) return;
 
-        LOTMCraft.LOGGER.info("in map: pathway: {}, seq: {}, name: {}",
-                BeyonderData.getPathway(entity), BeyonderData.getSequence(entity), entity.getDisplayName());
-
         map.put(entity.getUUID(), new StoredData(BeyonderData.getPathway(entity),
                 BeyonderData.getSequence(entity)));
     }

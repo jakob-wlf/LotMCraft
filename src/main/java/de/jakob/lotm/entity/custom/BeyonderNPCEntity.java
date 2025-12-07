@@ -487,6 +487,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
         String pathway = getPathway();
         int sequence = getSequence();
 
+        if(!BeyonderData.beyonderMap.check(pathway, sequence)) return;
+
         Random random = new Random();
 
         BeyonderCharacteristicItem characteristicItem = BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, sequence);
@@ -502,6 +504,13 @@ public class BeyonderNPCEntity extends PathfinderMob {
         }
 
         super.dropCustomDeathLoot(level, damageSource, recentlyHit);
+    }
+
+    @Override
+    protected void dropFromLootTable(DamageSource damageSource, boolean attackedRecently) {
+        if(!BeyonderData.beyonderMap.check(pathway, sequence)) return;
+
+        super.dropFromLootTable(damageSource, attackedRecently);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
