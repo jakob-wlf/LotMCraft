@@ -357,6 +357,12 @@
   "ability.lotmcraft.mundane_conceptual_theft.steal_thoughts": "Steal Thoughts",
   "ability.lotmcraft.mundane_conceptual_theft.theft_failed": "Theft Failed",
   "item.lotmcraft.parasitation_ability": "Parasitation",
+  "ability.lotmcraft.parasitation.no_target": "No Target found for parasitation",
+  "ability.lotmcraft.parasitation.target_too_strong": "Target is too strong to parasitize",
+  "item.lotmcraft.host_controlling_ability": "Host Controlling",
+  "ability.lotmcraft.host_controlling.drain_health": "Drain Health",
+  "ability.lotmcraft.host_controlling.kill": "Kill Host",
+  "ability.lotmcraft.host_controlling.no_host": "You are not parasitizing anyone",
   "item.lotmcraft.avatar_creation_ability": "Avatar Creation",
   "item.lotmcraft.deceit_ability": "Deceit",
 

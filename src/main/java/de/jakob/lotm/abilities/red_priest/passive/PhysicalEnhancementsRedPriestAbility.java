@@ -17,7 +17,7 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
     @Override
     public Map<String, Integer> getRequirements() {
         return new HashMap<>(Map.of(
-                "error", 9
+                "red_priest", 9
         ));
     }
 

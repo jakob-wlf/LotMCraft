@@ -29,7 +29,7 @@ void main() {
     vec2 uv = texCoord;
 
     // Much stronger wavy distortion
-    float distortAmount = 0.8;
+    float distortAmount = 0.025;
     float wavyX = sin(uv.y * 15.0 + Time * 2.0) * distortAmount;
     float wavyY = cos(uv.x * 12.0 + Time * 1.5) * distortAmount;
 
@@ -55,7 +55,7 @@ void main() {
     vec2 vigUV = uv - 0.5;
     float dist = length(vigUV);
     float vignette = smoothstep(0.7, 0.2, dist);
-    vignette = mix(0.05, 1.0, vignette);
+    vignette = mix(0.15, 1.0, vignette);
     color.rgb *= vignette;
 
     // Film grain

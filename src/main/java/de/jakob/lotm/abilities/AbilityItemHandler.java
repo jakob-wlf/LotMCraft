@@ -177,7 +177,6 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> SLEEP_INDUCEMENT = ITEMS.registerItem("sleep_inducement_ability", SleepInducementAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> DREAM_TRAVERSAL = ITEMS.registerItem("dream_traversal_ability", DreamTraversalAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> NIGHTMARE_SPECTATOR = ITEMS.registerItem("nightmare_spectator_ability", NightmareSpectatorAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> TEST = ITEMS.registerItem("test", SanityTestAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> PSYCHE_STORM = ITEMS.registerItem("psyche_storm_ability", PsycheStormAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> CALAMITY_ATTRACTION = ITEMS.registerItem("calamity_attraction_ability", CalamityAttractionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
@@ -190,6 +189,8 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> GIFT = ITEMS.registerItem("gift_ability", GiftAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> ABILITY_THEFT = ITEMS.registerItem("ability_theft_ability", AbilityTheftAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> MUNDANE_CONCEPTUAL_THEFT = ITEMS.registerItem("mundane_conceptual_theft_ability", MundaneConceptualTheft::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> PARASITATION = ITEMS.registerItem("parasitation_ability", ParasitationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> HOST_CONTROLLING = ITEMS.registerItem("host_controlling_ability", HostControllingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> ABILITY_NOT_IMPLEMENTED = ITEMS.registerItem("ability_not_implemented", Item::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 

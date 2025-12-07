@@ -39,6 +39,10 @@ public class SanityEventHandler {
         float sanity = sanityComp.getSanity();
         int sanityValue = (int)(sanity * 100); // Convert to 0-100 scale
 
+        if(sanityValue >= 80) {
+            return;
+        }
+
         // Clear all sanity effects if above threshold
 
         // ---------------- SANITY → BEYONDER INSTABILITY ----------------
@@ -96,7 +100,8 @@ public class SanityEventHandler {
                 }
             }
         }
-// ---------------------------------------------------------------
+
+        // ---------------------------------------------------------------
 
 
         Random random = new Random();

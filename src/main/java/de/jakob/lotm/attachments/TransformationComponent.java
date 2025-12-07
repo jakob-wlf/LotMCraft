@@ -89,6 +89,7 @@ public class TransformationComponent {
         FOG_OF_HISTORY(5),
         ENERGY(6),
         CONCEPTUALIZATION(7),
+        PARASTATION(8),
         TYRANT_MYTHICAL_CREATURE(101),
         DOOR_MYTHICAL_CREATURE(102);
 

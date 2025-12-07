@@ -26,6 +26,13 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<ParasitationComponent>> PARASITE_COMPONENT =
+            ATTACHMENT_TYPES.register("parasite_component", () ->
+                    AttachmentType.builder(ParasitationComponent::new)
+                            .serialize(ParasitationComponent.SERIALIZER)
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<NewPlayerComponent>> BOOK_COMPONENT =
             ATTACHMENT_TYPES.register("book_component", () ->
                     AttachmentType.builder(NewPlayerComponent::new)

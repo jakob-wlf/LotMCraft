@@ -1,6 +1,7 @@
 package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.ParasitationComponent;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
@@ -735,6 +736,17 @@ public class AbilityUtil {
         if (target instanceof Player player && player.isCreative()) return false;
         if (!source.canAttack(target)) return false;
 
+        ParasitationComponent parasitationComponent = target.getData(ModAttachments.PARASITE_COMPONENT.get());
+        if(parasitationComponent.isParasited()) {
+            if(parasitationComponent.getParasiteUUID().equals(source.getUUID()))
+                return false;
+        }
+
+        parasitationComponent = source.getData(ModAttachments.PARASITE_COMPONENT.get());
+        if(parasitationComponent.isParasited()) {
+            if(parasitationComponent.getParasiteUUID().equals(target.getUUID()))
+                return false;
+        }
 
         MarionetteComponent component = source.getData(ModAttachments.MARIONETTE_COMPONENT.get());
         if(component.isMarionette()) {

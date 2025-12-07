@@ -1,4 +1,4 @@
-// 1.21.1	2025-12-03T21:16:18.585169	Item Models: lotmcraft
+// 1.21.1	2025-12-08T00:50:05.4964375	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 b46fafcef24e66e85c39645e39df0ec0b12c3447 assets/lotmcraft/models/item/ability_theft_ability.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
@@ -180,6 +180,7 @@ adaa3e6918e978f71b51baadee8dcac122365a99 assets/lotmcraft/models/item/holy_light
 bc58423701ac8c13bf64cf0525c7fc97407d706d assets/lotmcraft/models/item/holy_song_ability.json
 6711764771e2f80d3ea9db4ffa352260018d217b assets/lotmcraft/models/item/hornacis_gray_mountain_goat_horn.json
 4736eb3fcf4c2bc9a061351ed044d3f1a2366deb assets/lotmcraft/models/item/horror_bishop_characteristic.json
+d36ba843caf431b9fb2ae81d7ac87077f8db71c2 assets/lotmcraft/models/item/host_controlling_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/hunter.json
 5607624d284fe69bdc78c41501574c57c05a2d36 assets/lotmcraft/models/item/hunter_characteristic.json
 32d6cef76acb7b25ea1d7991661786897f85e993 assets/lotmcraft/models/item/hunter_potion.json
@@ -277,6 +278,7 @@ e90ee5d776f7b0a3fc4cb8dcd0e2d7c499dbff4b assets/lotmcraft/models/item/pallbearer
 73f34c9746a58a00ba79b75e3d512a29bdaa2dc1 assets/lotmcraft/models/item/paper_dagger_ability.json
 74d308b7f3975c550963754d2b7d2d8864a16998 assets/lotmcraft/models/item/paper_figurine_substitute.json
 5ae35b66d24a61311c6415bfe3a10e2eb7536ac8 assets/lotmcraft/models/item/paper_figurine_substitute_ability.json
+b5296eb2c8b008a11ad9c88a7c2d13deec83fb4a assets/lotmcraft/models/item/parasitation_ability.json
 45459dd79e3947e3898639759ce6c3c55871520c assets/lotmcraft/models/item/passive_calamity_attraction_ability.json
 d98eed35093f94d6d9c55fdc9d99541ce8e286ad assets/lotmcraft/models/item/passive_luck_ability.json
 9b26df505ebb3201a3efe708ae9d1de0d0da9ba7 assets/lotmcraft/models/item/passive_luck_accumulation_ability.json
