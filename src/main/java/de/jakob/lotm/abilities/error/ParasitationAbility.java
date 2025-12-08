@@ -103,7 +103,7 @@ public class ParasitationAbility extends ToggleAbilityItem {
             return;
         }
 
-        Vec3 dir = new Vec3(entity.getLookAngle().x(), 0, entity.getLookAngle().z()).normalize().scale(-.7);
+        Vec3 dir = new Vec3(entity.getLookAngle().x(), 0, entity.getLookAngle().z()).normalize().scale(Math.min(-.85f, -1 * host.getBbWidth()));
         Vec3 hostPos = entity.position().add(dir);
 
         host.teleportTo(serverLevel, hostPos.x(), hostPos.y(), hostPos.z(), Set.of(), entity.getYRot(), entity.getXRot());

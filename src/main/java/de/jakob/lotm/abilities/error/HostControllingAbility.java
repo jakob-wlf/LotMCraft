@@ -50,7 +50,10 @@ public class HostControllingAbility extends SelectableAbilityItem {
                 host.hurt(entity.damageSources().magic(), healthToDrain);
                 entity.heal(healthToDrain);
             }
-            case 1 -> host.hurt(entity.damageSources().magic(), host.getHealth());
+            case 1 -> {
+                host.setHealth(0.5f);
+                host.hurt(entity.damageSources().magic(), 1000);
+            }
         }
     }
 }
