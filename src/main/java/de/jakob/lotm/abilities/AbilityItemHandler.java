@@ -192,6 +192,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> PARASITATION = ITEMS.registerItem("parasitation_ability", ParasitationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> HOST_CONTROLLING = ITEMS.registerItem("host_controlling_ability", HostControllingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> AVATAR_CREATION = ITEMS.registerItem("avatar_creation_ability", AvatarCreationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> DECEIT = ITEMS.registerItem("deceit_ability", DeceitAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> ABILITY_NOT_IMPLEMENTED = ITEMS.registerItem("ability_not_implemented", Item::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 

@@ -1,5 +1,6 @@
 package de.jakob.lotm.util.helper;
 
+import de.jakob.lotm.abilities.error.DeceitAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
@@ -780,6 +781,8 @@ public class AbilityUtil {
         if(!mayDamage(source, target)) return false;
 
         if(source == null || target == null) return true;
+
+        if(DeceitAbility.cannotBeTargeted.contains(target.getUUID())) return false;
 
         MarionetteComponent component = target.getData(ModAttachments.MARIONETTE_COMPONENT.get());
         if(component.isMarionette()) {

@@ -39,6 +39,8 @@ public class BeyonderData {
     private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
 
     private static final HashMap<UUID, HashMap<String, Double>> multiplierModifier = new HashMap<>();
+    private static final HashMap<UUID, HashMap<String, Long>> modifierTimeouts = new HashMap<>();
+
     private static final HashMap<UUID, HashMap<String, Long>> abilityDisablingTimeouts = new HashMap<>();
     private static final HashMap<UUID, HashSet<String>> disabledBeyonders = new HashMap<>();
 
@@ -286,23 +288,46 @@ public class BeyonderData {
     public static double getMultiplier(LivingEntity entity) {
         if(!BeyonderData.isBeyonder(entity))
             return 1;
-        int sequence = getSequence(entity);
 
-        if (sequence < 0 || sequence >= multiplier.length) {
-            return 1.0; // Default multiplier if sequence is invalid
+        int sequence = getSequence(entity);
+        if (sequence < 0 || sequence >= multiplier.length)
+            return 1.0;
+
+        UUID uuid = entity.getUUID();
+
+        // --- CLEANUP EXPIRED MODIFIERS ---
+        if(modifierTimeouts.containsKey(uuid)) {
+            HashSet<String> expired = new HashSet<>();
+
+            for(Map.Entry<String, Long> entry : modifierTimeouts.get(uuid).entrySet()) {
+                if(System.currentTimeMillis() >= entry.getValue()) {
+                    expired.add(entry.getKey());
+                }
+            }
+
+            for(String id : expired) {
+                modifierTimeouts.get(uuid).remove(id);
+                if(multiplierModifier.containsKey(uuid)) {
+                    multiplierModifier.get(uuid).remove(id);
+                }
+            }
+
+            if(modifierTimeouts.get(uuid).isEmpty())
+                modifierTimeouts.remove(uuid);
         }
 
         double damageMultiplier = multiplier[sequence];
 
-        if(!multiplierModifier.containsKey(entity.getUUID()))
+        if(!multiplierModifier.containsKey(uuid))
             return damageMultiplier;
 
-        for(double d : multiplierModifier.get(entity.getUUID()).values()) {
+        for(double d : multiplierModifier.get(uuid).values()) {
             damageMultiplier *= d;
         }
 
         return damageMultiplier;
     }
+
 
     public static double getMultiplierForSequence(int sequence) {
         return multiplier[sequence];
@@ -394,9 +419,36 @@ public class BeyonderData {
     public static void removeModifier(LivingEntity entity, String id) {
         UUID uuid = entity.getUUID();
 
-        multiplierModifier.putIfAbsent(uuid, new HashMap<>());
-        multiplierModifier.get(uuid).remove(id);
+        if(multiplierModifier.containsKey(uuid)) {
+            multiplierModifier.get(uuid).remove(id);
+            if(multiplierModifier.get(uuid).isEmpty())
+                multiplierModifier.remove(uuid);
+        }
+
+        if(modifierTimeouts.containsKey(uuid)) {
+            modifierTimeouts.get(uuid).remove(id);
+            if(modifierTimeouts.get(uuid).isEmpty())
+                modifierTimeouts.remove(uuid);
+        }
     }
+
+
+    public static void addModifierWithTimeLimit(
+            LivingEntity entity,
+            String id,
+            double modifier,
+            long millis
+    ) {
+        UUID uuid = entity.getUUID();
+
+        multiplierModifier.putIfAbsent(uuid, new HashMap<>());
+        multiplierModifier.get(uuid).put(id, modifier);
+
+        modifierTimeouts.putIfAbsent(uuid, new HashMap<>());
+        modifierTimeouts.get(uuid).put(id, System.currentTimeMillis() + millis);
+    }
+
+
 
     public static boolean isAbilityDisabled(LivingEntity entity) {
         final HashSet<String> idsToRemoveDueToTimeLimit = new HashSet<>();

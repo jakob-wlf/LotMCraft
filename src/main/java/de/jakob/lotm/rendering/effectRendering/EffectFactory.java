@@ -25,6 +25,7 @@ public class EffectFactory {
             case 15 -> new GiftingParticlesEffect(x, y, z);
             case 16 -> new AbilityTheftEffect(x, y, z);
             case 17 -> new ConceptualTheftEffect(x, y, z);
+            case 18 -> new DeceptionEffect(x, y, z);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
     }

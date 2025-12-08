@@ -1,4 +1,4 @@
-// 1.21.1	2025-12-08T01:04:30.8137621	Item Models: lotmcraft
+// 1.21.1	2025-12-08T13:13:55.4786966	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 b46fafcef24e66e85c39645e39df0ec0b12c3447 assets/lotmcraft/models/item/ability_theft_ability.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
@@ -80,6 +80,7 @@ e5dd6827988440365a8eed0425f3632ad574b408 assets/lotmcraft/models/item/crystalliz
 5bed7e7bf1e2d8c330cc662b8b6e44fbc1f434bf assets/lotmcraft/models/item/crystal_sunflower.json
 38a40c15eddc1ff0b33cd5c614a10a6e8f515d98 assets/lotmcraft/models/item/cull_ability.json
 f7d5a825411d8feba4ca5eb723aee1f71dec6107 assets/lotmcraft/models/item/curse_ability.json
+e5838a0e4139beab46c880e5f51573eece151e1a assets/lotmcraft/models/item/deceit_ability.json
 1c8c70436b34b6afd26a531185959352c3546fe1 assets/lotmcraft/models/item/decryption_ability.json
 8bc61abe6fa1571e9e6b0bad8ccdb7d1374181ad assets/lotmcraft/models/item/deep_sleeper_skull.json
 39f9d91b0fa101f6f71e5c1e71e7cbba341fee8e assets/lotmcraft/models/item/defiling_seed_ability.json

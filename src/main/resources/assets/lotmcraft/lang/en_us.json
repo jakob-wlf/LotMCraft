@@ -365,6 +365,7 @@
   "ability.lotmcraft.host_controlling.no_host": "You are not parasitizing anyone",
   "item.lotmcraft.avatar_creation_ability": "Avatar Creation",
   "item.lotmcraft.deceit_ability": "Deceit",
+  "ability.lotmcraft.deceit.entities": "Deceive surrounding enemies",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",

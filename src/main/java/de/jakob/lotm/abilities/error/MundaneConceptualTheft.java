@@ -96,6 +96,7 @@ public class MundaneConceptualTheft extends SelectableAbilityItem {
 
         if(abilityIndex == 3) {
             stealDistance(serverLevel, entity);
+            return;
         }
 
         LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * multiplier(entity)), 1.5f);

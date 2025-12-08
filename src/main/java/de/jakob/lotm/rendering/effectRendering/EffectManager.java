@@ -33,7 +33,8 @@ public class EffectManager {
         SEFIRAH_CASTLE(14),
         GIFTING_PARTICLES(15),
         ABILITY_THEFT(16),
-        CONCEPTUAL_THEFT(17);
+        CONCEPTUAL_THEFT(17),
+        DECEPTION(18);
 
         private final int index;
 

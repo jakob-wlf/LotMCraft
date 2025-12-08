@@ -85,11 +85,8 @@ public class ParasitationAbility extends ToggleAbilityItem {
                     player.getX(), player.getY(), player.getZ(),
                     player.getX(), player.getY(), player.getZ()
             ));
-            player.noPhysics = true;
-            player.horizontalCollision = false;
-            player.verticalCollision = false;
-            player.hurtMarked = true;
             player.onUpdateAbilities();
+            player.hurtMarked = true;
         }
 
         if(!hostMap.containsKey(entity.getUUID())) {
@@ -119,6 +116,10 @@ public class ParasitationAbility extends ToggleAbilityItem {
             mob.setTarget(entity.getLastHurtMob());
             mob.hurtMarked = true;
         }
+
+        host.fallDistance = 0;
+        host.hurtMarked = true;
+
 
         // Stop when overridden by another transformation^1
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
@@ -150,11 +151,8 @@ public class ParasitationAbility extends ToggleAbilityItem {
             player.setBoundingBox(player.getDimensions(player.getPose()).makeBoundingBox(
                     player.getX(), player.getY(), player.getZ()
             ));
-            player.noPhysics = false;
-            player.horizontalCollision = true;
-            player.verticalCollision = true;
-            player.hurtMarked = true;
             player.onUpdateAbilities();
+            player.hurtMarked = true;
         }
 
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
