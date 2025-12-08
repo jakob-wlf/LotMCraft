@@ -145,6 +145,9 @@ public class MundaneConceptualTheft extends SelectableAbilityItem {
         if(movementSpeed == null) {
             return;
         }
+        if(movementSpeed.getModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk")) != null) {
+            return;
+        }
         movementSpeed.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk"), -100, AttributeModifier.Operation.ADD_VALUE));
 
         ServerScheduler.scheduleDelayed(theftDuration, () -> {

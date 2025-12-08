@@ -1,4 +1,4 @@
-// 1.21.1	2025-12-08T00:50:05.4964375	Item Models: lotmcraft
+// 1.21.1	2025-12-08T01:04:30.8137621	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 b46fafcef24e66e85c39645e39df0ec0b12c3447 assets/lotmcraft/models/item/ability_theft_ability.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
@@ -20,6 +20,7 @@ d38bed5b70f74fe83f8c356643a96f58500a417e assets/lotmcraft/models/item/astrologer
 80581ec0e3cf7b979f20878d2aedbf7b3ffff9c7 assets/lotmcraft/models/item/astrologer_potion.json
 040d2cd5be7a85600eb0c375a494cd718c6f4517 assets/lotmcraft/models/item/attendant_of_mysteries_characteristic.json
 bc6df0e8880ecf18ac66253837cb2a23bffe81df assets/lotmcraft/models/item/author_characteristic.json
+5692679cd1261a373441b2c9e4eb632bf8cec587 assets/lotmcraft/models/item/avatar_creation_ability.json
 9755e100a4e1431dc2a0911ac2eb43ffd6695be8 assets/lotmcraft/models/item/avatar_of_desire_ability.json
 ab4e04a60003716e741e92a9df0dd572883bbbcd assets/lotmcraft/models/item/awe_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/bard.json

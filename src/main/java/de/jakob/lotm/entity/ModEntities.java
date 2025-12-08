@@ -230,6 +230,14 @@ public class ModEntities {
                     .updateInterval(2)
                     .build("beyonder_npc"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<ErrorAvatarEntity>> ERROR_AVATAR =
+            ENTITY_TYPES.register("error_avatar", () -> EntityType.Builder.<ErrorAvatarEntity>of(ErrorAvatarEntity::new, MobCategory.MONSTER)
+                    .sized(0.6f, 1.95f)
+                    .clientTrackingRange(32)
+                    .updateInterval(2)
+                    .noSummon()
+                    .build("error_avatar"));
+
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);
     }

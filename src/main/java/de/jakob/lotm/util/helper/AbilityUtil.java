@@ -3,6 +3,7 @@ package de.jakob.lotm.util.helper;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.entity.custom.ErrorAvatarEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
@@ -735,6 +736,11 @@ public class AbilityUtil {
         if (source == target) return false;
         if (target instanceof Player player && player.isCreative()) return false;
         if (!source.canAttack(target)) return false;
+
+        if(source instanceof ErrorAvatarEntity avatar) {
+            if(target.getUUID() == avatar.getOriginalOwner())
+                return false;
+        }
 
         ParasitationComponent parasitationComponent = target.getData(ModAttachments.PARASITE_COMPONENT.get());
         if(parasitationComponent.isParasited()) {

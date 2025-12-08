@@ -6,6 +6,7 @@ import de.jakob.lotm.command.SkinChangeCommand;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.*;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.entity.custom.ErrorAvatarEntity;
 import de.jakob.lotm.entity.custom.FireRavenEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.rendering.models.DoorMythicalCreatureModel;
@@ -64,6 +65,7 @@ public class ModEvents {
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.FIRE_RAVEN.get(), FireRavenEntity.createAttributes().build());
         event.put(ModEntities.BEYONDER_NPC.get(), BeyonderNPCEntity.createAttributes().build());
+        event.put(ModEntities.ERROR_AVATAR.get(), ErrorAvatarEntity.createAttributes().build());
     }
 
     @SubscribeEvent
