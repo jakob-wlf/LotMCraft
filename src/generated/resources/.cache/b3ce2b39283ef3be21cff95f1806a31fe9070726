@@ -1,4 +1,4 @@
-// 1.21.1	2025-12-08T13:13:55.4786966	Item Models: lotmcraft
+// 1.21.1	2025-12-09T23:41:58.4074537	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 b46fafcef24e66e85c39645e39df0ec0b12c3447 assets/lotmcraft/models/item/ability_theft_ability.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
@@ -144,6 +144,7 @@ e7920e0bfe9fe326a762f536d121b2bd638ff479 assets/lotmcraft/models/item/energy_tra
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/faceless.json
 f5f82cd2d74d4f90d50a94802a8b7ebfbb039142 assets/lotmcraft/models/item/faceless_characteristic.json
 7cae921d8a6eb45e8be0f9667898e25bada9423b assets/lotmcraft/models/item/faceless_potion.json
+d50e45db0625e7ea746fd8b5d0ac9496a1c86d6e assets/lotmcraft/models/item/fate_siphoning_ability.json
 f92fc1a03cc2ebd5b36e5cd3bd2c61b38eca45aa assets/lotmcraft/models/item/feather_fall_ability.json
 cd1ba193d2729afb68f30d5b059c8907dfa4fb96 assets/lotmcraft/models/item/filthy_monarch_characteristic.json
 0dbfea078d31fb91a9dc63ce06a2ea4217bd14c1 assets/lotmcraft/models/item/fire_of_light_ability.json

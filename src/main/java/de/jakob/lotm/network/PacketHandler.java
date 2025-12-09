@@ -70,6 +70,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                AddDirectionalEffectPacket.TYPE,
+                AddDirectionalEffectPacket.STREAM_CODEC,
+                AddDirectionalEffectPacket::handle
+        );
+
+        registrar.playToClient(
                 OpenCoordinateScreenPacket.TYPE,
                 OpenCoordinateScreenPacket.STREAM_CODEC,
                 OpenCoordinateScreenPacket::handle

@@ -6,8 +6,10 @@ import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.RingEffectManager;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +29,7 @@ import java.util.UUID;
 public class DeceitAbility extends SelectableAbilityItem {
 
     public static final HashSet<UUID> cannotBeTargeted = new HashSet<>();
+    public static final HashSet<UUID> cannotBeHarmed = new HashSet<>();
 
     public DeceitAbility(Properties properties) {
         super(properties, 1);
@@ -43,7 +47,7 @@ public class DeceitAbility extends SelectableAbilityItem {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.deceit.entities"};
+        return new String[]{"ability.lotmcraft.deceit.entities", "ability.lotmcraft.deceit.world"};
     }
 
     @Override
@@ -57,7 +61,13 @@ public class DeceitAbility extends SelectableAbilityItem {
 
         switch (abilityIndex) {
             case 0 -> deceiveOthers(serverLevel, entity);
+            case 1 -> deceiveWorld(serverLevel, entity);
         }
+    }
+
+    private void deceiveWorld(ServerLevel serverLevel, LivingEntity entity) {
+        cannotBeHarmed.add(entity.getUUID());
+        ServerScheduler.scheduleDelayed(20 * 7, () -> cannotBeHarmed.remove(entity.getUUID()));
     }
 
     private void deceiveOthers(ServerLevel serverLevel, LivingEntity entity) {
@@ -95,5 +105,14 @@ public class DeceitAbility extends SelectableAbilityItem {
         }
 
         event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+        LivingEntity entity = event.getEntity();
+        if(cannotBeHarmed.contains(entity.getUUID()) && entity.level() instanceof ServerLevel serverLevel) {
+            ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, entity.position().add(0, entity.getEyeHeight() / 2, 0), 60, 0.5, 0.5, 0.5, 0.1);
+            event.setCanceled(true);
+        }
     }
 }

@@ -207,6 +207,13 @@ public class ClientHandler {
         VFXRenderer.addActiveEffect(index, x, y, z);
     }
 
+    public static void addDirectionalEffect(int index,
+                                            double startX, double startY, double startZ,
+                                            double endX, double endY, double endZ,
+                                            int duration) {
+        VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration);
+    }
+
     public static void handleHotbarPacket(SyncAbilityHotbarPacket packet) {
         Player player = Minecraft.getInstance().player;
         if (player != null) {

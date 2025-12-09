@@ -366,6 +366,10 @@
   "item.lotmcraft.avatar_creation_ability": "Avatar Creation",
   "item.lotmcraft.deceit_ability": "Deceit",
   "ability.lotmcraft.deceit.entities": "Deceive surrounding enemies",
+  "ability.lotmcraft.deceit.world": "Deceive the world",
+  "item.lotmcraft.fate_siphoning_ability": "Deceit",
+  "ability.lotmcraft.fate_siphoning.no_target": "No Target found",
+  "ability.lotmcraft.fate_siphoning.already_swapping": "No Target found",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",
