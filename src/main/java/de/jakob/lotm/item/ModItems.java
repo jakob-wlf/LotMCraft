@@ -2,10 +2,7 @@ package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.artifacts.SealedArtifactItem;
-import de.jakob.lotm.item.custom.ExcavatedAreaItem;
-import de.jakob.lotm.item.custom.GuidingBookItem;
-import de.jakob.lotm.item.custom.MarionetteControllerItem;
-import de.jakob.lotm.item.custom.SubordinateControllerItem;
+import de.jakob.lotm.item.custom.*;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -35,6 +32,16 @@ public class ModItems {
 
     public static final Supplier<Item> EXCAVATED_AREA_ITEM = ITEMS.register("excavated_area",
             () -> new ExcavatedAreaItem(new Item.Properties()
+                    .stacksTo(1)
+            )
+    );
+    public static final Supplier<Item> SUN_ITEM = ITEMS.register("sun",
+            () -> new SunItem(new Item.Properties()
+                    .stacksTo(1)
+            )
+    );
+    public static final Supplier<Item> MOON_ITEM = ITEMS.register("moon",
+            () -> new MoonItem(new Item.Properties()
                     .stacksTo(1)
             )
     );

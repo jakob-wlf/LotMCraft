@@ -34,7 +34,8 @@ public class EffectManager {
         GIFTING_PARTICLES(15),
         ABILITY_THEFT(16),
         CONCEPTUAL_THEFT(17),
-        DECEPTION(18);
+        DECEPTION(18),
+        LOOPHOLE(19);
 
         private final int index;
 

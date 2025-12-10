@@ -193,7 +193,9 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> HOST_CONTROLLING = ITEMS.registerItem("host_controlling_ability", HostControllingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> AVATAR_CREATION = ITEMS.registerItem("avatar_creation_ability", AvatarCreationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> DECEIT = ITEMS.registerItem("deceit_ability", DeceitAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> LOOPHOLE_CREATION = ITEMS.registerItem("loophole_creation_ability", LoopHoleCreationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> FATE_SIPHONING = ITEMS.registerItem("fate_siphoning_ability", FateSiphoningAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> CONCEPTUAL_THEFT = ITEMS.registerItem("conceptual_theft_ability", ConceptualTheftAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> ABILITY_NOT_IMPLEMENTED = ITEMS.registerItem("ability_not_implemented", Item::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 

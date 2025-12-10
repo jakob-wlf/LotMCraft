@@ -172,6 +172,26 @@ public class ModEntities {
                     .fireImmune()
                     .build("sun"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<BigSunEntity>> BIG_SUN =
+            ENTITY_TYPES.register("big_sun", () -> EntityType.Builder.<BigSunEntity>of(
+                            BigSunEntity::new, MobCategory.MISC)
+                    .sized(12.0F, 12.0F)
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .noSummon()
+                    .build("big_sun"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<BigMoonEntity>> BIG_MOON =
+            ENTITY_TYPES.register("big_moon", () -> EntityType.Builder.<BigMoonEntity>of(
+                            BigMoonEntity::new, MobCategory.MISC)
+                    .sized(12.0F, 12.0F)
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .noSummon()
+                    .build("big_moon"));
+
     public static final Supplier<EntityType<SpaceRiftEntity>> SPACE_RIFT =
             ENTITY_TYPES.register("space_rift", () -> EntityType.Builder.<SpaceRiftEntity>of(SpaceRiftEntity::new, MobCategory.MISC)
                     .sized(10f, 10f).build("space_rift"));

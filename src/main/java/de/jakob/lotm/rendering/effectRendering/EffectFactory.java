@@ -26,6 +26,7 @@ public class EffectFactory {
             case 16 -> new AbilityTheftEffect(x, y, z);
             case 17 -> new ConceptualTheftEffect(x, y, z);
             case 18 -> new DeceptionEffect(x, y, z);
+            case 19 -> new LoopholeEffect(x, y, z);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
     }

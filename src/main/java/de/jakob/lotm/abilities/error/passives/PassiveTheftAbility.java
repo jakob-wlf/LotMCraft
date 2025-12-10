@@ -41,9 +41,14 @@ public class PassiveTheftAbility extends PassiveAbilityItem {
             return;
         }
 
+
         PassiveTheftAbility ability = (PassiveTheftAbility) PassiveAbilityHandler.PASSIVE_THEFT.get();
 
         if(!(event.getSource().getEntity() instanceof ServerPlayer player) || !ability.shouldApplyTo(player)) {
+            return;
+        }
+
+        if(event.getEntity().distanceToSqr(player) > 16) {
             return;
         }
 

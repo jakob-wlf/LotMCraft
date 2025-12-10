@@ -166,6 +166,8 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.SPEAR_OF_DESTRUCTION.get(), SpearOfDestructionProjectileRenderer::new);
             EntityRenderers.register(ModEntities.RETURN_PORTAL.get(), ReturnPortalRenderer::new);
             EntityRenderers.register(ModEntities.ERROR_AVATAR.get(), ErrorAvatarRenderer::new);
+            EntityRenderers.register(ModEntities.BIG_SUN.get(), BigSunRenderer::new);
+            EntityRenderers.register(ModEntities.BIG_MOON.get(), BigMoonRenderer::new);
 
             GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);
         }

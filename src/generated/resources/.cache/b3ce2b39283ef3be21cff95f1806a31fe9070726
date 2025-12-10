@@ -1,4 +1,4 @@
-// 1.21.1	2025-12-09T23:41:58.4074537	Item Models: lotmcraft
+// 1.21.1	2025-12-10T23:04:48.5564977	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 b46fafcef24e66e85c39645e39df0ec0b12c3447 assets/lotmcraft/models/item/ability_theft_ability.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
@@ -66,6 +66,7 @@ f5f82cd2d74d4f90d50a94802a8b7ebfbb039142 assets/lotmcraft/models/item/clown_char
 470d6510e866fcca1dfbd095552893bf70f89abc assets/lotmcraft/models/item/clown_potion.json
 f6998e4b31a5d7779f26c81c2124f4de8f9ab3ee assets/lotmcraft/models/item/cogitation_ability.json
 b289f09052474809344460fe5945e7d9db2d3fbb assets/lotmcraft/models/item/conceptualization_ability.json
+1da50bfdae1651528062b6c6a75718319f49fd60 assets/lotmcraft/models/item/conceptual_theft_ability.json
 48e2092d8d87b9741c22122d4a2dc034b3d35439 assets/lotmcraft/models/item/conquering_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/conqueror.json
 4709f35145c0fd5bd82d2087eced1cef575706da assets/lotmcraft/models/item/conqueror_characteristic.json
@@ -222,6 +223,7 @@ e7223c38a8519ecbc6b9ada373b37931754387e0 assets/lotmcraft/models/item/light_of_h
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/light_supplicant.json
 df027ae55c442b809ae64805c5f4e9762e4a809b assets/lotmcraft/models/item/light_supplicant_characteristic.json
 2934b87c1f9442be132897fdd7774c3acb15182f assets/lotmcraft/models/item/light_supplicant_potion.json
+fae6251389fa994b192ac237300fcdcd593eceff assets/lotmcraft/models/item/loophole_creation_ability.json
 cf66690d443363b2f9806dc5675d21f096959bdb assets/lotmcraft/models/item/lotm_icon.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/lucky_one.json
 74fed5f94dff2e1561ee7ffea83413071be10ab6 assets/lotmcraft/models/item/lucky_one_characteristic.json
@@ -257,6 +259,7 @@ e08d20b16c942db02247c09b39c672309cce3213 assets/lotmcraft/models/item/mist_watch
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/monster.json
 74fed5f94dff2e1561ee7ffea83413071be10ab6 assets/lotmcraft/models/item/monster_characteristic.json
 b6fde8a1f9aa8b1badc66efc8e72c1ea21702132 assets/lotmcraft/models/item/monster_potion.json
+24261c6d0868cadc2cd8723d3f2ec38741343c29 assets/lotmcraft/models/item/moon.json
 1e57b8d5c836865fbc918019f7a01151e9414068 assets/lotmcraft/models/item/mundane_conceptual_theft_ability.json
 f1caa54d29eca7a72716c885546fb828c3eb35d3 assets/lotmcraft/models/item/murloc_bladder.json
 1169222dd9903d4902ec1f3739f02c22f78edc25 assets/lotmcraft/models/item/mythical_creature_door_ability.json
@@ -425,6 +428,7 @@ aead00c0cbf8318fb0fdbbd5810f017ec9162924 assets/lotmcraft/models/item/spirit_war
 9f81231b6c6d24dbc7be98ab1f5ad7e2858d96d4 assets/lotmcraft/models/item/structural_collapse_ability.json
 dfe01c91dea4f4857afed973d309c798da878c2f assets/lotmcraft/models/item/subordinate_controller.json
 47500e8e101d09d23113f2683603ff979e913e47 assets/lotmcraft/models/item/succubus_eyes.json
+3d6381764d93ecb2d196b84f014949b3398ae0bd assets/lotmcraft/models/item/sun.json
 0741a3620cec71f31b0214b352136e0634568106 assets/lotmcraft/models/item/sun_orb.json
 4d5d5a9f06a7ce193d43a90e3033fbf02dff7cab assets/lotmcraft/models/item/sword_of_justice_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/telepathist.json

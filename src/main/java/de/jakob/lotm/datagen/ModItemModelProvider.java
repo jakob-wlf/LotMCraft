@@ -30,6 +30,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.MARIONETTE_CONTROLLER.get());
         basicItem(ModItems.SUBORDINATE_CONTROLLER.get());
         basicItem(ModItems.EXCAVATED_AREA_ITEM.get());
+        basicItem(ModItems.SUN_ITEM.get());
+        basicItem(ModItems.MOON_ITEM.get());
         basicItem(ModItems.GUIDING_BOOK.get());
         basicItem(ModItems.SEALED_ARTIFACT.get());
         basicItem(ModItems.SEALED_ARTIFACT_BELL.get());

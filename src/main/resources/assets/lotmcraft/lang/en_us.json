@@ -2,6 +2,8 @@
   "item.lotmcraft.fool_card": "Fool Card",
   "item.lotmcraft.guiding_book": "Guiding Book",
   "item.lotmcraft.blood": "Blood",
+  "item.lotmcraft.sun": "Sun",
+  "item.lotmcraft.moon": "Moon",
   "item.lotmcraft.lotm_icon": "LotM Icon",
   "item.lotmcraft.paper_figurine_substitute": "Paper Figurine Substitute",
   "item.lotmcraft.mirror": "Mirror",
@@ -367,9 +369,13 @@
   "item.lotmcraft.deceit_ability": "Deceit",
   "ability.lotmcraft.deceit.entities": "Deceive surrounding enemies",
   "ability.lotmcraft.deceit.world": "Deceive the world",
-  "item.lotmcraft.fate_siphoning_ability": "Deceit",
+  "item.lotmcraft.loophole_creation_ability": "Loophole Creation",
+  "item.lotmcraft.fate_siphoning_ability": "Fate Siphoning",
   "ability.lotmcraft.fate_siphoning.no_target": "No Target found",
   "ability.lotmcraft.fate_siphoning.already_swapping": "No Target found",
+  "item.lotmcraft.conceptual_theft_ability": "Conceptual Theft",
+  "ability.lotmcraft.conceptual_theft.day_night": "Steal Day/Night",
+  "ability.lotmcraft.conceptual_theft.area": "Steal Area",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",
