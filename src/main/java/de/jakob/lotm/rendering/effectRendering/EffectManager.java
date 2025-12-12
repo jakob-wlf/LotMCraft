@@ -35,7 +35,10 @@ public class EffectManager {
         ABILITY_THEFT(16),
         CONCEPTUAL_THEFT(17),
         DECEPTION(18),
-        LOOPHOLE(19);
+        LOOPHOLE(19),
+        MISFORTUNE_FIELD(20),
+        MISFORTUNE_CURSE(21),
+        BLESSING(22);
 
         private final int index;
 

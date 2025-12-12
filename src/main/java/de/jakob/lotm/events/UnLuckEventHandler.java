@@ -2,6 +2,7 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -13,26 +14,17 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.entity.monster.Skeleton;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -44,12 +36,13 @@ import java.util.*;
 public class UnLuckEventHandler {
 
     private static final HashMap<UUID, Long> lastSpawnTime = new HashMap<>();
-    private static final HashMap<UUID, Integer> toolBreakCounter = new HashMap<>();
     private static final HashMap<UUID, Long> lastSlipTime = new HashMap<>();
+    private static final HashMap<UUID, Long> lastMultiplierReductionTime = new HashMap<>();
+    private static final HashMap<UUID, Long> lastAbilityDisableTime = new HashMap<>();
 
-    // Dark purple/black particles for unluck
+    // Brown/orange particles for unluck
     private static final DustParticleOptions dust = new DustParticleOptions(
-            new Vector3f(50 / 255f, 20 / 255f, 70 / 255f),
+            new Vector3f(161 / 255f, 114 / 255f, 58 / 255f),
             1.5f
     );
 
@@ -75,7 +68,7 @@ public class UnLuckEventHandler {
             level.playSound(null, event.getPos(), SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 0.8f);
 
             if(entity instanceof ServerPlayer player) {
-                Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.items_destroyed").withColor(0xFF32144a);
+                Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.items_destroyed").withColor(0xFFa17246);
                 sendActionBar(player, actionBarText);
             }
         }
@@ -108,7 +101,7 @@ public class UnLuckEventHandler {
             ParticleUtil.spawnParticles(level, dust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 55, .4, entity.getEyeHeight() / 2, .4, 0);
 
             if(event.getEntity() instanceof ServerPlayer player) {
-                Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.extra_damage").withColor(0xFF32144a);
+                Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.extra_damage").withColor(0xFFa17246);
                 sendActionBar(player, actionBarText);
             }
         }
@@ -142,13 +135,13 @@ public class UnLuckEventHandler {
             ParticleUtil.spawnParticles(level, dust, event.getEntity().position().add(0, event.getEntity().getEyeHeight() / 2, 0), 30, .4, event.getEntity().getEyeHeight() / 2, .4, 0);
 
             if(entity instanceof ServerPlayer player) {
-                Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.weak_hit").withColor(0xFF32144a);
+                Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.weak_hit").withColor(0xFFa17246);
                 sendActionBar(player, actionBarText);
             }
         }
     }
 
-    // Randomly break blocks around player or spawn hostile mobs
+    // Various unluck effects on entity tick
     @SubscribeEvent
     public static void onEntityTick(EntityTickEvent.Post event) {
         if(!(event.getEntity() instanceof LivingEntity entity)) {
@@ -176,11 +169,6 @@ public class UnLuckEventHandler {
             spawnHostileMob(entity, level, amplifier);
         }
 
-        // Break random blocks nearby
-        if(Math.random() < getBlockBreakChance(amplifier)) {
-            breakRandomNearbyBlock(entity, level, amplifier);
-        }
-
         // Random item drops from inventory
         if(Math.random() < getItemDropChance(amplifier)) {
             dropRandomInventoryItem(entity, level);
@@ -189,6 +177,67 @@ public class UnLuckEventHandler {
         // Make player slip/stumble
         if(Math.random() < getSlipChance(amplifier)) {
             makeEntitySlip(entity, level);
+        }
+
+        // Temporarily reduce damage multiplier for Beyonders
+        if(BeyonderData.isBeyonder(entity) && Math.random() < getMultiplierReductionChance(amplifier)) {
+            reduceMultiplierTemporarily(entity, level, amplifier);
+        }
+
+        // Temporarily disable abilities for Beyonders
+        if(BeyonderData.isBeyonder(entity) && Math.random() < getAbilityDisableChance(amplifier)) {
+            disableAbilitiesTemporarily(entity, level, amplifier);
+        }
+    }
+
+    private static void reduceMultiplierTemporarily(LivingEntity entity, ServerLevel level, int amplifier) {
+        UUID uuid = entity.getUUID();
+        long currentTime = System.currentTimeMillis();
+
+        // Cooldown check to prevent spam
+        if(lastMultiplierReductionTime.containsKey(uuid) && currentTime - lastMultiplierReductionTime.get(uuid) < 8000) {
+            return;
+        }
+
+        lastMultiplierReductionTime.put(uuid, currentTime);
+
+        // Reduce multiplier by 30-60% based on amplifier
+        double reductionFactor = 0.4 + (amplifier * 0.03);
+        reductionFactor = Math.min(reductionFactor, 0.7); // Max 70% reduction
+
+        int duration = 3000 + (amplifier * 200); // 3-6 seconds based on amplifier
+
+        BeyonderData.addModifierWithTimeLimit(entity, "unluck_multiplier_reduction", reductionFactor, duration);
+
+        ParticleUtil.spawnParticles(level, dust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 40, .4, entity.getEyeHeight() / 2, .4, 0);
+
+        if(entity instanceof ServerPlayer player) {
+            Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.weakened").withColor(0xFFa17246);
+            sendActionBar(player, actionBarText);
+        }
+    }
+
+    private static void disableAbilitiesTemporarily(LivingEntity entity, ServerLevel level, int amplifier) {
+        UUID uuid = entity.getUUID();
+        long currentTime = System.currentTimeMillis();
+
+        // Cooldown check to prevent spam - longer cooldown for ability disabling
+        if(lastAbilityDisableTime.containsKey(uuid) && currentTime - lastAbilityDisableTime.get(uuid) < 15000) {
+            return;
+        }
+
+        lastAbilityDisableTime.put(uuid, currentTime);
+
+        int duration = 2000 + (amplifier * 150); // 2-5 seconds based on amplifier
+
+        BeyonderData.disableAbilityUseWithTimeLimit(entity, "unluck_ability_disable", duration);
+
+        ParticleUtil.spawnParticles(level, dust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 50, .5, entity.getEyeHeight() / 2, .5, 0);
+        level.playSound(null, entity.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 0.5f, 0.5f);
+
+        if(entity instanceof ServerPlayer player) {
+            Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.abilities_disabled").withColor(0xFFa17246);
+            sendActionBar(player, actionBarText);
         }
     }
 
@@ -214,7 +263,7 @@ public class UnLuckEventHandler {
         ParticleUtil.spawnParticles(level, dust, entity.position(), 30, .5, .1, .5, 0);
 
         if(entity instanceof ServerPlayer player) {
-            Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.slipped").withColor(0xFF32144a);
+            Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.slipped").withColor(0xFFa17246);
             sendActionBar(player, actionBarText);
         }
     }
@@ -244,44 +293,8 @@ public class UnLuckEventHandler {
 
         ParticleUtil.spawnParticles(level, dust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 20, .3, .3, .3, 0);
 
-        Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.item_dropped").withColor(0xFF32144a);
+        Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.item_dropped").withColor(0xFFa17246);
         sendActionBar(player, actionBarText);
-    }
-
-    private static void breakRandomNearbyBlock(LivingEntity entity, ServerLevel level, int amplifier) {
-        Random random = new Random();
-        int range = 2 + amplifier / 3;
-
-        List<BlockPos> nearbyBlocks = new ArrayList<>();
-        BlockPos entityPos = entity.blockPosition();
-
-        for(int x = -range; x <= range; x++) {
-            for(int y = -range; y <= range; y++) {
-                for(int z = -range; z <= range; z++) {
-                    BlockPos pos = entityPos.offset(x, y, z);
-                    if(!level.getBlockState(pos).isAir() &&
-                            !level.getBlockState(pos).is(Blocks.BEDROCK) &&
-                            level.getBlockState(pos).getDestroySpeed(level, pos) >= 0) {
-                        nearbyBlocks.add(pos);
-                    }
-                }
-            }
-        }
-
-        if(nearbyBlocks.isEmpty()) {
-            return;
-        }
-
-        BlockPos targetPos = nearbyBlocks.get(random.nextInt(nearbyBlocks.size()));
-        level.destroyBlock(targetPos, false);
-
-        ParticleUtil.spawnParticles(level, dust, targetPos.getCenter(), 15, .3, .3, .3, 0);
-        level.playSound(null, targetPos, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 0.3f, 0.7f);
-
-        if(entity instanceof ServerPlayer player) {
-            Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.block_broken").withColor(0xFF32144a);
-            sendActionBar(player, actionBarText);
-        }
     }
 
     private static void spawnHostileMob(LivingEntity entity, ServerLevel level, int amplifier) {
@@ -321,7 +334,7 @@ public class UnLuckEventHandler {
             level.playSound(null, blockPos, SoundEvents.PORTAL_AMBIENT, SoundSource.HOSTILE, 0.5f, 0.5f);
 
             if(entity instanceof ServerPlayer player) {
-                Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.mob_spawned").withColor(0xFF32144a);
+                Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.mob_spawned").withColor(0xFFa17246);
                 sendActionBar(player, actionBarText);
             }
         }
@@ -346,7 +359,7 @@ public class UnLuckEventHandler {
         ParticleUtil.spawnParticles(level, dust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 30, .4, entity.getEyeHeight() / 2, .4, 0);
 
         if(entity instanceof ServerPlayer player) {
-            Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.harmful_effect").withColor(0xFF32144a);
+            Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.harmful_effect").withColor(0xFFa17246);
             sendActionBar(player, actionBarText);
         }
     }
@@ -381,16 +394,20 @@ public class UnLuckEventHandler {
         return lerpClamped(amplifier, 0, 19, 0.0005, 0.008);
     }
 
-    private static double getBlockBreakChance(int amplifier) {
-        return lerpClamped(amplifier, 0, 19, 0.001, 0.015);
-    }
-
     private static double getItemDropChance(int amplifier) {
         return lerpClamped(amplifier, 0, 19, 0.0008, 0.012);
     }
 
     private static double getSlipChance(int amplifier) {
         return lerpClamped(amplifier, 0, 19, 0.002, 0.025);
+    }
+
+    private static double getMultiplierReductionChance(int amplifier) {
+        return lerpClamped(amplifier, 0, 19, 0.0008, 0.010);
+    }
+
+    private static double getAbilityDisableChance(int amplifier) {
+        return lerpClamped(amplifier, 0, 19, 0.0003, 0.005);
     }
 
     private static double lerpClamped(double amplifier, double minAmplifier, double maxAmplifier, double minValue, double maxValue) {

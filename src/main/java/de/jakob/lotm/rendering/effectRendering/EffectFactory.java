@@ -27,6 +27,9 @@ public class EffectFactory {
             case 17 -> new ConceptualTheftEffect(x, y, z);
             case 18 -> new DeceptionEffect(x, y, z);
             case 19 -> new LoopholeEffect(x, y, z);
+            case 20 -> new MisfortuneFieldEffect(x, y, z);
+            case 21 -> new MisfortuneCurseEffect(x, y, z);
+            case 22 -> new BlessingEffect(x, y, z);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
     }

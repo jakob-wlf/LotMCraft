@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -17,22 +18,25 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MisfortuneGiftingAbility extends AbilityItem {
-    public MisfortuneGiftingAbility(Properties properties) {
-        super(properties, 2);
+public class BlessingAbility extends AbilityItem {
+    public BlessingAbility(Properties properties) {
+        super(properties, 4);
     }
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("wheel_of_fortune", 5));
+        return new HashMap<>(Map.of("wheel_of_fortune", 4));
     }
 
     @Override
     protected float getSpiritualityCost() {
-        return 120;
+        return 750;
     }
 
-    private static final DustParticleOptions dust = new DustParticleOptions(new Vector3f(201 / 255f, 150 / 255f, 79 / 255f), 1.5f);
+    private static final DustParticleOptions dust = new DustParticleOptions(
+            new Vector3f(192 / 255f, 246 / 255f, 252 / 255f),
+            1.75f
+    );
 
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {
@@ -52,10 +56,12 @@ public class MisfortuneGiftingAbility extends AbilityItem {
             return;
         }
 
+        EffectManager.playEffect(EffectManager.Effect.BLESSING, target.getX(), target.getY(), target.getZ(), serverLevel);
+
         double eyeHeight = target.getEyeHeight();
         ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, eyeHeight / 2, 0), 120, .3, eyeHeight / 2, .3, 0);
 
-        int amplifier = (int) Math.round(multiplier(entity) * 2.5f);
-        target.addEffect(new MobEffectInstance(ModEffects.UNLUCK, 20 * 20, amplifier));
+        int amplifier = (int) Math.round(multiplier(entity) * 6.25f);
+        target.addEffect(new MobEffectInstance(ModEffects.LUCK, 20 * 60 * 17, amplifier));
     }
 }

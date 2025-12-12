@@ -20,10 +20,7 @@ import de.jakob.lotm.abilities.red_priest.*;
 import de.jakob.lotm.abilities.sun.*;
 import de.jakob.lotm.abilities.tyrant.*;
 import de.jakob.lotm.abilities.visionary.*;
-import de.jakob.lotm.abilities.wheel_of_fortune.CalamityAttractionAbility;
-import de.jakob.lotm.abilities.wheel_of_fortune.LuckReleaseAbility;
-import de.jakob.lotm.abilities.wheel_of_fortune.MisfortuneGiftingAbility;
-import de.jakob.lotm.abilities.wheel_of_fortune.PsycheStormAbility;
+import de.jakob.lotm.abilities.wheel_of_fortune.*;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
@@ -182,6 +179,9 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> CALAMITY_ATTRACTION = ITEMS.registerItem("calamity_attraction_ability", CalamityAttractionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> LUCK_ACCUMULATION = ITEMS.registerItem("luck_release_ability", LuckReleaseAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> MISFORTUNE_GIFTING = ITEMS.registerItem("misfortune_gifting_ability", MisfortuneGiftingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> MISFORTUNE_FIELD = ITEMS.registerItem("misfortune_field_ability", MisfortuneFieldAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> BLESSING = ITEMS.registerItem("blessing_ability", BlessingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> CURSE_OF_MISFORTUNE = ITEMS.registerItem("curse_of_misfortune_ability", CurseOfMisfortuneAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> THEFT = ITEMS.registerItem("theft_ability", TheftAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> MENTAL_DISRUPTION = ITEMS.registerItem("mental_disruption_ability", MentalDisruptionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

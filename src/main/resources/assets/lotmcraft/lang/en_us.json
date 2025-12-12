@@ -338,6 +338,9 @@
   "item.lotmcraft.luck_release_ability.description": "Release all of your accumulated luck",
   "item.lotmcraft.misfortune_gifting_ability": "Misfortune Gifting",
   "ability.lotmcraft.misfortune_gifting.no_target": "No Target found",
+  "item.lotmcraft.misfortune_field_ability": "Misfortune Field",
+  "item.lotmcraft.blessing_ability": "Blessing",
+  "item.lotmcraft.curse_of_misfortune_ability": "Curse of Misfortune",
 
   "item.lotmcraft.theft_ability": "Theft",
   "item.lotmcraft.mental_disruption_ability": "Mental Disruption",
