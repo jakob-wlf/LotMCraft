@@ -1,5 +1,7 @@
 package de.jakob.lotm.potions;
 
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.OpenRecipeMenuPacket;
 import de.jakob.lotm.rendering.GuidingBookRenderer;
 import de.jakob.lotm.rendering.PotionRecipeOverlay;
 import de.jakob.lotm.util.pathways.PathwayInfos;
@@ -31,7 +33,7 @@ public class PotionRecipeItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         if (level.isClientSide) {
-            PotionRecipeOverlay.toggleRenderRecipe();
+            PacketHandler.sendToServer(new OpenRecipeMenuPacket(recipe.potion().getSequence(), recipe.potion().getPathway()));
         }
         return InteractionResultHolder.success(player.getItemInHand(usedHand));
     }

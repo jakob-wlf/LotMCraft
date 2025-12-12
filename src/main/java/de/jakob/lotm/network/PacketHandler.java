@@ -250,6 +250,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                OpenRecipeMenuPacket.TYPE,
+                OpenRecipeMenuPacket.STREAM_CODEC,
+                OpenRecipeMenuPacket::handle
+        );
+
+        registrar.playToServer(
                 TeleportToSefirotPacket.TYPE,
                 TeleportToSefirotPacket.STREAM_CODEC,
                 TeleportToSefirotPacket::handle

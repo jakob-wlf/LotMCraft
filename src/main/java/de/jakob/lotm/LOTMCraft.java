@@ -17,6 +17,7 @@ import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.gui.custom.AbilitySelection.AbilitySelectionScreen;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
+import de.jakob.lotm.gui.custom.Recipe.RecipeScreen;
 import de.jakob.lotm.item.ModCreativeModTabs;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
@@ -202,6 +203,7 @@ public class LOTMCraft
         public static void registerScreens(RegisterMenuScreensEvent event) {
             event.register(ModMenuTypes.ABILITY_SELECTION_MENU.get(), AbilitySelectionScreen::new);
             event.register(ModMenuTypes.INTROSPECT_MENU.get(), IntrospectScreen::new);
+            event.register(ModMenuTypes.RECIPE_MENU.get(), RecipeScreen::new);
             event.register(ModMenuTypes.BREWING_CAULDRON_MENU.get(), BrewingCauldronScreen::new);
         }
     }
