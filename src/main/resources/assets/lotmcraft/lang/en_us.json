@@ -50,12 +50,17 @@
 
 
   "item.lotmcraft.illuminate_ability": "Illuminate",
+  "item.lotmcraft.illuminate_ability.description": "Create a small light",
   "item.lotmcraft.holy_song_ability": "Holy Song",
   "item.lotmcraft.holy_song_ability.description": "Play a holy tune to buff yourself",
   "item.lotmcraft.holy_light_ability": "Holy Light",
+  "item.lotmcraft.holy_light_ability.description": "Call down a Holy Light",
   "item.lotmcraft.fire_of_light_ability": "Fire of Light",
+  "item.lotmcraft.fire_of_light_ability.description": "Use Holy Fire to smite your foes",
   "item.lotmcraft.holy_light_summoning_ability": "Holy Light Summoning",
+  "item.lotmcraft.holy_light_summoning_ability.description": "Summon a Holy Light from the sky",
   "item.lotmcraft.cleave_of_purification_ability": "Cleave of Purification",
+  "item.lotmcraft.cleave_of_purification_ability.description": "A holy strike in front of you",
   "item.lotmcraft.holy_oath_ability": "Holy Oath",
   "item.lotmcraft.holy_oath_ability.description": "Strengthen your own attacks",
   "item.lotmcraft.notary_buff_ability": "God says its effective",
