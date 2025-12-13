@@ -38,6 +38,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                HybridMobSyncPacket.TYPE,
+                HybridMobSyncPacket.STREAM_CODEC,
+                HybridMobSyncPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncSanityPacket.TYPE,
                 SyncSanityPacket.STREAM_CODEC,
                 SyncSanityPacket::handle
