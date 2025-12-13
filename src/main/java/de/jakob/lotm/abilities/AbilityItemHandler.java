@@ -12,10 +12,7 @@ import de.jakob.lotm.abilities.demoness.*;
 import de.jakob.lotm.abilities.door.*;
 import de.jakob.lotm.abilities.error.*;
 import de.jakob.lotm.abilities.fool.*;
-import de.jakob.lotm.abilities.mother.CleansingAbility;
-import de.jakob.lotm.abilities.mother.HealingAbility;
-import de.jakob.lotm.abilities.mother.PlantControllingAbility;
-import de.jakob.lotm.abilities.mother.PlantNurturingAbility;
+import de.jakob.lotm.abilities.mother.*;
 import de.jakob.lotm.abilities.red_priest.*;
 import de.jakob.lotm.abilities.sun.*;
 import de.jakob.lotm.abilities.tyrant.*;
@@ -139,6 +136,8 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> HEALING = ITEMS.registerItem("healing_ability", HealingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> CLEANSING = ITEMS.registerItem("cleanse_ability", CleansingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> PLANT_CONTROLLING = ITEMS.registerItem("plant_controlling_ability", PlantControllingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> POISON_CREATION = ITEMS.registerItem("poison_creation_ability", PoisonCreationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> CROSS_BREEDING = ITEMS.registerItem("crossbreeding_ability", CrossbreedingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> DOOR_OPENING = ITEMS.registerItem("door_opening_ability", DoorOpeningAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SPELLS = ITEMS.registerItem("spells_ability", SpellsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

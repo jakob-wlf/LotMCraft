@@ -66,11 +66,6 @@ public class UnLuckEventHandler {
 
             ParticleUtil.spawnParticles(level, dust, event.getPos().getCenter(), 20, .6, .6, .6, 0);
             level.playSound(null, event.getPos(), SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 0.8f);
-
-            if(entity instanceof ServerPlayer player) {
-                Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.items_destroyed").withColor(0xFFa17246);
-                sendActionBar(player, actionBarText);
-            }
         }
 
         // Chance to damage tool extra
@@ -99,11 +94,6 @@ public class UnLuckEventHandler {
 
             Entity entity = event.getEntity();
             ParticleUtil.spawnParticles(level, dust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 55, .4, entity.getEyeHeight() / 2, .4, 0);
-
-            if(event.getEntity() instanceof ServerPlayer player) {
-                Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.extra_damage").withColor(0xFFa17246);
-                sendActionBar(player, actionBarText);
-            }
         }
     }
 
@@ -133,11 +123,6 @@ public class UnLuckEventHandler {
             event.setAmount(weakDamage);
 
             ParticleUtil.spawnParticles(level, dust, event.getEntity().position().add(0, event.getEntity().getEyeHeight() / 2, 0), 30, .4, event.getEntity().getEyeHeight() / 2, .4, 0);
-
-            if(entity instanceof ServerPlayer player) {
-                Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.weak_hit").withColor(0xFFa17246);
-                sendActionBar(player, actionBarText);
-            }
         }
     }
 
@@ -210,11 +195,6 @@ public class UnLuckEventHandler {
         BeyonderData.addModifierWithTimeLimit(entity, "unluck_multiplier_reduction", reductionFactor, duration);
 
         ParticleUtil.spawnParticles(level, dust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 40, .4, entity.getEyeHeight() / 2, .4, 0);
-
-        if(entity instanceof ServerPlayer player) {
-            Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.weakened").withColor(0xFFa17246);
-            sendActionBar(player, actionBarText);
-        }
     }
 
     private static void disableAbilitiesTemporarily(LivingEntity entity, ServerLevel level, int amplifier) {
@@ -234,11 +214,6 @@ public class UnLuckEventHandler {
 
         ParticleUtil.spawnParticles(level, dust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 50, .5, entity.getEyeHeight() / 2, .5, 0);
         level.playSound(null, entity.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 0.5f, 0.5f);
-
-        if(entity instanceof ServerPlayer player) {
-            Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.abilities_disabled").withColor(0xFFa17246);
-            sendActionBar(player, actionBarText);
-        }
     }
 
     private static void makeEntitySlip(LivingEntity entity, ServerLevel level) {
@@ -261,11 +236,6 @@ public class UnLuckEventHandler {
         entity.hurtMarked = true;
 
         ParticleUtil.spawnParticles(level, dust, entity.position(), 30, .5, .1, .5, 0);
-
-        if(entity instanceof ServerPlayer player) {
-            Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.slipped").withColor(0xFFa17246);
-            sendActionBar(player, actionBarText);
-        }
     }
 
     private static void dropRandomInventoryItem(LivingEntity entity, ServerLevel level) {
@@ -292,9 +262,6 @@ public class UnLuckEventHandler {
         level.addFreshEntity(itemEntity);
 
         ParticleUtil.spawnParticles(level, dust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 20, .3, .3, .3, 0);
-
-        Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.item_dropped").withColor(0xFFa17246);
-        sendActionBar(player, actionBarText);
     }
 
     private static void spawnHostileMob(LivingEntity entity, ServerLevel level, int amplifier) {
@@ -332,11 +299,6 @@ public class UnLuckEventHandler {
 
             ParticleUtil.spawnParticles(level, dust, spawnPos, 40, .5, 1, .5, 0);
             level.playSound(null, blockPos, SoundEvents.PORTAL_AMBIENT, SoundSource.HOSTILE, 0.5f, 0.5f);
-
-            if(entity instanceof ServerPlayer player) {
-                Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.mob_spawned").withColor(0xFFa17246);
-                sendActionBar(player, actionBarText);
-            }
         }
     }
 
@@ -358,15 +320,6 @@ public class UnLuckEventHandler {
 
         ParticleUtil.spawnParticles(level, dust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 30, .4, entity.getEyeHeight() / 2, .4, 0);
 
-        if(entity instanceof ServerPlayer player) {
-            Component actionBarText = Component.translatable("ability.lotmcraft.passive_unluck.harmful_effect").withColor(0xFFa17246);
-            sendActionBar(player, actionBarText);
-        }
-    }
-
-    private static void sendActionBar(ServerPlayer player, Component message) {
-        ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(message);
-        player.connection.send(packet);
     }
 
     // Probability calculation methods

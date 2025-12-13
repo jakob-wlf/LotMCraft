@@ -267,6 +267,13 @@
   "item.lotmcraft.plant_controlling_ability": "Plant Manipulation",
   "ability.lotmcraft.plants.trap": "Ensnare",
   "ability.lotmcraft.plants.attack": "Attack",
+  "item.lotmcraft.poison_creation_ability": "Poison Creation",
+  "ability.lotmcraft.poison_creation.area": "Poisonous Area",
+  "ability.lotmcraft.poison_creation.threads": "Poisonous Threads",
+  "item.lotmcraft.crossbreeding_ability": "Crossbreeding",
+  "ability.lotmcraft.crossbreeding.success": "Crossbreeding Successful",
+  "ability.lotmcraft.crossbreeding.not_valid_mob": "The target is not a valid mob for crossbreeding",
+  "ability.lotmcraft.crossbreeding.not_same_mob": "You can't cross a mob with itself",
 
   "item.lotmcraft.door_opening_ability": "Door Opening",
   "item.lotmcraft.door_opening_ability.description": "Use on solid walls to pass through them",
