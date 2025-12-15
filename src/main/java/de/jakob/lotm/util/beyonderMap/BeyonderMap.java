@@ -16,6 +16,7 @@ import java.util.UUID;
 
 public class BeyonderMap extends SavedData {
     public static final String NBT_BEYONDER_MAP = "beyonder_map";
+    public static final String NBT_BEYONDER_MAP_CLASS = "beyonder_map_class";
 
     public HashMap<UUID, StoredData> map;
 
@@ -30,6 +31,8 @@ public class BeyonderMap extends SavedData {
 
         map.put(entity.getUUID(), new StoredData(BeyonderData.getPathway(entity),
                 BeyonderData.getSequence(entity), null));
+
+        setDirty();
     }
 
     public void addHonorificName(LivingEntity entity, String name){
@@ -40,10 +43,14 @@ public class BeyonderMap extends SavedData {
         var data = map.get(entity.getUUID());
 
         map.put(entity.getUUID(), new StoredData(data.pathway(), data.sequence(), name));
+
+        setDirty();
     }
 
     public void remove(LivingEntity entity){
         map.remove(entity.getUUID());
+
+        setDirty();
     }
 
     public Optional<StoredData> get(LivingEntity entity){
@@ -73,7 +80,7 @@ public class BeyonderMap extends SavedData {
                 if (seq_2 + seq_1 >= 9) return false;
                 break;
             case 1:
-                if (seq_0 != 0 || seq_1 >= 3) return false;
+                if (seq_0 != 0 || seq_1 >= 1) return false;
                 break;
             case 0:
                 if (seq_0 != 0) return false;
@@ -114,7 +121,7 @@ public class BeyonderMap extends SavedData {
     public static BeyonderMap get(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(new Factory<BeyonderMap>(
                 BeyonderMap::new, BeyonderMap::load),
-                NBT_BEYONDER_MAP
+                NBT_BEYONDER_MAP_CLASS
         );
     }
 }
