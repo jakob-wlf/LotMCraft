@@ -9,6 +9,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncLivingEntityBeyonderDataPacket;
 import de.jakob.lotm.util.beyonderMap.BeyonderMap;
+import de.jakob.lotm.util.beyonderMap.StoredData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.pathways.PathwayInfos;
@@ -283,6 +284,23 @@ public class BeyonderData {
         if (!entity.level().isClientSide() && entity instanceof ServerPlayer serverPlayer) {
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
         }
+    }
+
+    public static Optional<String> getHonorificName(LivingEntity entity){
+        if(entity.level().isClientSide() || !(entity instanceof ServerPlayer))
+            return Optional.empty();
+
+        if(beyonderMap.get(entity).isEmpty()) return Optional.empty();
+
+        StoredData data = beyonderMap.get(entity).get();
+
+        return Optional.of(data.honorificName());
+    }
+
+    public static void setHonorificName(LivingEntity entity, String name){
+        if(entity.level().isClientSide()) return;
+
+        beyonderMap.addHonorificName(entity, name);
     }
 
     public static double getMultiplier(LivingEntity entity) {

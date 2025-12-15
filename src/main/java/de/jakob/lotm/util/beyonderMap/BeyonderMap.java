@@ -29,7 +29,17 @@ public class BeyonderMap extends SavedData {
         if(!(entity instanceof ServerPlayer)) return;
 
         map.put(entity.getUUID(), new StoredData(BeyonderData.getPathway(entity),
-                BeyonderData.getSequence(entity)));
+                BeyonderData.getSequence(entity), null));
+    }
+
+    public void addHonorificName(LivingEntity entity, String name){
+        if(!(entity instanceof ServerPlayer)) return;
+
+        if(!contains(entity)) put(entity);
+
+        var data = map.get(entity.getUUID());
+
+        map.put(entity.getUUID(), new StoredData(data.pathway(), data.sequence(), name));
     }
 
     public void remove(LivingEntity entity){
