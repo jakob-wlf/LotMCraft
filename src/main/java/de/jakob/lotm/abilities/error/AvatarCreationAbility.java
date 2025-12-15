@@ -38,8 +38,6 @@ public class AvatarCreationAbility extends AbilityItem {
         }
 
         int sequence = BeyonderData.getSequence(entity) + 1;
-        System.out.println("Creating Error Avatar with sequence " + sequence);
-
         ErrorAvatarEntity avatar = new ErrorAvatarEntity(ModEntities.ERROR_AVATAR.get(), level, entity.getUUID(), "error", sequence);
         avatar.setPos(entity.getX(), entity.getY(), entity.getZ());
         level.addFreshEntity(avatar);

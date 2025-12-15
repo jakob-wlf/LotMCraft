@@ -1,4 +1,4 @@
-// 1.21.1	2025-12-13T12:32:54.202954	Item Models: lotmcraft
+// 1.21.1	2025-12-13T20:06:57.8832583	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 b46fafcef24e66e85c39645e39df0ec0b12c3447 assets/lotmcraft/models/item/ability_theft_ability.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
@@ -269,6 +269,7 @@ f1caa54d29eca7a72716c885546fb828c3eb35d3 assets/lotmcraft/models/item/murloc_bla
 1169222dd9903d4902ec1f3739f02c22f78edc25 assets/lotmcraft/models/item/mythical_creature_door_ability.json
 ad42bda8ef4b6ad6055eed615f6216527a9bc393 assets/lotmcraft/models/item/mythical_creature_tyrant_ability.json
 e90ee5d776f7b0a3fc4cb8dcd0e2d7c499dbff4b assets/lotmcraft/models/item/naturewalker_characteristic.json
+8fbc2483d49aebc7bd513dfcb050c132e1d70af4 assets/lotmcraft/models/item/nature_spells_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/nightmare.json
 18ab5a8edeb1cb14cffe4b1dda01e63016348bd4 assets/lotmcraft/models/item/nightmare_ability.json
 aead00c0cbf8318fb0fdbbd5810f017ec9162924 assets/lotmcraft/models/item/nightmare_characteristic.json

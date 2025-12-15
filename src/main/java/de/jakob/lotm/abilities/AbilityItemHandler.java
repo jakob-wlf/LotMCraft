@@ -138,6 +138,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> PLANT_CONTROLLING = ITEMS.registerItem("plant_controlling_ability", PlantControllingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> POISON_CREATION = ITEMS.registerItem("poison_creation_ability", PoisonCreationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> CROSS_BREEDING = ITEMS.registerItem("crossbreeding_ability", CrossbreedingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> NATURE_SPELLS = ITEMS.registerItem("nature_spells_ability", NatureSpellsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> DOOR_OPENING = ITEMS.registerItem("door_opening_ability", DoorOpeningAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SPELLS = ITEMS.registerItem("spells_ability", SpellsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

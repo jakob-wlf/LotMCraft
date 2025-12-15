@@ -37,7 +37,7 @@ public class CrossbreedingAbility extends AbilityItem {
         return new HashMap<>(Map.of("mother", 6));
     }
 
-    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(112 / 255f, 212 / 255f, 130 / 255f), 4);
+    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(112 / 255f, 212 / 255f, 130 / 255f), 1.25f);
 
     @Override
     protected float getSpiritualityCost() {
@@ -86,7 +86,7 @@ public class CrossbreedingAbility extends AbilityItem {
             return;
         }
 
-        Vec3 spawnPos = firstMob.position().add(secondMob.position()).scale(0.5);
+        Vec3 spawnPos = secondMob.position();
         newMob.moveTo(spawnPos.x, spawnPos.y, spawnPos.z, secondMob.getYRot(), secondMob.getXRot());
 
         HybridMobData hybridData = new HybridMobData(

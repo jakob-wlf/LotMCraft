@@ -274,6 +274,12 @@
   "ability.lotmcraft.crossbreeding.success": "Crossbreeding Successful",
   "ability.lotmcraft.crossbreeding.not_valid_mob": "The target is not a valid mob for crossbreeding",
   "ability.lotmcraft.crossbreeding.not_same_mob": "You can't cross a mob with itself",
+  "item.lotmcraft.nature_spells_ability": "Nature Spells",
+  "ability.lotmcraft.nature_spells.swamp": "Swamp",
+  "ability.lotmcraft.nature_spells.child_of_oak": "Child of the Oak",
+  "ability.lotmcraft.nature_spells.natures_wrath": "Natures Wrath",
+  "ability.lotmcraft.nature_spells.natures_wrath.no_target": "No target found",
+  "ability.lotmcraft.nature_spells.natures_wrath.already_affected": "The target has already drawn the Wrath of Nature",
 
   "item.lotmcraft.door_opening_ability": "Door Opening",
   "item.lotmcraft.door_opening_ability.description": "Use on solid walls to pass through them",
