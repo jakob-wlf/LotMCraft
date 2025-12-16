@@ -33,8 +33,9 @@ public class SanityEventHandler {
 
         SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
 
-        // Add sanity back over time
-        sanityComp.increaseSanityAndSync(0.0025f, entity);
+        // Add sanity back over time if not angel, otherwise reduce it
+        float sanityIncrease = BeyonderData.isBeyonder(entity) && BeyonderData.getSequence(entity) <= 2 ? -0.00025f : 0.0025f;
+        sanityComp.increaseSanityAndSync(sanityIncrease, entity);
 
         float sanity = sanityComp.getSanity();
         int sanityValue = (int)(sanity * 100); // Convert to 0-100 scale
