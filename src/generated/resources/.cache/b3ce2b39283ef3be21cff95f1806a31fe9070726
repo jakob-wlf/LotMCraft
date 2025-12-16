@@ -1,4 +1,4 @@
-// 1.21.1	2025-12-13T20:06:57.8832583	Item Models: lotmcraft
+// 1.21.1	2025-12-15T13:03:58.6775434	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 b46fafcef24e66e85c39645e39df0ec0b12c3447 assets/lotmcraft/models/item/ability_theft_ability.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
@@ -276,6 +276,7 @@ aead00c0cbf8318fb0fdbbd5810f017ec9162924 assets/lotmcraft/models/item/nightmare_
 fcdd6a50e2513fc9c9291e2d65f9afebc8eb73ce assets/lotmcraft/models/item/nightmare_potion.json
 c593244da9f913071f53db5b9c22a24048590f84 assets/lotmcraft/models/item/nightmare_spectator_ability.json
 4736eb3fcf4c2bc9a061351ed044d3f1a2366deb assets/lotmcraft/models/item/nightwatcher_characteristic.json
+c59762b84a6dc4a78cb44938bb467b9e75c18bfa assets/lotmcraft/models/item/night_domain_ability.json
 84c26339e99df8707a320a1831fb33e371155de9 assets/lotmcraft/models/item/nocturnality_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/notary.json
 b71eb9065d7d9c7115bed9ee4b3be60036097a93 assets/lotmcraft/models/item/notary_buff_ability.json
@@ -423,6 +424,7 @@ f74d4a7abdd11f6c6c7aefcefe7b2af27a0e0566 assets/lotmcraft/models/item/spectator_
 051ec67f777c6a1854888e32e2a0a180288cd691 assets/lotmcraft/models/item/spectator_potion.json
 5c794067b3a61cb1a090612d4bd445c90e8af181 assets/lotmcraft/models/item/spells_ability.json
 1be794dc8885311d83ea77cefad5504a22e61211 assets/lotmcraft/models/item/sphinx_brain.json
+38aa28d688cc242c14d671eb8e7a04ca45c77297 assets/lotmcraft/models/item/spirit_commanding_ability.json
 be194b4d94b3206d981c5aec2704d91d923d3e8f assets/lotmcraft/models/item/spirit_eater_stomach_pouch.json
 6f2668e8cbbed4825a598919f39e69ee17651fcd assets/lotmcraft/models/item/spirit_pact_tree_fruit.json
 62cca063c19879ab0def9b465a34e384e39a8bb7 assets/lotmcraft/models/item/spirit_vision_ability.json

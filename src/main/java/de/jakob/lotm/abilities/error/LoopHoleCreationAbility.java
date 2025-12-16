@@ -50,7 +50,6 @@ public class LoopHoleCreationAbility extends AbilityItem {
         }
 
         ServerScheduler.scheduleForDuration(0, 2, 20 * 14, () -> {
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 3, (float) DamageLookup.lookupDamage(2, .855f), targetLoc, true, false);
             AbilityUtil.getNearbyEntities(entity, serverLevel, targetLoc, 3).forEach(e -> {
                 stealAbilities(entity, e);
 
