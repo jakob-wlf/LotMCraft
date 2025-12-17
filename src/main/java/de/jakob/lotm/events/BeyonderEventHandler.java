@@ -3,8 +3,11 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.item.PotionIngredient;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.potions.BeyonderPotion;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.beyonderMap.BeyonderMap;
@@ -16,6 +19,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -23,6 +30,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.Objects;
@@ -127,5 +135,48 @@ public class BeyonderEventHandler {
         }
     }
 
+    @SubscribeEvent
+    public static void onContainerOpen(PlayerContainerEvent.Open event) {
+        if (event.getEntity().level().isClientSide()) return;
+
+        var player = event.getEntity();
+
+        Objects.requireNonNull(player.getServer()).execute(() -> {
+            var container = event.getContainer();
+
+            for (Slot slot : container.slots) {
+                ItemStack stack = slot.getItem();
+                if (stack.isEmpty()) continue;
+
+                Item item = stack.getItem();
+
+                if (item instanceof PotionIngredient obj) {
+                    for (var path : obj.getPathways()) {
+                        if (!BeyonderData.beyonderMap.check(path, obj.getSequence())) {
+                            slot.set(ItemStack.EMPTY);
+                            break;
+                        }
+                    }
+                }
+
+                else if (item instanceof BeyonderPotion potion) {
+                    if (!BeyonderData.beyonderMap.check(
+                            potion.getPathway(), potion.getSequence())) {
+                        slot.set(ItemStack.EMPTY);
+                    }
+                }
+
+                else if (item instanceof BeyonderCharacteristicItem cha) {
+                    if (!BeyonderData.beyonderMap.check(
+                            cha.getPathway(), cha.getSequence())) {
+                        slot.set(ItemStack.EMPTY);
+                    }
+                }
+            }
+
+            container.broadcastChanges();
+        });
+
+    }
 
 }

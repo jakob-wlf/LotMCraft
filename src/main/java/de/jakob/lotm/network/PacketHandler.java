@@ -314,6 +314,11 @@ public class PacketHandler {
                 SkinRestorePacket.STREAM_CODEC,
                 SkinRestorePacket::handle
         );
+
+        registrar.playToServer(
+                InventoryOpenedPacket.TYPE,
+                InventoryOpenedPacket.STREAM_CODEC,
+                InventoryOpenedPacket::handle);
     }
 
     public static void sendToServer(CustomPacketPayload packet) {

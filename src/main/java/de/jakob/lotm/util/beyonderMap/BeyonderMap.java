@@ -155,7 +155,7 @@ public class BeyonderMap extends SavedData {
                 if (seq_2 + seq_1 >= 9) return false;
                 break;
             case 1:
-                if (seq_0 != 0 || seq_1 >= 3) return false;
+                if (seq_0 != 0 || seq_1 >= 1) return false;
                 break;
             case 0:
                 if (seq_0 != 0) return false;
