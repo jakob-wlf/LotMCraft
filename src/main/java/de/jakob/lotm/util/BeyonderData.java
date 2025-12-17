@@ -121,7 +121,7 @@ public class BeyonderData {
             return "Unknown";
 
         PathwayInfos infos = pathwayInfos.get(pathway);
-        if(sequence < 0 || sequence >= infos.sequenceNames().length)
+        if(sequence == LOTMCraft.NON_BEYONDER_SEQ || sequence >= infos.sequenceNames().length)
             return "Unknown";
 
         return infos.getSequenceName(sequence);
@@ -167,6 +167,12 @@ public class BeyonderData {
 
         if(entity instanceof ServerPlayer) {
             if(!beyonderMap.check(pathway, sequence)) return;
+        }
+
+        if(Objects.equals(sequence, LOTMCraft.NON_BEYONDER_SEQ)
+                || pathway.equals("none")) {
+            clearBeyonderData(entity);
+            return;
         }
 
         boolean griefing = !BeyonderData.isBeyonder(entity) || BeyonderData.isGriefingEnabled(entity);
@@ -241,7 +247,7 @@ public class BeyonderData {
             return ClientBeyonderCache.getSequence(entity.getUUID());
         }
         if (!entity.getPersistentData().contains(NBT_SEQUENCE)) {
-            return -1;
+            return LOTMCraft.NON_BEYONDER_SEQ;
         }
         return entity.getPersistentData().getInt(NBT_SEQUENCE);
     }
@@ -390,7 +396,7 @@ public class BeyonderData {
     }
 
     public static float getMaxSpirituality(int sequence) {
-        return sequence >= 0 && sequence < spiritualityLookup.length ? spiritualityLookup[sequence] : 0.0f;
+        return sequence > -1 && sequence != LOTMCraft.NON_BEYONDER_SEQ && sequence < spiritualityLookup.length ? spiritualityLookup[sequence] : 0.0f;
     }
 
     public static void clearBeyonderData(LivingEntity entity) {
@@ -399,6 +405,7 @@ public class BeyonderData {
         entity.getPersistentData().remove(NBT_SPIRITUALITY);
         entity.getPersistentData().remove(NBT_GRIEFING_ENABLED);
         entity.getPersistentData().remove(NBT_DIGESTION_PROGRESS);
+
         if(entity instanceof Player player) {
             SpiritualityProgressTracker.removeProgress(player);
             beyonderMap.put(player);
@@ -408,12 +415,12 @@ public class BeyonderData {
         if (!entity.level().isClientSide()) {
             if(entity instanceof ServerPlayer serverPlayer) {
                 // Send empty data to clear client cache
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", -1, 0.0f, false, 0.0f);
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", 10, 0.0f, false, 0.0f);
                 PacketHandler.sendToPlayer(serverPlayer, packet);
             }
             else {
                 SyncLivingEntityBeyonderDataPacket packet =
-                        new SyncLivingEntityBeyonderDataPacket(entity.getId(), "none", -1, 0.0f);
+                        new SyncLivingEntityBeyonderDataPacket(entity.getId(), "none", 10, 0.0f);
                 PacketHandler.sendToAllPlayers(packet); // broadcast to all players tracking this entity
             }
         }
@@ -423,6 +430,7 @@ public class BeyonderData {
         if (entity.level().isClientSide) {
             return ClientBeyonderCache.isBeyonder(entity.getUUID());
         }
+
         return (entity.getPersistentData().contains(NBT_PATHWAY) && entity.getPersistentData().contains(NBT_SEQUENCE));
     }
 

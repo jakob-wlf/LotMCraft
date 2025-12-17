@@ -1,14 +1,38 @@
 package de.jakob.lotm.util.beyonderMap;
 
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 
 import javax.annotation.Nullable;
+import java.util.LinkedList;
 
-public record StoredData(String pathway, Integer sequence, @Nullable String honorificName) {
+public record StoredData(String pathway, Integer sequence, @Nullable String honorificName,
+                         String trueName, LinkedList<MessageType> msgs) {
 
     public static final String NBT_PATHWAY = "beyonder_map_pathway";
     public static final String NBT_SEQUENCE = "beyonder_map_sequence";
     public static final String NBT_HONORIFIC_NAME = "beyonder_map_honorific_name";
+    public static final String NBT_TRUE_NAME = "beyonder_map_true_name";
+    public static final String NBT_MESSAGES = "beyonder_map_messages";
+
+
+    public void addMsg(MessageType msg){
+        msgs.add(msg);
+    }
+
+    public void removeMsg(MessageType msg){
+        msgs.removeIf(str -> str.equals(msg));
+    }
+
+    public StoredData regressSeq(){
+        return new StoredData(sequence + 1 == LOTMCraft.NON_BEYONDER_SEQ ?
+                "none" : pathway, sequence + 1,
+                honorificName, trueName, msgs);
+    }
+
 
     public CompoundTag toNBT(){
         CompoundTag tag = new CompoundTag();
@@ -19,6 +43,15 @@ public record StoredData(String pathway, Integer sequence, @Nullable String hono
         if(honorificName != null)
             tag.putString(NBT_HONORIFIC_NAME, honorificName);
 
+        tag.putString(NBT_TRUE_NAME, trueName);
+
+        ListTag list = new ListTag();
+        for (MessageType value : msgs) {
+            list.add(value.toNBT());
+        }
+
+        tag.put(NBT_MESSAGES, list);
+
         return tag;
     }
 
@@ -26,8 +59,15 @@ public record StoredData(String pathway, Integer sequence, @Nullable String hono
         String path = tag.getString(NBT_PATHWAY);
         Integer seq = tag.getInt(NBT_SEQUENCE);
         String name = tag.getString(NBT_HONORIFIC_NAME);
+        String trueName = tag.getString(NBT_TRUE_NAME);
 
-        return new StoredData(path, seq, name);
+        LinkedList<MessageType> list = new LinkedList<>();
+        for (var t : tag.getList(NBT_MESSAGES, StringTag.TAG_COMPOUND)) {
+            if(t instanceof CompoundTag compTag)
+                list.add(MessageType.fromNBT(compTag));
+        }
+
+        return new StoredData(path, seq, name.isEmpty() ? null : name, trueName, list);
     }
 
 }

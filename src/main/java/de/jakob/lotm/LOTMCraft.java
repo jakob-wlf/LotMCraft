@@ -58,6 +58,8 @@ public class LOTMCraft
 {
     public static final String MOD_ID = "lotmcraft";
 
+    public static final Integer NON_BEYONDER_SEQ = 10;
+
     public static KeyMapping pathwayInfosKey;
     public static KeyMapping openAbilitySelectionKey;
     public static KeyMapping toggleGriefingKey;
