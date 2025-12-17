@@ -24,8 +24,6 @@ public class ClientModEvents {
             CompoundTag persistentData = living.getPersistentData();
             
             if(persistentData.contains("HybridMobData")) {
-                System.out.println("Client rendering hybrid mob!");
-
                 HybridMobData hybridData = HybridMobData.load(persistentData.getCompound("HybridMobData"));
                 ResourceLocation modelEntityType = hybridData.getModelEntityType();
                 

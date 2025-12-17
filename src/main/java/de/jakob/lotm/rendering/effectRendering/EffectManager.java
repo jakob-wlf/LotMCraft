@@ -38,7 +38,8 @@ public class EffectManager {
         LOOPHOLE(19),
         MISFORTUNE_FIELD(20),
         MISFORTUNE_CURSE(21),
-        BLESSING(22);
+        BLESSING(22),
+        NIGHT_DOMAIN(23);
 
         private final int index;
 

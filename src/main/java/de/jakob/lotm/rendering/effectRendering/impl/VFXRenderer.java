@@ -7,6 +7,7 @@ import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
 import de.jakob.lotm.rendering.effectRendering.DirectionalEffectFactory;
 import de.jakob.lotm.rendering.effectRendering.EffectFactory;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -38,7 +39,7 @@ public class VFXRenderer {
             Iterator<ActiveEffect> iterator = activeEffects.iterator();
             while (iterator.hasNext()) {
                 ActiveEffect effect = iterator.next();
-                effect.update(poseStack, event.getPartialTick().getGameTimeDeltaPartialTick(false));
+                effect.update(poseStack, event.getPartialTick().getGameTimeDeltaPartialTick(true));
 
                 if (effect.isFinished()) {
                     iterator.remove();
@@ -49,7 +50,7 @@ public class VFXRenderer {
             Iterator<ActiveDirectionalEffect> dirIterator = activeDirectionalEffects.iterator();
             while (dirIterator.hasNext()) {
                 ActiveDirectionalEffect effect = dirIterator.next();
-                effect.update(poseStack, event.getPartialTick().getGameTimeDeltaPartialTick(false));
+                effect.update(poseStack, event.getPartialTick().getGameTimeDeltaPartialTick(true));
 
                 if (effect.isFinished()) {
                     dirIterator.remove();
@@ -62,8 +63,16 @@ public class VFXRenderer {
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
+        Minecraft mc = Minecraft.getInstance();
+
+        // Only pause effects in singleplayer when paused
+        // On servers, effects should always progress
+        if (mc.hasSingleplayerServer() && mc.isPaused()) {
+            return;
+        }
+
         activeEffects.forEach(ActiveEffect::tick);
-        activeDirectionalEffects.forEach(ActiveDirectionalEffect::tick); // ADD THIS
+        activeDirectionalEffects.forEach(ActiveDirectionalEffect::tick);
     }
 
     public static void addActiveEffect(int effectIndex, double x, double y, double z) {

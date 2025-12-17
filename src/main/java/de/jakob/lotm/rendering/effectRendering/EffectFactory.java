@@ -30,6 +30,7 @@ public class EffectFactory {
             case 20 -> new MisfortuneFieldEffect(x, y, z);
             case 21 -> new MisfortuneCurseEffect(x, y, z);
             case 22 -> new BlessingEffect(x, y, z);
+            case 23 -> new NightDomainEffect(x, y, z);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
     }
