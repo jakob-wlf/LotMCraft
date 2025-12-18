@@ -3,6 +3,8 @@ package de.jakob.lotm.util;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
@@ -603,35 +605,96 @@ public class BeyonderData {
             setBeyonder(entity, pathway, sequence);
             return;
         }
+
+        // Get sanity value (0 = no sanity, 1 = full sanity)
+        SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
+        float sanity = sanityComp.getSanity();
+
         if(!isBeyonder(entity)) {
             setBeyonder(entity, pathway, sequence);
             int difference = 10 - sequence;
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, getAmplifierBySequenceDifference(difference)));
-            return;
-        }
-        String prevPathway = getPathway(entity);
-        if(!prevPathway.equals(pathway)) {
-            setBeyonder(entity, pathway, sequence);
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, 9));
+            int amplifier = calculateAmplifier(difference, 0, sanity);
+            int duration = calculateDuration(difference, sanity);
+            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, amplifier));
             return;
         }
 
-        if(entity instanceof Player player && BeyonderData.getDigestionProgress(player) < .95) {
+        String prevPathway = getPathway(entity);
+        if(!prevPathway.equals(pathway)) {
             setBeyonder(entity, pathway, sequence);
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, 9));
+            int amplifier = calculateAmplifier(10, 0, sanity); // Maximum risk for wrong pathway
+            int duration = calculateDuration(10, sanity);
+            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, amplifier));
+            return;
+        }
+
+        float digestionProgress = 0;
+        if(entity instanceof Player player) {
+            digestionProgress = BeyonderData.getDigestionProgress(player);
+        }
+
+        if(digestionProgress < 0.95) {
+            setBeyonder(entity, pathway, sequence);
+            int prevSequence = getSequence(entity);
+            int difference = prevSequence - sequence;
+            int amplifier = calculateAmplifier(difference, digestionProgress, sanity);
+            int duration = calculateDuration(difference, sanity);
+            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, amplifier));
             return;
         }
 
         int prevSequence = getSequence(entity);
         if(prevSequence <= sequence) {
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, 2));
+            int duration = 20 * 5; // Standard duration for invalid advancement
+            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, 2));
             return;
         }
 
         int difference = prevSequence - sequence;
 
         setBeyonder(entity, pathway, sequence);
-        entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, getAmplifierBySequenceDifference(difference)));
+        int amplifier = calculateAmplifier(difference, digestionProgress, sanity);
+        int duration = calculateDuration(difference, sanity);
+        entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, amplifier));
+    }
+
+    /**
+     * Calculate amplifier based on sequence difference, digestion progress, and sanity
+     * Returns 0 for perfect conditions (difference=1, full digestion, full sanity)
+     */
+    private static int calculateAmplifier(int sequenceDifference, float digestion, float sanity) {
+        // Base amplifier from sequence difference
+        int baseAmplifier = getAmplifierBySequenceDifference(sequenceDifference);
+
+        // Increase risk based on incomplete digestion (0.95 to 1.0 = no penalty, below 0.95 = penalty)
+        float digestionPenalty = digestion < 0.95 ? (0.95f - digestion) * 10 : 0; // 0 to ~9.5 range
+
+        // Increase risk based on low sanity (lower sanity = higher penalty)
+        float sanityPenalty = (1.0f - sanity) * 5; // 0 to 5 range
+
+        // Combine penalties
+        int totalAmplifier = baseAmplifier + Math.round(digestionPenalty + sanityPenalty);
+
+        // Cap at 9 (100% death rate above 8)
+        return Math.min(9, totalAmplifier);
+    }
+
+    /**
+     * Calculate duration based on sequence difference and sanity
+     * Higher sequence advancement (lower number) = longer duration
+     * Lower sanity = longer duration
+     */
+    private static int calculateDuration(int sequenceDifference, float sanity) {
+        // Base duration increases with sequence difference
+        // Higher sequences (numerically lower) mean bigger jumps in power
+        int baseDuration = 20 * 5 * sequenceDifference; // 5 seconds per sequence difference
+
+        // Multiply by sanity penalty (lower sanity = longer duration)
+        // At full sanity (1.0): multiplier = 1.0
+        // At no sanity (0.0): multiplier = 3.0
+        float sanityMultiplier = 1.0f + (2.0f * (1.0f - sanity));
+
+        return Math.round(baseDuration * sanityMultiplier);
     }
 
     // Add these fields after the existing disabledBeyonders field

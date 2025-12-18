@@ -22,7 +22,7 @@ public class LoosingControlEffect extends MobEffect {
 
     /**
      * amplifier controls the chance of dying
-     * amplifier 0: 1%
+     * amplifier 0: 0%
      * amplifier 1: 5%
      * amplifier 2: 10%
      * amplifier 3: 15%
@@ -57,7 +57,6 @@ public class LoosingControlEffect extends MobEffect {
 
         if (amplifier > 8 || shouldKillThisTick(totalProbability)) {
             livingEntity.removeEffect(ModEffects.LOOSING_CONTROL);
-            BeyonderData.clearBeyonderData(livingEntity);
             livingEntity.hurt(
                     createCustomDamageSource(livingEntity),
                     Math.max(livingEntity.getMaxHealth() + 5, 10000)
@@ -68,6 +67,9 @@ public class LoosingControlEffect extends MobEffect {
     }
 
     private boolean shouldKillThisTick(float totalProbability) {
+        if(totalProbability == 0f) {
+            return false;
+        }
         // Effect is designed to last 5 seconds = 100 ticks
         int ticks = 100;
 
@@ -80,7 +82,7 @@ public class LoosingControlEffect extends MobEffect {
 
     private float getProbability(int amplifier) {
         return switch(amplifier) {
-            case 0 -> 0.01f;
+            case 0 -> 0.00f;
             case 1 -> 0.05f;
             case 2 -> 0.1f;
             case 3 -> 0.15f;
