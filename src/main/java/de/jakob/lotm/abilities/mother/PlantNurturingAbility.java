@@ -48,7 +48,10 @@ public class PlantNurturingAbility extends AbilityItem {
             AbilityUtil.getBlocksInCircle((ServerLevel) level, entity.position().subtract(0, 1, 0), 4.5, 25).forEach(b -> {
                 BlockState blockState = level.getBlockState(b);
 
-                if(blockState.getBlock() instanceof BonemealableBlock bonemealableBlock) {
+                if (blockState.is(Blocks.SUGAR_CANE)) {
+                    tryGrowSugarCane((ServerLevel) level, b);
+                    ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.HAPPY_VILLAGER, b.getCenter().add(0, 1, 0), 4, .2);
+                } else if(blockState.getBlock() instanceof BonemealableBlock bonemealableBlock) {
                     ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.HAPPY_VILLAGER, b.getCenter().add(0, 1, 0), 4, .2);
                     if(bonemealableBlock.isBonemealSuccess(level, RandomSource.create(), b, blockState))
                         bonemealableBlock.performBonemeal((ServerLevel) level, RandomSource.create(), b, blockState);
@@ -59,7 +62,11 @@ public class PlantNurturingAbility extends AbilityItem {
 
             AbilityUtil.getBlocksInCircle((ServerLevel) level, entity.position(), 4.5, 25).forEach(b -> {
                 BlockState blockState = level.getBlockState(b);
-                if(blockState.getBlock() instanceof BonemealableBlock bonemealableBlock) {
+
+                if (blockState.is(Blocks.SUGAR_CANE)) {
+                    tryGrowSugarCane((ServerLevel) level, b);
+                    ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.HAPPY_VILLAGER, b.getCenter().add(0, 1, 0), 4, .2);
+                } else if(blockState.getBlock() instanceof BonemealableBlock bonemealableBlock) {
                     if(bonemealableBlock.isBonemealSuccess(level, RandomSource.create(), b, blockState))
                         bonemealableBlock.performBonemeal((ServerLevel) level, RandomSource.create(), b, blockState);
                     ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.HAPPY_VILLAGER, b.getCenter().add(0, 1, 0), 4, .2);
@@ -68,7 +75,11 @@ public class PlantNurturingAbility extends AbilityItem {
 
             AbilityUtil.getBlocksInCircle((ServerLevel) level, entity.position().add(0, 1, 0), 4.5, 25).forEach(b -> {
                 BlockState blockState = level.getBlockState(b);
-                if(blockState.getBlock() instanceof BonemealableBlock bonemealableBlock) {
+
+                if (blockState.is(Blocks.SUGAR_CANE)) {
+                    tryGrowSugarCane((ServerLevel) level, b);
+                    ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.HAPPY_VILLAGER, b.getCenter().add(0, 1, 0), 4, .2);
+                } else if(blockState.getBlock() instanceof BonemealableBlock bonemealableBlock) {
                     if(bonemealableBlock.isBonemealSuccess(level, RandomSource.create(), b, blockState))
                         bonemealableBlock.performBonemeal((ServerLevel) level, RandomSource.create(), b, blockState);
                     if(bonemealableBlock.isBonemealSuccess(level, RandomSource.create(), b, blockState))
@@ -78,6 +89,18 @@ public class PlantNurturingAbility extends AbilityItem {
                 }
             });
         }catch (Exception ignored) {}
+    }
+
+    private void tryGrowSugarCane(ServerLevel level, BlockPos pos) {
+        if (level.isEmptyBlock(pos.above())) {
+
+            int height = level.getRandom().nextInt(3) > 0 ? 1 : 2;
+            for (int i = 1; i <= height; i++) {
+                if (level.isEmptyBlock(pos.above(i))) {
+                    level.setBlock(pos.above(i), Blocks.SUGAR_CANE.defaultBlockState(), 3);
+                }
+            }
+        }
     }
 
     @Override
