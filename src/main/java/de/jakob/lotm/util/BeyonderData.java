@@ -55,13 +55,14 @@ public class BeyonderData {
         implementedRecipes.put("door", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("sun", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("tyrant", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
-        implementedRecipes.put("darkness", List.of(new Integer[]{9, 8, 7, 6, 5}));
+        implementedRecipes.put("darkness", List.of(new Integer[]{9, 8, 7, 6, 5, 4}));
         implementedRecipes.put("demoness", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("red_priest", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("visionary", List.of(new Integer[]{9, 8, 7, 6, 5}));
         implementedRecipes.put("mother", List.of(new Integer[]{9, 8, 7, 6, 5}));
         implementedRecipes.put("abyss", List.of(new Integer[]{9, 8, 7, 6, 5}));
-        implementedRecipes.put("wheel_of_fortune", List.of(new Integer[]{9, 8, 7, 6, 5}));
+        implementedRecipes.put("wheel_of_fortune", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3}));
+        implementedRecipes.put("error", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2}));
 
     }
 
