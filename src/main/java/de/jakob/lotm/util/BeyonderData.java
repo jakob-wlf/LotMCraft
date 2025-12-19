@@ -108,9 +108,9 @@ public class BeyonderData {
     public static int getHighestImplementedSequence(String pathway) {
         return switch (pathway) {
             case "mother" -> 7;
-            case "darkness" -> 6;
-            case "abyss", "wheel_of_fortune", "visionary" -> 5;
-            case "fool" -> 3;
+            case "darkness" -> 4;
+            case "abyss", "visionary" -> 5;
+            case "fool", "wheel_of_fortune" -> 3;
             case "error" -> 2;
             case "demoness", "red_priest", "sun", "tyrant", "door" -> 1;
             default -> 9;
@@ -606,7 +606,6 @@ public class BeyonderData {
             return;
         }
 
-        // Get sanity value (0 = no sanity, 1 = full sanity)
         SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
         float sanity = sanityComp.getSanity();
 
@@ -681,7 +680,7 @@ public class BeyonderData {
 
     /**
      * Calculate duration based on sequence difference and sanity
-     * Higher sequence advancement (lower number) = longer duration
+     * Higher sequence advancement = longer duration
      * Lower sanity = longer duration
      */
     private static int calculateDuration(int sequenceDifference, float sanity) {
