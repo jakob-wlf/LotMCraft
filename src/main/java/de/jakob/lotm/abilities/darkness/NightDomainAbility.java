@@ -5,6 +5,7 @@ import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -51,6 +52,9 @@ public class NightDomainAbility extends AbilityItem {
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(MobEffects.BLINDNESS, 20, 20, false, false, false));
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(MobEffects.DARKNESS, 20, 20, false, false, false));
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(ModEffects.UNLUCK, 20, 4, false, false, false));
+            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 5, false, false, false));
+
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 35, DamageLookup.lookupDps(4, .85, 2, 20) * multiplier(entity), startPos, true, false);
 
             AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, 35).forEach(e -> BeyonderData.addModifierWithTimeLimit(e, "night_domain_debuff", .65, 2000));
             BeyonderData.addModifierWithTimeLimit(entity, "night_domain_buff", 1.35f, 2000);

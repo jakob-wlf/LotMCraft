@@ -1,5 +1,6 @@
 package de.jakob.lotm.abilities;
 
+import de.jakob.lotm.abilities.common.CogitationAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.Location;
@@ -7,6 +8,7 @@ import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -36,7 +38,7 @@ public class AbilityHandler {
         return null;
     }
 
-    public static boolean canUse(LivingEntity entity, boolean ignoreCreative, Map<String, Integer> requirements, double spiritualityCost) {
+    public static boolean canUse(LivingEntity entity, boolean ignoreCreative, Map<String, Integer> requirements, double spiritualityCost, ItemStack abilityItem) {
         // Creative mode always works
         if (entity instanceof Player player && player.isCreative() && !ignoreCreative) {
             return true;
@@ -77,7 +79,7 @@ public class AbilityHandler {
             if(!requirements.containsKey(pathway))
                 return false;
 
-            if(BeyonderData.isAbilityDisabled(entity))
+            if(BeyonderData.isAbilityDisabled(entity) && !(abilityItem.getItem() instanceof CogitationAbility))
                 return false;
 
             // Check if pathway has requirements

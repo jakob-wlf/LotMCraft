@@ -46,6 +46,7 @@ public class CogitationAbility extends ToggleAbilityItem {
             entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 5, 1, false, false, false));
 
             player.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(.0025f, player);
+            BeyonderData.disableAbilityUseWithTimeLimit(entity, "cogitation", 500);
 
             // Send message to client from server
             Component message = Component.translatable("lotm.ability.cogitation.tick");

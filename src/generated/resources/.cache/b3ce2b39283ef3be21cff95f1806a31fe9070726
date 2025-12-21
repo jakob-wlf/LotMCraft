@@ -1,4 +1,4 @@
-// 1.21.1	2025-12-19T14:12:57.5129904	Item Models: lotmcraft
+// 1.21.1	2025-12-20T15:45:54.0960517	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 b46fafcef24e66e85c39645e39df0ec0b12c3447 assets/lotmcraft/models/item/ability_theft_ability.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
@@ -182,6 +182,7 @@ ef6c3378da422c33b0cd107482cff036c0f50de2 assets/lotmcraft/models/item/frost_abil
 ba973641ef5550da2597873305b02717284e8659 assets/lotmcraft/models/item/golden_blood.json
 f07135695348ab8e47f302514f4c413be2656cb1 assets/lotmcraft/models/item/golden_phoenix_eyes.json
 5307b73696bd92644711f550a4787e494e96ab41 assets/lotmcraft/models/item/guiding_book.json
+82e4e7718d3bf5696d70b16f51d182e5beac745b assets/lotmcraft/models/item/hair_entanglement_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/harvest_priest.json
 53bf2e073a7be41175c64d01457176d8d7687e67 assets/lotmcraft/models/item/harvest_priest_characteristic.json
 21b9eaa21a54ecc4e368a58c6d64b5d23e99c5e4 assets/lotmcraft/models/item/harvest_priest_potion.json

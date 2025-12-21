@@ -1,5 +1,6 @@
 package de.jakob.lotm.abilities;
 
+import de.jakob.lotm.abilities.common.CogitationAbility;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -113,7 +114,7 @@ public abstract class AbilityItem extends Item {
             return InteractionResultHolder.fail(itemStack);
         }
 
-        if(BeyonderData.isSpecificAbilityDisabled(player, itemStack.getDescriptionId())) {
+        if(BeyonderData.isSpecificAbilityDisabled(player, itemStack.getDescriptionId())  && !(this instanceof CogitationAbility)) {
             return InteractionResultHolder.fail(itemStack);
         }
 
@@ -206,7 +207,7 @@ public abstract class AbilityItem extends Item {
     }
 
     public boolean canUse(LivingEntity entity, boolean ignoreCreative) {
-        return AbilityHandler.canUse(entity, ignoreCreative, getRequirements(), getSpiritualityCost());
+        return AbilityHandler.canUse(entity, ignoreCreative, getRequirements(), getSpiritualityCost(), new ItemStack(this));
     }
 
     public int getCooldown() {

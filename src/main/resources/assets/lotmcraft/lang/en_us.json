@@ -203,6 +203,10 @@
   "ability.lotmcraft.marionette_controlling.auto_swap": "Auto Swap",
   "ability.lotmcraft.marionette_controlling.get_item": "Get marionette Item",
   "item.lotmcraft.historical_void_summoning_ability": "Historical Void Summoning",
+  "ability.lotmcraft.historical_void_summoning.summon_item": "Summon Item",
+  "ability.lotmcraft.historical_void_summoning.summon_entity": "Summon Entity",
+  "ability.lotmcraft.historical_void_summoning.mark_items": "Mark the Items",
+  "ability.lotmcraft.historical_void_summoning.mark_entity": "Mark an entity",
   "item.lotmcraft.historical_void_hiding_ability": "Hiding in the Historical Void",
 
   "item.lotmcraft.midnight_poem_ability": "Midnight Poem",
@@ -217,6 +221,7 @@
   "item.lotmcraft.requiem_ability": "Requiem",
   "item.lotmcraft.spirit_commanding_ability": "Spirit Commanding",
   "item.lotmcraft.night_domain_ability": "Night Domain",
+  "item.lotmcraft.hair_entanglement_ability": "Hair Entanglement",
 
   "item.lotmcraft.mighty_blow_ability": "Mighty Blow",
   "item.lotmcraft.instigation_ability": "Instigation",

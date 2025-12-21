@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.abyss.*;
 import de.jakob.lotm.abilities.common.CogitationAbility;
+import de.jakob.lotm.abilities.common.CurseOfMisfortuneAbility;
 import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.common.SpiritVisionAbility;
 import de.jakob.lotm.abilities.darkness.*;
@@ -113,6 +114,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> REQUIEM = ITEMS.registerItem("requiem_ability", RequiemAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SPIRIT_COMMANDING = ITEMS.registerItem("spirit_commanding_ability", SpiritCommandingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> NIGHT_DOMAIN = ITEMS.registerItem("night_domain_ability", NightDomainAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> HAIR_ENTANGLEMENT = ITEMS.registerItem("hair_entanglement_ability", HairEntanglementAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> SHADOW_CONCEALMENT = ITEMS.registerItem("shadow_concealment_ability", ShadowConcealmentAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> MIGHTY_BLOW = ITEMS.registerItem("mighty_blow_ability", MightyBlowAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

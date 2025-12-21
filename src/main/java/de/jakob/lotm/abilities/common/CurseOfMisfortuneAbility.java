@@ -1,4 +1,4 @@
-package de.jakob.lotm.abilities.wheel_of_fortune;
+package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.effect.ModEffects;
@@ -25,7 +25,7 @@ public class CurseOfMisfortuneAbility extends AbilityItem {
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("wheel_of_fortune", 4));
+        return new HashMap<>(Map.of("wheel_of_fortune", 4, "darkness", 4));
     }
 
     @Override
