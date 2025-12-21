@@ -9,7 +9,7 @@ import net.minecraft.nbt.StringTag;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 
-public record StoredData(String pathway, Integer sequence, @Nullable String honorificName,
+public record StoredData(String pathway, Integer sequence, @Nullable HonorificName honorificName,
                          String trueName, LinkedList<MessageType> msgs) {
 
     public static final String NBT_PATHWAY = "beyonder_map_pathway";
@@ -41,7 +41,7 @@ public record StoredData(String pathway, Integer sequence, @Nullable String hono
         tag.putInt(NBT_SEQUENCE, sequence);
 
         if(honorificName != null)
-            tag.putString(NBT_HONORIFIC_NAME, honorificName);
+            tag.put(NBT_HONORIFIC_NAME, honorificName.toNBT());
 
         tag.putString(NBT_TRUE_NAME, trueName);
 
@@ -58,7 +58,7 @@ public record StoredData(String pathway, Integer sequence, @Nullable String hono
     public static StoredData fromNBT(CompoundTag tag){
         String path = tag.getString(NBT_PATHWAY);
         Integer seq = tag.getInt(NBT_SEQUENCE);
-        String name = tag.getString(NBT_HONORIFIC_NAME);
+        HonorificName name = HonorificName.fromNBT(tag.getCompound(NBT_HONORIFIC_NAME));
         String trueName = tag.getString(NBT_TRUE_NAME);
 
         LinkedList<MessageType> list = new LinkedList<>();
@@ -67,7 +67,7 @@ public record StoredData(String pathway, Integer sequence, @Nullable String hono
                 list.add(MessageType.fromNBT(compTag));
         }
 
-        return new StoredData(path, seq, name.isEmpty() ? null : name, trueName, list);
+        return new StoredData(path, seq, name.first().isEmpty() ? null : name, trueName, list);
     }
 
 }

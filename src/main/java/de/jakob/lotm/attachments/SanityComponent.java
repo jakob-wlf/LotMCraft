@@ -27,19 +27,23 @@ public class SanityComponent {
 
     public void setSanityAndSync(float sanity, LivingEntity entity) {
         this.sanity = sanity;
+
         if(this.sanity < 0.0f)
             this.sanity = 0.0f;
-        if(this.sanity > 1.0f)
+        else if(this.sanity > 1.0f)
             this.sanity = 1.0f;
+
         PacketHandler.sendToAllPlayers(new SyncSanityPacket(sanity, entity.getId()));
     }
 
     public void increaseSanityAndSync(float amount, LivingEntity entity) {
         this.sanity += amount;
+
         if(this.sanity > 1.0f)
             this.sanity = 1.0f;
-        if(this.sanity < 0.0f)
+        else if(this.sanity < 0.0f)
             this.sanity = 0.0f;
+
         PacketHandler.sendToAllPlayers(new SyncSanityPacket(sanity, entity.getId()));
     }
 
