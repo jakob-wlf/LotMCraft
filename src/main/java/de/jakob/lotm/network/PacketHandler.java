@@ -240,6 +240,12 @@ public class PacketHandler {
                 SkinDataPacket.STREAM_CODEC,
                 SkinDataPacket::handle
         );
+
+        registrar.playToClient(
+                SyncAllyDataPacket.TYPE,
+                SyncAllyDataPacket.STREAM_CODEC,
+                SyncAllyDataPacket::handle
+        );
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {

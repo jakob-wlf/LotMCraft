@@ -2,10 +2,7 @@ package de.jakob.lotm.abilities;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.abyss.*;
-import de.jakob.lotm.abilities.common.CogitationAbility;
-import de.jakob.lotm.abilities.common.CurseOfMisfortuneAbility;
-import de.jakob.lotm.abilities.common.DivinationAbility;
-import de.jakob.lotm.abilities.common.SpiritVisionAbility;
+import de.jakob.lotm.abilities.common.*;
 import de.jakob.lotm.abilities.darkness.*;
 import de.jakob.lotm.abilities.demoness.*;
 import de.jakob.lotm.abilities.door.*;
@@ -27,6 +24,7 @@ public class AbilityItemHandler {
 
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(LOTMCraft.MOD_ID);
     public static final DeferredItem<Item> COGITATION = ITEMS.registerItem("cogitation_ability", CogitationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static final DeferredItem<Item> ALLY = ITEMS.registerItem("ally_ability", AllyAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static final DeferredItem<Item> DIVINATION = ITEMS.registerItem("divination_ability", DivinationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static final DeferredItem<Item> SPIRIT_VISION = ITEMS.registerItem("spirit_vision_ability", SpiritVisionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 

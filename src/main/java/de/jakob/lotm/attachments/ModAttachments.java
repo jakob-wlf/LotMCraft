@@ -33,6 +33,13 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<AllyComponent>> ALLY_COMPONENT = ATTACHMENT_TYPES.register(
+            "ally_component",
+            () -> AttachmentType.builder(() -> new AllyComponent())
+                    .serialize(AllyComponent.CODEC)
+                    .build()
+    );
+
     public static final Supplier<AttachmentType<NewPlayerComponent>> BOOK_COMPONENT =
             ATTACHMENT_TYPES.register("book_component", () ->
                     AttachmentType.builder(NewPlayerComponent::new)

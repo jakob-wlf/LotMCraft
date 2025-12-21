@@ -732,11 +732,20 @@ public class AbilityUtil {
 
 
 
+    /**
+     * Updated mayDamage method that respects ally relationships
+     * Replace your existing mayDamage method with this one
+     */
     public static boolean mayDamage(LivingEntity source, LivingEntity target) {
         if(source == null || target == null) return true;
         if (source == target) return false;
         if (target instanceof Player player && player.isCreative()) return false;
         if (!source.canAttack(target)) return false;
+
+        // Check ally relationship - allies cannot damage each other
+        if (AllyUtil.areAllies(source, target)) {
+            return false;
+        }
 
         if(source instanceof ErrorAvatarEntity avatar) {
             if(target.getUUID() == avatar.getOriginalOwner())
@@ -777,10 +786,19 @@ public class AbilityUtil {
         return true;
     }
 
+    /**
+     * Updated mayTarget method that respects ally relationships
+     * Replace your existing mayTarget method with this one
+     */
     public static boolean mayTarget(LivingEntity source, LivingEntity target) {
         if(!mayDamage(source, target)) return false;
 
         if(source == null || target == null) return true;
+
+        // Check ally relationship - allies cannot target each other
+        if (AllyUtil.areAllies(source, target)) {
+            return false;
+        }
 
         if(DeceitAbility.cannotBeTargeted.contains(target.getUUID())) return false;
 
