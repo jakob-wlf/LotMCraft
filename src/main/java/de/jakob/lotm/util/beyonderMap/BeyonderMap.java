@@ -34,9 +34,14 @@ public class BeyonderMap extends SavedData {
         var data = map.get(entity.getUUID());
         boolean isNull = data == null;
 
-        map.put(entity.getUUID(), new StoredData(BeyonderData.getPathway(entity),
-                BeyonderData.getSequence(entity), isNull? null : data.honorificName(),
-                ((ServerPlayer) entity).getGameProfile().getName(), isNull ? new LinkedList<>() : data.msgs()));
+        map.put(entity.getUUID(), new StoredData(
+                BeyonderData.getPathway(entity),
+                BeyonderData.getSequence(entity),
+                isNull? null : data.honorificName(),
+                ((ServerPlayer) entity).getGameProfile().getName(),
+                isNull ? new LinkedList<>() : data.msgs(),
+                isNull ? new LinkedList<>() : data.knownNames()
+        ));
 
         setDirty();
     }
@@ -49,13 +54,39 @@ public class BeyonderMap extends SavedData {
         setDirty();
     }
 
-    public void addHonorificName(LivingEntity entity, String name){
+    public void addHonorificName(LivingEntity entity, HonorificName name){
         if(!(entity instanceof ServerPlayer)) return;
 
         if(!contains(entity)) put(entity);
 
         map.compute(entity.getUUID(), (k, data) -> new StoredData(data.pathway(),
-                data.sequence(), name, data.trueName(), data.msgs()));
+                data.sequence(), name, data.trueName(), data.msgs(), data.knownNames()));
+
+        setDirty();
+    }
+
+    public void addKnownHonorificName(LivingEntity entity, HonorificName name){
+        if(!(entity instanceof ServerPlayer)) return;
+
+        if(!contains(entity)) put(entity);
+
+        var data = map.get(entity.getUUID());
+        data.knownNames().add(name);
+
+        map.put(entity.getUUID(), data);
+
+        setDirty();
+    }
+
+    public void removeKnownHonorificName(LivingEntity entity, HonorificName name){
+        if(!(entity instanceof ServerPlayer)) return;
+
+        if(!contains(entity)) put(entity);
+
+        var data = map.get(entity.getUUID());
+        data.knownNames().remove(name);
+
+        map.put(entity.getUUID(), data);
 
         setDirty();
     }

@@ -10,14 +10,14 @@ import javax.annotation.Nullable;
 import java.util.LinkedList;
 
 public record StoredData(String pathway, Integer sequence, @Nullable HonorificName honorificName,
-                         String trueName, LinkedList<MessageType> msgs) {
+                         String trueName, LinkedList<MessageType> msgs, LinkedList<HonorificName> knownNames) {
 
     public static final String NBT_PATHWAY = "beyonder_map_pathway";
     public static final String NBT_SEQUENCE = "beyonder_map_sequence";
     public static final String NBT_HONORIFIC_NAME = "beyonder_map_honorific_name";
     public static final String NBT_TRUE_NAME = "beyonder_map_true_name";
     public static final String NBT_MESSAGES = "beyonder_map_messages";
-
+    public static final String NBT_KNOWN_NAMES = "beyonder_map_known_names";
 
     public void addMsg(MessageType msg){
         msgs.add(msg);
@@ -30,7 +30,7 @@ public record StoredData(String pathway, Integer sequence, @Nullable HonorificNa
     public StoredData regressSeq(){
         return new StoredData(sequence + 1 == LOTMCraft.NON_BEYONDER_SEQ ?
                 "none" : pathway, sequence + 1,
-                honorificName, trueName, msgs);
+                honorificName, trueName, msgs, knownNames);
     }
 
 
@@ -52,6 +52,13 @@ public record StoredData(String pathway, Integer sequence, @Nullable HonorificNa
 
         tag.put(NBT_MESSAGES, list);
 
+        ListTag list2 = new ListTag();
+        for (MessageType value : msgs) {
+            list2.add(value.toNBT());
+        }
+
+        tag.put(NBT_KNOWN_NAMES, list2);
+
         return tag;
     }
 
@@ -67,7 +74,13 @@ public record StoredData(String pathway, Integer sequence, @Nullable HonorificNa
                 list.add(MessageType.fromNBT(compTag));
         }
 
-        return new StoredData(path, seq, name.first().isEmpty() ? null : name, trueName, list);
+        LinkedList<HonorificName> names = new LinkedList<>();
+        for (var t : tag.getList(NBT_KNOWN_NAMES, StringTag.TAG_COMPOUND)) {
+            if(t instanceof CompoundTag compTag)
+                names.add(HonorificName.fromNBT(compTag));
+        }
+
+        return new StoredData(path, seq, name.first().isEmpty() ? null : name, trueName, list, names);
     }
 
 }
