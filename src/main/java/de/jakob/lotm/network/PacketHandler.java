@@ -246,6 +246,12 @@ public class PacketHandler {
                 SyncAllyDataPacket.STREAM_CODEC,
                 SyncAllyDataPacket::handle
         );
+
+        registrar.playToClient(
+                PendingAllyRequestPacket.TYPE,
+                PendingAllyRequestPacket.STREAM_CODEC,
+                PendingAllyRequestPacket::handle
+        );
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
@@ -254,6 +260,13 @@ public class PacketHandler {
                 BecomeBeyonderPacket.STREAM_CODEC,
                 BecomeBeyonderPacket::handle
         );
+
+        registrar.playToServer(
+                AllyRequestResponsePacket.TYPE,
+                AllyRequestResponsePacket.STREAM_CODEC,
+                AllyRequestResponsePacket::handle
+        );
+
 
         registrar.playToServer(
                 OpenIntrospectMenuPacket.TYPE,

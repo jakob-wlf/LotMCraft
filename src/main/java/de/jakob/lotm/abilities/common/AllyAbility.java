@@ -1,11 +1,14 @@
 package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PendingAllyRequestPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -98,14 +101,11 @@ public class AllyAbility extends AbilityItem {
         // Notify requester
         AbilityUtil.sendActionBar(requester, Component.translatable("lotm.ally.request_sent", target.getName()).withColor(0x2196F3));
 
-        // Notify target with clickable message
-        target.sendSystemMessage(
-                Component.translatable("lotm.ally.request_received", requester.getName())
-                        .withColor(0x2196F3)
-                        .append(Component.literal(" "))
-                        .append(Component.translatable("lotm.ally.click_to_accept")
-                                .withColor(0x4CAF50))
-        );
+        // Send packet to target client to display clickable message
+        if (target instanceof ServerPlayer serverTarget) {
+            PendingAllyRequestPacket packet = new PendingAllyRequestPacket(requesterUUID, requester.getName().getString());
+            PacketHandler.sendToPlayer(serverTarget, packet);
+        }
 
         AbilityUtil.sendActionBar(target,
                 Component.translatable("lotm.ally.request_received_short", requester.getName())
