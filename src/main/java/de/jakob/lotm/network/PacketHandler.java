@@ -252,6 +252,24 @@ public class PacketHandler {
                 PendingAllyRequestPacket.STREAM_CODEC,
                 PendingAllyRequestPacket::handle
         );
+
+        registrar.playToClient(
+                RemoveMovableEffectPacket.TYPE,
+                RemoveMovableEffectPacket.STREAM_CODEC,
+                RemoveMovableEffectPacket::handle
+        );
+
+        registrar.playToClient(
+                UpdateMovableEffectPositionPacket.TYPE,
+                UpdateMovableEffectPositionPacket.STREAM_CODEC,
+                UpdateMovableEffectPositionPacket::handle
+        );
+
+        registrar.playToClient(
+                AddMovableEffectPacket.TYPE,
+                AddMovableEffectPacket.STREAM_CODEC,
+                AddMovableEffectPacket::handle
+        );
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {

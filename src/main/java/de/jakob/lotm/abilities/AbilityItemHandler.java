@@ -113,6 +113,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> SPIRIT_COMMANDING = ITEMS.registerItem("spirit_commanding_ability", SpiritCommandingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> NIGHT_DOMAIN = ITEMS.registerItem("night_domain_ability", NightDomainAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> HAIR_ENTANGLEMENT = ITEMS.registerItem("hair_entanglement_ability", HairEntanglementAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> HORROR_AURA = ITEMS.registerItem("horror_aura_ability", HorrorAuraAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> SHADOW_CONCEALMENT = ITEMS.registerItem("shadow_concealment_ability", ShadowConcealmentAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> MIGHTY_BLOW = ITEMS.registerItem("mighty_blow_ability", MightyBlowAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

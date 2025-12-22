@@ -2,10 +2,8 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.rendering.effectRendering.ActiveDirectionalEffect;
-import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
-import de.jakob.lotm.rendering.effectRendering.DirectionalEffectFactory;
-import de.jakob.lotm.rendering.effectRendering.EffectFactory;
+import de.jakob.lotm.rendering.effectRendering.*;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
@@ -16,8 +14,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
@@ -57,9 +54,24 @@ public class VFXRenderer {
                 }
             }
 
+            Iterator<Map.Entry<UUID, ActiveMovableEffect>> movableIterator = activeMovableEffects.entrySet().iterator();
+            while (movableIterator.hasNext()) {
+                Map.Entry<UUID, ActiveMovableEffect> entry = movableIterator.next();
+                ActiveMovableEffect effect = entry.getValue();
+                effect.update(poseStack, event.getPartialTick().getGameTimeDeltaPartialTick(false));
+
+                if (effect.isFinished()) {
+                    movableIterator.remove();
+                }
+            }
+
+
             poseStack.popPose();
         }
     }
+
+    private static final Map<UUID, ActiveMovableEffect> activeMovableEffects = new HashMap<>();
+
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
@@ -73,6 +85,36 @@ public class VFXRenderer {
 
         activeEffects.forEach(ActiveEffect::tick);
         activeDirectionalEffects.forEach(ActiveDirectionalEffect::tick);
+        activeMovableEffects.values().forEach(ActiveMovableEffect::tick);
+    }
+
+    public static void addActiveMovableEffect(UUID effectId, int effectIndex,
+                                              double x, double y, double z,
+                                              int duration, boolean infinite) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) return;
+
+        Location location = new Location(new Vec3(x, y, z), mc.level);
+        ActiveMovableEffect effect = MovableEffectFactory.createEffect(effectIndex, location, duration, infinite);
+        activeMovableEffects.put(effectId, effect);
+    }
+
+    public static void updateMovableEffectPosition(UUID effectId, double x, double y, double z) {
+        ActiveMovableEffect effect = activeMovableEffects.get(effectId);
+        if (effect != null) {
+            effect.setPosition(x, y, z);
+        }
+    }
+
+    public static void removeMovableEffect(UUID effectId) {
+        activeMovableEffects.remove(effectId);
+    }
+
+    // Update clearActiveEffects method to include movable effects
+    public static void clearActiveEffects() {
+        activeEffects.clear();
+        activeDirectionalEffects.clear();
+        activeMovableEffects.clear(); // ADD THIS
     }
 
     public static void addActiveEffect(int effectIndex, double x, double y, double z) {
@@ -90,10 +132,5 @@ public class VFXRenderer {
                         endX, endY, endZ,
                         duration)
         );
-    }
-
-    public static void clearActiveEffects() {
-        activeEffects.clear();
-        activeDirectionalEffects.clear(); // ADD THIS
     }
 }

@@ -253,6 +253,20 @@ public class ClientHandler {
         ability.handleClientSync(mc.level, livingEntity, packet.active());
     }
 
+    public static void addMovableEffect(UUID effectId, int index,
+                                        double x, double y, double z,
+                                        int duration, boolean infinite) {
+        VFXRenderer.addActiveMovableEffect(effectId, index, x, y, z, duration, infinite);
+    }
+
+    public static void updateMovableEffectPosition(UUID effectId, double x, double y, double z) {
+        VFXRenderer.updateMovableEffectPosition(effectId, x, y, z);
+    }
+
+    public static void removeMovableEffect(UUID effectId) {
+        VFXRenderer.removeMovableEffect(effectId);
+    }
+
     public static void syncDecryptionAbility(SyncDecryptionLookedAtEntitiesAbilityPacket packet, Player player) {
         if(packet.active()) {
             DecryptionRenderLayer.activeDecryption.add(player.getUUID());
