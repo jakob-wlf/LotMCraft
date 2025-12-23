@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.fool;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -20,25 +21,50 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.*;
 
+@EventBusSubscriber
 public class HistoricalVoidSummoningAbility extends SelectableAbilityItem {
     private static final String MARKED_ENTITIES_TAG = "MarkedEntities";
-    private static final String SUMMONED_COUNT_TAG = "SummonedCount";
+    private static final String SUMMONED_COUNT_TAG = "SummonedCount_Session"; // Changed to session-only
+    private static final String PLACED_BLOCKS_TAG = "VoidPlacedBlocks";
     private static final int MAX_MARKED_ENTITIES = 54;
-    private static final int MAX_SUMMONED = 3;
-    private static final int SUMMON_DURATION_TICKS = 2400; // 2 minutes
+    private static final int MAX_SUMMONED = 5;
+    private static final int SUMMON_DURATION_TICKS = 20 * 20;
+
+    // Track placed blocks and their summon times
+    private static final Map<BlockPos, PlacedBlockData> placedBlocks = new HashMap<>();
+
+    private static class PlacedBlockData {
+        long summonTime;
+        UUID playerUUID;
+
+        PlacedBlockData(long summonTime, UUID playerUUID) {
+            this.summonTime = summonTime;
+            this.playerUUID = playerUUID;
+        }
+    }
 
     public HistoricalVoidSummoningAbility(Properties properties) {
         super(properties, 1);
+
+        canBeCopied = false;
+        canBeUsedByNPC = false;
     }
 
     @Override
@@ -157,6 +183,92 @@ public class HistoricalVoidSummoningAbility extends SelectableAbilityItem {
                         }
                     }
                 }
+            }
+        }
+
+        // Also remove any placed blocks from this summon
+        removeTemporaryBlocks(level, player, summonTime);
+    }
+
+    private void removeTemporaryBlocks(ServerLevel level, ServerPlayer player, long summonTime) {
+        List<BlockPos> toRemove = new ArrayList<>();
+
+        for(Map.Entry<BlockPos, PlacedBlockData> entry : placedBlocks.entrySet()) {
+            if(entry.getValue().summonTime == summonTime && entry.getValue().playerUUID.equals(player.getUUID())) {
+                BlockPos pos = entry.getKey();
+                level.removeBlock(pos, false);
+                toRemove.add(pos);
+            }
+        }
+
+        toRemove.forEach(placedBlocks::remove);
+    }
+
+    // Event handler for block placement
+    @SubscribeEvent
+    public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
+        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        ItemStack placedItem = event.getPlacedBlock().getBlock().asItem().getDefaultInstance();
+        ItemStack heldItem = player.getMainHandItem();
+
+        if(heldItem.isEmpty()) {
+            heldItem = player.getOffhandItem();
+        }
+
+        if(!heldItem.isEmpty()) {
+            net.minecraft.world.item.component.CustomData customData = heldItem.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+            if(customData != null) {
+                CompoundTag tag = customData.copyTag();
+                if(tag.contains("VoidSummonTime") && tag.contains("VoidSummonOwner")) {
+                    long summonTime = tag.getLong("VoidSummonTime");
+                    UUID ownerId = tag.getUUID("VoidSummonOwner");
+
+                    // Track this placed block
+                    placedBlocks.put(event.getPos(), new PlacedBlockData(summonTime, ownerId));
+                }
+            }
+        }
+    }
+
+    // Event handler for block breaking
+    @SubscribeEvent
+    public static void onBlockBreak(BlockEvent.BreakEvent event) {
+        BlockPos pos = event.getPos();
+
+        if(placedBlocks.containsKey(pos)) {
+            // Remove drops from void-summoned blocks
+            event.setCanceled(true);
+            // Manually remove the block without drops
+            if(event.getLevel() instanceof ServerLevel serverLevel) {
+                serverLevel.removeBlock(pos, false);
+            }
+            placedBlocks.remove(pos);
+        }
+    }
+
+    // Event handler for item toss
+    @SubscribeEvent
+    public static void onItemToss(ItemTossEvent event) {
+        ItemStack tossedItem = event.getEntity().getItem();
+
+        net.minecraft.world.item.component.CustomData customData = tossedItem.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+        if(customData != null) {
+            CompoundTag tag = customData.copyTag();
+            if(tag.contains("VoidSummonTime") && tag.contains("VoidSummonOwner")) {
+                // This is a summoned item being tossed - make it disappear
+                event.getEntity().discard();
+
+                // Notify player and decrement count
+                UUID ownerId = tag.getUUID("VoidSummonOwner");
+                ServerPlayer player = (ServerPlayer) event.getPlayer();
+
+                if(player.getUUID().equals(ownerId)) {
+                    player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.item_returned").withStyle(ChatFormatting.GRAY));
+                    decrementSummonedCount(player);
+                }
+
+                event.setCanceled(true);
             }
         }
     }
@@ -319,6 +431,11 @@ public class HistoricalVoidSummoningAbility extends SelectableAbilityItem {
             boolean spawned = level.addFreshEntity(entity);
 
             if(spawned) {
+                // Make the summoned entity an ally of the player
+                if(entity instanceof LivingEntity livingEntity) {
+                    AllyUtil.makeAllies(player, livingEntity);
+                }
+
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.summoned_entity", entity.getName().getString()).withStyle(ChatFormatting.GREEN));
 
                 // Schedule removal after 2 minutes
@@ -465,18 +582,24 @@ public class HistoricalVoidSummoningAbility extends SelectableAbilityItem {
     }
 
     private int getSummonedCount(ServerPlayer player) {
-        CompoundTag data = player.getPersistentData();
-        return data.getInt(SUMMONED_COUNT_TAG);
+        // Use a session-only tag that doesn't persist
+        if(!player.getPersistentData().contains(SUMMONED_COUNT_TAG)) {
+            player.getPersistentData().putInt(SUMMONED_COUNT_TAG, 0);
+        }
+        return player.getPersistentData().getInt(SUMMONED_COUNT_TAG);
     }
 
     private void incrementSummonedCount(ServerPlayer player) {
-        CompoundTag data = player.getPersistentData();
-        data.putInt(SUMMONED_COUNT_TAG, data.getInt(SUMMONED_COUNT_TAG) + 1);
+        int current = getSummonedCount(player);
+        player.getPersistentData().putInt(SUMMONED_COUNT_TAG, current + 1);
     }
 
-    private void decrementSummonedCount(ServerPlayer player) {
-        CompoundTag data = player.getPersistentData();
-        int count = Math.max(0, data.getInt(SUMMONED_COUNT_TAG) - 1);
-        data.putInt(SUMMONED_COUNT_TAG, count);
+    private static void decrementSummonedCount(ServerPlayer player) {
+        if(!player.getPersistentData().contains(SUMMONED_COUNT_TAG)) {
+            player.getPersistentData().putInt(SUMMONED_COUNT_TAG, 0);
+            return;
+        }
+        int count = Math.max(0, player.getPersistentData().getInt(SUMMONED_COUNT_TAG) - 1);
+        player.getPersistentData().putInt(SUMMONED_COUNT_TAG, count);
     }
 }

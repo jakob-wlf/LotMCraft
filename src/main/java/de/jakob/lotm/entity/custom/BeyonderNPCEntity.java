@@ -255,8 +255,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
     public void onAddedToLevel() {
         super.onAddedToLevel();
         if (!this.level().isClientSide) {
-            // Only generate a quest if this NPC doesn't already have one
-            if (this.random.nextFloat() <= .2f && !hasQuest() && !isPuppetWarrior() && !MarionetteUtils.isMarionette(this)) {
+            // DISABLED FOR NOW
+            if (this.random.nextFloat() < 0f && !hasQuest() && !isPuppetWarrior() && !MarionetteUtils.isMarionette(this)) {
                 setHasQuest(true);
 
                 // Generate and store the quest ID

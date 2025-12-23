@@ -1,4 +1,4 @@
-// 1.21.1	2025-12-21T20:42:07.1896767	Item Models: lotmcraft
+// 1.21.1	2025-12-23T14:06:25.1341708	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 b46fafcef24e66e85c39645e39df0ec0b12c3447 assets/lotmcraft/models/item/ability_theft_ability.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
@@ -196,6 +196,7 @@ adaa3e6918e978f71b51baadee8dcac122365a99 assets/lotmcraft/models/item/holy_light
 2198b2577699f0b9b33d70ac7005cbf0583ab8ce assets/lotmcraft/models/item/holy_oath_ability.json
 bc58423701ac8c13bf64cf0525c7fc97407d706d assets/lotmcraft/models/item/holy_song_ability.json
 6711764771e2f80d3ea9db4ffa352260018d217b assets/lotmcraft/models/item/hornacis_gray_mountain_goat_horn.json
+c0453f9e90666a5d6c78ccb99a679e8c88f95947 assets/lotmcraft/models/item/horror_aura_ability.json
 4736eb3fcf4c2bc9a061351ed044d3f1a2366deb assets/lotmcraft/models/item/horror_bishop_characteristic.json
 d36ba843caf431b9fb2ae81d7ac87077f8db71c2 assets/lotmcraft/models/item/host_controlling_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/hunter.json
