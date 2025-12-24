@@ -6,9 +6,12 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,6 +22,8 @@ import java.util.UUID;
 public abstract class SelectableAbilityItem extends AbilityItem{
 
     protected final HashMap<UUID, Integer> selectedAbilities = new HashMap<>();
+    private final HashMap<UUID, Long> lastLeftClick = new HashMap<>();
+    private static final long LEFT_CLICK_WINDOW = 100; // 100ms window to detect left click
 
     public SelectableAbilityItem(Properties properties, float cooldown) {
         super(properties, cooldown);
@@ -39,6 +44,18 @@ public abstract class SelectableAbilityItem extends AbilityItem{
     };
 
     protected abstract String[] getAbilityNames();
+
+    public String[] getAbilityNamesCopy() {
+        return getAbilityNames().clone();
+    }
+
+    // Method to check if this is a left-click action (called from client-side event)
+    public void handleLeftClickInAir(Player player, ItemStack itemStack) {
+        if (player.level().isClientSide && getAbilityNames().length > 0) {
+            lastLeftClick.put(player.getUUID(), System.currentTimeMillis());
+            ClientAbilityWheelHelper.openWheel(this, itemStack, player);
+        }
+    }
 
     @Override
     public void useAsNpcAbility(Level level, LivingEntity beyonderNPC) {
@@ -98,6 +115,7 @@ public abstract class SelectableAbilityItem extends AbilityItem{
     protected void onAbilityUse(Level level, LivingEntity entity) {
         if(!(entity instanceof Player)) {
             useAbility(level, entity, random.nextInt(getAbilityNames().length));
+            return;
         }
 
         if(!selectedAbilities.containsKey(entity.getUUID())) {
