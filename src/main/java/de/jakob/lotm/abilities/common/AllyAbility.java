@@ -74,7 +74,7 @@ public class AllyAbility extends AbilityItem {
         if (target instanceof Player targetPlayer) {
             sendAllyRequest(player, targetPlayer);
         } else {
-            AbilityUtil.sendActionBar(entity, Component.translatable("lotm.ally.cannot_ally_beyonder").withColor(0xF44336));
+            AbilityUtil.sendActionBar(entity, Component.translatable("lotm.ally.cannot_ally").withColor(0xF44336));
         }
     }
 

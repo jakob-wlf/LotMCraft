@@ -240,7 +240,7 @@
   "item.lotmcraft.spirit_commanding_ability": "Spirit Commanding",
   "item.lotmcraft.night_domain_ability": "Night Domain",
   "item.lotmcraft.hair_entanglement_ability": "Hair Entanglement",
-  "item.lotmcraft.horror_aura_ability": "Hair Entanglement",
+  "item.lotmcraft.horror_aura_ability": "Horror Aura",
 
   "item.lotmcraft.mighty_blow_ability": "Mighty Blow",
   "item.lotmcraft.instigation_ability": "Instigation",
@@ -911,6 +911,7 @@
   "lotm.ally.added": "Allied with %s",
   "lotm.ally.removed": "Removed alliance with %s",
   "lotm.ally.cannot_ally_beyonder": "Cannot ally with beyonder entities without their permission",
+  "lotm.ally.cannot_ally": "Cannot ally with entity",
   "lotm.ally.request_sent": "Ally request sent to %s",
   "lotm.ally.request_received": "%s wants to become your ally.",
   "lotm.ally.request_received_short": "%s sent you an ally request",

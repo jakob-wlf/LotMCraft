@@ -219,17 +219,32 @@ public class AbilityWheelScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && hoveredIndex >= 0) {
-            PacketHandler.sendToServer(new AbilitySelectionPacket(abilityItem, hoveredIndex));
+        // Don't close on click, wait for release
+        return true;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == 0) {
+            if (hoveredIndex >= 0) {
+                PacketHandler.sendToServer(new AbilitySelectionPacket(abilityItem, hoveredIndex));
+            }
             this.onClose();
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        this.onClose();
+        // Allow all keys to pass through without closing the screen
+        // This enables movement while the wheel is open
+        return false;
+    }
+
+    @Override
+    public boolean shouldCloseOnEsc() {
+        // Still allow ESC to close the wheel
         return true;
     }
 

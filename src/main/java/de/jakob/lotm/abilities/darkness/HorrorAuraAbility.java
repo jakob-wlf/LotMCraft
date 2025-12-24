@@ -43,7 +43,7 @@ public class HorrorAuraAbility extends AbilityItem {
         }
 
         Location loc = new Location(entity.position(), serverLevel);
-        UUID effectID = MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.HORROR_AURA, loc, 20 * 20, false, serverLevel);
+        UUID effectID = MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.HORROR_AURA, loc, 20 * 25, false, serverLevel);
 
         AtomicInteger ticks = new AtomicInteger(0);
 

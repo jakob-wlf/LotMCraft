@@ -25,7 +25,7 @@ public class SelectedAbilityRenderer {
 
     private static void renderText(GuiGraphics guiGraphics) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.level == null) return;
+        if (mc.player == null || mc.level == null || mc.options.hideGui) return;
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
 
