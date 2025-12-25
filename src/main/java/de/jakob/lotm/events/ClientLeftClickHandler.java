@@ -1,7 +1,9 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.ClientAbilityWheelHelper;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.rendering.AbilityWheelOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -20,17 +22,27 @@ public class ClientLeftClickHandler {
         if (event.isAttack()) { // isAttack() returns true for left-click
             Minecraft mc = Minecraft.getInstance();
             Player player = mc.player;
-            
+
             if (player != null && event.getHand() == InteractionHand.MAIN_HAND) {
                 ItemStack stack = player.getMainHandItem();
-                
+
                 if (stack.getItem() instanceof SelectableAbilityItem selectableItem) {
                     if (selectableItem.getAbilityNamesCopy().length > 0) {
-                        selectableItem.handleLeftClickInAir(player, stack);
+                        selectableItem.handleLeftClickInAir(player);
                         event.setCanceled(true); // Prevent the left-click from doing anything else
                         event.setSwingHand(false); // Don't swing arm
                     }
                 }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onMouseInput(InputEvent.MouseButton.Post event) {
+        // When left mouse button is released (button 0, action 0 = release)
+        if (event.getButton() == 0 && event.getAction() == 0) {
+            if (ClientAbilityWheelHelper.isWheelOpen()) {
+                AbilityWheelOverlay.getInstance().handleMouseRelease();
             }
         }
     }

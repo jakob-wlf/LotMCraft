@@ -22,8 +22,6 @@ import java.util.UUID;
 public abstract class SelectableAbilityItem extends AbilityItem{
 
     protected final HashMap<UUID, Integer> selectedAbilities = new HashMap<>();
-    private final HashMap<UUID, Long> lastLeftClick = new HashMap<>();
-    private static final long LEFT_CLICK_WINDOW = 100; // 100ms window to detect left click
 
     public SelectableAbilityItem(Properties properties, float cooldown) {
         super(properties, cooldown);
@@ -49,11 +47,13 @@ public abstract class SelectableAbilityItem extends AbilityItem{
         return getAbilityNames().clone();
     }
 
-    // Method to check if this is a left-click action (called from client-side event)
-    public void handleLeftClickInAir(Player player, ItemStack itemStack) {
+    // Method to open the wheel when left-clicking in air (called from client-side event)
+    public void handleLeftClickInAir(Player player) {
         if (player.level().isClientSide && getAbilityNames().length > 0) {
-            lastLeftClick.put(player.getUUID(), System.currentTimeMillis());
-            ClientAbilityWheelHelper.openWheel(this, itemStack, player);
+            if(ClientAbilityWheelHelper.isWheelOpen() && ClientAbilityWheelHelper.getCurrentAbilityItem() == this) {
+                return;
+            }
+            ClientAbilityWheelHelper.openWheel(this, player);
         }
     }
 
