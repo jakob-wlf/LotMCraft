@@ -29,19 +29,17 @@ public class AbilityWheelOverlay {
     private int currentSelection;
     private boolean isOpen = false;
 
-    // Mouse offset for centering
     private double mouseOffsetX = 0;
     private double mouseOffsetY = 0;
 
-    private static final int WHEEL_RADIUS = 80;
-    private static final int CENTER_RADIUS = 20;
-    private static final int SEGMENT_HOVER_RADIUS = 90;
-    private static final int SEGMENTS_DETAIL = 32;
+    private static final int WHEEL_RADIUS = 85;
+    private static final int CENTER_RADIUS = 22;
+    private static final int SEGMENT_HOVER_RADIUS = 95;
+    private static final int SEGMENTS_DETAIL = 40;
 
     public static AbilityWheelOverlay getInstance() {
         if (instance == null) {
             instance = new AbilityWheelOverlay();
-            // Register to event bus when instance is created
             if (!registered) {
                 net.neoforged.neoforge.common.NeoForge.EVENT_BUS.register(instance);
                 registered = true;
@@ -57,7 +55,6 @@ public class AbilityWheelOverlay {
         this.currentSelection = getSelectedAbilityIndex();
         this.isOpen = true;
 
-        // Calculate offset to center the cursor when opening
         Minecraft mc = Minecraft.getInstance();
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
@@ -96,7 +93,7 @@ public class AbilityWheelOverlay {
     }
 
     @SubscribeEvent
-    public void onRenderGui(RenderGuiEvent.Post event) {
+    public void onRenderGui(RenderGuiEvent.Pre event) {
         if (!isOpen) return;
 
         Minecraft mc = Minecraft.getInstance();
@@ -107,31 +104,22 @@ public class AbilityWheelOverlay {
         int centerX = screenWidth / 2;
         int centerY = screenHeight / 2;
 
-        // Get mouse position with offset applied
         double mouseX = mc.mouseHandler.xpos() * screenWidth / mc.getWindow().getScreenWidth() + mouseOffsetX;
         double mouseY = mc.mouseHandler.ypos() * screenHeight / mc.getWindow().getScreenHeight() + mouseOffsetY;
 
         hoveredIndex = getHoveredSegment((int)mouseX, (int)mouseY, centerX, centerY);
 
-        // Draw semi-transparent background
-        graphics.fill(0, 0, screenWidth, screenHeight, 0x66000000);
-
         drawWheelSegments(graphics, centerX, centerY);
+        drawSegmentBorders(graphics, centerX, centerY);
         drawCenterCircle(graphics, centerX, centerY);
         drawAbilityNames(graphics, centerX, centerY, mc);
         drawCursor(graphics, (int)mouseX, (int)mouseY);
     }
 
     private void drawCursor(GuiGraphics graphics, int mouseX, int mouseY) {
-        // Draw a crosshair cursor
-        int size = 5;
+        int size = 6;
         int thickness = 2;
-        int color = 0xFFFFFFFF; // White
-
-        // Horizontal line
-        graphics.fill(mouseX - size, mouseY - thickness / 2, mouseX + size, mouseY + thickness / 2, color);
-        // Vertical line
-        graphics.fill(mouseX - thickness / 2, mouseY - size, mouseX + thickness / 2, mouseY + size, color);
+        int gap = 3;
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -139,23 +127,36 @@ public class AbilityWheelOverlay {
 
         Matrix4f matrix = graphics.pose().last().pose();
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-        // Center point
-        buffer.addVertex(matrix, mouseX, mouseY, 0).setColor(255, 255, 255, 255);
+        addQuad(buffer, matrix, mouseX - size, mouseY - thickness / 2, mouseX - gap, mouseY + thickness / 2, 255, 255, 255, 230);
+        addQuad(buffer, matrix, mouseX + gap, mouseY - thickness / 2, mouseX + size, mouseY + thickness / 2, 255, 255, 255, 230);
+        addQuad(buffer, matrix, mouseX - thickness / 2, mouseY - size, mouseX + thickness / 2, mouseY - gap, 255, 255, 255, 230);
+        addQuad(buffer, matrix, mouseX - thickness / 2, mouseY + gap, mouseX + thickness / 2, mouseY + size, 255, 255, 255, 230);
 
-        // Circle vertices (small center dot)
-        int circleSegments = 16;
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
+
+        buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+        buffer.addVertex(matrix, mouseX, mouseY, 0).setColor(255, 255, 255, 230);
+
+        int circleSegments = 12;
         int dotRadius = 2;
         for (int i = 0; i <= circleSegments; i++) {
             float angle = (float) (i * 2 * Math.PI / circleSegments);
             float x = mouseX + (float) Math.cos(angle) * dotRadius;
             float y = mouseY + (float) Math.sin(angle) * dotRadius;
-            buffer.addVertex(matrix, x, y, 0).setColor(255, 255, 255, 255);
+            buffer.addVertex(matrix, x, y, 0).setColor(255, 255, 255, 230);
         }
 
         BufferUploader.drawWithShader(buffer.buildOrThrow());
         RenderSystem.disableBlend();
+    }
+
+    private void addQuad(BufferBuilder buffer, Matrix4f matrix, float x1, float y1, float x2, float y2, int r, int g, int b, int a) {
+        buffer.addVertex(matrix, x1, y1, 0).setColor(r, g, b, a);
+        buffer.addVertex(matrix, x1, y2, 0).setColor(r, g, b, a);
+        buffer.addVertex(matrix, x2, y2, 0).setColor(r, g, b, a);
+        buffer.addVertex(matrix, x2, y1, 0).setColor(r, g, b, a);
     }
 
     private void drawWheelSegments(GuiGraphics graphics, int centerX, int centerY) {
@@ -190,11 +191,11 @@ public class AbilityWheelOverlay {
 
     private int getSegmentColor(int index) {
         if (index == currentSelection) {
-            return 0xFF4A90E2;
+            return 0xD0708090;
         } else if (index == hoveredIndex) {
-            return 0xFF5FA3D8;
+            return 0xD08090A0;
         } else {
-            return 0xFF2C3E50;
+            return 0xC0505560;
         }
     }
 
@@ -228,6 +229,37 @@ public class AbilityWheelOverlay {
         }
     }
 
+    private void drawSegmentBorders(GuiGraphics graphics, int centerX, int centerY) {
+        if (abilityNames.length == 0) return;
+
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
+        Matrix4f matrix = graphics.pose().last().pose();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+
+        float anglePerSegment = 360.0f / abilityNames.length;
+
+        for (int i = 0; i < abilityNames.length; i++) {
+            float angle = (float) Math.toRadians(i * anglePerSegment - 90);
+            float cos = (float) Math.cos(angle);
+            float sin = (float) Math.sin(angle);
+
+            float x1 = centerX + cos * CENTER_RADIUS;
+            float y1 = centerY + sin * CENTER_RADIUS;
+            float x2 = centerX + cos * WHEEL_RADIUS;
+            float y2 = centerY + sin * WHEEL_RADIUS;
+
+            buffer.addVertex(matrix, x1, y1, 0).setColor(40, 45, 50, 140);
+            buffer.addVertex(matrix, x2, y2, 0).setColor(40, 45, 50, 140);
+        }
+
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
+        RenderSystem.disableBlend();
+    }
+
     private void drawCenterCircle(GuiGraphics graphics, int centerX, int centerY) {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -237,14 +269,25 @@ public class AbilityWheelOverlay {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
 
-        buffer.addVertex(matrix, centerX, centerY, 0).setColor(51, 51, 51, 255);
+        buffer.addVertex(matrix, centerX, centerY, 0).setColor(60, 65, 70, 220);
 
-        int circleSegments = 32;
+        int circleSegments = 40;
         for (int i = 0; i <= circleSegments; i++) {
             float angle = (float) (i * 2 * Math.PI / circleSegments);
             float x = centerX + (float) Math.cos(angle) * CENTER_RADIUS;
             float y = centerY + (float) Math.sin(angle) * CENTER_RADIUS;
-            buffer.addVertex(matrix, x, y, 0).setColor(51, 51, 51, 255);
+            buffer.addVertex(matrix, x, y, 0).setColor(60, 65, 70, 220);
+        }
+
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
+
+        buffer = tesselator.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+
+        for (int i = 0; i <= circleSegments; i++) {
+            float angle = (float) (i * 2 * Math.PI / circleSegments);
+            float x = centerX + (float) Math.cos(angle) * CENTER_RADIUS;
+            float y = centerY + (float) Math.sin(angle) * CENTER_RADIUS;
+            buffer.addVertex(matrix, x, y, 0).setColor(80, 85, 90, 180);
         }
 
         BufferUploader.drawWithShader(buffer.buildOrThrow());
@@ -258,15 +301,21 @@ public class AbilityWheelOverlay {
 
         for (int i = 0; i < abilityNames.length; i++) {
             float angle = (float) Math.toRadians(i * anglePerSegment - 90 + anglePerSegment / 2);
-            int textRadius = WHEEL_RADIUS + 20;
+            int textRadius = WHEEL_RADIUS + 25;
             int x = centerX + (int)(Math.cos(angle) * textRadius);
             int y = centerY + (int)(Math.sin(angle) * textRadius);
 
             Component text = Component.translatable(abilityNames[i]);
             int textWidth = mc.font.width(text);
+            int textX = x - textWidth / 2;
+            int textY = y - 4;
 
-            int textColor = (i == hoveredIndex || i == currentSelection) ? 0xFFFFFF : 0xAAAAAA;
-            graphics.drawString(mc.font, text, x - textWidth / 2, y - 4, textColor, false);
+            boolean isActive = (i == hoveredIndex || i == currentSelection);
+
+            graphics.drawString(mc.font, text, textX + 1, textY + 1, 0x80000000, false);
+
+            int textColor = isActive ? 0xFFFFFFFF : 0xFFD0D0D0;
+            graphics.drawString(mc.font, text, textX, textY, textColor, false);
         }
     }
 
