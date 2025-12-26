@@ -12,36 +12,60 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class MessagesMenu extends AbstractContainerMenu {
-    private LinkedList<HonorificName> honorificNames;
+    private LinkedList<HonorificName> knownNames;
     private HonorificName name;
     private LinkedList<MessageType> messages;
 
-    //Client-side
-    public MessagesMenu(int containerId, Inventory inv, FriendlyByteBuf ignored) {
-        this(containerId, inv,
-                new LinkedList<>(),
-                new HonorificName("DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"),
-                new LinkedList<>());
+    private int selectedMessageIndex = -1;
+
+    // CLIENT constructor
+    public MessagesMenu(int id, Inventory inv, FriendlyByteBuf buf) {
+        this(
+                id,
+                inv,
+                buf.readCollection(s -> new LinkedList<>(), HonorificName::fromNetwork),
+                HonorificName.fromNetwork(buf),
+                buf.readCollection(s -> new LinkedList<>(), MessageType::fromNetwork)
+        );
     }
 
-    public MessagesMenu(int containerId, Inventory inv, StoredData data){
-        this(containerId, inv, new LinkedList<>(), data.honorificName(), data.msgs());
+    // SERVER constructor
+    public MessagesMenu(int id, Inventory inv, StoredData data) {
+        this(
+                id,
+                inv,
+                data.knownNames(),
+                data.honorificName(),
+                data.msgs()
+        );
     }
 
-    //Server-side
-    public MessagesMenu(int containerId, Inventory inv, LinkedList<HonorificName> list, HonorificName name, LinkedList<MessageType> msgs){
-        super(ModMenuTypes.MESSAGES_MENU.get(), containerId);
-
-        honorificNames = list;
+    private MessagesMenu(
+            int id,
+            Inventory inv,
+            LinkedList<HonorificName> knownNames,
+            HonorificName name,
+            LinkedList<MessageType> messages
+    ) {
+        super(ModMenuTypes.MESSAGES_MENU.get(), id);
+        this.knownNames = knownNames;
+        this.messages = messages;
         this.name = name;
-        messages = msgs;
     }
 
-    @Override
-    public ItemStack quickMoveStack(Player player, int i) {
-        return null;
+    public List<MessageType> getMessages() {
+        return messages;
+    }
+
+    public int getSelectedMessageIndex() {
+        return selectedMessageIndex;
+    }
+
+    public void selectMessage(int index) {
+        this.selectedMessageIndex = index;
     }
 
     @Override
@@ -49,5 +73,9 @@ public class MessagesMenu extends AbstractContainerMenu {
         return true;
     }
 
+    @Override
+    public ItemStack quickMoveStack(Player player, int index) {
+        return ItemStack.EMPTY;
+    }
 
 }

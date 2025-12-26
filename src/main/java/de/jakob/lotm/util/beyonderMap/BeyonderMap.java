@@ -37,7 +37,7 @@ public class BeyonderMap extends SavedData {
         map.put(entity.getUUID(), new StoredData(
                 BeyonderData.getPathway(entity),
                 BeyonderData.getSequence(entity),
-                isNull? null : data.honorificName(),
+                isNull? HonorificName.EMPTY : data.honorificName(),
                 ((ServerPlayer) entity).getGameProfile().getName(),
                 isNull ? new LinkedList<>() : data.msgs(),
                 isNull ? new LinkedList<>() : data.knownNames()
@@ -133,6 +133,24 @@ public class BeyonderMap extends SavedData {
         setDirty();
 
         return buff;
+    }
+
+    public void markRead(LivingEntity entity, int index){
+        if(!(entity instanceof ServerPlayer)) return;
+
+        if(!contains(entity)) put(entity);
+
+        var data = map.get(entity.getUUID());
+        if(data.msgs().isEmpty()) return;
+
+        var msg = data.msgs().remove(index);
+        msg.setRead(true);
+
+        data.msgs().add(msg);
+
+        map.put(entity.getUUID(), data);
+
+        setDirty();
     }
 
     public void remove(LivingEntity entity){

@@ -81,7 +81,7 @@ public class BeyonderCommand {
                     if (data.sequence() != sequence || (!data.pathway().equals(pathway)
                             && !data.pathway().equals("none"))) {
                         source.sendFailure(Component.literal(
-                                "Failed to advance because of insufficient amount of characteristics"));
+                                "Failed to advance due to insufficient amount of characteristics"));
                         return 0;
                     }
                 }

@@ -9,7 +9,7 @@ import net.minecraft.nbt.StringTag;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 
-public record StoredData(String pathway, Integer sequence, @Nullable HonorificName honorificName,
+public record StoredData(String pathway, Integer sequence, HonorificName honorificName,
                          String trueName, LinkedList<MessageType> msgs, LinkedList<HonorificName> knownNames) {
 
     public static final String NBT_PATHWAY = "beyonder_map_pathway";
@@ -40,8 +40,7 @@ public record StoredData(String pathway, Integer sequence, @Nullable HonorificNa
         tag.putString(NBT_PATHWAY, pathway);
         tag.putInt(NBT_SEQUENCE, sequence);
 
-        if(honorificName != null)
-            tag.put(NBT_HONORIFIC_NAME, honorificName.toNBT());
+        tag.put(NBT_HONORIFIC_NAME, honorificName.toNBT());
 
         tag.putString(NBT_TRUE_NAME, trueName);
 
@@ -80,7 +79,7 @@ public record StoredData(String pathway, Integer sequence, @Nullable HonorificNa
                 names.add(HonorificName.fromNBT(compTag));
         }
 
-        return new StoredData(path, seq, name.first().isEmpty() ? null : name, trueName, list, names);
+        return new StoredData(path, seq, name, trueName, list, names);
     }
 
 }

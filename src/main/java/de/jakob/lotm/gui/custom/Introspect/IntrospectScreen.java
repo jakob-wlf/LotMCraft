@@ -2,10 +2,18 @@ package de.jakob.lotm.gui.custom.Introspect;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.gui.custom.Messages.MessagesMenu;
+import de.jakob.lotm.gui.custom.Messages.MessagesScreen;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.OpenMessagesMenuPacket;
 import de.jakob.lotm.util.BeyonderData;
+import io.netty.buffer.Unpooled;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -33,6 +41,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if(this.minecraft == null) return;
 
         updateScreen(menu.getPathway(), menu.getSequence());
+    }
+
+    private void openMessagesMenu() {
+        PacketHandler.sendToServer(new OpenMessagesMenuPacket());
     }
 
     public void updateMenuData(int sequence, String pathway, float digestionProgress, float sanity) {
@@ -184,6 +196,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int screenY = y + iconY;
 
         guiGraphics.blit(iconTexture, screenX, screenY, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
+    }
+
+    private void renderMessageButton(GuiGraphics guiGraphics, int x, int y){
+
     }
 
 
