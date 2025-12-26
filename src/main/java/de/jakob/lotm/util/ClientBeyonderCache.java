@@ -1,5 +1,6 @@
 package de.jakob.lotm.util;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gamerule.ClientGameruleCache;
 
 import java.util.Map;
@@ -25,7 +26,7 @@ public class ClientBeyonderCache {
 
     public static int getSequence(UUID playerUUID) {
         BeyonderClientData data = dataCache.get(playerUUID);
-        return data != null ? data.sequence() : -1;
+        return data != null ? data.sequence() : LOTMCraft.NON_BEYONDER_SEQ;
     }
 
     public static float getDigestionProgress(UUID playerUUID) {
@@ -48,7 +49,8 @@ public class ClientBeyonderCache {
 
     public static boolean isBeyonder(UUID playerUUID) {
         BeyonderClientData data = dataCache.get(playerUUID);
-        return data != null && !data.pathway().equals("none") && data.sequence() >= 0;
+
+        return data != null && !data.pathway().equals("none") && data.sequence() != LOTMCraft.NON_BEYONDER_SEQ;
     }
 
     public static void clearCache() {

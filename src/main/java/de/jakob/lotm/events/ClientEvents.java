@@ -2,13 +2,17 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.darkness.NightmareAbility;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.InventoryOpenedPacket;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
@@ -54,5 +58,10 @@ public class ClientEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void onScreenOpen(ScreenEvent.Opening event) {
+        if (!(event.getScreen() instanceof InventoryScreen)) return;
 
+        PacketHandler.sendToServer(new InventoryOpenedPacket());
+    }
 }

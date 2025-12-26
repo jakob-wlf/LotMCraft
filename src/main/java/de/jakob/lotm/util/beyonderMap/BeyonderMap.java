@@ -1,7 +1,5 @@
 package de.jakob.lotm.util.beyonderMap;
 
-import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -10,12 +8,17 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.saveddata.SavedData;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.UUID;
 
+import static de.jakob.lotm.util.BeyonderData.beyonderMap;
+
 public class BeyonderMap extends SavedData {
     public static final String NBT_BEYONDER_MAP = "beyonder_map";
+    public static final String NBT_BEYONDER_MAP_CLASS = "beyonder_map_class";
 
     public HashMap<UUID, StoredData> map;
 
@@ -28,12 +31,150 @@ public class BeyonderMap extends SavedData {
     public void put(LivingEntity entity) {
         if(!(entity instanceof ServerPlayer)) return;
 
-        map.put(entity.getUUID(), new StoredData(BeyonderData.getPathway(entity),
-                BeyonderData.getSequence(entity)));
+        var data = map.get(entity.getUUID());
+        boolean isNull = data == null;
+
+        map.put(entity.getUUID(), new StoredData(
+                BeyonderData.getPathway(entity),
+                BeyonderData.getSequence(entity),
+                isNull? HonorificName.EMPTY : data.honorificName(),
+                ((ServerPlayer) entity).getGameProfile().getName(),
+                isNull ? new LinkedList<>() : data.msgs(),
+                isNull ? new LinkedList<>() : data.knownNames()
+        ));
+
+        setDirty();
+    }
+
+    public void put(LivingEntity entity, StoredData data){
+        if(!(entity instanceof ServerPlayer)) return;
+
+        map.put(entity.getUUID(), data);
+
+        setDirty();
+    }
+
+    public void addHonorificName(LivingEntity entity, HonorificName name){
+        if(!(entity instanceof ServerPlayer)) return;
+
+        if(!contains(entity)) put(entity);
+
+        map.compute(entity.getUUID(), (k, data) -> new StoredData(data.pathway(),
+                data.sequence(), name, data.trueName(), data.msgs(), data.knownNames()));
+
+        setDirty();
+    }
+
+    public void addKnownHonorificName(LivingEntity entity, HonorificName name){
+        if(!(entity instanceof ServerPlayer)) return;
+
+        if(!contains(entity)) put(entity);
+
+        var data = map.get(entity.getUUID());
+        data.knownNames().add(name);
+
+        map.put(entity.getUUID(), data);
+
+        setDirty();
+    }
+
+    public void removeKnownHonorificName(LivingEntity entity, HonorificName name){
+        if(!(entity instanceof ServerPlayer)) return;
+
+        if(!contains(entity)) put(entity);
+
+        var data = map.get(entity.getUUID());
+        data.knownNames().remove(name);
+
+        map.put(entity.getUUID(), data);
+
+        setDirty();
+    }
+
+    public void addMessage(LivingEntity entity, MessageType msg){
+        if(!(entity instanceof ServerPlayer)) return;
+
+        if(!contains(entity)) put(entity);
+
+        var data = map.get(entity.getUUID());
+        data.addMsg(msg);
+
+        map.put(entity.getUUID(), data);
+
+        setDirty();
+    }
+
+    public void removeMessage(LivingEntity entity, MessageType msg){
+        if(!(entity instanceof ServerPlayer)) return;
+
+        if(!contains(entity)) put(entity);
+
+        var data = map.get(entity.getUUID());
+        data.removeMsg(msg);
+
+        map.put(entity.getUUID(), data);
+
+        setDirty();
+    }
+
+    public @Nullable MessageType popMessage(LivingEntity entity){
+        if(!(entity instanceof ServerPlayer)) return null;
+
+        if(!contains(entity)) put(entity);
+
+        var data = map.get(entity.getUUID());
+        if(data.msgs().isEmpty()) return null;
+
+        var buff = data.msgs().getFirst();
+        data.removeMsg(buff);
+
+        map.put(entity.getUUID(), data);
+
+        setDirty();
+
+        return buff;
+    }
+
+    public void markRead(LivingEntity entity, int index){
+        if(!(entity instanceof ServerPlayer)) return;
+
+        if(!contains(entity)) put(entity);
+
+        var data = map.get(entity.getUUID());
+        if(data.msgs().isEmpty()) return;
+
+        var msg = data.msgs().remove(index);
+        msg.setRead(true);
+
+        data.msgs().add(msg);
+
+        map.put(entity.getUUID(), data);
+
+        setDirty();
     }
 
     public void remove(LivingEntity entity){
         map.remove(entity.getUUID());
+
+        setDirty();
+    }
+
+    public boolean isDiffPathSeq(LivingEntity entity){
+        if(!(entity instanceof ServerPlayer) ) return false;
+        if(!contains(entity)) put(entity);
+
+        StoredData data = beyonderMap.get(entity).get();
+
+        return (!data.pathway().equals(BeyonderData.getPathway(entity))
+                || data.sequence() != BeyonderData.getSequence(entity));
+    }
+
+    public @Nullable UUID getKeyByName(String name){
+        for(var obj : map.entrySet()){
+            if(name.equals(obj.getValue().trueName())) return obj.getKey();
+        }
+
+        return null;
     }
 
     public Optional<StoredData> get(LivingEntity entity){
@@ -63,7 +204,7 @@ public class BeyonderMap extends SavedData {
                 if (seq_2 + seq_1 >= 9) return false;
                 break;
             case 1:
-                if (seq_0 != 0 || seq_1 >= 3) return false;
+                if (seq_0 != 0 || seq_1 >= 1) return false;
                 break;
             case 0:
                 if (seq_0 != 0) return false;
@@ -104,7 +245,7 @@ public class BeyonderMap extends SavedData {
     public static BeyonderMap get(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(new Factory<BeyonderMap>(
                 BeyonderMap::new, BeyonderMap::load),
-                NBT_BEYONDER_MAP
+                NBT_BEYONDER_MAP_CLASS
         );
     }
 }
