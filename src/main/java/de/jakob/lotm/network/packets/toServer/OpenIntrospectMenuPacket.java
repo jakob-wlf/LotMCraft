@@ -41,8 +41,7 @@ public record OpenIntrospectMenuPacket(int sequence, String pathway) implements 
         context.enqueueWork(() -> {
             if (context.flow().getReceptionSide().isServer()) {
                 ServerPlayer player = (ServerPlayer) context.player();
-
-                LOTMCraft.LOGGER.info("Before if: {}", BeyonderData.isBeyonder(player));
+                
                 if(!BeyonderData.isBeyonder(player))
                     return;
 
