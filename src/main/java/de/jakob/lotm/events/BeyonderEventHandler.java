@@ -2,6 +2,7 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.PotionIngredient;
@@ -28,6 +29,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -120,7 +122,9 @@ public class BeyonderEventHandler {
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof Player player) {
 
-            if (!BeyonderData.isBeyonder(player)) return;
+            if (!BeyonderData.isBeyonder(player)
+                    || player.getServer().getGameRules()
+                    .getBoolean(ModGameRules.SHOULD_REGRESS_ON_DEATH)) return;
 
             StoredData data = player.hasEffect(ModEffects.LOOSING_CONTROL)?
                     beyonderMap.get(player).get().clearPath() : beyonderMap.get(player).get().regressSeq();

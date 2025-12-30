@@ -8,6 +8,7 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_GRIEFING;
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_BEYONDER_SPAWNING;
     public static GameRules.Key<GameRules.BooleanValue> REDUCE_REGEN_IN_BEYONDER_FIGHT;
+    public static GameRules.Key<GameRules.BooleanValue> SHOULD_REGRESS_ON_DEATH;
 
     public static void register() {
         ALLOW_GRIEFING = GameRules.register(
@@ -28,6 +29,12 @@ public class ModGameRules {
                 "reduceRegenInBeyonderFight",
                 GameRules.Category.MISC,
                 GameRules.BooleanValue.create(true)
+        );
+
+        SHOULD_REGRESS_ON_DEATH = GameRules.register(
+                "shouldRegressOnDeath",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(false)
         );
     }
 
