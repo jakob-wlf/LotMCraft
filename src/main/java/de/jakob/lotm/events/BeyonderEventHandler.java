@@ -1,6 +1,7 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.PotionIngredient;
@@ -121,11 +122,10 @@ public class BeyonderEventHandler {
 
             if (!BeyonderData.isBeyonder(player)) return;
 
-            StoredData data = beyonderMap.get(player).get().regressSeq();
+            StoredData data = player.hasEffect(ModEffects.LOOSING_CONTROL)?
+                    beyonderMap.get(player).get().clearPath() : beyonderMap.get(player).get().regressSeq();
 
             beyonderMap.put(player, data);
-
-            LOTMCraft.LOGGER.info("seq: {}", data.sequence());
 
             if (Objects.equals(data.sequence(), LOTMCraft.NON_BEYONDER_SEQ)) {
                 ClientBeyonderCache.removePlayer(player.getUUID());

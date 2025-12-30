@@ -33,6 +33,11 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 honorificName, trueName, msgs, knownNames);
     }
 
+    public StoredData clearPath(){
+        return new StoredData("none", LOTMCraft.NON_BEYONDER_SEQ,
+                honorificName, trueName, msgs, knownNames);
+    }
+
 
     public CompoundTag toNBT(){
         CompoundTag tag = new CompoundTag();

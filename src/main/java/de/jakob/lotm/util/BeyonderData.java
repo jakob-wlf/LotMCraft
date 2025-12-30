@@ -639,7 +639,7 @@ public class BeyonderData {
 
         if(!isBeyonder(entity)) {
             setBeyonder(entity, pathway, sequence);
-            int difference = 10 - sequence;
+            int difference = LOTMCraft.NON_BEYONDER_SEQ - sequence;
             int amplifier = calculateAmplifier(difference, 0, sanity);
             int duration = calculateDuration(difference, sanity);
             entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, amplifier));
