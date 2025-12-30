@@ -15,7 +15,9 @@ import de.jakob.lotm.util.beyonderMap.HonorificName;
 import de.jakob.lotm.util.beyonderMap.StoredData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.pathways.PathwayInfos;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.core.particles.ParticleTypes;
@@ -26,6 +28,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -41,6 +44,7 @@ public class BeyonderData {
 
     private static final int[] spiritualityLookup = {150000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180};
     private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
+    private static final double[] sanityDecreaseMultiplier = {.006, .025, .05, .1, .2, .65, 75, .88, 1.0, 1.0};
 
     private static final HashMap<UUID, HashMap<String, Double>> multiplierModifier = new HashMap<>();
     private static final HashMap<UUID, HashMap<String, Long>> modifierTimeouts = new HashMap<>();
@@ -250,6 +254,21 @@ public class BeyonderData {
         if(entity.level().isClientSide) {
             return ClientBeyonderCache.getSequence(entity.getUUID());
         }
+
+        MarionetteComponent marionetteComponent = entity.getData(ModAttachments.MARIONETTE_COMPONENT);
+        if(marionetteComponent.isMarionette()) {
+            UUID controllerUUID = UUID.fromString(marionetteComponent.getControllerUUID());
+            Entity owner = ((ServerLevel) entity.level()).getEntity(controllerUUID);
+            if(owner instanceof LivingEntity ownerLiving) {
+                int ownerSequence = getSequence(ownerLiving);
+                if (!entity.getPersistentData().contains(NBT_SEQUENCE)) {
+                    return ownerSequence;
+                }
+                return Math.max(entity.getPersistentData().getInt(NBT_SEQUENCE), ownerSequence);
+            }
+
+        }
+
         if (!entity.getPersistentData().contains(NBT_SEQUENCE)) {
             return LOTMCraft.NON_BEYONDER_SEQ;
         }
@@ -359,6 +378,10 @@ public class BeyonderData {
 
     public static double getMultiplierForSequence(int sequence) {
         return multiplier[sequence];
+    }
+
+    public static double getSanityDecreaseMultiplierForSequence(int sequence) {
+        return sanityDecreaseMultiplier[sequence];
     }
 
     public static void incrementSpirituality(LivingEntity entity, float amount) {
@@ -562,7 +585,7 @@ public class BeyonderData {
     public static void digest(Player player, float amount) {
         float current = getDigestionProgress(player);
         float newAmount = Math.min(1.0f, current + amount);
-        if(newAmount == 1.0f) {
+        if(newAmount == 1.0f && current < 1.0f) {
             AbilityUtil.sendActionBar(player, Component.translatable("lotm.digested").withColor(0xbd64d1));
             if(player.level() instanceof ServerLevel serverLevel) {
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, player.position().add(0, player.getEyeHeight() / 2, 0), 30, .5, player.getEyeHeight() / 2, .5, 0.06);
@@ -570,6 +593,7 @@ public class BeyonderData {
             else {
                 player.playSound(SoundEvents.NOTE_BLOCK_BELL.value(), 1, 1);
             }
+            newAmount = 1.01f;
         }
         player.getPersistentData().putFloat(NBT_DIGESTION_PROGRESS, newAmount);
 
@@ -637,97 +661,203 @@ public class BeyonderData {
         SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
         float sanity = sanityComp.getSanity();
 
+        // First time becoming a beyonder
         if(!isBeyonder(entity)) {
-            setBeyonder(entity, pathway, sequence);
-            int difference = 10 - sequence;
-            int amplifier = calculateAmplifier(difference, 0, sanity);
-            int duration = calculateDuration(difference, sanity);
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, amplifier));
+            // Starting at a high sequence (low number) should be more dangerous
+            // Digestion is irrelevant for first time
+            int amplifier = calculateAmplifierForFirstTime(sequence, sanity);
+            int duration = calculateDurationForFirstTime(sequence, sanity);
+
+            if(amplifier > 0 || duration > 0) {
+                entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, amplifier));
+            }
+            ServerScheduler.scheduleDelayed(duration, () -> {
+                if(!entity.isDeadOrDying())
+                    setBeyonder(entity, pathway, sequence);
+            });
             return;
         }
 
         String prevPathway = getPathway(entity);
+
+        // Wrong pathway - extremely dangerous
         if(!prevPathway.equals(pathway)) {
-            setBeyonder(entity, pathway, sequence);
-            int amplifier = calculateAmplifier(10, 0, sanity); // Maximum risk for wrong pathway
+            int amplifier = 9; // Maximum danger - 100% death
             int duration = calculateDuration(10, sanity);
             entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, amplifier));
+            ServerScheduler.scheduleDelayed(duration, () -> {
+                if(!entity.isDeadOrDying())
+                    setBeyonder(entity, pathway, sequence);
+            });
             return;
         }
 
+        int prevSequence = getSequence(entity);
+
+        // Can't advance to same or higher sequence number (lower power)
+        if(prevSequence <= sequence) {
+            int duration = 20 * 10; // 10 seconds of losing control
+            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, 3));
+            return;
+        }
+
+        // Get digestion progress
         float digestionProgress = 0;
         if(entity instanceof Player player) {
             digestionProgress = BeyonderData.getDigestionProgress(player);
         }
 
-        if(digestionProgress < 0.95) {
-            setBeyonder(entity, pathway, sequence);
-            int prevSequence = getSequence(entity);
-            int difference = prevSequence - sequence;
-            int amplifier = calculateAmplifier(difference, digestionProgress, sanity);
-            int duration = calculateDuration(difference, sanity);
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, amplifier));
-            return;
-        }
-
-        int prevSequence = getSequence(entity);
-        if(prevSequence <= sequence) {
-            int duration = 20 * 5; // Standard duration for invalid advancement
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, 2));
-            return;
-        }
-
+        // Calculate sequence difference (how many sequences jumping)
         int difference = prevSequence - sequence;
 
-        setBeyonder(entity, pathway, sequence);
+        // Calculate risk
         int amplifier = calculateAmplifier(difference, digestionProgress, sanity);
         int duration = calculateDuration(difference, sanity);
-        entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, amplifier));
+
+        // Apply losing control effect
+        if(amplifier > 0 || duration > 0) {
+            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, amplifier));
+        }
+
+        ServerScheduler.scheduleDelayed(duration, () -> {
+            if(!entity.isDeadOrDying())
+                setBeyonder(entity, pathway, sequence);
+        });
     }
 
     /**
-     * Calculate amplifier based on sequence difference, digestion progress, and sanity
-     * Returns 0 for perfect conditions (difference=1, full digestion, full sanity)
+     * Calculate amplifier for first time becoming a beyonder
+     * Starting at high sequences (seq 9, 8, 7) is safer
+     * Starting at low sequences (seq 1, 2, 3) is extremely dangerous
+     * Digestion is irrelevant for first time beyonders
      */
-    private static int calculateAmplifier(int sequenceDifference, float digestion, float sanity) {
-        // Base amplifier from sequence difference
-        int baseAmplifier = getAmplifierBySequenceDifference(sequenceDifference);
+    private static int calculateAmplifierForFirstTime(int sequence, float sanity) {
+        int baseAmplifier;
 
-        // Increase risk based on incomplete digestion (0.95 to 1.0 = no penalty, below 0.95 = penalty)
-        float digestionPenalty = digestion < 0.95 ? (0.95f - digestion) * 10 : 0; // 0 to ~9.5 range
+        if(sequence >= 9) {
+            baseAmplifier = 0; // Starting at sequence 9 is safe
+        } else if(sequence >= 7) {
+            baseAmplifier = 1; // Sequence 7-8: slight risk
+        } else if(sequence >= 5) {
+            baseAmplifier = 3; // Sequence 5-6: moderate risk
+        } else if(sequence >= 3) {
+            baseAmplifier = 6; // Sequence 3-4: high risk
+        } else {
+            baseAmplifier = 8; // Sequence 1-2: extreme risk
+        }
 
-        // Increase risk based on low sanity (lower sanity = higher penalty)
-        float sanityPenalty = (1.0f - sanity) * 5; // 0 to 5 range
+        // Sanity penalty - only matters below 0.8
+        float sanityPenalty = 0;
+        if(sanity < 0.8f) {
+            sanityPenalty = (0.8f - sanity) * 5; // 0 to 4 range (at 0 sanity = 4 penalty)
+        }
 
-        // Combine penalties
-        int totalAmplifier = baseAmplifier + Math.round(digestionPenalty + sanityPenalty);
-
-        // Cap at 9 (100% death rate above 8)
-        return Math.min(9, totalAmplifier);
+        int totalAmplifier = baseAmplifier + Math.round(sanityPenalty);
+        return Math.min(9, Math.max(0, totalAmplifier));
     }
 
     /**
-     * Calculate duration based on sequence difference and sanity
-     * Higher sequence advancement = longer duration
-     * Lower sanity = longer duration
+     * Calculate duration for first time becoming a beyonder
      */
-    private static int calculateDuration(int sequenceDifference, float sanity) {
-        // Base duration increases with sequence difference
-        // Higher sequences (numerically lower) mean bigger jumps in power
-        int baseDuration = 20 * 5 * sequenceDifference; // 5 seconds per sequence difference
+    private static int calculateDurationForFirstTime(int sequence, float sanity) {
+        // Base duration: lower sequences = longer suffering
+        int baseDuration = 20 * (15 - sequence); // seq 9 = 6s, seq 1 = 14s
 
-        // Multiply by sanity penalty (lower sanity = longer duration)
-        // At full sanity (1.0): multiplier = 1.0
-        // At no sanity (0.0): multiplier = 3.0
-        float sanityMultiplier = 1.0f + (2.0f * (1.0f - sanity));
+        // Sanity multiplier - only matters below 0.8
+        float sanityMultiplier = 1.0f;
+        if(sanity < 0.8f) {
+            sanityMultiplier = 1.0f + (2.0f * (0.8f - sanity)); // 1.0 to 2.6 range
+        }
 
         return Math.round(baseDuration * sanityMultiplier);
     }
 
-    // Add these fields after the existing disabledBeyonders field
+    /**
+     * Calculate amplifier based on sequence difference, digestion progress, and sanity
+     * Returns amplifier where higher = more dangerous
+     *
+     * Perfect conditions (diff=1, digestion>=0.95, sanity>=0.8) = amplifier 0 (0% death)
+     * Digestion has a maximum impact of +2 amplifier
+     * Sanity only matters below 0.8
+     */
+    private static int calculateAmplifier(int sequenceDifference, float digestion, float sanity) {
+        // Base amplifier from sequence difference
+        int baseAmplifier;
+
+        if (sequenceDifference == 1) {
+            // Single sequence advancement - safe if conditions are met
+            if (digestion >= 0.95f && sanity >= 0.8f) {
+                baseAmplifier = 0; // Perfect conditions
+            } else if (digestion >= 0.95f || sanity >= 0.8f) {
+                // One condition met but not both
+                if(digestion >= 0.95f) {
+                    // Good digestion but low sanity
+                    baseAmplifier = 2;
+                } else {
+                    // Good sanity but low digestion
+                    baseAmplifier = 1;
+                }
+            } else {
+                // Neither condition met
+                baseAmplifier = 3;
+            }
+        } else if (sequenceDifference == 2) {
+            // Two sequences - very dangerous regardless
+            baseAmplifier = 6;
+        } else {
+            // Three or more sequences - extremely dangerous
+            baseAmplifier = 8;
+        }
+
+        // Digestion penalty - maximum +2 amplifier impact
+        float digestionPenalty = 0;
+        if (digestion < 0.95f) {
+            // Scale from 0 to 2 based on digestion level
+            digestionPenalty = Math.min(2.0f, (0.95f - digestion) * 2.1f);
+        }
+
+        // Sanity penalty - only applies below 0.8
+        float sanityPenalty = 0;
+        if (sanity < 0.8f) {
+            // Scale from 0 to 4 based on how far below 0.8
+            sanityPenalty = (0.8f - sanity) * 5; // 0 to 4 range
+        }
+
+        // Combine all factors
+        int totalAmplifier = baseAmplifier + Math.round(digestionPenalty + sanityPenalty);
+
+        // Cap at 9 (100% death rate)
+        return Math.min(9, Math.max(0, totalAmplifier));
+    }
+
+    /**
+     * Calculate duration based on sequence difference and sanity
+     * Duration should be long enough to be noticeable and create tension
+     * Sanity only matters below 0.8
+     *
+     * Minimum 10 seconds, scales up with difficulty
+     */
+    private static int calculateDuration(int sequenceDifference, float sanity) {
+        // Base duration scales with sequence difference
+        // 1 sequence: 10 seconds
+        // 2 sequences: 20 seconds
+        // 3+ sequences: 30 seconds
+        int baseSeconds = Math.min(30, 10 * sequenceDifference);
+        int baseDuration = 20 * baseSeconds; // Convert to ticks
+
+        // Sanity multiplier - only matters below 0.8
+        float sanityMultiplier = 1.0f;
+        if(sanity < 0.8f) {
+            sanityMultiplier = 1.0f + (2.0f * (0.8f - sanity)); // 1.0 to 2.6 range
+        }
+
+        return Math.round(baseDuration * sanityMultiplier);
+    }
+
+    // Existing fields
     private static final HashMap<UUID, HashMap<String, HashSet<String>>> disabledAbilities = new HashMap<>();
     private static final HashMap<UUID, HashMap<String, HashMap<String, Long>>> abilitySpecificDisablingTimeouts = new HashMap<>();
-// Structure: UUID -> abilityId -> reasonId -> timeout
+    // Structure: UUID -> abilityId -> reasonId -> timeout
 
     // Method to check if a specific ability is disabled
     public static boolean isSpecificAbilityDisabled(LivingEntity entity, String abilityId) {

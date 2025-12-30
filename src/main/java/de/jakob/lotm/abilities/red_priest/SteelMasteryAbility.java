@@ -60,7 +60,7 @@ public class SteelMasteryAbility extends SelectableAbilityItem {
 
         if(target == null) {
             if(entity instanceof ServerPlayer player) {
-                Component actionBar = Component.translatable("ability.lotmcraft.steel_mastery.no_trarget").withColor(0xFF422a2a);
+                Component actionBar = Component.translatable("ability.lotmcraft.steel_mastery.no_target").withColor(0xFF422a2a);
                 sendActionBar(player, actionBar);
             }
             return;

@@ -31,6 +31,7 @@ public class SpiritVisionAbility extends ToggleAbilityItem {
 
         canBeCopied = false;
         canBeUsedByNPC = false;
+        doesNotIncreaseDigestion = true;
     }
 
     @Override

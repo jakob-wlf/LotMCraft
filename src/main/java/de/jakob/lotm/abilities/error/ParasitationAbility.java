@@ -9,6 +9,8 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -119,6 +121,13 @@ public class ParasitationAbility extends ToggleAbilityItem {
 
         host.fallDistance = 0;
         host.hurtMarked = true;
+
+        entity.setRemainingFireTicks(0);
+        entity.getActiveEffects().stream()
+                .map(MobEffectInstance::getEffect)
+                .filter(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL)
+                .toList()
+                .forEach(entity::removeEffect);
 
 
         // Stop when overridden by another transformation^1

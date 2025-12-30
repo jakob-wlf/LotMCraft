@@ -125,7 +125,7 @@ public class ErrorAvatarEntity extends PathfinderMob {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new FloatGoal(this));
-        this.goalSelector.addGoal(2, new AvatarTargetGoal(this));
+        this.goalSelector.addGoal(1, new AvatarTargetGoal(this));
         this.goalSelector.addGoal(4, new AvatarAbilityUseGoal(this));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
@@ -145,7 +145,7 @@ public class ErrorAvatarEntity extends PathfinderMob {
         this.targetSelector.removeAllGoals(goal -> goal instanceof NearestAttackableTargetGoal ||
                 goal instanceof HurtByTargetGoal);
 
-        this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
 
         if (hasRangedOption()) {
             this.goalSelector.addGoal(3, new AvatarRangedCombatGoal(this, 1.0D, 8.0F, 16.0F));
@@ -155,7 +155,7 @@ public class ErrorAvatarEntity extends PathfinderMob {
         }
 
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Monster.class, true));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Monster.class, true));
     }
 
     public void setOriginalOwner(UUID ownerUUID) {
@@ -274,6 +274,20 @@ public class ErrorAvatarEntity extends PathfinderMob {
                 .add(Attributes.ARMOR, 0.0D);
     }
 
+    @Override
+    public void setTarget(@javax.annotation.Nullable LivingEntity target) {
+        // Don't target the owner
+        if (target != null && target.getUUID().equals(getOriginalOwner())) {
+            return;
+        }
+
+        // Don't target entities that shouldn't be targeted
+        if (target != null && !AbilityUtil.mayTarget(this, target)) {
+            return;
+        }
+
+        super.setTarget(target);
+    }
 
     @Override
     public void tick() {
@@ -294,7 +308,19 @@ public class ErrorAvatarEntity extends PathfinderMob {
         }
 
         if(getTarget() != null) {
+            if(getTarget().getUUID().equals(getOriginalOwner())) {
+                this.setTarget(null);
+            }
             if(!AbilityUtil.mayTarget(this, getTarget())) {
+                this.setTarget(null);
+            }
+        }
+
+        if(getCurrentTarget() != null) {
+            if(getCurrentTarget().getUUID().equals(getOriginalOwner())) {
+                this.setTarget(null);
+            }
+            if(!AbilityUtil.mayTarget(this, getCurrentTarget())) {
                 this.setTarget(null);
             }
         }

@@ -207,11 +207,6 @@ public class TheftHandler {
             loot.add(new TheftLoot(new ItemStack(Items.HONEYCOMB), 0, 3));
         }
 
-        // Fallback: if no specific loot, give a small chance for common drops
-        if (loot.isEmpty()) {
-            loot.add(new TheftLoot(new ItemStack(Items.STICK), 0, 2));
-        }
-
         return loot;
     }
 

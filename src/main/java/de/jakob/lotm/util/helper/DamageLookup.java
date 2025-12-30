@@ -66,7 +66,7 @@ public class DamageLookup {
     public static double lookupDamage(int sequence, double scale) {
 
         if (!SEQUENCES.containsKey(sequence)) {
-            throw new IllegalArgumentException("Unknown sequence: " + sequence);
+            sequence = 9;
         }
 
         Range current = SEQUENCES.get(sequence);

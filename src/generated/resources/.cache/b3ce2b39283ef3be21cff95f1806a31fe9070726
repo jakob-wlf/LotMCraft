@@ -1,4 +1,4 @@
-// 1.21.1	2025-12-23T14:06:25.1341708	Item Models: lotmcraft
+// 1.21.1	2025-12-27T13:03:38.2095628	Item Models: lotmcraft
 c36caa89cf177e81575d44c57092f230b0da1903 assets/lotmcraft/models/item/ability_not_implemented.json
 b46fafcef24e66e85c39645e39df0ec0b12c3447 assets/lotmcraft/models/item/ability_theft_ability.json
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
@@ -465,6 +465,7 @@ dfe01c91dea4f4857afed973d309c798da878c2f assets/lotmcraft/models/item/subordinat
 47500e8e101d09d23113f2683603ff979e913e47 assets/lotmcraft/models/item/succubus_eyes.json
 3d6381764d93ecb2d196b84f014949b3398ae0bd assets/lotmcraft/models/item/sun.json
 0741a3620cec71f31b0214b352136e0634568106 assets/lotmcraft/models/item/sun_orb.json
+5be51abbd54e4bb62a4e530e66b92253f94ba6ba assets/lotmcraft/models/item/surge_of_darkness_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/swindler.json
 1867d61d6de2ed7a8b3fdfa7aa0019498e70b218 assets/lotmcraft/models/item/swindler_characteristic.json
 4e119cec344bab6b92712ce3221fed3d52a71cbb assets/lotmcraft/models/item/swindler_potion.json

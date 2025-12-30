@@ -30,6 +30,7 @@ public class ServerScheduler {
      * @return Task ID for cancellation
      */
     public static UUID scheduleDelayed(int delay, Runnable task) {
+        if (delay < 0) delay = 0;
         return scheduleDelayed(delay, task, null);
     }
 

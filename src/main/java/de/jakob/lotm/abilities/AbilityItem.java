@@ -34,6 +34,7 @@ public abstract class AbilityItem extends Item {
 
     public boolean canBeUsedByNPC = true;
     public boolean canBeCopied = true;
+    public boolean doesNotIncreaseDigestion = false;
     public boolean hasOptimalDistance = false;
     public float optimalDistance = 1f;
 
@@ -132,7 +133,7 @@ public abstract class AbilityItem extends Item {
             player.getCooldowns().addCooldown(this, cooldown);
         }
 
-        if(!level.isClientSide) {
+        if(!level.isClientSide && !this.doesNotIncreaseDigestion) {
             AbilityHandler.useAbilityInArea(this, new Location(player.position(), level));
             BeyonderData.digest(player, getDigestionProgressForUse(player));
         }

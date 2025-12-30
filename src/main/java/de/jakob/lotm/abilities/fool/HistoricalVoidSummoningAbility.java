@@ -317,7 +317,6 @@ public class HistoricalVoidSummoningAbility extends SelectableAbilityItem {
                                         // Execute on server thread to avoid threading issues
                                         level.getServer().execute(() -> {
                                             spawnTemporaryEntity(level, player, entityData);
-                                            incrementSummonedCount(player);
                                         });
                                         player.closeContainer();
                                     }
@@ -431,6 +430,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbilityItem {
             boolean spawned = level.addFreshEntity(entity);
 
             if(spawned) {
+                incrementSummonedCount(player);
                 // Make the summoned entity an ally of the player
                 if(entity instanceof LivingEntity livingEntity) {
                     AllyUtil.makeAllies(player, livingEntity);
@@ -445,12 +445,9 @@ public class HistoricalVoidSummoningAbility extends SelectableAbilityItem {
                 }, level);
             } else {
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.failed_spawn_entity").withStyle(ChatFormatting.RED));
-                decrementSummonedCount(player);
             }
         } catch(Exception e) {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.error_summoning", e.getMessage()).withStyle(ChatFormatting.RED));
-            e.printStackTrace();
-            decrementSummonedCount(player);
         }
     }
 

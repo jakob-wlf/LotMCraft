@@ -3,6 +3,7 @@ package de.jakob.lotm.attachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncFogPacket;
 import de.jakob.lotm.network.packets.toClient.SyncSanityPacket;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -37,6 +38,10 @@ public class SanityComponent {
     }
 
     public void increaseSanityAndSync(float amount, LivingEntity entity) {
+        if(amount < 0 && BeyonderData.isBeyonder(entity)) {
+            amount *= (float) BeyonderData.getSanityDecreaseMultiplierForSequence(BeyonderData.getSequence(entity));
+        }
+
         this.sanity += amount;
 
         if(this.sanity > 1.0f)

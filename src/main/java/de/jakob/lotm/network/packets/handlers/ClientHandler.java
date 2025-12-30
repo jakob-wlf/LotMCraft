@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.door.PlayerTeleportationAbility;
+import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gui.custom.CoordinateInput.CoordinateInputScreen;
 import de.jakob.lotm.network.packets.toClient.*;
@@ -292,5 +293,12 @@ public class ClientHandler {
             return;
         }
         entity.getData(ModAttachments.SANITY_COMPONENT.get()).setSanity(packet.sanity());
+    }
+
+    public static void handleAllyPacket(SyncAllyDataPacket packet) {
+        if (Minecraft.getInstance().player != null) {
+            AllyComponent newComponent = new AllyComponent(packet.allies());
+            Minecraft.getInstance().player.setData(ModAttachments.ALLY_COMPONENT.get(), newComponent);
+        }
     }
 }

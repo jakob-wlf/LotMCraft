@@ -29,6 +29,7 @@ public class DivinationAbility extends SelectableAbilityItem {
 
         canBeCopied = false;
         canBeUsedByNPC = false;
+        doesNotIncreaseDigestion = true;
     }
 
     @Override

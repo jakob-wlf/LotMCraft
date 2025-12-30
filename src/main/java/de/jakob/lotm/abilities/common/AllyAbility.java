@@ -26,6 +26,9 @@ public class AllyAbility extends AbilityItem {
 
     public AllyAbility(Properties properties) {
         super(properties, 1);
+
+        canBeCopied = false;
+        canBeUsedByNPC = false;
     }
 
     @Override
