@@ -1,6 +1,7 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.ModIngredients;
@@ -122,11 +123,13 @@ public class BeyonderEventHandler {
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof Player player) {
 
+            if (player.level().isClientSide()) return;
+
             if (!BeyonderData.isBeyonder(player)
                     || player.getServer().getGameRules()
                     .getBoolean(ModGameRules.SHOULD_REGRESS_ON_DEATH)) return;
 
-            StoredData data = player.hasEffect(ModEffects.LOOSING_CONTROL)?
+            StoredData data = event.getSource().is(ModDamageTypes.LOOSING_CONTROL)?
                     beyonderMap.get(player).get().clearPath() : beyonderMap.get(player).get().regressSeq();
 
             beyonderMap.put(player, data);

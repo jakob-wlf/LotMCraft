@@ -637,7 +637,7 @@ public class BeyonderData {
         SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
         float sanity = sanityComp.getSanity();
 
-        if(!isBeyonder(entity)) {
+        if(!isBeyonder(entity) || getSequence(entity) + 1 != sequence ) {
             setBeyonder(entity, pathway, sequence);
             int difference = LOTMCraft.NON_BEYONDER_SEQ - sequence;
             int amplifier = calculateAmplifier(difference, 0, sanity);
