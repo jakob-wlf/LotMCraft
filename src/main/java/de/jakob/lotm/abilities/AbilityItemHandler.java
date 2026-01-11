@@ -106,6 +106,7 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> MARIONETTE_CONTROLLING = ITEMS.registerItem("marionette_controlling_ability", MarionetteControllingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> HISTORICAL_VOID_SUMMONING = ITEMS.registerItem("historical_void_summoning_ability", HistoricalVoidSummoningAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> HISTORICAL_VOID_HIDING = ITEMS.registerItem("historical_void_hiding_ability", HistoricalVoidHidingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> MIRACLE_CREATION = ITEMS.registerItem("miracle_creation_ability", MiracleCreationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> MIDNIGHT_POEM = ITEMS.registerItem("midnight_poem_ability", MidnightPoemAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> NIGHTMARE = ITEMS.registerItem("nightmare_ability", NightmareAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
@@ -141,6 +142,11 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> POISON_CREATION = ITEMS.registerItem("poison_creation_ability", PoisonCreationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> CROSS_BREEDING = ITEMS.registerItem("crossbreeding_ability", CrossbreedingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> NATURE_SPELLS = ITEMS.registerItem("nature_spells_ability", NatureSpellsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> LIFE_AURA = ITEMS.registerItem("life_aura_ability", LifeAuraAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> MUTATION_CREATION = ITEMS.registerItem("mutation_creation_ability", MutationCreationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> GOLEM_CREATION = ITEMS.registerItem("golem_creation_ability", GolemCreationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> LIFE_DEPRIVATION = ITEMS.registerItem("life_deprivation_ability", LifeDeprivationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> MATERNAL_EMBRACE = ITEMS.registerItem("maternal_embrace_ability", MaternalEmbraceAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> DOOR_OPENING = ITEMS.registerItem("door_opening_ability", DoorOpeningAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SPELLS = ITEMS.registerItem("spells_ability", SpellsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
@@ -176,6 +182,10 @@ public class AbilityItemHandler {
     public static DeferredItem<Item> SLEEP_INDUCEMENT = ITEMS.registerItem("sleep_inducement_ability", SleepInducementAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> DREAM_TRAVERSAL = ITEMS.registerItem("dream_traversal_ability", DreamTraversalAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> NIGHTMARE_SPECTATOR = ITEMS.registerItem("nightmare_spectator_ability", NightmareSpectatorAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> MANIPULATION = ITEMS.registerItem("manipulation_ability", ManipulationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> MENTAL_PLAGUE = ITEMS.registerItem("mental_plague_ability", MentalPlagueAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> MIND_INVASION = ITEMS.registerItem("mind_invasion_ability", MindInvasionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static DeferredItem<Item> IDENTITY_AVATAR = ITEMS.registerItem("identity_avatar_ability", IdentityAvatarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> PSYCHE_STORM = ITEMS.registerItem("psyche_storm_ability", PsycheStormAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> CALAMITY_ATTRACTION = ITEMS.registerItem("calamity_attraction_ability", CalamityAttractionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
