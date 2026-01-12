@@ -314,6 +314,8 @@
   "item.lotmcraft.horror_aura_ability.description": "Bring Fear into your enemies, unleashing your Horror Aura. They will be heavily debuffed and lose their sanity",
   "item.lotmcraft.surge_of_darkness_ability": "Surge of Darkness",
   "item.lotmcraft.surge_of_darkness_ability.description": "Flood the area with Darkness, bringing Horror and Death to everything around you",
+  "item.lotmcraft.concealment_ability": "Concealment",
+  "item.lotmcraft.concealment_ability.description": "Conceal everything around you, effectively erasing it",
 
   "item.lotmcraft.mighty_blow_ability": "Mighty Blow",
   "item.lotmcraft.mighty_blow_ability.description": "Strike your target with one single powerful blow",
@@ -413,6 +415,10 @@
   "ability.lotmcraft.life_deprivation.area": "Drain Area",
   "item.lotmcraft.maternal_embrace_ability": "Maternal Embrace",
   "item.lotmcraft.maternal_embrace_ability.description": "Seal your target in a coffin",
+  "item.lotmcraft.area_desolation_ability": "Area Desolation",
+  "item.lotmcraft.area_desolation_ability.description": "Designate an area (200x200) that will become desolate and lifeless. Use the ability again in the same area to revert it back to normal",
+  "item.lotmcraft.blooming_area_ability": "Blooming Area",
+  "item.lotmcraft.blooming_area_ability.description": "Designate an area (200x200) that will become lush and flourish greatly. Inside there wil be no hunger and other various effects. Use the ability again in the same area to revert it back to normal",
 
   "item.lotmcraft.door_opening_ability": "Door Opening",
   "item.lotmcraft.door_opening_ability.description": "Use on solid walls to pass through them",
@@ -529,6 +535,12 @@
   "item.lotmcraft.blessing_ability.description": "Give a blessing gifted to your allies",
   "item.lotmcraft.curse_of_misfortune_ability": "Curse of Misfortune",
   "item.lotmcraft.curse_of_misfortune_ability.description": "Curse your enemies with misfortune",
+  "item.lotmcraft.spiritual_baptism_ability": "Spiritual Baptism",
+  "item.lotmcraft.spiritual_baptism_ability.description": "Make the targets spirit clean and stable, effectively removing all mental effects",
+  "item.lotmcraft.words_of_misfortune_ability": "Words of Misfortune",
+  "item.lotmcraft.words_of_misfortune_ability.description": "Leave behind words of Misfortune that will bring anyone who steps near them great misfortune",
+  "item.lotmcraft.prophecy_ability": "Prophecy",
+  "item.lotmcraft.prophecy_ability.description": "Speak a Prophecy. Once spoken it has a high chance to turn true",
 
   "item.lotmcraft.theft_ability": "Theft",
   "item.lotmcraft.theft_ability.description": "If used on Player, it will attempt to steal any item from his inventory. If used on Mob, it will give random drop related to them, like meat from animals or arrows from skeleton",

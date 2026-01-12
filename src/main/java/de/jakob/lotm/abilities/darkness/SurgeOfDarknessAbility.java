@@ -31,45 +31,6 @@ public class SurgeOfDarknessAbility extends AbilityItem {
 
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {
-        if(!(level instanceof ServerLevel serverLevel)) return;
 
-        Vec3 center = entity.position();
-        double maxRadius = 40.0;
-
-        // Get all solid blocks in the sphere
-        List<BlockPos> allBlocks = AbilityUtil.getBlocksInSphereRadius(
-                serverLevel,
-                center,
-                maxRadius,
-                true,  // filled
-                true,  // exclude empty blocks (only solid blocks)
-                false  // not only exposed
-        );
-
-        // Group blocks by distance from center
-        Map<Integer, List<BlockPos>> blocksByDistance = new HashMap<>();
-        for (BlockPos pos : allBlocks) {
-            double distance = Math.sqrt(pos.distToCenterSqr(center));
-            int radiusGroup = (int) Math.ceil(distance);
-            blocksByDistance.computeIfAbsent(radiusGroup, k -> new ArrayList<>()).add(pos);
-        }
-
-        // Schedule the expansion wave (5 seconds = 100 ticks)
-        int expansionTicks = 100;
-        int ticksPerRadius = expansionTicks / (int) maxRadius;
-
-        for (int radius = 1; radius <= maxRadius; radius++) {
-            List<BlockPos> blocksAtRadius = blocksByDistance.getOrDefault(radius, new ArrayList<>());
-            if (blocksAtRadius.isEmpty()) continue;
-
-            int delay = (radius - 1) * ticksPerRadius;
-            final int currentRadius = radius;
-
-            ServerScheduler.scheduleDelayed(delay, () -> {
-                // Send packet to nearby players (10 seconds duration = 10000ms)
-                long durationMs = 10000;
-                
-            }, serverLevel);
-        }
     }
 }
