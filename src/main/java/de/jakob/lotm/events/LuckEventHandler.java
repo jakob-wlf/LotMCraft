@@ -1,6 +1,7 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.effect.LoosingControlEffect;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
@@ -291,7 +292,7 @@ public class LuckEventHandler {
     private static void removeHarmfulEffects(LivingEntity entity, ServerLevel level) {
         List<Holder<MobEffect>> harmfulEffects = entity.getActiveEffects().stream()
                 .map(MobEffectInstance::getEffect)
-                .filter(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL)
+                .filter(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL && !(effect.value() instanceof LoosingControlEffect))
                 .toList();
 
         if(harmfulEffects.isEmpty()) {
