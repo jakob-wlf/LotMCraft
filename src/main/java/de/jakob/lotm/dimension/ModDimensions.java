@@ -77,6 +77,25 @@ public class ModDimensions {
             ResourceKey.create(Registries.DIMENSION,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
 
+    public static final ResourceKey<LevelStem> CONCEALMENT_WORLD_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "concealment_world"));
+
+    public static final ResourceKey<Level> CONCEALMENT_WORLD_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "concealment_world"));
+
+    public static final ResourceKey<DimensionType> CONCEALMENT_WORLD_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "concealment_world"));
+
+    public static final ResourceKey<Biome> CONCEALMENT_WORLD_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "concealment_world_biome"));
+
+    public static final Supplier<MapCodec<ConcealmentWorldChunkGenerator>> CONCEALMENT_WORLD_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("concealment_world", () -> ConcealmentWorldChunkGenerator.CODEC);
+
     public static void register(IEventBus eventBus) {
         CHUNK_GENERATORS.register(eventBus);
     }

@@ -242,6 +242,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                DarknessEffectPacket.TYPE,
+                DarknessEffectPacket.STREAM_CODEC,
+                DarknessEffectPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncAllyDataPacket.TYPE,
                 SyncAllyDataPacket.STREAM_CODEC,
                 SyncAllyDataPacket::handle

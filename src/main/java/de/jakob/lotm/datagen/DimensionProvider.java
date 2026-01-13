@@ -1,10 +1,7 @@
 package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.dimension.EmptyChunkGenerator;
-import de.jakob.lotm.dimension.ModDimensions;
-import de.jakob.lotm.dimension.PreGeneratedChunkGenerator;
-import de.jakob.lotm.dimension.SpiritWorldChunkGenerator;
+import de.jakob.lotm.dimension.*;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.registries.Registries;
@@ -94,6 +91,25 @@ public class DimensionProvider {
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
                                                     .build()
                                     );
+                                    bootstrap.register(ModDimensions.CONCEALMENT_WORLD_BIOME_KEY,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false) // No weather
+                                                    .temperature(0.5f)
+                                                    .downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x0A0A14) // Dark blue-purple like End
+                                                            .fogColor(0x0A0A14) // Same as sky for End-like effect
+                                                            .waterColor(0x3f76e4)
+                                                            .waterFogColor(0x050533)
+                                                            .grassColorOverride(0x79c05a) // Normal grass color
+                                                            .foliageColorOverride(0x59ae30)
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build()
+                                    );
+
                                 })
                                 .add(Registries.DIMENSION_TYPE, bootstrap -> {
                                     bootstrap.register(ModDimensions.SPACE_TYPE_KEY, new DimensionType(
@@ -148,6 +164,23 @@ public class DimensionProvider {
                                             1.0f, // FULL ambient light - always bright everywhere
                                             new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0) // No mob spawning for now
                                     ));
+                                    bootstrap.register(ModDimensions.CONCEALMENT_WORLD_TYPE_KEY, new DimensionType(
+                                            OptionalLong.of(6000), // Fixed time (noon, no day/night cycle)
+                                            true, // Has skylight - but with fixed time it won't change
+                                            false, // No ceiling
+                                            false, // Not ultrawarm
+                                            false, // Not natural (disables weather)
+                                            1.0, // Normal coordinate scale
+                                            true, // Beds work
+                                            false, // Respawn anchors don't work
+                                            -64, // min y
+                                            384, // height
+                                            384, // logical height
+                                            BlockTags.INFINIBURN_OVERWORLD,
+                                            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "concealment_world"),
+                                            1.0f, // Full ambient light everywhere
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0) // No mob spawning
+                                    ));
                                 })
                                 .add(Registries.LEVEL_STEM, bootstrap -> {
                                     var biomeRegistry = bootstrap.lookup(Registries.BIOME);
@@ -180,6 +213,17 @@ public class DimensionProvider {
                                     bootstrap.register(ModDimensions.SEFIRAH_CASTLE_LEVEL_KEY,
                                             new LevelStem(dimensionTypes.getOrThrow(ModDimensions.SEFIRAH_CASTLE_TYPE_KEY),
                                                     sefirahCastleGenerator)
+                                    );
+
+                                    var concealmentBiomeSource = new FixedBiomeSource(
+                                            biomeRegistry.getOrThrow(ModDimensions.CONCEALMENT_WORLD_BIOME_KEY)
+                                    );
+
+                                    var concealmentChunkGenerator = new ConcealmentWorldChunkGenerator(concealmentBiomeSource);
+
+                                    bootstrap.register(ModDimensions.CONCEALMENT_WORLD_LEVEL_KEY,
+                                            new LevelStem(dimensionTypes.getOrThrow(ModDimensions.CONCEALMENT_WORLD_TYPE_KEY),
+                                                    concealmentChunkGenerator)
                                     );
                                 }),
                         Set.of(LOTMCraft.MOD_ID)

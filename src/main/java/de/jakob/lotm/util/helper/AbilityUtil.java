@@ -302,6 +302,89 @@ public class AbilityUtil {
         return targetPosition;
     }
 
+    public static List<BlockPos> getBlocksInEllipsoid(
+            ClientLevel level,
+            Vec3 center,
+            double xzRadius,
+            double yRadius,
+            boolean filled,
+            boolean excludeEmptyBlocks,
+            boolean onlyExposed
+    ) {
+        if (level == null) return List.of();
+
+        List<BlockPos> blocks = new ArrayList<>();
+
+        double maxRadius = Math.max(xzRadius, yRadius);
+        int steps = (int) Math.max(20, 4 * Math.PI * maxRadius * maxRadius);
+
+        if (filled) {
+            int minX = Mth.floor(center.x - xzRadius);
+            int maxX = Mth.ceil(center.x + xzRadius);
+            int minY = Mth.floor(center.y - yRadius);
+            int maxY = Mth.ceil(center.y + yRadius);
+            int minZ = Mth.floor(center.z - xzRadius);
+            int maxZ = Mth.ceil(center.z + xzRadius);
+
+            for (int x = minX; x <= maxX; x++) {
+                for (int y = minY; y <= maxY; y++) {
+                    for (int z = minZ; z <= maxZ; z++) {
+                        double dx = (x + 0.5 - center.x) / xzRadius;
+                        double dy = (y + 0.5 - center.y) / yRadius;
+                        double dz = (z + 0.5 - center.z) / xzRadius;
+
+                        // Equation for ellipsoid: (x/a)^2 + (y/b)^2 + (z/a)^2 <= 1
+                        if (dx * dx + dy * dy + dz * dz <= 1.0) {
+                            BlockPos pos = new BlockPos(x, y, z);
+
+                            if (excludeEmptyBlocks) {
+                                if (level.getBlockState(pos).getCollisionShape(level, pos).isEmpty())
+                                    continue;
+                            }
+
+                            if (onlyExposed) {
+                                BlockPos above = pos.above();
+                                if (!level.getBlockState(above).getCollisionShape(level, above).isEmpty())
+                                    continue;
+                            }
+
+                            blocks.add(pos);
+                        }
+                    }
+                }
+            }
+        } else {
+            RandomSource random = level.random;
+
+            for (int i = 0; i < steps; i++) {
+                double theta = 2 * Math.PI * random.nextDouble();
+                double phi = Math.acos(2 * random.nextDouble() - 1);
+
+                // Parametric ellipsoid equation
+                double x = center.x + xzRadius * Math.sin(phi) * Math.cos(theta);
+                double y = center.y + yRadius * Math.sin(phi) * Math.sin(theta);
+                double z = center.z + xzRadius * Math.cos(phi);
+
+                BlockPos pos = BlockPos.containing(x, y, z);
+
+                if (excludeEmptyBlocks) {
+                    if (level.getBlockState(pos).getCollisionShape(level, pos).isEmpty())
+                        continue;
+                }
+
+                if (onlyExposed) {
+                    BlockPos above = pos.above();
+                    if (!level.getBlockState(above).getCollisionShape(level, above).isEmpty())
+                        continue;
+                }
+
+                blocks.add(pos);
+            }
+        }
+
+        return blocks;
+    }
+
     public static Set<BlockPos> getBlocksInCircleOutline(ServerLevel level, Vec3 center,
                                                          double radius, int steps) {
         if (level == null) return Set.of();
@@ -1228,10 +1311,10 @@ public class AbilityUtil {
     }
 
 
-    public static void addPotionEffectToNearbyEntities(ServerLevel level, LivingEntity entity, double radius, Vec3 pos, MobEffectInstance... mobEffectInstances) {
+    public static void addPotionEffectToNearbyEntities(ServerLevel level, @Nullable LivingEntity entity, double radius, Vec3 pos, MobEffectInstance... mobEffectInstances) {
         List<LivingEntity> nearbyEntities = getNearbyEntities(entity, level, pos, radius);
         for (LivingEntity nearbyEntity : nearbyEntities) {
-            if (!nearbyEntity.isAlive() || nearbyEntity.isInvulnerableTo(entity.damageSources().mobAttack(entity))) {
+            if (!nearbyEntity.isAlive() || (entity != null && nearbyEntity.isInvulnerableTo(entity.damageSources().mobAttack(entity)))) {
                 continue;
             }
             for (MobEffectInstance effect : mobEffectInstances) {

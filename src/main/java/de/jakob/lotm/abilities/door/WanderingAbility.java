@@ -50,6 +50,7 @@ public class WanderingAbility extends AbilityItem {
 
         List<ServerLevel> dimensions = StreamSupport.stream(serverLevel.getServer().getAllLevels().spliterator(), false)
                 .filter(s -> !s.dimension().equals(ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY))
+                .filter(s -> !s.dimension().equals(ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY))
                 .toList();
 
         if(dimensions.size() <= 1) {

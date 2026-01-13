@@ -6,6 +6,7 @@ import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.door.PlayerTeleportationAbility;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.gui.custom.CoordinateInput.CoordinateInputScreen;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.rendering.*;
@@ -15,6 +16,7 @@ import de.jakob.lotm.util.helper.RingExpansionRenderer;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -22,6 +24,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -30,6 +33,7 @@ import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Random;
 
+import java.util.List;
 import java.util.UUID;
 
 @OnlyIn(Dist.CLIENT)
@@ -55,6 +59,10 @@ public class ClientHandler {
                     0.0f
             );
         }
+    }
+
+    public static void reloadChunks(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        Minecraft.getInstance().levelRenderer.setBlocksDirty(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     public static void syncSpectatingAbility(SyncSpectatingAbilityPacket packet, Player player) {
@@ -299,6 +307,25 @@ public class ClientHandler {
         if (Minecraft.getInstance().player != null) {
             AllyComponent newComponent = new AllyComponent(packet.allies());
             Minecraft.getInstance().player.setData(ModAttachments.ALLY_COMPONENT.get(), newComponent);
+        }
+    }
+
+    public static void handleDarknessEffectPacket(boolean restore, List<BlockPos> blockPositions, int waveNumber) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        if (!restore) {
+            // Turn blocks black client-side
+            for (BlockPos pos : blockPositions) {
+                level.setBlock(pos, ModBlocks.SOLID_VOID.get().defaultBlockState(),
+                        Block.UPDATE_CLIENTS | Block.UPDATE_IMMEDIATE);
+            }
+        } else {
+            // Force client to re-sync these blocks from server
+            for (BlockPos pos : blockPositions) {
+                // Remove the fake block and request update from server
+                level.setBlock(pos, level.getBlockState(pos), Block.UPDATE_ALL);
+            }
         }
     }
 }

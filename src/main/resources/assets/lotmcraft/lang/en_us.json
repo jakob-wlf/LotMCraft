@@ -316,6 +316,8 @@
   "item.lotmcraft.surge_of_darkness_ability.description": "Flood the area with Darkness, bringing Horror and Death to everything around you",
   "item.lotmcraft.concealment_ability": "Concealment",
   "item.lotmcraft.concealment_ability.description": "Conceal everything around you, effectively erasing it",
+  "ability.lotmcraft.concealment.enter_concealed_area": "Enter Concealed Area",
+  "ability.lotmcraft.concealment.surroundings": "Conceal Surroundings",
 
   "item.lotmcraft.mighty_blow_ability": "Mighty Blow",
   "item.lotmcraft.mighty_blow_ability.description": "Strike your target with one single powerful blow",
