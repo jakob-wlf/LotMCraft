@@ -8,9 +8,11 @@ import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
+import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.TemporaryChunkLoader;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -250,6 +252,8 @@ public class ConcealmentAbility extends SelectableAbilityItem {
                     processedBlocks.add(blockPos);
                 });
             }
+
+            ParticleUtil.spawnSphereParticles(serverLevel, ParticleTypes.END_ROD, finalTargetLoc, radius.get(),  (int) Math.round(radius.get()) * 3);
 
             AbilityUtil.getNearbyEntities(entity, serverLevel, finalTargetLoc, radius.get()).forEach(targetEntity -> {
                 if(AbilityUtil.isTargetSignificantlyStronger(entity, targetEntity)) return;

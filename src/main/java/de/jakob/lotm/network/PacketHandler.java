@@ -299,6 +299,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                PerformMiraclePacket.TYPE,
+                PerformMiraclePacket.STREAM_CODEC,
+                PerformMiraclePacket::handle
+        );
+
+        registrar.playToServer(
                 OpenRecipeMenuPacket.TYPE,
                 OpenRecipeMenuPacket.STREAM_CODEC,
                 OpenRecipeMenuPacket::handle

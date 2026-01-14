@@ -289,6 +289,11 @@
   "ability.lotmcraft.miracle_creation.area_manipulation": "Area Manipulation",
   "ability.lotmcraft.miracle_creation.teleportation": "Teleportation",
   "ability.lotmcraft.miracle_creation.target_manipulation": "Target Manipulation",
+  "ability.lotmcraft.miracle_creation.miracle.summon_village": "Summon Village",
+  "ability.lotmcraft.miracle_creation.miracle.summon_end_city": "Summon End City",
+  "ability.lotmcraft.miracle_creation.miracle.summon_pillager_outpost": "Summon Pillager Outpost",
+  "ability.lotmcraft.miracle_creation.miracle.summon_desert_temple": "Summon Desert Temple",
+  "ability.lotmcraft.miracle_creation.miracle.summon_evernight_church": "Summon Evernight Church",
 
 
   "item.lotmcraft.midnight_poem_ability": "Midnight Poem",

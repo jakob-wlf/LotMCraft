@@ -1,7 +1,10 @@
 package de.jakob.lotm.abilities.fool;
 
+import de.jakob.lotm.abilities.ClientAbilityWheelHelper;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.rendering.MiracleWheelOverlay;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
@@ -52,7 +55,22 @@ public class MiracleCreationAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    public void handleLeftClickInAir(Player player) {
+        if (player.level().isClientSide && getAbilityNames().length > 0) {
+            if((ClientAbilityWheelHelper.isWheelOpen() && ClientAbilityWheelHelper.getCurrentAbilityItem() == this) ||
+                    (MiracleWheelOverlay.getInstance().isOpen()) || ((System.currentTimeMillis() - MiracleWheelOverlay.getInstance().lastClosedMs) < 500)) {
+                return;
+            }
+            ClientAbilityWheelHelper.openWheel(this, player);
+        }
+    }
 
+    @Override
+    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+        if(!(entity instanceof Player player)) return; // Will be handled later
+        if(!level.isClientSide) return; // Client-side only for opening the wheel
+        switch (abilityIndex) {
+            case 0 -> MiracleWheelOverlay.getInstance().open(player, "summon_village", "summon_end_city", "summon_pillager_outpost", "summon_desert_temple", "summon_evernight_church");
+        }
     }
 }

@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.ClientAbilityWheelHelper;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.rendering.AbilityWheelOverlay;
+import de.jakob.lotm.rendering.MiracleWheelOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -40,9 +41,16 @@ public class ClientLeftClickHandler {
     @SubscribeEvent
     public static void onMouseInput(InputEvent.MouseButton.Post event) {
         // When left mouse button is released (button 0, action 0 = release)
-        if (event.getButton() == 0 && event.getAction() == 0) {
-            if (ClientAbilityWheelHelper.isWheelOpen()) {
-                AbilityWheelOverlay.getInstance().handleMouseRelease();
+        if (event.getButton() == 0) {
+            if(event.getAction() == 0) {
+                if (ClientAbilityWheelHelper.isWheelOpen()) {
+                    AbilityWheelOverlay.getInstance().handleMouseRelease();
+                }
+            }
+            else if (event.getAction() == 1) {
+                if(MiracleWheelOverlay.getInstance().isOpen()) {
+                    MiracleWheelOverlay.getInstance().handleMouseRelease();
+                }
             }
         }
     }
