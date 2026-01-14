@@ -10,18 +10,18 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
-public class SefirahCastleDimensionEffects{
+public class ConcealmentWorldDimensionEffects {
 
     @SubscribeEvent
     public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
         event.register(
-                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space"),
-                new SefirahCastleEffects()
+                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "concealment_world"),
+                new ConcealmentWorldEffects()
         );
     }
     
-    public static class SefirahCastleEffects extends DimensionSpecialEffects {
-        public SefirahCastleEffects() {
+    public static class ConcealmentWorldEffects extends DimensionSpecialEffects {
+        public ConcealmentWorldEffects() {
             super(
                     Float.NaN, // Cloud height (NaN = no clouds)
                     true, // Has sky effects

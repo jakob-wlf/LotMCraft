@@ -8,6 +8,7 @@ import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
+import de.jakob.lotm.util.helper.TemporaryChunkLoader;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -26,6 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class ConcealmentAbility extends SelectableAbilityItem {
     public ConcealmentAbility(Properties properties) {
@@ -248,6 +250,48 @@ public class ConcealmentAbility extends SelectableAbilityItem {
                     processedBlocks.add(blockPos);
                 });
             }
+
+            AbilityUtil.getNearbyEntities(entity, serverLevel, finalTargetLoc, radius.get()).forEach(targetEntity -> {
+                if(AbilityUtil.isTargetSignificantlyStronger(entity, targetEntity)) return;
+
+                Vec3 originalPos = targetEntity.position();
+
+                // Teleport the entity to the concealment world
+                BlockPos safePos = findSafePosition(concealmentWorld, targetEntity.getX(), targetEntity.blockPosition().getY(), targetEntity.getZ(), false);
+
+                TemporaryChunkLoader.forceChunksTemporarily(concealmentWorld, safePos.getX(), safePos.getZ(), 10, 20 * 10);
+
+                targetEntity.teleportTo(concealmentWorld,
+                        safePos.getX() + 0.5,
+                        safePos.getY(),
+                        safePos.getZ() + 0.5,
+                        Set.of(),
+                        targetEntity.getYRot(),
+                        targetEntity.getXRot()
+                );
+
+                LivingEntity teleportedEntity = (LivingEntity) concealmentWorld.getEntity(targetEntity.getUUID());
+
+                if(teleportedEntity == null) return;
+
+                if(AbilityUtil.isTargetSignificantlyWeaker(entity, teleportedEntity)) {
+                    teleportedEntity.setHealth(1);
+                    return;
+                }
+
+                int returnTime = BeyonderData.getSequence(teleportedEntity) < BeyonderData.getSequence(entity) ? 20 * 5 : 20 * 25;
+
+                ServerScheduler.scheduleDelayed(returnTime, () -> {
+                    teleportedEntity.teleportTo(serverLevel,
+                            originalPos.x() + 0.5,
+                            originalPos.y(),
+                            originalPos.z() + 0.5,
+                            Set.of(),
+                            teleportedEntity.getYRot(),
+                            teleportedEntity.getXRot()
+                    );
+                });
+            });
 
             radius.addAndGet(0.8);
         });

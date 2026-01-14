@@ -123,10 +123,13 @@ public class ExileDoorsEntity extends Entity {
 
                     ParticleUtil.spawnParticles((ServerLevel) entity.level(), ModParticles.STAR.get(), entity.position(), 100, 1, 2, 1, .1);
                     ParticleUtil.spawnParticles((ServerLevel) entity.level(), ParticleTypes.PORTAL, entity.position(), 100, 1, 2, 1, .1);
+
                     level().playSound(null, entity.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 2.0f, 0.5f + level().random.nextFloat());
+
                     TemporaryChunkLoader.forceChunksTemporarily(endLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
                     entity.teleportTo(endLevel, randomX, y, randomZ, Set.of(), entity.getYRot(), entity.getXRot());
                     TemporaryChunkLoader.forceChunksTemporarily(endLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
+
                     entity.resetFallDistance();
                     ParticleUtil.spawnParticles((ServerLevel) entity.level(), ModParticles.STAR.get(), entity.position(), 100, 1, 2, 1, .1);
                     ParticleUtil.spawnParticles((ServerLevel) entity.level(), ParticleTypes.PORTAL, entity.position(), 100, 1, 2, 1, .1);
