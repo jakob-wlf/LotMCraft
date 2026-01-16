@@ -1,7 +1,12 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.util.helper.AllyUtil;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
@@ -24,6 +29,25 @@ public class GolemCreationAbility extends AbilityItem {
 
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {
+        if(level.isClientSide()) {
+            return;
+        }
 
+        ServerLevel serverLevel = (ServerLevel) level;
+        IronGolem golem = new IronGolem(EntityType.IRON_GOLEM, serverLevel);
+        serverLevel.addFreshEntity(golem);
+        AttributeInstance maxHealth = golem.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH);
+        if (maxHealth != null) {
+            maxHealth.setBaseValue(200.0);
+        }
+
+        AttributeInstance attackDamage = golem.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+        if (attackDamage != null) {
+            attackDamage.setBaseValue(40.0);
+        }
+
+        golem.setHealth(200.0F);
+        golem.setPos(entity.getX(), entity.getY(), entity.getZ());
+        AllyUtil.addAllyOneWay(entity, golem.getUUID());
     }
 }

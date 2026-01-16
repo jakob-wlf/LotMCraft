@@ -1,6 +1,7 @@
 package de.jakob.lotm.rendering.effectRendering;
 
 import de.jakob.lotm.rendering.effectRendering.impl.HorrorAuraEffect;
+import de.jakob.lotm.rendering.effectRendering.impl.LifeAuraEffect;
 import de.jakob.lotm.util.data.Location;
 
 public class MovableEffectFactory {
@@ -9,6 +10,7 @@ public class MovableEffectFactory {
                                                   int duration, boolean infinite) {
         return switch (effectIndex) {
             case 0 -> new HorrorAuraEffect(location, duration, infinite);
+            case 1 -> new LifeAuraEffect(location, duration, infinite);
             default -> throw new IllegalArgumentException("Unknown movable effect index: " + effectIndex);
         };
     }
