@@ -341,7 +341,7 @@ public class ExplosionEffect extends ActiveEffect {
         for (SmokeColumn column : smokeColumns) {
             column.update(expansion, intensity);
 
-            for (int i = 0; i < column.puffs.size() - 1; i++) {
+            for (int i = 0; i < column.puffs.size(); i++) {  // Changed: removed "- 1" to render all puffs
                 SmokePuff puff = column.puffs.get(i);
 
                 if (puff.alpha <= 0) continue;
@@ -351,7 +351,8 @@ public class ExplosionEffect extends ActiveEffect {
 
                 Tesselator tesselator = Tesselator.getInstance();
 
-                for (int lat = 0; lat < segments / 2; lat++) {
+                // Render full sphere instead of half
+                for (int lat = 0; lat < segments; lat++) {  // Changed: full sphere (was segments/2)
                     BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
 
                     float theta1 = (float) (lat * Math.PI / segments);

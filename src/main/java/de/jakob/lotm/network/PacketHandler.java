@@ -272,6 +272,19 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                OpenCoordinateScreenForTeleportationPacket.TYPE,
+                OpenCoordinateScreenForTeleportationPacket.STREAM_CODEC,
+                OpenCoordinateScreenForTeleportationPacket::handle
+        );
+
+        registrar.playToClient(
+                HotGroundEffectPacket.TYPE,
+                HotGroundEffectPacket.STREAM_CODEC,
+                HotGroundEffectPacket::handle
+        );
+
+
+        registrar.playToClient(
                 AddMovableEffectPacket.TYPE,
                 AddMovableEffectPacket.STREAM_CODEC,
                 AddMovableEffectPacket::handle
@@ -338,6 +351,12 @@ public class PacketHandler {
                 OpenAbilitySelectionPacket.TYPE,
                 OpenAbilitySelectionPacket.STREAM_CODEC,
                 OpenAbilitySelectionPacket::handle
+        );
+
+        registrar.playToServer(
+                TeleportPlayerToLocationPacket.TYPE,
+                TeleportPlayerToLocationPacket.STREAM_CODEC,
+                TeleportPlayerToLocationPacket::handle
         );
 
         registrar.playToServer(

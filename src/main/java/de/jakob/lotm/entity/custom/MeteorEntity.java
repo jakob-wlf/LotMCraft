@@ -166,7 +166,7 @@ public class MeteorEntity extends Entity {
         if(position().distanceTo(targetPos.subtract(0, 1, 0)) < .5 || (lastPos != null && position().distanceTo(targetPos.subtract(0, 1, 0)) > lastPos.distanceTo(targetPos.subtract(0, 1, 0))) || !level().getBlockState(BlockPos.containing(position())).isAir()) {
             AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), getDamage(), position(), true, false);
             EffectManager.playEffect(EffectManager.Effect.EXPLOSION, position().x, position().y, position().z, serverLevel);
-            serverLevel.explode(this, position().x, position().y, position().z, getRadius(), isGriefing(), isGriefing() ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE);
+            serverLevel.explode(this, position().x, position().y - 1.5, position().z, getRadius(), isGriefing(), isGriefing() ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE);
             discard();
         }
 

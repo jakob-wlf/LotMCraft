@@ -31,11 +31,12 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
         Vec3 velocity;
         float size;
         float alpha;
-        int age;
+        float age;
         int maxAge;
         ParticleType type;
-        float rotation; // For particle rotation animation
+        float rotation;
         float rotationSpeed;
+        float brightness; // For flickering effect
 
         ParticleData(Vec3 pos, Vec3 vel, float size, int maxAge, ParticleType type) {
             this.position = pos;
@@ -47,29 +48,35 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
             this.type = type;
             this.rotation = (float)(Math.random() * Math.PI * 2);
             this.rotationSpeed = (float)((Math.random() - 0.5) * 0.3);
+            this.brightness = 0.9f + (float)Math.random() * 0.1f;
         }
 
-        void tick() {
-            age++;
-            position = position.add(velocity);
-            velocity = velocity.scale(0.92); // Slightly less drag for longer trails
-            rotation += rotationSpeed;
+        void tick(float partialTick) {
+            age += partialTick;
+            position = position.add(velocity.scale(partialTick));
+            velocity = velocity.scale(0.94); // Smoother deceleration
+            rotation += rotationSpeed * partialTick;
 
-            // Smoother fade out curve
-            float progress = (float)age / maxAge;
-            if (progress < 0.5f) {
-                alpha = 1.0f;
-            } else {
-                // Quadratic ease-out for smooth fade
-                float fadeProgress = (progress - 0.5f) / 0.5f;
-                alpha = 1.0f - (fadeProgress * fadeProgress);
+            // Smooth flickering for fire
+            if (type == ParticleType.FIRE) {
+                brightness = 0.85f + (float)Math.sin(age * 0.5) * 0.15f;
             }
 
-            // Size grows slightly over time for fire, but smoke grows more to become puffier/rounder
+            // Smoother fade out curve with partial tick
+            float progress = age / maxAge;
+            if (progress < 0.3f) {
+                alpha = 1.0f;
+            } else {
+                // Smooth cubic ease-out
+                float fadeProgress = (progress - 0.3f) / 0.7f;
+                alpha = 1.0f - (fadeProgress * fadeProgress * fadeProgress);
+            }
+
+            // Smoother size scaling
             if (type == ParticleType.FIRE) {
-                size *= 1.012f;
+                size *= 1.0f + (0.012f * partialTick);
             } else if (type == ParticleType.SMOKE) {
-                size *= 1.035f; // Grows significantly faster to become large, round puffs
+                size *= 1.0f + (0.035f * partialTick);
             }
         }
 
@@ -83,6 +90,7 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
     }
 
     private final List<ParticleData> particles = new ArrayList<>();
+    private float particleAccumulator = 0f;
 
     public MeteorRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -104,23 +112,29 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
         poseStack.popPose();
 
         if(entity.getLifeTicks() > 2) {
-            spawnParticles(entity);
-            updateParticles();
+            spawnParticles(entity, partialTicks);
+            updateParticles(partialTicks);
 
-            renderParticles(entity, poseStack, buffer, packedLight);
+            renderParticles(entity, poseStack, buffer, packedLight, partialTicks);
         }
 
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
 
-    private void spawnParticles(MeteorEntity entity) {
+    private void spawnParticles(MeteorEntity entity, float partialTicks) {
         Vec3 entityPos = entity.position();
         Vec3 motion = entity.getDeltaMovement();
         float size = entity.getSize();
 
-        // Spawn fire particles (bright, medium-lived)
-        if (entity.level().random.nextFloat() <= 1) {
-            for (int i = 0; i < 3; i++) {
+        // Use accumulator for smoother spawning
+        particleAccumulator += partialTicks;
+
+        // Spawn particles based on accumulator to smooth out frame rate variations
+        while (particleAccumulator >= 0.25f) {
+            particleAccumulator -= 0.25f;
+
+            // Spawn fire particles (bright, medium-lived)
+            for (int i = 0; i < 4; i++) { // Increased count for denser trail
                 Vec3 offset = new Vec3(
                         (entity.level().random.nextFloat() - 0.5) * size * 0.7,
                         (entity.level().random.nextFloat() - 0.5) * size * 0.7,
@@ -135,64 +149,63 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
                         entityPos.add(offset),
                         particleVel,
                         size * (0.4f + entity.level().random.nextFloat() * 0.30f),
-                        18 + entity.level().random.nextInt(18),
+                        20 + entity.level().random.nextInt(15),
                         ParticleType.FIRE
                 ));
             }
-        }
 
-        // Spawn smoke particles (darker, longer-lived, circular puffs)
-        if (entity.level().random.nextFloat() < 1) {
-            Vec3 offset = new Vec3(
-                    (entity.level().random.nextFloat() - 0.5) * size * 0.6,
-                    (entity.level().random.nextFloat() - 0.5) * size * 0.6,
-                    (entity.level().random.nextFloat() - 0.5) * size * 0.6
-            );
-            Vec3 particleVel = motion.scale(-0.15).add(
-                    (entity.level().random.nextFloat() - 0.5) * 0.05,
-                    (entity.level().random.nextFloat() - 0.5) * 0.05,
-                    (entity.level().random.nextFloat() - 0.5) * 0.05
-            );
-            particles.add(new ParticleData(
-                    entityPos.add(offset),
-                    particleVel,
-                    size * (0.35f + entity.level().random.nextFloat() * 0.25f),
-                    30 + entity.level().random.nextInt(30),
-                    ParticleType.SMOKE
-            ));
-        }
+            // Spawn smoke particles
+            for (int i = 0; i < 2; i++) {
+                Vec3 offset = new Vec3(
+                        (entity.level().random.nextFloat() - 0.5) * size * 0.6,
+                        (entity.level().random.nextFloat() - 0.5) * size * 0.6,
+                        (entity.level().random.nextFloat() - 0.5) * size * 0.6
+                );
+                Vec3 particleVel = motion.scale(-0.15).add(
+                        (entity.level().random.nextFloat() - 0.5) * 0.05,
+                        (entity.level().random.nextFloat() - 0.5) * 0.05,
+                        (entity.level().random.nextFloat() - 0.5) * 0.05
+                );
+                particles.add(new ParticleData(
+                        entityPos.add(offset),
+                        particleVel,
+                        size * (0.35f + entity.level().random.nextFloat() * 0.25f),
+                        35 + entity.level().random.nextInt(25),
+                        ParticleType.SMOKE
+                ));
+            }
 
-        // Spawn trail particles (bright streaks)
-        if (entity.level().random.nextFloat() < 0.85f) {
-            Vec3 offset = new Vec3(
-                    (entity.level().random.nextFloat() - 0.5) * size * 0.5,
-                    (entity.level().random.nextFloat() - 0.5) * size * 0.5,
-                    (entity.level().random.nextFloat() - 0.5) * size * 0.5
-            );
-            Vec3 particleVel = motion.scale(-0.15);
-            particles.add(new ParticleData(
-                    entityPos.add(offset),
-                    particleVel,
-                    size * (0.2f + entity.level().random.nextFloat() * 0.15f),
-                    15 + entity.level().random.nextInt(15),
-                    ParticleType.TRAIL
-            ));
+            // Spawn trail particles
+            for (int i = 0; i < 3; i++) {
+                Vec3 offset = new Vec3(
+                        (entity.level().random.nextFloat() - 0.5) * size * 0.5,
+                        (entity.level().random.nextFloat() - 0.5) * size * 0.5,
+                        (entity.level().random.nextFloat() - 0.5) * size * 0.5
+                );
+                Vec3 particleVel = motion.scale(-0.15);
+                particles.add(new ParticleData(
+                        entityPos.add(offset),
+                        particleVel,
+                        size * (0.2f + entity.level().random.nextFloat() * 0.15f),
+                        18 + entity.level().random.nextInt(12),
+                        ParticleType.TRAIL
+                ));
+            }
         }
     }
 
-    private void updateParticles() {
+    private void updateParticles(float partialTicks) {
         Iterator<ParticleData> iterator = particles.iterator();
         while (iterator.hasNext()) {
             ParticleData particle = iterator.next();
-            particle.tick();
+            particle.tick(partialTicks);
             if (particle.isExpired()) {
                 iterator.remove();
             }
         }
     }
 
-    private void renderParticles(MeteorEntity entity, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        // Use a render type that doesn't require texture
+    private void renderParticles(MeteorEntity entity, PoseStack poseStack, MultiBufferSource buffer, int packedLight, float partialTicks) {
         VertexConsumer consumer = buffer.getBuffer(RenderType.itemEntityTranslucentCull(TRAIL_TEXTURE));
 
         for (ParticleData particle : particles) {
@@ -202,7 +215,7 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
             for (int q = 0; q < quadCount; q++) {
                 poseStack.pushPose();
 
-                // Translate to particle position relative to entity
+                // Interpolate position for smoother movement
                 Vec3 relativePos = particle.position.subtract(entity.position());
                 poseStack.translate(relativePos.x, relativePos.y, relativePos.z);
 
@@ -210,8 +223,9 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
                 poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
                 poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
 
-                // Add rotation for visual variety
-                poseStack.mulPose(Axis.ZP.rotation(particle.rotation + (q * (float)Math.PI / 1.5f)));
+                // Smooth rotation interpolation
+                float smoothRotation = particle.rotation + (particle.rotationSpeed * partialTicks);
+                poseStack.mulPose(Axis.ZP.rotation(smoothRotation + (q * (float)Math.PI / 1.5f)));
 
                 // Additional rotation for smoke to make it spherical
                 if (particle.type == ParticleType.SMOKE) {
@@ -229,19 +243,23 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
                     alpha *= 0.5f;
                 }
 
-                // Color based on particle type with more vibrant colors
+                // Color based on particle type with brightness variation
                 int r, g, b, a;
                 a = (int)(alpha * 255);
 
                 switch (particle.type) {
                     case FIRE:
                         r = 255;
-                        g = (int)(100 + 80 * (1.0f - particle.alpha * 0.5f)); // More red, less yellow
-                        b = (int)(30 * (1.0f - particle.alpha)); // Even less blue
+                        g = (int)(100 + 80 * (1.0f - particle.alpha * 0.5f));
+                        b = (int)(30 * (1.0f - particle.alpha));
+                        // Apply brightness variation for flickering
+                        r = (int)(r * particle.brightness);
+                        g = (int)(g * particle.brightness);
+                        b = (int)(b * particle.brightness);
                         a = (int)(alpha * 240);
                         break;
                     case SMOKE:
-                        int grayValue = (int)(10 + 25 * particle.alpha); // Very dark range: 10-35
+                        int grayValue = (int)(10 + 25 * particle.alpha);
                         r = grayValue;
                         g = grayValue;
                         b = grayValue;
@@ -275,8 +293,6 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
                         particle.type == ParticleType.SPARK ?
                         15728880 : packedLight;
 
-                // Render billboard quad with circular gradient UV mapping
-                // Center of quad = 0.5, 0.5 for circular falloff
                 renderCircularQuad(consumer, matrix, normal, size, r, g, b, a, particleLight);
 
                 poseStack.popPose();
@@ -286,7 +302,6 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
 
     private void renderCircularQuad(VertexConsumer consumer, Matrix4f matrix, Matrix3f normal,
                                     float size, int r, int g, int b, int a, int light) {
-        // Render quad with UVs mapped for circular appearance
         consumer.addVertex(matrix, -size, -size, 0).setColor(r, g, b, a)
                 .setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light)
                 .setNormal(0, 1, 0);
@@ -329,12 +344,10 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
         for (int i = 0; i < segments; i++) {
             float progress = (float) i / segments;
 
-            // More transparent overall
-            float alpha = (1.0f - (progress * 0.8f)) * 0.5f; // Reduced to 50% opacity
+            float alpha = (1.0f - (progress * 0.8f)) * 0.5f;
 
-            // Dynamic width variation using sine wave
             float time = entity.tickCount + entity.level().getGameTime();
-            float sineWave = (float)Math.sin(time * 0.1 + progress * 3.0) * 0.08f; // Subtle oscillation
+            float sineWave = (float)Math.sin(time * 0.1 + progress * 3.0) * 0.08f;
             float width = size * 0.6f * (1.0f - progress * 0.7f) * (1.0f + sineWave);
 
             float z = segmentLength * i;
@@ -361,7 +374,6 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
         int g = (color >> 8) & 0xFF;
         int b = color & 0xFF;
 
-        // Create a cone-like shape with 8 sides for smooth appearance
         int sides = 8;
         for (int i = 0; i < sides; i++) {
             float angle1 = (float) (2 * Math.PI * i / sides);
@@ -372,19 +384,16 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
             float x2 = (float) Math.cos(angle2);
             float y2 = (float) Math.sin(angle2);
 
-            // Front face vertices
             float fx1 = x1 * width1;
             float fy1 = y1 * width1;
             float fx2 = x2 * width1;
             float fy2 = y2 * width1;
 
-            // Back face vertices
             float bx1 = x1 * width2;
             float by1 = y1 * width2;
             float bx2 = x2 * width2;
             float by2 = y2 * width2;
 
-            // Calculate normals for lighting
             Vec3 v1 = new Vec3(fx1, fy1, z1);
             Vec3 v2 = new Vec3(fx2, fy2, z1);
             Vec3 v3 = new Vec3(bx2, by2, z2);
@@ -392,7 +401,6 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
             Vec3 edge2 = v3.subtract(v1);
             Vec3 norm = edge1.cross(edge2).normalize();
 
-            // Quad face (two triangles)
             consumer.addVertex(matrix, fx1, fy1, z1).setColor(r, g, b, a)
                     .setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight)
                     .setNormal((float)norm.x, (float)norm.y, (float)norm.z);

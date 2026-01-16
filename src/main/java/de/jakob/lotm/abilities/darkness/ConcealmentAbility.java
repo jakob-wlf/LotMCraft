@@ -280,10 +280,12 @@ public class ConcealmentAbility extends SelectableAbilityItem {
 
                 if(AbilityUtil.isTargetSignificantlyWeaker(entity, teleportedEntity)) {
                     teleportedEntity.setHealth(1);
-                    return;
+                    if(!(targetEntity instanceof Player))
+                        return;
                 }
 
-                int returnTime = BeyonderData.getSequence(teleportedEntity) < BeyonderData.getSequence(entity) ? 20 * 5 : 20 * 25;
+                int returnTime = AbilityUtil.isTargetSignificantlyWeaker(entity, teleportedEntity) ? 20 * 60 * 2 :
+                        BeyonderData.getSequence(teleportedEntity) < BeyonderData.getSequence(entity) ? 20 * 5 : 20 * 25;
 
                 ServerScheduler.scheduleDelayed(returnTime, () -> {
                     teleportedEntity.teleportTo(serverLevel,

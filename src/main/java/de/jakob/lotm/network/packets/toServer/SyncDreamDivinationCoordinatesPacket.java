@@ -10,7 +10,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SyncDreamDivinationCoordinatesPacket(double x, double y, double z) implements CustomPacketPayload {
+public record SyncDreamDivinationCoordinatesPacket(double x, double y, double z, int id) implements CustomPacketPayload {
     public static final Type<SyncDreamDivinationCoordinatesPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sync_dream_divination_coordinates"));
 
@@ -19,6 +19,7 @@ public record SyncDreamDivinationCoordinatesPacket(double x, double y, double z)
                     ByteBufCodecs.DOUBLE, SyncDreamDivinationCoordinatesPacket::x,
                     ByteBufCodecs.DOUBLE, SyncDreamDivinationCoordinatesPacket::y,
                     ByteBufCodecs.DOUBLE, SyncDreamDivinationCoordinatesPacket::z,
+                    ByteBufCodecs.INT, SyncDreamDivinationCoordinatesPacket::id,
                     SyncDreamDivinationCoordinatesPacket::new
             );
 
@@ -29,8 +30,13 @@ public record SyncDreamDivinationCoordinatesPacket(double x, double y, double z)
 
     public static void handle(SyncDreamDivinationCoordinatesPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            if(!DivinationAbility.dreamDivinationUsers.containsKey(context.player().getUUID())) {
-                DivinationAbility.dreamDivinationUsers.put(context.player().getUUID(), BlockPos.containing(packet.x, packet.y, packet.z));
+            if (context.flow().getReceptionSide().isServer()) {
+                if(context.player().getId() != packet.id) {
+                    return;
+                }
+                if(!DivinationAbility.dreamDivinationUsers.containsKey(context.player().getUUID())) {
+                    DivinationAbility.dreamDivinationUsers.put(context.player().getUUID(), BlockPos.containing(packet.x, packet.y, packet.z));
+                }
             }
         });
     }

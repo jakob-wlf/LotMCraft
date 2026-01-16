@@ -10,7 +10,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SyncTravelersDoorCoordinatesPacket(double x, double y, double z) implements CustomPacketPayload {
+public record SyncTravelersDoorCoordinatesPacket(double x, double y, double z, int id) implements CustomPacketPayload {
     public static final Type<SyncTravelersDoorCoordinatesPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sync_travelers_door_coordinates"));
 
@@ -19,6 +19,7 @@ public record SyncTravelersDoorCoordinatesPacket(double x, double y, double z) i
                     ByteBufCodecs.DOUBLE, SyncTravelersDoorCoordinatesPacket::x,
                     ByteBufCodecs.DOUBLE, SyncTravelersDoorCoordinatesPacket::y,
                     ByteBufCodecs.DOUBLE, SyncTravelersDoorCoordinatesPacket::z,
+                    ByteBufCodecs.INT, SyncTravelersDoorCoordinatesPacket::id,
                     SyncTravelersDoorCoordinatesPacket::new
             );
 
@@ -29,7 +30,12 @@ public record SyncTravelersDoorCoordinatesPacket(double x, double y, double z) i
 
     public static void handle(SyncTravelersDoorCoordinatesPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            TravelersDoorAbility.travelersDoorUsers.put(context.player().getUUID(), BlockPos.containing(packet.x, packet.y, packet.z));
+            if (context.flow().getReceptionSide().isServer()) {
+                if(context.player().getId() != packet.id) {
+                    return;
+                }
+                TravelersDoorAbility.travelersDoorUsers.put(context.player().getUUID(), BlockPos.containing(packet.x, packet.y, packet.z));
+            }
         });
     }
 }

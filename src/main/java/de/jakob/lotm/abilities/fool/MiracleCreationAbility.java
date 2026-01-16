@@ -2,6 +2,8 @@ package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.abilities.ClientAbilityWheelHelper;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.fool.miracle_creation.MiracleHandler;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.rendering.MiracleWheelOverlay;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -71,6 +73,9 @@ public class MiracleCreationAbility extends SelectableAbilityItem {
         if(!level.isClientSide) return; // Client-side only for opening the wheel
         switch (abilityIndex) {
             case 0 -> MiracleWheelOverlay.getInstance().open(player, "summon_village", "summon_end_city", "summon_pillager_outpost", "summon_desert_temple", "summon_evernight_church");
+            case 1 -> MiracleWheelOverlay.getInstance().open(player, "summon_meteor", "summon_tornados", "summon_volcano");
+            case 2 -> MiracleWheelOverlay.getInstance().open(player, "reverse_gravity", "slow_time", "make_ground_hot", "darkness", "forbid_godhood");
+            case 3 -> ClientHandler.openCoordinateScreen(player, "teleportation");
         }
     }
 }
