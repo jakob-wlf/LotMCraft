@@ -51,8 +51,8 @@ public class MiracleCreationAbility extends SelectableAbilityItem {
         return new String[]{"ability.lotmcraft.miracle_creation.summon_structure",
                 "ability.lotmcraft.miracle_creation.calamity_creation",
                 "ability.lotmcraft.miracle_creation.area_manipulation",
-                "ability.lotmcraft.miracle_creation.teleportation",
-                "ability.lotmcraft.miracle_creation.target_manipulation"
+                "ability.lotmcraft.miracle_creation.teleportation"
+                //"ability.lotmcraft.miracle_creation.target_manipulation"
         };
     }
 
@@ -74,7 +74,7 @@ public class MiracleCreationAbility extends SelectableAbilityItem {
         switch (abilityIndex) {
             case 0 -> MiracleWheelOverlay.getInstance().open(player, "summon_village", "summon_end_city", "summon_pillager_outpost", "summon_desert_temple", "summon_evernight_church");
             case 1 -> MiracleWheelOverlay.getInstance().open(player, "summon_meteor", "summon_tornados", "summon_volcano");
-            case 2 -> MiracleWheelOverlay.getInstance().open(player, "reverse_gravity", "slow_time", "make_ground_hot", "darkness", "forbid_godhood");
+            case 2 -> MiracleWheelOverlay.getInstance().open(player, "reverse_gravity", "slow_time", "make_ground_hot", "darkness"); //TODO: "forbid_godhood"
             case 3 -> ClientHandler.openCoordinateScreen(player, "teleportation");
         }
     }

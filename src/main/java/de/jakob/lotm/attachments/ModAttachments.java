@@ -23,6 +23,7 @@ public class ModAttachments {
             ATTACHMENT_TYPES.register("marionette_component", () ->
                     AttachmentType.builder(MarionetteComponent::new)
                             .serialize(MarionetteComponent.SERIALIZER)
+                            .copyOnDeath()
                             .build()
             );
 
@@ -30,6 +31,7 @@ public class ModAttachments {
             ATTACHMENT_TYPES.register("parasite_component", () ->
                     AttachmentType.builder(ParasitationComponent::new)
                             .serialize(ParasitationComponent.SERIALIZER)
+                            .copyOnDeath()
                             .build()
             );
 
@@ -37,6 +39,7 @@ public class ModAttachments {
             "ally_component",
             () -> AttachmentType.builder(() -> new AllyComponent())
                     .serialize(AllyComponent.CODEC)
+                    .copyOnDeath()
                     .build()
     );
 
@@ -44,6 +47,7 @@ public class ModAttachments {
             ATTACHMENT_TYPES.register("book_component", () ->
                     AttachmentType.builder(NewPlayerComponent::new)
                             .serialize(NewPlayerComponent.SERIALIZER)
+                            .copyOnDeath()
                             .build()
             );
 
@@ -58,6 +62,7 @@ public class ModAttachments {
             ATTACHMENT_TYPES.register("subordinate_component", () ->
                     AttachmentType.builder(SubordinateComponent::new)
                             .serialize(SubordinateComponent.SERIALIZER)
+                            .copyOnDeath()
                             .build()
             );
 

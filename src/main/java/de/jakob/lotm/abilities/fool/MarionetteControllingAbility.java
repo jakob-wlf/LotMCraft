@@ -119,8 +119,6 @@ public class MarionetteControllingAbility extends SelectableAbilityItem {
                     if (newMarionetteEntity instanceof LivingEntity newMarionette) {
                         newMarionette.hurtMarked = true;
 
-                        level.getChunkSource().addEntity(newMarionette);
-
                         //Force Position Update
                         newMarionette.teleportTo(newMarionette.getX(), newMarionette.getY(), newMarionette.getZ());
                     }

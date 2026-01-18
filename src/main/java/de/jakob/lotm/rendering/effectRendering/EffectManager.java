@@ -39,7 +39,8 @@ public class EffectManager {
         MISFORTUNE_FIELD(20),
         MISFORTUNE_CURSE(21),
         BLESSING(22),
-        NIGHT_DOMAIN(23);
+        NIGHT_DOMAIN(23),
+        MIRACLE(24);
 
         private final int index;
 
