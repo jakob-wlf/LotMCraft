@@ -421,6 +421,7 @@
   "item.lotmcraft.life_aura_ability": "Life Aura",
   "item.lotmcraft.life_aura_ability.description": "Emanate an Aura of Life nourishing plant growth and healing nearby entities",
   "item.lotmcraft.mutation_creation_ability": "Mutation Creation",
+  "ability.lotmcraft.mutation_creation.already_afflicted": "Target is already mutated",
   "item.lotmcraft.mutation_creation_ability.description": "Randomly mutate your target, damaging them and draining their sanity",
   "item.lotmcraft.golem_creation_ability": "Golem Creation",
   "item.lotmcraft.golem_creation_ability.description": "Create Golems",
@@ -678,6 +679,7 @@
   "effect.lotmcraft.unluck": "Unluck",
   "effect.lotmcraft.petrification": "Petrification",
   "effect.lotmcraft.conquered": "Conquered",
+  "effect.lotmcraft.mutation": "Mutated",
 
   "_comment004": "Sounds-----------------------------------------------------------------------------",
   "sounds.lotmcraft.midnight_poem": "Midnight Poem",

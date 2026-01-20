@@ -28,6 +28,9 @@ public class ModEffects {
     public static final Holder<MobEffect> PETRIFICATION = MOB_EFFECTS.register("petrification",
             () -> new PetrificationEffect(MobEffectCategory.HARMFUL, 0x7532a8));
 
+    public static final Holder<MobEffect> MUTATED = MOB_EFFECTS.register("mutation",
+            () -> new MutationEffect(MobEffectCategory.HARMFUL, 0x7532a8));
+
     public static final Holder<MobEffect> CONQUERED = MOB_EFFECTS.register("conquered",
             () -> new ConqueredEffect(MobEffectCategory.HARMFUL, 0x701010)
                     .addAttributeModifier(Attributes.MOVEMENT_SPEED, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "conquered"), -20f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
