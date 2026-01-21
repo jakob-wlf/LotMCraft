@@ -173,6 +173,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.ERROR_AVATAR.get(), ErrorAvatarRenderer::new);
             EntityRenderers.register(ModEntities.BIG_SUN.get(), BigSunRenderer::new);
             EntityRenderers.register(ModEntities.BIG_MOON.get(), BigMoonRenderer::new);
+            EntityRenderers.register(ModEntities.COFFIN.get(), CoffinRenderer::new);
 
             GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);
         }

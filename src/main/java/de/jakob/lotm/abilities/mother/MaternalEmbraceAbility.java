@@ -1,6 +1,8 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.entity.custom.CoffinEntity;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -24,6 +26,12 @@ public class MaternalEmbraceAbility extends AbilityItem {
 
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {
+        if(!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        CoffinEntity coffinEntity = new CoffinEntity(serverLevel, entity.position());
+        serverLevel.addFreshEntity(coffinEntity);
 
     }
 }

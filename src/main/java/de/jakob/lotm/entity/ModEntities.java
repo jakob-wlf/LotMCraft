@@ -50,6 +50,10 @@ public class ModEntities {
             ENTITY_TYPES.register("wind_blade", () -> EntityType.Builder.<WindBladeEntity>of(WindBladeEntity::new, MobCategory.MISC)
                     .sized(.75f, 2f).build("wind_blade"));
 
+    public static final Supplier<EntityType<CoffinEntity>> COFFIN =
+            ENTITY_TYPES.register("coffin", () -> EntityType.Builder.<CoffinEntity>of(CoffinEntity::new, MobCategory.MISC)
+                    .sized(5f, 2f).build("coffin"));
+
     public static final DeferredHolder<EntityType<?>, EntityType<TornadoEntity>> TORNADO =
             ENTITY_TYPES.register("tornado", () -> EntityType.Builder.of(
                             (EntityType<TornadoEntity> type, net.minecraft.world.level.Level level) ->

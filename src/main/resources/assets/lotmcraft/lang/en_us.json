@@ -429,6 +429,7 @@
   "item.lotmcraft.life_deprivation_ability.description": "Drain life from your targets or your surroundings",
   "ability.lotmcraft.life_deprivation.target": "Single Target",
   "ability.lotmcraft.life_deprivation.area": "Drain Area",
+  "ability.lotmcraft.life_deprivation.no_target": "No Target found",
   "item.lotmcraft.maternal_embrace_ability": "Maternal Embrace",
   "item.lotmcraft.maternal_embrace_ability.description": "Seal your target in a coffin",
   "item.lotmcraft.area_desolation_ability": "Area Desolation",
