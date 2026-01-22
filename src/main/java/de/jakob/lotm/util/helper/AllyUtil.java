@@ -21,6 +21,10 @@ public class AllyUtil {
      * Make two entities allies (bidirectional)
      */
     public static void makeAllies(LivingEntity entity1, LivingEntity entity2) {
+        makeAllies(entity1, entity2, true);
+    }
+
+    public static void makeAllies(LivingEntity entity1, LivingEntity entity2, boolean sendMessage) {
         if (entity1 == null || entity2 == null) return;
         if (entity1.getUUID().equals(entity2.getUUID())) return;
 
@@ -34,11 +38,13 @@ public class AllyUtil {
         // Sync to clients if they're players
         if (entity1 instanceof ServerPlayer player1) {
             syncAllyData(player1);
-            player1.sendSystemMessage(Component.translatable("lotm.ally.added", entity2.getName()).withColor(0x4CAF50));
+            if (sendMessage)
+                player1.sendSystemMessage(Component.translatable("lotm.ally.added", entity2.getName()).withColor(0x4CAF50));
         }
         if (entity2 instanceof ServerPlayer player2) {
             syncAllyData(player2);
-            player2.sendSystemMessage(Component.translatable("lotm.ally.added", entity1.getName()).withColor(0x4CAF50));
+            if (sendMessage)
+                player2.sendSystemMessage(Component.translatable("lotm.ally.added", entity1.getName()).withColor(0x4CAF50));
         }
     }
 

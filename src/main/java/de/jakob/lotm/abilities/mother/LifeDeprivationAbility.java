@@ -51,7 +51,7 @@ public class LifeDeprivationAbility extends SelectableAbilityItem {
     }
 
     private void targetArea(ServerLevel serverLevel, LivingEntity entity) {
-        ArrayList<BlockPos> blocks = new ArrayList<>(AbilityUtil.getBlocksInEllipsoid(serverLevel, entity.position(), 30, 10, true, true, true));
+        ArrayList<BlockPos> blocks = new ArrayList<>(AbilityUtil.getBlocksInEllipsoid(serverLevel, entity.position(), 55, 10, true, true, true));
         Collections.shuffle(blocks);
 
         int totalDuration = 20 * 3;
@@ -65,12 +65,15 @@ public class LifeDeprivationAbility extends SelectableAbilityItem {
                 if(griefing) {
                     serverLevel.setBlockAndUpdate(blockPos, Blocks.SOUL_SOIL.defaultBlockState());
                 }
-                Vec3 particleDirection = entityPos.subtract(Vec3.atCenterOf(blockPos)).normalize();
-                ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SOUL, Vec3.atCenterOf(blockPos), 0, particleDirection.x, particleDirection.y, particleDirection.z, blockPos.getCenter().distanceTo(entityPos) / 20);
+                for(int j = 0; j < 2; j++) {
+                    Vec3 particleDirection = entityPos.subtract(Vec3.atCenterOf(blockPos).add(0, .75, 0)).normalize();
+                    Vec3 tempCenter = Vec3.atCenterOf(blockPos).add(0, .75, 0).add((random.nextDouble() - .5) * 0.5, (random.nextDouble() - .5) * 0.5, (random.nextDouble() - .5) * 0.5);
+                    ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SOUL, tempCenter, 0, particleDirection.x, particleDirection.y, particleDirection.z, blockPos.getCenter().distanceTo(entityPos) / 20);
+                }
             }
         });
 
-        List<LivingEntity> targets = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 30);
+        List<LivingEntity> targets = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 55);
         ServerScheduler.scheduleForDuration(0, 2, 50, () -> {
             for(LivingEntity target : targets) {
                 target.hurt(target.damageSources().wither(), (float) (DamageLookup.lookupDps(3, .3, 2, 25) * multiplier(entity)));

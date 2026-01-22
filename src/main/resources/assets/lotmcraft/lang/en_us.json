@@ -432,6 +432,7 @@
   "ability.lotmcraft.life_deprivation.no_target": "No Target found",
   "item.lotmcraft.maternal_embrace_ability": "Maternal Embrace",
   "item.lotmcraft.maternal_embrace_ability.description": "Seal your target in a coffin",
+  "ability.lotmcraft.maternal_embrace.too_strong": "You cannot seal a target with the same or higher Sequence",
   "item.lotmcraft.area_desolation_ability": "Area Desolation",
   "item.lotmcraft.area_desolation_ability.description": "Designate an area (200x200) that will become desolate and lifeless. Use the ability again in the same area to revert it back to normal",
   "item.lotmcraft.blooming_area_ability": "Blooming Area",

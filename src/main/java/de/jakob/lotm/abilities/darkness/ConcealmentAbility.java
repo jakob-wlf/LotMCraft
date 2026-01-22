@@ -223,10 +223,23 @@ public class ConcealmentAbility extends SelectableAbilityItem {
             return;
         }
 
-        // Get the concealment world once at the start
-        ServerLevel concealmentWorld = serverLevel.getServer().getLevel(ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY);
-        if(concealmentWorld == null) {
-            return; // Exit early if concealment world doesn't exist
+        // Check if we're currently in the concealment world
+        boolean isInConcealmentWorld = serverLevel.dimension().equals(ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY);
+
+        // Determine source and destination levels based on current dimension
+        ServerLevel sourceLevel = serverLevel;
+        ServerLevel destinationLevel;
+
+        if (isInConcealmentWorld) {
+            // If in concealment world, move blocks back to overworld
+            destinationLevel = serverLevel.getServer().getLevel(Level.OVERWORLD);
+        } else {
+            // If in overworld (or other dimension), move blocks to concealment world
+            destinationLevel = serverLevel.getServer().getLevel(ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY);
+        }
+
+        if(destinationLevel == null) {
+            return; // Exit early if destination world doesn't exist
         }
 
         AtomicDouble radius = new AtomicDouble(2);
@@ -236,36 +249,42 @@ public class ConcealmentAbility extends SelectableAbilityItem {
 
         ServerScheduler.scheduleForDuration(0, 2, 20 * 3, () -> {
             if(BeyonderData.isGriefingEnabled(entity)) {
-                AbilityUtil.getBlocksInSphereRadius(serverLevel, finalTargetLoc, radius.get(), true, false, false).forEach(blockPos -> {
+                AbilityUtil.getBlocksInSphereRadius(sourceLevel, finalTargetLoc, radius.get(), true, false, false).forEach(blockPos -> {
                     if(blockPos.getY() < entity.position().y) return;
 
                     if(processedBlocks.contains(blockPos)) return;
 
                     // Get the block state before removing it
-                    BlockState blockState = serverLevel.getBlockState(blockPos);
+                    BlockState blockState = sourceLevel.getBlockState(blockPos);
 
-                    concealmentWorld.setBlockAndUpdate(blockPos, blockState);
+                    if(blockState.isAir() && destinationLevel == serverLevel.getServer().getLevel(Level.OVERWORLD)) { // Skip air blocks when returning to overworld
+                        processedBlocks.add(blockPos);
+                        return;
+                    }
 
-                    // Remove the block from the current world
-                    serverLevel.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
+                    // Set the block in the destination world
+                    destinationLevel.setBlockAndUpdate(blockPos, blockState);
+
+                    // Remove the block from the source world
+                    sourceLevel.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
 
                     processedBlocks.add(blockPos);
                 });
             }
 
-            ParticleUtil.spawnSphereParticles(serverLevel, ParticleTypes.END_ROD, finalTargetLoc, radius.get(),  (int) Math.round(radius.get()) * 3);
+            ParticleUtil.spawnSphereParticles(sourceLevel, ParticleTypes.END_ROD, finalTargetLoc, radius.get(),  (int) Math.round(radius.get()) * 3);
 
-            AbilityUtil.getNearbyEntities(entity, serverLevel, finalTargetLoc, radius.get()).forEach(targetEntity -> {
+            AbilityUtil.getNearbyEntities(entity, sourceLevel, finalTargetLoc, radius.get()).forEach(targetEntity -> {
                 if(AbilityUtil.isTargetSignificantlyStronger(entity, targetEntity)) return;
 
                 Vec3 originalPos = targetEntity.position();
 
                 // Teleport the entity to the concealment world
-                BlockPos safePos = findSafePosition(concealmentWorld, targetEntity.getX(), targetEntity.blockPosition().getY(), targetEntity.getZ(), false);
+                BlockPos safePos = findSafePosition(destinationLevel, targetEntity.getX(), targetEntity.blockPosition().getY(), targetEntity.getZ(), false);
 
-                TemporaryChunkLoader.forceChunksTemporarily(concealmentWorld, safePos.getX(), safePos.getZ(), 10, 20 * 10);
+                TemporaryChunkLoader.forceChunksTemporarily(destinationLevel, safePos.getX(), safePos.getZ(), 10, 20 * 10);
 
-                targetEntity.teleportTo(concealmentWorld,
+                targetEntity.teleportTo(destinationLevel,
                         safePos.getX() + 0.5,
                         safePos.getY(),
                         safePos.getZ() + 0.5,
@@ -274,7 +293,7 @@ public class ConcealmentAbility extends SelectableAbilityItem {
                         targetEntity.getXRot()
                 );
 
-                LivingEntity teleportedEntity = (LivingEntity) concealmentWorld.getEntity(targetEntity.getUUID());
+                LivingEntity teleportedEntity = (LivingEntity) destinationLevel.getEntity(targetEntity.getUUID());
 
                 if(teleportedEntity == null) return;
 
@@ -288,7 +307,7 @@ public class ConcealmentAbility extends SelectableAbilityItem {
                         BeyonderData.getSequence(teleportedEntity) < BeyonderData.getSequence(entity) ? 20 * 5 : 20 * 25;
 
                 ServerScheduler.scheduleDelayed(returnTime, () -> {
-                    teleportedEntity.teleportTo(serverLevel,
+                    teleportedEntity.teleportTo(sourceLevel,
                             originalPos.x() + 0.5,
                             originalPos.y(),
                             originalPos.z() + 0.5,
