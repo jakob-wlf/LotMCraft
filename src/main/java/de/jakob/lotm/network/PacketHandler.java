@@ -136,12 +136,6 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                RemoveDreamDivinationUserPacket.TYPE,
-                RemoveDreamDivinationUserPacket.STREAM_CODEC,
-                RemoveDreamDivinationUserPacket::handle
-        );
-
-        registrar.playToClient(
                 SyncLivingEntityBeyonderDataPacket.TYPE,
                 SyncLivingEntityBeyonderDataPacket.STREAM_CODEC,
                 SyncLivingEntityBeyonderDataPacket::handle

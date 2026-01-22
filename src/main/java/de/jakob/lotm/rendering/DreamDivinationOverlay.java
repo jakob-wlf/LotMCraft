@@ -3,6 +3,8 @@ package de.jakob.lotm.rendering;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.common.DivinationAbility;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.TransformationComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -29,7 +31,9 @@ public class DreamDivinationOverlay {
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
 
-        if (DivinationAbility.dreamDivinationUsers.containsKey(mc.player.getUUID())) {
+        TransformationComponent transformationComponent = mc.player.getData(ModAttachments.TRANSFORMATION_COMPONENT);
+
+        if (transformationComponent.isTransformed() && transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.DREAM_DIVINATION.getIndex()) {
             ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/dream_divination_overlay.png");
             // Push the current pose
             guiGraphics.pose().pushPose();

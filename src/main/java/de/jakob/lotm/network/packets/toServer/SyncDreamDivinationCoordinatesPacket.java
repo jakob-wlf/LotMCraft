@@ -2,6 +2,7 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.common.DivinationAbility;
+import de.jakob.lotm.rendering.DreamDivinationOverlay;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -10,15 +11,15 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SyncDreamDivinationCoordinatesPacket(double x, double y, double z, int id) implements CustomPacketPayload {
+public record SyncDreamDivinationCoordinatesPacket(int x, int y, int z, int id) implements CustomPacketPayload {
     public static final Type<SyncDreamDivinationCoordinatesPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sync_dream_divination_coordinates"));
 
     public static final StreamCodec<FriendlyByteBuf, SyncDreamDivinationCoordinatesPacket> STREAM_CODEC =
             StreamCodec.composite(
-                    ByteBufCodecs.DOUBLE, SyncDreamDivinationCoordinatesPacket::x,
-                    ByteBufCodecs.DOUBLE, SyncDreamDivinationCoordinatesPacket::y,
-                    ByteBufCodecs.DOUBLE, SyncDreamDivinationCoordinatesPacket::z,
+                    ByteBufCodecs.INT, SyncDreamDivinationCoordinatesPacket::x,
+                    ByteBufCodecs.INT, SyncDreamDivinationCoordinatesPacket::y,
+                    ByteBufCodecs.INT, SyncDreamDivinationCoordinatesPacket::z,
                     ByteBufCodecs.INT, SyncDreamDivinationCoordinatesPacket::id,
                     SyncDreamDivinationCoordinatesPacket::new
             );
@@ -34,9 +35,8 @@ public record SyncDreamDivinationCoordinatesPacket(double x, double y, double z,
                 if(context.player().getId() != packet.id) {
                     return;
                 }
-                if(!DivinationAbility.dreamDivinationUsers.containsKey(context.player().getUUID())) {
-                    DivinationAbility.dreamDivinationUsers.put(context.player().getUUID(), BlockPos.containing(packet.x, packet.y, packet.z));
-                }
+
+                DivinationAbility.performDreamDivination(context.player().level(), context.player(), new BlockPos(packet.x, packet.y, packet.z));
             }
         });
     }

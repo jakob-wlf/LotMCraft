@@ -48,6 +48,7 @@ public class PlayerEvents {
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             ToggleAbilityItem.cleanupEntity(player.level(), player);
+            DivinationAbility.cleanupOnLogout(player);
 
             AbilityHotbarManager manager = player.getData(ModAttachments.ABILITY_HOTBAR);
 

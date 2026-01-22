@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 public class CoordinateInputScreen extends Screen {
     private EditBox xBox, yBox, zBox;
@@ -76,10 +77,10 @@ public class CoordinateInputScreen extends Screen {
             switch (use) {
                 case "travelers_door" -> PacketHandler.sendToServer(new SyncTravelersDoorCoordinatesPacket(x, y, z, entity.getId()));
                 case "dream_divination" -> {
+                    if(!(entity instanceof Player player))
+                        return;
                     PacketHandler.sendToServer(new SyncDreamDivinationCoordinatesPacket(x, y, z, entity.getId()));
-                    if(!DivinationAbility.dreamDivinationUsers.containsKey(entity.getUUID())) {
-                        DivinationAbility.dreamDivinationUsers.put(entity.getUUID(), BlockPos.containing(x, y, z));
-                    }
+                    DivinationAbility.performDreamDivination(player.level(), player, new BlockPos(x, y, z));
                 }
                 case "teleportation" -> PacketHandler.sendToServer(new TeleportPlayerToLocationPacket(x, y, z, entity.getId()));
             }

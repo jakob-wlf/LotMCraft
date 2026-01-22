@@ -22,6 +22,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -124,7 +125,7 @@ public class PuppeteeringAbility extends AbilityItem {
         int sequence = BeyonderData.getSequence(entity);
 
         LivingEntity target = AbilityUtil.getTargetEntity(entity, getManipulationDistance(sequence), 3);
-        if(target == null || target == entity) {
+        if(target == null || target == entity || target instanceof Phantom) {
             if(entity instanceof ServerPlayer player) {
                 ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("ability.lotmcraft.puppeteering.no_entity_found").withColor(0xFFff124d));
                 player.connection.send(packet);

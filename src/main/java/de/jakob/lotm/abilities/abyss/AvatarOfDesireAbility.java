@@ -19,6 +19,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.level.Level;
 import net.neoforged.fml.common.Mod;
 
@@ -89,7 +90,7 @@ public class AvatarOfDesireAbility extends ToggleAbilityItem {
                 return;
             }
 
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, random.nextInt(2, 5)));
+            e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, random.nextInt(2, 5)));
         });
     }
 

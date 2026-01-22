@@ -83,7 +83,7 @@ public class PetrificationAbility extends SelectableAbilityItem {
                     return;
                 }
 
-                entity.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 45, 9));
+                e.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 45, 9));
             });
 
             radius.addAndGet(0.5);

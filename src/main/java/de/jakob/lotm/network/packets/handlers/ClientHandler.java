@@ -98,10 +98,6 @@ public class ClientHandler {
         RingExpansionRenderer.handleRingEffectPacket(packet);
     }
 
-    public static void removeDreamDivinationUser(Player player) {
-        DivinationAbility.dreamDivinationUsers.remove(player.getUUID());
-    }
-
     public static void syncTelepathyAbility(SyncTelepathyAbilityPacket packet, Player player) {
         if(packet.active()) {
             Level level = Minecraft.getInstance().level;
@@ -347,5 +343,13 @@ public class ClientHandler {
                 level.setBlock(pos, level.getBlockState(pos), Block.UPDATE_ALL);
             }
         }
+    }
+
+    public static void hideGUI() {
+        Minecraft.getInstance().options.hideGui = true;
+    }
+
+    public static void showGui() {
+        Minecraft.getInstance().options.hideGui = false;
     }
 }

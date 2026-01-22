@@ -81,6 +81,8 @@ public class TelepathyAbility extends ToggleAbilityItem {
 
     private static String formatGoalName(String goalName) {
         String withSpaces = goalName.replaceAll("([a-z])([A-Z])", "$1 $2");
+        if(withSpaces.length() <= 1)
+            return withSpaces;
         return withSpaces.substring(0, 1).toUpperCase() + withSpaces.substring(1);
     }
 

@@ -5,7 +5,6 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.TravelersDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenCoordinateScreenTravelersDoorPacket;
-import de.jakob.lotm.network.packets.toClient.RemoveDreamDivinationUserPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -121,7 +120,6 @@ public class TravelersDoorAbility extends SelectableAbilityItem {
         }, () -> {
             if(!hasInputCoordinates.get()) {
                 travelersDoorUsers.remove(player.getUUID());
-                PacketHandler.sendToPlayer(player, new RemoveDreamDivinationUserPacket());
             }
         }, serverLevel);
     }

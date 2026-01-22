@@ -91,6 +91,7 @@ public class TransformationComponent {
         CONCEPTUALIZATION(7),
         PARASTATION(8),
         COFFIN(9),
+        DREAM_DIVINATION(10),
         TYRANT_MYTHICAL_CREATURE(101),
         DOOR_MYTHICAL_CREATURE(102);
 

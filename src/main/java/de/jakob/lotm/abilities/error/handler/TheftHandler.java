@@ -255,7 +255,9 @@ public class TheftHandler {
         int amountToSteal = lootToSteal.minAmount + (new Random()).nextInt(lootToSteal.maxAmount - lootToSteal.minAmount + 1);
         ItemStack stolenItem = lootToSteal.loot.copy();
         stolenItem.setCount(amountToSteal);
-        thief.getInventory().add(stolenItem);
+        if(!thief.getInventory().add(stolenItem)) {
+            thief.drop(stolenItem, false);
+        }
     }
 
     private static void stealFromPlayer(Player player, Player thief) {
@@ -273,7 +275,9 @@ public class TheftHandler {
         int slotToSteal = nonEmptySlots.get((new Random()).nextInt(nonEmptySlots.size()));
         ItemStack stolenItem = player.getInventory().items.get(slotToSteal).copy();
         player.getInventory().items.set(slotToSteal, ItemStack.EMPTY);
-        thief.getInventory().add(stolenItem);
+        if(!thief.getInventory().add(stolenItem)) {
+            thief.drop(stolenItem, false);
+        }
     }
 
     public record TheftLoot(ItemStack loot, int minAmount, int maxAmount) {
