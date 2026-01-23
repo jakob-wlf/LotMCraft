@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.entity.custom.MisfortuneWordsEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -24,6 +25,9 @@ public class WordsOfMisfortuneAbility extends AbilityItem {
 
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {
+        if(level.isClientSide()) return;
 
+        MisfortuneWordsEntity wordsEntity = new MisfortuneWordsEntity(level, entity.position().add(0, 1, 0));
+        level.addFreshEntity(wordsEntity);
     }
 }

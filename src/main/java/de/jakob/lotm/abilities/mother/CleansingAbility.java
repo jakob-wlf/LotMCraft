@@ -59,8 +59,8 @@ public class CleansingAbility extends SelectableAbilityItem {
 
             e.getActiveEffects()
                     .stream()
-                    .filter(effect -> effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL)
                     .map(MobEffectInstance::getEffect)
+                    .filter(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL)
                     .forEach(entity::removeEffect);
 
             if(e instanceof Player player) {

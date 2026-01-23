@@ -1,5 +1,6 @@
 package de.jakob.lotm.rendering.effectRendering;
 
+import de.jakob.lotm.abilities.wheel_of_fortune.SpiritualBaptismAbility;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
 import de.jakob.lotm.rendering.effectRendering.impl.*;
 
@@ -32,6 +33,7 @@ public class EffectFactory {
             case 22 -> new BlessingEffect(x, y, z);
             case 23 -> new NightDomainEffect(x, y, z);
             case 24 -> new MiracleEffect(x, y, z);
+            case 25 -> new BaptismEffect(x, y, z);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
     }

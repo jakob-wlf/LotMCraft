@@ -54,6 +54,10 @@ public class ModEntities {
             ENTITY_TYPES.register("coffin", () -> EntityType.Builder.<CoffinEntity>of(CoffinEntity::new, MobCategory.MISC)
                     .sized(5f, 2f).build("coffin"));
 
+    public static final Supplier<EntityType<MisfortuneWordsEntity>> MISFORTUNE_WORDS =
+            ENTITY_TYPES.register("misfortune_words", () -> EntityType.Builder.<MisfortuneWordsEntity>of(MisfortuneWordsEntity::new, MobCategory.MISC)
+                    .sized(20f, 2f).build("misfortune_words"));
+
     public static final DeferredHolder<EntityType<?>, EntityType<TornadoEntity>> TORNADO =
             ENTITY_TYPES.register("tornado", () -> EntityType.Builder.of(
                             (EntityType<TornadoEntity> type, net.minecraft.world.level.Level level) ->

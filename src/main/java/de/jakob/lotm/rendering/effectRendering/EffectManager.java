@@ -40,7 +40,8 @@ public class EffectManager {
         MISFORTUNE_CURSE(21),
         BLESSING(22),
         NIGHT_DOMAIN(23),
-        MIRACLE(24);
+        MIRACLE(24),
+        SPIRITUAL_BAPTISM(25);
 
         private final int index;
 

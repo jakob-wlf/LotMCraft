@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.Holder;
@@ -166,6 +167,51 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
         }
     }
 
+    private void applyLuck(LivingEntity entity) {
+        // Check if entity has regeneration enhancement
+        int luckLevel= 0;
+
+        // Check permanent enhancements
+        Map<EnhancementType, Integer> enhancements = entityEnhancements.get(entity.getUUID());
+        if (enhancements != null && enhancements.containsKey(EnhancementType.LUCK)) {
+            luckLevel = enhancements.get(EnhancementType.LUCK);
+        }
+
+        // Check temporary enhancements
+        Map<String, TemporaryEnhancement> temps = temporaryEnhancements.get(entity.getUUID());
+        if (temps != null) {
+            for (TemporaryEnhancement temp : temps.values()) {
+                if (temp.enhancement.getType() == EnhancementType.LUCK) {
+                    luckLevel += temp.enhancement.getLevel();
+                }
+            }
+        }
+
+        // Check boosts
+        Map<String, EnhancementBoost> boosts = enhancementBoosts.get(entity.getUUID());
+        if (boosts != null) {
+            for (EnhancementBoost boost : boosts.values()) {
+                if (boost.enhancement.getType() == EnhancementType.LUCK) {
+                    luckLevel += boost.amount;
+                }
+            }
+        }
+
+        if (luckLevel <= 0) {
+            return;
+        }
+
+        // Apply the regeneration effect (duration of 300 ticks = 15 seconds, since tick is called every 5 ticks)
+        entity.addEffect(new MobEffectInstance(
+                MobEffects.LUCK,
+                300,
+                luckLevel - 1, // Minecraft amplifier is 0-based (0 = level 1)
+                false,
+                false,
+                false
+        ));
+    }
+
     private void applyConduit(LivingEntity entity) {
         // Check if entity has night vision enhancement
         boolean hasEffect = false;
@@ -297,6 +343,8 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             entity.setAirSupply(entity.getMaxAirSupply());
         }
     }
+
+
 
     private void applyRegeneration(LivingEntity entity) {
         // Check if entity has regeneration enhancement
@@ -703,6 +751,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
         RESISTANCE(null, null, 0), // Special: handled via event
         NIGHT_VISION(null, null, 0), // Special: handled via effects
         FIRE_RESISTANCE(null, null, 0), // Special: handled via effects
+        LUCK(null, null, 0), // Special: handled via effects
         REGENERATION(null, null, 0), // Special: handled via effects with combat reduction
         CONDUIT(null, null, 0),
         DOLPHINS_GRACE(null, null, 0),
