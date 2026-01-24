@@ -34,6 +34,7 @@ public class EffectFactory {
             case 23 -> new NightDomainEffect(x, y, z);
             case 24 -> new MiracleEffect(x, y, z);
             case 25 -> new BaptismEffect(x, y, z);
+            case 26 -> new ConcealmentEffect(x, y, z);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
     }

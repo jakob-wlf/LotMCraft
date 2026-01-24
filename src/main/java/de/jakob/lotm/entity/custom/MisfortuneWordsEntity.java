@@ -47,7 +47,7 @@ public class MisfortuneWordsEntity extends Entity {
                 if(BeyonderData.isBeyonder(e) && BeyonderData.getPathway(e).equalsIgnoreCase("wheel_of_fortune") && BeyonderData.getSequence(e) <= 2)
                     return;
 
-                e.addEffect(new MobEffectInstance(ModEffects.UNLUCK, 20 * 60 * 5, 9, false, false, false));
+                e.addEffect(new MobEffectInstance(ModEffects.UNLUCK, 20 * 60 * 5, 12, false, false, false));
             });
         }
     }

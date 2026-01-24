@@ -39,6 +39,7 @@ public class UnLuckEventHandler {
     private static final HashMap<UUID, Long> lastSlipTime = new HashMap<>();
     private static final HashMap<UUID, Long> lastMultiplierReductionTime = new HashMap<>();
     private static final HashMap<UUID, Long> lastAbilityDisableTime = new HashMap<>();
+    private static final HashMap<UUID, Long> lastTripTime = new HashMap<>();
 
     // Brown/orange particles for unluck
     private static final DustParticleOptions dust = new DustParticleOptions(
@@ -142,6 +143,11 @@ public class UnLuckEventHandler {
         // Apply harmful effects periodically
         if(Math.random() < getHarmfulEffectChance(amplifier)) {
             applyRandomHarmfulEffect(entity, level);
+        }
+
+        // Random trip and take damage
+        if(Math.random() < getTripChance(amplifier)) {
+            tripAndTakeDamage(entity, level, amplifier);
         }
 
         // Bad Omen effect at higher levels
@@ -262,6 +268,52 @@ public class UnLuckEventHandler {
         level.addFreshEntity(itemEntity);
 
         ParticleUtil.spawnParticles(level, dust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 20, .3, .3, .3, 0);
+    }
+
+    private static void tripAndTakeDamage(LivingEntity entity, ServerLevel level, int amplifier) {
+        UUID uuid = entity.getUUID();
+        long currentTime = System.currentTimeMillis();
+
+        // Cooldown check to prevent spam
+        if(lastTripTime.containsKey(uuid) && currentTime - lastTripTime.get(uuid) < 2000) {
+            return;
+        }
+
+        lastTripTime.put(uuid, currentTime);
+
+        // Calculate damage based on amplifier (at amp 12: ~32.5 damage)
+        float baseDamage = 10.0f;
+        float damagePerLevel = 1.875f;
+        float damage = baseDamage + (amplifier * damagePerLevel);
+
+        // Apply damage
+        entity.hurt(level.damageSources().magic(), damage);
+
+        // Apply a small knockdown effect
+        Random random = new Random();
+        entity.setDeltaMovement(
+                random.nextDouble(-0.2, 0.2),
+                0.1,
+                random.nextDouble(-0.2, 0.2)
+        );
+        entity.hurtMarked = true;
+
+        // Visual and sound effects
+        ParticleUtil.spawnParticles(level, dust, entity.position(), 40, .5, .2, .5, 0);
+        level.playSound(null, entity.blockPosition(), SoundEvents.PLAYER_HURT, SoundSource.PLAYERS, 0.7f, 0.8f);
+
+        // Optional: Display action bar message for players
+        if(entity instanceof ServerPlayer player) {
+            player.connection.send(new ClientboundSetActionBarTextPacket(
+                    Component.literal("You tripped!").withStyle(style -> style.withColor(0xA17234))
+            ));
+        }
+    }
+
+    private static double getTripChance(int amplifier) {
+        // At amplifier 12: ~0.006 (with 20 ticks/sec = every 8.3 seconds on average)
+        // Adjusted to hit every 3-5 seconds at amp 12
+        return lerpClamped(amplifier, 0, 19, 0.0005, 0.015);
     }
 
     private static void spawnHostileMob(LivingEntity entity, ServerLevel level, int amplifier) {

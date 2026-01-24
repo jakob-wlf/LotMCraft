@@ -7,7 +7,6 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-// Make selectable
 public class ProphecyAbility extends AbilityItem {
     public ProphecyAbility(Properties properties) {
         super(properties, 2);
@@ -25,6 +24,6 @@ public class ProphecyAbility extends AbilityItem {
 
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {
-
+        // Random priophecy should happen that can benefit the user greatly
     }
 }

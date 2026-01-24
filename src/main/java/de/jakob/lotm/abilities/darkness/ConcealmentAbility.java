@@ -5,6 +5,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.dimension.ModDimensions;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -33,7 +34,7 @@ import java.util.Set;
 
 public class ConcealmentAbility extends SelectableAbilityItem {
     public ConcealmentAbility(Properties properties) {
-        super(properties, 4);
+        super(properties, 5);
     }
 
     @Override
@@ -242,12 +243,14 @@ public class ConcealmentAbility extends SelectableAbilityItem {
             return; // Exit early if destination world doesn't exist
         }
 
+        EffectManager.playEffect(EffectManager.Effect.CONCEALMENT, entity.getX(), entity.getY(), entity.getZ(), serverLevel);
+
         AtomicDouble radius = new AtomicDouble(2);
         Vec3 finalTargetLoc = entity.position();
 
         final HashSet<BlockPos> processedBlocks = new HashSet<>();
 
-        ServerScheduler.scheduleForDuration(0, 2, 20 * 3, () -> {
+        ServerScheduler.scheduleForDuration(0, 2, 20 * 5, () -> {
             if(BeyonderData.isGriefingEnabled(entity)) {
                 AbilityUtil.getBlocksInSphereRadius(sourceLevel, finalTargetLoc, radius.get(), true, false, false).forEach(blockPos -> {
                     if(blockPos.getY() < entity.position().y) return;
@@ -271,8 +274,6 @@ public class ConcealmentAbility extends SelectableAbilityItem {
                     processedBlocks.add(blockPos);
                 });
             }
-
-            ParticleUtil.spawnSphereParticles(sourceLevel, ParticleTypes.END_ROD, finalTargetLoc, radius.get(),  (int) Math.round(radius.get()) * 3);
 
             AbilityUtil.getNearbyEntities(entity, sourceLevel, finalTargetLoc, radius.get()).forEach(targetEntity -> {
                 if(AbilityUtil.isTargetSignificantlyStronger(entity, targetEntity)) return;
@@ -318,7 +319,7 @@ public class ConcealmentAbility extends SelectableAbilityItem {
                 });
             });
 
-            radius.addAndGet(0.8);
+            radius.addAndGet(0.5);
         });
     }
 }

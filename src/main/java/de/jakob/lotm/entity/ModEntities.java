@@ -58,6 +58,10 @@ public class ModEntities {
             ENTITY_TYPES.register("misfortune_words", () -> EntityType.Builder.<MisfortuneWordsEntity>of(MisfortuneWordsEntity::new, MobCategory.MISC)
                     .sized(20f, 2f).build("misfortune_words"));
 
+    public static final Supplier<EntityType<BloomingAreaEntity>> BLOOMING_AREA =
+            ENTITY_TYPES.register("blooming_area", () -> EntityType.Builder.<BloomingAreaEntity>of(BloomingAreaEntity::new, MobCategory.MISC)
+                    .sized(20f, 2f).build("blooming_area"));
+
     public static final DeferredHolder<EntityType<?>, EntityType<TornadoEntity>> TORNADO =
             ENTITY_TYPES.register("tornado", () -> EntityType.Builder.of(
                             (EntityType<TornadoEntity> type, net.minecraft.world.level.Level level) ->
