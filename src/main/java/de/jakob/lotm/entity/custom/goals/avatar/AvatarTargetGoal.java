@@ -1,10 +1,7 @@
 package de.jakob.lotm.entity.custom.goals.avatar;
 
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.entity.custom.ErrorAvatarEntity;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.entity.custom.AvatarEntity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.player.Player;
 
@@ -12,10 +9,10 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 public class AvatarTargetGoal extends TargetGoal {
-    private final ErrorAvatarEntity avatar;
+    private final AvatarEntity avatar;
     private Player controller;
 
-    public AvatarTargetGoal(ErrorAvatarEntity avatar) {
+    public AvatarTargetGoal(AvatarEntity avatar) {
         super(avatar, false);
         this.avatar = avatar;
         // Only control targeting

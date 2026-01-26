@@ -4,7 +4,7 @@ import de.jakob.lotm.abilities.error.DeceitAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
-import de.jakob.lotm.entity.custom.ErrorAvatarEntity;
+import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
@@ -830,7 +830,7 @@ public class AbilityUtil {
             return false;
         }
 
-        if(source instanceof ErrorAvatarEntity avatar) {
+        if(source instanceof AvatarEntity avatar) {
             if(target.getUUID() == avatar.getOriginalOwner())
                 return false;
         }

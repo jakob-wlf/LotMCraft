@@ -1,7 +1,6 @@
 package de.jakob.lotm.entity;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.client.SpearOfDestructionProjectileModel;
 import de.jakob.lotm.entity.custom.GiantLightningEntity;
 import de.jakob.lotm.entity.custom.*;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -262,8 +261,8 @@ public class ModEntities {
                     .updateInterval(2)
                     .build("beyonder_npc"));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<ErrorAvatarEntity>> ERROR_AVATAR =
-            ENTITY_TYPES.register("error_avatar", () -> EntityType.Builder.<ErrorAvatarEntity>of(ErrorAvatarEntity::new, MobCategory.MONSTER)
+    public static final DeferredHolder<EntityType<?>, EntityType<AvatarEntity>> ERROR_AVATAR =
+            ENTITY_TYPES.register("error_avatar", () -> EntityType.Builder.<AvatarEntity>of(AvatarEntity::new, MobCategory.MONSTER)
                     .sized(0.6f, 1.95f)
                     .clientTrackingRange(32)
                     .updateInterval(2)

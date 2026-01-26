@@ -559,6 +559,9 @@
   "item.lotmcraft.words_of_misfortune_ability.description": "Leave behind words of Misfortune that will bring anyone who steps near them great misfortune",
   "item.lotmcraft.prophecy_ability": "Prophecy",
   "item.lotmcraft.prophecy_ability.description": "Speak a Prophecy. Once spoken it has a high chance to turn true",
+  "ability.lotmcraft.prophecy.disaster": "I prophesy a great Calamity will befall us",
+  "ability.lotmcraft.prophecy.fortune": "I prophesy that a great fortune shall come to pass",
+  "ability.lotmcraft.prophecy.misfortune_for_enemy": "I prophesy that great misfortune shall come to those who oppose me",
 
   "item.lotmcraft.theft_ability": "Theft",
   "item.lotmcraft.theft_ability.description": "If used on Player, it will attempt to steal any item from his inventory. If used on Mob, it will give random drop related to them, like meat from animals or arrows from skeleton",

@@ -1,15 +1,14 @@
 package de.jakob.lotm.entity.custom.goals.avatar;
 
-import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
-import de.jakob.lotm.entity.custom.ErrorAvatarEntity;
+import de.jakob.lotm.entity.custom.AvatarEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.Random;
 
 
 public class AvatarAbilityUseGoal extends Goal {
-    private final ErrorAvatarEntity entity;
-    public AvatarAbilityUseGoal(ErrorAvatarEntity entity) {
+    private final AvatarEntity entity;
+    public AvatarAbilityUseGoal(AvatarEntity entity) {
         this.entity = entity;
     }
 

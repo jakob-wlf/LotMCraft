@@ -1,21 +1,20 @@
 package de.jakob.lotm.entity.custom.goals.avatar;
 
-import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
-import de.jakob.lotm.entity.custom.ErrorAvatarEntity;
+import de.jakob.lotm.entity.custom.AvatarEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
 
 public class AvatarRangedCombatGoal extends Goal {
-    private final ErrorAvatarEntity entity;
+    private final AvatarEntity entity;
     private final double moveSpeed;
     private final float minDistance;
     private final float maxDistance;
     private int attackCooldown = 0;
     private int meleeCooldown = 0;
 
-    public AvatarRangedCombatGoal(ErrorAvatarEntity entity, double moveSpeed, float minDistance, float maxDistance) {
+    public AvatarRangedCombatGoal(AvatarEntity entity, double moveSpeed, float minDistance, float maxDistance) {
         this.entity = entity;
         this.moveSpeed = moveSpeed;
         this.minDistance = minDistance;

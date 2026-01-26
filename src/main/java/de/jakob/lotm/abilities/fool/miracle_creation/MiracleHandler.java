@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.entity.custom.GiantLightningEntity;
 import de.jakob.lotm.entity.custom.MeteorEntity;
 import de.jakob.lotm.entity.custom.TornadoEntity;
 import de.jakob.lotm.entity.custom.VolcanoEntity;
@@ -32,6 +33,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -53,11 +55,24 @@ public class MiracleHandler {
             case "summon_meteor" -> summonMeteor(level, caster);
             case "summon_tornados" -> summonTornados(level, caster);
             case "summon_volcano" -> summonVolcano(level, caster);
+            case "summon_lightning" -> summonLightning(level, caster);
             case "reverse_gravity" -> reverseGravity(level, caster);
             case "darkness" -> summonDarkness(level, caster);
             case "make_ground_hot" -> makeGroundHot(level, caster);
             case "slow_time" -> slowTime(level, caster);
         }
+    }
+
+    private static void summonLightning(ServerLevel level, LivingEntity caster) {
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(caster, 70, 2, true);
+        for(int i = 0; i < 35; i++) {
+            BlockState state = level.getBlockState(BlockPos.containing(targetLoc.subtract(0, 1, 0)));
+            if(state.getCollisionShape(level, BlockPos.containing(targetLoc)).isEmpty())
+                targetLoc = targetLoc.subtract(0, 1, 0);
+        }
+
+        GiantLightningEntity lightning = new GiantLightningEntity(level, caster, targetLoc, 50, 6, DamageLookup.lookupDamage(2, .85) * BeyonderData.getMultiplier(caster), BeyonderData.isGriefingEnabled(caster), 13, 200, 0x6522a8);
+        level.addFreshEntity(lightning);
     }
 
     private static void slowTime(ServerLevel level, LivingEntity caster) {
@@ -250,17 +265,15 @@ public class MiracleHandler {
     private static void summonTornados(ServerLevel level, LivingEntity caster) {
         LivingEntity target = AbilityUtil.getTargetEntity(caster, 12, 3);
 
-        EffectManager.playEffect(EffectManager.Effect.MIRACLE, caster.getX(), caster.getY(), caster.getZ(), level);
-
         Vec3 pos = AbilityUtil.getTargetLocation(caster, 12, 2);
 
         TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (float) BeyonderData.getMultiplier(caster), caster) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, 32.5f * (float) BeyonderData.getMultiplier(caster), caster, target);
         tornado.setPos(pos);
         level.addFreshEntity(tornado);
 
-        for(int i = 0; i < 30; i++) {
-            TornadoEntity additionalTornado = target == null || (new Random()).nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, 17f, caster) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, 17f, caster, target);
-            Vec3 randomOffset = new Vec3((level.random.nextDouble() - 0.5) * 120, 3, (level.random.nextDouble() - 0.5) * 120);
+        for(int i = 0; i < 5; i++) {
+            TornadoEntity additionalTornado = target == null || (new Random()).nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (float) BeyonderData.getMultiplier(caster), caster) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (float) BeyonderData.getMultiplier(caster), caster, target);
+            Vec3 randomOffset = new Vec3((level.random.nextDouble() - 0.5) * 40, 3, (level.random.nextDouble() - 0.5) * 40);
             additionalTornado.setPos(pos.add(randomOffset));
             level.addFreshEntity(additionalTornado);
         }
@@ -273,7 +286,7 @@ public class MiracleHandler {
 
         EffectManager.playEffect(EffectManager.Effect.MIRACLE, targetLoc.x, targetLoc.y, targetLoc.z, level);
 
-        MeteorEntity meteor = new MeteorEntity(level, 3.25f,  (float) DamageLookup.lookupDamage(2, 1) * (float) BeyonderData.getMultiplier(caster), 6, caster, BeyonderData.isGriefingEnabled(caster), 12, 34);
+        MeteorEntity meteor = new MeteorEntity(level, 3.25f,  (float) DamageLookup.lookupDamage(2, 1) * (float) BeyonderData.getMultiplier(caster), 6, caster, BeyonderData.isGriefingEnabled(caster), 20, 34);
         meteor.setPosition(targetLoc);
         level.addFreshEntity(meteor);
     }

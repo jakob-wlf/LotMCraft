@@ -111,7 +111,8 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PhysicalEnhanceme
                     new PhysicalEnhancement(EnhancementType.RESISTANCE, 18),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 20),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 5)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 5),
+                    new PhysicalEnhancement(EnhancementType.LUCK, 25)
             );
 
             default -> List.of();

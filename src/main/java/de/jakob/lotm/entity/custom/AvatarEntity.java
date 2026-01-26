@@ -42,11 +42,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class ErrorAvatarEntity extends PathfinderMob {
-    private static final EntityDataAccessor<String> PATHWAY = SynchedEntityData.defineId(ErrorAvatarEntity.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<Integer> SEQUENCE = SynchedEntityData.defineId(ErrorAvatarEntity.class, EntityDataSerializers.INT);
+public class AvatarEntity extends PathfinderMob {
+    private static final EntityDataAccessor<String> PATHWAY = SynchedEntityData.defineId(AvatarEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Integer> SEQUENCE = SynchedEntityData.defineId(AvatarEntity.class, EntityDataSerializers.INT);
 
-    private static final EntityDataAccessor<Optional<UUID>> ORIGINAL = SynchedEntityData.defineId(ErrorAvatarEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Optional<UUID>> ORIGINAL = SynchedEntityData.defineId(AvatarEntity.class, EntityDataSerializers.OPTIONAL_UUID);
 
     private String pathway = "error";
     private int sequence = 5;
@@ -55,11 +55,11 @@ public class ErrorAvatarEntity extends PathfinderMob {
 
     LivingEntity ownerEntity;
 
-    public ErrorAvatarEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
+    public AvatarEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         this(entityType, level, null, "error", 5);
     }
 
-    public ErrorAvatarEntity(EntityType<? extends PathfinderMob> entityType, Level level, UUID owner, String pathway, int sequence) {
+    public AvatarEntity(EntityType<? extends PathfinderMob> entityType, Level level, UUID owner, String pathway, int sequence) {
         super(entityType, level);
         setOriginalOwner(owner);
 

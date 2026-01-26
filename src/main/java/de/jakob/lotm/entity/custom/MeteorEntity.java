@@ -3,6 +3,7 @@ package de.jakob.lotm.entity.custom;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.PerformantExplosion;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -12,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -166,7 +168,7 @@ public class MeteorEntity extends Entity {
         if(position().distanceTo(targetPos.subtract(0, 1, 0)) < .5 || (lastPos != null && position().distanceTo(targetPos.subtract(0, 1, 0)) > lastPos.distanceTo(targetPos.subtract(0, 1, 0))) || !level().getBlockState(BlockPos.containing(position())).isAir()) {
             AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), getDamage(), position(), true, false);
             EffectManager.playEffect(EffectManager.Effect.EXPLOSION, position().x, position().y, position().z, serverLevel);
-            serverLevel.explode(this, position().x, position().y - 1.5, position().z, getRadius(), isGriefing(), isGriefing() ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE);
+            PerformantExplosion.create(serverLevel, getCaster(), position(), getExplosionSize(), isGriefing(), isGriefing() ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.KEEP);
             discard();
         }
 

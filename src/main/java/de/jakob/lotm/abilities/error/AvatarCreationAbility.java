@@ -2,8 +2,7 @@ package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.client.ErrorAvatarRenderer;
-import de.jakob.lotm.entity.custom.ErrorAvatarEntity;
+import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -38,7 +37,7 @@ public class AvatarCreationAbility extends AbilityItem {
         }
 
         int sequence = BeyonderData.getSequence(entity) + 1;
-        ErrorAvatarEntity avatar = new ErrorAvatarEntity(ModEntities.ERROR_AVATAR.get(), level, entity.getUUID(), "error", sequence);
+        AvatarEntity avatar = new AvatarEntity(ModEntities.ERROR_AVATAR.get(), level, entity.getUUID(), "error", sequence);
         avatar.setPos(entity.getX(), entity.getY(), entity.getZ());
         level.addFreshEntity(avatar);
     }

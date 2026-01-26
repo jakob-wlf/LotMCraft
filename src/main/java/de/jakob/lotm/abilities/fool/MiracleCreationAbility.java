@@ -73,8 +73,8 @@ public class MiracleCreationAbility extends SelectableAbilityItem {
         if(!level.isClientSide) return; // Client-side only for opening the wheel
         switch (abilityIndex) {
             case 0 -> MiracleWheelOverlay.getInstance().open(player, "summon_village", "summon_end_city", "summon_pillager_outpost", "summon_desert_temple", "summon_evernight_church");
-            case 1 -> MiracleWheelOverlay.getInstance().open(player, "summon_meteor", "summon_tornados", "summon_volcano");
-            case 2 -> MiracleWheelOverlay.getInstance().open(player, "reverse_gravity", "slow_time", "make_ground_hot", "darkness"); //TODO: "forbid_godhood"
+            case 1 -> MiracleWheelOverlay.getInstance().open(player, "summon_meteor", "summon_tornados", "summon_volcano", "summon_lightning");
+            case 2 -> MiracleWheelOverlay.getInstance().open(player, "reverse_gravity", "slow_time", "make_ground_hot", "darkness");
             case 3 -> ClientHandler.openCoordinateScreen(player, "teleportation");
         }
     }

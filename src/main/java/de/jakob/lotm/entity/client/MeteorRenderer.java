@@ -16,9 +16,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/meteor/meteor.png");
@@ -89,8 +87,14 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
         FIRE, SMOKE, TRAIL, EMBER, SPARK
     }
 
-    private final List<ParticleData> particles = new ArrayList<>();
-    private float particleAccumulator = 0f;
+    // Store particle data per entity UUID to avoid cross-contamination
+    private static class EntityParticleData {
+        List<ParticleData> particles = new ArrayList<>();
+        float particleAccumulator = 0f;
+    }
+
+    // Map of entity UUID -> particle data
+    private final Map<UUID, EntityParticleData> entityParticles = new HashMap<>();
 
     public MeteorRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -112,26 +116,40 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
         poseStack.popPose();
 
         if(entity.getLifeTicks() > 2) {
-            spawnParticles(entity, partialTicks);
-            updateParticles(partialTicks);
+            // Get or create particle data for this specific entity
+            EntityParticleData data = entityParticles.computeIfAbsent(entity.getUUID(), k -> new EntityParticleData());
 
-            renderParticles(entity, poseStack, buffer, packedLight, partialTicks);
+            spawnParticles(entity, partialTicks, data);
+            updateParticles(partialTicks, data);
+            renderParticles(entity, poseStack, buffer, packedLight, partialTicks, data);
         }
+
+        // Clean up particle data for removed entities
+        cleanupOldEntities();
 
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
 
-    private void spawnParticles(MeteorEntity entity, float partialTicks) {
+    private void cleanupOldEntities() {
+        // Remove particle data for entities that no longer exist
+        // This prevents memory leaks from accumulating old particle data
+        entityParticles.entrySet().removeIf(entry -> {
+            // Keep entries that still have active particles
+            return entry.getValue().particles.isEmpty();
+        });
+    }
+
+    private void spawnParticles(MeteorEntity entity, float partialTicks, EntityParticleData data) {
         Vec3 entityPos = entity.position();
         Vec3 motion = entity.getDeltaMovement();
         float size = entity.getSize();
 
         // Use accumulator for smoother spawning
-        particleAccumulator += partialTicks;
+        data.particleAccumulator += partialTicks;
 
         // Spawn particles based on accumulator to smooth out frame rate variations
-        while (particleAccumulator >= 0.25f) {
-            particleAccumulator -= 0.25f;
+        while (data.particleAccumulator >= 0.25f) {
+            data.particleAccumulator -= 0.25f;
 
             // Spawn fire particles (bright, medium-lived)
             for (int i = 0; i < 4; i++) { // Increased count for denser trail
@@ -145,7 +163,7 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
                         (entity.level().random.nextFloat() - 0.5) * 0.08,
                         (entity.level().random.nextFloat() - 0.5) * 0.08
                 );
-                particles.add(new ParticleData(
+                data.particles.add(new ParticleData(
                         entityPos.add(offset),
                         particleVel,
                         size * (0.4f + entity.level().random.nextFloat() * 0.30f),
@@ -166,7 +184,7 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
                         (entity.level().random.nextFloat() - 0.5) * 0.05,
                         (entity.level().random.nextFloat() - 0.5) * 0.05
                 );
-                particles.add(new ParticleData(
+                data.particles.add(new ParticleData(
                         entityPos.add(offset),
                         particleVel,
                         size * (0.35f + entity.level().random.nextFloat() * 0.25f),
@@ -183,7 +201,7 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
                         (entity.level().random.nextFloat() - 0.5) * size * 0.5
                 );
                 Vec3 particleVel = motion.scale(-0.15);
-                particles.add(new ParticleData(
+                data.particles.add(new ParticleData(
                         entityPos.add(offset),
                         particleVel,
                         size * (0.2f + entity.level().random.nextFloat() * 0.15f),
@@ -194,8 +212,8 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
         }
     }
 
-    private void updateParticles(float partialTicks) {
-        Iterator<ParticleData> iterator = particles.iterator();
+    private void updateParticles(float partialTicks, EntityParticleData data) {
+        Iterator<ParticleData> iterator = data.particles.iterator();
         while (iterator.hasNext()) {
             ParticleData particle = iterator.next();
             particle.tick(partialTicks);
@@ -205,10 +223,10 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
         }
     }
 
-    private void renderParticles(MeteorEntity entity, PoseStack poseStack, MultiBufferSource buffer, int packedLight, float partialTicks) {
+    private void renderParticles(MeteorEntity entity, PoseStack poseStack, MultiBufferSource buffer, int packedLight, float partialTicks, EntityParticleData data) {
         VertexConsumer consumer = buffer.getBuffer(RenderType.itemEntityTranslucentCull(TRAIL_TEXTURE));
 
-        for (ParticleData particle : particles) {
+        for (ParticleData particle : data.particles) {
             // For smoke, render multiple rotated quads to create spherical appearance
             int quadCount = particle.type == ParticleType.SMOKE ? 3 : 1;
 

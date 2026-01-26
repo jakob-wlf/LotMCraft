@@ -99,6 +99,10 @@ public class BloomingAreaEntity extends Entity {
             // Apply effects
             applyEffects(serverLevel);
 
+            if (initialScanComplete) {
+                spawnPlants(serverLevel);
+            }
+
             // Grow crops from the map
             if(tickCount % 20 == 0) {
                 instantGrowAllCrops(serverLevel);

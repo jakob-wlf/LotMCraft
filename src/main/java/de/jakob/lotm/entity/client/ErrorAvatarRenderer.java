@@ -1,7 +1,7 @@
 package de.jakob.lotm.entity.client;
 
 import com.mojang.authlib.GameProfile;
-import de.jakob.lotm.entity.custom.ErrorAvatarEntity;
+import de.jakob.lotm.entity.custom.AvatarEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayers;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ErrorAvatarRenderer extends MobRenderer<ErrorAvatarEntity, PlayerModel<ErrorAvatarEntity>> {
+public class ErrorAvatarRenderer extends MobRenderer<AvatarEntity, PlayerModel<AvatarEntity>> {
     // Cache for player skins to avoid repeated lookups
     private static final Map<UUID, ResourceLocation> SKIN_CACHE = new ConcurrentHashMap<>();
 
@@ -27,7 +27,7 @@ public class ErrorAvatarRenderer extends MobRenderer<ErrorAvatarEntity, PlayerMo
     }
 
     @Override
-    public @NotNull ResourceLocation getTextureLocation(ErrorAvatarEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(AvatarEntity entity) {
         UUID ownerUUID = entity.getOriginalOwner();
 
         // If no owner, use fallback

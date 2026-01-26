@@ -64,6 +64,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
 
         applyNightVision(entity);
         applyConduit(entity);
+        applyLuck(entity);
         applyDolphinsGrace(entity);
         applySaturation(entity);
         applyWaterBreathing(entity);
@@ -203,7 +204,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
 
         // Apply the regeneration effect (duration of 300 ticks = 15 seconds, since tick is called every 5 ticks)
         entity.addEffect(new MobEffectInstance(
-                MobEffects.LUCK,
+                ModEffects.LUCK,
                 300,
                 luckLevel - 1, // Minecraft amplifier is 0-based (0 = level 1)
                 false,
