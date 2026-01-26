@@ -18,8 +18,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.CropBlock;
-import net.minecraft.world.level.block.SaplingBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
@@ -28,7 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.*;
 
 public class BloomingAreaEntity extends Entity {
-    private static final int RADIUS = 100; // 200x200 area
+    private static final int RADIUS = 200;
     private static final int CHUNKS_PER_TICK = 2; // Process 2 chunks per tick
 
     // Map to store all crop positions in the area
@@ -43,11 +42,12 @@ public class BloomingAreaEntity extends Entity {
 
     private boolean initialScanComplete = false;
 
-
     private final Map<BlockPos, String> designatedAreas = new HashMap<>(); // "mushroom" or "flower"
     private int lastPlantSpawn = 0;
-    private static final int PLANT_SPAWN_INTERVAL = 2; // Spawn every 2 seconds
+    private static final int PLANT_SPAWN_INTERVAL = 5;
 
+    private int lastBonemealApplication = 0;
+    private static final int BONEMEAL_INTERVAL = 20; // Apply bonemeal every second
 
     public BloomingAreaEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -101,6 +101,7 @@ public class BloomingAreaEntity extends Entity {
 
             if (initialScanComplete) {
                 spawnPlants(serverLevel);
+                applyRandomBonemeal(serverLevel);
             }
 
             // Grow crops from the map
@@ -114,8 +115,8 @@ public class BloomingAreaEntity extends Entity {
         BlockPos center = this.blockPosition();
         Random random = new Random();
 
-        // Create 5-10 random patches
-        int patchCount = 5 + random.nextInt(6);
+        // Create 15-25 random patches - much more than before!
+        int patchCount = 15 + random.nextInt(11);
 
         for (int i = 0; i < patchCount; i++) {
             // Random position within the 200x200 area
@@ -126,8 +127,8 @@ public class BloomingAreaEntity extends Entity {
             // Randomly choose mushroom or flower patch
             String type = random.nextBoolean() ? "mushroom" : "flower";
 
-            // Mark a 7x7 area around this center
-            int patchRadius = 3 + random.nextInt(4); // 3-6 block radius
+            // Mark a larger area around this center
+            int patchRadius = 5 + random.nextInt(6); // 5-10 block radius - bigger patches!
             for (int x = -patchRadius; x <= patchRadius; x++) {
                 for (int z = -patchRadius; z <= patchRadius; z++) {
                     BlockPos pos = patchCenter.offset(x, 0, z);
@@ -137,7 +138,6 @@ public class BloomingAreaEntity extends Entity {
         }
     }
 
-    // Call this when initial scan completes
     private void scanChunks(ServerLevel level) {
         for (int i = 0; i < CHUNKS_PER_TICK && !chunksToScan.isEmpty(); i++) {
             ChunkPos chunkPos = chunksToScan.poll();
@@ -150,15 +150,14 @@ public class BloomingAreaEntity extends Entity {
         }
     }
 
-    // Add this method to spawn plants
     private void spawnPlants(ServerLevel level) {
         if (tickCount - lastPlantSpawn < PLANT_SPAWN_INTERVAL) return;
         lastPlantSpawn = tickCount;
 
         Random random = new Random();
 
-        // Spawn 1-3 plants per interval
-        int spawns = 1 + random.nextInt(3);
+        // Spawn 3-7 plants per interval - much more frequent!
+        int spawns = 3 + random.nextInt(5);
 
         for (int i = 0; i < spawns; i++) {
             // Pick a random designated area
@@ -176,16 +175,15 @@ public class BloomingAreaEntity extends Entity {
                 BlockState aboveState = level.getBlockState(mutablePos.above());
 
                 // Check if it's a valid grass block with air above
-                if (groundState.is(net.minecraft.world.level.block.Blocks.GRASS_BLOCK) &&
-                        aboveState.isAir()) {
+                if (groundState.is(Blocks.GRASS_BLOCK) && aboveState.isAir()) {
 
                     BlockPos spawnPos = mutablePos.above();
 
                     if (type.equals("mushroom")) {
                         // Spawn red or brown mushroom
                         BlockState mushroom = random.nextBoolean() ?
-                                net.minecraft.world.level.block.Blocks.RED_MUSHROOM.defaultBlockState() :
-                                net.minecraft.world.level.block.Blocks.BROWN_MUSHROOM.defaultBlockState();
+                                Blocks.RED_MUSHROOM.defaultBlockState() :
+                                Blocks.BROWN_MUSHROOM.defaultBlockState();
                         level.setBlock(spawnPos, mushroom, 3);
 
                     } else if (type.equals("flower")) {
@@ -199,20 +197,92 @@ public class BloomingAreaEntity extends Entity {
         }
     }
 
+    private void applyRandomBonemeal(ServerLevel serverLevel) {
+        if (tickCount - lastBonemealApplication < BONEMEAL_INTERVAL) return;
+        lastBonemealApplication = tickCount;
+
+        Random random = new Random();
+        BlockPos center = this.blockPosition();
+
+        // Apply bonemeal to 15-30 random positions per second - creates very lush environment!
+        int bonemealApplications = 15 + random.nextInt(16);
+
+        for (int i = 0; i < bonemealApplications; i++) {
+            // Pick a random position within the radius
+            int offsetX = random.nextInt(RADIUS * 2) - RADIUS;
+            int offsetZ = random.nextInt(RADIUS * 2) - RADIUS;
+            int offsetY = random.nextInt(11) - 5; // -5 to +5 from center Y
+
+            BlockPos targetPos = center.offset(offsetX, offsetY, offsetZ);
+
+            // Check if position is loaded
+            if (!serverLevel.isLoaded(targetPos)) continue;
+
+            BlockState blockState = serverLevel.getBlockState(targetPos);
+
+            // Apply bonemeal with a preference for grass patches (30% of the time)
+            boolean shouldBonemealGrass = random.nextFloat() < 0.3f;
+
+            applyBonemeal(serverLevel, targetPos, blockState, shouldBonemealGrass);
+        }
+    }
+
+    private void applyBonemeal(ServerLevel serverLevel, BlockPos blockPos, BlockState blockState, boolean shouldBonemealGrass) {
+        if(blockState.is(Blocks.GRASS_BLOCK) && !shouldBonemealGrass) {
+            return; // Don't want grass to grow everywhere always
+        }
+
+        if(blockState.is(Blocks.SHORT_GRASS)) {
+            return; // It looks weird if all grass is tall
+        }
+
+        if(!(blockState.getBlock() instanceof BonemealableBlock bonemealableBlock)) {
+            if(blockState.is(Blocks.SUGAR_CANE)) {
+                tryGrowSugarCane(serverLevel, blockPos);
+            }
+            return;
+        }
+
+        if(blockState.is(Blocks.COCOA) && blockState.getValue(CocoaBlock.AGE) >= 2) {
+            return; // Cocoa is fully grown and will crash if we try to bonemeal it
+        }
+
+        if(bonemealableBlock.isBonemealSuccess(serverLevel, serverLevel.random, blockPos, blockState)) {
+            bonemealableBlock.performBonemeal(serverLevel, serverLevel.random, blockPos, blockState);
+        }
+    }
+
+    private void tryGrowSugarCane(ServerLevel serverLevel, BlockPos blockPos) {
+        // Find the top of the sugar cane
+        BlockPos.MutableBlockPos mutablePos = blockPos.mutable();
+        while (serverLevel.getBlockState(mutablePos.above()).is(Blocks.SUGAR_CANE)) {
+            mutablePos.move(0, 1, 0);
+        }
+
+        // Try to grow if not at max height (3 blocks)
+        if (mutablePos.getY() - blockPos.getY() < 2 && serverLevel.getBlockState(mutablePos.above()).isAir()) {
+            serverLevel.setBlock(mutablePos.above(), Blocks.SUGAR_CANE.defaultBlockState(), 3);
+        }
+    }
+
     private BlockState getRandomFlower(Random random) {
-        net.minecraft.world.level.block.Block[] flowers = {
-                net.minecraft.world.level.block.Blocks.DANDELION,
-                net.minecraft.world.level.block.Blocks.POPPY,
-                net.minecraft.world.level.block.Blocks.BLUE_ORCHID,
-                net.minecraft.world.level.block.Blocks.ALLIUM,
-                net.minecraft.world.level.block.Blocks.AZURE_BLUET,
-                net.minecraft.world.level.block.Blocks.RED_TULIP,
-                net.minecraft.world.level.block.Blocks.ORANGE_TULIP,
-                net.minecraft.world.level.block.Blocks.WHITE_TULIP,
-                net.minecraft.world.level.block.Blocks.PINK_TULIP,
-                net.minecraft.world.level.block.Blocks.OXEYE_DAISY,
-                net.minecraft.world.level.block.Blocks.CORNFLOWER,
-                net.minecraft.world.level.block.Blocks.LILY_OF_THE_VALLEY
+        Block[] flowers = {
+                Blocks.DANDELION,
+                Blocks.POPPY,
+                Blocks.BLUE_ORCHID,
+                Blocks.ALLIUM,
+                Blocks.AZURE_BLUET,
+                Blocks.RED_TULIP,
+                Blocks.ORANGE_TULIP,
+                Blocks.WHITE_TULIP,
+                Blocks.PINK_TULIP,
+                Blocks.OXEYE_DAISY,
+                Blocks.CORNFLOWER,
+                Blocks.LILY_OF_THE_VALLEY,
+                Blocks.SUNFLOWER,
+                Blocks.LILAC,
+                Blocks.ROSE_BUSH,
+                Blocks.PEONY
         };
         return flowers[random.nextInt(flowers.length)].defaultBlockState();
     }
@@ -241,7 +311,7 @@ public class BloomingAreaEntity extends Entity {
 
                         // Check for crops OR saplings
                         if (state.getBlock() instanceof CropBlock ||
-                                state.getBlock() instanceof net.minecraft.world.level.block.SaplingBlock) {
+                                state.getBlock() instanceof SaplingBlock) {
                             BlockPos worldPos = new BlockPos(
                                     chunk.getPos().getMinBlockX() + x,
                                     sectionY + y,
@@ -254,34 +324,6 @@ public class BloomingAreaEntity extends Entity {
                         }
                     }
                 }
-            }
-        }
-    }
-
-    private void growCrops(ServerLevel level) {
-        if (!initialScanComplete) return;
-
-        // Iterate through the crop map and grow them
-        Iterator<Map.Entry<BlockPos, BlockState>> iterator = cropMap.entrySet().iterator();
-
-        while (iterator.hasNext()) {
-            Map.Entry<BlockPos, BlockState> entry = iterator.next();
-            BlockPos pos = entry.getKey();
-            BlockState currentState = level.getBlockState(pos);
-
-            // Remove if no longer a crop
-            if (!(currentState.getBlock() instanceof CropBlock crop)) {
-                iterator.remove();
-                continue;
-            }
-
-            // Grow the crop
-            if (!crop.isMaxAge(currentState)) {
-                // Apply random tick to grow naturally
-                currentState.randomTick(level, pos, level.random);
-
-                // Update the map with new state
-                entry.setValue(level.getBlockState(pos));
             }
         }
     }
@@ -305,7 +347,7 @@ public class BloomingAreaEntity extends Entity {
             BlockState state = entry.getValue();
 
             if (state.getBlock() instanceof CropBlock crop && level.getBlockState(pos).getBlock() instanceof CropBlock) {
-                level.setBlock(pos, state.setValue(CropBlock.AGE, crop.getMaxAge()), 2);
+                level.setBlock(pos, state.trySetValue(CropBlock.AGE, crop.getMaxAge()), 2);
             } else if (state.getBlock() instanceof SaplingBlock sapling && level.getBlockState(pos).getBlock() instanceof SaplingBlock) {
                 // Force sapling to grow into a tree
                 sapling.advanceTree(level, pos, state, level.random);

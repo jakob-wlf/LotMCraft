@@ -192,6 +192,8 @@ public class BeyonderData {
         tag.putBoolean(NBT_GRIEFING_ENABLED, griefing);
         tag.putFloat(NBT_DIGESTION_PROGRESS, 0.0f);
 
+        entity.save(tag);
+
         if(entity instanceof Player player)
             SpiritualityProgressTracker.setProgress(player.getUUID(), 1.0f);
 

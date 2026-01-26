@@ -228,7 +228,6 @@ public class ConcealmentAbility extends SelectableAbilityItem {
         boolean isInConcealmentWorld = serverLevel.dimension().equals(ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY);
 
         // Determine source and destination levels based on current dimension
-        ServerLevel sourceLevel = serverLevel;
         ServerLevel destinationLevel;
 
         if (isInConcealmentWorld) {
@@ -252,15 +251,15 @@ public class ConcealmentAbility extends SelectableAbilityItem {
 
         ServerScheduler.scheduleForDuration(0, 2, 20 * 5, () -> {
             if(BeyonderData.isGriefingEnabled(entity)) {
-                AbilityUtil.getBlocksInSphereRadius(sourceLevel, finalTargetLoc, radius.get(), true, false, false).forEach(blockPos -> {
+                AbilityUtil.getBlocksInSphereRadius(serverLevel, finalTargetLoc, radius.get(), true, false, false).forEach(blockPos -> {
                     if(blockPos.getY() < entity.position().y) return;
 
                     if(processedBlocks.contains(blockPos)) return;
 
                     // Get the block state before removing it
-                    BlockState blockState = sourceLevel.getBlockState(blockPos);
+                    BlockState blockState = serverLevel.getBlockState(blockPos);
 
-                    if(blockState.isAir() && destinationLevel == serverLevel.getServer().getLevel(Level.OVERWORLD)) { // Skip air blocks when returning to overworld
+                    if(blockState.isAir()) { // Skip air blocks when returning to overworld
                         processedBlocks.add(blockPos);
                         return;
                     }
@@ -269,13 +268,13 @@ public class ConcealmentAbility extends SelectableAbilityItem {
                     destinationLevel.setBlockAndUpdate(blockPos, blockState);
 
                     // Remove the block from the source world
-                    sourceLevel.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
+                    serverLevel.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
 
                     processedBlocks.add(blockPos);
                 });
             }
 
-            AbilityUtil.getNearbyEntities(entity, sourceLevel, finalTargetLoc, radius.get()).forEach(targetEntity -> {
+            AbilityUtil.getNearbyEntities(entity, serverLevel, finalTargetLoc, radius.get()).forEach(targetEntity -> {
                 if(AbilityUtil.isTargetSignificantlyStronger(entity, targetEntity)) return;
 
                 Vec3 originalPos = targetEntity.position();
@@ -308,7 +307,7 @@ public class ConcealmentAbility extends SelectableAbilityItem {
                         BeyonderData.getSequence(teleportedEntity) < BeyonderData.getSequence(entity) ? 20 * 5 : 20 * 25;
 
                 ServerScheduler.scheduleDelayed(returnTime, () -> {
-                    teleportedEntity.teleportTo(sourceLevel,
+                    teleportedEntity.teleportTo(serverLevel,
                             originalPos.x() + 0.5,
                             originalPos.y(),
                             originalPos.z() + 0.5,

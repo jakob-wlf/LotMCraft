@@ -296,6 +296,7 @@
   "ability.lotmcraft.miracle_creation.miracle.summon_evernight_church": "Summon Evernight Church",
   "ability.lotmcraft.miracle_creation.miracle.summon_meteor": "Summon Meteor",
   "ability.lotmcraft.miracle_creation.miracle.summon_tornados": "Summon Tornados",
+  "ability.lotmcraft.miracle_creation.miracle.summon_lightning": "Summon Lightning",
   "ability.lotmcraft.miracle_creation.miracle.summon_volcano": "Summon Volcano",
   "ability.lotmcraft.miracle_creation.miracle.reverse_gravity": "Reverse Gravity",
   "ability.lotmcraft.miracle_creation.miracle.make_ground_hot": "Scorch the Ground",
@@ -1114,6 +1115,7 @@
   "lotm.ally.requester_offline": "Requester is no longer online",
 
   "lotm.griefing": "Griefing Enabled",
+  "lotm.griefing_required": "Griefing must be enabled",
   "lotm.description": "Description",
   "lotm.digested": "Digested the Potion",
   "lotm.marionette": "Marionette",

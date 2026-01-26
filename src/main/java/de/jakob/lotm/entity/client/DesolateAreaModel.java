@@ -14,9 +14,9 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
-public class BloomingAreaModel<T extends Entity> extends EntityModel<T> {
+public class DesolateAreaModel<T extends Entity> extends EntityModel<T> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "blooming_area"), "main");
+	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "desolate_area"), "main");
 	private final ModelPart rune_1;
 	private final ModelPart rune_8;
 	private final ModelPart rune_2;
@@ -26,7 +26,7 @@ public class BloomingAreaModel<T extends Entity> extends EntityModel<T> {
 	private final ModelPart rune_4;
 	private final ModelPart rune_5;
 
-	public BloomingAreaModel(ModelPart root) {
+	public DesolateAreaModel(ModelPart root) {
 		this.rune_1 = root.getChild("rune_1");
 		this.rune_8 = root.getChild("rune_8");
 		this.rune_2 = root.getChild("rune_2");

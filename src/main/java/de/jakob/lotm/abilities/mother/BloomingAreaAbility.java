@@ -3,11 +3,15 @@ package de.jakob.lotm.abilities.mother;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.entity.custom.BloomingAreaEntity;
 import de.jakob.lotm.entity.custom.MisfortuneWordsEntity;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +35,13 @@ public class BloomingAreaAbility extends AbilityItem {
     @Override
     protected void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide()) return;
+
+        if(!BeyonderData.isGriefingEnabled(entity)) {
+            if(entity instanceof Player player) {
+                player.displayClientMessage(Component.translatable("lotm.griefing_required").withColor(0xed716b), false);
+            }
+            return;
+        }
 
         BloomingAreaEntity previousEntity = AbilityUtil.getAllNearbyEntities(entity, (ServerLevel) level, entity.position(), 20)
                 .stream()

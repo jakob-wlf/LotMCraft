@@ -176,6 +176,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.COFFIN.get(), CoffinRenderer::new);
             EntityRenderers.register(ModEntities.MISFORTUNE_WORDS.get(), MisfortuneWordsRenderer::new);
             EntityRenderers.register(ModEntities.BLOOMING_AREA.get(), BloomingAreaRenderer::new);
+            EntityRenderers.register(ModEntities.DESOLATE_AREA.get(), DesolateAreaRenderer::new);
 
             GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);
         }
