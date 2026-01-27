@@ -1,6 +1,9 @@
 package de.jakob.lotm;
 
 import com.mojang.logging.LogUtils;
+import com.zigythebird.playeranim.animation.PlayerAnimationController;
+import com.zigythebird.playeranim.api.PlayerAnimationFactory;
+import com.zigythebird.playeranimcore.enums.PlayState;
 import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -39,6 +42,7 @@ import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.villager.ModVillagers;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -53,7 +57,6 @@ import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import org.slf4j.Logger;
 
 @Mod(LOTMCraft.MOD_ID)
 public class LOTMCraft
@@ -72,8 +75,8 @@ public class LOTMCraft
     public static KeyMapping cycleAbilityHotbarKey;
     public static KeyMapping enterSefirotKey;
 
+    public static final ResourceLocation ANIMATION_LAYER_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "lotmcraft_animations");
 
-    public static final Logger LOGGER = LogUtils.getLogger();
 
     public LOTMCraft(IEventBus modEventBus, ModContainer modContainer)
     {
@@ -179,6 +182,14 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.DESOLATE_AREA.get(), DesolateAreaRenderer::new);
 
             GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);
+
+            event.enqueueWork(() -> {
+                PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(ANIMATION_LAYER_ID, 1000,
+                        player -> new PlayerAnimationController(player,
+                                (controller, state, animSetter) -> PlayState.STOP
+                        )
+                );
+            });
         }
 
         @SubscribeEvent

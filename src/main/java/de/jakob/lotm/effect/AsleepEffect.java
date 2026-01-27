@@ -73,8 +73,7 @@ public class AsleepEffect extends MobEffect {
             try {
                 ResourceLocation blurShader = ResourceLocation.fromNamespaceAndPath( LOTMCraft.MOD_ID, "shaders/post/blur.json");
                 mc.gameRenderer.loadEffect(blurShader);
-            } catch (Exception e) {
-                LOTMCraft.LOGGER.error("Failed to load blur shader", e);
+            } catch (Exception ignored) {
             }
         }
     }

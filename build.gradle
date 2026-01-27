@@ -21,7 +21,16 @@ repositories {
     // Add here additional repositories if required by some of the dependencies below.
     mavenCentral()
     maven { url = 'https://maven.neoforged.net/releases/' }
+    maven { url = 'https://libraries.minecraft.net' }
     maven { url = 'https://jitpack.io' }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+    }
+    maven {
+        name = "RedlanceMinecraft"
+        url = "https://repo.redlance.org/public"
+    }
 }
 
 base {
@@ -112,32 +121,33 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 // "optional", meaning it will not be pulled by dependents of this mod.
 configurations {
     runtimeClasspath.extendsFrom localRuntime
+    include
+    implementation.extendsFrom(include)
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'com.google.code.gson:gson:2.10.1'
+        force 'org.slf4j:slf4j-api:2.0.9'
+        force 'io.netty:netty-buffer:4.1.97.Final'
+        force 'io.netty:netty-common:4.1.97.Final'
+        force 'it.unimi.dsi:fastutil:8.5.12'
+    }
+}
+
+tasks.named('jar', Jar).configure {
+    from configurations.include.collect { it.isDirectory() ? it : zipTree(it) }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE  // Add this line
 }
 
 dependencies {
-    // Example optional mod dependency with JEI
-    // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
-    // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
-    // compileOnly "mezz.jei:jei-${mc_version}-neoforge-api:${jei_version}"
-    // We add the full version to localRuntime, not runtimeOnly, so that we do not publish a dependency on it
-    // localRuntime "mezz.jei:jei-${mc_version}-neoforge:${jei_version}"
-
-    // Example mod dependency using a mod jar from ./libs with a flat dir repository
-    // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
-    // The group id is ignored when searching -- in this case, it is "blank"
-    // implementation "blank:coolmod-${mc_version}:${coolmod_version}"
-
-    // Example mod dependency using a file as dependency
-    // implementation files("libs/coolmod-${mc_version}-${coolmod_version}.jar")
-
-    // Example project dependency using a sister or child project:
-    // implementation project(":myproject")
-
-    // For more info:
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
     implementation 'com.github.Querz:NBT:6.1'
+    include("com.zigythebird.playeranim:PlayerAnimationLibNeo:1.1.3+mc.1.21.1") {
+        exclude group: 'com.google.code.gson'
+        exclude group: 'org.slf4j'
+        exclude group: 'io.netty'
+        exclude group: 'it.unimi.dsi'
+    }
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -160,6 +170,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
     from "src/main/templates"
     into "build/generated/sources/modMetadata"
 }
+
 // Include the output of "generateModMetadata" as an input directory for the build
 // this works with both building through Gradle and the IDE.
 sourceSets.main.resources.srcDir generateModMetadata

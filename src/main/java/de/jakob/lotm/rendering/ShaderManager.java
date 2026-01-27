@@ -105,8 +105,7 @@ public class ShaderManager {
                 mc.gameRenderer.loadEffect(
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "shaders/post/" + shaderName + ".json")
                 );
-            } catch (Exception e) {
-                LOTMCraft.LOGGER.error("Failed to load shader: " + shaderName, e);
+            } catch (Exception ignored) {
             }
         }
     }

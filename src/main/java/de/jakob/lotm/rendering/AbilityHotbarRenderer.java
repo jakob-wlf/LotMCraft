@@ -43,9 +43,8 @@ public class AbilityHotbarRenderer {
         String text = "Ability Hotbar " + (manager.getCurrentHotbarIndex() + 1);
         int textWidth = mc.font.width(text);
 
-        // Position above the hotbar (higher up to avoid hearts)
         int x = screenWidth / 2 - textWidth / 2;
-        int y = screenHeight - 65;
+        int y = screenHeight - 55;
 
         // Draw background
         graphics.fill(x - 2, y - 2, x + textWidth + 2, y + mc.font.lineHeight + 2, 0x80000000);

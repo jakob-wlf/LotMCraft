@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.sun;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.AnimationUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -10,6 +11,7 @@ import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
@@ -76,6 +78,9 @@ public class LightOfHolinessAbility extends AbilityItem {
             ServerScheduler.scheduleDelayed(40, () -> {
                 lights.forEach(l -> level.setBlockAndUpdate(l, Blocks.AIR.defaultBlockState()));
             }, (ServerLevel) level);
+        }
+        else if(entity instanceof Player player) {
+            AnimationUtil.playOpenArmAnimation(player);
         }
     }
 }
