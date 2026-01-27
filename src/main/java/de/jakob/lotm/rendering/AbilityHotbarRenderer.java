@@ -6,6 +6,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -15,8 +16,13 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class AbilityHotbarRenderer {
 
+    private static final ResourceLocation iconTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/ability_hotbar_overlay.png");
+    private static final int iconWidth = 190;
+    private static final int iconHeight = 26;
+
+
     @SubscribeEvent
-    public static void onRenderHotbar(RenderGuiLayerEvent.Pre event) {
+    public static void onRenderHotbar(RenderGuiLayerEvent.Post event) {
         if (!event.getName().equals(VanillaGuiLayers.PLAYER_HEALTH)) return;
 
         Minecraft mc = Minecraft.getInstance();
@@ -48,24 +54,9 @@ public class AbilityHotbarRenderer {
         graphics.drawString(mc.font, text, x, y, 0xFFFFFF);
 
 
-        int hotbarX = screenWidth / 2 - 91; // vanilla hotbar width = 182
-        int hotbarY = screenHeight - 22;    // vanilla hotbar height = 22
+        int hotbarX = screenWidth / 2 - iconWidth / 2;
+        int hotbarY = screenHeight - iconHeight;
 
-        int thickness = 1;
-
-        int purple = 0xFF9B00FF;
-
-        graphics.fill(hotbarX - thickness, hotbarY - thickness,
-                hotbarX + 182 + thickness, hotbarY, purple);
-
-        graphics.fill(hotbarX - thickness, hotbarY + 22,
-                hotbarX + 182 + thickness, hotbarY + 22 + thickness, purple);
-
-        graphics.fill(hotbarX - thickness, hotbarY - thickness,
-                hotbarX, hotbarY + 22 + thickness, purple);
-
-        graphics.fill(hotbarX + 182, hotbarY - thickness,
-                hotbarX + 182 + thickness, hotbarY + 22 + thickness, purple);
-
+        graphics.blit(iconTexture, hotbarX, hotbarY, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
     }
 }

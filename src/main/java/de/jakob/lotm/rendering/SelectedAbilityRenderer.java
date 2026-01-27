@@ -23,14 +23,11 @@ public class SelectedAbilityRenderer {
         });
     }
 
+    private final static int hotbarWidth = 182;
+
     private static void renderText(GuiGraphics guiGraphics) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null || mc.options.hideGui) return;
-
-        int screenWidth = mc.getWindow().getGuiScaledWidth();
-
-        int x = (screenWidth / 2) + (screenWidth / 6) + 30;
-        int y = mc.getWindow().getGuiScaledHeight() - 45;
 
         if(!BeyonderData.pathwayInfos.containsKey(ClientBeyonderCache.getPathway(mc.player.getUUID())))
             return;
@@ -42,6 +39,21 @@ public class SelectedAbilityRenderer {
             if (mc.player.getMainHandItem().getItem() instanceof SelectableAbilityItem abilityItem && abilityItem.canUse(mc.player, mc.player.getMainHandItem())) {
                 Component message1 = Component.translatable("lotm.selected").append(":").withColor(grayColor);
                 Component message2 = Component.translatable(abilityItem.getSelectedAbility(mc.player)).withColor(color);
+
+                int height = mc.font.lineHeight * 2 + 6;
+                int width = (int) Math.round(Math.max(mc.font.width(message1), mc.font.width(message2)) * 1.5);
+
+                int screenWidth = mc.getWindow().getGuiScaledWidth();
+
+                int hotbarStartX = (screenWidth - hotbarWidth) / 2;
+                int hotbarEndX = hotbarStartX + hotbarWidth;
+
+                int x = hotbarEndX + 10;
+                int y = mc.getWindow().getGuiScaledHeight() - height;
+
+                guiGraphics.fill(x - 5, y - 5, x + width, y + height, 0x80000000);
+                guiGraphics.renderOutline(x - 5, y - 5, width + 5, height + 5, 0xFF000000);
+
                 guiGraphics.drawString(mc.font, message1, x, y, grayColor);
                 guiGraphics.drawString(mc.font, message2, x, y + mc.font.lineHeight + 2, color);
             }

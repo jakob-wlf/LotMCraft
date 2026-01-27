@@ -64,7 +64,7 @@ public class PlayerEvents {
             PacketHandler.sendToPlayer(player, new SyncGriefingGamerulePacket(player.level().getGameRules().getBoolean(ModGameRules.ALLOW_GRIEFING)));
 
             NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
-            if(!component.isHasReceivedNewPlayerPerks()) {
+            if(!component.isHasReceivedNewPlayerPerks() && !player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC)) {
                 player.addItem(new ItemStack(ModItems.GUIDING_BOOK.get()));
 
                 String pathway = BeyonderData.implementedPathways.get(random.nextInt(BeyonderData.implementedPathways.size()));

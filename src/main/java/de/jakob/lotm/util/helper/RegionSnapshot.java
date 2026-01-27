@@ -12,28 +12,41 @@ import java.util.Map;
 public class RegionSnapshot {
     private final Map<BlockPos, BlockState> blockStates = new HashMap<>();
     private final Map<BlockPos, CompoundTag> blockEntityData = new HashMap<>();
-    private final BlockPos center;
-    private final int radius;
+    private final Level level;
 
     public RegionSnapshot(Level level, BlockPos center, int radius) {
-        this.center = center;
-        this.radius = radius;
-        captureRegion(level);
+        this.level = level;
+        // Don't capture anything on creation - we'll capture blocks as they're modified
     }
 
-    private void captureRegion(Level level) {
+    /**
+     * Capture the current state of a block before modifying it.
+     * This should be called BEFORE any block modification.
+     */
+    public void captureBlock(BlockPos pos) {
+        // Only capture if we haven't already captured this position
+        if (!blockStates.containsKey(pos)) {
+            BlockPos immutablePos = pos.immutable();
+            blockStates.put(immutablePos, level.getBlockState(pos));
+
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be != null) {
+                blockEntityData.put(immutablePos, be.saveWithoutMetadata(level.registryAccess()));
+            }
+        }
+    }
+
+    /**
+     * Capture all blocks in a spherical region before modifying them.
+     */
+    public void captureSphere(BlockPos center, int radius) {
         for (int x = -radius; x <= radius; x++) {
             for (int y = -radius; y <= radius; y++) {
                 for (int z = -radius; z <= radius; z++) {
-                    if (x*x + y*y + z*z <= radius*radius) { // Spherical bounds
+                    double distance = Math.sqrt(x * x + y * y + z * z);
+                    if (distance <= radius) {
                         BlockPos pos = center.offset(x, y, z);
-                        blockStates.put(pos, level.getBlockState(pos));
-
-                        BlockEntity be = level.getBlockEntity(pos);
-                        if (be != null) {
-                            // saveWithoutMetadata requires a HolderLookup.Provider
-                            blockEntityData.put(pos, be.saveWithoutMetadata(level.registryAccess()));
-                        }
+                        captureBlock(pos);
                     }
                 }
             }
@@ -58,7 +71,6 @@ public class RegionSnapshot {
         blockEntityData.forEach((pos, data) -> {
             BlockState state = level.getBlockState(pos);
             if (state.hasBlockEntity()) {
-                // loadStatic takes 4 parameters: pos, state, tag, and provider
                 BlockEntity be = BlockEntity.loadStatic(pos, state, data, level.registryAccess());
                 if (be != null) {
                     level.setBlockEntity(be);

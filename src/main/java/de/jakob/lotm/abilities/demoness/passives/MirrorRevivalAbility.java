@@ -12,6 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
@@ -39,7 +40,7 @@ public class MirrorRevivalAbility extends PassiveAbilityItem {
 
     private static final DustParticleOptions dust = new DustParticleOptions(new Vector3f(143 / 255f, 52 / 255f, 235 / 255f), 2f);
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onLivingDeath(LivingDeathEvent event) {
         LivingEntity entity = event.getEntity();
 

@@ -38,8 +38,8 @@ public class DangerPremonitionOverlayRenderer {
         if (playersWithDangerPremonitionActivated.contains(mc.player.getUUID())) {
             PoseStack poseStack = guiGraphics.pose();
             poseStack.pushPose();
-            poseStack.scale(24.0f / 64.0f, 24.0f / 64.0f, 1.0f);
-            guiGraphics.blit(iconTexture, (int)(x / (24.0f / 64.0f)), (int)(y / (24.0f / 64.0f)), 0, 0, 64, 64, 64, 64);
+            poseStack.scale(24.0f / 32f, 24.0f / 32f, 1.0f);
+            guiGraphics.blit(iconTexture, (int)(x / (24.0f / 32f)), (int)(y / (24.0f / 32f)), 0, 0, 32, 32, 32, 32);
             poseStack.popPose();
         }
     }

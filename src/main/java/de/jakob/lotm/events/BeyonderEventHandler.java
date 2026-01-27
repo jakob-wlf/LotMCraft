@@ -1,6 +1,7 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.PotionIngredient;
@@ -96,6 +97,7 @@ public class BeyonderEventHandler {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
         if (!BeyonderData.isBeyonder(player)) return;
+        if (!player.serverLevel().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)) return;
 
         var stack = new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler
                 .selectCharacteristicOfPathwayAndSequence(
@@ -109,6 +111,8 @@ public class BeyonderEventHandler {
                 stack
         );
 
+        if(beyonderMap.get(player).isEmpty()) return;
+
         var data = beyonderMap.get(player).get();
         BeyonderData.setBeyonder(player, data.pathway(), data.sequence());
 
@@ -120,12 +124,12 @@ public class BeyonderEventHandler {
         if (event.getEntity() instanceof Player player) {
 
             if (!BeyonderData.isBeyonder(player)) return;
+            if(beyonderMap.get(player).isEmpty()) return;
+            if (!player.level().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)) return;
 
             StoredData data = beyonderMap.get(player).get().regressSeq();
 
             beyonderMap.put(player, data);
-
-            LOTMCraft.LOGGER.info("seq: {}", data.sequence());
 
             if (Objects.equals(data.sequence(), LOTMCraft.NON_BEYONDER_SEQ)) {
                 ClientBeyonderCache.removePlayer(player.getUUID());

@@ -44,7 +44,7 @@ public class BloomingAreaEntity extends Entity {
 
     private final Map<BlockPos, String> designatedAreas = new HashMap<>(); // "mushroom" or "flower"
     private int lastPlantSpawn = 0;
-    private static final int PLANT_SPAWN_INTERVAL = 5;
+    private static final int PLANT_SPAWN_INTERVAL = 10; // Spawn every 0.5 seconds (10 ticks) - much more frequent!
 
     private int lastBonemealApplication = 0;
     private static final int BONEMEAL_INTERVAL = 20; // Apply bonemeal every second
@@ -65,6 +65,7 @@ public class BloomingAreaEntity extends Entity {
         this.setXRot(90);
         this.setYRot(0);
         scheduleInitialScan();
+        designateGrowthAreas(); // Set up patches immediately!
     }
 
     private void scheduleInitialScan() {
@@ -99,10 +100,9 @@ public class BloomingAreaEntity extends Entity {
             // Apply effects
             applyEffects(serverLevel);
 
-            if (initialScanComplete) {
-                spawnPlants(serverLevel);
-                applyRandomBonemeal(serverLevel);
-            }
+            // Always spawn plants and apply bonemeal - don't wait for scan
+            spawnPlants(serverLevel);
+            applyRandomBonemeal(serverLevel);
 
             // Grow crops from the map
             if(tickCount % 20 == 0) {
@@ -155,27 +155,45 @@ public class BloomingAreaEntity extends Entity {
         lastPlantSpawn = tickCount;
 
         Random random = new Random();
+        BlockPos center = this.blockPosition();
 
         // Spawn 3-7 plants per interval - much more frequent!
         int spawns = 3 + random.nextInt(5);
 
         for (int i = 0; i < spawns; i++) {
-            // Pick a random designated area
-            if (designatedAreas.isEmpty()) continue;
+            // Pick a random designated area OR random position if no designated areas yet
+            BlockPos targetPos;
+            String type;
 
-            List<BlockPos> positions = new ArrayList<>(designatedAreas.keySet());
-            BlockPos randomPos = positions.get(random.nextInt(positions.size()));
-            String type = designatedAreas.get(randomPos);
+            if (!designatedAreas.isEmpty() && random.nextFloat() < 0.7f) {
+                // 70% of the time, use designated areas
+                List<BlockPos> positions = new ArrayList<>(designatedAreas.keySet());
+                targetPos = positions.get(random.nextInt(positions.size()));
+                type = designatedAreas.get(targetPos);
+            } else {
+                // 30% of the time, spawn randomly anywhere
+                int offsetX = random.nextInt(RADIUS * 2) - RADIUS;
+                int offsetZ = random.nextInt(RADIUS * 2) - RADIUS;
+                targetPos = center.offset(offsetX, 0, offsetZ);
+                type = random.nextBoolean() ? "mushroom" : "flower";
+            }
 
-            // Find the actual ground level
-            BlockPos.MutableBlockPos mutablePos = randomPos.mutable();
-            for (int y = -5; y <= 5; y++) {
-                mutablePos.setY(this.blockPosition().getY() + y);
+            // Find the actual ground level - search much wider range
+            BlockPos.MutableBlockPos mutablePos = targetPos.mutable();
+            boolean foundGround = false;
+
+            // Search from world top to bottom in this area
+            for (int y = level.getMaxBuildHeight() - 1; y >= level.getMinBuildHeight(); y--) {
+                mutablePos.setY(y);
+
+                if (!level.isLoaded(mutablePos)) continue;
+
                 BlockState groundState = level.getBlockState(mutablePos);
                 BlockState aboveState = level.getBlockState(mutablePos.above());
 
-                // Check if it's a valid grass block with air above
-                if (groundState.is(Blocks.GRASS_BLOCK) && aboveState.isAir()) {
+                // Check if it's a valid grass block or dirt with air above
+                if ((groundState.is(Blocks.GRASS_BLOCK) || groundState.is(Blocks.DIRT))
+                        && aboveState.isAir()) {
 
                     BlockPos spawnPos = mutablePos.above();
 
@@ -191,6 +209,7 @@ public class BloomingAreaEntity extends Entity {
                         BlockState flower = getRandomFlower(random);
                         level.setBlock(spawnPos, flower, 3);
                     }
+                    foundGround = true;
                     break;
                 }
             }
@@ -211,19 +230,34 @@ public class BloomingAreaEntity extends Entity {
             // Pick a random position within the radius
             int offsetX = random.nextInt(RADIUS * 2) - RADIUS;
             int offsetZ = random.nextInt(RADIUS * 2) - RADIUS;
-            int offsetY = random.nextInt(11) - 5; // -5 to +5 from center Y
 
-            BlockPos targetPos = center.offset(offsetX, offsetY, offsetZ);
+            // Search for ground level from a reasonable height
+            BlockPos searchStart = new BlockPos(center.getX() + offsetX, center.getY(), center.getZ() + offsetZ);
+            BlockPos.MutableBlockPos mutablePos = searchStart.mutable();
 
-            // Check if position is loaded
-            if (!serverLevel.isLoaded(targetPos)) continue;
+            // Search down and up for ground
+            for (int yOffset = 0; yOffset >= -64; yOffset--) {
+                mutablePos.setY(center.getY() + yOffset);
 
-            BlockState blockState = serverLevel.getBlockState(targetPos);
+                if (!serverLevel.isLoaded(mutablePos)) continue;
 
-            // Apply bonemeal with a preference for grass patches (30% of the time)
-            boolean shouldBonemealGrass = random.nextFloat() < 0.3f;
+                BlockState blockState = serverLevel.getBlockState(mutablePos);
 
-            applyBonemeal(serverLevel, targetPos, blockState, shouldBonemealGrass);
+                // If we found a solid block, try to bonemeal it or the block above it
+                if (!blockState.isAir()) {
+                    // Try the block itself
+                    boolean shouldBonemealGrass = random.nextFloat() < 0.3f;
+                    applyBonemeal(serverLevel, mutablePos, blockState, shouldBonemealGrass);
+
+                    // Also try the block above if it's air (for growing plants on grass)
+                    BlockPos abovePos = mutablePos.above();
+                    if (serverLevel.getBlockState(abovePos).isAir()) {
+                        BlockState aboveGround = serverLevel.getBlockState(mutablePos);
+                        applyBonemeal(serverLevel, mutablePos, aboveGround, shouldBonemealGrass);
+                    }
+                    break;
+                }
+            }
         }
     }
 

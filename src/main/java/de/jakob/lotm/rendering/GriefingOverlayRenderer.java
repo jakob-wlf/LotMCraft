@@ -21,21 +21,20 @@ public class GriefingOverlayRenderer {
         });
     }
 
+    private static final ResourceLocation iconTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/griefing_overlay.png");
+    private static final int size = 24;
+
     private static void renderText(GuiGraphics guiGraphics) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
 
-        int x = screenWidth - 100;
-        int y = 10;
-
-        int redColor = 0xFFed5651;
+        int x = screenWidth - size - 4;
+        int y = 4;
 
         if (BeyonderData.isGriefingEnabled(mc.player) && !mc.options.hideGui) {
-            String text = Component.translatable("lotm.griefing").getString();
-
-            guiGraphics.drawString(mc.font, text, x, y, redColor);
+            guiGraphics.blit(iconTexture, x, y, 0, 0, size, size, size, size);
         }
     }
 }

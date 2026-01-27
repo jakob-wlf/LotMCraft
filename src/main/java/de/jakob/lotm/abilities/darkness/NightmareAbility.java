@@ -287,6 +287,8 @@ public class NightmareAbility extends SelectableAbilityItem {
 
         activeNightmaresServer.put(entity.getUUID(), center);
         PacketHandler.sendToAllPlayers(new SyncNightmareAbilityPacket(entity.position().x, entity.position().y, entity.position().z, radius, true));
+
+        // Create an empty snapshot - it will capture blocks as they're modified
         RegionSnapshot region = new RegionSnapshot(level, BlockPos.containing(center.pos()), radius);
         storedRegions.put(entity.getUUID(), region);
 
@@ -367,6 +369,11 @@ public class NightmareAbility extends SelectableAbilityItem {
     private void createBlockSphere(Block block, ServerLevel level, Vec3 center, UUID casterUuid) {
         int radius = 3;
         BlockPos centerPos = BlockPos.containing(center);
+
+        // Capture the sphere BEFORE modifying it so we can restore it later
+        if (storedRegions.containsKey(casterUuid)) {
+            storedRegions.get(casterUuid).captureSphere(centerPos, radius);
+        }
 
         // Iterate through all positions in a cube around the center
         for (int x = -radius; x <= radius; x++) {
