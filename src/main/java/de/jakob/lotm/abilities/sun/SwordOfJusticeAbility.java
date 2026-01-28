@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.JusticeSwordEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -14,9 +15,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SwordOfJusticeAbility extends AbilityItem {
-    public SwordOfJusticeAbility(Properties properties) {
-        super(properties, 2.5f);
+public class SwordOfJusticeAbility extends Ability {
+    public SwordOfJusticeAbility(String id) {
+        super(id, 2.5f);
     }
 
     @Override
@@ -30,7 +31,7 @@ public class SwordOfJusticeAbility extends AbilityItem {
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel)) {
             return;
         }

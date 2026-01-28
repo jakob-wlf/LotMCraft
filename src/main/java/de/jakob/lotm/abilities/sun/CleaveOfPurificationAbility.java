@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -19,9 +20,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CleaveOfPurificationAbility extends AbilityItem {
-    public CleaveOfPurificationAbility(Properties properties) {
-        super(properties, .8f);
+public class CleaveOfPurificationAbility extends Ability {
+    public CleaveOfPurificationAbility(String id) {
+        super(id, .8f);
 
         hasOptimalDistance = true;
         optimalDistance = 1f;
@@ -40,7 +41,7 @@ public class CleaveOfPurificationAbility extends AbilityItem {
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

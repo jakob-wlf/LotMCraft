@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.SpearOfLightProjectileEntity;
 import de.jakob.lotm.entity.custom.UnshadowedSpearProjectileEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -15,9 +16,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SpearOfLightAbility extends AbilityItem {
-    public SpearOfLightAbility(Properties properties) {
-        super(properties, 1);
+public class SpearOfLightAbility extends Ability {
+    public SpearOfLightAbility(String id) {
+        super(id, 1);
     }
 
     @Override
@@ -31,7 +32,7 @@ public class SpearOfLightAbility extends AbilityItem {
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

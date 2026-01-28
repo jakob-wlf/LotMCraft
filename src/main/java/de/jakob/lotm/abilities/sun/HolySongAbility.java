@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -19,9 +20,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HolySongAbility extends AbilityItem {
-    public HolySongAbility(Properties properties) {
-        super(properties, 20);
+public class HolySongAbility extends Ability {
+    public HolySongAbility(String id) {
+        super(id, 20);
     }
 
     @Override
@@ -43,7 +44,7 @@ public class HolySongAbility extends AbilityItem {
     );
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if (!level.isClientSide) {
             entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, duration, 0, false, false, false));
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, duration, 1, false, false, false));

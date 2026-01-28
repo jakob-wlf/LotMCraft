@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -18,9 +19,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class IlluminateAbility extends AbilityItem {
-    public IlluminateAbility(Properties properties) {
-        super(properties, .25f);
+public class IlluminateAbility extends Ability {
+    public IlluminateAbility(String id) {
+        super(id, .25f);
         canBeUsedByNPC = false;
     }
 
@@ -36,8 +37,6 @@ public class IlluminateAbility extends AbilityItem {
         return 12;
     }
 
-
-
     final int radius = 16;
     final int duration = 20 * 25;
 
@@ -50,7 +49,7 @@ public class IlluminateAbility extends AbilityItem {
     );
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         BlockPos targetBlock = AbilityUtil.getTargetBlock(entity, radius);
 
         if (!level.isClientSide) {

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -17,9 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GodSaysItsNotEffectiveAbility extends AbilityItem {
-    public GodSaysItsNotEffectiveAbility(Properties properties) {
-        super(properties, 20);
+public class GodSaysItsNotEffectiveAbility extends Ability {
+    public GodSaysItsNotEffectiveAbility(String id) {
+        super(id, 20);
     }
 
     @Override
@@ -33,7 +34,7 @@ public class GodSaysItsNotEffectiveAbility extends AbilityItem {
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

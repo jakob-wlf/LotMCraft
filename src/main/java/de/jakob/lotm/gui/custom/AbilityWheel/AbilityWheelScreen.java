@@ -19,12 +19,12 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
     private static final ResourceLocation WHEEL_BACKGROUND =
             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/ability_wheel_background.png");
 
-    private static final int WHEEL_SIZE = 240;
+    private static final int WHEEL_SIZE = 200;
     private static final int CENTER_X = WHEEL_SIZE / 2;
     private static final int CENTER_Y = WHEEL_SIZE / 2;
 
-    private static final int SLOT_SIZE = 32;
-    private static final int SLOT_HOVER_SIZE = 34;
+    private static final int SLOT_SIZE = 28;
+    private static final int SLOT_HOVER_SIZE = 30;
 
     private int hoveredSlot = -1;
 
@@ -52,6 +52,11 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
 
         // Update hovered slot
         hoveredSlot = getSlotAtPosition(mouseX, mouseY, abilities.size());
+    }
+
+    @Override
+    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBg(guiGraphics, partialTick, mouseX, mouseY);
     }
 
     @Override

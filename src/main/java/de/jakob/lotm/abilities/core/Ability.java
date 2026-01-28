@@ -49,6 +49,9 @@ public abstract class Ability {
             return;
         }
 
+        AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
+        component.setCooldown(id, cooldown);
+
         onAbilityUse(serverLevel, entity);
         PacketHandler.sendToAllPlayersInSameLevel(new UseAbilityPacket(getId(), entity.getId()), serverLevel);
     }

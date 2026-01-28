@@ -318,6 +318,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                CloseAbilityWheelPacket.TYPE,
+                CloseAbilityWheelPacket.STREAM_CODEC,
+                CloseAbilityWheelPacket::handle
+        );
+
+        registrar.playToServer(
                 RequestAbilityWheelPacket.TYPE,
                 RequestAbilityWheelPacket.STREAM_CODEC,
                 RequestAbilityWheelPacket::handle

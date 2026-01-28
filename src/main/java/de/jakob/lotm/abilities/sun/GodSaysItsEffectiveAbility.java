@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.RingEffectManager;
@@ -15,9 +16,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GodSaysItsEffectiveAbility extends AbilityItem {
-    public GodSaysItsEffectiveAbility(Properties properties) {
-        super(properties, 20);
+public class GodSaysItsEffectiveAbility extends Ability {
+    public GodSaysItsEffectiveAbility(String id) {
+        super(id, 20);
     }
 
     @Override
@@ -31,7 +32,7 @@ public class GodSaysItsEffectiveAbility extends AbilityItem {
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

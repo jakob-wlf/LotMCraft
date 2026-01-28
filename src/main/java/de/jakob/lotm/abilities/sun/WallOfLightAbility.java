@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
@@ -21,9 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WallOfLightAbility extends AbilityItem {
-    public WallOfLightAbility(Properties properties) {
-        super(properties, 5);
+public class WallOfLightAbility extends Ability {
+    public WallOfLightAbility(String id) {
+        super(id, 5);
     }
 
     @Override
@@ -40,7 +41,7 @@ public class WallOfLightAbility extends AbilityItem {
 
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

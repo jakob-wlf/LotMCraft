@@ -5,6 +5,8 @@ import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.attachments.AbilityCooldownComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.custom.MarionetteControllerItem;
 import de.jakob.lotm.item.custom.SubordinateControllerItem;
@@ -31,6 +33,9 @@ public class BeyonderDataTickHandler {
         }
 
         // Tick cooldowns
+        AbilityCooldownComponent component = player.getData(ModAttachments.COOLDOWN_COMPONENT);
+        component.tick();
+
 
         if (BeyonderData.isBeyonder(player)) {
             float amount = BeyonderData.getMaxSpirituality(BeyonderData.getSequence(player)) * 0.0006f;

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.SunEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -22,9 +23,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FlaringSunAbility extends AbilityItem {
-    public FlaringSunAbility(Properties properties) {
-        super(properties, 8);
+public class FlaringSunAbility extends Ability {
+    public FlaringSunAbility(String id) {
+        super(id, 8);
     }
 
     @Override
@@ -38,7 +39,7 @@ public class FlaringSunAbility extends AbilityItem {
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AnimationUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -24,9 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class HolyLightAbility extends AbilityItem {
-    public HolyLightAbility(Properties properties) {
-        super(properties, .75f);
+public class HolyLightAbility extends Ability {
+    public HolyLightAbility(String id) {
+        super(id, .75f);
     }
 
     @Override
@@ -49,7 +50,7 @@ public class HolyLightAbility extends AbilityItem {
     );
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         Vec3 initialPos = AbilityUtil.getTargetLocation(entity, radius, .75f).add(0, 14, 0);
 
         List<BlockPos> lights = new ArrayList<>();

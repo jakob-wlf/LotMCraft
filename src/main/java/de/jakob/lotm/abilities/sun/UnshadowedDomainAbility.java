@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -25,9 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class UnshadowedDomainAbility extends AbilityItem {
-    public UnshadowedDomainAbility(Properties properties) {
-        super(properties, 50);
+public class UnshadowedDomainAbility extends Ability {
+    public UnshadowedDomainAbility(String id) {
+        super(id, 50);
     }
 
     @Override
@@ -43,7 +44,7 @@ public class UnshadowedDomainAbility extends AbilityItem {
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(1f, 185 / 255f, 3 / 255f), 10f);
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

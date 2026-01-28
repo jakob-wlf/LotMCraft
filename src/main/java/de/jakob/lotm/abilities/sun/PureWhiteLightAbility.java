@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.sun;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -21,9 +22,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PureWhiteLightAbility extends AbilityItem {
-    public PureWhiteLightAbility(Properties properties) {
-        super(properties, 4);
+public class PureWhiteLightAbility extends Ability {
+    public PureWhiteLightAbility(String id) {
+        super(id, 4);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class PureWhiteLightAbility extends AbilityItem {
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             if(entity instanceof Player player) {
                 AnimationUtil.playOpenArmAnimation(player);

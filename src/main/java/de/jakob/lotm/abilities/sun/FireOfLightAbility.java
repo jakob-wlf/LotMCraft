@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -20,9 +21,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FireOfLightAbility extends AbilityItem {
-    public FireOfLightAbility(Properties properties) {
-        super(properties, .75f);
+public class FireOfLightAbility extends Ability {
+    public FireOfLightAbility(String id) {
+        super(id, .75f);
     }
 
     @Override
@@ -43,7 +44,7 @@ public class FireOfLightAbility extends AbilityItem {
     );
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

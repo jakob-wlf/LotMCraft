@@ -2,7 +2,6 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
-import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelMenu;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.*;
@@ -15,18 +14,15 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class KeyInputHandler {
 
-    private static boolean wasHoldKeyDown = false;
-    private static boolean wheelOpenedByHold = false;
-    private static boolean waitingForWheelData = false;
-    private static int waitTicks = 0;
-    private static boolean pendingOpenByHold = false;
-
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
+        Minecraft mc = Minecraft.getInstance();
+
         if (LOTMCraft.openAbilitySelectionKey != null && LOTMCraft.openAbilitySelectionKey.consumeClick()) {
             Player player = Minecraft.getInstance().player;
             if (player != null) {
@@ -81,57 +77,13 @@ public class KeyInputHandler {
             }
         }
 
-        Minecraft mc = Minecraft.getInstance();
-
-        if (mc.player == null) {
-            return;
+        if (LOTMCraft.openWheelToggleKey.consumeClick()) {
+            openAbilityWheel();
         }
 
-        // Handle waiting for server response
-        if (waitingForWheelData) {
-            waitTicks++;
-            if (waitTicks > 5) { // Wait max 5 ticks (0.25 seconds)
-                waitingForWheelData = false;
-                waitTicks = 0;
-
-                // Check if player has any abilities
-                if (ClientData.getAbilityWheelAbilities().isEmpty()) {
-                    mc.player.displayClientMessage(Component.translatable("lotm.ability_wheel.no_abilities"), true);
-                } else {
-                    PacketHandler.sendToServer(new OpenAbilityWheelPacket());
-
-                    if (pendingOpenByHold) {
-                        wheelOpenedByHold = true;
-                        pendingOpenByHold = false;
-                    }
-                }
-            }
-            return; // Don't process other keys while waiting
+        if(LOTMCraft.openWheelHoldKey.consumeClick() && mc.screen == null) {
+            openAbilityWheel();
         }
-
-        // Check if we're already in a menu (but not our wheel)
-        boolean inOtherMenu = mc.screen != null && !(mc.screen instanceof AbilityWheelScreen);
-
-        // Handle toggle key
-        if (LOTMCraft.openWheelToggleKey.consumeClick() && !inOtherMenu) {
-            openAbilityWheel(false);
-        }
-
-        // Handle hold key
-        boolean isHoldKeyDown = LOTMCraft.openWheelHoldKey.isDown();
-
-        if (isHoldKeyDown && !wasHoldKeyDown && !inOtherMenu) {
-            // Key just pressed
-            openAbilityWheel(true);
-        } else if (!isHoldKeyDown && wasHoldKeyDown && wheelOpenedByHold) {
-            // Key just released - close if it was opened by hold
-            if (mc.screen instanceof AbilityWheelScreen) {
-                mc.player.closeContainer();
-            }
-            wheelOpenedByHold = false;
-        }
-
-        wasHoldKeyDown = isHoldKeyDown;
 
         // Handle use ability key
         if (LOTMCraft.useSelectedAbilityKey.consumeClick()) {
@@ -139,11 +91,21 @@ public class KeyInputHandler {
         }
     }
 
-    private static void openAbilityWheel(boolean openedByHold) {
-        // Request data from server and wait for response
-        PacketHandler.sendToServer(new RequestAbilityWheelPacket());
-        waitingForWheelData = true;
-        waitTicks = 0;
-        pendingOpenByHold = openedByHold;
+    @SubscribeEvent
+    public static void onKeyReleased(ScreenEvent.KeyReleased.Post event) {
+        if(event.getKeyCode() == LOTMCraft.openWheelHoldKey.getKey().getValue()) {
+            if(Minecraft.getInstance().screen instanceof AbilityWheelScreen) {
+                PacketHandler.sendToServer(new CloseAbilityWheelPacket());
+            }
+        }
+    }
+
+    private static void openAbilityWheel() {
+        Minecraft mc = Minecraft.getInstance();
+        if (ClientData.getAbilityWheelAbilities().isEmpty()) {
+            mc.player.displayClientMessage(Component.translatable("lotm.ability_wheel.no_abilities"), true);
+        } else {
+            PacketHandler.sendToServer(new OpenAbilityWheelPacket());
+        }
     }
 }

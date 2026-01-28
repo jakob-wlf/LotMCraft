@@ -28,27 +28,9 @@ public class AbilityItemHandler {
     public static final DeferredItem<Item> DIVINATION = ITEMS.registerItem("divination_ability", DivinationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static final DeferredItem<Item> SPIRIT_VISION = ITEMS.registerItem("spirit_vision_ability", SpiritVisionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
-    public static final DeferredItem<Item> HOLY_SONG = ITEMS.registerItem("holy_song_ability", HolySongAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static final DeferredItem<Item> ILLUMINATE = ITEMS.registerItem("illuminate_ability", IlluminateAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> HOLY_LIGHT = ITEMS.registerItem("holy_light_ability",  HolyLightAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> FIRE_OF_LIGHT = ITEMS.registerItem("fire_of_light_ability",  FireOfLightAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> HOLY_LIGHT_SUMMONING = ITEMS.registerItem("holy_light_summoning_ability",  HolyLightSummoningAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> CLEAVE_OF_PURIFICATION = ITEMS.registerItem("cleave_of_purification_ability",  CleaveOfPurificationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> HOLY_OATH = ITEMS.registerItem("holy_oath_ability",  HolyOathAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> NOTARY_BUFF = ITEMS.registerItem("notary_buff_ability",  GodSaysItsEffectiveAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> NOTARY_DEBUFF = ITEMS.registerItem("notary_debuff_ability",  GodSaysItsNotEffectiveAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> LIGHT_OF_HOLINESS = ITEMS.registerItem("light_of_holiness_ability",  LightOfHolinessAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> PURIFICATION_HALO = ITEMS.registerItem("purification_halo_ability",  PurificationHaloAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> FLARING_SUN = ITEMS.registerItem("flaring_sun_ability",  FlaringSunAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> UNSHADOWED_SPEAR = ITEMS.registerItem("unshadowed_spear_ability",  UnshadowedSpearAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> UNSHADOWED_DOMAIN = ITEMS.registerItem("unshadowed_domain_ability",  UnshadowedDomainAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> WALL_OF_LIGHT = ITEMS.registerItem("wall_of_light_ability",  WallOfLightAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> SWORD_OF_JUSTICE = ITEMS.registerItem("sword_of_justice_ability",  SwordOfJusticeAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> SPEAR_OF_LIGHT = ITEMS.registerItem("spear_of_light_ability",  SpearOfLightAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> SOLAR_ENVOY = ITEMS.registerItem("solar_envoy_ability",  SolarEnvoyAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> WINGS_OF_LIGHT = ITEMS.registerItem("wings_of_light_ability",  WingsOfLightAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> PURE_WHITE_LIGHT = ITEMS.registerItem("pure_white_light_ability",  PureWhiteLightAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-    public static DeferredItem<Item> DIVINE_KINGDOM_MANIFESTATION = ITEMS.registerItem("divine_kingdom_manifestation_ability",  DivineKingdomManifestationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static DeferredItem<Item> TRAP = ITEMS.registerItem("trap_ability", TrapAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static DeferredItem<Item> PROVOKING = ITEMS.registerItem("provoking_ability", ProvokingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

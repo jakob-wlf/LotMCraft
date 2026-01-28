@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.SunKingdomEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -11,9 +12,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DivineKingdomManifestationAbility extends AbilityItem {
-    public DivineKingdomManifestationAbility(Properties properties) {
-        super(properties, 20 * 60 * 3);
+public class DivineKingdomManifestationAbility extends Ability {
+    public DivineKingdomManifestationAbility(String id) {
+        super(id, 20 * 60 * 3);
     }
 
     @Override
@@ -27,7 +28,7 @@ public class DivineKingdomManifestationAbility extends AbilityItem {
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

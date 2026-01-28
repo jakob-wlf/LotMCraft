@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.sun;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.RingEffectManager;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -13,9 +14,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PurificationHaloAbility extends AbilityItem {
-    public PurificationHaloAbility(Properties properties) {
-        super(properties, 3);
+public class PurificationHaloAbility extends Ability {
+    public PurificationHaloAbility(String id) {
+        super(id, 3);
     }
 
     @Override
@@ -29,7 +30,7 @@ public class PurificationHaloAbility extends AbilityItem {
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 
