@@ -40,7 +40,7 @@ public class PetrificationEffect extends MobEffect {
 
     @Override
     public boolean applyEffectTick(@NotNull LivingEntity livingEntity, int amplifier) {
-        if( livingEntity.level().isClientSide()) {
+        if(livingEntity.level().isClientSide()) {
             return true;
         }
 

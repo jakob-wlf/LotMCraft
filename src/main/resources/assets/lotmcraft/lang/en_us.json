@@ -533,6 +533,8 @@
   "item.lotmcraft.manipulation_ability.description": "Control the movement of your target",
   "item.lotmcraft.mental_plague_ability": "Mental Plague",
   "item.lotmcraft.mental_plague.description": "Spread a mental plague that will slowly drive all entities to insanity",
+  "ability.lotmcraft.mental_plague.no_target": "No Target found",
+  "ability.lotmcraft.mental_plague.target_too_strong": "The target is too strong",
   "item.lotmcraft.mind_invasion_ability": "Mind Invasion",
   "item.lotmcraft.mind_invasion.description": "Invade your opponents Mind Island. The more you destroy the more sanity they will lose",
   "item.lotmcraft.identity_avatar_ability": "Identity Avatar",
@@ -684,6 +686,7 @@
   "effect.lotmcraft.luck": "Luck",
   "effect.lotmcraft.unluck": "Unluck",
   "effect.lotmcraft.petrification": "Petrification",
+  "effect.lotmcraft.mental_plague": "Mental Plague",
   "effect.lotmcraft.conquered": "Conquered",
   "effect.lotmcraft.mutation": "Mutated",
 

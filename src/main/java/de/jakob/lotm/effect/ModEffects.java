@@ -25,6 +25,9 @@ public class ModEffects {
     public static final Holder<MobEffect> UNLUCK = MOB_EFFECTS.register("unluck",
             () -> new UnluckEffect(MobEffectCategory.HARMFUL, 0xf0b05d));
 
+    public static final Holder<MobEffect> MENTAL_PLAGUE = MOB_EFFECTS.register("mental_plague",
+            () -> new MentalPlagueEffect(MobEffectCategory.HARMFUL, 0xf0b05d));
+
     public static final Holder<MobEffect> PETRIFICATION = MOB_EFFECTS.register("petrification",
             () -> new PetrificationEffect(MobEffectCategory.HARMFUL, 0x7532a8));
 

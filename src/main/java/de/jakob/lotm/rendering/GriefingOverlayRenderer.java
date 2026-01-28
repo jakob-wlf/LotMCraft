@@ -31,13 +31,14 @@ public class GriefingOverlayRenderer {
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
 
-        int x = screenWidth - size - 4;
+        float ratio = 16.0f / 24.0f;
+
+        int x = screenWidth - 16 - 4;
         int y = 4;
 
         if (BeyonderData.isGriefingEnabled(mc.player) && !mc.options.hideGui) {
             PoseStack poseStack = guiGraphics.pose();
             poseStack.pushPose();
-            float ratio = 16.0f / 24.0f;
             poseStack.scale(ratio, ratio, 1.0f);
             guiGraphics.blit(iconTexture, (int) (x / ratio), (int) (y / ratio), 0, 0, size, size, size, size);
             poseStack.popPose();
