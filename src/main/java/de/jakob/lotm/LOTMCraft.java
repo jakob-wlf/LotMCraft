@@ -6,6 +6,7 @@ import com.zigythebird.playeranim.api.PlayerAnimationFactory;
 import com.zigythebird.playeranimcore.enums.PlayState;
 import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
+import de.jakob.lotm.abilities.core.AbilityHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.block.ModBlocks;
@@ -18,6 +19,7 @@ import de.jakob.lotm.entity.quests.QuestRegistry;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.gui.custom.AbilitySelection.AbilitySelectionScreen;
+import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.Messages.MessagesScreen;
@@ -74,6 +76,11 @@ public class LOTMCraft
     public static KeyMapping toggleAbilityHotbarKey;
     public static KeyMapping cycleAbilityHotbarKey;
     public static KeyMapping enterSefirotKey;
+    public static KeyMapping openWheelHoldKey;
+    public static KeyMapping openWheelToggleKey;
+    public static KeyMapping useSelectedAbilityKey;
+
+    public static AbilityHandler abilityHandler;
 
     public static final ResourceLocation ANIMATION_LAYER_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "lotmcraft_animations");
 
@@ -113,6 +120,8 @@ public class LOTMCraft
         AbilityItemHandler.registerAbilities(modEventBus);
         PassiveAbilityHandler.registerAbilities(modEventBus);
         PotionItemHandler.registerPotions(modEventBus);
+
+        abilityHandler = new AbilityHandler();
 
         modEventBus.addListener(this::addCreative);
         modEventBus.addListener(PacketHandler::register);
@@ -225,6 +234,7 @@ public class LOTMCraft
             event.register(ModMenuTypes.MESSAGES_MENU.get(), MessagesScreen::new);
             event.register(ModMenuTypes.RECIPE_MENU.get(), RecipeScreen::new);
             event.register(ModMenuTypes.BREWING_CAULDRON_MENU.get(), BrewingCauldronScreen::new);
+            event.register(ModMenuTypes.ABILITY_WHEEL_MENU.get(), AbilityWheelScreen::new);
         }
     }
 

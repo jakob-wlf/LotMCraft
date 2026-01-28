@@ -38,6 +38,25 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncAbilityWheelDataPacket.TYPE,
+                SyncAbilityWheelDataPacket.STREAM_CODEC,
+                SyncAbilityWheelDataPacket::handle
+        );
+
+        registrar.playToClient(
+                UseAbilityPacket.TYPE,
+                UseAbilityPacket.STREAM_CODEC,
+                UseAbilityPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncAbilityWheelPacket.TYPE,
+                SyncAbilityWheelPacket.STREAM_CODEC,
+                SyncAbilityWheelPacket::handle
+        );
+
+
+        registrar.playToClient(
                 HybridMobSyncPacket.TYPE,
                 HybridMobSyncPacket.STREAM_CODEC,
                 HybridMobSyncPacket::handle
@@ -290,6 +309,36 @@ public class PacketHandler {
                 BecomeBeyonderPacket.TYPE,
                 BecomeBeyonderPacket.STREAM_CODEC,
                 BecomeBeyonderPacket::handle
+        );
+
+        registrar.playToServer(
+                OpenAbilityWheelPacket.TYPE,
+                OpenAbilityWheelPacket.STREAM_CODEC,
+                OpenAbilityWheelPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestAbilityWheelPacket.TYPE,
+                RequestAbilityWheelPacket.STREAM_CODEC,
+                RequestAbilityWheelPacket::handle
+        );
+
+        registrar.playToServer(
+                SyncAbilityWheelAbilitiesPacket.TYPE,
+                SyncAbilityWheelAbilitiesPacket.STREAM_CODEC,
+                SyncAbilityWheelAbilitiesPacket::handle
+        );
+
+        registrar.playToServer(
+                UpdateSelectedAbilityPacket.TYPE,
+                UpdateSelectedAbilityPacket.STREAM_CODEC,
+                UpdateSelectedAbilityPacket::handle
+        );
+
+        registrar.playToServer(
+                UseSelectedAbilityPacket.TYPE,
+                UseSelectedAbilityPacket.STREAM_CODEC,
+                UseSelectedAbilityPacket::handle
         );
 
         registrar.playToServer(

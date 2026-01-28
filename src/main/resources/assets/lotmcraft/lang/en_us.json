@@ -33,6 +33,9 @@
   "key.beyonders.toggle_ability_hotbar": "Toggle Ability Hotbar",
   "key.beyonders.cycle_ability_hotbar": "Cycle Ability Hotbar",
   "key.beyonders.enter_sefirot": "Enter Sefirot",
+  "key.beyonders.open_wheel_toggle": "Open Ability Wheel (Toggle)",
+  "key.beyonders.open_wheel_hold": "Open Ability Wheel",
+  "key.beyonders.use_ability": "Use Ability",
 
 
 
@@ -1139,5 +1142,7 @@
   "lotm.passive": "Passive",
   "lotm.toggleable": "Toggleable",
   "lotm.selectable": "Selectable",
+  "lotm.ability_wheel.title": "Ability Wheel",
+  "lotm.ability_wheel.no_abilities": "No abilities available in wheel",
   "lotmcraft.griefing_enabled_required": "Enable griefing for this ability to work"
 }

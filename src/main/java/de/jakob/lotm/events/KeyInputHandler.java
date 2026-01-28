@@ -2,10 +2,14 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelMenu;
+import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.data.ClientData;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -14,6 +18,12 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class KeyInputHandler {
+
+    private static boolean wasHoldKeyDown = false;
+    private static boolean wheelOpenedByHold = false;
+    private static boolean waitingForWheelData = false;
+    private static int waitTicks = 0;
+    private static boolean pendingOpenByHold = false;
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
@@ -53,7 +63,6 @@ public class KeyInputHandler {
 
         if(LOTMCraft.cycleAbilityHotbarKey != null && LOTMCraft.cycleAbilityHotbarKey.consumeClick()) {
             PacketHandler.sendToServer(new ToggleAbilityHotbarPacket(false));
-
         }
 
         if(LOTMCraft.nextAbilityKey != null && LOTMCraft.nextAbilityKey.consumeClick()) {
@@ -71,5 +80,70 @@ public class KeyInputHandler {
                     abilityItem.previousAbility(player);
             }
         }
+
+        Minecraft mc = Minecraft.getInstance();
+
+        if (mc.player == null) {
+            return;
+        }
+
+        // Handle waiting for server response
+        if (waitingForWheelData) {
+            waitTicks++;
+            if (waitTicks > 5) { // Wait max 5 ticks (0.25 seconds)
+                waitingForWheelData = false;
+                waitTicks = 0;
+
+                // Check if player has any abilities
+                if (ClientData.getAbilityWheelAbilities().isEmpty()) {
+                    mc.player.displayClientMessage(Component.translatable("lotm.ability_wheel.no_abilities"), true);
+                } else {
+                    PacketHandler.sendToServer(new OpenAbilityWheelPacket());
+
+                    if (pendingOpenByHold) {
+                        wheelOpenedByHold = true;
+                        pendingOpenByHold = false;
+                    }
+                }
+            }
+            return; // Don't process other keys while waiting
+        }
+
+        // Check if we're already in a menu (but not our wheel)
+        boolean inOtherMenu = mc.screen != null && !(mc.screen instanceof AbilityWheelScreen);
+
+        // Handle toggle key
+        if (LOTMCraft.openWheelToggleKey.consumeClick() && !inOtherMenu) {
+            openAbilityWheel(false);
+        }
+
+        // Handle hold key
+        boolean isHoldKeyDown = LOTMCraft.openWheelHoldKey.isDown();
+
+        if (isHoldKeyDown && !wasHoldKeyDown && !inOtherMenu) {
+            // Key just pressed
+            openAbilityWheel(true);
+        } else if (!isHoldKeyDown && wasHoldKeyDown && wheelOpenedByHold) {
+            // Key just released - close if it was opened by hold
+            if (mc.screen instanceof AbilityWheelScreen) {
+                mc.player.closeContainer();
+            }
+            wheelOpenedByHold = false;
+        }
+
+        wasHoldKeyDown = isHoldKeyDown;
+
+        // Handle use ability key
+        if (LOTMCraft.useSelectedAbilityKey.consumeClick()) {
+            PacketHandler.sendToServer(new UseSelectedAbilityPacket());
+        }
+    }
+
+    private static void openAbilityWheel(boolean openedByHold) {
+        // Request data from server and wait for response
+        PacketHandler.sendToServer(new RequestAbilityWheelPacket());
+        waitingForWheelData = true;
+        waitTicks = 0;
+        pendingOpenByHold = openedByHold;
     }
 }

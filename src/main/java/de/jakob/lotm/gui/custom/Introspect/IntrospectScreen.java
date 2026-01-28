@@ -2,8 +2,11 @@ package de.jakob.lotm.gui.custom.Introspect;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.OpenMessagesMenuPacket;
+import de.jakob.lotm.network.packets.toServer.SyncAbilityWheelAbilitiesPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,6 +18,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private ResourceLocation containerBackground;
@@ -22,9 +26,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private Button toggleButton;
 
     // Ability management
-    private List<AbilityIcon> availableAbilities = new ArrayList<>();
-    private List<AbilityIcon> abilityWheelSlots = new ArrayList<>();
-    private AbilityIcon draggedAbility = null;
+    private final List<Ability> availableAbilities = new ArrayList<>();
+    private final List<Ability> abilityWheelSlots = new ArrayList<>();
+    private Ability draggedAbility = null;
     private int draggedFromWheelIndex = -1; // Track where we dragged from in the wheel
     private boolean draggedFromAvailable = false; // Track if dragged from available abilities
     private int dragOffsetX = 0;
@@ -35,7 +39,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private static final int ABILITIES_PANEL_HEIGHT = 140;
     private static final int ABILITY_WHEEL_HEIGHT = 80;
     private static final int ABILITY_ICON_SIZE = 16;
-    private static final int ABILITY_WHEEL_MAX = 18;
+    private static final int ABILITY_WHEEL_MAX = 14;
 
     private int abilitiesScrollOffset = 0;
     private int maxAbilitiesScroll = 0;
@@ -47,21 +51,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         this.imageHeight = 231;
         this.imageWidth = 192;
-
-        // Initialize some test abilities (colored squares)
-        initializeTestAbilities();
     }
 
-    private void initializeTestAbilities() {
-        // Add some test abilities with different colors
-        availableAbilities.add(new AbilityIcon("ability_1", 0xFFFF0000, null)); // Red
-        availableAbilities.add(new AbilityIcon("ability_2", 0xFF00FF00, null)); // Green
-        availableAbilities.add(new AbilityIcon("ability_3", 0xFF0000FF, null)); // Blue
-        availableAbilities.add(new AbilityIcon("ability_4", 0xFFFFFF00, null)); // Yellow
-        availableAbilities.add(new AbilityIcon("ability_5", 0xFFFF00FF, null)); // Magenta
-        availableAbilities.add(new AbilityIcon("ability_6", 0xFF00FFFF, null)); // Cyan
-        availableAbilities.add(new AbilityIcon("ability_7", 0xFFFF8800, null)); // Orange
-        availableAbilities.add(new AbilityIcon("ability_8", 0xFF8800FF, null)); // Purple
+    private void initializeAbilities() {
+        availableAbilities.addAll(LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence()));
 
         // Calculate max scroll
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
@@ -70,8 +63,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         maxAbilitiesScroll = Math.max(0, rows - visibleRows);
     }
 
-    public void updateScreen(String pathway, int sequence) {
-        this.containerBackground = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/introspect.png");
+    public void setAbilityWheelSlots(ArrayList<String> abilityIds) {
+        this.abilityWheelSlots.clear();
+        for (String id : abilityIds) {
+            Ability ability = LOTMCraft.abilityHandler.getById(id);
+            if (ability != null) {
+                this.abilityWheelSlots.add(ability);
+            }
+        }
     }
 
     @Override
@@ -79,8 +78,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         super.init();
 
         if(this.minecraft == null) return;
-
-        updateScreen(menu.getPathway(), menu.getSequence());
 
         // Add toggle button to the left of the main screen
         int buttonX = this.leftPos - 25;
@@ -103,12 +100,11 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     public void updateMenuData(int sequence, String pathway, float digestionProgress, float sanity) {
         this.menu.updateData(sequence, pathway, digestionProgress, sanity);
+        initializeAbilities();
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        updateScreen(menu.getPathway(), menu.getSequence());
-
         this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
@@ -168,7 +164,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
             // Only render if within visible area
             if (y >= panelY && y + ABILITY_ICON_SIZE <= panelY + ABILITIES_PANEL_HEIGHT - 15) {
-                AbilityIcon ability = availableAbilities.get(i);
+                Ability ability = availableAbilities.get(i);
                 // Always render available abilities (they never disappear)
                 renderAbilityIcon(guiGraphics, ability, x, y);
             }
@@ -195,7 +191,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
             // Render ability if present (skip if this is the one being dragged)
             if (i < abilityWheelSlots.size()) {
-                AbilityIcon ability = abilityWheelSlots.get(i);
+                Ability ability = abilityWheelSlots.get(i);
                 // Don't render if this is the slot we're dragging from
                 if (draggedFromWheelIndex != i) {
                     renderAbilityIcon(guiGraphics, ability, x, y);
@@ -204,13 +200,13 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
     }
 
-    private void renderAbilityIcon(GuiGraphics guiGraphics, AbilityIcon ability, int x, int y) {
-        if (ability.texture != null) {
+    private void renderAbilityIcon(GuiGraphics guiGraphics, Ability ability, int x, int y) {
+        if (ability.getTextureLocation() != null) {
             // Render texture when available
-            guiGraphics.blit(ability.texture, x, y, 0, 0, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE);
+            guiGraphics.blit(ability.getTextureLocation(), x, y, 0, 0, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE);
         } else {
             // Render colored square as placeholder
-            guiGraphics.fill(x, y, x + ABILITY_ICON_SIZE, y + ABILITY_ICON_SIZE, ability.color);
+            guiGraphics.fill(x, y, x + ABILITY_ICON_SIZE, y + ABILITY_ICON_SIZE, 0xFFFFFFFF);
             guiGraphics.renderOutline(x, y, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, 0xFF000000);
         }
     }
@@ -220,7 +216,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (button == 0 && showAbilities) { // Left click
             int panelX = this.leftPos + this.imageWidth + 5;
             int panelY = this.topPos + 15;
-            int wheelY = panelY + ABILITIES_PANEL_HEIGHT - 10;
+            int wheelY = panelY + ABILITIES_PANEL_HEIGHT + 5; // FIXED: was -10, now +5 to match render
 
             // Check if clicking on ability wheel first (higher priority)
             int wheelSlot = getAbilityWheelSlot((int) mouseX, (int) mouseY, panelX, wheelY);
@@ -234,7 +230,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             }
 
             // Check if clicking on available abilities
-            AbilityIcon clicked = getAbilityAt((int) mouseX, (int) mouseY, panelX, panelY, availableAbilities, true);
+            Ability clicked = getAbilityAt((int) mouseX, (int) mouseY, panelX, panelY, availableAbilities, true);
             if (clicked != null) {
                 draggedAbility = clicked;
                 draggedFromWheelIndex = -1;
@@ -253,7 +249,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (button == 0 && draggedAbility != null) {
             int panelX = this.leftPos + this.imageWidth + 5;
             int panelY = this.topPos + 15;
-            int wheelY = panelY + ABILITIES_PANEL_HEIGHT - 10;
+            int wheelY = panelY + ABILITIES_PANEL_HEIGHT + 5; // FIXED: was -10, now +5 to match render
 
             // Check if dropping in ability wheel area
             if (isInAbilityWheelArea((int) mouseX, (int) mouseY, panelX, wheelY)) {
@@ -263,7 +259,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                     if (draggedFromAvailable) {
                         // Dragging from available abilities to wheel
                         if (targetSlot < abilityWheelSlots.size()) {
-                            // Replace existing ability
+                            // FIXED: Replace existing ability at target slot
                             abilityWheelSlots.set(targetSlot, draggedAbility);
                         } else {
                             // Add to end if slot is empty
@@ -272,16 +268,17 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                     } else {
                         // Rearranging within wheel
                         if (draggedFromWheelIndex >= 0) {
-                            if (targetSlot < abilityWheelSlots.size()) {
-                                // Swap abilities
-                                AbilityIcon temp = abilityWheelSlots.get(targetSlot);
+                            if (targetSlot < abilityWheelSlots.size() && targetSlot != draggedFromWheelIndex) {
+                                // FIXED: Swap abilities properly
+                                Ability temp = abilityWheelSlots.get(targetSlot);
                                 abilityWheelSlots.set(targetSlot, draggedAbility);
                                 abilityWheelSlots.set(draggedFromWheelIndex, temp);
-                            } else {
+                            } else if (targetSlot >= abilityWheelSlots.size()) {
                                 // Move to end
                                 abilityWheelSlots.remove(draggedFromWheelIndex);
                                 abilityWheelSlots.add(draggedAbility);
                             }
+                            // FIXED: If targetSlot == draggedFromWheelIndex, do nothing (dropped on same slot)
                         }
                     }
                 }
@@ -292,6 +289,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                     abilityWheelSlots.remove(draggedFromWheelIndex);
                 }
             }
+
+            PacketHandler.sendToServer(new SyncAbilityWheelAbilitiesPacket(abilityWheelSlots.stream().map(Ability::getId).collect(Collectors.toCollection(ArrayList::new))));
 
             // Reset drag state
             draggedAbility = null;
@@ -322,7 +321,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
-    private AbilityIcon getAbilityAt(int mouseX, int mouseY, int panelX, int panelY, List<AbilityIcon> abilities, boolean useScroll) {
+    private Ability getAbilityAt(int mouseX, int mouseY, int panelX, int panelY, List<Ability> abilities, boolean useScroll) {
         int startX = panelX + 5;
         int startY = panelY + (useScroll ? abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2) : 0);
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
@@ -343,7 +342,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         return null;
     }
 
-    private int getAbilityX(AbilityIcon ability, int panelX, int panelY, List<AbilityIcon> abilities, boolean useScroll) {
+    private int getAbilityX(Ability ability, int panelX, int panelY, List<Ability> abilities, boolean useScroll) {
         int index = abilities.indexOf(ability);
         if (index < 0) return 0;
 
@@ -353,7 +352,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         return panelX + 5 + col * (ABILITY_ICON_SIZE + 2);
     }
 
-    private int getAbilityY(AbilityIcon ability, int panelX, int panelY, List<AbilityIcon> abilities, boolean useScroll) {
+    private int getAbilityY(Ability ability, int panelX, int panelY, List<Ability> abilities, boolean useScroll) {
         int index = abilities.indexOf(ability);
         if (index < 0) return 0;
 
@@ -399,19 +398,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
         int row = slot / iconsPerRow;
         return wheelY + row * (ABILITY_ICON_SIZE + 2);
-    }
-
-    // Inner class to represent an ability icon
-    private static class AbilityIcon {
-        String id;
-        int color;
-        ResourceLocation texture;
-
-        AbilityIcon(String id, int color, ResourceLocation texture) {
-            this.id = id;
-            this.color = color;
-            this.texture = texture;
-        }
     }
 
     @Override

@@ -3,11 +3,13 @@ package de.jakob.lotm.network.packets.handlers;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.common.DivinationAbility;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.door.PlayerTeleportationAbility;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.gui.custom.CoordinateInput.CoordinateInputScreen;
+import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.rendering.*;
 import de.jakob.lotm.rendering.effectRendering.impl.VFXRenderer;
@@ -351,5 +353,29 @@ public class ClientHandler {
 
     public static void showGui() {
         Minecraft.getInstance().options.hideGui = false;
+    }
+
+    public static void useAbility(UseAbilityPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if(!(entity instanceof LivingEntity living)) {
+            return;
+        }
+
+        Ability ability = LOTMCraft.abilityHandler.getById(packet.abilityId());
+        if(ability == null) {
+            return;
+        }
+
+        ability.onAbilityUse(level, living);
+    }
+
+    public static void handleSyncAbilityWheelDataPacket(SyncAbilityWheelDataPacket packet) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen instanceof IntrospectScreen screen) {
+            screen.setAbilityWheelSlots(packet.abilityIds());
+        }
     }
 }

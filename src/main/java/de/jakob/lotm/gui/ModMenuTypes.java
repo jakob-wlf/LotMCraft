@@ -2,6 +2,7 @@ package de.jakob.lotm.gui;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.AbilitySelection.AbilitySelectionMenu;
+import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelMenu;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
 import de.jakob.lotm.gui.custom.Messages.MessagesMenu;
@@ -36,6 +37,11 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<MessagesMenu>> MESSAGES_MENU =
             MENU_TYPES.register("messages_menu", () ->
                     IMenuTypeExtension.create(MessagesMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<AbilityWheelMenu>> ABILITY_WHEEL_MENU = MENU_TYPES.register(
+            "ability_wheel_menu",
+            () -> new MenuType<>(AbilityWheelMenu::new, net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS)
+    );
 
     public static void register(IEventBus eventBus) {
         MENU_TYPES.register(eventBus);

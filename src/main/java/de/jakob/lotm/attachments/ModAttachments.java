@@ -31,8 +31,17 @@ public class ModAttachments {
             ATTACHMENT_TYPES.register("parasite_component", () ->
                     AttachmentType.builder(ParasitationComponent::new)
                             .serialize(ParasitationComponent.SERIALIZER)
-                            .copyOnDeath()
                             .build()
+            );
+
+    public static final Supplier<AttachmentType<AbilityCooldownComponent>> COOLDOWN_COMPONENT =
+            ATTACHMENT_TYPES.register("cooldown_component", () ->
+                    AttachmentType.serializable(AbilityCooldownComponent::new).build()
+            );
+
+    public static final Supplier<AttachmentType<AbilityWheelComponent>> ABILITY_WHEEL_COMPONENT =
+            ATTACHMENT_TYPES.register("ability_wheel_component", () ->
+                    AttachmentType.serializable(AbilityWheelComponent::new).copyOnDeath().build()
             );
 
     public static final Supplier<AttachmentType<AllyComponent>> ALLY_COMPONENT = ATTACHMENT_TYPES.register(

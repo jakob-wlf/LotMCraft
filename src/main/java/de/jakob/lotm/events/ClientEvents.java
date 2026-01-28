@@ -34,6 +34,9 @@ public class ClientEvents {
         LOTMCraft.toggleAbilityHotbarKey = new KeyMapping("key.beyonders.toggle_ability_hotbar", GLFW.GLFW_KEY_B, "key.categories.beyonders");
         LOTMCraft.cycleAbilityHotbarKey = new KeyMapping("key.beyonders.cycle_ability_hotbar", GLFW.GLFW_KEY_N, "key.categories.beyonders");
         LOTMCraft.enterSefirotKey = new KeyMapping("key.beyonders.enter_sefirot", GLFW.GLFW_KEY_U, "key.categories.beyonders");
+        LOTMCraft.openWheelToggleKey = new KeyMapping("key.beyonders.open_wheel_toggle", GLFW.GLFW_KEY_LEFT_ALT, "key.categories.beyonders");
+        LOTMCraft.openWheelHoldKey = new KeyMapping("key.beyonders.open_wheel_hold", GLFW.GLFW_KEY_P, "key.categories.beyonders");
+        LOTMCraft.useSelectedAbilityKey = new KeyMapping("key.beyonders.use_ability", GLFW.GLFW_KEY_M, "key.categories.beyonders");
 
         event.register(LOTMCraft.pathwayInfosKey);
         event.register(LOTMCraft.openAbilitySelectionKey);
@@ -43,6 +46,9 @@ public class ClientEvents {
         event.register(LOTMCraft.toggleAbilityHotbarKey);
         event.register(LOTMCraft.cycleAbilityHotbarKey);
         event.register(LOTMCraft.enterSefirotKey);
+        event.register(LOTMCraft.openWheelToggleKey);
+        event.register(LOTMCraft.openWheelHoldKey);
+        event.register(LOTMCraft.useSelectedAbilityKey);
     }
 
     @SubscribeEvent

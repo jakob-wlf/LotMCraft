@@ -30,6 +30,8 @@ public class BeyonderDataTickHandler {
             return;
         }
 
+        // Tick cooldowns
+
         if (BeyonderData.isBeyonder(player)) {
             float amount = BeyonderData.getMaxSpirituality(BeyonderData.getSequence(player)) * 0.0006f;
             BeyonderData.incrementSpirituality(player, amount);
