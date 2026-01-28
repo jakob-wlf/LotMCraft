@@ -24,7 +24,7 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
     private static final int CENTER_Y = WHEEL_SIZE / 2;
 
     private static final int SLOT_SIZE = 32;
-    private static final int SLOT_HOVER_SIZE = 40; // 1.25x scale
+    private static final int SLOT_HOVER_SIZE = 34;
 
     private int hoveredSlot = -1;
 
@@ -77,9 +77,6 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
         RenderSystem.setShaderTexture(0, WHEEL_BACKGROUND);
         guiGraphics.blit(WHEEL_BACKGROUND, this.leftPos, this.topPos, 0, 0, WHEEL_SIZE, WHEEL_SIZE, WHEEL_SIZE, WHEEL_SIZE);
 
-        // Render dynamic lines from center to ability positions
-        renderCenterLines(guiGraphics, centerX, centerY, abilities);
-
         // Only render ability slots dynamically
         renderAbilitySlots(guiGraphics, centerX, centerY, abilities);
 
@@ -116,16 +113,16 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
         int y = pos.y - size / 2;
 
         // Background
-        guiGraphics.fill(x, y, x + size, y + size, 0xFF000000);
+        guiGraphics.fill(x, y, x + size, y + size, 0xCC000000);
 
         // Border with glow effect
-        int borderColor = isSelected ? 0xFFD4AF37 : (isHovered ? 0xFFD4AF37 : 0xFF8B6914);
-        int borderWidth = isSelected ? 5 : 4;
+        int borderColor = isSelected ? 0xFFc4a8e3 : (isHovered ? 0xFFc4a8e3 : 0xFF9989ab);
+        int borderWidth = isSelected ? 2 : 1;
 
         // Glow effect for hovered/selected (render behind)
         if (isHovered || isSelected) {
-            int glowSize = 2;
-            int glowColor = isSelected ? 0x60D4AF37 : 0x408B6914;
+            int glowSize = 1;
+            int glowColor = isSelected ? 0x60c4a8e3 : 0x409989ab;
             guiGraphics.fill(x - glowSize, y - glowSize, x + size + glowSize, y + size + glowSize, glowColor);
         }
 
@@ -141,7 +138,7 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, texture);
 
-            int iconPadding = 8;
+            int iconPadding = 3;
             int iconSize = size - iconPadding * 2;
             guiGraphics.blit(texture,
                     x + iconPadding,

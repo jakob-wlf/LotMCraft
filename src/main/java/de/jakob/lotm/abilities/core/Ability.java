@@ -59,6 +59,10 @@ public abstract class Ability {
 
     protected abstract float getSpiritualityCost();
 
+    protected float multiplier(LivingEntity entity) {
+        return (float) BeyonderData.getMultiplier(entity);
+    }
+
     public boolean hasAbility(LivingEntity entity) {
         if(!BeyonderData.isBeyonder(entity)) return false;
 
