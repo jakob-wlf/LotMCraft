@@ -23,6 +23,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private ResourceLocation containerBackground;
     private boolean showAbilities = false;
     private Button toggleButton;
+    private Button clearWheelButton;
 
     // Ability management
     private final List<Ability> availableAbilities = new ArrayList<>();
@@ -78,19 +79,41 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         if(this.minecraft == null) return;
 
-        // Add toggle button to the left of the main screen
-        int buttonX = this.leftPos - 25;
+        // Add toggle button to the left of the main screen with descriptive text
+        int buttonX = this.leftPos - 65;
         int buttonY = this.topPos + 10;
 
-        toggleButton = Button.builder(Component.literal(showAbilities ? "<" : ">"),
+        toggleButton = Button.builder(Component.literal(showAbilities ? "< Hide" : "Abilities >"),
                         button -> {
                             showAbilities = !showAbilities;
-                            button.setMessage(Component.literal(showAbilities ? "<" : ">"));
+                            button.setMessage(Component.literal(showAbilities ? "< Hide" : "Abilities >"));
+                            updateClearButtonVisibility();
                         })
-                .bounds(buttonX, buttonY, 20, 20)
+                .bounds(buttonX, buttonY, 60, 20)
                 .build();
 
         this.addRenderableWidget(toggleButton);
+
+        // Add clear wheel button (only visible when abilities panel is shown)
+        int clearButtonX = this.leftPos + this.imageWidth + 5;
+        int clearButtonY = this.topPos + ABILITIES_PANEL_HEIGHT + 5 + ABILITY_WHEEL_HEIGHT + 5;
+
+        clearWheelButton = Button.builder(Component.literal("Clear Wheel").withStyle(ChatFormatting.RED),
+                        button -> {
+                            abilityWheelSlots.clear();
+                            PacketHandler.sendToServer(new SyncAbilityWheelAbilitiesPacket(new ArrayList<>()));
+                        })
+                .bounds(clearButtonX, clearButtonY, ABILITIES_PANEL_WIDTH, 20)
+                .build();
+
+        this.addRenderableWidget(clearWheelButton);
+        updateClearButtonVisibility();
+    }
+
+    private void updateClearButtonVisibility() {
+        if (clearWheelButton != null) {
+            clearWheelButton.visible = showAbilities;
+        }
     }
 
     private void openMessagesMenu() {
@@ -146,7 +169,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             List<Component> tooltipLines = new ArrayList<>();
 
             // Add ability name
-            tooltipLines.add(hoveredAbility.getName());
+            int color = BeyonderData.pathwayInfos.get(menu.getPathway()).color();
+            tooltipLines.add(hoveredAbility.getName().withStyle(ChatFormatting.BOLD).withColor(color));
 
             // Add description if available, wrapping long text
             Component description = hoveredAbility.getDescription();

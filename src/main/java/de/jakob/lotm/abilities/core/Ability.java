@@ -153,7 +153,11 @@ public abstract class Ability {
         return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/abilities/" + id + ".png");
     }
 
-    public Component getName() {
+    public MutableComponent getName() {
+        return Component.translatable("lotmcraft." + getId());
+    }
+
+    public Component getNameFormatted() {
         if(getRequirements().isEmpty()) {
             return Component.translatable("lotmcraft." + getId()).withStyle(ChatFormatting.BOLD);
         }
@@ -165,7 +169,7 @@ public abstract class Ability {
                 .orElse(null);
 
         int color = BeyonderData.pathwayInfos.get(pathway).color();
-        return Component.translatable("lotmcraft." + getId()).withStyle(ChatFormatting.BOLD).withColor(color);
+        return getName().withStyle(ChatFormatting.BOLD).withColor(color);
     }
 
     @Nullable

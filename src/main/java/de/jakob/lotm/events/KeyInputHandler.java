@@ -138,7 +138,7 @@ public class KeyInputHandler {
             return;
         }
 
-        if(number >= ClientData.getAbilityWheelAbilities().size()) {
+        if((number - 1) >= ClientData.getAbilityWheelAbilities().size()) {
             return;
         }
 

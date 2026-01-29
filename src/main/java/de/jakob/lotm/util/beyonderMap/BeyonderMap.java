@@ -1,5 +1,6 @@
 package de.jakob.lotm.util.beyonderMap;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -31,12 +32,20 @@ public class BeyonderMap extends SavedData {
     public void put(LivingEntity entity) {
         if(!(entity instanceof ServerPlayer)) return;
 
+        String pathway = BeyonderData.getPathway(entity);
+        int sequence = BeyonderData.getSequence(entity);
+
+        // Don't store if this is default/empty data
+        if(pathway.equals("none") || sequence == LOTMCraft.NON_BEYONDER_SEQ) {
+            return; // Don't overwrite existing data with empty data
+        }
+
         var data = map.get(entity.getUUID());
         boolean isNull = data == null;
 
         map.put(entity.getUUID(), new StoredData(
-                BeyonderData.getPathway(entity),
-                BeyonderData.getSequence(entity),
+                pathway,
+                sequence,
                 isNull? HonorificName.EMPTY : data.honorificName(),
                 ((ServerPlayer) entity).getGameProfile().getName(),
                 isNull ? new LinkedList<>() : data.msgs(),

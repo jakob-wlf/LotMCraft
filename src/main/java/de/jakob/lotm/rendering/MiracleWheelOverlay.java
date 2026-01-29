@@ -93,11 +93,94 @@ public class MiracleWheelOverlay {
 
         hoveredIndex = getHoveredSegment((int)mouseX, (int)mouseY, centerX, centerY);
 
+        // Draw background glow
+        drawBackgroundGlow(graphics, centerX, centerY);
+
+        // Draw wheel segments with gradients
         drawWheelSegments(graphics, centerX, centerY);
+
+        // Draw outer ring
+        drawOuterRing(graphics, centerX, centerY);
+
+        // Draw segment borders
         drawSegmentBorders(graphics, centerX, centerY);
+
+        // Draw center circle with gradient
         drawCenterCircle(graphics, centerX, centerY);
+
+        // Draw ability names
         drawAbilityNames(graphics, centerX, centerY, mc);
+
+        // Draw cursor
         drawCursor(graphics, (int)mouseX, (int)mouseY);
+    }
+
+    private void drawBackgroundGlow(GuiGraphics graphics, int centerX, int centerY) {
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
+        Matrix4f matrix = graphics.pose().last().pose();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+
+        // Center point - fully transparent
+        buffer.addVertex(matrix, centerX, centerY, 0).setColor(80, 60, 100, 0);
+
+        int glowRadius = WHEEL_RADIUS + 35;
+        int circleSegments = 60;
+        for (int i = 0; i <= circleSegments; i++) {
+            float angle = (float) (i * 2 * Math.PI / circleSegments);
+            float x = centerX + (float) Math.cos(angle) * glowRadius;
+            float y = centerY + (float) Math.sin(angle) * glowRadius;
+            buffer.addVertex(matrix, x, y, 0).setColor(60, 40, 80, 40);
+        }
+
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
+        RenderSystem.disableBlend();
+    }
+
+    private void drawOuterRing(GuiGraphics graphics, int centerX, int centerY) {
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
+        Matrix4f matrix = graphics.pose().last().pose();
+        Tesselator tesselator = Tesselator.getInstance();
+
+        int innerRadius = WHEEL_RADIUS;
+        int outerRadius = WHEEL_RADIUS + 3;
+        int circleSegments = 60;
+
+        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
+        for (int i = 0; i < circleSegments; i++) {
+            float angle1 = (float) (i * 2 * Math.PI / circleSegments);
+            float angle2 = (float) ((i + 1) * 2 * Math.PI / circleSegments);
+
+            float cos1 = (float) Math.cos(angle1);
+            float sin1 = (float) Math.sin(angle1);
+            float cos2 = (float) Math.cos(angle2);
+            float sin2 = (float) Math.sin(angle2);
+
+            float x1 = centerX + cos1 * innerRadius;
+            float y1 = centerY + sin1 * innerRadius;
+            float x2 = centerX + cos2 * innerRadius;
+            float y2 = centerY + sin2 * innerRadius;
+            float x3 = centerX + cos1 * outerRadius;
+            float y3 = centerY + sin1 * outerRadius;
+            float x4 = centerX + cos2 * outerRadius;
+            float y4 = centerY + sin2 * outerRadius;
+
+            // Gradient from purple to lighter purple
+            buffer.addVertex(matrix, x1, y1, 0).setColor(160, 120, 180, 220);
+            buffer.addVertex(matrix, x2, y2, 0).setColor(160, 120, 180, 220);
+            buffer.addVertex(matrix, x4, y4, 0).setColor(200, 160, 220, 180);
+            buffer.addVertex(matrix, x3, y3, 0).setColor(200, 160, 220, 180);
+        }
+
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
+        RenderSystem.disableBlend();
     }
 
     private void drawCursor(GuiGraphics graphics, int mouseX, int mouseY) {
@@ -113,15 +196,16 @@ public class MiracleWheelOverlay {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-        addQuad(buffer, matrix, mouseX - size, mouseY - thickness / 2, mouseX - gap, mouseY + thickness / 2, 255, 255, 255, 230);
-        addQuad(buffer, matrix, mouseX + gap, mouseY - thickness / 2, mouseX + size, mouseY + thickness / 2, 255, 255, 255, 230);
-        addQuad(buffer, matrix, mouseX - thickness / 2, mouseY - size, mouseX + thickness / 2, mouseY - gap, 255, 255, 255, 230);
-        addQuad(buffer, matrix, mouseX - thickness / 2, mouseY + gap, mouseX + thickness / 2, mouseY + size, 255, 255, 255, 230);
+        // Brighter cursor with a subtle glow
+        addQuad(buffer, matrix, mouseX - size, mouseY - thickness / 2, mouseX - gap, mouseY + thickness / 2, 255, 240, 200, 250);
+        addQuad(buffer, matrix, mouseX + gap, mouseY - thickness / 2, mouseX + size, mouseY + thickness / 2, 255, 240, 200, 250);
+        addQuad(buffer, matrix, mouseX - thickness / 2, mouseY - size, mouseX + thickness / 2, mouseY - gap, 255, 240, 200, 250);
+        addQuad(buffer, matrix, mouseX - thickness / 2, mouseY + gap, mouseX + thickness / 2, mouseY + size, 255, 240, 200, 250);
 
         BufferUploader.drawWithShader(buffer.buildOrThrow());
 
         buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
-        buffer.addVertex(matrix, mouseX, mouseY, 0).setColor(255, 255, 255, 230);
+        buffer.addVertex(matrix, mouseX, mouseY, 0).setColor(255, 240, 200, 250);
 
         int circleSegments = 12;
         int dotRadius = 2;
@@ -129,7 +213,7 @@ public class MiracleWheelOverlay {
             float angle = (float) (i * 2 * Math.PI / circleSegments);
             float x = mouseX + (float) Math.cos(angle) * dotRadius;
             float y = mouseY + (float) Math.sin(angle) * dotRadius;
-            buffer.addVertex(matrix, x, y, 0).setColor(255, 255, 255, 230);
+            buffer.addVertex(matrix, x, y, 0).setColor(255, 240, 200, 250);
         }
 
         BufferUploader.drawWithShader(buffer.buildOrThrow());
@@ -160,30 +244,31 @@ public class MiracleWheelOverlay {
             float startAngle = (float) Math.toRadians(i * anglePerSegment - 90);
             float endAngle = (float) Math.toRadians((i + 1) * anglePerSegment - 90);
 
-            int color = getSegmentColor(i);
-            int r = (color >> 16) & 0xFF;
-            int g = (color >> 8) & 0xFF;
-            int b = color & 0xFF;
-            int a = (color >> 24) & 0xFF;
-
-            drawSegmentOptimized(buffer, matrix, centerX, centerY, startAngle, endAngle, r, g, b, a);
+            boolean isHovered = (i == hoveredIndex);
+            drawSegmentWithGradient(buffer, matrix, centerX, centerY, startAngle, endAngle, isHovered);
         }
 
         BufferUploader.drawWithShader(buffer.buildOrThrow());
         RenderSystem.disableBlend();
     }
 
-    private int getSegmentColor(int index) {
-        if (index == hoveredIndex) {
-            return 0xD0A080D0;
-        } else {
-            return 0xC0604070;
-        }
-    }
-
-    private void drawSegmentOptimized(BufferBuilder buffer, Matrix4f matrix, int centerX, int centerY,
-                                      float startAngle, float endAngle, int r, int g, int b, int a) {
+    private void drawSegmentWithGradient(BufferBuilder buffer, Matrix4f matrix, int centerX, int centerY,
+                                         float startAngle, float endAngle, boolean isHovered) {
         float angleStep = (endAngle - startAngle) / SEGMENTS_DETAIL;
+
+        // Color values for gradient
+        int innerR, innerG, innerB, innerA;
+        int outerR, outerG, outerB, outerA;
+
+        if (isHovered) {
+            // Hovered: Brighter purple/magenta gradient
+            innerR = 140; innerG = 100; innerB = 160; innerA = 240;
+            outerR = 180; outerG = 130; outerB = 200; outerA = 220;
+        } else {
+            // Normal: Deeper purple gradient
+            innerR = 80; innerG = 50; innerB = 100; innerA = 200;
+            outerR = 120; outerG = 80; outerB = 140; outerA = 180;
+        }
 
         for (int i = 0; i < SEGMENTS_DETAIL; i++) {
             float angle1 = startAngle + i * angleStep;
@@ -194,20 +279,23 @@ public class MiracleWheelOverlay {
             float cos2 = (float) Math.cos(angle2);
             float sin2 = (float) Math.sin(angle2);
 
+            // Inner vertices (near center)
             float x1 = centerX + cos1 * CENTER_RADIUS;
             float y1 = centerY + sin1 * CENTER_RADIUS;
             float x2 = centerX + cos2 * CENTER_RADIUS;
             float y2 = centerY + sin2 * CENTER_RADIUS;
 
+            // Outer vertices (edge of wheel)
             float x3 = centerX + cos1 * WHEEL_RADIUS;
             float y3 = centerY + sin1 * WHEEL_RADIUS;
             float x4 = centerX + cos2 * WHEEL_RADIUS;
             float y4 = centerY + sin2 * WHEEL_RADIUS;
 
-            buffer.addVertex(matrix, x1, y1, 0).setColor(r, g, b, a);
-            buffer.addVertex(matrix, x2, y2, 0).setColor(r, g, b, a);
-            buffer.addVertex(matrix, x4, y4, 0).setColor(r, g, b, a);
-            buffer.addVertex(matrix, x3, y3, 0).setColor(r, g, b, a);
+            // Create gradient from inner (darker) to outer (lighter)
+            buffer.addVertex(matrix, x1, y1, 0).setColor(innerR, innerG, innerB, innerA);
+            buffer.addVertex(matrix, x2, y2, 0).setColor(innerR, innerG, innerB, innerA);
+            buffer.addVertex(matrix, x4, y4, 0).setColor(outerR, outerG, outerB, outerA);
+            buffer.addVertex(matrix, x3, y3, 0).setColor(outerR, outerG, outerB, outerA);
         }
     }
 
@@ -217,6 +305,7 @@ public class MiracleWheelOverlay {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.lineWidth(1.5f);
 
         Matrix4f matrix = graphics.pose().last().pose();
         Tesselator tesselator = Tesselator.getInstance();
@@ -234,11 +323,13 @@ public class MiracleWheelOverlay {
             float x2 = centerX + cos * WHEEL_RADIUS;
             float y2 = centerY + sin * WHEEL_RADIUS;
 
-            buffer.addVertex(matrix, x1, y1, 0).setColor(40, 45, 50, 140);
-            buffer.addVertex(matrix, x2, y2, 0).setColor(40, 45, 50, 140);
+            // Slightly brighter borders
+            buffer.addVertex(matrix, x1, y1, 0).setColor(90, 80, 110, 180);
+            buffer.addVertex(matrix, x2, y2, 0).setColor(90, 80, 110, 180);
         }
 
         BufferUploader.drawWithShader(buffer.buildOrThrow());
+        RenderSystem.lineWidth(1.0f);
         RenderSystem.disableBlend();
     }
 
@@ -249,27 +340,32 @@ public class MiracleWheelOverlay {
 
         Matrix4f matrix = graphics.pose().last().pose();
         Tesselator tesselator = Tesselator.getInstance();
+
+        // Draw filled circle with gradient
         BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
 
-        buffer.addVertex(matrix, centerX, centerY, 0).setColor(60, 65, 70, 220);
+        // Center is lighter
+        buffer.addVertex(matrix, centerX, centerY, 0).setColor(100, 80, 120, 240);
 
         int circleSegments = 40;
         for (int i = 0; i <= circleSegments; i++) {
             float angle = (float) (i * 2 * Math.PI / circleSegments);
             float x = centerX + (float) Math.cos(angle) * CENTER_RADIUS;
             float y = centerY + (float) Math.sin(angle) * CENTER_RADIUS;
-            buffer.addVertex(matrix, x, y, 0).setColor(60, 65, 70, 220);
+            // Edges are darker
+            buffer.addVertex(matrix, x, y, 0).setColor(70, 55, 90, 240);
         }
 
         BufferUploader.drawWithShader(buffer.buildOrThrow());
 
+        // Draw border ring
         buffer = tesselator.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
 
         for (int i = 0; i <= circleSegments; i++) {
             float angle = (float) (i * 2 * Math.PI / circleSegments);
             float x = centerX + (float) Math.cos(angle) * CENTER_RADIUS;
             float y = centerY + (float) Math.sin(angle) * CENTER_RADIUS;
-            buffer.addVertex(matrix, x, y, 0).setColor(80, 85, 90, 180);
+            buffer.addVertex(matrix, x, y, 0).setColor(130, 110, 150, 200);
         }
 
         BufferUploader.drawWithShader(buffer.buildOrThrow());
@@ -294,9 +390,11 @@ public class MiracleWheelOverlay {
 
             boolean isActive = (i == hoveredIndex);
 
-            graphics.drawString(mc.font, text, textX + 1, textY + 1, 0x80000000, false);
+            // Enhanced shadow
+            graphics.drawString(mc.font, text, textX + 1, textY + 1, 0xA0000000, false);
 
-            int textColor = isActive ? 0xFFFFFFFF : 0xFFD0D0D0;
+            // More vibrant colors
+            int textColor = isActive ? 0xFFFFE0A0 : 0xFFE8D0E8;
             graphics.drawString(mc.font, text, textX, textY, textColor, false);
         }
     }
