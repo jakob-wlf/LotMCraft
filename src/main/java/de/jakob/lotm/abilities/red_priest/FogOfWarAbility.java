@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.red_priest;
 
-import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;

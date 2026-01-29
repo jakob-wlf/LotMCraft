@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.darkness;
 
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;

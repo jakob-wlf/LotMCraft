@@ -1,6 +1,5 @@
 package de.jakob.lotm.entity.quests;
 
-import de.jakob.lotm.attachments.ModAttachments;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;

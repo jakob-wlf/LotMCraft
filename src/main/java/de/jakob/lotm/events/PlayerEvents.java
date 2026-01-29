@@ -1,20 +1,15 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.AbilityItemHandler;
-import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.darkness.NightmareAbility;
-import de.jakob.lotm.abilities.red_priest.CullAbility;
-import de.jakob.lotm.attachments.AbilityHotbarManager;
-import de.jakob.lotm.attachments.NewPlayerComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.NewPlayerComponent;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
-import de.jakob.lotm.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.util.BeyonderData;
@@ -48,15 +43,8 @@ public class PlayerEvents {
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            ToggleAbilityItem.cleanupEntity(player.level(), player);
             ToggleAbility.cleanUp(player.serverLevel(), player);
             DivinationAbility.cleanupOnLogout(player);
-
-            AbilityHotbarManager manager = player.getData(ModAttachments.ABILITY_HOTBAR);
-
-            if (manager.isAbilityHotbarActive()) {
-                manager.resetToRegularHotbar(player);
-            }
         }
     }
 
@@ -90,31 +78,6 @@ public class PlayerEvents {
         }
 
         ToggleAbility.cleanUp(level, event.getEntity());
-
-        if (event.getEntity() instanceof ServerPlayer player) {
-            ToggleAbilityItem.cleanupEntity(player.level(), player);
-
-            AbilityHotbarManager manager = player.getData(ModAttachments.ABILITY_HOTBAR);
-
-            if (manager.isAbilityHotbarActive()) {
-                manager.resetToRegularHotbar(player);
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerSave(PlayerEvent.SaveToFile event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            AbilityHotbarManager manager = player.getData(ModAttachments.ABILITY_HOTBAR);
-            // Save current state before file write
-            if (manager.isAbilityHotbarActive()) {
-                // Save the current ability hotbar to the attachment
-                manager.saveCurrentAbilityHotbar(player);
-            } else {
-                // Save regular hotbar to the attachment
-                manager.saveCurrentRegularHotbar(player);
-            }
-        }
     }
 
     private static final Random random = new Random();
@@ -123,29 +86,6 @@ public class PlayerEvents {
             new Vector3f(.05f, 0, 0),
             1.5f
     );
-
-    @SubscribeEvent
-    public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            AbilityHotbarManager manager = player.getData(ModAttachments.ABILITY_HOTBAR);
-
-            if (manager.isAbilityHotbarActive()) {
-                for (int i = 0; i < 9; i++) {
-                    var stack = player.getInventory().getItem(i);
-                    if (!stack.isEmpty() && !manager.canPlaceInAbilityHotbar(stack)) {
-                        player.getInventory().setItem(i, ItemStack.EMPTY);
-                        for(int j = 9; j < 36; j++) {
-                            if(player.getInventory().getItem(j).isEmpty()) {
-                                player.getInventory().setItem(j, stack);
-                                return;
-                            }
-                        }
-                        player.drop(stack, false);
-                    }
-                }
-            }
-        }
-    }
 
     @SubscribeEvent
     public static void onDamage(LivingIncomingDamageEvent event) {

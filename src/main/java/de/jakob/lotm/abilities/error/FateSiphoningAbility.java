@@ -1,7 +1,6 @@
 package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.rendering.effectRendering.DirectionalEffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;

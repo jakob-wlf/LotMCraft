@@ -1,12 +1,10 @@
 package de.jakob.lotm.effect;
 
 import de.jakob.lotm.damage.ModDamageTypes;
-import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;

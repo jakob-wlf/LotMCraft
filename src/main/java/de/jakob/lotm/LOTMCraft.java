@@ -1,10 +1,8 @@
 package de.jakob.lotm;
 
-import com.mojang.logging.LogUtils;
 import com.zigythebird.playeranim.animation.PlayerAnimationController;
 import com.zigythebird.playeranim.api.PlayerAnimationFactory;
 import com.zigythebird.playeranimcore.enums.PlayState;
-import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.core.AbilityHandler;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -18,7 +16,6 @@ import de.jakob.lotm.entity.client.*;
 import de.jakob.lotm.entity.quests.QuestRegistry;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.gui.ModMenuTypes;
-import de.jakob.lotm.gui.custom.AbilitySelection.AbilitySelectionScreen;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
@@ -34,7 +31,6 @@ import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.potions.PotionRecipes;
-import de.jakob.lotm.rendering.AbilityWheelOverlay;
 import de.jakob.lotm.rendering.GuidingBookRenderer;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.structure.ModStructures;
@@ -114,7 +110,6 @@ public class LOTMCraft
         ModDimensions.register(modEventBus);
         ModGameRules.register();
 
-        AbilityItemHandler.registerAbilities(modEventBus);
         PassiveAbilityHandler.registerAbilities(modEventBus);
         PotionItemHandler.registerPotions(modEventBus);
 
@@ -226,7 +221,6 @@ public class LOTMCraft
 
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event) {
-            event.register(ModMenuTypes.ABILITY_SELECTION_MENU.get(), AbilitySelectionScreen::new);
             event.register(ModMenuTypes.INTROSPECT_MENU.get(), IntrospectScreen::new);
             event.register(ModMenuTypes.MESSAGES_MENU.get(), MessagesScreen::new);
             event.register(ModMenuTypes.RECIPE_MENU.get(), RecipeScreen::new);

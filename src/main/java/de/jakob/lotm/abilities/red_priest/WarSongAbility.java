@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.red_priest;
 
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.sound.ModSounds;

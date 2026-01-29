@@ -1,7 +1,6 @@
 package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
@@ -22,7 +21,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 import java.util.HashMap;
 import java.util.Map;

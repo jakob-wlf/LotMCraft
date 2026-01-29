@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.abyss;
 
-import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

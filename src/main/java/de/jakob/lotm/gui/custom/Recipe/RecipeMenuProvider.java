@@ -1,9 +1,7 @@
 package de.jakob.lotm.gui.custom.Recipe;
 
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.pathways.PathwayInfos;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;

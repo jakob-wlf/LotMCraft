@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.abyss;
 
-import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.helper.AbilityUtil;

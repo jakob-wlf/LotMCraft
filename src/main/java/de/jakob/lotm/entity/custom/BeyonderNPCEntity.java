@@ -1,10 +1,9 @@
 package de.jakob.lotm.entity.custom;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.AbilityItem;
-import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.custom.goals.AbilityUseGoal;
@@ -13,8 +12,10 @@ import de.jakob.lotm.entity.quests.PlayerQuestData;
 import de.jakob.lotm.entity.quests.Quest;
 import de.jakob.lotm.entity.quests.QuestRegistry;
 import de.jakob.lotm.entity.quests.impl.CompoundQuest;
-import de.jakob.lotm.item.ModIngredients;
-import de.jakob.lotm.potions.*;
+import de.jakob.lotm.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.potions.PotionRecipeItem;
+import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -32,7 +33,10 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
@@ -40,9 +44,7 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
@@ -87,7 +89,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
     };
 
     private boolean defaultHostile;
-    private ArrayList<AbilityItem> usableAbilities = new ArrayList<>();
+    private ArrayList<Ability> usableAbilities = new ArrayList<>();
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         this(entityType, level, false); // Default to neutral
@@ -571,7 +573,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         }
         if(usableAbilities.isEmpty())
             return false;
-        for (AbilityItem ability : usableAbilities) {
+        for (Ability ability : usableAbilities) {
             if (ability.hasOptimalDistance) {
                 return false;
             }
@@ -580,8 +582,11 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     public void useAbility(Level level) {
+        if(level.isClientSide) {
+            return;
+        }
 
-        List<AbilityItem> usableAbilities = this.getUsableAbilities().stream().filter(a -> a.shouldUseAbility(this)).sorted(Comparator.comparing(AbilityItem::lowestSequenceUsable)).toList();
+        List<Ability> usableAbilities = this.getUsableAbilities().stream().filter(a -> a.shouldUseAbility(this) && a.canUse(this)).sorted(Comparator.comparing(Ability::lowestSequenceUsable)).toList();
 
         if (usableAbilities.isEmpty()) {
             return;
@@ -597,7 +602,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
         // Find which ability this corresponds to
         int cumulativeWeight = 0;
-        AbilityItem selectedAbility = usableAbilities.get(0); // fallback
+        Ability selectedAbility = usableAbilities.get(0); // fallback
 
         for (int i = 0; i < size; i++) {
             // Weight decreases: first item gets 'size' weight, last gets 1
@@ -610,7 +615,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
             }
         }
 
-        selectedAbility.useAsNpcAbility(level, this);
+        selectedAbility.useAbility((ServerLevel) level, this);
     }
 
     public void tryUseAbility() {
@@ -625,16 +630,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
             usableAbilities = new ArrayList<>();
         else
             usableAbilities.clear();
-        AbilityItemHandler.ITEMS.getEntries()
-                .stream()
-                .map(DeferredHolder::get)
-                .filter(a -> a instanceof AbilityItem)
-                .map(a -> (AbilityItem) a)
-                .filter(
-                        a -> a.getRequirements().containsKey(pathway) && a.getRequirements().get(pathway) >= sequence
-                )
-                .filter(a -> a.canBeUsedByNPC)
-                .forEach(usableAbilities::add);
+
+        LOTMCraft.abilityHandler.getByPathwayAndSequence(pathway, sequence).stream().filter(a -> a.canBeUsedByNPC).forEach(usableAbilities::add);
 
         MarionetteComponent component = this.getData(ModAttachments.MARIONETTE_COMPONENT.get());
         if(component.isMarionette()) {
@@ -644,17 +641,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
             if(BeyonderData.isBeyonder(controller) && BeyonderData.getSequence(controller) <= 4) {
                 String controllerPathway = BeyonderData.getPathway(controller);
                 int controllerSequence = BeyonderData.getSequence(controller);
-                AbilityItemHandler.ITEMS.getEntries()
-                        .stream()
-                        .map(DeferredHolder::get)
-                        .filter(a -> a instanceof AbilityItem)
-                        .map(a -> (AbilityItem) a)
-                        .filter(
-                                a -> a.getRequirements().containsKey(controllerPathway) && a.getRequirements().get(controllerPathway) >= controllerSequence
-                        )
-                        .filter(a -> a.canBeUsedByNPC)
-                        .forEach(usableAbilities::add);
-
+                LOTMCraft.abilityHandler.getByPathwayAndSequence(controllerPathway, controllerSequence).stream().filter(a -> a.canBeUsedByNPC).forEach(usableAbilities::add);
             }
         }
     }
@@ -674,7 +661,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         return controller == null || !controller.isAlive() ? null : controller;
     }
 
-    public ArrayList<AbilityItem> getUsableAbilities() {
+    public ArrayList<Ability> getUsableAbilities() {
         return usableAbilities;
     }
 

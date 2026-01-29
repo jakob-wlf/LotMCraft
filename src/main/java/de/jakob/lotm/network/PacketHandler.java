@@ -143,12 +143,6 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                SyncAbilityHotbarPacket.TYPE,
-                SyncAbilityHotbarPacket.STREAM_CODEC,
-                SyncAbilityHotbarPacket::handle
-        );
-
-        registrar.playToClient(
                 SyncTransformationPacket.TYPE,
                 SyncTransformationPacket.STREAM_CODEC,
                 SyncTransformationPacket::handle
@@ -247,17 +241,6 @@ public class PacketHandler {
                 SyncGriefingStatePacket.TYPE,
                 SyncGriefingStatePacket.STREAM_CODEC,
                 SyncGriefingStatePacket::handle
-        );
-        registrar.playToClient(
-                SyncAbilityMenuPacket.TYPE,
-                SyncAbilityMenuPacket.STREAM_CODEC,
-                SyncAbilityMenuPacket::handle
-        );
-
-        registrar.playToClient(
-                ToggleAbilityPacket.TYPE,
-                ToggleAbilityPacket.STREAM_CODEC,
-                ToggleAbilityPacket::handleClient
         );
 
         registrar.playToClient(
@@ -409,12 +392,6 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
-                OpenAbilitySelectionPacket.TYPE,
-                OpenAbilitySelectionPacket.STREAM_CODEC,
-                OpenAbilitySelectionPacket::handle
-        );
-
-        registrar.playToServer(
                 TeleportPlayerToLocationPacket.TYPE,
                 TeleportPlayerToLocationPacket.STREAM_CODEC,
                 TeleportPlayerToLocationPacket::handle
@@ -424,12 +401,6 @@ public class PacketHandler {
                 ToggleGriefingPacket.TYPE,
                 ToggleGriefingPacket.STREAM_CODEC,
                 ToggleGriefingPacket::handle
-        );
-
-        registrar.playToServer(
-                ToggleAbilityHotbarPacket.TYPE,
-                ToggleAbilityHotbarPacket.STREAM_CODEC,
-                ToggleAbilityHotbarPacket::handle
         );
 
         registrar.playToServer(

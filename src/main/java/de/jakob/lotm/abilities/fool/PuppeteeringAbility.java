@@ -1,7 +1,6 @@
 package de.jakob.lotm.abilities.fool;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;

@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.tyrant;
 
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;

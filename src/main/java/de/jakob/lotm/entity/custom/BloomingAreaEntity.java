@@ -1,8 +1,6 @@
 package de.jakob.lotm.entity.custom;
 
-import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

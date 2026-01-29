@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.core;
 
-import de.jakob.lotm.abilities.ClientAbilityWheelHelper;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import net.minecraft.server.level.ServerPlayer;

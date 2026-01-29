@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.error;
 
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.network.PacketHandler;
@@ -9,7 +8,6 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 

@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.red_priest;
 
-import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.FireballEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -8,7 +7,6 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
-import de.jakob.lotm.util.scheduling.ClientScheduler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;

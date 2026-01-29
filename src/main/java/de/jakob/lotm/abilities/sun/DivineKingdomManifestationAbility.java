@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.sun;
 
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.SunKingdomEntity;

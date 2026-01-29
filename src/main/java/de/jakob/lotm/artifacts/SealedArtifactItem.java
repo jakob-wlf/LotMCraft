@@ -1,11 +1,10 @@
 package de.jakob.lotm.artifacts;
 
-import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.data.ModDataComponents;
-import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -28,8 +27,8 @@ public class SealedArtifactItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
-        if(player.getCooldowns().isOnCooldown(this)) {
-            return InteractionResultHolder.fail(stack);
+        if(level.isClientSide) {
+            return InteractionResultHolder.success(stack);
         }
 
         SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
@@ -40,17 +39,10 @@ public class SealedArtifactItem extends Item {
         // Get the currently selected ability
         int selectedIndex = (new Random()).nextInt(data.abilities().size());
 
-        AbilityItem ability = data.abilities().get(selectedIndex);
-
-        if(!level.isClientSide) {
-            player.getCooldowns().addCooldown(this, 10);
-        }
+        Ability ability = data.abilities().get(selectedIndex);
 
         // Use the ability
-        if(!ability.useAsArtifactAbility(level, player)) {
-            return InteractionResultHolder.fail(stack);
-        }
-
+        ability.useAbility((ServerLevel) level, player);
         return InteractionResultHolder.success(stack);
     }
 
@@ -81,8 +73,8 @@ public class SealedArtifactItem extends Item {
                 .withStyle(ChatFormatting.AQUA)); // aqua = soft blue highlight
 
         for (int i = 0; i < data.abilities().size(); i++) {
-            AbilityItem ability = data.abilities().get(i);
-            Component abilityName = Component.translatable(ability.getDescriptionId());
+            Ability ability = data.abilities().get(i);
+            Component abilityName = Component.translatable("lotmcraft." + ability.getId());
 
             tooltipComponents.add(
                     Component.literal("  → ")

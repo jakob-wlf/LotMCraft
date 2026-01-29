@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.mother;
 
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.mother.handler.HybridMobData;
 import de.jakob.lotm.network.packets.toClient.HybridMobSyncPacket;
@@ -9,7 +8,6 @@ import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;

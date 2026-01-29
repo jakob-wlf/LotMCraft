@@ -1,11 +1,11 @@
 package de.jakob.lotm.abilities.tyrant.passives;
 
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
 import de.jakob.lotm.util.BeyonderData;
-import net.neoforged.fml.common.EventBusSubscriber;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbility {

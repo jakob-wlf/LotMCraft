@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.common;
 
-import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
@@ -11,21 +10,15 @@ import de.jakob.lotm.network.packets.toClient.SyncDangerPremonitionAbilityPacket
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ClientScheduler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.commands.LocateCommand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Logger;
 
 public class DivinationAbility extends SelectableAbility {
     public static final Set<UUID> dangerPremonitionActive = new HashSet<>();

@@ -1,7 +1,6 @@
 package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;

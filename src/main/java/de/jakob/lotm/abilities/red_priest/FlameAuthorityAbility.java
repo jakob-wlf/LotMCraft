@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.red_priest;
 
-import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.SpearOfDestructionProjectileEntity;
 import de.jakob.lotm.particle.ModParticles;

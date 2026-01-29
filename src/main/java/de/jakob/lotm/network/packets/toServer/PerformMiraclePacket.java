@@ -1,9 +1,7 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.door.TravelersDoorAbility;
 import de.jakob.lotm.abilities.fool.miracle_creation.MiracleHandler;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

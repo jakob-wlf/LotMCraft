@@ -1,7 +1,5 @@
 package de.jakob.lotm.abilities.mother;
 
-import de.jakob.lotm.abilities.AbilityItem;
-import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -13,7 +11,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;

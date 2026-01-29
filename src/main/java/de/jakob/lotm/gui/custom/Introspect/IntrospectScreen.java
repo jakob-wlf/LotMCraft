@@ -3,7 +3,6 @@ package de.jakob.lotm.gui.custom.Introspect;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
-import de.jakob.lotm.abilities.core.AbilityHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.OpenMessagesMenuPacket;
 import de.jakob.lotm.network.packets.toServer.SyncAbilityWheelAbilitiesPacket;

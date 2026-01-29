@@ -17,10 +17,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
-
-import static de.jakob.lotm.util.BeyonderData.beyonderMap;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class SubordinateEventHandler {

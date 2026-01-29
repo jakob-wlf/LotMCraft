@@ -2,13 +2,8 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.Messages.MessageMenuProvider;
-import de.jakob.lotm.gui.custom.Messages.MessagesMenu;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.beyonderMap.BeyonderMap;
-import de.jakob.lotm.util.beyonderMap.HonorificName;
-import de.jakob.lotm.util.beyonderMap.MessageType;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;

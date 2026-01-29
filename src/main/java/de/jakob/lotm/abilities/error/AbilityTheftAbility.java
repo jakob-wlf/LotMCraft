@@ -1,8 +1,5 @@
 package de.jakob.lotm.abilities.error;
 
-import de.jakob.lotm.abilities.AbilityItem;
-import de.jakob.lotm.abilities.AbilityItemHandler;
-import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
@@ -11,7 +8,6 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -44,78 +40,78 @@ public class AbilityTheftAbility extends Ability {
         if(true)
             return;
 
-        if(!(level instanceof ServerLevel)) {
-            if(entity instanceof Player player) {
-                player.playSound(SoundEvents.BELL_RESONATE, 1, 1);
-            }
-            return;
-        }
-
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2);
-        if(target == null) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_target").withColor(0x6d32a8));
-            return;
-        }
-
-        if(entity instanceof ServerPlayer serverPlayer) {
-            EffectManager.playEffect(EffectManager.Effect.ABILITY_THEFT, target.position().x, target.position().y + target.getEyeHeight(), target.position().z, serverPlayer);
-        }
-
-        if(!BeyonderData.isBeyonder(target)) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.not_beyonder").withColor(0x6d32a8));
-            return;
-        }
-
-        ArrayList<AbilityItem> stealableAbilities = new ArrayList<>(AbilityItemHandler.ITEMS.getEntries().stream().filter(abilityEntry -> {
-            if(!(abilityEntry.get() instanceof AbilityItem abilityItem) || abilityEntry.get() instanceof ToggleAbilityItem) return false;
-            if(!abilityItem.canBeCopied) return false;
-            if(BeyonderData.isSpecificAbilityDisabled(target, abilityItem.getDescriptionId())) return false;
-
-            return abilityItem.canUse(target, true);
-        }).map(abilityEntry -> (AbilityItem) abilityEntry.get()).toList());
-
-        if(stealableAbilities.isEmpty()) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_abilities").withColor(0x6d32a8));
-            return;
-        }
-
-        if(AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_abilities").withColor(0x6d32a8));
-            return;
-        }
-
-        if(doesTheftFail(BeyonderData.getSequence(entity), BeyonderData.getSequence(target))) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_abilities").withColor(0x6d32a8));
-            return;
-        }
-
-        List<AbilityItem> stolenItems = new ArrayList<>();
-        int sequence = BeyonderData.getSequence(entity);
-        int abilityCount = getAbilityCountForSequence(sequence);
-        int abilityUses = getAbilityUsesForSequence(sequence);
-        for(int i = 0; i < abilityCount; i++) {
-            if(stealableAbilities.isEmpty()) {
-                break;
-            }
-            int index = random.nextInt(stealableAbilities.size());
-            AbilityItem stolenAbility = stealableAbilities.get(index);
-            stealableAbilities.remove(index);
-            stolenItems.add(stolenAbility);
-            BeyonderData.disableSpecificAbilityWithTimeLimit(target, "ability_theft_disable", stolenAbility.getDescriptionId(), getDisablingTimeForSequenceInSeconds(sequence) * 1000L);
-        }
-
-        for(AbilityItem stolenItem : stolenItems) {
-            ItemStack stolenStack = new ItemStack(stolenItem);
-            stolenStack.set(ModDataComponents.ABILITY_USES, abilityUses);
-            stolenStack.set(ModDataComponents.IS_STOLEN, true);
-
-            if(entity instanceof Player player) {
-                if(!player.getInventory().add(stolenStack)) {
-                    player.drop(stolenStack, false);
-                }
-            }
-
-        }
+//        if(!(level instanceof ServerLevel)) {
+//            if(entity instanceof Player player) {
+//                player.playSound(SoundEvents.BELL_RESONATE, 1, 1);
+//            }
+//            return;
+//        }
+//
+//        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2);
+//        if(target == null) {
+//            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_target").withColor(0x6d32a8));
+//            return;
+//        }
+//
+//        if(entity instanceof ServerPlayer serverPlayer) {
+//            EffectManager.playEffect(EffectManager.Effect.ABILITY_THEFT, target.position().x, target.position().y + target.getEyeHeight(), target.position().z, serverPlayer);
+//        }
+//
+//        if(!BeyonderData.isBeyonder(target)) {
+//            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.not_beyonder").withColor(0x6d32a8));
+//            return;
+//        }
+//
+//        ArrayList<AbilityItem> stealableAbilities = new ArrayList<>(AbilityItemHandler.ITEMS.getEntries().stream().filter(abilityEntry -> {
+//            if(!(abilityEntry.get() instanceof AbilityItem abilityItem) || abilityEntry.get() instanceof ToggleAbilityItem) return false;
+//            if(!abilityItem.canBeCopied) return false;
+//            if(BeyonderData.isSpecificAbilityDisabled(target, abilityItem.getDescriptionId())) return false;
+//
+//            return abilityItem.canUse(target, true);
+//        }).map(abilityEntry -> (AbilityItem) abilityEntry.get()).toList());
+//
+//        if(stealableAbilities.isEmpty()) {
+//            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_abilities").withColor(0x6d32a8));
+//            return;
+//        }
+//
+//        if(AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
+//            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_abilities").withColor(0x6d32a8));
+//            return;
+//        }
+//
+//        if(doesTheftFail(BeyonderData.getSequence(entity), BeyonderData.getSequence(target))) {
+//            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_abilities").withColor(0x6d32a8));
+//            return;
+//        }
+//
+//        List<AbilityItem> stolenItems = new ArrayList<>();
+//        int sequence = BeyonderData.getSequence(entity);
+//        int abilityCount = getAbilityCountForSequence(sequence);
+//        int abilityUses = getAbilityUsesForSequence(sequence);
+//        for(int i = 0; i < abilityCount; i++) {
+//            if(stealableAbilities.isEmpty()) {
+//                break;
+//            }
+//            int index = random.nextInt(stealableAbilities.size());
+//            AbilityItem stolenAbility = stealableAbilities.get(index);
+//            stealableAbilities.remove(index);
+//            stolenItems.add(stolenAbility);
+//            BeyonderData.disableSpecificAbilityWithTimeLimit(target, "ability_theft_disable", stolenAbility.getDescriptionId(), getDisablingTimeForSequenceInSeconds(sequence) * 1000L);
+//        }
+//
+//        for(AbilityItem stolenItem : stolenItems) {
+//            ItemStack stolenStack = new ItemStack(stolenItem);
+//            stolenStack.set(ModDataComponents.ABILITY_USES, abilityUses);
+//            stolenStack.set(ModDataComponents.IS_STOLEN, true);
+//
+//            if(entity instanceof Player player) {
+//                if(!player.getInventory().add(stolenStack)) {
+//                    player.drop(stolenStack, false);
+//                }
+//            }
+//
+//        }
     }
 
     private static int getAbilityCountForSequence(int sequence) {

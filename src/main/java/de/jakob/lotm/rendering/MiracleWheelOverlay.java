@@ -2,10 +2,7 @@ package de.jakob.lotm.rendering;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import de.jakob.lotm.abilities.SelectableAbilityItem;
-import de.jakob.lotm.abilities.fool.miracle_creation.MiracleHandler;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.network.packets.toServer.PerformMiraclePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

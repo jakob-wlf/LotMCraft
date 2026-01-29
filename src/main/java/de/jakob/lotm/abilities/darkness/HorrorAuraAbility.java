@@ -1,11 +1,9 @@
 package de.jakob.lotm.abilities.darkness;
 
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
-import de.jakob.lotm.rendering.effectRendering.impl.HorrorAuraEffect;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;

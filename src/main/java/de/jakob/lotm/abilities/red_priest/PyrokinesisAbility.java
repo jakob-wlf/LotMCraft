@@ -1,7 +1,6 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.FireRavenEntity;
 import de.jakob.lotm.entity.custom.FireballEntity;

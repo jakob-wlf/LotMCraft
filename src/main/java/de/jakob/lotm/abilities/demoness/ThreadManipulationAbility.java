@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.demoness;
 
-import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;

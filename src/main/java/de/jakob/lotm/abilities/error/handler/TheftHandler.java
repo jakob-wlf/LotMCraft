@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.error.handler;
 
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerLevel;
@@ -16,7 +15,7 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
-import net.minecraft.world.entity.npc.*;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -219,7 +218,7 @@ public class TheftHandler {
 
         if(entity instanceof Player player) {
             for(ItemStack stack : player.getInventory().items) {
-                if(!stack.isEmpty() && !items.contains(stack.getItem()) && !(stack.getItem() instanceof AbilityItem)) {
+                if(!stack.isEmpty() && !items.contains(stack.getItem())) {
                     items.add(stack.getItem());
                 }
             }
@@ -263,7 +262,7 @@ public class TheftHandler {
     private static void stealFromPlayer(Player player, Player thief) {
         ArrayList<Integer> nonEmptySlots = new ArrayList<>();
         for (int i = 0; i < player.getInventory().items.size(); i++) {
-            if (!player.getInventory().items.get(i).isEmpty() && !(player.getInventory().items.get(i).getItem() instanceof AbilityItem)) {
+            if (!player.getInventory().items.get(i).isEmpty()) {
                 nonEmptySlots.add(i);
             }
         }

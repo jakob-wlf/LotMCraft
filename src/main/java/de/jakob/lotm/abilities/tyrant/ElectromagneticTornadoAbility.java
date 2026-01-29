@@ -1,10 +1,8 @@
 package de.jakob.lotm.abilities.tyrant;
 
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ElectromagneticTornadoEntity;
-import de.jakob.lotm.entity.custom.TornadoEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.world.entity.LivingEntity;

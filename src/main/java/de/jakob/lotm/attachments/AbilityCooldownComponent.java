@@ -2,7 +2,6 @@ package de.jakob.lotm.attachments;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import java.util.HashMap;

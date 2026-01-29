@@ -2,9 +2,8 @@ package de.jakob.lotm.artifacts;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import de.jakob.lotm.abilities.AbilityItem;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.item.Item;
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.core.Ability;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,22 +14,23 @@ import java.util.stream.Collectors;
 public record SealedArtifactData(
         String pathway,
         int sequence,
-        List<AbilityItem> abilities,
+        List<Ability> abilities,
         NegativeEffect negativeEffect
 ) {
-    
+
     public static final Codec<SealedArtifactData> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                     Codec.STRING.fieldOf("pathway").forGetter(SealedArtifactData::pathway),
                     Codec.INT.fieldOf("sequence").forGetter(SealedArtifactData::sequence),
-                    Codec.list(BuiltInRegistries.ITEM.byNameCodec())
+                    Codec.list(Codec.STRING)
                             .xmap(
-                                    items -> items.stream()
-                                            .filter(item -> item instanceof AbilityItem)
-                                            .map(item -> (AbilityItem) item)
+                                    // String IDs -> Ability objects
+                                    ids -> ids.stream()
+                                            .map(id -> LOTMCraft.abilityHandler.getById(id))
                                             .collect(Collectors.toList()),
+                                    // Ability objects -> String IDs
                                     abilities -> abilities.stream()
-                                            .map(ability -> (Item) ability)
+                                            .map(Ability::getId)
                                             .collect(Collectors.toList())
                             )
                             .fieldOf("abilities")

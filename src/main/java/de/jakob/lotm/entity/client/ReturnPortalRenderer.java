@@ -1,7 +1,6 @@
 package de.jakob.lotm.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.custom.ReturnPortalEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -10,8 +9,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.Random;
 
 public class ReturnPortalRenderer extends EntityRenderer<ReturnPortalEntity> {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_3.png");

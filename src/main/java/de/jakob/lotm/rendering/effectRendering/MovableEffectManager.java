@@ -2,8 +2,8 @@ package de.jakob.lotm.rendering.effectRendering;
 
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.AddMovableEffectPacket;
-import de.jakob.lotm.network.packets.toClient.UpdateMovableEffectPositionPacket;
 import de.jakob.lotm.network.packets.toClient.RemoveMovableEffectPacket;
+import de.jakob.lotm.network.packets.toClient.UpdateMovableEffectPositionPacket;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

@@ -1,7 +1,6 @@
 package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;

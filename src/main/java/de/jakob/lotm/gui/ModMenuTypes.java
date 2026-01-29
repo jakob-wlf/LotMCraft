@@ -1,7 +1,6 @@
 package de.jakob.lotm.gui;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.gui.custom.AbilitySelection.AbilitySelectionMenu;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelMenu;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
@@ -17,10 +16,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class ModMenuTypes {
 
     public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(Registries.MENU, LOTMCraft.MOD_ID);
-
-    public static final DeferredHolder<MenuType<?>, MenuType<AbilitySelectionMenu>> ABILITY_SELECTION_MENU =
-            MENU_TYPES.register("ability_selection_menu", () ->
-                    IMenuTypeExtension.create(AbilitySelectionMenu::new));
 
     public static final DeferredHolder<MenuType<?>, MenuType<IntrospectMenu>> INTROSPECT_MENU =
             MENU_TYPES.register("introspect_menu", () ->

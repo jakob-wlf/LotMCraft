@@ -1,7 +1,6 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.PocketDimensionData;
 import de.jakob.lotm.block.ModBlocks;

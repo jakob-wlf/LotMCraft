@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.wheel_of_fortune;
 
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.wheel_of_fortune.calamities.Calamity;
 import de.jakob.lotm.abilities.wheel_of_fortune.calamities.Earthquake;

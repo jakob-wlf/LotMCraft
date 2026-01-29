@@ -1,7 +1,6 @@
 package de.jakob.lotm.entity;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.custom.GiantLightningEntity;
 import de.jakob.lotm.entity.custom.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;

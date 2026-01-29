@@ -1,12 +1,10 @@
 package de.jakob.lotm.util.beyonderMap;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 
-import javax.annotation.Nullable;
 import java.util.LinkedList;
 
 public record StoredData(String pathway, Integer sequence, HonorificName honorificName,

@@ -2,7 +2,6 @@ package de.jakob.lotm.rendering;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import net.minecraft.client.Minecraft;

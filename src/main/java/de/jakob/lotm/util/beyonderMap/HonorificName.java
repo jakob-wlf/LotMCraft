@@ -2,7 +2,6 @@ package de.jakob.lotm.util.beyonderMap;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import org.w3c.dom.Attr;
 
 public record HonorificName(String first, String second, String third, String trueName) {
     static public String NBT_FIRST = "honorific_name_first";

@@ -1,22 +1,11 @@
 package de.jakob.lotm.abilities.door.passives;
 
-import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.PassiveAbilityItem;
 import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
-import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class PhysicalEnhancementsDoorAbility extends PhysicalEnhancementsAbility {

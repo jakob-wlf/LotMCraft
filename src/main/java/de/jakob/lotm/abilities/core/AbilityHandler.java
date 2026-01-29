@@ -233,6 +233,10 @@ public class AbilityHandler {
         abilities.add(new ConceptualTheftAbility("conceptual_theft_ability"));
     }
 
+    public HashSet<Ability> getAbilities() {
+        return new HashSet<>(abilities);
+    }
+
     public Ability getById(String id) {
         return abilities.stream().filter(ability -> ability.getId().equals(id)).findFirst().orElse(null);
     }

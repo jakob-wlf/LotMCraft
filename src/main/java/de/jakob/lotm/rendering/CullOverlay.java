@@ -1,11 +1,8 @@
 package de.jakob.lotm.rendering;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.core.ToggleAbility;
-import de.jakob.lotm.abilities.red_priest.CullAbility;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;

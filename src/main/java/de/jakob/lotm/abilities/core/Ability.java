@@ -110,6 +110,8 @@ public abstract class Ability {
 
         if(shouldConsumeSpirituality(entity) && BeyonderData.getSpirituality(entity) <= getSpiritualityCost()) return false;
 
+        if(!(entity instanceof Player) && !canBeUsedByNPC) return false;
+
         return true;
     }
 

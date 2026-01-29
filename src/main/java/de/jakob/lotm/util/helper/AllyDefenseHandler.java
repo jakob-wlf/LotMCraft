@@ -3,18 +3,15 @@ package de.jakob.lotm.util.helper;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
-import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Handles ally defense - when an ally is attacked or attacks someone,

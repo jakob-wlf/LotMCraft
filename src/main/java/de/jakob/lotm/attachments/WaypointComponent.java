@@ -1,7 +1,5 @@
 package de.jakob.lotm.attachments;
 
-import de.jakob.lotm.entity.quests.Quest;
-import de.jakob.lotm.entity.quests.QuestRegistry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -16,7 +14,6 @@ import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**

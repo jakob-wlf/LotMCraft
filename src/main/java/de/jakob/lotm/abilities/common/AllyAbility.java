@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.common;
 
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PendingAllyRequestPacket;

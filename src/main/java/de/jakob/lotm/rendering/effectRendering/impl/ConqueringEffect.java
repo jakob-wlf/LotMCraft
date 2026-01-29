@@ -7,7 +7,6 @@ import com.mojang.math.Axis;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;

@@ -1,13 +1,10 @@
 package de.jakob.lotm.gui.custom.Introspect;
 
-import de.jakob.lotm.abilities.*;
 import de.jakob.lotm.gui.ModMenuTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
@@ -15,8 +12,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static de.jakob.lotm.util.Config.items;
 
 public class IntrospectMenu extends AbstractContainerMenu {
     private final ItemStackHandler itemHandler;

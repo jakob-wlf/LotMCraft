@@ -2,7 +2,6 @@ package de.jakob.lotm.potions;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.BeyonderData;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;

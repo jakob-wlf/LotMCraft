@@ -1,10 +1,8 @@
 package de.jakob.lotm.attachments;
 
-import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.data.LocationWithLevelKey;
 import de.jakob.lotm.util.data.ServerLocation;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -19,7 +17,10 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.UUID;
 
 public class SefirotData extends SavedData {
 

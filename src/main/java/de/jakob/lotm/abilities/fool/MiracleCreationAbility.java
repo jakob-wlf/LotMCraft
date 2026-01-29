@@ -1,9 +1,6 @@
 package de.jakob.lotm.abilities.fool;
 
-import de.jakob.lotm.abilities.ClientAbilityWheelHelper;
-import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.abilities.core.SelectableAbility;
-import de.jakob.lotm.abilities.fool.miracle_creation.MiracleHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.rendering.MiracleWheelOverlay;
 import net.minecraft.world.entity.LivingEntity;

@@ -1,24 +1,15 @@
 package de.jakob.lotm.abilities.door;
 
-import de.jakob.lotm.abilities.SelectableAbilityItem;
-import de.jakob.lotm.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.abilities.core.SelectableAbility;
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.AddPlayerToTeleportationListPacket;
-import de.jakob.lotm.network.packets.toClient.ClearPlayerListInTeleportationPacket;
-import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.UUID;
 
 public class PlayerTeleportationAbility extends SelectableAbility {
 

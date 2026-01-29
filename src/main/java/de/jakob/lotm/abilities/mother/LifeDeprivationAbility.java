@@ -1,7 +1,5 @@
 package de.jakob.lotm.abilities.mother;
 
-import de.jakob.lotm.abilities.AbilityItem;
-import de.jakob.lotm.abilities.SelectableAbilityItem;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -9,7 +7,6 @@ import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -19,7 +16,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class LifeDeprivationAbility extends SelectableAbility {
     public LifeDeprivationAbility(String id) {

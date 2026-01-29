@@ -1,8 +1,6 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.AbilityWheelComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;

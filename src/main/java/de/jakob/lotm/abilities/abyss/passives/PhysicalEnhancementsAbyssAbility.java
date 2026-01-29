@@ -3,7 +3,9 @@ package de.jakob.lotm.abilities.abyss.passives;
 import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
 import de.jakob.lotm.util.BeyonderData;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PhysicalEnhancementsAbyssAbility extends PhysicalEnhancementsAbility {
 

@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.visionary;
 
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;

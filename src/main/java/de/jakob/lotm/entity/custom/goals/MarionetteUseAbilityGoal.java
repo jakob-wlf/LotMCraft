@@ -1,11 +1,12 @@
 package de.jakob.lotm.entity.custom.goals;
 
-import de.jakob.lotm.abilities.AbilityItem;
-import de.jakob.lotm.abilities.AbilityItemHandler;
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.fool.passives.PuppeteeringEnhancementsAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
@@ -41,17 +42,20 @@ public class MarionetteUseAbilityGoal extends TargetGoal {
         return true;
     }
 
-    private List<AbilityItem> usableAbilities() {
-        return AbilityItemHandler.ITEMS.getEntries().stream().filter(i -> i.get() instanceof AbilityItem).map(i -> (AbilityItem) i.get()).filter(a -> a.canUse(controller)).toList();
+    private List<Ability> usableAbilities() {
+        return LOTMCraft.abilityHandler.getAbilities().stream().filter(a -> a.canUse(controller)).toList();
     }
 
     private final Random random = new Random();
 
     @Override
     public void tick() {
+        if(marionette.level().isClientSide) {
+            return;
+        }
         if(random.nextInt(100) >= 40) {
-            List<AbilityItem> abilityItems = usableAbilities();
-            abilityItems.get(random.nextInt(abilityItems.size())).useAsNpcAbility(marionette.level(), marionette);
+            List<Ability> abilityItems = usableAbilities();
+            abilityItems.get(random.nextInt(abilityItems.size())).useAbility((ServerLevel) marionette.level(), marionette);
         }
     }
 

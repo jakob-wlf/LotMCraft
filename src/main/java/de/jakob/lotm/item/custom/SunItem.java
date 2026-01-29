@@ -1,6 +1,5 @@
 package de.jakob.lotm.item.custom;
 
-import de.jakob.lotm.entity.client.BigSunRenderer;
 import de.jakob.lotm.entity.custom.BigSunEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.DamageLookup;

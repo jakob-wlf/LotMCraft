@@ -1,6 +1,5 @@
 package de.jakob.lotm.abilities.fool;
 
-import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.gui.custom.UsernameInput.UsernameInputScreen;
 import de.jakob.lotm.util.helper.SkinChanger;

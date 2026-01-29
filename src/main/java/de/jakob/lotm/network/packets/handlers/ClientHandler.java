@@ -1,8 +1,6 @@
 package de.jakob.lotm.network.packets.handlers;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.ToggleAbilityItem;
-import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.door.PlayerTeleportationAbility;
 import de.jakob.lotm.attachments.AllyComponent;
@@ -222,43 +220,8 @@ public class ClientHandler {
         VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration);
     }
 
-    public static void handleHotbarPacket(SyncAbilityHotbarPacket packet) {
-        Player player = Minecraft.getInstance().player;
-        if (player != null) {
-            player.getData(ModAttachments.ABILITY_HOTBAR.get()).setCurrentHotbarIndex(packet.hotbarIndex());
-        }
-    }
-
     public static void addPlayerToList(int id, String playerName, UUID playerUUID) {
         PlayerTeleportationAbility.allPlayers.add(new PlayerTeleportationAbility.PlayerInfo(id, playerName, playerUUID));
-    }
-
-    public static void handleToggleAbilityPacket(ToggleAbilityPacket packet, IPayloadContext context) {
-        Minecraft mc = Minecraft.getInstance();
-        if(mc.level == null) return;
-
-        Entity entity = mc.level.getEntity(packet.entityId());
-
-        // Try to find by UUID if hash code lookup fails
-        if(entity == null) {
-            for(Entity e : mc.level.entitiesForRendering()) {
-                if(e.getId() == packet.entityId()) {
-                    entity = e;
-                    break;
-                }
-            }
-        }
-
-        if(!(entity instanceof LivingEntity livingEntity)) return;
-
-        // Get the ability instance from registry
-        ResourceLocation abilityLocation = ResourceLocation.parse(packet.abilityId());
-        Item item = BuiltInRegistries.ITEM.get(abilityLocation);
-
-        if(!(item instanceof ToggleAbilityItem ability)) return;
-
-        // Update client-side state
-        ability.handleClientSync(mc.level, livingEntity, packet.active());
     }
 
     public static void addMovableEffect(UUID effectId, int index,

@@ -1,10 +1,9 @@
 package de.jakob.lotm.entity.custom;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.AbilityItem;
-import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.goals.RangedCombatGoal;
 import de.jakob.lotm.entity.custom.goals.avatar.AvatarAbilityUseGoal;
@@ -51,7 +50,7 @@ public class AvatarEntity extends PathfinderMob {
     private String pathway = "error";
     private int sequence = 5;
 
-    private ArrayList<AbilityItem> usableAbilities = new ArrayList<>();
+    private ArrayList<Ability> usableAbilities = new ArrayList<>();
 
     LivingEntity ownerEntity;
 
@@ -347,7 +346,7 @@ public class AvatarEntity extends PathfinderMob {
         }
         if(usableAbilities.isEmpty())
             return false;
-        for (AbilityItem ability : usableAbilities) {
+        for (Ability ability : usableAbilities) {
             if (ability.hasOptimalDistance) {
                 return false;
             }
@@ -356,8 +355,11 @@ public class AvatarEntity extends PathfinderMob {
     }
 
     public void useAbility(Level level) {
+        if(level.isClientSide) {
+            return;
+        }
 
-        List<AbilityItem> usableAbilities = this.getUsableAbilities().stream().filter(a -> a.shouldUseAbility(this)).sorted(Comparator.comparing(AbilityItem::lowestSequenceUsable)).toList();
+        List<Ability> usableAbilities = this.getUsableAbilities().stream().filter(a -> a.shouldUseAbility(this) && a.canUse(this)).sorted(Comparator.comparing(Ability::lowestSequenceUsable)).toList();
 
         if (usableAbilities.isEmpty()) {
             return;
@@ -373,7 +375,7 @@ public class AvatarEntity extends PathfinderMob {
 
         // Find which ability this corresponds to
         int cumulativeWeight = 0;
-        AbilityItem selectedAbility = usableAbilities.get(0); // fallback
+        Ability selectedAbility = usableAbilities.get(0); // fallback
 
         for (int i = 0; i < size; i++) {
             // Weight decreases: first item gets 'size' weight, last gets 1
@@ -386,7 +388,7 @@ public class AvatarEntity extends PathfinderMob {
             }
         }
 
-        selectedAbility.useAsNpcAbility(level, this);
+        selectedAbility.useAbility((ServerLevel) level, this);
     }
 
     public void tryUseAbility() {
@@ -401,16 +403,7 @@ public class AvatarEntity extends PathfinderMob {
             usableAbilities = new ArrayList<>();
         else
             usableAbilities.clear();
-        AbilityItemHandler.ITEMS.getEntries()
-                .stream()
-                .map(DeferredHolder::get)
-                .filter(a -> a instanceof AbilityItem)
-                .map(a -> (AbilityItem) a)
-                .filter(
-                        a -> a.getRequirements().containsKey(pathway) && a.getRequirements().get(pathway) >= sequence
-                )
-                .filter(a -> a.canBeUsedByNPC)
-                .forEach(usableAbilities::add);
+        LOTMCraft.abilityHandler.getByPathwayAndSequence(pathway, sequence).stream().filter(a -> a.canBeUsedByNPC).forEach(usableAbilities::add);
 
         MarionetteComponent component = this.getData(ModAttachments.MARIONETTE_COMPONENT.get());
         if(component.isMarionette()) {
@@ -420,16 +413,7 @@ public class AvatarEntity extends PathfinderMob {
             if(BeyonderData.isBeyonder(controller) && BeyonderData.getSequence(controller) <= 4) {
                 String controllerPathway = BeyonderData.getPathway(controller);
                 int controllerSequence = BeyonderData.getSequence(controller);
-                AbilityItemHandler.ITEMS.getEntries()
-                        .stream()
-                        .map(DeferredHolder::get)
-                        .filter(a -> a instanceof AbilityItem)
-                        .map(a -> (AbilityItem) a)
-                        .filter(
-                                a -> a.getRequirements().containsKey(controllerPathway) && a.getRequirements().get(controllerPathway) >= controllerSequence
-                        )
-                        .filter(a -> a.canBeUsedByNPC)
-                        .forEach(usableAbilities::add);
+                LOTMCraft.abilityHandler.getByPathwayAndSequence(controllerPathway, controllerSequence).stream().filter(a -> a.canBeUsedByNPC).forEach(usableAbilities::add);
 
             }
         }
@@ -450,7 +434,7 @@ public class AvatarEntity extends PathfinderMob {
         return controller == null || !controller.isAlive() ? null : controller;
     }
 
-    public ArrayList<AbilityItem> getUsableAbilities() {
+    public ArrayList<Ability> getUsableAbilities() {
         return usableAbilities;
     }
 

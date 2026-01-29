@@ -3,7 +3,6 @@ package de.jakob.lotm.entity.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.custom.BlackHoleEntity;
 import de.jakob.lotm.entity.custom.SunEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
