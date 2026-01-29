@@ -8,6 +8,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.ClientData;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -15,7 +16,11 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.ArrayList;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class KeyInputHandler {
@@ -107,6 +112,42 @@ public class KeyInputHandler {
                 PacketHandler.sendToServer(new CloseAbilityWheelPacket());
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onKeyInput(InputEvent.Key event) {
+        int key = event.getKey();
+
+        int number = -1;
+
+        // Check if it's a number key (top row)
+        if (key >= GLFW.GLFW_KEY_0 && key <= GLFW.GLFW_KEY_9) {
+            number = (key == GLFW.GLFW_KEY_0) ? 0 : (key - GLFW.GLFW_KEY_0);
+        }
+
+        // Or check numpad keys
+        if (key >= GLFW.GLFW_KEY_KP_0 && key <= GLFW.GLFW_KEY_KP_9) {
+            number = key - GLFW.GLFW_KEY_KP_0;
+        }
+
+        if(number <= 0) {
+            return;
+        }
+
+        if(!(Minecraft.getInstance().screen instanceof AbilityWheelScreen)) {
+            return;
+        }
+
+        if(number >= ClientData.getAbilityWheelAbilities().size()) {
+            return;
+        }
+
+        PacketHandler.sendToServer(new UpdateSelectedAbilityPacket(number - 1));
+        ClientData.setAbilityWheelData(
+                new ArrayList<>(ClientData.getAbilityWheelAbilities()),
+                number - 1
+        );
+        PacketHandler.sendToServer(new CloseAbilityWheelPacket());
     }
 
     private static void openAbilityWheel() {
