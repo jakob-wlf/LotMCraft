@@ -61,7 +61,7 @@ public class CleansingAbility extends SelectableAbility {
                     .stream()
                     .map(MobEffectInstance::getEffect)
                     .filter(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL)
-                    .forEach(entity::removeEffect);
+                    .forEach(e::removeEffect);
 
             if(e instanceof Player player) {
                 player.getFoodData().setSaturation(20);

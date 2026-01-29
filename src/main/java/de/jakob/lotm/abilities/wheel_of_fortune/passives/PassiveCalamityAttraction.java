@@ -37,7 +37,7 @@ public class PassiveCalamityAttraction extends PassiveAbilityItem {
             return;
         }
 
-        if(BeyonderData.getSequence(entity) <= 4) {
+        if(BeyonderData.getSequence(entity) <= 5) {
             return;
         }
 

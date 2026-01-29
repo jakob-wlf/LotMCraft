@@ -189,6 +189,8 @@ public class BeyonderMap extends SavedData {
     public Optional<StoredData> get(LivingEntity entity){
         if(!(entity instanceof ServerPlayer)) return Optional.empty();
 
+        if(!map.containsKey(entity.getUUID()) || map.get(entity.getUUID()) == null) return Optional.empty();
+
         return Optional.of(map.get(entity.getUUID()));
     }
 

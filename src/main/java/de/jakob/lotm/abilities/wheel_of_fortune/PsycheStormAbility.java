@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -47,7 +48,7 @@ public class PsycheStormAbility extends Ability {
         }
 
         AbilityUtil.damageNearbyEntities(serverLevel, entity, 10, DamageLookup.lookupDamage(6, .875) * multiplier(entity), entity.getEyePosition(), true, false);
-        AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 10, entity.getEyePosition(), new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 7, random.nextInt(1) + 3));
+        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10).forEach(e -> e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 7, getAmplifier(entity, e))));
 
         Location loc = new Location(entity.position(), serverLevel);
 
@@ -59,5 +60,29 @@ public class PsycheStormAbility extends Ability {
 
         serverLevel.playSound(null, BlockPos.containing(loc.getPosition()), SoundEvents.BREEZE_DEATH, SoundSource.BLOCKS);
 
+    }
+
+    private int getAmplifier(LivingEntity entity, LivingEntity target) {
+        if(AbilityUtil.isTargetSignificantlyWeaker(entity, target)) {
+            return 6;
+        }
+
+        if(AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
+            return 1;
+        }
+
+        if(BeyonderData.isBeyonder(entity) && BeyonderData.isBeyonder(target)) {
+            int targetSequence = BeyonderData.getSequence(target);
+            int sequence = BeyonderData.getSequence(entity);
+
+            if(targetSequence <= sequence) {
+                return 2;
+            }
+            else {
+                return random.nextInt(3, 5);
+            }
+        }
+
+        return 1;
     }
 }

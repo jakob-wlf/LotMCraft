@@ -112,6 +112,10 @@ public abstract class Ability {
 
         if(!(entity instanceof Player) && !canBeUsedByNPC) return false;
 
+        if(BeyonderData.isAbilityDisabled(entity)) return false;
+
+        if(BeyonderData.isSpecificAbilityDisabled(entity, getId())) return false;
+
         return true;
     }
 

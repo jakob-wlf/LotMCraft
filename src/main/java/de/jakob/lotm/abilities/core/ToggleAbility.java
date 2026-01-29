@@ -79,7 +79,7 @@ public abstract class ToggleAbility extends Ability {
             return activeAbilities.containsKey(entity.getUUID()) && activeAbilities.get(entity.getUUID()).contains(this);
         }
         else {
-            return activeAbilitiesClientCache.containsKey(entity.getUUID()) && activeAbilities.get(entity.getUUID()).contains(this);
+            return activeAbilitiesClientCache.containsKey(entity.getUUID()) && activeAbilities.get(entity.getUUID()) != null && activeAbilities.get(entity.getUUID()).contains(this);
         }
     }
 

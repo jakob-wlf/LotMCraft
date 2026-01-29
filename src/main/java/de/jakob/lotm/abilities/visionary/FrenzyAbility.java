@@ -58,27 +58,41 @@ public class FrenzyAbility extends Ability {
             return;
         }
 
-        int amplifier = 0;
-        if(!BeyonderData.isBeyonder(target)) {
-            amplifier = Math.max(1, 3 + 7 - BeyonderData.getSequence(entity));
-        }
-        else {
-            int sequence = BeyonderData.getSequence(target);
-            int difference = sequence - BeyonderData.getSequence(entity);
-            if(difference > 0)
-                amplifier = 2 + difference;
-        }
+        int amplifier = getAmplifier(entity, target);
 
         if(!BeyonderData.isBeyonder(target) || BeyonderData.getSequence(target) >= BeyonderData.getSequence(entity)) {
-            amplifier = (int) Math.round(amplifier * (multiplier(entity) / 2f));
             if (!target.hasEffect(ModEffects.LOOSING_CONTROL) || target.getEffect(ModEffects.LOOSING_CONTROL).getAmplifier() < amplifier)
                 target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 8, amplifier));
         }
 
         target.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), (float) (DamageLookup.lookupDamage(7, .85) * multiplier(entity)));
 
-        target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync((float) (-0.1f * multiplier(entity)), target);
+        target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync((float) (-0.065f * multiplier(entity) * multiplier(entity)), target);
 
         ParticleUtil.spawnParticles((ServerLevel) level, dust, target.getEyePosition(), 80, 0.5f);
+    }
+
+    private int getAmplifier(LivingEntity entity, LivingEntity target) {
+        if(AbilityUtil.isTargetSignificantlyWeaker(entity, target)) {
+            return 6;
+        }
+
+        if(AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
+            return 1;
+        }
+
+        if(BeyonderData.isBeyonder(entity) && BeyonderData.isBeyonder(target)) {
+            int targetSequence = BeyonderData.getSequence(target);
+            int sequence = BeyonderData.getSequence(entity);
+
+            if(targetSequence <= sequence) {
+                return 2;
+            }
+            else {
+                return random.nextInt(3, 5);
+            }
+        }
+
+        return 1;
     }
 }

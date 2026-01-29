@@ -61,7 +61,7 @@ public class SpiritualBaptismAbility extends Ability {
                 .stream()
                 .map(MobEffectInstance::getEffect)
                 .filter(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL)
-                .forEach(entity::removeEffect);
+                .forEach(target::removeEffect);
 
         if(target instanceof Player player) {
             player.getFoodData().setSaturation(20);
