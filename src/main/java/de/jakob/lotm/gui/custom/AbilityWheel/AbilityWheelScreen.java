@@ -19,12 +19,13 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
     private static final ResourceLocation WHEEL_BACKGROUND =
             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/ability_wheel_background.png");
 
-    private static final int WHEEL_SIZE = 200;
+    private static final int WHEEL_SIZE = 180;
     private static final int CENTER_X = WHEEL_SIZE / 2;
     private static final int CENTER_Y = WHEEL_SIZE / 2;
+    private static final int WHEEL_RADIUS = WHEEL_SIZE / 2;
 
-    private static final int SLOT_SIZE = 28;
-    private static final int SLOT_HOVER_SIZE = 30;
+    private static final int SLOT_SIZE = 30;
+    private static final int SLOT_HOVER_SIZE = 32;
 
     private int hoveredSlot = -1;
 
@@ -50,7 +51,7 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
             return;
         }
 
-        // Update hovered slot
+        // Update hovered slot based on section
         hoveredSlot = getSlotAtPosition(mouseX, mouseY, abilities.size());
     }
 
@@ -82,6 +83,14 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
         RenderSystem.setShaderTexture(0, WHEEL_BACKGROUND);
         guiGraphics.blit(WHEEL_BACKGROUND, this.leftPos, this.topPos, 0, 0, WHEEL_SIZE, WHEEL_SIZE, WHEEL_SIZE, WHEEL_SIZE);
 
+        // Render section glow for hovered section
+        if (hoveredSlot != -1) {
+            renderSectionGlow(guiGraphics, centerX, centerY, abilities.size(), hoveredSlot);
+        }
+
+        // Render section divider lines
+        renderSectionLines(guiGraphics, centerX, centerY, abilities);
+
         // Only render ability slots dynamically
         renderAbilitySlots(guiGraphics, centerX, centerY, abilities);
 
@@ -89,14 +98,97 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
         RenderSystem.disableBlend();
     }
 
-    private void renderCenterLines(GuiGraphics guiGraphics, int centerX, int centerY, List<String> abilities) {
+    private void renderSectionLines(GuiGraphics guiGraphics, int centerX, int centerY, List<String> abilities) {
         int abilityCount = Math.min(abilities.size(), 14);
-        int lineColor = 0x998B6914; // Semi-transparent golden color
+        int lineColor = 0x4Dc4a8e3; // Semi-transparent golden color (30% opacity)
 
         for (int i = 0; i < abilityCount; i++) {
-            SlotPosition pos = getSlotPosition(i, abilityCount, centerX, centerY);
-            drawLine(guiGraphics, centerX, centerY, pos.x, pos.y, lineColor, 2);
+            // Calculate angle for the line (between two abilities)
+            double angleOffset = 360.0 / abilityCount / 2.0; // Half section to get middle
+            double angle = Math.toRadians(i * (360.0 / abilityCount) - 90 - angleOffset);
+
+            // Calculate end point at the wheel's edge
+            int endX = centerX + (int)(Math.cos(angle) * WHEEL_RADIUS);
+            int endY = centerY + (int)(Math.sin(angle) * WHEEL_RADIUS);
+
+            // Draw smooth line
+            drawSmoothLine(guiGraphics, centerX, centerY, endX, endY, lineColor);
         }
+    }
+
+    private void renderSectionGlow(GuiGraphics guiGraphics, int centerX, int centerY, int totalSlots, int hoveredSection) {
+        double degreesPerSection = 360.0 / totalSlots;
+
+        // Calculate start and end angles for this section (in radians for efficiency)
+        double sectionStartAngle = Math.toRadians(hoveredSection * degreesPerSection - 90 - (degreesPerSection / 2.0));
+        double sectionEndAngle = Math.toRadians(hoveredSection * degreesPerSection - 90 + (degreesPerSection / 2.0));
+
+        int maxGlowRadius = (int) Math.round(WHEEL_RADIUS / 1.5);
+
+        // OPTIMIZATION 1: Reduce pixel sampling - only check every 2-3 pixels
+        int step = 2; // Increase to 3 for even better performance
+
+        // OPTIMIZATION 2: Pre-calculate these once
+        double radiusSq = maxGlowRadius * maxGlowRadius;
+        double invMaxRadius = 1.0 / maxGlowRadius;
+
+        // Pre-calculate bounds
+        int minX = centerX - maxGlowRadius;
+        int maxX = centerX + maxGlowRadius;
+        int minY = centerY - maxGlowRadius;
+        int maxY = centerY + maxGlowRadius;
+
+        // OPTIMIZATION 3: Use PoseStack for batch rendering instead of individual fill calls
+        var pose = guiGraphics.pose();
+        pose.pushPose();
+
+        // Draw glow with reduced sampling
+        for (int y = minY; y <= maxY; y += step) {
+            for (int x = minX; x <= maxX; x += step) {
+                int dx = x - centerX;
+                int dy = y - centerY;
+
+                // OPTIMIZATION 4: Use squared distance to avoid sqrt
+                double distanceSq = dx * dx + dy * dy;
+
+                // Skip if outside glow radius (using squared distance)
+                if (distanceSq > radiusSq || distanceSq < 1) {
+                    continue;
+                }
+
+                // Calculate angle of this pixel
+                double pixelAngle = Math.atan2(dy, dx);
+
+                // Normalize angles to same range for comparison
+                double normalizedPixelAngle = pixelAngle;
+                double normalizedStartAngle = sectionStartAngle;
+                double normalizedEndAngle = sectionEndAngle;
+
+                // Handle angle wrapping
+                if (normalizedEndAngle < normalizedStartAngle) {
+                    normalizedEndAngle += 2 * Math.PI;
+                }
+                if (normalizedPixelAngle < normalizedStartAngle) {
+                    normalizedPixelAngle += 2 * Math.PI;
+                }
+
+                // Check if pixel is within the section's angular range
+                if (normalizedPixelAngle >= normalizedStartAngle && normalizedPixelAngle <= normalizedEndAngle) {
+                    // OPTIMIZATION 5: Calculate alpha using squared distance
+                    double distance = Math.sqrt(distanceSq); // Only sqrt when needed
+                    double alphaMult = 1.0 - (distance * invMaxRadius);
+                    int alpha = (int)(0xEE * alphaMult);
+
+                    if (alpha > 0) {
+                        int glowColor = (alpha << 24) | 0xc4a8e3;
+                        // Draw slightly larger pixels to compensate for step
+                        guiGraphics.fill(x, y, x + step, y + step, glowColor);
+                    }
+                }
+            }
+        }
+
+        pose.popPose();
     }
 
     private void renderAbilitySlots(GuiGraphics guiGraphics, int centerX, int centerY, List<String> abilities) {
@@ -184,17 +276,54 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
         int centerX = this.leftPos + CENTER_X;
         int centerY = this.topPos + CENTER_Y;
 
-        for (int i = 0; i < totalSlots; i++) {
-            SlotPosition pos = getSlotPosition(i, totalSlots, centerX, centerY);
-            int halfSize = SLOT_HOVER_SIZE / 2;
+        // Calculate relative position from center
+        int relativeX = mouseX - centerX;
+        int relativeY = mouseY - centerY;
 
-            if (mouseX >= pos.x - halfSize && mouseX <= pos.x + halfSize &&
-                    mouseY >= pos.y - halfSize && mouseY <= pos.y + halfSize) {
-                return i;
-            }
+        // Calculate distance from center
+        double distance = Math.sqrt(relativeX * relativeX + relativeY * relativeY);
+
+        // Check if mouse is outside the wheel
+        if (distance > WHEEL_RADIUS) {
+            return -1;
         }
 
-        return -1;
+        // Calculate angle in radians, then convert to degrees
+        // atan2 gives us the angle from the positive X axis (right = 0°)
+        double angleRadians = Math.atan2(relativeY, relativeX);
+        double angleDegrees = Math.toDegrees(angleRadians);
+
+        // Normalize to 0-360 range (atan2 returns -180 to 180)
+        if (angleDegrees < 0) {
+            angleDegrees += 360;
+        }
+
+        // Calculate degrees per section
+        double degreesPerSection = 360.0 / totalSlots;
+
+        // The first ability is at -90 degrees (straight up, or 270 in our 0-360 system)
+        // We need to rotate our coordinate system so that:
+        // - The first section (index 0) is centered at 270° (up)
+        // - Section boundaries are offset by half a section from the ability positions
+
+        // Offset to align: rotate by 90° (to make up = 0°) then by half section (to center sections)
+        double adjustedAngle = angleDegrees - 270 + (degreesPerSection / 2.0);
+
+        // Normalize back to 0-360
+        while (adjustedAngle < 0) {
+            adjustedAngle += 360;
+        }
+        adjustedAngle = adjustedAngle % 360;
+
+        // Calculate which section this angle falls into
+        int section = (int)(adjustedAngle / degreesPerSection);
+
+        // Ensure section is within valid range
+        if (section >= totalSlots) {
+            section = 0;
+        }
+
+        return section;
     }
 
     @Override
@@ -220,31 +349,73 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
         // Don't render inventory labels
     }
 
-    // Helper method to draw a line with thickness
-    private void drawLine(GuiGraphics guiGraphics, int x1, int y1, int x2, int y2, int color, int thickness) {
-        int dx = Math.abs(x2 - x1);
-        int dy = Math.abs(y2 - y1);
-        int sx = x1 < x2 ? 1 : -1;
-        int sy = y1 < y2 ? 1 : -1;
-        int err = dx - dy;
+    // Smooth anti-aliased line drawing using Xiaolin Wu's algorithm (simplified)
+    private void drawSmoothLine(GuiGraphics guiGraphics, int x0, int y0, int x1, int y1, int baseColor) {
+        int dx = Math.abs(x1 - x0);
+        int dy = Math.abs(y1 - y0);
 
-        int halfThickness = thickness / 2;
+        if (dx == 0 && dy == 0) {
+            guiGraphics.fill(x0, y0, x0 + 1, y0 + 1, baseColor);
+            return;
+        }
 
-        while (true) {
-            // Draw a small rectangle for thickness
-            guiGraphics.fill(x1 - halfThickness, y1 - halfThickness,
-                    x1 + halfThickness, y1 + halfThickness, color);
+        // Extract ARGB components
+        int alpha = (baseColor >> 24) & 0xFF;
+        int red = (baseColor >> 16) & 0xFF;
+        int green = (baseColor >> 8) & 0xFF;
+        int blue = baseColor & 0xFF;
 
-            if (x1 == x2 && y1 == y2) break;
-
-            int e2 = 2 * err;
-            if (e2 > -dy) {
-                err -= dy;
-                x1 += sx;
+        if (dx > dy) {
+            // Line is more horizontal
+            if (x0 > x1) {
+                int temp = x0; x0 = x1; x1 = temp;
+                temp = y0; y0 = y1; y1 = temp;
             }
-            if (e2 < dx) {
-                err += dx;
-                y1 += sy;
+
+            float gradient = (float)(y1 - y0) / (x1 - x0);
+            float y = y0;
+
+            for (int x = x0; x <= x1; x++) {
+                int yInt = (int)y;
+                float yFrac = y - yInt;
+
+                // Main pixel
+                int alpha1 = (int)(alpha * (1 - yFrac));
+                int color1 = (alpha1 << 24) | (red << 16) | (green << 8) | blue;
+                guiGraphics.fill(x, yInt, x + 1, yInt + 1, color1);
+
+                // Anti-aliasing pixel
+                int alpha2 = (int)(alpha * yFrac);
+                int color2 = (alpha2 << 24) | (red << 16) | (green << 8) | blue;
+                guiGraphics.fill(x, yInt + 1, x + 1, yInt + 2, color2);
+
+                y += gradient;
+            }
+        } else {
+            // Line is more vertical
+            if (y0 > y1) {
+                int temp = x0; x0 = x1; x1 = temp;
+                temp = y0; y0 = y1; y1 = temp;
+            }
+
+            float gradient = (float)(x1 - x0) / (y1 - y0);
+            float x = x0;
+
+            for (int y = y0; y <= y1; y++) {
+                int xInt = (int)x;
+                float xFrac = x - xInt;
+
+                // Main pixel
+                int alpha1 = (int)(alpha * (1 - xFrac));
+                int color1 = (alpha1 << 24) | (red << 16) | (green << 8) | blue;
+                guiGraphics.fill(xInt, y, xInt + 1, y + 1, color1);
+
+                // Anti-aliasing pixel
+                int alpha2 = (int)(alpha * xFrac);
+                int color2 = (alpha2 << 24) | (red << 16) | (green << 8) | blue;
+                guiGraphics.fill(xInt + 1, y, xInt + 2, y + 1, color2);
+
+                x += gradient;
             }
         }
     }

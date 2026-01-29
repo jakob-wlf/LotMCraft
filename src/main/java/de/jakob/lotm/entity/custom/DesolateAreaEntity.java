@@ -191,9 +191,7 @@ public class DesolateAreaEntity extends Entity {
             return;
         }
 
-        // Convert leaves to pale oak leaves (or dead bushes if pale oak not available)
         if (block instanceof LeavesBlock) {
-            // Try pale oak leaves first, fallback to air or dead bush
             level.setBlock(pos, Blocks.MANGROVE_ROOTS.defaultBlockState(), 3);
             spawnCorruptionParticles(level, pos);
             return;
