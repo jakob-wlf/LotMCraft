@@ -2,6 +2,10 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.attachments.AbilityWheelComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.*;
@@ -19,18 +23,12 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class KeyInputHandler {
 
+    // set from the ability wheel screen when clicked
+    public static int holdAbilityWheelCooldownTicks = 0;
+
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-
-        if (LOTMCraft.openAbilitySelectionKey != null && LOTMCraft.openAbilitySelectionKey.consumeClick()) {
-            Player player = Minecraft.getInstance().player;
-            if (player != null) {
-                int sequence = ClientBeyonderCache.getSequence(player.getUUID());
-                String pathway = ClientBeyonderCache.getPathway(player.getUUID());
-                PacketHandler.sendToServer(new OpenAbilitySelectionPacket(sequence, pathway));
-            }
-        }
 
         if(LOTMCraft.toggleGriefingKey != null && LOTMCraft.toggleGriefingKey.consumeClick()) {
             Player player = Minecraft.getInstance().player;
@@ -53,27 +51,37 @@ public class KeyInputHandler {
             }
         }
 
-        if(LOTMCraft.toggleAbilityHotbarKey != null && LOTMCraft.toggleAbilityHotbarKey.consumeClick()) {
-            PacketHandler.sendToServer(new ToggleAbilityHotbarPacket(true));
-        }
-
-        if(LOTMCraft.cycleAbilityHotbarKey != null && LOTMCraft.cycleAbilityHotbarKey.consumeClick()) {
-            PacketHandler.sendToServer(new ToggleAbilityHotbarPacket(false));
-        }
-
         if(LOTMCraft.nextAbilityKey != null && LOTMCraft.nextAbilityKey.consumeClick()) {
             Player player = Minecraft.getInstance().player;
             if(player != null && ClientBeyonderCache.isBeyonder(player.getUUID())) {
-                if(player.getMainHandItem().getItem() instanceof SelectableAbilityItem abilityItem && abilityItem.canUse(player, player.getMainHandItem()))
-                    abilityItem.nextAbility(player);
+                if(ClientData.getSelectedAbility() < 0 || ClientData.getSelectedAbility() >= ClientData.getAbilityWheelAbilities().size()) {
+                    return;
+                }
+
+                String abilityId = ClientData.getAbilityWheelAbilities().get(ClientData.getSelectedAbility());
+                Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+                if(!(ability instanceof SelectableAbility selectableAbility)) {
+                    return;
+                }
+
+                selectableAbility.nextAbility(player);
             }
         }
 
         if(LOTMCraft.previousAbilityKey != null && LOTMCraft.previousAbilityKey.consumeClick()) {
             Player player = Minecraft.getInstance().player;
             if(player != null && ClientBeyonderCache.isBeyonder(player.getUUID())) {
-                if(player.getMainHandItem().getItem() instanceof SelectableAbilityItem abilityItem && abilityItem.canUse(player, player.getMainHandItem()))
-                    abilityItem.previousAbility(player);
+                if(ClientData.getSelectedAbility() < 0 || ClientData.getSelectedAbility() >= ClientData.getAbilityWheelAbilities().size()) {
+                    return;
+                }
+
+                String abilityId = ClientData.getAbilityWheelAbilities().get(ClientData.getSelectedAbility());
+                Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+                if(!(ability instanceof SelectableAbility selectableAbility)) {
+                    return;
+                }
+
+                selectableAbility.previousAbility(player);
             }
         }
 
@@ -81,13 +89,17 @@ public class KeyInputHandler {
             openAbilityWheel();
         }
 
-        if(LOTMCraft.openWheelHoldKey.consumeClick() && mc.screen == null) {
+        if(LOTMCraft.openWheelHoldKey.consumeClick() && mc.screen == null && holdAbilityWheelCooldownTicks <= 0) {
             openAbilityWheel();
         }
 
         // Handle use ability key
         if (LOTMCraft.useSelectedAbilityKey.consumeClick()) {
             PacketHandler.sendToServer(new UseSelectedAbilityPacket());
+        }
+
+        if(holdAbilityWheelCooldownTicks > 0) {
+            holdAbilityWheelCooldownTicks--;
         }
     }
 

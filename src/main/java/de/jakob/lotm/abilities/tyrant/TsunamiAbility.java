@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.TsunamiEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -14,9 +15,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TsunamiAbility extends AbilityItem {
-    public TsunamiAbility(Properties properties) {
-        super(properties, 6);
+public class TsunamiAbility extends Ability {
+    public TsunamiAbility(String id) {
+        super(id, 6);
     }
 
     @Override
@@ -25,12 +26,12 @@ public class TsunamiAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 500;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) return;
 
         Vec3 position = VectorUtil.getRelativePosition(entity.position(), entity.getLookAngle().normalize(), 10, random.nextDouble(-11, 11), 0);

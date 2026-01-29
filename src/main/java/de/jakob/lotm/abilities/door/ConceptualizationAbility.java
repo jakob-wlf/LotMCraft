@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.particle.ModParticles;
@@ -15,13 +16,13 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConceptualizationAbility extends ToggleAbilityItem {
-    public ConceptualizationAbility(Properties properties) {
-        super(properties);
+public class ConceptualizationAbility extends ToggleAbility {
+    public ConceptualizationAbility(String id) {
+        super(id);
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 2;
     }
 
@@ -31,7 +32,7 @@ public class ConceptualizationAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             return;
         }
@@ -42,7 +43,7 @@ public class ConceptualizationAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             return;
         }
@@ -67,7 +68,7 @@ public class ConceptualizationAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

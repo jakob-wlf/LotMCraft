@@ -2,11 +2,14 @@ package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityHandler;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.entity.custom.ApprenticeBookEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -27,9 +30,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class RecordingAbility extends AbilityItem {
-    public RecordingAbility(Properties properties) {
-        super(properties, 8f);
+public class RecordingAbility extends Ability {
+    public RecordingAbility(String id) {
+        super(id, 8f);
     }
 
     @Override
@@ -38,12 +41,16 @@ public class RecordingAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 0;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
+        AbilityUtil.sendActionBar(entity, Component.translatable("lotm.temporarily_disabled").withColor(0xFFFF0000));
+        if(true)
+            return;
+
         if(!(level instanceof ServerLevel serverLevel))
             return;
 
@@ -69,8 +76,8 @@ public class RecordingAbility extends AbilityItem {
             book.setFacingDirection(currentDir);
 
             AbilityItem abilityItem = AbilityHandler.abilityUsedInArea(new Location(entity.getEyePosition(), level), 15);
-            if(abilityItem == null || abilityItem instanceof RecordingAbility)
-                return;
+//            if(abilityItem == null || abilityItem instanceof RecordingAbility)
+//                return;
 
             hasRecordedAbility.set(true);
             book.discard();

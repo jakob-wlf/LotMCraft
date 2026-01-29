@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.LuckAccumulationComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
@@ -16,9 +17,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LuckReleaseAbility extends AbilityItem {
-    public LuckReleaseAbility(Properties properties) {
-        super(properties, 120);
+public class LuckReleaseAbility extends Ability {
+    public LuckReleaseAbility(String id) {
+        super(id, 120);
     }
 
     @Override
@@ -27,7 +28,7 @@ public class LuckReleaseAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 100;
     }
 
@@ -38,7 +39,7 @@ public class LuckReleaseAbility extends AbilityItem {
 
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel)) {
             return;
         }

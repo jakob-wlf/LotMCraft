@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.WindBladeEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -20,11 +21,11 @@ import net.minecraft.world.phys.Vec3;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class WindManipulationAbility extends SelectableAbilityItem {
+public class WindManipulationAbility extends SelectableAbility {
     private final HashSet<UUID> isFlying = new HashSet<>();
 
-    public WindManipulationAbility(Properties properties) {
-        super(properties, .8f);
+    public WindManipulationAbility(String id) {
+        super(id, .8f);
     }
 
     @Override
@@ -33,12 +34,12 @@ public class WindManipulationAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 30;
     }
 
     @Override
-    protected String[] getAbilityNames() {
+    public String[] getAbilityNames() {
         return new String[]{
                 "ability.lotmcraft.wind_manipulation.wind_blade",
                 "ability.lotmcraft.wind_manipulation.binding",
@@ -48,7 +49,7 @@ public class WindManipulationAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    public void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(entity instanceof Player) && abilityIndex == 2) {
             abilityIndex = 0;
         }

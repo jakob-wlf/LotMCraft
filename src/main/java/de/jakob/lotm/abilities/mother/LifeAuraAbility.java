@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -24,12 +25,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class LifeAuraAbility extends ToggleAbilityItem {
+public class LifeAuraAbility extends ToggleAbility {
 
     private final HashMap<UUID, UUID> entityEffectMap = new HashMap<>();
 
-    public LifeAuraAbility(Properties properties) {
-        super(properties);
+    public LifeAuraAbility(String id) {
+        super(id);
 
         canBeUsedByNPC = false;
     }
@@ -40,12 +41,12 @@ public class LifeAuraAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 3;
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }
@@ -55,7 +56,7 @@ public class LifeAuraAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }
@@ -119,7 +120,7 @@ public class LifeAuraAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

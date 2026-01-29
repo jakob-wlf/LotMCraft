@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.AllyUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
@@ -13,9 +14,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GolemCreationAbility extends AbilityItem {
-    public GolemCreationAbility(Properties properties) {
-        super(properties, 4);
+public class GolemCreationAbility extends Ability {
+    public GolemCreationAbility(String id) {
+        super(id, 4);
     }
 
     @Override
@@ -24,12 +25,12 @@ public class GolemCreationAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 600;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide()) {
             return;
         }

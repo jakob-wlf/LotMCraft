@@ -68,13 +68,10 @@ public class LOTMCraft
     public static final Integer NON_BEYONDER_SEQ = 10;
 
     public static KeyMapping pathwayInfosKey;
-    public static KeyMapping openAbilitySelectionKey;
     public static KeyMapping toggleGriefingKey;
     public static KeyMapping showPassiveAbilitiesKey;
     public static KeyMapping nextAbilityKey;
     public static KeyMapping previousAbilityKey;
-    public static KeyMapping toggleAbilityHotbarKey;
-    public static KeyMapping cycleAbilityHotbarKey;
     public static KeyMapping enterSefirotKey;
     public static KeyMapping openWheelHoldKey;
     public static KeyMapping openWheelToggleKey;

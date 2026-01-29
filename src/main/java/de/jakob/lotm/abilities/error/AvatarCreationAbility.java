@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -11,9 +12,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AvatarCreationAbility extends AbilityItem {
-    public AvatarCreationAbility(Properties properties) {
-        super(properties, 2);
+public class AvatarCreationAbility extends Ability {
+    public AvatarCreationAbility(String id) {
+        super(id, 2);
     }
 
     @Override
@@ -22,12 +23,12 @@ public class AvatarCreationAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 500;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel)) {
             return;
         }

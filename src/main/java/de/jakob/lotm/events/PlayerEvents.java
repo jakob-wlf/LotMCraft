@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
 import de.jakob.lotm.abilities.common.DivinationAbility;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.darkness.NightmareAbility;
 import de.jakob.lotm.abilities.red_priest.CullAbility;
 import de.jakob.lotm.attachments.AbilityHotbarManager;
@@ -48,6 +49,7 @@ public class PlayerEvents {
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             ToggleAbilityItem.cleanupEntity(player.level(), player);
+            ToggleAbility.cleanUp(player.serverLevel(), player);
             DivinationAbility.cleanupOnLogout(player);
 
             AbilityHotbarManager manager = player.getData(ModAttachments.ABILITY_HOTBAR);
@@ -83,6 +85,12 @@ public class PlayerEvents {
 
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
+        if(!(event.getEntity().level() instanceof ServerLevel level)) {
+            return;
+        }
+
+        ToggleAbility.cleanUp(level, event.getEntity());
+
         if (event.getEntity() instanceof ServerPlayer player) {
             ToggleAbilityItem.cleanupEntity(player.level(), player);
 
@@ -141,6 +149,9 @@ public class PlayerEvents {
 
     @SubscribeEvent
     public static void onDamage(LivingIncomingDamageEvent event) {
+        if(event.getEntity().level().isClientSide)
+            return;
+
         if(DivinationAbility.dangerPremonitionActive.contains(event.getEntity().getUUID()) && random.nextFloat() < .1) {
             event.setCanceled(true);
             if(event.getEntity() instanceof ServerPlayer player) {
@@ -156,7 +167,7 @@ public class PlayerEvents {
             }
         }
         Entity damager = event.getSource().getEntity();
-        if(damager instanceof LivingEntity source && ((CullAbility) AbilityItemHandler.CULL.get()).isActive(source)) {
+        if(damager instanceof LivingEntity source && ((ToggleAbility) LOTMCraft.abilityHandler.getById("cull_ability")).isActiveForEntity(source)) {
             Level level = event.getEntity().level();
             if(!level.isClientSide) {
                 ParticleUtil.spawnParticles((ServerLevel) level, dust, event.getEntity().getEyePosition().subtract(0, .4, 0), 40, .4, .8, .4, 0);

@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -26,9 +27,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MundaneConceptualTheft extends SelectableAbilityItem {
-    public MundaneConceptualTheft(Properties properties) {
-        super(properties, 1);
+public class MundaneConceptualTheft extends SelectableAbility {
+    public MundaneConceptualTheft(String id) {
+        super(id, 1);
     }
 
     @Override
@@ -86,7 +87,7 @@ public class MundaneConceptualTheft extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel)) {
             if(entity instanceof Player player) {
                 player.playSound(SoundEvents.BELL_RESONATE, 1, 1);

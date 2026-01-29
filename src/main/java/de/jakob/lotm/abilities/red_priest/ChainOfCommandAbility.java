@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -25,12 +26,12 @@ import java.util.*;
 import java.util.stream.StreamSupport;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class ChainOfCommandAbility extends AbilityItem {
+public class ChainOfCommandAbility extends Ability {
 
     private static ChainOfCommandAbility instance;
 
-    public ChainOfCommandAbility(Properties properties) {
-        super(properties, 5);
+    public ChainOfCommandAbility(String id) {
+        super(id, 5);
 
         instance = this;
 
@@ -51,7 +52,7 @@ public class ChainOfCommandAbility extends AbilityItem {
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(.2f, .1f, .1f), 2);
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide || !(level instanceof ServerLevel serverLevel)) {
             return;
         }
@@ -124,7 +125,7 @@ public class ChainOfCommandAbility extends AbilityItem {
     public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
         LivingEntity entity = event.getEntity();
 
-        if(!instance.canUse(entity, true)) {
+        if(!instance.canUse(entity)) {
             return;
         }
 

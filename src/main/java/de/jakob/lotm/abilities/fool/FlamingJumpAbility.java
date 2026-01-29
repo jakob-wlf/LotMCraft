@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -23,9 +24,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FlamingJumpAbility extends AbilityItem {
-    public FlamingJumpAbility(Properties properties) {
-        super(properties, .05f);
+public class FlamingJumpAbility extends Ability {
+    public FlamingJumpAbility(String id) {
+        super(id, .05f);
 
         canBeUsedByNPC = false;
     }
@@ -36,12 +37,12 @@ public class FlamingJumpAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 12;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

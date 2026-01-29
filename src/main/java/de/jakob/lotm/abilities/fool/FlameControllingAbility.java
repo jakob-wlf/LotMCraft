@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -21,9 +22,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class FlameControllingAbility extends AbilityItem {
-    public FlameControllingAbility(Properties properties) {
-        super(properties, .75f);
+public class FlameControllingAbility extends Ability {
+    public FlameControllingAbility(String id) {
+        super(id, .75f);
     }
 
     @Override
@@ -32,12 +33,12 @@ public class FlameControllingAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 20;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

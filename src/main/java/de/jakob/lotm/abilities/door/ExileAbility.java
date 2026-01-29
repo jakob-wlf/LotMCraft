@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ExileDoorsEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -14,9 +15,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExileAbility extends AbilityItem {
-    public ExileAbility(Properties properties) {
-        super(properties, 10);
+public class ExileAbility extends Ability {
+    public ExileAbility(String id) {
+        super(id, 10);
     }
 
     @Override
@@ -25,12 +26,12 @@ public class ExileAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 500;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

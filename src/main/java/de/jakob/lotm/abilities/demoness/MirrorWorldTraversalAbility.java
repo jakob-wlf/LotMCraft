@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.MirrorWorldTraversalComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
@@ -27,9 +28,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class MirrorWorldTraversalAbility extends AbilityItem {
-    public MirrorWorldTraversalAbility(Properties properties) {
-        super(properties, 2);
+public class MirrorWorldTraversalAbility extends Ability {
+    public MirrorWorldTraversalAbility(String id) {
+        super(id, 2);
 
         canBeCopied = false;
         canBeUsedByNPC = false;
@@ -41,13 +42,13 @@ public class MirrorWorldTraversalAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 200;
     }
 
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide || !(level instanceof ServerLevel serverLevel)) {
             return;
         }

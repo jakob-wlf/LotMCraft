@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.SpaceCollapseEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -12,9 +13,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SpaceTearingAbility extends AbilityItem {
-    public SpaceTearingAbility(Properties properties) {
-        super(properties, 2);
+public class SpaceTearingAbility extends Ability {
+    public SpaceTearingAbility(String id) {
+        super(id, 2);
     }
 
     @Override
@@ -23,12 +24,12 @@ public class SpaceTearingAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 800;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

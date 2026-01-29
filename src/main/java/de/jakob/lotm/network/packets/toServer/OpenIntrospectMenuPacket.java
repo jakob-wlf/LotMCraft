@@ -10,6 +10,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncIntrospectMenuPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -60,6 +61,7 @@ public record OpenIntrospectMenuPacket(int sequence, String pathway) implements 
                 SanityComponent sanityComponent = player.getData(ModAttachments.SANITY_COMPONENT);
                 float sanity = sanityComponent.getSanity();
 
+                AbilityWheelHelper.removeUnusableAbilities(player);
                 AbilityWheelComponent abilityWheelComponent = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
 
                 player.openMenu(new IntrospectMenuProvider(passiveAbilities, sequence, pathway, digestionProgress, sanity));

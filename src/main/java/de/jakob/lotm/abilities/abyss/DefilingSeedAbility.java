@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.abyss;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -26,11 +27,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
-public class DefilingSeedAbility extends AbilityItem {
+public class DefilingSeedAbility extends Ability {
     private static final HashSet<UUID> defiledEntities = new HashSet<>();
 
-    public DefilingSeedAbility(Properties properties) {
-        super(properties, 2);
+    public DefilingSeedAbility(String id) {
+        super(id, 2);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class DefilingSeedAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 60;
     }
 
@@ -49,7 +50,7 @@ public class DefilingSeedAbility extends AbilityItem {
     );
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             LivingEntity target = AbilityUtil.getTargetEntity(entity, 25, 2.5f);
             if(target == null || defiledEntities.contains(target.getUUID()))

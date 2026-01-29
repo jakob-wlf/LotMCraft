@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
@@ -21,9 +22,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SirenSongAbility extends SelectableAbilityItem {
-    public SirenSongAbility(Properties properties) {
-        super(properties, 45);
+public class SirenSongAbility extends SelectableAbility {
+    public SirenSongAbility(String id) {
+        super(id, 45);
     }
 
     @Override
@@ -32,17 +33,17 @@ public class SirenSongAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 60;
     }
 
     @Override
-    protected String[] getAbilityNames() {
+    public String[] getAbilityNames() {
         return new String[]{"ability.lotmcraft.siren_song.death_melody", "ability.lotmcraft.siren_song.strengthening_melody", "ability.lotmcraft.siren_song.dazing_song"};
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    public void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(level.isClientSide)
             return;
 

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -30,9 +31,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class GiftAbility extends AbilityItem {
-    public GiftAbility(Properties properties) {
-        super(properties, 1);
+public class GiftAbility extends Ability {
+    public GiftAbility(String id) {
+        super(id, 1);
     }
 
     @Override
@@ -41,12 +42,12 @@ public class GiftAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 30;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(entity instanceof ServerPlayer player)) {
             if(entity instanceof Player player && entity.level().isClientSide) {
                 player.playSound(SoundEvents.BELL_RESONATE, 1, 1);

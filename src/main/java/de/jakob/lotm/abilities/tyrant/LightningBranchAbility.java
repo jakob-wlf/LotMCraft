@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.LightningBranchEntity;
 import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,9 +11,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LightningBranchAbility extends AbilityItem {
-    public LightningBranchAbility(Properties properties) {
-        super(properties, 1.5f);
+public class LightningBranchAbility extends Ability {
+    public LightningBranchAbility(String id) {
+        super(id, 1.5f);
     }
 
     @Override
@@ -21,12 +22,12 @@ public class LightningBranchAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 450;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

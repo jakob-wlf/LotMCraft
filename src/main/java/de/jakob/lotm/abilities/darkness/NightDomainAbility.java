@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -20,9 +21,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NightDomainAbility extends AbilityItem {
-    public NightDomainAbility(Properties properties) {
-        super(properties, 30);
+public class NightDomainAbility extends Ability {
+    public NightDomainAbility(String id) {
+        super(id, 30);
     }
 
     @Override
@@ -31,14 +32,14 @@ public class NightDomainAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 900;
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(0, 0, 0), 5);
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

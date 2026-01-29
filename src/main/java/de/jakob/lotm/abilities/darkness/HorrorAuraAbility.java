@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
@@ -21,9 +22,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class HorrorAuraAbility extends AbilityItem {
-    public HorrorAuraAbility(Properties properties) {
-        super(properties, 30);
+public class HorrorAuraAbility extends Ability {
+    public HorrorAuraAbility(String id) {
+        super(id, 30);
     }
 
     @Override
@@ -32,12 +33,12 @@ public class HorrorAuraAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1000;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

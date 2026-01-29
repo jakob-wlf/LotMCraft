@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.tyrant;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -32,11 +33,11 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class WaterManipulationAbility extends SelectableAbilityItem {
+public class WaterManipulationAbility extends SelectableAbility {
     private final HashSet<UUID> castingCorrosiveRain = new HashSet<>();
 
-    public WaterManipulationAbility(Properties properties) {
-        super(properties, .75f);
+    public WaterManipulationAbility(String id) {
+        super(id, .75f);
     }
 
     private final DustParticleOptions dustOptions = new DustParticleOptions(
@@ -57,12 +58,12 @@ public class WaterManipulationAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 28;
     }
 
     @Override
-    protected String[] getAbilityNames() {
+    public String[] getAbilityNames() {
         return new String[]{
                 "ability.lotmcraft.water_manipulation.water_bolt",
                 "ability.lotmcraft.water_manipulation.aqueous_light",
@@ -72,7 +73,7 @@ public class WaterManipulationAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    public void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(entity instanceof Player) && abilityIndex == 1)
             abilityIndex = 0;
 
@@ -196,41 +197,5 @@ public class WaterManipulationAbility extends SelectableAbilityItem {
     }
 
     private void waterWhip(Level level, LivingEntity entity) {
-    }
-
-    @Override
-    public void nextAbility(LivingEntity entity) {
-        if(getAbilityNames().length == 0)
-            return;
-
-        if(!selectedAbilities.containsKey(entity.getUUID())) {
-            selectedAbilities.put(entity.getUUID(), 0);
-        }
-
-        int selectedAbility = selectedAbilities.get(entity.getUUID());
-        selectedAbility++;
-        if(selectedAbility >= (ClientBeyonderCache.getSequence(entity.getUUID()) <= 5 ? getAbilityNames().length : getAbilityNames().length - 1)) {
-            selectedAbility = 0;
-        }
-        selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(this, selectedAbility));
-    }
-
-    @Override
-    public void previousAbility(LivingEntity entity) {
-        if(getAbilityNames().length == 0)
-            return;
-
-        if(!selectedAbilities.containsKey(entity.getUUID())) {
-            selectedAbilities.put(entity.getUUID(), 0);
-        }
-
-        int selectedAbility = selectedAbilities.get(entity.getUUID());
-        selectedAbility--;
-        if(selectedAbility <= -1) {
-            selectedAbility = ClientBeyonderCache.getSequence(entity.getUUID()) <= 5 ? getAbilityNames().length - 1 : getAbilityNames().length - 2;
-        }
-        selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(this, selectedAbility));
     }
 }

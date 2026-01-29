@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.wheel_of_fortune.calamities.Calamity;
 import de.jakob.lotm.abilities.wheel_of_fortune.calamities.Earthquake;
 import de.jakob.lotm.abilities.wheel_of_fortune.calamities.Meteor;
@@ -19,9 +20,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CalamityAttractionAbility extends AbilityItem {
-    public CalamityAttractionAbility(Properties properties) {
-        super(properties, 10);
+public class CalamityAttractionAbility extends Ability {
+    public CalamityAttractionAbility(String id) {
+        super(id, 10);
     }
 
     @Override
@@ -30,14 +31,14 @@ public class CalamityAttractionAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 190;
     }
 
     private final Calamity[] calamities = new Calamity[]{new Tornado(), new Earthquake(), new Meteor()};
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -39,7 +40,7 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import java.util.*;
 
 @EventBusSubscriber
-public class HistoricalVoidSummoningAbility extends SelectableAbilityItem {
+public class HistoricalVoidSummoningAbility extends SelectableAbility {
     private static final String MARKED_ENTITIES_TAG = "MarkedEntities";
     private static final String SUMMONED_COUNT_TAG = "SummonedCount_Session"; // Changed to session-only
     private static final String PLACED_BLOCKS_TAG = "VoidPlacedBlocks";
@@ -60,8 +61,8 @@ public class HistoricalVoidSummoningAbility extends SelectableAbilityItem {
         }
     }
 
-    public HistoricalVoidSummoningAbility(Properties properties) {
-        super(properties, 1);
+    public HistoricalVoidSummoningAbility(String id) {
+        super(id, 1);
 
         canBeCopied = false;
         canBeUsedByNPC = false;
@@ -83,7 +84,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel) || !(entity instanceof ServerPlayer player)) {
             return;
         }

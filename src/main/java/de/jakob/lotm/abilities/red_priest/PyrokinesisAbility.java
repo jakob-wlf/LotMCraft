@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.red_priest;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.FireRavenEntity;
 import de.jakob.lotm.entity.custom.FireballEntity;
 import de.jakob.lotm.entity.custom.FlamingSpearProjectileEntity;
@@ -21,11 +22,10 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PyrokinesisAbility extends SelectableAbilityItem {
+public class PyrokinesisAbility extends SelectableAbility {
 
-    //TODO: Refactor class name with ability suffix
-    public PyrokinesisAbility(Properties properties) {
-        super(properties, .75f);
+    public PyrokinesisAbility(String id) {
+        super(id, .75f);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class PyrokinesisAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch(abilityIndex) {
             case 0 -> fireball(level, entity);
             case 1 -> flameWave(level, entity);

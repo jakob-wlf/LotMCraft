@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.abyss;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -19,9 +20,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ToxicSmokeAbility extends AbilityItem {
-    public ToxicSmokeAbility(Properties properties) {
-        super(properties, 5.5f);
+public class ToxicSmokeAbility extends Ability {
+    public ToxicSmokeAbility(String id) {
+        super(id, 5.5f);
 
         hasOptimalDistance = true;
         optimalDistance = 7;
@@ -35,14 +36,14 @@ public class ToxicSmokeAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 22;
     }
 
     private final DustParticleOptions dustOptions = new DustParticleOptions(new Vector3f(35 / 255f, 168 / 255f, 102 / 255f), 3f);
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

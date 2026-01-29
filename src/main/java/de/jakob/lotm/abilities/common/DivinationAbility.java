@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.network.PacketHandler;
@@ -26,11 +27,11 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
-public class DivinationAbility extends SelectableAbilityItem {
+public class DivinationAbility extends SelectableAbility {
     public static final Set<UUID> dangerPremonitionActive = new HashSet<>();
 
-    public DivinationAbility(Properties properties) {
-        super(properties, 1);
+    public DivinationAbility(String id) {
+        super(id, 1);
 
         canBeCopied = false;
         canBeUsedByNPC = false;
@@ -59,7 +60,7 @@ public class DivinationAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch(abilityIndex) {
             case 0 -> dangerPremonition(level, entity);
             case 1 -> dreamDivination(level, entity);

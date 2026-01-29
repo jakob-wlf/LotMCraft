@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSpiritVisionAbilityPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -23,11 +24,11 @@ import org.joml.Vector3f;
 
 import java.util.*;
 
-public class SpiritVisionAbility extends ToggleAbilityItem {
+public class SpiritVisionAbility extends ToggleAbility {
 
 
-    public SpiritVisionAbility(Properties properties) {
-        super(properties);
+    public SpiritVisionAbility(String id) {
+        super(id);
 
         canBeCopied = false;
         canBeUsedByNPC = false;
@@ -47,7 +48,7 @@ public class SpiritVisionAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
             if(entity instanceof ServerPlayer player) {
                 PacketHandler.sendToPlayer(player,  new SyncSpiritVisionAbilityPacket(true, -1));
@@ -63,7 +64,7 @@ public class SpiritVisionAbility extends ToggleAbilityItem {
     private final HashMap<UUID, Set<Entity>> glowingEntities = new HashMap<>();
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide()) {
             List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ClientLevel) level, entity.getEyePosition(), 30)
                     .stream()
@@ -118,7 +119,7 @@ public class SpiritVisionAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             entity.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
         }

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.RingEffectManager;
 import net.minecraft.server.level.ServerLevel;
@@ -16,9 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 //TODO: Rework effects using geckolib
-public class CleansingAbility extends SelectableAbilityItem {
-    public CleansingAbility(Properties properties) {
-        super(properties, 2);
+public class CleansingAbility extends SelectableAbility {
+    public CleansingAbility(String id) {
+        super(id, 2);
     }
 
     @Override
@@ -27,17 +28,17 @@ public class CleansingAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 25;
     }
 
     @Override
-    protected String[] getAbilityNames() {
+    public String[] getAbilityNames() {
         return new String[]{"ability.lotmcraft.cleansing.self", "ability.lotmcraft.cleansing.others"};
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    public void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(entity instanceof Player))
             abilityIndex = 0;
         switch(abilityIndex) {

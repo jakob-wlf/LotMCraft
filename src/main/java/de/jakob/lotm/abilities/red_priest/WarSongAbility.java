@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
@@ -18,9 +19,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WarSongAbility extends AbilityItem {
-    public WarSongAbility(Properties properties) {
-        super(properties, 40);
+public class WarSongAbility extends Ability {
+    public WarSongAbility(String id) {
+        super(id, 40);
     }
 
     @Override
@@ -34,7 +35,7 @@ public class WarSongAbility extends AbilityItem {
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

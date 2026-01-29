@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.mother;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -30,9 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PoisonCreationAbility extends SelectableAbilityItem {
-    public PoisonCreationAbility(Properties properties) {
-        super(properties, 3);
+public class PoisonCreationAbility extends SelectableAbility {
+    public PoisonCreationAbility(String id) {
+        super(id, 3);
     }
 
     @Override
@@ -54,7 +55,7 @@ public class PoisonCreationAbility extends SelectableAbilityItem {
     private final DustParticleOptions dustSmall = new DustParticleOptions(new Vector3f(112 / 255f, 212 / 255f, 130 / 255f), 1);
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

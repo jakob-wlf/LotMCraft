@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.FireballEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -28,10 +29,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class FlameMasteryAbility extends SelectableAbilityItem {
+public class FlameMasteryAbility extends SelectableAbility {
     private final HashSet<UUID> transformedEntities = new HashSet<>();
-    public FlameMasteryAbility(Properties properties) {
-        super(properties, 2.5f);
+    public FlameMasteryAbility(String id) {
+        super(id, 2.5f);
     }
 
     @Override
@@ -54,7 +55,7 @@ public class FlameMasteryAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(level.isClientSide)
             return;
         if(!(entity instanceof Player)) {

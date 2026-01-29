@@ -35,17 +35,6 @@ public class ModCreativeModTabs {
                     })
                     .build());
 
-    public static final Supplier<CreativeModeTab> ABILITIES_TAB = CREATIVE_MODE_TABS.register("abilities_tab",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(AbilityItemHandler.COGITATION.get()))
-                    .withTabsBefore(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "lotm_tab"))
-                    .title(Component.translatable("creativetab.lotmcraft.abilities_tab"))
-                    .displayItems((parameters, output) -> {
-                        AbilityItemHandler.ITEMS.getEntries().forEach(itemHolder -> {
-                            output.accept(itemHolder.get());
-                        });
-                    })
-                    .build());
-
     public static final Supplier<CreativeModeTab> PASSIVE_ABILITIES_TAB = CREATIVE_MODE_TABS.register("passive_abilities_tab",
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(PassiveAbilityHandler.PHYSICAL_ENHANCEMENTS_RED_PRIEST.get()))
                     .withTabsBefore(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "abilities_tab"))

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.WaypointComponent;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
@@ -16,9 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class WaypointAbility extends SelectableAbilityItem {
-    public WaypointAbility(Properties properties) {
-        super(properties, 1);
+public class WaypointAbility extends SelectableAbility {
+    public WaypointAbility(String id) {
+        super(id, 1);
 
         canBeCopied = false;
         canBeUsedByNPC = false;
@@ -40,7 +41,7 @@ public class WaypointAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

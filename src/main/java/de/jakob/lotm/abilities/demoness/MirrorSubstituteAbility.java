@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
@@ -24,12 +25,12 @@ import java.util.Random;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class MirrorSubstituteAbility extends AbilityItem {
+public class MirrorSubstituteAbility extends Ability {
 
     private static final HashMap<UUID, Integer> figurineNumbers = new HashMap<>();
 
-    public MirrorSubstituteAbility(Properties properties) {
-        super(properties, 5f);
+    public MirrorSubstituteAbility(String id) {
+        super(id, 5f);
     }
 
     @Override
@@ -38,12 +39,12 @@ public class MirrorSubstituteAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 20;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             if(entity instanceof Player player)
                 player.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);

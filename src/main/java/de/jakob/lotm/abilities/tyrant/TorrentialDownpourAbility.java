@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -24,9 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TorrentialDownpourAbility extends AbilityItem {
-    public TorrentialDownpourAbility(Properties properties) {
-        super(properties, 40);
+public class TorrentialDownpourAbility extends Ability {
+    public TorrentialDownpourAbility(String id) {
+        super(id, 40);
     }
 
     @Override
@@ -45,12 +46,12 @@ public class TorrentialDownpourAbility extends AbilityItem {
     );
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 900;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -25,9 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class WaterMasteryAbility extends SelectableAbilityItem {
-    public WaterMasteryAbility(Properties properties) {
-        super(properties, 5f);
+public class WaterMasteryAbility extends SelectableAbility {
+    public WaterMasteryAbility(String id) {
+        super(id, 5f);
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(
@@ -44,12 +45,12 @@ public class WaterMasteryAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 300;
     }
 
     @Override
-    protected String[] getAbilityNames() {
+    public String[] getAbilityNames() {
         return new String[]{
                 "ability.lotmcraft.water_mastery.water_wall",
                 "ability.lotmcraft.water_mastery.flooding",
@@ -57,7 +58,7 @@ public class WaterMasteryAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    public void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(level.isClientSide)
             return;
         if(!(entity instanceof Player))

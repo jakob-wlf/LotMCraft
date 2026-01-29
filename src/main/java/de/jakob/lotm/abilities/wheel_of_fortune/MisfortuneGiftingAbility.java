@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -17,9 +18,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MisfortuneGiftingAbility extends AbilityItem {
-    public MisfortuneGiftingAbility(Properties properties) {
-        super(properties, 2);
+public class MisfortuneGiftingAbility extends Ability {
+    public MisfortuneGiftingAbility(String id) {
+        super(id, 2);
     }
 
     @Override
@@ -28,14 +29,14 @@ public class MisfortuneGiftingAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 120;
     }
 
     private static final DustParticleOptions dust = new DustParticleOptions(new Vector3f(201 / 255f, 150 / 255f, 79 / 255f), 1.5f);
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

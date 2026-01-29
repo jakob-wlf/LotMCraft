@@ -26,25 +26,20 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
         LOTMCraft.pathwayInfosKey = new KeyMapping("key.beyonders.pathway_infos", GLFW.GLFW_KEY_J, "key.categories.beyonders");
-        LOTMCraft.openAbilitySelectionKey = new KeyMapping("key.beyonders.open_ability_selection", GLFW.GLFW_KEY_O, "key.categories.beyonders");
         LOTMCraft.toggleGriefingKey = new KeyMapping("key.beyonders.toggle_griefing", GLFW.GLFW_KEY_K, "key.categories.beyonders");
         LOTMCraft.showPassiveAbilitiesKey = new KeyMapping("key.beyonders.show_passives", GLFW.GLFW_KEY_I, "key.categories.beyonders");
         LOTMCraft.nextAbilityKey = new KeyMapping("key.beyonders.next_ability", GLFW.GLFW_KEY_V, "key.categories.beyonders");
         LOTMCraft.previousAbilityKey = new KeyMapping("key.beyonders.previous_ability", GLFW.GLFW_KEY_X, "key.categories.beyonders");
-        LOTMCraft.toggleAbilityHotbarKey = new KeyMapping("key.beyonders.toggle_ability_hotbar", GLFW.GLFW_KEY_B, "key.categories.beyonders");
-        LOTMCraft.cycleAbilityHotbarKey = new KeyMapping("key.beyonders.cycle_ability_hotbar", GLFW.GLFW_KEY_N, "key.categories.beyonders");
         LOTMCraft.enterSefirotKey = new KeyMapping("key.beyonders.enter_sefirot", GLFW.GLFW_KEY_U, "key.categories.beyonders");
         LOTMCraft.openWheelToggleKey = new KeyMapping("key.beyonders.open_wheel_toggle", GLFW.GLFW_KEY_LEFT_ALT, "key.categories.beyonders");
         LOTMCraft.openWheelHoldKey = new KeyMapping("key.beyonders.open_wheel_hold", GLFW.GLFW_KEY_P, "key.categories.beyonders");
         LOTMCraft.useSelectedAbilityKey = new KeyMapping("key.beyonders.use_ability", GLFW.GLFW_KEY_M, "key.categories.beyonders");
 
         event.register(LOTMCraft.pathwayInfosKey);
-        event.register(LOTMCraft.openAbilitySelectionKey);
         event.register(LOTMCraft.toggleGriefingKey);
         event.register(LOTMCraft.showPassiveAbilitiesKey);
         event.register(LOTMCraft.nextAbilityKey);
-        event.register(LOTMCraft.toggleAbilityHotbarKey);
-        event.register(LOTMCraft.cycleAbilityHotbarKey);
+        event.register(LOTMCraft.previousAbilityKey);
         event.register(LOTMCraft.enterSefirotKey);
         event.register(LOTMCraft.openWheelToggleKey);
         event.register(LOTMCraft.openWheelHoldKey);

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
@@ -20,10 +21,10 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NightmareSpectatorAbility extends AbilityItem {
+public class NightmareSpectatorAbility extends Ability {
 
-    public NightmareSpectatorAbility(Properties properties) {
-        super(properties, 1.5f);
+    public NightmareSpectatorAbility(String id) {
+        super(id, 1.5f);
     }
 
     @Override
@@ -32,7 +33,7 @@ public class NightmareSpectatorAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 110;
     }
 
@@ -42,7 +43,7 @@ public class NightmareSpectatorAbility extends AbilityItem {
     );
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

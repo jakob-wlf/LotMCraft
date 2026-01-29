@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.effect.ModEffects;
@@ -22,9 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class MythicalCreatureFormDoorAbility extends ToggleAbilityItem {
-    public MythicalCreatureFormDoorAbility(Properties properties) {
-        super(properties);
+public class MythicalCreatureFormDoorAbility extends ToggleAbility {
+    public MythicalCreatureFormDoorAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -33,7 +34,7 @@ public class MythicalCreatureFormDoorAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 3;
     }
 
@@ -41,7 +42,7 @@ public class MythicalCreatureFormDoorAbility extends ToggleAbilityItem {
     private static final HashMap<UUID, Double> previousScale = new HashMap<>();
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             ClientHandler.changeToThirdPerson();
             return;
@@ -60,7 +61,7 @@ public class MythicalCreatureFormDoorAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             ClientHandler.changeToThirdPerson();
             return;
@@ -103,7 +104,7 @@ public class MythicalCreatureFormDoorAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             ClientHandler.changeToFirstPerson();
             return;

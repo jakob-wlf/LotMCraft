@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -26,12 +27,12 @@ import org.joml.Vector3f;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class HairEntanglementAbility extends AbilityItem {
+public class HairEntanglementAbility extends Ability {
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(.2f, .2f, .2f), .5f);
     private static final HashSet<UUID> pacifiedEntities = new HashSet<>();
 
-    public HairEntanglementAbility(Properties properties) {
-        super(properties, 3);
+    public HairEntanglementAbility(String id) {
+        super(id, 3);
     }
 
     @Override
@@ -40,12 +41,12 @@ public class HairEntanglementAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 600;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

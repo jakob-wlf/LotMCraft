@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
@@ -20,13 +21,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AreaMiniaturizationAbility extends AbilityItem {
+public class AreaMiniaturizationAbility extends Ability {
 
     private static final double RADIUS = 20.0;
     private static final double Y_RADIUS = 9.0;
 
-    public AreaMiniaturizationAbility(Properties properties) {
-        super(properties, 2);
+    public AreaMiniaturizationAbility(String id) {
+        super(id, 2);
 
         canBeUsedByNPC = false;
     }
@@ -37,12 +38,12 @@ public class AreaMiniaturizationAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1200f;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
 
         if(!BeyonderData.isGriefingEnabled(entity)) {

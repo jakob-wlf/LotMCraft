@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
@@ -20,11 +21,11 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 
-public class SolarEnvoyAbility extends ToggleAbilityItem {
+public class SolarEnvoyAbility extends ToggleAbility {
     private final HashMap<UUID, Vec3> locations = new HashMap<>();
 
-    public SolarEnvoyAbility(Properties properties) {
-        super(properties);
+    public SolarEnvoyAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -38,7 +39,7 @@ public class SolarEnvoyAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             ClientHandler.changeToThirdPerson();
             return;
@@ -77,7 +78,7 @@ public class SolarEnvoyAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             ClientHandler.changeToThirdPerson();
             return;
@@ -108,7 +109,7 @@ public class SolarEnvoyAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             ClientHandler.changeToFirstPerson();
             return;

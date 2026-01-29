@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.BloomingAreaEntity;
 import de.jakob.lotm.entity.custom.MisfortuneWordsEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -15,9 +16,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BloomingAreaAbility extends AbilityItem {
-    public BloomingAreaAbility(Properties properties) {
-        super(properties, 5);
+public class BloomingAreaAbility extends Ability {
+    public BloomingAreaAbility(String id) {
+        super(id, 5);
 
         canBeUsedByNPC = false;
     }
@@ -28,12 +29,12 @@ public class BloomingAreaAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1400;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide()) return;
 
         if(!BeyonderData.isGriefingEnabled(entity)) {

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,9 +11,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FlightAbility extends ToggleAbilityItem {
-    public FlightAbility(Properties properties) {
-        super(properties);
+public class FlightAbility extends ToggleAbility {
+    public FlightAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -26,11 +27,11 @@ public class FlightAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
     }
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             return;
         }
@@ -45,7 +46,7 @@ public class FlightAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

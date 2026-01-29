@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.ElectricShockEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -22,11 +23,11 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 
-public class SpellsAbility extends SelectableAbilityItem {
+public class SpellsAbility extends SelectableAbility {
     private final Set<UUID> isCastingWind = new HashSet<>();
 
-    public SpellsAbility(Properties properties) {
-        super(properties, .8f);
+    public SpellsAbility(String id) {
+        super(id, .8f);
     }
 
     @Override
@@ -45,7 +46,7 @@ public class SpellsAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch(abilityIndex) {
             case 0 -> wind(level, entity);
             case 1 -> electrickShock(level, entity);

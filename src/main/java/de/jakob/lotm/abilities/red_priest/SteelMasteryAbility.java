@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -23,11 +24,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class SteelMasteryAbility extends SelectableAbilityItem {
+public class SteelMasteryAbility extends SelectableAbility {
     private final HashSet<UUID> castingSteelSkin = new HashSet<>();
 
-    public SteelMasteryAbility(Properties properties) {
-        super(properties, 2);
+    public SteelMasteryAbility(String id) {
+        super(id, 2);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class SteelMasteryAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(level.isClientSide)
             return;
         switch (abilityIndex) {

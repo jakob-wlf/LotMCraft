@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -13,13 +14,13 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EnergyTransformationAbility extends ToggleAbilityItem {
-    public EnergyTransformationAbility(Properties properties) {
-        super(properties);
+public class EnergyTransformationAbility extends ToggleAbility {
+    public EnergyTransformationAbility(String id) {
+        super(id);
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 16;
     }
 
@@ -29,7 +30,7 @@ public class EnergyTransformationAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             return;
         }
@@ -41,7 +42,7 @@ public class EnergyTransformationAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             return;
         }
@@ -64,7 +65,7 @@ public class EnergyTransformationAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

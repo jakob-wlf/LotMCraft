@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -30,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ThreadManipulationAbility extends SelectableAbilityItem {
+public class ThreadManipulationAbility extends SelectableAbility {
 
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(.6f, .75f, .75f), .5f);
     private final DustParticleOptions dustBig = new DustParticleOptions(new Vector3f(.6f, .75f, .75f), 1.75f);
@@ -38,8 +39,8 @@ public class ThreadManipulationAbility extends SelectableAbilityItem {
     private static final HashSet<UUID> boundEntities = new HashSet<>();
     private static final HashSet<UUID> inCocoon = new HashSet<>();
 
-    public ThreadManipulationAbility(Properties properties) {
-        super(properties, 1.5f);
+    public ThreadManipulationAbility(String id) {
+        super(id, 1.5f);
     }
 
     @Override
@@ -58,7 +59,7 @@ public class ThreadManipulationAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(level.isClientSide)
             return;
 

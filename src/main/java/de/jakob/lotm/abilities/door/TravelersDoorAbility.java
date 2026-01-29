@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.TravelersDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
@@ -22,12 +23,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class TravelersDoorAbility extends SelectableAbilityItem {
+public class TravelersDoorAbility extends SelectableAbility {
 
     public static final HashMap<UUID, BlockPos> travelersDoorUsers = new HashMap<>();
 
-    public TravelersDoorAbility(Properties properties) {
-        super(properties, 3);
+    public TravelersDoorAbility(String id) {
+        super(id, 3);
 
         canBeUsedByNPC = false;
     }
@@ -49,7 +50,7 @@ public class TravelersDoorAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel) || !(entity instanceof ServerPlayer player)) {
             return;
         }

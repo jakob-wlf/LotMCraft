@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -15,10 +16,10 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MightyBlowAbility extends AbilityItem{
+public class MightyBlowAbility extends Ability {
 
-    public MightyBlowAbility(Properties properties) {
-        super(properties, 2.5f);
+    public MightyBlowAbility(String id) {
+        super(id, 2.5f);
 
         hasOptimalDistance = true;
         optimalDistance = 1.5f;
@@ -30,12 +31,12 @@ public class MightyBlowAbility extends AbilityItem{
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 15;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

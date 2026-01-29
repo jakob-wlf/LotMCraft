@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -24,11 +25,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class InstigationAbility extends AbilityItem {
+public class InstigationAbility extends Ability {
     private final HashMap<UUID, LivingEntity> targets = new HashMap<>();
 
-    public InstigationAbility(Properties properties) {
-        super(properties, 1);
+    public InstigationAbility(String id) {
+        super(id, 1);
 
         canBeUsedByNPC = false;
         canBeCopied = false;
@@ -40,7 +41,7 @@ public class InstigationAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 40;
     }
 
@@ -50,7 +51,7 @@ public class InstigationAbility extends AbilityItem {
     );
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.command.SanityCommand;
@@ -22,9 +23,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SpiritualBaptismAbility extends AbilityItem {
-    public SpiritualBaptismAbility(Properties properties) {
-        super(properties, 6);
+public class SpiritualBaptismAbility extends Ability {
+    public SpiritualBaptismAbility(String id) {
+        super(id, 6);
     }
 
     @Override
@@ -33,12 +34,12 @@ public class SpiritualBaptismAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 900;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

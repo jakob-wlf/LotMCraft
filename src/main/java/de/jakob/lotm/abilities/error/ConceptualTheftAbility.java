@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.custom.SunItem;
@@ -22,9 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ConceptualTheftAbility extends SelectableAbilityItem {
-    public ConceptualTheftAbility(Properties properties) {
-        super(properties, 25);
+public class ConceptualTheftAbility extends SelectableAbility {
+    public ConceptualTheftAbility(String id) {
+        super(id, 25);
 
         canBeUsedByNPC = false;
     }
@@ -45,7 +46,7 @@ public class ConceptualTheftAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

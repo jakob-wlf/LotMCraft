@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSelectedMarionettePacket;
@@ -27,14 +28,14 @@ import java.util.*;
 import java.util.stream.StreamSupport;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class MarionetteControllingAbility extends SelectableAbilityItem {
+public class MarionetteControllingAbility extends SelectableAbility {
 
     private static final Map<UUID, Integer> marionetteIndices = new HashMap<>();
 
     private static final HashSet<UUID> swapOnDamageIsActive = new HashSet<>();
 
-    public MarionetteControllingAbility(Properties properties) {
-        super(properties, .5f);
+    public MarionetteControllingAbility(String id) {
+        super(id, .5f);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class MarionetteControllingAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(level.isClientSide || !(entity instanceof ServerPlayer player))
             return;
 

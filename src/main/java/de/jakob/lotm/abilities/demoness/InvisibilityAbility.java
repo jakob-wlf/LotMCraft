@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
@@ -20,11 +21,11 @@ import java.util.Map;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class InvisibilityAbility extends AbilityItem {
+public class InvisibilityAbility extends Ability {
     public static final HashSet<UUID> invisiblePlayers = new HashSet<>();
 
-    public InvisibilityAbility(Properties properties) {
-        super(properties, 180);
+    public InvisibilityAbility(String id) {
+        super(id, 180);
     }
 
     @Override
@@ -33,7 +34,7 @@ public class InvisibilityAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 13;
     }
 
@@ -43,7 +44,7 @@ public class InvisibilityAbility extends AbilityItem {
     );
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
 
             // make invisible

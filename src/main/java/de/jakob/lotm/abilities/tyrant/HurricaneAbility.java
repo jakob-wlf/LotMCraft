@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.TornadoEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -12,9 +13,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HurricaneAbility extends AbilityItem {
-    public HurricaneAbility(Properties properties) {
-        super(properties, 2.5f);
+public class HurricaneAbility extends Ability {
+    public HurricaneAbility(String id) {
+        super(id, 2.5f);
     }
 
     @Override
@@ -23,12 +24,12 @@ public class HurricaneAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 400;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide()) return;
 
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 12, 3);

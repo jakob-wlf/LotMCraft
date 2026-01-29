@@ -115,7 +115,7 @@ public abstract class AbilityItem extends Item {
             return InteractionResultHolder.fail(itemStack);
         }
 
-        if(BeyonderData.isSpecificAbilityDisabled(player, itemStack.getDescriptionId())  && !(this instanceof CogitationAbility)) {
+        if(BeyonderData.isSpecificAbilityDisabled(player, itemStack.getDescriptionId())) {
             return InteractionResultHolder.fail(itemStack);
         }
 

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncTelepathyAbilityPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -17,9 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TelepathyAbility extends ToggleAbilityItem {
-    public TelepathyAbility(Properties properties) {
-        super(properties);
+public class TelepathyAbility extends ToggleAbility {
+    public TelepathyAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -28,7 +29,7 @@ public class TelepathyAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
             if(entity instanceof ServerPlayer player) {
                 PacketHandler.sendToPlayer(player, new SyncTelepathyAbilityPacket(true, -1, new ArrayList<>()));
@@ -40,7 +41,7 @@ public class TelepathyAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(!(entity instanceof ServerPlayer player) || level.isClientSide) {
             return;
         }
@@ -66,7 +67,7 @@ public class TelepathyAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
             if(entity instanceof ServerPlayer player) {
                 PacketHandler.sendToPlayer(player, new SyncTelepathyAbilityPacket(false, -1, new ArrayList<>()));
@@ -87,7 +88,7 @@ public class TelepathyAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1;
     }
 }

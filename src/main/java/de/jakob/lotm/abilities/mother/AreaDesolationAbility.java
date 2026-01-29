@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.BloomingAreaEntity;
 import de.jakob.lotm.entity.custom.DesolateAreaEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -14,9 +15,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AreaDesolationAbility extends AbilityItem {
-    public AreaDesolationAbility(Properties properties) {
-        super(properties, 5);
+public class AreaDesolationAbility extends Ability {
+    public AreaDesolationAbility(String id) {
+        super(id, 5);
     }
 
     @Override
@@ -25,12 +26,12 @@ public class AreaDesolationAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1400;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide()) return;
 
         if(!BeyonderData.isGriefingEnabled(entity)) {

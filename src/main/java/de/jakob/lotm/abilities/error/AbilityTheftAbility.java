@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.error;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -22,9 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AbilityTheftAbility extends AbilityItem {
-    public AbilityTheftAbility(Properties properties) {
-        super(properties, 1);
+public class AbilityTheftAbility extends Ability {
+    public AbilityTheftAbility(String id) {
+        super(id, 1);
     }
 
     @Override
@@ -33,12 +34,16 @@ public class AbilityTheftAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 95;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
+        AbilityUtil.sendActionBar(entity, Component.translatable("lotm.temporarily_disabled").withColor(0xFFFF0000));
+        if(true)
+            return;
+
         if(!(level instanceof ServerLevel)) {
             if(entity instanceof Player player) {
                 player.playSound(SoundEvents.BELL_RESONATE, 1, 1);

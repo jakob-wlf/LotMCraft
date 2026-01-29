@@ -6,16 +6,19 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 
 public abstract class Ability {
 
@@ -42,6 +45,7 @@ public abstract class Ability {
             return;
         }
 
+        // Fire event
         AbilityUseEvent event = new AbilityUseEvent(entity, this);
         NeoForge.EVENT_BUS.post(event);
 
@@ -49,9 +53,21 @@ public abstract class Ability {
             return;
         }
 
+        // Consume spirituality
+        if(shouldConsumeSpirituality(entity)) {
+            BeyonderData.reduceSpirituality(entity, getSpiritualityCost());
+        }
+
+        // Digest potion
+        if(!doesNotIncreaseDigestion && entity instanceof Player player) {
+            BeyonderData.digest(player, getDigestionProgressForUse(entity));
+        }
+
+        // Handle Cooldown
         AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
         component.setCooldown(id, cooldown);
 
+        // Use ability client and server sided
         onAbilityUse(serverLevel, entity);
         PacketHandler.sendToAllPlayersInSameLevel(new UseAbilityPacket(getId(), entity.getId()), serverLevel);
     }
@@ -64,6 +80,14 @@ public abstract class Ability {
 
     protected float multiplier(LivingEntity entity) {
         return (float) BeyonderData.getMultiplier(entity);
+    }
+
+    public void onHold(Level level, LivingEntity entity) {
+
+    }
+
+    public boolean shouldUseAbility(LivingEntity entity) {
+        return true;
     }
 
     public boolean hasAbility(LivingEntity entity) {
@@ -84,13 +108,13 @@ public abstract class Ability {
         AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
         if(component.isOnCooldown(id)) return false;
 
-        if(consumeSpirituality(entity) && BeyonderData.getSpirituality(entity) <= getSpiritualityCost()) return false;
+        if(shouldConsumeSpirituality(entity) && BeyonderData.getSpirituality(entity) <= getSpiritualityCost()) return false;
 
         return true;
     }
 
-    private boolean consumeSpirituality(LivingEntity entity) {
-        return entity.hasInfiniteMaterials();
+    protected boolean shouldConsumeSpirituality(LivingEntity entity) {
+        return !entity.hasInfiniteMaterials() && entity instanceof Player;
     }
 
     public int lowestSequenceUsable() {
@@ -125,6 +149,30 @@ public abstract class Ability {
 
     public ResourceLocation getTextureLocation() {
         return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/abilities/" + id + ".png");
+    }
+
+    public Component getName() {
+        if(getRequirements().isEmpty()) {
+            return Component.translatable("lotmcraft." + getId()).withStyle(ChatFormatting.BOLD);
+        }
+
+        String pathway = getRequirements().keySet()
+                .stream()
+                .sorted()
+                .findFirst()
+                .orElse(null);
+
+        int color = BeyonderData.pathwayInfos.get(pathway).color();
+        return Component.translatable("lotmcraft." + getId()).withStyle(ChatFormatting.BOLD).withColor(color);
+    }
+
+    @Nullable
+    public Component getDescription() {
+        MutableComponent description = Component.translatable("lotmcraft." + getId() + ".description");
+        if(description.getString().equals("lotmcraft." + getId() + ".description")) {
+            return null;
+        }
+        return description.withStyle(ChatFormatting.DARK_GRAY);
     }
 
     public String getId() {

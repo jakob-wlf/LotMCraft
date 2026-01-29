@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -18,9 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SpaceTimeStormAbility extends AbilityItem {
-    public SpaceTimeStormAbility(Properties properties) {
-        super(properties, 12);
+public class SpaceTimeStormAbility extends Ability {
+    public SpaceTimeStormAbility(String id) {
+        super(id, 12);
     }
 
     @Override
@@ -29,12 +30,12 @@ public class SpaceTimeStormAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1700;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

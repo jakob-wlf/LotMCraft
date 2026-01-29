@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -16,9 +17,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConqueringAbility extends AbilityItem {
-    public ConqueringAbility(Properties properties) {
-        super(properties, 1.5f);
+public class ConqueringAbility extends Ability {
+    public ConqueringAbility(String id) {
+        super(id, 1.5f);
     }
 
     @Override
@@ -32,7 +33,7 @@ public class ConqueringAbility extends AbilityItem {
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -17,9 +18,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlagueAbility extends AbilityItem {
-    public PlagueAbility(Properties properties) {
-        super(properties, 120);
+public class PlagueAbility extends Ability {
+    public PlagueAbility(String id) {
+        super(id, 120);
     }
 
     @Override
@@ -28,14 +29,14 @@ public class PlagueAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 400;
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(0, 0, 0), 10f);
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide || !(level instanceof ServerLevel serverLevel))
             return;
 

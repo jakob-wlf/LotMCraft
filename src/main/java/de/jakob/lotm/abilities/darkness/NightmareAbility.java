@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncNightmareAbilityPacket;
 import de.jakob.lotm.util.data.Location;
@@ -36,14 +37,14 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class NightmareAbility extends SelectableAbilityItem {
+public class NightmareAbility extends SelectableAbility {
     private static final HashMap<UUID, NightmareCenter> activeNightmaresServer = new HashMap<>();
     private static final HashMap<UUID, NightmareCenter> activeNightmaresClient = new HashMap<>();
     private static final HashSet<UUID> isReshaping = new HashSet<>();
     private static final HashMap<UUID, RegionSnapshot> storedRegions = new HashMap<>();
 
-    public NightmareAbility(Properties properties) {
-        super(properties, .15f);
+    public NightmareAbility(String id) {
+        super(id, .15f);
 
         canBeCopied = false;
         canBeUsedByNPC = false;
@@ -65,7 +66,7 @@ public class NightmareAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch(abilityIndex) {
             case 0 -> nightmare(level, entity);
             case 1 -> reshape(level, entity);

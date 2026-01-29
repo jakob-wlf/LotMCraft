@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.demoness;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ActiveShaderComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -33,9 +34,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DisasterManifestationAbility extends SelectableAbilityItem {
-    public DisasterManifestationAbility(Properties properties) {
-        super(properties, 4);
+public class DisasterManifestationAbility extends SelectableAbility {
+    public DisasterManifestationAbility(String id) {
+        super(id, 4);
     }
 
     @Override
@@ -54,7 +55,7 @@ public class DisasterManifestationAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

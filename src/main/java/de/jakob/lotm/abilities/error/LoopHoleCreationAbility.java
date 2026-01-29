@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.error;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.AbilityItemHandler;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -22,9 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LoopHoleCreationAbility extends AbilityItem {
-    public LoopHoleCreationAbility(Properties properties) {
-        super(properties, 3.5f);
+public class LoopHoleCreationAbility extends Ability {
+    public LoopHoleCreationAbility(String id) {
+        super(id, 3.5f);
     }
 
     @Override
@@ -33,12 +34,12 @@ public class LoopHoleCreationAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1200;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

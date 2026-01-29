@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -16,9 +17,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BlinkAbility extends AbilityItem {
-    public BlinkAbility(Properties properties) {
-        super(properties, .001f);
+public class BlinkAbility extends Ability {
+    public BlinkAbility(String id) {
+        super(id, .001f);
     }
 
     @Override
@@ -27,7 +28,7 @@ public class BlinkAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 20;
     }
 
@@ -42,7 +43,7 @@ public class BlinkAbility extends AbilityItem {
     );
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

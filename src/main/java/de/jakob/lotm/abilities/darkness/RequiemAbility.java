@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -26,13 +27,13 @@ import org.joml.Vector3f;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RequiemAbility extends AbilityItem {
+public class RequiemAbility extends Ability {
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), .5f);
     private final DustParticleOptions bigDust = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), 1f);
     private static final HashSet<UUID> pacifiedEntities = new HashSet<>();
 
-    public RequiemAbility(Properties properties) {
-        super(properties, 3);
+    public RequiemAbility(String id) {
+        super(id, 3);
     }
 
     @Override
@@ -41,12 +42,12 @@ public class RequiemAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 45;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

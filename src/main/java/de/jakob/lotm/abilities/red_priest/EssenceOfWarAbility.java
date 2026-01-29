@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.WarBannerEntity;
 import net.minecraft.sounds.SoundEvents;
@@ -11,9 +12,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EssenceOfWarAbility extends AbilityItem {
-    public EssenceOfWarAbility(Properties properties) {
-        super(properties, 180);
+public class EssenceOfWarAbility extends Ability {
+    public EssenceOfWarAbility(String id) {
+        super(id, 180);
     }
 
     @Override
@@ -27,7 +28,7 @@ public class EssenceOfWarAbility extends AbilityItem {
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

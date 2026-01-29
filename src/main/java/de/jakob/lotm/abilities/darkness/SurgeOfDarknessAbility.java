@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.block.ModBlocks;
@@ -27,9 +28,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
 
-public class SurgeOfDarknessAbility extends AbilityItem {
-    public SurgeOfDarknessAbility(Properties properties) {
-        super(properties, 11);
+public class SurgeOfDarknessAbility extends Ability {
+    public SurgeOfDarknessAbility(String id) {
+        super(id, 11);
     }
 
     @Override
@@ -38,12 +39,12 @@ public class SurgeOfDarknessAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1000;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if (!level.isClientSide) {
             Vec3 center = entity.position();
 

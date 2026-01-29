@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BlackHoleEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -13,9 +14,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BlackHoleAbility extends AbilityItem {
-    public BlackHoleAbility(Properties properties) {
-        super(properties, 20 * 60 * 2);
+public class BlackHoleAbility extends Ability {
+    public BlackHoleAbility(String id) {
+        super(id, 20 * 60 * 2);
     }
 
     @Override
@@ -24,12 +25,12 @@ public class BlackHoleAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1500;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

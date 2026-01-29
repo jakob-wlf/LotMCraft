@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -20,9 +21,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RoarOfTheThunderGodAbility extends AbilityItem {
-    public RoarOfTheThunderGodAbility(Properties properties) {
-        super(properties, 2);
+public class RoarOfTheThunderGodAbility extends Ability {
+    public RoarOfTheThunderGodAbility(String id) {
+        super(id, 2);
     }
 
     @Override
@@ -31,12 +32,12 @@ public class RoarOfTheThunderGodAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1800;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             ClientHandler.applyCameraShake(2, 30);
             return;

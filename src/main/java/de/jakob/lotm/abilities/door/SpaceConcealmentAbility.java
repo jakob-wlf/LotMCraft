@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ApprenticeDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
@@ -31,12 +32,12 @@ import org.joml.Vector3f;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SpaceConcealmentAbility extends SelectableAbilityItem {
+public class SpaceConcealmentAbility extends SelectableAbility {
     private static final Map<UUID, List<ConcealedSpace>> playerSpaces = new ConcurrentHashMap<>();
     private static final Map<UUID, List<ApprenticeDoorEntity>> playerDoors = new ConcurrentHashMap<>();
 
-    public SpaceConcealmentAbility(Properties properties) {
-        super(properties, 1);
+    public SpaceConcealmentAbility(String id) {
+        super(id, 1);
     }
 
     @Override
@@ -55,7 +56,7 @@ public class SpaceConcealmentAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(level.isClientSide)
             return;
 

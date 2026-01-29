@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -20,9 +21,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LifeDeprivationAbility extends SelectableAbilityItem {
-    public LifeDeprivationAbility(Properties properties) {
-        super(properties, 3);
+public class LifeDeprivationAbility extends SelectableAbility {
+    public LifeDeprivationAbility(String id) {
+        super(id, 3);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class LifeDeprivationAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel)) return;
 
         switch (abilityIndex) {

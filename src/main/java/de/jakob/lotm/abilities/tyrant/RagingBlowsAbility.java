@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -16,9 +17,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RagingBlowsAbility extends AbilityItem {
-    public RagingBlowsAbility(Properties properties) {
-        super(properties, 1.2f);
+public class RagingBlowsAbility extends Ability {
+    public RagingBlowsAbility(String id) {
+        super(id, 1.2f);
     }
 
     @Override
@@ -27,12 +28,12 @@ public class RagingBlowsAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 14;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
             ServerScheduler.scheduleForDuration(0, 6, 6 * 9, () -> {
                 Vec3 pos = VectorUtil.getRelativePosition(entity.getEyePosition(), entity.getLookAngle().normalize(), random.nextDouble(1, 2), random.nextDouble(-1.5, 1.5), random.nextDouble(-.5, .5));

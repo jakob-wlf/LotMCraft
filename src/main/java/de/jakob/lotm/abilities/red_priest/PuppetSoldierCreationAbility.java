@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -13,9 +14,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PuppetSoldierCreationAbility extends AbilityItem {
-    public PuppetSoldierCreationAbility(Properties properties) {
-        super(properties, 20 * 270); // 4 min, 30 seconds
+public class PuppetSoldierCreationAbility extends Ability {
+    public PuppetSoldierCreationAbility(String id) {
+        super(id, 20 * 270); // 4 min, 30 seconds
     }
 
     @Override
@@ -29,7 +30,7 @@ public class PuppetSoldierCreationAbility extends AbilityItem {
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

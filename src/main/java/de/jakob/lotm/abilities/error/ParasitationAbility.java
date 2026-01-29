@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
 import de.jakob.lotm.attachments.TransformationComponent;
@@ -29,11 +30,11 @@ import java.util.Set;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class ParasitationAbility extends ToggleAbilityItem {
+public class ParasitationAbility extends ToggleAbility {
 
     private static final HashMap<UUID, UUID> hostMap = new HashMap<>();
-    public ParasitationAbility(Properties properties) {
-        super(properties);
+    public ParasitationAbility(String id) {
+        super(id);
 
         canBeUsedByNPC = false;
     }
@@ -44,12 +45,12 @@ public class ParasitationAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1;
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             return;
         }
@@ -77,7 +78,7 @@ public class ParasitationAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }
@@ -141,7 +142,7 @@ public class ParasitationAbility extends ToggleAbilityItem {
 
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel))
             return;
 

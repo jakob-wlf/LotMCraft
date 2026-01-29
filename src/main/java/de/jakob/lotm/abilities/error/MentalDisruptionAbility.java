@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -17,9 +18,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MentalDisruptionAbility extends AbilityItem {
-    public MentalDisruptionAbility(Properties properties) {
-        super(properties, 2);
+public class MentalDisruptionAbility extends Ability {
+    public MentalDisruptionAbility(String id) {
+        super(id, 2);
     }
 
     @Override
@@ -28,7 +29,7 @@ public class MentalDisruptionAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 40;
     }
 
@@ -38,7 +39,7 @@ public class MentalDisruptionAbility extends AbilityItem {
     );
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

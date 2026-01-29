@@ -154,7 +154,7 @@ public abstract class SelectableAbilityItem extends AbilityItem{
             selectedAbility = 0;
         }
         selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(this, selectedAbility));
+        //PacketHandler.sendToServer(new AbilitySelectionPacket(this, selectedAbility));
     }
 
     public void previousAbility(LivingEntity entity) {
@@ -171,7 +171,7 @@ public abstract class SelectableAbilityItem extends AbilityItem{
             selectedAbility = getAbilityNames().length - 1;
         }
         selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(this, selectedAbility));
+        //PacketHandler.sendToServer(new AbilitySelectionPacket(this, selectedAbility));
     }
 
     @Override

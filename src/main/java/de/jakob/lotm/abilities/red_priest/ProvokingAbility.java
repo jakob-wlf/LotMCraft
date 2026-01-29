@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -19,9 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ProvokingAbility extends AbilityItem {
-    public ProvokingAbility(Properties properties) {
-        super(properties, 5);
+public class ProvokingAbility extends Ability {
+    public ProvokingAbility(String id) {
+        super(id, 5);
     }
 
     @Override
@@ -35,7 +36,7 @@ public class ProvokingAbility extends AbilityItem {
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         Vec3 pos = entity.getEyePosition();
 
         if(!level.isClientSide) {

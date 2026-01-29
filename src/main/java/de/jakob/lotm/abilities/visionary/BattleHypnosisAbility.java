@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -22,9 +23,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BattleHypnosisAbility extends AbilityItem {
-    public BattleHypnosisAbility(Properties properties) {
-        super(properties, 2);
+public class BattleHypnosisAbility extends Ability {
+    public BattleHypnosisAbility(String id) {
+        super(id, 2);
     }
 
     @Override
@@ -33,7 +34,7 @@ public class BattleHypnosisAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 150;
     }
 
@@ -43,7 +44,7 @@ public class BattleHypnosisAbility extends AbilityItem {
     );
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

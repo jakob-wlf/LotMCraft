@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -22,10 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EarthquakeAbility extends AbilityItem {
+public class EarthquakeAbility extends Ability {
 
-    public EarthquakeAbility(Properties properties) {
-        super(properties, 32);
+    public EarthquakeAbility(String id) {
+        super(id, 32);
     }
 
     @Override
@@ -34,12 +35,12 @@ public class EarthquakeAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 400;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

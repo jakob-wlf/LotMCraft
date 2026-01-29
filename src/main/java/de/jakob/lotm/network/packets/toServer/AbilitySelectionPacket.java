@@ -2,6 +2,8 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -12,13 +14,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record AbilitySelectionPacket(Item item, int selectedAbility) implements CustomPacketPayload {
+public record AbilitySelectionPacket(String abilityId, int selectedAbility) implements CustomPacketPayload {
     public static final Type<AbilitySelectionPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "select_ability"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, AbilitySelectionPacket> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.registry(Registries.ITEM),
-            AbilitySelectionPacket::item,
+            ByteBufCodecs.STRING_UTF8,
+            AbilitySelectionPacket::abilityId,
             ByteBufCodecs.INT,
             AbilitySelectionPacket::selectedAbility,
             AbilitySelectionPacket::new
@@ -32,13 +34,15 @@ public record AbilitySelectionPacket(Item item, int selectedAbility) implements 
     public static void handle(AbilitySelectionPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
-            updatePlayerAbilitySelection(player, packet.selectedAbility(), packet.item());
+            Ability ability = LOTMCraft.abilityHandler.getById(packet.abilityId());
+            if(!(ability instanceof SelectableAbility selectableAbility)) {
+                return;
+            }
+            updatePlayerAbilitySelection(player, packet.selectedAbility(), selectableAbility);
         });
     }
 
-    private static void updatePlayerAbilitySelection(ServerPlayer player, int selectedAbility, Item item) {
-        if (item instanceof SelectableAbilityItem selectableItem) {
-            selectableItem.setSelectedAbility(player, selectedAbility);
-        }
+    private static void updatePlayerAbilitySelection(ServerPlayer player, int selectedAbility, SelectableAbility ability) {
+        ability.setSelectedAbility(player, selectedAbility);
     }
 }

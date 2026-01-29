@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -18,9 +19,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BlessingAbility extends AbilityItem {
-    public BlessingAbility(Properties properties) {
-        super(properties, 4);
+public class BlessingAbility extends Ability {
+    public BlessingAbility(String id) {
+        super(id, 4);
     }
 
     @Override
@@ -29,7 +30,7 @@ public class BlessingAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 750;
     }
 
@@ -39,7 +40,7 @@ public class BlessingAbility extends AbilityItem {
     );
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
@@ -20,10 +21,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-public class WingsOfLightAbility extends ToggleAbilityItem {
+public class WingsOfLightAbility extends ToggleAbility {
 
-    public WingsOfLightAbility(Properties properties) {
-        super(properties);
+    public WingsOfLightAbility(String id) {
+        super(id);
 
         canBeUsedByNPC = false;
     }
@@ -39,7 +40,7 @@ public class WingsOfLightAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             return;
         }
@@ -51,7 +52,7 @@ public class WingsOfLightAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             return;
         }
@@ -74,7 +75,7 @@ public class WingsOfLightAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

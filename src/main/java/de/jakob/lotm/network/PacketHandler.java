@@ -38,6 +38,18 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncToggleAbilityPacket.TYPE,
+                SyncToggleAbilityPacket.STREAM_CODEC,
+                SyncToggleAbilityPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncOnHoldAbilityPacket.TYPE,
+                SyncOnHoldAbilityPacket.STREAM_CODEC,
+                SyncOnHoldAbilityPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncAbilityWheelDataPacket.TYPE,
                 SyncAbilityWheelDataPacket.STREAM_CODEC,
                 SyncAbilityWheelDataPacket::handle

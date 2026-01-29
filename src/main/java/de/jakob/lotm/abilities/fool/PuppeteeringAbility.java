@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.fool;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
@@ -34,12 +35,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class PuppeteeringAbility extends AbilityItem {
+public class PuppeteeringAbility extends Ability {
 
     private final HashMap<UUID, LivingEntity> entitiesBeingManipulated = new HashMap<>();
 
-    public PuppeteeringAbility(Properties properties) {
-        super(properties, 1);
+    public PuppeteeringAbility(String id) {
+        super(id, 1);
 
         canBeCopied = false;
     }
@@ -50,7 +51,7 @@ public class PuppeteeringAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 40;
     }
 
@@ -110,7 +111,7 @@ public class PuppeteeringAbility extends AbilityItem {
     private final DustParticleOptions particleOptions = new DustParticleOptions(new Vector3f(.4f, .4f, .4f), 1.35f);
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

@@ -2,6 +2,7 @@ package de.jakob.lotm.gui.custom.AbilityWheel;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.events.KeyInputHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.UpdateSelectedAbilityPacket;
 import de.jakob.lotm.util.data.ClientData;
@@ -84,12 +85,14 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
         guiGraphics.blit(WHEEL_BACKGROUND, this.leftPos, this.topPos, 0, 0, WHEEL_SIZE, WHEEL_SIZE, WHEEL_SIZE, WHEEL_SIZE);
 
         // Render section glow for hovered section
-        if (hoveredSlot != -1) {
+        if (hoveredSlot != -1 && abilities.size() > 1) {
             renderSectionGlow(guiGraphics, centerX, centerY, abilities.size(), hoveredSlot);
         }
 
         // Render section divider lines
-        renderSectionLines(guiGraphics, centerX, centerY, abilities);
+        if(abilities.size() > 1) {
+            renderSectionLines(guiGraphics, centerX, centerY, abilities);
+        }
 
         // Only render ability slots dynamically
         renderAbilitySlots(guiGraphics, centerX, centerY, abilities);
@@ -337,6 +340,7 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
             );
 
             // Close the screen
+            KeyInputHandler.holdAbilityWheelCooldownTicks = 12;
             this.onClose();
             return true;
         }

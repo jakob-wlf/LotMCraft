@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.MisfortuneWordsEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerLevel;
@@ -10,9 +11,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WordsOfMisfortuneAbility extends AbilityItem {
-    public WordsOfMisfortuneAbility(Properties properties) {
-        super(properties, 4);
+public class WordsOfMisfortuneAbility extends Ability {
+    public WordsOfMisfortuneAbility(String id) {
+        super(id, 4);
     }
 
     @Override
@@ -21,12 +22,12 @@ public class WordsOfMisfortuneAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1000;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide()) return;
 
         MisfortuneWordsEntity previousWordsEntity = AbilityUtil.getAllNearbyEntities(entity, (ServerLevel) level, entity.position(), 3)

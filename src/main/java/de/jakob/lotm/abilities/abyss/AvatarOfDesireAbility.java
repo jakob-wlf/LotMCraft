@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.abyss;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -27,13 +28,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class AvatarOfDesireAbility extends ToggleAbilityItem {
-    public AvatarOfDesireAbility(Properties properties) {
-        super(properties);
+public class AvatarOfDesireAbility extends ToggleAbility {
+    public AvatarOfDesireAbility(String id) {
+        super(id);
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 0;
     }
 
@@ -43,7 +44,7 @@ public class AvatarOfDesireAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             ClientHandler.changeToThirdPerson();
             return;
@@ -61,7 +62,7 @@ public class AvatarOfDesireAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             ClientHandler.changeToThirdPerson();
             return;
@@ -95,7 +96,7 @@ public class AvatarOfDesireAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             ClientHandler.changeToFirstPerson();
             return;

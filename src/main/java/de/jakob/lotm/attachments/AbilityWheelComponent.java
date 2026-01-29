@@ -1,11 +1,13 @@
 package de.jakob.lotm.attachments;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import java.util.ArrayList;
@@ -31,6 +33,8 @@ public class AbilityWheelComponent implements INBTSerializable<CompoundTag> {
     public void setSelectedAbility(int selectedAbility) {
         this.selectedAbility = selectedAbility;
     }
+
+
 
     @Override
     public CompoundTag serializeNBT(HolderLookup.Provider provider) {

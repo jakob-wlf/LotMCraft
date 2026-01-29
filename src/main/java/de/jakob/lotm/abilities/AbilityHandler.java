@@ -79,7 +79,7 @@ public class AbilityHandler {
             if(!requirements.containsKey(pathway))
                 return false;
 
-            if(BeyonderData.isAbilityDisabled(entity) && !(abilityItem.getItem() instanceof CogitationAbility))
+            if(BeyonderData.isAbilityDisabled(entity))
                 return false;
 
             // Check if pathway has requirements

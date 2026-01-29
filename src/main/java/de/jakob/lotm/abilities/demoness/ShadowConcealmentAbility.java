@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.DisplayShadowParticlesPacket;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -23,11 +24,11 @@ import java.util.Map;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class ShadowConcealmentAbility extends AbilityItem {
+public class ShadowConcealmentAbility extends Ability {
     public static final HashSet<UUID> invisiblePlayers = new HashSet<>();
 
-    public ShadowConcealmentAbility(Properties properties) {
-        super(properties, 45);
+    public ShadowConcealmentAbility(String id) {
+        super(id, 45);
     }
 
     @Override
@@ -36,7 +37,7 @@ public class ShadowConcealmentAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 13;
     }
 
@@ -46,7 +47,7 @@ public class ShadowConcealmentAbility extends AbilityItem {
     );
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
 
             // make invisible

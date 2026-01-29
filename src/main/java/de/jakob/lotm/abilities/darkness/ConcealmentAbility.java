@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -32,9 +33,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class ConcealmentAbility extends SelectableAbilityItem {
-    public ConcealmentAbility(Properties properties) {
-        super(properties, 5);
+public class ConcealmentAbility extends SelectableAbility {
+    public ConcealmentAbility(String id) {
+        super(id, 5);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class ConcealmentAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(entity instanceof Player)) abilityIndex = 0;
         switch(abilityIndex) {
             case 0 -> concealSurroundings(level, entity);

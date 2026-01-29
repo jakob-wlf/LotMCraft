@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -26,13 +27,13 @@ import org.joml.Vector3f;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class NatureSpellsAbility extends SelectableAbilityItem {
+public class NatureSpellsAbility extends SelectableAbility {
     private final HashSet<UUID> castingSwamp = new HashSet<>();
     private final HashSet<UUID> castingChildOfOak = new HashSet<>();
     private final HashSet<UUID> affectedByNatureWrath = new HashSet<>();
 
-    public NatureSpellsAbility(Properties properties) {
-        super(properties, 3);
+    public NatureSpellsAbility(String id) {
+        super(id, 3);
     }
 
     @Override
@@ -51,7 +52,7 @@ public class NatureSpellsAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

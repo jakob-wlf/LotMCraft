@@ -12,6 +12,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncIntrospectMenuPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -41,6 +42,7 @@ public record OpenAbilityWheelPacket() implements CustomPacketPayload {
         context.enqueueWork(() -> {
             if (context.flow().getReceptionSide().isServer()) {
                 ServerPlayer player = (ServerPlayer) context.player();
+                AbilityWheelHelper.removeUnusableAbilities(player);
                 player.openMenu(new SimpleMenuProvider(
                         (id, inventory, p) -> new AbilityWheelMenu(id, inventory),
                         Component.translatable("lotm.ability_wheel.title")

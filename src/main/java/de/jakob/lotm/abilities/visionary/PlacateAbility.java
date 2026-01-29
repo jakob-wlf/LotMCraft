@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -17,9 +18,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlacateAbility extends SelectableAbilityItem {
-    public PlacateAbility(Properties properties) {
-        super(properties, 3);
+public class PlacateAbility extends SelectableAbility {
+    public PlacateAbility(String id) {
+        super(id, 3);
     }
 
     @Override
@@ -28,17 +29,17 @@ public class PlacateAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 50;
     }
 
     @Override
-    protected String[] getAbilityNames() {
+    public String[] getAbilityNames() {
         return new String[]{"ability.lotmcraft.placate.self", "ability.lotmcraft.placate.others"};
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    public void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(entity instanceof Player))
             abilityIndex = 0;
         switch (abilityIndex) {

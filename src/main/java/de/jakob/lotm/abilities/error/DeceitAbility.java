@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -26,13 +27,13 @@ import java.util.Map;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class DeceitAbility extends SelectableAbilityItem {
+public class DeceitAbility extends SelectableAbility {
 
     public static final HashSet<UUID> cannotBeTargeted = new HashSet<>();
     public static final HashSet<UUID> cannotBeHarmed = new HashSet<>();
 
-    public DeceitAbility(Properties properties) {
-        super(properties, 1);
+    public DeceitAbility(String id) {
+        super(id, 1);
     }
 
     @Override
@@ -51,7 +52,7 @@ public class DeceitAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel)) {
             entity.playSound(SoundEvents.BELL_RESONATE, 2, 1);
             return;

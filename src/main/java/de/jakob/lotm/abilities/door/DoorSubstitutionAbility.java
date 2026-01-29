@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -25,12 +26,12 @@ import java.util.Random;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class DoorSubstitutionAbility extends AbilityItem {
+public class DoorSubstitutionAbility extends Ability {
 
     private static final HashMap<UUID, Integer> figurineNumbers = new HashMap<>();
 
-    public DoorSubstitutionAbility(Properties properties) {
-        super(properties, 5f);
+    public DoorSubstitutionAbility(String id) {
+        super(id, 5f);
     }
 
     @Override
@@ -39,12 +40,12 @@ public class DoorSubstitutionAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 90;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             if(entity instanceof Player player)
                 player.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);

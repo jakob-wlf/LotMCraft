@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.abyss;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.FireballEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -24,10 +25,10 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FlameSpellsAbility extends SelectableAbilityItem {
+public class FlameSpellsAbility extends SelectableAbility {
 
-    public FlameSpellsAbility(Properties properties) {
-        super(properties, .75f);
+    public FlameSpellsAbility(String id) {
+        super(id, .75f);
     }
 
     @Override
@@ -51,7 +52,7 @@ public class FlameSpellsAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch(abilityIndex) {
             case 0 -> fireball(level, entity);
             case 1 -> eruption(level, entity);

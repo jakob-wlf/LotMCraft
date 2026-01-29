@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SendPassiveTheftEffectPacket;
@@ -15,9 +16,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TheftAbility extends AbilityItem {
-    public TheftAbility(Properties properties) {
-        super(properties, 1.75f);
+public class TheftAbility extends Ability {
+    public TheftAbility(String id) {
+        super(id, 1.75f);
 
         canBeUsedByNPC = false;
     }
@@ -28,12 +29,12 @@ public class TheftAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 10.5f;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel) || !(entity instanceof ServerPlayer player)) {
             return;
         }

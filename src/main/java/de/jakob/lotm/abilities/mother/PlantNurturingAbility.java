@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
@@ -19,9 +20,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlantNurturingAbility extends AbilityItem {
-    public PlantNurturingAbility(Properties properties) {
-        super(properties, 2);
+public class PlantNurturingAbility extends Ability {
+    public PlantNurturingAbility(String id) {
+        super(id, 2);
     }
 
     @Override
@@ -32,12 +33,12 @@ public class PlantNurturingAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 10;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
         try {

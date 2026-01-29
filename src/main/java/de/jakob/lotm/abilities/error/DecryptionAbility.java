@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncDecryptionLookedAtEntitiesAbilityPacket;
 import de.jakob.lotm.network.packets.toClient.SyncSpectatingAbilityPacket;
@@ -26,17 +27,17 @@ import org.joml.Vector3f;
 
 import java.util.*;
 
-public class DecryptionAbility extends ToggleAbilityItem {
+public class DecryptionAbility extends ToggleAbility {
 
-    public DecryptionAbility(Properties properties) {
-        super(properties);
+    public DecryptionAbility(String id) {
+        super(id);
 
         canBeCopied = false;
         canBeUsedByNPC = false;
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
             if(entity instanceof ServerPlayer player) {
                 PacketHandler.sendToPlayer(player, new SyncDecryptionLookedAtEntitiesAbilityPacket(true, -1));
@@ -48,7 +49,7 @@ public class DecryptionAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(!(entity instanceof ServerPlayer player) || level.isClientSide)
             return;
 
@@ -63,7 +64,7 @@ public class DecryptionAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
             if(entity instanceof ServerPlayer player) {
                 PacketHandler.sendToPlayer(player, new SyncDecryptionLookedAtEntitiesAbilityPacket(false, -1));
@@ -81,7 +82,7 @@ public class DecryptionAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return .25f;
     }
 

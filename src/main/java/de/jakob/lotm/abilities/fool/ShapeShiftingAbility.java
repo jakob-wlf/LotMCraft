@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.gui.custom.UsernameInput.UsernameInputScreen;
 import de.jakob.lotm.util.helper.SkinChanger;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -17,11 +18,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ShapeShiftingAbility extends AbilityItem {
+public class ShapeShiftingAbility extends Ability {
     public static final HashMap<UUID, String> attemptingToChangeSkin = new HashMap<>();
 
-    public ShapeShiftingAbility(Properties properties) {
-        super(properties, 60);
+    public ShapeShiftingAbility(String id) {
+        super(id, 60);
 
         canBeCopied = false;
         canBeUsedByNPC = false;
@@ -33,12 +34,12 @@ public class ShapeShiftingAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 100;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

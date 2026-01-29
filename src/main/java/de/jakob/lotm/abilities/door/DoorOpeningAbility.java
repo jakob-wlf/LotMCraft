@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ApprenticeDoorEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -20,9 +21,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DoorOpeningAbility extends AbilityItem {
-    public DoorOpeningAbility(Properties properties) {
-        super(properties, 1);
+public class DoorOpeningAbility extends Ability {
+    public DoorOpeningAbility(String id) {
+        super(id, 1);
 
         canBeUsedByNPC = false;
     }
@@ -33,12 +34,12 @@ public class DoorOpeningAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 12;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

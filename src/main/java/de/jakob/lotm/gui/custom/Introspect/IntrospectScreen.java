@@ -119,6 +119,81 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
 
         this.renderTooltip(guiGraphics, mouseX, mouseY);
+
+        // Render ability tooltips if hovering and not dragging
+        if (showAbilities && draggedAbility == null) {
+            renderAbilityTooltips(guiGraphics, mouseX, mouseY);
+        }
+    }
+
+    private void renderAbilityTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        int panelX = this.leftPos + this.imageWidth + 5;
+        int panelY = this.topPos + 15;
+        int wheelY = panelY + ABILITIES_PANEL_HEIGHT + 5;
+
+        // Check for hover over available abilities
+        Ability hoveredAbility = getAbilityAt(mouseX, mouseY, panelX, panelY, availableAbilities, true);
+
+        // If not hovering over available abilities, check ability wheel
+        if (hoveredAbility == null) {
+            int wheelSlot = getAbilityWheelSlot(mouseX, mouseY, panelX, wheelY);
+            if (wheelSlot >= 0 && wheelSlot < abilityWheelSlots.size()) {
+                hoveredAbility = abilityWheelSlots.get(wheelSlot);
+            }
+        }
+
+        // Render tooltip if we found a hovered ability
+        if (hoveredAbility != null) {
+            List<Component> tooltipLines = new ArrayList<>();
+
+            // Add ability name
+            tooltipLines.add(hoveredAbility.getName());
+
+            // Add description if available, wrapping long text
+            Component description = hoveredAbility.getDescription();
+            if (description != null) {
+                String descText = description.getString();
+                int maxWidth = 100; // Maximum width in pixels for tooltip
+
+                // Split description into multiple lines if needed
+                List<String> wrappedLines = wrapText(descText, maxWidth);
+                for (String line : wrappedLines) {
+                    tooltipLines.add(Component.literal(line).withStyle(ChatFormatting.DARK_GRAY));
+                }
+            }
+
+            guiGraphics.renderTooltip(this.font, tooltipLines, java.util.Optional.empty(), mouseX, mouseY);
+        }
+    }
+
+    private List<String> wrapText(String text, int maxWidth) {
+        List<String> lines = new ArrayList<>();
+        String[] words = text.split(" ");
+        StringBuilder currentLine = new StringBuilder();
+
+        for (String word : words) {
+            String testLine = currentLine.length() == 0 ? word : currentLine + " " + word;
+            int lineWidth = this.font.width(testLine);
+
+            if (lineWidth > maxWidth && currentLine.length() > 0) {
+                // Current line is full, add it and start a new line
+                lines.add(currentLine.toString());
+                currentLine = new StringBuilder(word);
+            } else {
+                // Add word to current line
+                if (currentLine.length() > 0) {
+                    currentLine.append(" ");
+                }
+                currentLine.append(word);
+            }
+        }
+
+        // Add the last line
+        if (currentLine.length() > 0) {
+            lines.add(currentLine.toString());
+        }
+
+        return lines;
     }
 
     private void renderAbilitiesPanel(GuiGraphics guiGraphics, int mouseX, int mouseY) {

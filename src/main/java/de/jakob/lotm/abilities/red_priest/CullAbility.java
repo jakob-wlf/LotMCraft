@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncCullAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -17,12 +18,12 @@ import net.minecraft.world.level.Level;
 
 import java.util.*;
 
-public class CullAbility extends ToggleAbilityItem {
+public class CullAbility extends ToggleAbility {
     private final HashMap<UUID, Set<Entity>> glowingEntities = new HashMap<>();
 
 
-    public CullAbility(Properties properties) {
-        super(properties);
+    public CullAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -36,7 +37,7 @@ public class CullAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
         BeyonderData.addModifier(entity, "cull", 1.7);
@@ -45,7 +46,7 @@ public class CullAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 
@@ -62,7 +63,7 @@ public class CullAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
         BeyonderData.removeModifier(entity, "cull");

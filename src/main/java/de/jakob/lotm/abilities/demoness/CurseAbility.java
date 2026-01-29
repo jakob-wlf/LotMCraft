@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.item.ModItems;
@@ -24,9 +25,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class CurseAbility extends AbilityItem {
-    public CurseAbility(Properties properties) {
-        super(properties, 1.5f);
+public class CurseAbility extends Ability {
+    public CurseAbility(String id) {
+        super(id, 1.5f);
 
         canBeUsedByNPC = false;
     }
@@ -37,12 +38,12 @@ public class CurseAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 300;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

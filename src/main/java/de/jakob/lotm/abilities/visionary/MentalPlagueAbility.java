@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -17,9 +18,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MentalPlagueAbility extends AbilityItem {
-    public MentalPlagueAbility(Properties properties) {
-        super(properties, 20);
+public class MentalPlagueAbility extends Ability {
+    public MentalPlagueAbility(String id) {
+        super(id, 20);
     }
 
     @Override
@@ -28,7 +29,7 @@ public class MentalPlagueAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1200;
     }
 
@@ -38,7 +39,7 @@ public class MentalPlagueAbility extends AbilityItem {
     );
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) return;
 
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 30, 2);

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.GiantLightningEntity;
@@ -31,9 +32,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class ProphecyAbility extends AbilityItem {
-    public ProphecyAbility(Properties properties) {
-        super(properties, 4);
+public class ProphecyAbility extends Ability {
+    public ProphecyAbility(String id) {
+        super(id, 4);
     }
 
     @Override
@@ -42,14 +43,14 @@ public class ProphecyAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1000;
     }
 
     private final String[] prophecies = new String[] {"disaster", "fortune", "misfortune_for_enemy"};
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide()) return;
 
         String prophecy = prophecies[level.random.nextInt(prophecies.length)];

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncExplodedTrapPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -23,9 +24,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class TrapAbility extends AbilityItem {
-    public TrapAbility(Properties properties) {
-        super(properties, 1);
+public class TrapAbility extends Ability {
+    public TrapAbility(String id) {
+        super(id, 1);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class TrapAbility extends AbilityItem {
     );
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         final int duration = 20 * 30;
         Vec3 pos = entity.position();
         String trapKey = entity.getUUID() + "_" + pos.x + "_" + pos.y + "_" + pos.z;

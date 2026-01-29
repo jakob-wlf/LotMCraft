@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -18,9 +19,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CurseOfMisfortuneAbility extends AbilityItem {
-    public CurseOfMisfortuneAbility(Properties properties) {
-        super(properties, 10);
+public class CurseOfMisfortuneAbility extends Ability {
+    public CurseOfMisfortuneAbility(String id) {
+        super(id, 10);
     }
 
     @Override
@@ -36,7 +37,7 @@ public class CurseOfMisfortuneAbility extends AbilityItem {
     private static final DustParticleOptions dust = new DustParticleOptions(new Vector3f(201 / 255f, 150 / 255f, 79 / 255f), 1.5f);
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }

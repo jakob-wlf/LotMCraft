@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.network.chat.Component;
@@ -11,9 +12,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HostControllingAbility extends SelectableAbilityItem {
-    public HostControllingAbility(Properties properties) {
-        super(properties, .5f);
+public class HostControllingAbility extends SelectableAbility {
+    public HostControllingAbility(String id) {
+        super(id, .5f);
     }
 
     @Override
@@ -32,7 +33,7 @@ public class HostControllingAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

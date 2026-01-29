@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItemHandler;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.red_priest.CullAbility;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -62,14 +63,11 @@ public class CullOverlay {
     @SubscribeEvent
     public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?> event) {
         Player localPlayer = Minecraft.getInstance().player;
-        if (localPlayer == null || !((CullAbility) AbilityItemHandler.CULL.get()).isActive(localPlayer)) {
+        if (localPlayer == null || !((ToggleAbility) LOTMCraft.abilityHandler.getById("cull_ability")).isActiveForEntity(localPlayer)) {
             return;
         }
 
         if (event.getEntity() != localPlayer) {
-            PoseStack poseStack = event.getPoseStack();
-            poseStack.pushPose();
-
             RenderSystem.setShaderColor(0.0f, 0.0f, 0.0f, 1.0f);
         }
     }
@@ -77,14 +75,11 @@ public class CullOverlay {
     @SubscribeEvent
     public static void onRenderLivingPost(RenderLivingEvent.Post<?, ?> event) {
         Player localPlayer = Minecraft.getInstance().player;
-        if (localPlayer == null || !((CullAbility) AbilityItemHandler.CULL.get()).isActive(localPlayer)) {
+        if (localPlayer == null || !((ToggleAbility) LOTMCraft.abilityHandler.getById("cull_ability")).isActiveForEntity(localPlayer)) {
             return;
         }
 
         if (event.getEntity() != localPlayer) {
-            PoseStack poseStack = event.getPoseStack();
-            poseStack.popPose();
-
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         }
     }

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.GiantLightningEntity;
 import de.jakob.lotm.entity.custom.LightningEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -16,9 +17,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HeavenlyPunishmentAbility extends AbilityItem {
-    public HeavenlyPunishmentAbility(Properties properties) {
-        super(properties, 2);
+public class HeavenlyPunishmentAbility extends Ability {
+    public HeavenlyPunishmentAbility(String id) {
+        super(id, 2);
     }
 
     @Override
@@ -27,12 +28,12 @@ public class HeavenlyPunishmentAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1950;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

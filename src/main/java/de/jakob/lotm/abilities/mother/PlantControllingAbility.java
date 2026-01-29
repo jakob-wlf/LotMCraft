@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -27,12 +28,12 @@ import org.joml.Vector3f;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PlantControllingAbility extends SelectableAbilityItem {
+public class PlantControllingAbility extends SelectableAbility {
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(33 / 255f, 163 / 255f, 52 / 255f), .7f);
     private static final HashSet<UUID> boundEntities = new HashSet<>();
 
-    public PlantControllingAbility(Properties properties) {
-        super(properties, 2);
+    public PlantControllingAbility(String id) {
+        super(id, 2);
     }
 
     @Override
@@ -108,7 +109,7 @@ public class PlantControllingAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch (abilityIndex) {
             case 0 -> entrap(level, entity);
             case 1 -> attack(level, entity);

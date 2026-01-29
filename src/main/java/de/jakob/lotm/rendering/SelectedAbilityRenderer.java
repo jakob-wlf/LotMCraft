@@ -2,8 +2,11 @@ package de.jakob.lotm.rendering;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.data.ClientData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -14,8 +17,12 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class SelectedAbilityRenderer {
+
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "selected_ability_overlay"), (guiGraphics, deltaTracker) -> {
@@ -35,28 +42,39 @@ public class SelectedAbilityRenderer {
         int grayColor = 0xFF808080;
         int color = BeyonderData.pathwayInfos.get(ClientBeyonderCache.getPathway(mc.player.getUUID())).color();
 
-        if(ClientBeyonderCache.isBeyonder(mc.player.getUUID())){
-            if (mc.player.getMainHandItem().getItem() instanceof SelectableAbilityItem abilityItem && abilityItem.canUse(mc.player, mc.player.getMainHandItem())) {
-                Component message1 = Component.translatable("lotm.selected").append(":").withColor(grayColor);
-                Component message2 = Component.translatable(abilityItem.getSelectedAbility(mc.player)).withColor(color);
-
-                int height = mc.font.lineHeight * 2 + 6;
-                int width = (int) Math.round(Math.max(mc.font.width(message1), mc.font.width(message2)) * 1.5);
-
-                int screenWidth = mc.getWindow().getGuiScaledWidth();
-
-                int hotbarStartX = (screenWidth - hotbarWidth) / 2;
-                int hotbarEndX = hotbarStartX + hotbarWidth;
-
-                int x = hotbarEndX + 10;
-                int y = mc.getWindow().getGuiScaledHeight() - height;
-
-                guiGraphics.fill(x - 5, y - 5, x + width, y + height, 0x80000000);
-                guiGraphics.renderOutline(x - 5, y - 5, width + 5, height + 5, 0xFF000000);
-
-                guiGraphics.drawString(mc.font, message1, x, y, grayColor);
-                guiGraphics.drawString(mc.font, message2, x, y + mc.font.lineHeight + 2, color);
-            }
+        if(!ClientBeyonderCache.isBeyonder(mc.player.getUUID())){
+            return;
         }
+
+        int selectedAbilityIndex = ClientData.getSelectedAbility();
+        if(selectedAbilityIndex < 0 || selectedAbilityIndex >= ClientData.getAbilityWheelAbilities().size()) {
+            return;
+        }
+
+        String selectedAbilityId = ClientData.getAbilityWheelAbilities().get(selectedAbilityIndex);
+        Ability selectedAbility = LOTMCraft.abilityHandler.getById(selectedAbilityId);
+        if(!(selectedAbility instanceof SelectableAbility ability)) {
+            return;
+        }
+
+        Component message1 = Component.translatable("lotm.selected").append(":").withColor(grayColor);
+        Component message2 = Component.translatable(ability.getSelectedAbility(mc.player)).withColor(color);
+
+        int height = mc.font.lineHeight * 2 + 6;
+        int width = Math.max(mc.font.width(message1), mc.font.width(message2)) + 30;
+
+        int screenWidth = mc.getWindow().getGuiScaledWidth();
+
+        int hotbarStartX = (screenWidth - hotbarWidth) / 2;
+        int hotbarEndX = hotbarStartX + hotbarWidth;
+
+        int x = hotbarEndX + 10;
+        int y = mc.getWindow().getGuiScaledHeight() - height;
+
+        guiGraphics.fill(x - 5, y - 5, x + width, y + height, 0x80000000);
+        guiGraphics.renderOutline(x - 5, y - 5, width + 5, height + 5, 0xFF000000);
+
+        guiGraphics.drawString(mc.font, message1, x, y, grayColor);
+        guiGraphics.drawString(mc.font, message2, x, y + mc.font.lineHeight + 2, color);
     }
 }

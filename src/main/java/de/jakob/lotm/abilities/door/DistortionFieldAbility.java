@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.DistortionFieldEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -20,9 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DistortionFieldAbility extends AbilityItem {
-    public DistortionFieldAbility(Properties properties) {
-        super(properties, 40);
+public class DistortionFieldAbility extends Ability {
+    public DistortionFieldAbility(String id) {
+        super(id, 40);
     }
 
     @Override
@@ -31,14 +32,14 @@ public class DistortionFieldAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1400;
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(56 / 255f, 19 / 255f, 102 / 255f), 5f);
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             return;
         }

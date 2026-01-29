@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.abilities.ClientAbilityWheelHelper;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.fool.miracle_creation.MiracleHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.rendering.MiracleWheelOverlay;
@@ -31,9 +32,9 @@ CATEGORIES:
     - Make Target lost
 - Other
  */
-public class MiracleCreationAbility extends SelectableAbilityItem {
-    public MiracleCreationAbility(Properties properties) {
-        super(properties, 5);
+public class MiracleCreationAbility extends SelectableAbility {
+    public MiracleCreationAbility(String id) {
+        super(id, 5);
     }
 
     @Override
@@ -57,18 +58,7 @@ public class MiracleCreationAbility extends SelectableAbilityItem {
     }
 
     @Override
-    public void handleLeftClickInAir(Player player) {
-        if (player.level().isClientSide && getAbilityNames().length > 0) {
-            if((ClientAbilityWheelHelper.isWheelOpen() && ClientAbilityWheelHelper.getCurrentAbilityItem() == this) ||
-                    (MiracleWheelOverlay.getInstance().isOpen()) || ((System.currentTimeMillis() - MiracleWheelOverlay.getInstance().lastClosedMs) < 500)) {
-                return;
-            }
-            ClientAbilityWheelHelper.openWheel(this, player);
-        }
-    }
-
-    @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(entity instanceof Player player)) return; // Will be handled later
         if(!level.isClientSide) return; // Client-side only for opening the wheel
         switch (abilityIndex) {

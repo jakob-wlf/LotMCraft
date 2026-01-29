@@ -341,7 +341,7 @@ public class AbilityWheelOverlay {
 
     public void handleMouseRelease() {
         if (isOpen && hoveredIndex >= 0) {
-            PacketHandler.sendToServer(new AbilitySelectionPacket(abilityItem, hoveredIndex));
+            //PacketHandler.sendToServer(new AbilitySelectionPacket(abilityItem, hoveredIndex));
         }
         close();
     }

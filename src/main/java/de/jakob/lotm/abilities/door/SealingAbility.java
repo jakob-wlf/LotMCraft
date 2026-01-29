@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -24,9 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SealingAbility extends AbilityItem {
-    public SealingAbility(Properties properties) {
-        super(properties, 2);
+public class SealingAbility extends Ability {
+    public SealingAbility(String id) {
+        super(id, 2);
     }
 
     @Override
@@ -35,7 +36,7 @@ public class SealingAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 500;
     }
 
@@ -43,7 +44,7 @@ public class SealingAbility extends AbilityItem {
     private final DustParticleOptions dustOptions2 = new DustParticleOptions(new Vector3f(224 / 255f, 120 / 255f, 245 / 255f), 2.5f);
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

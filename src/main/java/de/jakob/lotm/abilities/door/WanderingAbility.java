@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -24,9 +25,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.StreamSupport;
 
-public class WanderingAbility extends AbilityItem {
-    public WanderingAbility(Properties properties) {
-        super(properties, 1);
+public class WanderingAbility extends Ability {
+    public WanderingAbility(String id) {
+        super(id, 1);
 
         canBeUsedByNPC = false;
     }
@@ -37,12 +38,12 @@ public class WanderingAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 200;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide || !(level instanceof ServerLevel serverLevel))
             return;
 

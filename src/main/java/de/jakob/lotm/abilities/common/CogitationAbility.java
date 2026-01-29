@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
@@ -14,10 +15,10 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CogitationAbility extends ToggleAbilityItem {
+public class CogitationAbility extends ToggleAbility {
 
-    public CogitationAbility(Item.Properties properties) {
-        super(properties);
+    public CogitationAbility(String id) {
+        super(id);
 
         canBeCopied = false;
         canBeUsedByNPC = false;
@@ -34,11 +35,11 @@ public class CogitationAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
     }
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(!(entity instanceof Player player))
             return;
 
@@ -59,7 +60,7 @@ public class CogitationAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
     }
 
     @Override

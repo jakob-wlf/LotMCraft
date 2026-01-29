@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -25,12 +26,12 @@ import java.util.Map;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class CharmAbility extends AbilityItem {
+public class CharmAbility extends Ability {
     private static final HashMap<UUID, UUID> charmed = new HashMap<>();
     private static final HashSet<UUID> onCharmedCooldown = new HashSet<>();
 
-    public CharmAbility(Properties properties) {
-        super(properties, 2);
+    public CharmAbility(String id) {
+        super(id, 2);
     }
 
     @Override
@@ -39,12 +40,12 @@ public class CharmAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 40;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

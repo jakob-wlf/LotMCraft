@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.demoness;
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.AbilityItem;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -24,9 +25,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PetrificationAbility extends SelectableAbilityItem {
-    public PetrificationAbility(Properties properties) {
-        super(properties, 5);
+public class PetrificationAbility extends SelectableAbility {
+    public PetrificationAbility(String id) {
+        super(id, 5);
     }
 
     @Override
@@ -45,7 +46,7 @@ public class PetrificationAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

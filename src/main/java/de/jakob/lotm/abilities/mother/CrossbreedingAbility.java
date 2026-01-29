@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.mother.handler.HybridMobData;
 import de.jakob.lotm.network.packets.toClient.HybridMobSyncPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -22,11 +23,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class CrossbreedingAbility extends AbilityItem {
+public class CrossbreedingAbility extends Ability {
     private final HashMap<UUID, LivingEntity> targets = new HashMap<>();
 
-    public CrossbreedingAbility(Properties properties) {
-        super(properties, 1);
+    public CrossbreedingAbility(String id) {
+        super(id, 1);
 
         canBeUsedByNPC = false;
         canBeCopied = false;
@@ -40,12 +41,12 @@ public class CrossbreedingAbility extends AbilityItem {
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(112 / 255f, 212 / 255f, 130 / 255f), 1.25f);
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 220;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel))
             return;
 

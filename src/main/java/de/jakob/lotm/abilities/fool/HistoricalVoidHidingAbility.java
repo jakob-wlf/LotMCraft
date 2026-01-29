@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
@@ -24,15 +25,15 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-public class HistoricalVoidHidingAbility extends ToggleAbilityItem {
+public class HistoricalVoidHidingAbility extends ToggleAbility {
     private final HashMap<UUID, Vec3> locations = new HashMap<>();
 
-    public HistoricalVoidHidingAbility(Properties properties) {
-        super(properties);
+    public HistoricalVoidHidingAbility(String id) {
+        super(id);
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 5;
     }
 
@@ -42,7 +43,7 @@ public class HistoricalVoidHidingAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             return;
         }
@@ -55,7 +56,7 @@ public class HistoricalVoidHidingAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             return;
         }
@@ -93,7 +94,7 @@ public class HistoricalVoidHidingAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 

@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.demoness;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -16,9 +17,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ApocalypseAbility extends AbilityItem {
-    public ApocalypseAbility(Properties properties) {
-        super(properties, 10);
+public class ApocalypseAbility extends Ability {
+    public ApocalypseAbility(String id) {
+        super(id, 10);
     }
 
     @Override
@@ -27,12 +28,12 @@ public class ApocalypseAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 2500;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

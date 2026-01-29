@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSpectatingAbilityPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -15,15 +16,15 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SpectatingAbility extends ToggleAbilityItem {
-    public SpectatingAbility(Properties properties) {
-        super(properties);
+public class SpectatingAbility extends ToggleAbility {
+    public SpectatingAbility(String id) {
+        super(id);
 
         canBeUsedByNPC = false;
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return .125f;
     }
 
@@ -33,7 +34,7 @@ public class SpectatingAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
             if(entity instanceof ServerPlayer player) {
                 PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(true, -1));
@@ -45,7 +46,7 @@ public class SpectatingAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(!(entity instanceof ServerPlayer player) || level.isClientSide)
             return;
 
@@ -60,7 +61,7 @@ public class SpectatingAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
             if(entity instanceof ServerPlayer player) {
                 PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(false, -1));

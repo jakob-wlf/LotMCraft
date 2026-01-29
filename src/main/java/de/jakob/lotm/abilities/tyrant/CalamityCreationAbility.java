@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ActiveShaderComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -27,9 +28,9 @@ import org.joml.Vector3f;
 
 import java.util.*;
 
-public class CalamityCreationAbility extends SelectableAbilityItem {
-    public CalamityCreationAbility(Properties properties) {
-        super(properties, 25);
+public class CalamityCreationAbility extends SelectableAbility {
+    public CalamityCreationAbility(String id) {
+        super(id, 25);
     }
 
     @Override
@@ -48,7 +49,7 @@ public class CalamityCreationAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

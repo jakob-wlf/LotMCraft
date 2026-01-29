@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -18,11 +19,11 @@ import java.util.Map;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class PsychologicalInvisibilityAbility extends AbilityItem {
+public class PsychologicalInvisibilityAbility extends Ability {
     public static final HashSet<UUID> invisiblePlayers = new HashSet<>();
 
-    public PsychologicalInvisibilityAbility(Properties properties) {
-        super(properties, 180);
+    public PsychologicalInvisibilityAbility(String id) {
+        super(id, 180);
     }
 
     @Override
@@ -31,13 +32,13 @@ public class PsychologicalInvisibilityAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 13;
     }
 
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
 
             // make invisible

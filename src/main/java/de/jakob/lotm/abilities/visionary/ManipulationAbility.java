@@ -1,15 +1,16 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ManipulationAbility extends AbilityItem {
-    public ManipulationAbility(Properties properties) {
-        super(properties, 30);
+public class ManipulationAbility extends Ability {
+    public ManipulationAbility(String id) {
+        super(id, 30);
     }
 
     @Override
@@ -18,12 +19,12 @@ public class ManipulationAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 600;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
 
     }
 }

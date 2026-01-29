@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -17,9 +18,9 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 
-public class StructuralCollapseAbility extends AbilityItem {
-    public StructuralCollapseAbility(Properties properties) {
-        super(properties, 3);
+public class StructuralCollapseAbility extends Ability {
+    public StructuralCollapseAbility(String id) {
+        super(id, 3);
     }
 
     @Override
@@ -28,12 +29,12 @@ public class StructuralCollapseAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1200;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

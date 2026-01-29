@@ -1,6 +1,6 @@
 package de.jakob.lotm.abilities.sun;
 
-import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
@@ -13,9 +13,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HolyOathAbility extends ToggleAbilityItem {
-    public HolyOathAbility(Properties properties) {
-        super(properties);
+public class HolyOathAbility extends ToggleAbility {
+    public HolyOathAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class HolyOathAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
 
     }
 
@@ -39,7 +39,7 @@ public class HolyOathAbility extends ToggleAbilityItem {
     );
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 
@@ -53,7 +53,7 @@ public class HolyOathAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
 
     }
 }

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.abilities.ToggleAbilityItem;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import net.minecraft.core.BlockPos;
@@ -17,15 +18,15 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UnderWaterBreathingAbility extends ToggleAbilityItem {
-    public UnderWaterBreathingAbility(Properties properties) {
-        super(properties);
+public class UnderWaterBreathingAbility extends ToggleAbility {
+    public UnderWaterBreathingAbility(String id) {
+        super(id);
 
         canBeUsedByNPC = false;
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 2;
     }
 
@@ -35,18 +36,18 @@ public class UnderWaterBreathingAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void start(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
 
     }
 
     private final Vec3 direction = new Vec3(0, .5, 0);
 
     @Override
-    protected void tick(Level level, LivingEntity entity) {
+    public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
         if(level.getBlockState(BlockPos.containing(entity.position().x, entity.position().y, entity.position().z)).getBlock() != Blocks.WATER) {
-            use(level, (Player) entity, InteractionHand.MAIN_HAND);
+            cancel((ServerLevel) level, entity);
             return;
         }
 
@@ -70,7 +71,7 @@ public class UnderWaterBreathingAbility extends ToggleAbilityItem {
     }
 
     @Override
-    protected void stop(Level level, LivingEntity entity) {
+    public void stop(Level level, LivingEntity entity) {
 
     }
 }

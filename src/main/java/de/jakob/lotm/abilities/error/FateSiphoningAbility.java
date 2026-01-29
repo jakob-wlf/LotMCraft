@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.rendering.effectRendering.DirectionalEffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -20,12 +21,12 @@ import java.util.Map;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class FateSiphoningAbility extends AbilityItem {
+public class FateSiphoningAbility extends Ability {
 
     private static final HashMap<UUID, UUID> linkedEntities = new HashMap<>();
 
-    public FateSiphoningAbility(Properties properties) {
-        super(properties, 25);
+    public FateSiphoningAbility(String id) {
+        super(id, 25);
     }
 
     @Override
@@ -34,12 +35,12 @@ public class FateSiphoningAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1000;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

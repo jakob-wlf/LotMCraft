@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.SpearOfDestructionProjectileEntity;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
@@ -20,9 +21,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FlameAuthorityAbility extends SelectableAbilityItem {
-    public FlameAuthorityAbility(Properties properties) {
-        super(properties, 2.5f);
+public class FlameAuthorityAbility extends SelectableAbility {
+    public FlameAuthorityAbility(String id) {
+        super(id, 2.5f);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class FlameAuthorityAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

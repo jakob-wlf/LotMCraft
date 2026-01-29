@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PendingAllyRequestPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -18,14 +19,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AllyAbility extends AbilityItem {
+public class AllyAbility extends Ability {
 
     // Store pending ally requests: requester UUID -> target UUID -> expiration time
     private static final Map<UUID, Map<UUID, Long>> pendingRequests = new ConcurrentHashMap<>();
     private static final long REQUEST_TIMEOUT = 30000; // 30 seconds
 
-    public AllyAbility(Properties properties) {
-        super(properties, 1);
+    public AllyAbility(String id) {
+        super(id, 1);
 
         canBeCopied = false;
         canBeUsedByNPC = false;
@@ -46,7 +47,7 @@ public class AllyAbility extends AbilityItem {
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if (!(level instanceof ServerLevel serverLevel)) return;
         if (!(entity instanceof Player player)) return;
 

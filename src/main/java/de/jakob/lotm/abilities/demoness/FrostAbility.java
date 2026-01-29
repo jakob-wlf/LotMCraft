@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.demoness;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.FrostSpearProjectileEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -26,10 +27,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 //TODO: Add snow/ice when griefing is enabled
-public class FrostAbility extends SelectableAbilityItem {
+public class FrostAbility extends SelectableAbility {
 
-    public FrostAbility(Properties properties) {
-        super(properties, .75f);
+    public FrostAbility(String id) {
+        super(id, .75f);
     }
 
     @Override
@@ -54,7 +55,7 @@ public class FrostAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch(abilityIndex) {
             case 0 -> shoot(level, entity);
             case 1 -> spear(level, entity);

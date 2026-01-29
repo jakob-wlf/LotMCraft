@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.AbilityItem;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.PocketDimensionData;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.entity.custom.ReturnPortalEntity;
@@ -21,9 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PocketDimensionAbility extends AbilityItem {
-    public PocketDimensionAbility(Properties properties) {
-        super(properties, 2);
+public class PocketDimensionAbility extends Ability {
+    public PocketDimensionAbility(String id) {
+        super(id, 2);
 
         canBeCopied = false;
         canBeUsedByNPC = false;
@@ -35,12 +36,12 @@ public class PocketDimensionAbility extends AbilityItem {
     }
 
     @Override
-    protected float getSpiritualityCost() {
+    public float getSpiritualityCost() {
         return 1000;
     }
 
     @Override
-    protected void onAbilityUse(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if (!(level instanceof ServerLevel serverLevel) || !(entity instanceof ServerPlayer player)) {
             return;
         }

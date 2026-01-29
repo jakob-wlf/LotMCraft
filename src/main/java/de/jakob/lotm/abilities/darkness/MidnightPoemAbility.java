@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.sound.ModSounds;
@@ -19,13 +20,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MidnightPoemAbility extends SelectableAbilityItem {
+public class MidnightPoemAbility extends SelectableAbility {
 
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), 2.5f);
     private final DustParticleOptions dustBig = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), 10f);
 
-    public MidnightPoemAbility(Properties properties) {
-        super(properties, 4f);
+    public MidnightPoemAbility(String id) {
+        super(id, 4f);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class MidnightPoemAbility extends SelectableAbilityItem {
     }
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch (abilityIndex) {
             case 0 -> lullaby(level, entity);
             case 1 -> wilt(level, entity);

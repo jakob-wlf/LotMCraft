@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.abyss;
 
 import de.jakob.lotm.abilities.SelectableAbilityItem;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -19,9 +20,9 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LanguageOfFoulnessAbility extends SelectableAbilityItem {
-    public LanguageOfFoulnessAbility(Properties properties) {
-        super(properties, 2);
+public class LanguageOfFoulnessAbility extends SelectableAbility {
+    public LanguageOfFoulnessAbility(String id) {
+        super(id, 2);
     }
 
     @Override
@@ -42,7 +43,7 @@ public class LanguageOfFoulnessAbility extends SelectableAbilityItem {
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(114 / 255f, 59 / 255f, 148 / 255f), 1.5f);
 
     @Override
-    protected void useAbility(Level level, LivingEntity entity, int abilityIndex) {
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }
