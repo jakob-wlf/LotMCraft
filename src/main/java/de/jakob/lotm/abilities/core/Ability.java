@@ -28,6 +28,7 @@ public abstract class Ability {
 
     public boolean canBeUsedByNPC = true;
     public boolean canBeCopied = true;
+    public boolean canAlwaysBeUsed = false;
 
     public boolean doesNotIncreaseDigestion = false;
     public boolean hasOptimalDistance = false;
@@ -40,8 +41,8 @@ public abstract class Ability {
         this.cooldown = Math.round(cooldown * 20);
     }
 
-    public void useAbility(ServerLevel serverLevel, LivingEntity entity) {
-        if(!canUse(entity)) {
+    public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToMeetRequirements) {
+        if(!canUse(entity) && hasToMeetRequirements) {
             return;
         }
 
@@ -54,7 +55,7 @@ public abstract class Ability {
         }
 
         // Consume spirituality
-        if(shouldConsumeSpirituality(entity)) {
+        if(shouldConsumeSpirituality(entity) && consumeSpirituality) {
             BeyonderData.reduceSpirituality(entity, getSpiritualityCost());
         }
 
@@ -70,6 +71,10 @@ public abstract class Ability {
         // Use ability client and server sided
         onAbilityUse(serverLevel, entity);
         PacketHandler.sendToAllPlayersInSameLevel(new UseAbilityPacket(getId(), entity.getId()), serverLevel);
+    }
+
+    public void useAbility(ServerLevel serverLevel, LivingEntity entity) {
+        useAbility(serverLevel, entity, true, true);
     }
 
     public abstract void onAbilityUse(Level level, LivingEntity entity);
@@ -112,7 +117,7 @@ public abstract class Ability {
 
         if(!(entity instanceof Player) && !canBeUsedByNPC) return false;
 
-        if(BeyonderData.isAbilityDisabled(entity)) return false;
+        if(BeyonderData.isAbilityDisabled(entity) && !this.canAlwaysBeUsed) return false;
 
         if(BeyonderData.isSpecificAbilityDisabled(entity, getId())) return false;
 

@@ -37,7 +37,12 @@ public class SealedArtifactAnvilRecipe {
             case "star" -> new ItemStack(ModItems.SEALED_ARTIFACT_STAR);
             default -> new ItemStack(ModItems.SEALED_ARTIFACT);
         };
-        
+
+        if (left.getCount() > 1) {
+            event.setCanceled(true); // Prevent the recipe from working
+            return;
+        }
+
         // Generate sealed artifact data
         SealedArtifactData data = SealedArtifactHandler.createSealedArtifactData(characteristic);
         result.set(ModDataComponents.SEALED_ARTIFACT_DATA, data);

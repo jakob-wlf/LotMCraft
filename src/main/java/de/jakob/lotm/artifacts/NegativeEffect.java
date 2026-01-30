@@ -34,6 +34,11 @@ public class NegativeEffect {
                     new NegativeEffect(type, strength, null, amplifier))
     );
 
+    public static NegativeEffect createDefault() {
+        // Return a safe default negative effect
+        return new NegativeEffect(NegativeEffectType.DRAIN_HEALTH, 9, null, 1);
+    }
+
     public NegativeEffect(NegativeEffectType type, int sequence, Holder<MobEffect> mobEffect, int effectAmplifier) {
         this.type = type;
         this.sequence = Math.max(0, Math.min(9, sequence));

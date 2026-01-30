@@ -487,7 +487,7 @@
   "lotmcraft.space_distortion_ability.description": "Create a localized anomaly that pulls in everything.",
   "lotmcraft.pocket_dimension_ability": "Pocket Dimension",
   "lotmcraft.pocket_dimension_ability.description": "Create a Pocket Dimension in other Dimension, no one can enter it, without your help",
-  "lotmcraft.excavated_area": "Excavated Area",
+  "item.lotmcraft.excavated_area": "Excavated Area",
   "lotmcraft.excavated_area.description": "Area that was miniaturized with Area Miniaturization",
   "lotmcraft.space_time_storm_ability": "Space-Time Storm",
   "lotmcraft.space_time_storm_ability.description": "Unleash power, that is enough to shatter Space and Time, turning everything in range into Void, that is deadly to everyone without Void Immunity",

@@ -53,17 +53,17 @@ public class BeyonderData {
     public static BeyonderMap beyonderMap;
 
     static {
-        implementedRecipes.put("fool", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3}));
+        implementedRecipes.put("fool", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2}));
         implementedRecipes.put("door", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("sun", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("tyrant", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
-        implementedRecipes.put("darkness", List.of(new Integer[]{9, 8, 7, 6, 5, 4}));
+        implementedRecipes.put("darkness", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2}));
         implementedRecipes.put("demoness", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("red_priest", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("visionary", List.of(new Integer[]{9, 8, 7, 6, 5}));
-        implementedRecipes.put("mother", List.of(new Integer[]{9, 8, 7, 6, 5}));
+        implementedRecipes.put("mother", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2}));
         implementedRecipes.put("abyss", List.of(new Integer[]{9, 8, 7, 6, 5}));
-        implementedRecipes.put("wheel_of_fortune", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3}));
+        implementedRecipes.put("wheel_of_fortune", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2}));
         implementedRecipes.put("error", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2}));
 
     }
@@ -110,11 +110,8 @@ public class BeyonderData {
 
     public static int getHighestImplementedSequence(String pathway) {
         return switch (pathway) {
-            case "mother" -> 7;
-            case "darkness" -> 4;
+            case "mother", "darkness", "fool", "wheel_of_fortune", "error" -> 2;
             case "abyss", "visionary" -> 5;
-            case "fool", "wheel_of_fortune" -> 3;
-            case "error" -> 2;
             case "demoness", "red_priest", "sun", "tyrant", "door" -> 1;
             default -> 9;
         };

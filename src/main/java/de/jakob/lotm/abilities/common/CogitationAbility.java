@@ -21,6 +21,7 @@ public class CogitationAbility extends ToggleAbility {
         canBeCopied = false;
         canBeUsedByNPC = false;
         doesNotIncreaseDigestion = true;
+        canAlwaysBeUsed = true;
     }
 
     @Override

@@ -29,6 +29,7 @@ public class AllyAbility extends Ability {
 
         canBeCopied = false;
         canBeUsedByNPC = false;
+        canAlwaysBeUsed = true;
     }
 
     @Override

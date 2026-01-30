@@ -39,7 +39,7 @@ public class AreaDesolationAbility extends Ability {
             return;
         }
 
-        DesolateAreaEntity previousEntity = AbilityUtil.getAllNearbyEntities(entity, (ServerLevel) level, entity.position(), 20)
+        DesolateAreaEntity previousEntity = AbilityUtil.getAllNearbyEntities(entity, (ServerLevel) level, entity.position(), 30)
                 .stream()
                 .filter(e -> e instanceof DesolateAreaEntity)
                 .map(e -> (DesolateAreaEntity) e).findFirst().orElse(null);

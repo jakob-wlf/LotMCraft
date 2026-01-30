@@ -13,6 +13,8 @@ import java.util.Map;
 public class WordsOfMisfortuneAbility extends Ability {
     public WordsOfMisfortuneAbility(String id) {
         super(id, 4);
+
+        canBeUsedByNPC = false;
     }
 
     @Override
@@ -29,7 +31,7 @@ public class WordsOfMisfortuneAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide()) return;
 
-        MisfortuneWordsEntity previousWordsEntity = AbilityUtil.getAllNearbyEntities(entity, (ServerLevel) level, entity.position(), 3)
+        MisfortuneWordsEntity previousWordsEntity = AbilityUtil.getAllNearbyEntities(entity, (ServerLevel) level, entity.position(), 15)
                 .stream()
                 .filter(e -> e instanceof MisfortuneWordsEntity)
                 .map(e -> (MisfortuneWordsEntity) e).findFirst().orElse(null);

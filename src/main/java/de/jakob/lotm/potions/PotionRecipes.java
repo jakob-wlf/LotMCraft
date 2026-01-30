@@ -1,6 +1,7 @@
 package de.jakob.lotm.potions;
 
 import de.jakob.lotm.item.ModIngredients;
+import de.jakob.lotm.item.ModItems;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -58,6 +59,12 @@ public class PotionRecipes {
                 new ItemStack(Items.WRITABLE_BOOK, 1),
                 new ItemStack(Items.END_STONE, 1),
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("fool", 3)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.MIRACLE_INVOKER_POTION.get(),
+                new ItemStack(Items.NETHER_STAR, 1),
+                new ItemStack(Items.PAPER, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("fool", 2)))
         ));
 
 
@@ -266,6 +273,18 @@ public class PotionRecipes {
                 new ItemStack(Items.BIRCH_LEAVES, 1),
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("darkness", 4)))
         ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.HORROR_BISHOP_POTION.get(),
+                new ItemStack(Items.WITHER_SKELETON_SKULL, 1),
+                new ItemStack(Items.COAL_BLOCK, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("darkness", 3)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.SERVANT_OF_CONCEALMENT_POTION.get(),
+                new ItemStack(Items.GLASS, 1),
+                new ItemStack(Items.NETHER_STAR, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("darkness", 2)))
+        ));
 
 
         RECIPES.add(new PotionRecipe(
@@ -442,6 +461,24 @@ public class PotionRecipes {
                 new ItemStack(Items.WARPED_STEM, 1),
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("mother", 5)))
         ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.CLASSICAL_ALCHEMIST_POTION.get(),
+                new ItemStack(ModItems.BLOOD.get(), 1),
+                new ItemStack(Items.SOUL_SOIL, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("mother", 4)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.PALLBEARER_POTION.get(),
+                new ItemStack(Items.WITHER_SKELETON_SKULL, 1),
+                new ItemStack(Items.WITHER_ROSE, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("mother", 3)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DESOLATE_MATRIARCH_POTION.get(),
+                new ItemStack(Items.CHORUS_FRUIT, 1),
+                new ItemStack(Items.CRYING_OBSIDIAN, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("mother", 2)))
+        ));
 
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.MARAUDER_POTION.get(),
@@ -534,6 +571,12 @@ public class PotionRecipes {
                 new ItemStack(Items.LAVA_BUCKET, 1),
                 new ItemStack(Items.CHORUS_FRUIT, 1),
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("wheel_of_fortune", 3)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.SOOTHSAYER_POTION.get(),
+                new ItemStack(Items.BOOK, 1),
+                new ItemStack(Items.END_STONE, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("wheel_of_fortune", 2)))
         ));
 
 

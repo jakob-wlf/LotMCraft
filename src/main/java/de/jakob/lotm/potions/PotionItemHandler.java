@@ -46,6 +46,10 @@ public class PotionItemHandler {
                     new BeyonderPotion(properties, 3, "fool"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
+    public static DeferredItem<Item> MIRACLE_INVOKER_POTION = ITEMS.registerItem("miracle_invoker_potion", properties ->
+                    new BeyonderPotion(properties, 2, "fool"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
 
     public static DeferredItem<Item> BARD_POTION = ITEMS.registerItem("bard_potion", properties ->
                     new BeyonderPotion(properties, 9, "sun"),
@@ -242,6 +246,14 @@ public class PotionItemHandler {
                     new BeyonderPotion(properties, 4, "darkness"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
+    public static DeferredItem<Item> HORROR_BISHOP_POTION = ITEMS.registerItem("horror_bishop_potion", properties ->
+                    new BeyonderPotion(properties, 3, "darkness"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> SERVANT_OF_CONCEALMENT_POTION = ITEMS.registerItem("servant_of_concealment_potion", properties ->
+                    new BeyonderPotion(properties, 2, "darkness"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
 
     public static DeferredItem<Item> PLANTER_POTION = ITEMS.registerItem("planter_potion", properties ->
                     new BeyonderPotion(properties, 9, "mother"),
@@ -261,6 +273,18 @@ public class PotionItemHandler {
 
     public static DeferredItem<Item> DRUID_POTION = ITEMS.registerItem("druid_potion", properties ->
                     new BeyonderPotion(properties, 5, "mother"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> CLASSICAL_ALCHEMIST_POTION = ITEMS.registerItem("classical_alchemist_potion", properties ->
+                    new BeyonderPotion(properties, 4, "mother"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> PALLBEARER_POTION = ITEMS.registerItem("pallbearer_potion", properties ->
+                    new BeyonderPotion(properties, 3, "mother"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> DESOLATE_MATRIARCH_POTION = ITEMS.registerItem("desolate_matriarch_potion", properties ->
+                    new BeyonderPotion(properties, 2, "mother"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
 
@@ -381,6 +405,10 @@ public class PotionItemHandler {
 
     public static DeferredItem<Item> CHAOSWALKER_POTION = ITEMS.registerItem("chaoswalker_potion", properties ->
                     new BeyonderPotion(properties, 3, "wheel_of_fortune"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> SOOTHSAYER_POTION = ITEMS.registerItem("soothsayer_potion", properties ->
+                    new BeyonderPotion(properties, 2, "wheel_of_fortune"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
 

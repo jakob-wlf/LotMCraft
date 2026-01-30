@@ -41,7 +41,7 @@ public class BloomingAreaAbility extends Ability {
             return;
         }
 
-        BloomingAreaEntity previousEntity = AbilityUtil.getAllNearbyEntities(entity, (ServerLevel) level, entity.position(), 20)
+        BloomingAreaEntity previousEntity = AbilityUtil.getAllNearbyEntities(entity, (ServerLevel) level, entity.position(), 30)
                 .stream()
                 .filter(e -> e instanceof BloomingAreaEntity)
                 .map(e -> (BloomingAreaEntity) e).findFirst().orElse(null);
