@@ -10,8 +10,6 @@ public class AbilityWheelMenu extends AbstractContainerMenu {
 
     public AbilityWheelMenu(int containerId, Inventory playerInventory) {
         super(ModMenuTypes.ABILITY_WHEEL_MENU.get(), containerId);
-
-        System.out.println("created instance");
     }
 
     @Override
@@ -23,4 +21,6 @@ public class AbilityWheelMenu extends AbstractContainerMenu {
     public boolean stillValid(Player player) {
         return true;
     }
+
+
 }

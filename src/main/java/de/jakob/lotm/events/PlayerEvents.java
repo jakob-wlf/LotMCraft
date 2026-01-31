@@ -71,19 +71,6 @@ public class PlayerEvents {
 
                 component.setHasReceivedNewPlayerPerks(true);
             }
-
-            BeyonderMap beyonderMap = BeyonderData.beyonderMap;
-            if(beyonderMap == null) return;
-
-            Optional<StoredData> storedData = beyonderMap.get(player);
-            if(storedData.isPresent()) {
-                StoredData data = storedData.get();
-
-                // Restore from map if NBT is missing or different
-                if(!BeyonderData.isBeyonder(player) || beyonderMap.isDiffPathSeq(player)) {
-                    BeyonderData.setBeyonder(player, data.pathway(), data.sequence());
-                }
-            }
         }
     }
 

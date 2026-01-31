@@ -55,7 +55,7 @@ public class SpectatingAbility extends ToggleAbility {
 
         entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 17, 1, false, false, false));
 
-        Component message = Component.translatable("item.lotmcraft.spectating_ability");
+        Component message = Component.translatable("lotmcraft.spectating_ability");
         player.displayClientMessage(message, true);
     }
 

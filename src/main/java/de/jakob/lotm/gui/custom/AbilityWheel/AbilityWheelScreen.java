@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
+import java.security.Key;
 import java.util.List;
 
 public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu> {
@@ -346,6 +347,18 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
         }
 
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public void onClose() {
+        if(KeyInputHandler.wasWheelOpenedWithHold && hoveredSlot != -1) {
+            PacketHandler.sendToServer(new UpdateSelectedAbilityPacket(hoveredSlot));
+            ClientData.setAbilityWheelData(
+                    new java.util.ArrayList<>(ClientData.getAbilityWheelAbilities()),
+                    hoveredSlot
+            );
+        }
+        super.onClose();
     }
 
     @Override

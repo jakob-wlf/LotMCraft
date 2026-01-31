@@ -40,13 +40,17 @@ public class BeyonderEventHandler {
             // Sync beyonder data when player joins
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
 
-            if (!beyonderMap.contains(serverPlayer))
+            if (!beyonderMap.contains(serverPlayer)) {
                 beyonderMap.put(serverPlayer);
-            else {
+            } else {
                 StoredData data = beyonderMap.get(serverPlayer).get();
 
-                if (beyonderMap.isDiffPathSeq(serverPlayer)) {
+                // Only restore from map if player has NO beyonder data (data loss scenario)
+                if (!BeyonderData.isBeyonder(serverPlayer)) {
                     BeyonderData.setBeyonder(serverPlayer, data.pathway(), data.sequence());
+                } else if (beyonderMap.isDiffPathSeq(serverPlayer)) {
+                    // If they have data but it differs, update the map to match NBT (NBT is source of truth)
+                    beyonderMap.put(serverPlayer);
                 }
             }
         }

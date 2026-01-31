@@ -55,7 +55,7 @@ public class WanderingAbility extends Ability {
 
         if(dimensions.size() <= 1) {
             if(entity instanceof ServerPlayer player) {
-                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("item.lotmcraft.wandering_ability.no_dimension_found").withColor(0xFF68dff7));
+                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("lotmcraft.wandering_ability.no_dimension_found").withColor(0xFF68dff7));
                 player.connection.send(packet);
             }
         }
@@ -63,7 +63,7 @@ public class WanderingAbility extends Ability {
         int currentIndex = dimensions.indexOf(serverLevel);
         if(currentIndex == -1) {
             if(entity instanceof ServerPlayer player) {
-                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("item.lotmcraft.wandering_ability.no_dimension_found").withColor(0xFF68dff7));
+                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("lotmcraft.wandering_ability.no_dimension_found").withColor(0xFF68dff7));
                 player.connection.send(packet);
             }
         }

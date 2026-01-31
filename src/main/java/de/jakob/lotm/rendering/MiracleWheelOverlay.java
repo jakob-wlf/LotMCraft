@@ -81,6 +81,10 @@ public class MiracleWheelOverlay {
         if (!isOpen) return;
 
         Minecraft mc = Minecraft.getInstance();
+        if(mc.player != player){
+            close();
+            return;
+        }
         GuiGraphics graphics = event.getGuiGraphics();
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();

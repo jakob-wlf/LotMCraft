@@ -31,6 +31,14 @@ repositories {
         name = "RedlanceMinecraft"
         url = "https://repo.redlance.org/public"
     }
+    maven {
+        name = "Progwml6 maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    maven {
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
 }
 
 base {
@@ -136,6 +144,8 @@ configurations.all {
 
 dependencies {
     implementation 'com.github.Querz:NBT:6.1'
+
+    compileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.27.0.340"
 
     // Use jarJar for bundling PlayerAnimationLibNeo
     jarJar("com.zigythebird.playeranim:PlayerAnimationLibNeo:1.1.3+mc.1.21.1") {

@@ -1,3 +1,4 @@
+// FILE 1: IntrospectScreen.java (updated with proper JEI support indicator)
 package de.jakob.lotm.gui.custom.Introspect;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -29,8 +30,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private final List<Ability> availableAbilities = new ArrayList<>();
     private final List<Ability> abilityWheelSlots = new ArrayList<>();
     private Ability draggedAbility = null;
-    private int draggedFromWheelIndex = -1; // Track where we dragged from in the wheel
-    private boolean draggedFromAvailable = false; // Track if dragged from available abilities
+    private int draggedFromWheelIndex = -1;
+    private boolean draggedFromAvailable = false;
     private int dragOffsetX = 0;
     private int dragOffsetY = 0;
 
@@ -79,15 +80,26 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         if(this.minecraft == null) return;
 
+        // Update positions when buttons are created
+        updateButtonPositions();
+    }
+
+    private void updateButtonPositions() {
+        // Clear existing widgets
+        this.clearWidgets();
+
+        // Calculate base position (shifted left when abilities are shown)
+        int baseLeftPos = this.leftPos;
+
         // Add toggle button to the left of the main screen with descriptive text
-        int buttonX = this.leftPos - 65;
+        int buttonX = baseLeftPos - 65;
         int buttonY = this.topPos + 10;
 
         toggleButton = Button.builder(Component.literal(showAbilities ? "< Hide" : "Abilities >"),
                         button -> {
                             showAbilities = !showAbilities;
                             button.setMessage(Component.literal(showAbilities ? "< Hide" : "Abilities >"));
-                            updateClearButtonVisibility();
+                            updateButtonPositions(); // Recreate buttons at new positions
                         })
                 .bounds(buttonX, buttonY, 60, 20)
                 .build();
@@ -95,7 +107,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.addRenderableWidget(toggleButton);
 
         // Add clear wheel button (only visible when abilities panel is shown)
-        int clearButtonX = this.leftPos + this.imageWidth + 5;
+        int clearButtonX = baseLeftPos + this.imageWidth + 5;
         int clearButtonY = this.topPos + ABILITIES_PANEL_HEIGHT + 5 + ABILITY_WHEEL_HEIGHT + 5;
 
         clearWheelButton = Button.builder(Component.literal("Clear Wheel").withStyle(ChatFormatting.RED),
@@ -107,13 +119,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 .build();
 
         this.addRenderableWidget(clearWheelButton);
-        updateClearButtonVisibility();
-    }
-
-    private void updateClearButtonVisibility() {
-        if (clearWheelButton != null) {
-            clearWheelButton.visible = showAbilities;
-        }
+        clearWheelButton.visible = showAbilities;
     }
 
     private void openMessagesMenu() {
@@ -149,7 +155,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private void renderAbilityTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        int panelX = this.leftPos + this.imageWidth + 5;
+        int baseLeftPos = this.leftPos;
+        int panelX = baseLeftPos + this.imageWidth + 5;
         int panelY = this.topPos + 15;
         int wheelY = panelY + ABILITIES_PANEL_HEIGHT + 5;
 
@@ -220,7 +227,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private void renderAbilitiesPanel(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        int panelX = this.leftPos + this.imageWidth + 5;
+        int baseLeftPos = this.leftPos;
+        int panelX = baseLeftPos + this.imageWidth + 5;
         int panelY = this.topPos;
 
         // Render abilities list background
@@ -312,9 +320,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && showAbilities) { // Left click
-            int panelX = this.leftPos + this.imageWidth + 5;
+            int baseLeftPos = this.leftPos;
+            int panelX = baseLeftPos + this.imageWidth + 5;
             int panelY = this.topPos + 15;
-            int wheelY = panelY + ABILITIES_PANEL_HEIGHT + 5; // FIXED: was -10, now +5 to match render
+            int wheelY = panelY + ABILITIES_PANEL_HEIGHT + 5;
 
             // Check if clicking on ability wheel first (higher priority)
             int wheelSlot = getAbilityWheelSlot((int) mouseX, (int) mouseY, panelX, wheelY);
@@ -345,9 +354,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (button == 0 && draggedAbility != null) {
-            int panelX = this.leftPos + this.imageWidth + 5;
+            int baseLeftPos = this.leftPos;
+            int panelX = baseLeftPos + this.imageWidth + 5;
             int panelY = this.topPos + 15;
-            int wheelY = panelY + ABILITIES_PANEL_HEIGHT + 5; // FIXED: was -10, now +5 to match render
+            int wheelY = panelY + ABILITIES_PANEL_HEIGHT + 5;
 
             // Check if dropping in ability wheel area
             if (isInAbilityWheelArea((int) mouseX, (int) mouseY, panelX, wheelY)) {
@@ -357,7 +367,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                     if (draggedFromAvailable) {
                         // Dragging from available abilities to wheel
                         if (targetSlot < abilityWheelSlots.size()) {
-                            // FIXED: Replace existing ability at target slot
+                            // Replace existing ability at target slot
                             abilityWheelSlots.set(targetSlot, draggedAbility);
                         } else {
                             // Add to end if slot is empty
@@ -367,7 +377,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         // Rearranging within wheel
                         if (draggedFromWheelIndex >= 0) {
                             if (targetSlot < abilityWheelSlots.size() && targetSlot != draggedFromWheelIndex) {
-                                // FIXED: Swap abilities properly
+                                // Swap abilities properly
                                 Ability temp = abilityWheelSlots.get(targetSlot);
                                 abilityWheelSlots.set(targetSlot, draggedAbility);
                                 abilityWheelSlots.set(draggedFromWheelIndex, temp);
@@ -376,7 +386,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                                 abilityWheelSlots.remove(draggedFromWheelIndex);
                                 abilityWheelSlots.add(draggedAbility);
                             }
-                            // FIXED: If targetSlot == draggedFromWheelIndex, do nothing (dropped on same slot)
+                            // If targetSlot == draggedFromWheelIndex, do nothing (dropped on same slot)
                         }
                     }
                 }
@@ -403,7 +413,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (showAbilities) {
-            int panelX = this.leftPos + this.imageWidth + 5;
+            int baseLeftPos = this.leftPos;
+            int panelX = baseLeftPos + this.imageWidth + 5;
             int panelY = this.topPos + 15;
 
             // Check if mouse is over abilities panel
@@ -505,6 +516,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
 
+        // Shift menu left when abilities are shown
         int x = (this.width - this.imageWidth) / 2;
         int y = (this.height - this.imageHeight) / 2;
 

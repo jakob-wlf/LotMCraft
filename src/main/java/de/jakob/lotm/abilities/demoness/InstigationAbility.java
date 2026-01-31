@@ -57,7 +57,7 @@ public class InstigationAbility extends Ability {
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2);
         if(target == null) {
             if(entity instanceof ServerPlayer player) {
-                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("item.lotmcraft.instigation_ability.not_valid_mob").withColor(0xFF68dff7));
+                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("lotmcraft.instigation_ability.not_valid_mob").withColor(0xFF68dff7));
                 player.connection.send(packet);
             }
             return;
@@ -73,7 +73,7 @@ public class InstigationAbility extends Ability {
             targets.remove(entity.getUUID());
             if(previousTarget == target) {
                 if(entity instanceof ServerPlayer player) {
-                    ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("item.lotmcraft.instigation_ability.cannot_target_same_mob").withColor(0xFF68dff7));
+                    ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("lotmcraft.instigation_ability.cannot_target_same_mob").withColor(0xFF68dff7));
                     player.connection.send(packet);
                 }
                 return;

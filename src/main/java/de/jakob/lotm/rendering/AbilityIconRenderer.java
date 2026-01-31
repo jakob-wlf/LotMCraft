@@ -2,6 +2,8 @@ package de.jakob.lotm.rendering;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.RequestActiveStatusOfAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.ClientData;
@@ -19,6 +21,8 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class AbilityIconRenderer {
 
+    public static boolean isDeactivated = false;
+
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "ability_icon_overlay"), (guiGraphics, deltaTracker) -> {
@@ -35,6 +39,7 @@ public class AbilityIconRenderer {
     private final static int ICON_HEIGHT = 18;
 
     private final static ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/ability_frame.png");
+    private final static ResourceLocation foregroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/ability_frame_foreground.png");
 
     private static void renderText(GuiGraphics guiGraphics) {
         Minecraft mc = Minecraft.getInstance();
@@ -58,6 +63,8 @@ public class AbilityIconRenderer {
             return;
         }
 
+        PacketHandler.sendToServer(new RequestActiveStatusOfAbilityPacket(selectedAbilityId));
+
         int screenWidth = mc.getWindow().getGuiScaledWidth();
 
         int hotbarStartX = (screenWidth - hotbarWidth) / 2;
@@ -72,5 +79,10 @@ public class AbilityIconRenderer {
         int abilityIconY = y + 2;
 
         guiGraphics.blit(selectedAbility.getTextureLocation(), abilityIconX, abilityIconY, 0, 0, ICON_WIDTH, ICON_HEIGHT, ICON_WIDTH, ICON_HEIGHT);
+        if(isDeactivated) {
+            guiGraphics.fill(abilityIconX, abilityIconY, abilityIconX + ICON_WIDTH, abilityIconY + ICON_HEIGHT, 0x55000000);
+        }
+
+        guiGraphics.blit(foregroundTexture, x, y, 0, 0, WIDTH, HEIGHT, WIDTH, HEIGHT);
     }
 }

@@ -49,7 +49,7 @@ public class FlamingJumpAbility extends Ability {
 
         if(block == null) {
             if(entity instanceof ServerPlayer player) {
-                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("item.lotmcraft.flaming_jump_ability.no_fire_found").withColor(0xFFff124d));
+                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("lotmcraft.flaming_jump_ability.no_fire_found").withColor(0xFFff124d));
                 player.connection.send(packet);
             }
             return;

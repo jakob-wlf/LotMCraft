@@ -8,8 +8,8 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.ClientData;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
@@ -27,6 +27,7 @@ public class KeyInputHandler {
 
     // set from the ability wheel screen when clicked
     public static int holdAbilityWheelCooldownTicks = 0;
+    public static boolean wasWheelOpenedWithHold = false;
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
@@ -88,10 +89,12 @@ public class KeyInputHandler {
         }
 
         if (LOTMCraft.openWheelToggleKey.consumeClick()) {
+            wasWheelOpenedWithHold = false;
             openAbilityWheel();
         }
 
         if(LOTMCraft.openWheelHoldKey.consumeClick() && mc.screen == null && holdAbilityWheelCooldownTicks <= 0) {
+            wasWheelOpenedWithHold = true;
             openAbilityWheel();
         }
 
@@ -108,7 +111,11 @@ public class KeyInputHandler {
     @SubscribeEvent
     public static void onKeyReleased(ScreenEvent.KeyReleased.Post event) {
         if(event.getKeyCode() == LOTMCraft.openWheelHoldKey.getKey().getValue()) {
-            if(Minecraft.getInstance().screen instanceof AbilityWheelScreen) {
+            if(Minecraft.getInstance().screen instanceof AbilityWheelScreen && wasWheelOpenedWithHold) {
+                LocalPlayer player = Minecraft.getInstance().player;
+                if (player != null) {
+                    player.closeContainer();
+                }
                 PacketHandler.sendToServer(new CloseAbilityWheelPacket());
             }
         }
@@ -139,6 +146,13 @@ public class KeyInputHandler {
         }
 
         if((number - 1) >= ClientData.getAbilityWheelAbilities().size()) {
+            return;
+        }
+
+        if(LOTMCraft.openWheelHoldKey.getKey().getNumericKeyValue().orElse(-1) == number) {
+            return;
+        }
+        if(LOTMCraft.openWheelToggleKey.getKey().getNumericKeyValue().orElse(-1) == number) {
             return;
         }
 

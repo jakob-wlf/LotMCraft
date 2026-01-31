@@ -38,6 +38,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncAbilityActiveStatusPacket.TYPE,
+                SyncAbilityActiveStatusPacket.STREAM_CODEC,
+                SyncAbilityActiveStatusPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncToggleAbilityPacket.TYPE,
                 SyncToggleAbilityPacket.STREAM_CODEC,
                 SyncToggleAbilityPacket::handle
@@ -304,6 +310,12 @@ public class PacketHandler {
                 BecomeBeyonderPacket.TYPE,
                 BecomeBeyonderPacket.STREAM_CODEC,
                 BecomeBeyonderPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestActiveStatusOfAbilityPacket.TYPE,
+                RequestActiveStatusOfAbilityPacket.STREAM_CODEC,
+                RequestActiveStatusOfAbilityPacket::handle
         );
 
         registrar.playToServer(
