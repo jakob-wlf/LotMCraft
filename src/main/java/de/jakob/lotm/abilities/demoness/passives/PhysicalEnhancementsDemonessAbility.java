@@ -32,7 +32,8 @@ public class PhysicalEnhancementsDemonessAbility extends PhysicalEnhancementsAbi
             case 9 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 1),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
+                    new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
 
             case 8, 7 -> List.of(
@@ -40,7 +41,8 @@ public class PhysicalEnhancementsDemonessAbility extends PhysicalEnhancementsAbi
                     new PhysicalEnhancement(EnhancementType.RESISTANCE, 4),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 5),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
+                    new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
 
             case 6 -> List.of(
@@ -48,7 +50,8 @@ public class PhysicalEnhancementsDemonessAbility extends PhysicalEnhancementsAbi
                     new PhysicalEnhancement(EnhancementType.RESISTANCE, 6),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 7),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
+                    new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
 
             case 5 -> List.of(
@@ -56,7 +59,8 @@ public class PhysicalEnhancementsDemonessAbility extends PhysicalEnhancementsAbi
                     new PhysicalEnhancement(EnhancementType.RESISTANCE, 8),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 9),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
+                    new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
 
             case 4 -> List.of(
@@ -64,7 +68,8 @@ public class PhysicalEnhancementsDemonessAbility extends PhysicalEnhancementsAbi
                     new PhysicalEnhancement(EnhancementType.RESISTANCE, 13),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 16),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
+                    new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
 
             case 3 -> List.of(
@@ -72,7 +77,8 @@ public class PhysicalEnhancementsDemonessAbility extends PhysicalEnhancementsAbi
                     new PhysicalEnhancement(EnhancementType.RESISTANCE, 14),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 17),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
+                    new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
 
             case 2 -> List.of(
@@ -80,7 +86,8 @@ public class PhysicalEnhancementsDemonessAbility extends PhysicalEnhancementsAbi
                     new PhysicalEnhancement(EnhancementType.RESISTANCE, 17),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 25),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
+                    new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
 
             case 1 -> List.of(
@@ -88,7 +95,8 @@ public class PhysicalEnhancementsDemonessAbility extends PhysicalEnhancementsAbi
                     new PhysicalEnhancement(EnhancementType.RESISTANCE, 18),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 30),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
+                    new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
 
             case 0 -> List.of(
@@ -96,7 +104,8 @@ public class PhysicalEnhancementsDemonessAbility extends PhysicalEnhancementsAbi
                     new PhysicalEnhancement(EnhancementType.RESISTANCE, 18),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 20),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 5)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 5),
+                    new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
 
             default -> List.of();

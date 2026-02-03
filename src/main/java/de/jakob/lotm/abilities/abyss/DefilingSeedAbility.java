@@ -50,15 +50,6 @@ public class DefilingSeedAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
-        if(level.isClientSide) {
-            LivingEntity target = AbilityUtil.getTargetEntity(entity, 25, 2.5f);
-            if(target == null || defiledEntities.contains(target.getUUID()))
-                return;
-            ParticleUtil.spawnParticles((ClientLevel) level, blackDust, target.getEyePosition(), 40, 1.5, 0);
-            level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 1, 1);
-            return;
-        }
-
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 25, 2.5f);
         if(target == null || defiledEntities.contains(target.getUUID())) {
             if(entity instanceof ServerPlayer player) {
@@ -73,6 +64,9 @@ public class DefilingSeedAbility extends Ability {
             entity.hurt(entity.damageSources().generic(), 10);
             return;
         }
+
+        ParticleUtil.spawnParticles((ClientLevel) level, blackDust, target.getEyePosition(), 40, 1.5, 0);
+        level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 1, 1);
 
         defiledEntities.add(target.getUUID());
 

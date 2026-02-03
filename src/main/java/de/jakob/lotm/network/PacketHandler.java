@@ -173,15 +173,15 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                ClearPlayerListInTeleportationPacket.TYPE,
-                ClearPlayerListInTeleportationPacket.STREAM_CODEC,
-                ClearPlayerListInTeleportationPacket::handle
+                ChangePlayerPerspectivePacket.TYPE,
+                ChangePlayerPerspectivePacket.STREAM_CODEC,
+                ChangePlayerPerspectivePacket::handle
         );
 
         registrar.playToClient(
-                AddPlayerToTeleportationListPacket.TYPE,
-                AddPlayerToTeleportationListPacket.STREAM_CODEC,
-                AddPlayerToTeleportationListPacket::handle
+                SyncPlayerListPacket.TYPE,
+                SyncPlayerListPacket.STREAM_CODEC,
+                SyncPlayerListPacket::handle
         );
 
         registrar.playToClient(

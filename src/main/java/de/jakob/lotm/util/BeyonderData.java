@@ -135,30 +135,28 @@ public class BeyonderData {
     }
 
     public static void initPathwayInfos() {
-        pathwayInfos.put("fool", new PathwayInfos("fool", 0xFF864ec7, new String[]{"fool", "attendant_of_mysteries", "miracle_invoker", "scholar_of_yore", "bizarro_sorcerer", "marionettist", "faceless", "magician", "clown", "seer"}));
-        pathwayInfos.put("error", new PathwayInfos("error", 0xFF0018b8, new String[]{"error", "worm_of_time", "trojan_horse_of_destiny", "mentor_of_deceit", "parasite", "dream_stealer", "prometheus", "cryptologist", "swindler", "marauder"}));
-        pathwayInfos.put("door", new PathwayInfos("door", 0xFF89f5f5, new String[]{"door", "key_of_stars", "planeswalker", "wanderer", "secrets_sorcerer", "traveler", "scribe", "astrologer", "trickmaster", "apprentice"}));
-        pathwayInfos.put("visionary", new PathwayInfos("visionary", 0xFFe3ffff, new String[]{"visionary", "author", "discerner", "dream_weaver", "manipulator", "dreamwalker", "hypnotist", "psychiatrist", "telepathist", "spectator"}));
-        pathwayInfos.put("sun", new PathwayInfos("sun", 0xFFffad33, new String[]{"sun", "white_angel", "lightseeker", "justice_mentor", "unshadowed", "priest_of_light", "notary", "solar_high_priest", "light_supplicant", "bard"}));
-        pathwayInfos.put("tyrant", new PathwayInfos("tyrant", 0xFF336dff, new String[]{"tyrant", "thunder_god", "calamity", "sea_king", "cataclysmic_interrer", "ocean_songster", "wind_blessed", "seafarer", "folk_of_rage", "sailor"}));
-        pathwayInfos.put("white_tower", new PathwayInfos("white_tower", 0xFF8cadff, new String[]{"white_tower", "omniscient_eye", "wisdom_angel", "cognizer", "prophet", "mysticism_magister", "polymath", "detective", "student_of_ratiocination", "reader"}));
-        pathwayInfos.put("hanged_man", new PathwayInfos("hanged_man", 0xFF8a0a0a, new String[]{"hanged_man", "dark_angel", "profane_presbyter", "trinity_templar", "black_knight", "shepherd", "rose_bishop", "shadow_ascetic", "listener", "secrets_supplicant"}));
-        pathwayInfos.put("darkness", new PathwayInfos("darkness", 0xFF3300b5, new String[]{"darkness", "knight_of_misfortune", "servant_of_concealment", "horror_bishop", "nightwatcher", "spirit_warlock", "soul_assurer", "nightmare", "midnight_poet", "sleepless"}));
-        pathwayInfos.put("death", new PathwayInfos("death", 0xFF334f23, new String[]{"death", "pale_emperor", "death_consul", "ferryman", "undying", "gatekeeper", "spirit_guide", "spirit_medium", "gravedigger", "corpse_collector"}));
-        pathwayInfos.put("twilight_giant", new PathwayInfos("twilight_giant", 0xFF944b16, new String[]{"twilight_giant", "hand_of_god", "glory", "silver_knight", "demon_hunter", "guardian", "dawn_paladin", "weapon_master", "pugilist", "warrior"}));
-        pathwayInfos.put("demoness", new PathwayInfos("demoness", 0xFFc014c9, new String[]{"demoness", "demoness_of_apocalypse", "demoness_of_catastrophe", "demoness_of_unaging", "demoness_of_despair", "demoness_of_affliction", "demoness_of_pleasure", "witch", "instigator", "assassin"}));
-        pathwayInfos.put("red_priest", new PathwayInfos("red_priest", 0xFFb80000, new String[]{"red_priest", "conqueror", "weather_warlock", "war_bishop", "iron_blooded_knight", "reaper", "conspirer", "pyromaniac", "provoker", "hunter"}));
-        pathwayInfos.put("hermit", new PathwayInfos("hermit", 0xFF832ed9, new String[]{"hermit", "knowledge_emperor", "sage", "clairvoyant", "mysticologist", "constellations_master", "scrolls_professor", "warlock", "melee_scholar", "mystery_pryer"}));
-        pathwayInfos.put("paragon", new PathwayInfos("paragon", 0xFFf58e40, new String[]{"paragon", "illuminator", "knowledge_master", "arcane_scholar", "alchemist", "astronomer", "artisan", "appraiser", "archeologist", "savant"}));
-        pathwayInfos.put("wheel_of_fortune", new PathwayInfos("wheel_of_fortune", 0xFFbad2f5, new String[]{"wheel_of_fortune", "snake_of_mercury", "soothsayer", "chaoswalker", "misfortune_mage", "winner", "calamity_priest", "lucky_one", "robot", "monster"}));
-        pathwayInfos.put("mother", new PathwayInfos("mother", 0xFF6bdb94, new String[]{"mother", "naturewalker", "desolate_matriarch", "pallbearer", "classical_alchemist", "druid", "biologist", "harvest_priest", "doctor", "planter"}));
-        pathwayInfos.put("moon", new PathwayInfos("moon", 0xFFf5384b, new String[]{"moon", "beauty_goddess", "life-giver", "high_summoner", "shaman_king", "scarlet_scholar", "potions_professor", "vampire", "beast_tamer", "apothecary"}));
-        pathwayInfos.put("abyss", new PathwayInfos("abyss", 0xFFa3070c, new String[]{"abyss", "filthy_monarch", "bloody_archduke", "blatherer", "demon", "desire_apostle", "devil", "serial_killer", "unwinged_angel", "criminal"}));
-        pathwayInfos.put("chained", new PathwayInfos("chained", 0xFFb18fbf, new String[]{"chained", "abomination", "ancient_bane", "disciple_of_silence", "puppet", "wraith", "zombie", "werewolf", "lunatic", "prisoner"}));
-        pathwayInfos.put("black_emperor", new PathwayInfos("black_emperor", 0xFF181040, new String[]{"black_emperor", "prince_of_abolition", "duke_of_entropy", "frenzied_mage", "ear_of_the_fallen", "mentor_of_disorder", "baron_of_corruption", "briber", "barbarian", "lawyer"}));
-        pathwayInfos.put("justiciar", new PathwayInfos("justiciar", 0xFFfcd99f, new String[]{"justiciar", "hand_of_order", "balancer", "chaos_hunter", "imperative_mage", "disciplinary_paladin", "judge", "interrogator", "sheriff", "arbiter"}));
-
-
+        pathwayInfos.put("fool", new PathwayInfos("fool", 0xFF864ec7, new String[]{"fool", "attendant_of_mysteries", "miracle_invoker", "scholar_of_yore", "bizarro_sorcerer", "marionettist", "faceless", "magician", "clown", "seer"}, new String[]{"error", "door"}));
+        pathwayInfos.put("error", new PathwayInfos("error", 0xFF0018b8, new String[]{"error", "worm_of_time", "trojan_horse_of_destiny", "mentor_of_deceit", "parasite", "dream_stealer", "prometheus", "cryptologist", "swindler", "marauder"}, new String[]{"fool", "door"}));
+        pathwayInfos.put("door", new PathwayInfos("door", 0xFF89f5f5, new String[]{"door", "key_of_stars", "planeswalker", "wanderer", "secrets_sorcerer", "traveler", "scribe", "astrologer", "trickmaster", "apprentice"}, new String[]{"error", "error"}));
+        pathwayInfos.put("visionary", new PathwayInfos("visionary", 0xFFe3ffff, new String[]{"visionary", "author", "discerner", "dream_weaver", "manipulator", "dreamwalker", "hypnotist", "psychiatrist", "telepathist", "spectator"}, new String[]{"sun", "hanged_man", "white_tower", "tyrant"}));
+        pathwayInfos.put("sun", new PathwayInfos("sun", 0xFFffad33, new String[]{"sun", "white_angel", "lightseeker", "justice_mentor", "unshadowed", "priest_of_light", "notary", "solar_high_priest", "light_supplicant", "bard"}, new String[]{"visionary", "hanged_man", "white_tower", "tyrant"}));
+        pathwayInfos.put("tyrant", new PathwayInfos("tyrant", 0xFF336dff, new String[]{"tyrant", "thunder_god", "calamity", "sea_king", "cataclysmic_interrer", "ocean_songster", "wind_blessed", "seafarer", "folk_of_rage", "sailor"}, new String[]{"sun", "hanged_man", "white_tower", "visionary"}));
+        pathwayInfos.put("white_tower", new PathwayInfos("white_tower", 0xFF8cadff, new String[]{"white_tower", "omniscient_eye", "wisdom_angel", "cognizer", "prophet", "mysticism_magister", "polymath", "detective", "student_of_ratiocination", "reader"}, new String[]{"sun", "hanged_man", "visionary", "tyrant"}));
+        pathwayInfos.put("hanged_man", new PathwayInfos("hanged_man", 0xFF8a0a0a, new String[]{"hanged_man", "dark_angel", "profane_presbyter", "trinity_templar", "black_knight", "shepherd", "rose_bishop", "shadow_ascetic", "listener", "secrets_supplicant"}, new String[]{"sun", "visionary", "white_tower", "tyrant"}));
+        pathwayInfos.put("darkness", new PathwayInfos("darkness", 0xFF3300b5, new String[]{"darkness", "knight_of_misfortune", "servant_of_concealment", "horror_bishop", "nightwatcher", "spirit_warlock", "soul_assurer", "nightmare", "midnight_poet", "sleepless"}, new String[]{"death", "twilight_giant"}));
+        pathwayInfos.put("death", new PathwayInfos("death", 0xFF334f23, new String[]{"death", "pale_emperor", "death_consul", "ferryman", "undying", "gatekeeper", "spirit_guide", "spirit_medium", "gravedigger", "corpse_collector"}, new String[]{"darkness", "twilight_giant"}));
+        pathwayInfos.put("twilight_giant", new PathwayInfos("twilight_giant", 0xFF944b16, new String[]{"twilight_giant", "hand_of_god", "glory", "silver_knight", "demon_hunter", "guardian", "dawn_paladin", "weapon_master", "pugilist", "warrior"}, new String[]{"death", "darkness"}));
+        pathwayInfos.put("demoness", new PathwayInfos("demoness", 0xFFc014c9, new String[]{"demoness", "demoness_of_apocalypse", "demoness_of_catastrophe", "demoness_of_unaging", "demoness_of_despair", "demoness_of_affliction", "demoness_of_pleasure", "witch", "instigator", "assassin"}, new String[]{"red_priest"}));
+        pathwayInfos.put("red_priest", new PathwayInfos("red_priest", 0xFFb80000, new String[]{"red_priest", "conqueror", "weather_warlock", "war_bishop", "iron_blooded_knight", "reaper", "conspirer", "pyromaniac", "provoker", "hunter"}, new String[]{"demoness"}));
+        pathwayInfos.put("hermit", new PathwayInfos("hermit", 0xFF832ed9, new String[]{"hermit", "knowledge_emperor", "sage", "clairvoyant", "mysticologist", "constellations_master", "scrolls_professor", "warlock", "melee_scholar", "mystery_pryer"}, new String[]{"paragon"}));
+        pathwayInfos.put("paragon", new PathwayInfos("paragon", 0xFFf58e40, new String[]{"paragon", "illuminator", "knowledge_master", "arcane_scholar", "alchemist", "astronomer", "artisan", "appraiser", "archeologist", "savant"}, new String[]{"hermit"}));
+        pathwayInfos.put("wheel_of_fortune", new PathwayInfos("wheel_of_fortune", 0xFFbad2f5, new String[]{"wheel_of_fortune", "snake_of_mercury", "soothsayer", "chaoswalker", "misfortune_mage", "winner", "calamity_priest", "lucky_one", "robot", "monster"}, new String[]{}));
+        pathwayInfos.put("mother", new PathwayInfos("mother", 0xFF6bdb94, new String[]{"mother", "naturewalker", "desolate_matriarch", "pallbearer", "classical_alchemist", "druid", "biologist", "harvest_priest", "doctor", "planter"}, new String[]{"moon"}));
+        pathwayInfos.put("moon", new PathwayInfos("moon", 0xFFf5384b, new String[]{"moon", "beauty_goddess", "life-giver", "high_summoner", "shaman_king", "scarlet_scholar", "potions_professor", "vampire", "beast_tamer", "apothecary"}, new String[]{"mother"}));
+        pathwayInfos.put("abyss", new PathwayInfos("abyss", 0xFFa3070c, new String[]{"abyss", "filthy_monarch", "bloody_archduke", "blatherer", "demon", "desire_apostle", "devil", "serial_killer", "unwinged_angel", "criminal"}, new String[]{"chained"}));
+        pathwayInfos.put("chained", new PathwayInfos("chained", 0xFFb18fbf, new String[]{"chained", "abomination", "ancient_bane", "disciple_of_silence", "puppet", "wraith", "zombie", "werewolf", "lunatic", "prisoner"}, new String[]{"abyss"}));
+        pathwayInfos.put("black_emperor", new PathwayInfos("black_emperor", 0xFF181040, new String[]{"black_emperor", "prince_of_abolition", "duke_of_entropy", "frenzied_mage", "ear_of_the_fallen", "mentor_of_disorder", "baron_of_corruption", "briber", "barbarian", "lawyer"}, new String[]{"justiciar"}));
+        pathwayInfos.put("justiciar", new PathwayInfos("justiciar", 0xFFfcd99f, new String[]{"justiciar", "hand_of_order", "balancer", "chaos_hunter", "imperative_mage", "disciplinary_paladin", "judge", "interrogator", "sheriff", "arbiter"}, new String[]{"black_emperor"}));
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence) {
@@ -643,208 +641,6 @@ public class BeyonderData {
         if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
         }
-    }
-
-    public static void advance(LivingEntity entity, String pathway, int sequence) {
-        if(entity instanceof Player player && player.isCreative()) {
-            setBeyonder(entity, pathway, sequence);
-            return;
-        }
-
-        SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
-        float sanity = sanityComp.getSanity();
-
-        // First time becoming a beyonder
-        if(!isBeyonder(entity)) {
-            // Starting at a high sequence (low number) should be more dangerous
-            // Digestion is irrelevant for first time
-            int amplifier = calculateAmplifierForFirstTime(sequence, sanity);
-            int duration = calculateDurationForFirstTime(sequence, sanity);
-
-            if(amplifier > 0 || duration > 0) {
-                entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, amplifier));
-            }
-            ServerScheduler.scheduleDelayed(duration, () -> {
-                if(!entity.isDeadOrDying())
-                    setBeyonder(entity, pathway, sequence);
-            });
-            return;
-        }
-
-        String prevPathway = getPathway(entity);
-
-        // Wrong pathway - extremely dangerous
-        if(!prevPathway.equals(pathway)) {
-            int amplifier = 9; // Maximum danger - 100% death
-            int duration = calculateDuration(10, sanity);
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, amplifier));
-            ServerScheduler.scheduleDelayed(duration, () -> {
-                if(!entity.isDeadOrDying())
-                    setBeyonder(entity, pathway, sequence);
-            });
-            return;
-        }
-
-        int prevSequence = getSequence(entity);
-
-        // Can't advance to same or higher sequence number (lower power)
-        if(prevSequence <= sequence) {
-            int duration = 20 * 10; // 10 seconds of losing control
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, 3));
-            return;
-        }
-
-        // Get digestion progress
-        float digestionProgress = 0;
-        if(entity instanceof Player player) {
-            digestionProgress = BeyonderData.getDigestionProgress(player);
-        }
-
-        // Calculate sequence difference (how many sequences jumping)
-        int difference = prevSequence - sequence;
-
-        // Calculate risk
-        int amplifier = calculateAmplifier(difference, digestionProgress, sanity);
-        int duration = calculateDuration(difference, sanity);
-
-        // Apply losing control effect
-        if(amplifier > 0 || duration > 0) {
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, duration, amplifier));
-        }
-
-        ServerScheduler.scheduleDelayed(duration, () -> {
-            if(!entity.isDeadOrDying())
-                setBeyonder(entity, pathway, sequence);
-        });
-    }
-
-    /**
-     * Calculate amplifier for first time becoming a beyonder
-     * Starting at high sequences (seq 9, 8, 7) is safer
-     * Starting at low sequences (seq 1, 2, 3) is extremely dangerous
-     * Digestion is irrelevant for first time beyonders
-     */
-    private static int calculateAmplifierForFirstTime(int sequence, float sanity) {
-        int baseAmplifier;
-
-        if(sequence >= 9) {
-            baseAmplifier = 0; // Starting at sequence 9 is safe
-        } else if(sequence >= 7) {
-            baseAmplifier = 1; // Sequence 7-8: slight risk
-        } else if(sequence >= 5) {
-            baseAmplifier = 3; // Sequence 5-6: moderate risk
-        } else if(sequence >= 3) {
-            baseAmplifier = 6; // Sequence 3-4: high risk
-        } else {
-            baseAmplifier = 8; // Sequence 1-2: extreme risk
-        }
-
-        // Sanity penalty - only matters below 0.8
-        float sanityPenalty = 0;
-        if(sanity < 0.8f) {
-            sanityPenalty = (0.8f - sanity) * 5; // 0 to 4 range (at 0 sanity = 4 penalty)
-        }
-
-        int totalAmplifier = baseAmplifier + Math.round(sanityPenalty);
-        return Math.min(9, Math.max(0, totalAmplifier));
-    }
-
-    /**
-     * Calculate duration for first time becoming a beyonder
-     */
-    private static int calculateDurationForFirstTime(int sequence, float sanity) {
-        // Base duration: lower sequences = longer suffering
-        int baseDuration = 20 * (15 - sequence); // seq 9 = 6s, seq 1 = 14s
-
-        // Sanity multiplier - only matters below 0.8
-        float sanityMultiplier = 1.0f;
-        if(sanity < 0.8f) {
-            sanityMultiplier = 1.0f + (2.0f * (0.8f - sanity)); // 1.0 to 2.6 range
-        }
-
-        return Math.round(baseDuration * sanityMultiplier);
-    }
-
-    /**
-     * Calculate amplifier based on sequence difference, digestion progress, and sanity
-     * Returns amplifier where higher = more dangerous
-     *
-     * Perfect conditions (diff=1, digestion>=0.95, sanity>=0.8) = amplifier 0 (0% death)
-     * Digestion has a maximum impact of +2 amplifier
-     * Sanity only matters below 0.8
-     */
-    private static int calculateAmplifier(int sequenceDifference, float digestion, float sanity) {
-        // Base amplifier from sequence difference
-        int baseAmplifier;
-
-        if (sequenceDifference == 1) {
-            // Single sequence advancement - safe if conditions are met
-            if (digestion >= 0.95f && sanity >= 0.8f) {
-                baseAmplifier = 0; // Perfect conditions
-            } else if (digestion >= 0.95f || sanity >= 0.8f) {
-                // One condition met but not both
-                if(digestion >= 0.95f) {
-                    // Good digestion but low sanity
-                    baseAmplifier = 2;
-                } else {
-                    // Good sanity but low digestion
-                    baseAmplifier = 1;
-                }
-            } else {
-                // Neither condition met
-                baseAmplifier = 3;
-            }
-        } else if (sequenceDifference == 2) {
-            // Two sequences - very dangerous regardless
-            baseAmplifier = 6;
-        } else {
-            // Three or more sequences - extremely dangerous
-            baseAmplifier = 8;
-        }
-
-        // Digestion penalty - maximum +2 amplifier impact
-        float digestionPenalty = 0;
-        if (digestion < 0.95f) {
-            // Scale from 0 to 2 based on digestion level
-            digestionPenalty = Math.min(2.0f, (0.95f - digestion) * 2.1f);
-        }
-
-        // Sanity penalty - only applies below 0.8
-        float sanityPenalty = 0;
-        if (sanity < 0.8f) {
-            // Scale from 0 to 4 based on how far below 0.8
-            sanityPenalty = (0.8f - sanity) * 5; // 0 to 4 range
-        }
-
-        // Combine all factors
-        int totalAmplifier = baseAmplifier + Math.round(digestionPenalty + sanityPenalty);
-
-        // Cap at 9 (100% death rate)
-        return Math.min(9, Math.max(0, totalAmplifier));
-    }
-
-    /**
-     * Calculate duration based on sequence difference and sanity
-     * Duration should be long enough to be noticeable and create tension
-     * Sanity only matters below 0.8
-     *
-     * Minimum 10 seconds, scales up with difficulty
-     */
-    private static int calculateDuration(int sequenceDifference, float sanity) {
-        // Base duration scales with sequence difference
-        // 1 sequence: 10 seconds
-        // 2 sequences: 20 seconds
-        // 3+ sequences: 30 seconds
-        int baseSeconds = Math.min(30, 10 * sequenceDifference);
-        int baseDuration = 20 * baseSeconds; // Convert to ticks
-
-        // Sanity multiplier - only matters below 0.8
-        float sanityMultiplier = 1.0f;
-        if(sanity < 0.8f) {
-            sanityMultiplier = 1.0f + (2.0f * (0.8f - sanity)); // 1.0 to 2.6 range
-        }
-
-        return Math.round(baseDuration * sanityMultiplier);
     }
 
     // Existing fields

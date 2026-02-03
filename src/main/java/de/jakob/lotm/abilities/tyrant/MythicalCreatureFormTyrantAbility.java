@@ -41,7 +41,7 @@ public class MythicalCreatureFormTyrantAbility extends ToggleAbility {
     @Override
     public void start(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
-            ClientHandler.changeToThirdPerson();
+            ClientHandler.changeToThirdPerson(entity);
             return;
         }
 
@@ -60,7 +60,7 @@ public class MythicalCreatureFormTyrantAbility extends ToggleAbility {
     @Override
     public void tick(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
-            ClientHandler.changeToThirdPerson();
+            ClientHandler.changeToThirdPerson(entity);
             return;
         }
 
@@ -105,7 +105,7 @@ public class MythicalCreatureFormTyrantAbility extends ToggleAbility {
     @Override
     public void stop(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
-            ClientHandler.changeToFirstPerson();
+            ClientHandler.changeToFirstPerson(entity);
             return;
         }
 

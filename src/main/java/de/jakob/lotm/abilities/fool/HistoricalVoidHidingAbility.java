@@ -1,5 +1,6 @@
 package de.jakob.lotm.abilities.fool;
 
+import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -57,6 +58,7 @@ public class HistoricalVoidHidingAbility extends ToggleAbility {
         FogComponent fogComponent = entity.getData(ModAttachments.FOG_COMPONENT);
         fogComponent.setActiveAndSync(true, entity);
         fogComponent.setFogIndexAndSync(FogComponent.FOG_TYPE.FOG_OF_HISTORY, entity);
+        fogComponent.setFogColorAndSync(new Vec3f(1, 1, 1), entity);
 
         // Stop from moving
         entity.setDeltaMovement(0, 0, 0);

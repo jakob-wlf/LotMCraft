@@ -112,10 +112,7 @@ public class KeyInputHandler {
     public static void onKeyReleased(ScreenEvent.KeyReleased.Post event) {
         if(event.getKeyCode() == LOTMCraft.openWheelHoldKey.getKey().getValue()) {
             if(Minecraft.getInstance().screen instanceof AbilityWheelScreen && wasWheelOpenedWithHold) {
-                LocalPlayer player = Minecraft.getInstance().player;
-                if (player != null) {
-                    player.closeContainer();
-                }
+                Minecraft.getInstance().screen.onClose();
                 PacketHandler.sendToServer(new CloseAbilityWheelPacket());
             }
         }

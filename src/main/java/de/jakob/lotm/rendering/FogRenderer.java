@@ -1,5 +1,6 @@
 package de.jakob.lotm.rendering;
 
+import com.mojang.blaze3d.shaders.FogShape;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -33,9 +34,32 @@ public class FogRenderer {
             return;
         }
 
+        event.setFogShape(FogShape.SPHERE);
         event.setNearPlaneDistance(fogType.getNearPlaneDistance());
         event.setFarPlaneDistance(fogType.getFarPlaneDistance());
         event.setCanceled(true);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void onRenderFog(ViewportEvent.ComputeFogColor event) {
+        Player player = Minecraft.getInstance().player;
+        if(player == null) {
+            return;
+        }
+
+        FogComponent component = player.getData(ModAttachments.FOG_COMPONENT);
+        if(!component.isActive()) {
+            return;
+        }
+
+        FogComponent.FOG_TYPE fogType = component.getFogType();
+        if(fogType == null) {
+            return;
+        }
+
+        event.setRed(component.getColor().x());
+        event.setGreen(component.getColor().y());
+        event.setBlue(component.getColor().z());
     }
 
 }
