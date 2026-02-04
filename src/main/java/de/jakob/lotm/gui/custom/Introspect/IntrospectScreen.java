@@ -23,8 +23,10 @@ import java.util.stream.Collectors;
 public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private ResourceLocation containerBackground;
     private boolean showAbilities = false;
+
     private Button toggleButton;
     private Button clearWheelButton;
+    private Button messageButton;
 
     // Ability management
     private final List<Ability> availableAbilities = new ArrayList<>();
@@ -105,6 +107,18 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 .build();
 
         this.addRenderableWidget(toggleButton);
+
+        int messageButtonX = baseLeftPos - 65;
+        int messageButtonY = this.topPos + 20;
+
+        messageButton = Button.builder(Component.literal("Messages"),
+                button -> {
+                    openMessagesMenu();
+                 })
+                .bounds(messageButtonX, messageButtonY, 60, 20)
+                .build();
+
+        this.addRenderableWidget(messageButton);
 
         // Add clear wheel button (only visible when abilities panel is shown)
         int clearButtonX = baseLeftPos + this.imageWidth + 5;

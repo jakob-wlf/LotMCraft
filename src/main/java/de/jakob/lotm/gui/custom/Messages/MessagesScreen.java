@@ -26,7 +26,6 @@ public class MessagesScreen extends AbstractContainerScreen<MessagesMenu> {
     protected void init() {
         super.init();
 
-        // Example: open message button
         this.addRenderableWidget(
                 Button.builder(Component.literal("Open"), btn -> openSelected())
                         .bounds(leftPos + 10, topPos + 160, 50, 20)

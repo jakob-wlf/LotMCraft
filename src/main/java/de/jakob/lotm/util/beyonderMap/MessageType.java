@@ -4,6 +4,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 
 import javax.annotation.Nullable;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 public record MessageType(@Nullable String from, Long when, String title, String desc, boolean read) {
     public static String NBT_FROM = "message_from";
@@ -15,6 +19,18 @@ public record MessageType(@Nullable String from, Long when, String title, String
     public static int MAX_NAME_LENGTH = 30;
     public static int MAX_TITLE_LENGTH = 250;
     public static int MAX_MESSAGE_LENGTH = 5000;
+
+    public static Long createTimestamp(){
+        return java.time.Instant.now().toEpochMilli();
+    }
+
+    public static String readTimestamp(Long stamp){
+        Instant instant = Instant.ofEpochMilli(stamp);
+        LocalDateTime time = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy - H:mm:ss");
+        return time.format(formatter);
+    }
 
     public MessageType setRead(boolean value){
         return new MessageType(from, when, title, desc, value);
