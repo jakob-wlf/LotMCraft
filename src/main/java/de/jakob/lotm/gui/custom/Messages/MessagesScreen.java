@@ -66,11 +66,10 @@ public class MessagesScreen extends AbstractContainerScreen<MessagesMenu> {
                     inboxY,
                     inboxX + 80,
                     inboxY + 12,
-                    0x80FFFFFF   // translucent white
+                    0x80FFFFFF
             );
         }
 
-        // 3️⃣ Unread message markers
         var messages = menu.getMessages();
         for (int i = 0; i < messages.size(); i++) {
             if (!messages.get(i).read()) {
@@ -82,12 +81,11 @@ public class MessagesScreen extends AbstractContainerScreen<MessagesMenu> {
                         dotY,
                         dotX + 4,
                         dotY + 4,
-                        0xFFFFAA00   // orange dot
+                        0xFFFFAA00
                 );
             }
         }
 
-        // 4️⃣ Divider line (inbox → message)
         gfx.fill(
                 x + 96,
                 y + 12,
