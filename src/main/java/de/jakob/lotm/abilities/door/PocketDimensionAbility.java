@@ -61,6 +61,10 @@ public class PocketDimensionAbility extends Ability {
             return;
         }
 
+        if(spaceLevel == level) {
+            return;
+        }
+
         // Generate the hollow sphere
         generateHollowSphere(spaceLevel, pocketCenter, 22, data.isFirstVisit(player.getUUID()));
 

@@ -573,7 +573,7 @@ public class BeyonderData {
         return player.getPersistentData().getFloat(NBT_DIGESTION_PROGRESS);
     }
 
-    public static void digest(Player player, float amount) {
+    public static void digest(Player player, float amount, boolean countTowardsCooldown) {
         float current = getDigestionProgress(player);
         float newAmount = Math.min(1.0f, current + amount);
         if(newAmount == 1.0f && current < 1.0f) {

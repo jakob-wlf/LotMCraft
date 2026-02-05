@@ -46,7 +46,7 @@ public class SpaceTimeStormAbility extends Ability {
 
         List<BlockPos> blocks = AbilityUtil.getBlocksInSphereRadius(serverLevel, center, 35, true, true, false);
         ServerScheduler.scheduleForDuration(0, 2, 20 * 12, () -> {
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 35, DamageLookup.lookupDps(1, .75, 2, 20) * (float) multiplier(entity), center, true, false);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 35, DamageLookup.lookupDps(1, .875, 2, 18) * (float) multiplier(entity), center, true, false);
 
             if(griefing) {
                 blocks.stream().filter(b -> random.nextInt(175) == 0 && !serverLevel.getBlockState(b).is(ModBlocks.VOID.get())).forEach(b -> serverLevel.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState()));

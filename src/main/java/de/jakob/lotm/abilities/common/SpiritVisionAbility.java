@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSpiritVisionAbilityPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.AbilityUtilClient;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.mixin.EntityAccessor;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -65,7 +66,7 @@ public class SpiritVisionAbility extends ToggleAbility {
     @Override
     public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide()) {
-            List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ClientLevel) level, entity.getEyePosition(), 30)
+            List<LivingEntity> nearbyEntities = AbilityUtilClient.getNearbyEntities(entity, (ClientLevel) level, entity.getEyePosition(), 30)
                     .stream()
                     .toList();
 
@@ -80,7 +81,7 @@ public class SpiritVisionAbility extends ToggleAbility {
             LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
             PacketHandler.sendToPlayer(player,  new SyncSpiritVisionAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
 
-            entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 10, 1, false, false, false));
+            entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 25, 1, false, false, false));
 
             List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 30)
                     .stream()
@@ -125,6 +126,9 @@ public class SpiritVisionAbility extends ToggleAbility {
         else {
             if(!(entity instanceof ServerPlayer player))
                 return;
+
+            player.removeEffect(MobEffects.NIGHT_VISION);
+
             if(glowingEntities.containsKey(entity.getUUID()))
                 glowingEntities.get(entity.getUUID()).forEach(e -> setGlowingForPlayer(e, player, false));
             glowingEntities.remove(entity.getUUID());

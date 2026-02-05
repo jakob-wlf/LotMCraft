@@ -10,7 +10,6 @@ import de.jakob.lotm.events.custom.TargetLocationEvent;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
@@ -568,19 +567,6 @@ public class AbilityUtil {
         return getNearbyEntitiesInternal(exclude, level, center, radius, allowCreativeMode, false);
     }
 
-    public static List<LivingEntity> getNearbyEntities(@Nullable LivingEntity exclude, ClientLevel level,
-                                                       Vec3 center, double radius) {
-        AABB detectionBox = createDetectionBox(center, radius);
-        double radiusSquared = radius * radius;
-
-        return level.getEntitiesOfClass(LivingEntity.class, detectionBox).stream()
-                .filter(e -> !(e instanceof Player player) || !player.isCreative())
-                .filter(entity -> entity.position().distanceToSqr(center) <= radiusSquared)
-                .filter(entity -> entity != exclude)
-                .filter(e -> exclude == null || mayTarget(exclude, e))
-                .toList();
-    }
-
     public static List<Entity> getAllNearbyEntities(@Nullable LivingEntity exclude, ServerLevel level,
                                                     Vec3 center, double radius) {
         return getAllNearbyEntities(exclude, level, center, radius, false);
@@ -866,13 +852,6 @@ public class AbilityUtil {
             }
         }
         return blocks;
-    }
-
-    public static List<BlockPos> getBlocksInEllipsoid(ClientLevel level, Vec3 center, double xzRadius,
-                                                      double yRadius, boolean filled,
-                                                      boolean excludeEmptyBlocks, boolean onlyExposed) {
-        return getBlocksInEllipsoidInternal(level, center, xzRadius, yRadius, filled,
-                excludeEmptyBlocks, onlyExposed);
     }
 
     public static List<BlockPos> getBlocksInEllipsoid(ServerLevel level, Vec3 center, double xzRadius,

@@ -44,6 +44,11 @@ public class ModAttachments {
                     AttachmentType.serializable(AbilityWheelComponent::new).copyOnDeath().build()
             );
 
+    public static final Supplier<AttachmentType<AbilityBarComponent>> ABILITY_BAR_COMPONENT =
+            ATTACHMENT_TYPES.register("ability_bar_component", () ->
+                    AttachmentType.serializable(AbilityBarComponent::new).copyOnDeath().build()
+            );
+
     public static final Supplier<AttachmentType<AllyComponent>> ALLY_COMPONENT = ATTACHMENT_TYPES.register(
             "ally_component",
             () -> AttachmentType.builder(() -> new AllyComponent())

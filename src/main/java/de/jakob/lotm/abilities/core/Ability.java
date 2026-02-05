@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.core;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -61,7 +62,8 @@ public abstract class Ability {
 
         // Digest potion
         if(!doesNotIncreaseDigestion && entity instanceof Player player) {
-            BeyonderData.digest(player, getDigestionProgressForUse(entity));
+            System.out.println("Digesting ability use for " + getId() + " with progress " + getDigestionProgressForUse(entity));
+            BeyonderData.digest(player, getDigestionProgressForUse(entity), true);
         }
 
         // Handle Cooldown
@@ -148,14 +150,7 @@ public abstract class Ability {
             return 0f;
         }
 
-        // If same sequence → requires ~100 uses
-        if (sequence == requiredSequence) {
-            return 1f / 100f;
-        }
-
-        // Ability sequence is stronger (numerically lower) → digestion is slower
-        int diff = requiredSequence - sequence; // always >= 1 here
-        return 1f / (100f * (diff + 1));
+        return (1f / (100f * Math.max(.5f, ((10 - sequence) * .5f)))) * (entity.level().getGameRules().getInt(ModGameRules.DIGESTION_RATE) / 100f);
     }
 
     public ResourceLocation getTextureLocation() {

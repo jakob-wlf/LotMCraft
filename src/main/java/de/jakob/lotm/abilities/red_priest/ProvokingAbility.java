@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.AbilityUtilClient;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -52,7 +53,7 @@ public class ProvokingAbility extends Ability {
         else {
             entity.playSound(SoundEvents.PILLAGER_AMBIENT, 1.0f, 0.6f + (float) Math.random() * 0.4f);
             entity.playSound(SoundEvents.WOLF_GROWL, 1.0f, 1);
-            List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ClientLevel) level, pos, 18);
+            List<LivingEntity> nearbyEntities = AbilityUtilClient.getNearbyEntities(entity, (ClientLevel) level, pos, 18);
 
             nearbyEntities.forEach(e -> {
                 ParticleUtil.spawnParticles((ClientLevel) level, ParticleTypes.ANGRY_VILLAGER, e.getEyePosition().add(0, .5, 0), 10, 0.8, 0);

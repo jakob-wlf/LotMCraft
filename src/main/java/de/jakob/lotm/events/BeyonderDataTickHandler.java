@@ -32,6 +32,10 @@ public class BeyonderDataTickHandler {
             return;
         }
 
+        if(player.getY() < -200) {
+            player.kill();
+        }
+
         // Tick cooldowns
         AbilityCooldownComponent component = player.getData(ModAttachments.COOLDOWN_COMPONENT);
         component.tick();
@@ -47,7 +51,7 @@ public class BeyonderDataTickHandler {
 
             // Slowly digest potion
             if(player.tickCount % 20 == 0) {
-                BeyonderData.digest(player, 1 / (20 * 60 * 60f));
+                BeyonderData.digest(player, 1 / (20 * 60 * 60f), false);
             }
         }
 

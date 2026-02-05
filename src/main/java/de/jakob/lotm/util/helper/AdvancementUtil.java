@@ -42,6 +42,7 @@ public class AdvancementUtil {
             scheduleFloating(entity, duration);
             scheduleThirdPerson(entity, duration);
             scheduleFog(entity, duration, pathway);
+            scheduleRandomDamage(entity, duration, sequence);
 
             if(failureChance >= 1.0 || Math.random() < failureChance) {
                 // Advancement will fail - death at random point during advancement
@@ -73,6 +74,7 @@ public class AdvancementUtil {
             scheduleFloating(entity, duration);
             scheduleThirdPerson(entity, duration);
             scheduleFog(entity, duration, pathway);
+            scheduleRandomDamage(entity, duration, sequence);
 
             int deathTime = (int)(Math.random() * duration);
             ServerScheduler.scheduleDelayed(deathTime, () -> {
@@ -108,6 +110,7 @@ public class AdvancementUtil {
         scheduleFloating(entity, duration);
         scheduleThirdPerson(entity, duration);
         scheduleFog(entity, duration, pathway);
+        scheduleRandomDamage(entity, duration, sequence);
 
         // Check if advancement will fail
         if(failureChance >= 1.0 || Math.random() < failureChance) {
@@ -137,16 +140,73 @@ public class AdvancementUtil {
         }
 
         int colorInt = BeyonderData.pathwayInfos.get(pathway).color();
-        float red = ((colorInt >> 16) & 0xFF) / 255.0f;
-        float green = ((colorInt >> 8) & 0xFF) / 255.0f;
-        float blue = (colorInt & 0xFF) / 255.0f;
+        float baseRed = ((colorInt >> 16) & 0xFF) / 255.0f;
+        float baseGreen = ((colorInt >> 8) & 0xFF) / 255.0f;
+        float baseBlue = (colorInt & 0xFF) / 255.0f;
+
+        AtomicInteger tickCounter = new AtomicInteger(0);
 
         ServerScheduler.scheduleForDuration(0, 2, duration, () -> {
+            int tick = tickCounter.getAndIncrement();
+
+            // Create a slow sine wave for hue shifting (0.05 is the shift speed)
+            float hueShift = (float)Math.sin(tick * 0.05f) * 0.3f; // ±0.15 hue shift
+
+            // Apply hue shift to each color channel
+            float red = Math.max(0.0f, Math.min(1.0f, baseRed + hueShift));
+            float green = Math.max(0.0f, Math.min(1.0f, baseGreen + hueShift * 0.8f));
+            float blue = Math.max(0.0f, Math.min(1.0f, baseBlue + hueShift * 0.6f));
+
             FogComponent fogComponent = serverPlayer.getData(ModAttachments.FOG_COMPONENT);
             fogComponent.setFogIndexAndSync(FogComponent.FOG_TYPE.ADVANCING, entity);
             fogComponent.setActiveAndSync(true, entity);
             fogComponent.setFogColorAndSync(new Vec3f(red, green, blue), entity);
         });
+    }
+
+    /**
+     * Schedule random damage events during advancement
+     * Damage scales with sequence power but never kills the entity
+     * Lower sequences (more powerful) cause more frequent and intense damage
+     */
+    private static void scheduleRandomDamage(LivingEntity entity, int duration, int sequence) {
+        if(!(entity.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        int baseDamageInterval = 15;
+
+        // Calculate how many damage events will occur
+        int damageEventCount = duration / baseDamageInterval;
+
+        for(int i = 0; i < damageEventCount; i++) {
+            // Random offset to make timing unpredictable
+            int randomOffset = (int)(Math.random() * (baseDamageInterval / 2));
+            int damageTime = (i * baseDamageInterval) + randomOffset;
+
+            ServerScheduler.scheduleDelayed(damageTime, () -> {
+                if(entity.isDeadOrDying()) return;
+
+                float currentHealth = entity.getHealth();
+
+                // Calculate damage based on sequence
+                // Sequence 9: 1-2 hearts damage
+                // Sequence 5: 2-4 hearts damage
+                // Sequence 1: 3-6 hearts damage
+                float baseDamage = 2.0f + (9 - sequence) * 0.5f;
+                float randomVariation = (float)(Math.random() * 2.0f);
+                float damage = baseDamage + randomVariation;
+
+                // Never reduce health below 2 hearts (4 health points)
+                float minHealthAfterDamage = 4.0f;
+                float safeMaxDamage = currentHealth - minHealthAfterDamage;
+
+                if(safeMaxDamage > 0) {
+                    float finalDamage = Math.min(damage, safeMaxDamage);
+                    entity.hurt(entity.damageSources().magic(), finalDamage);
+                }
+            }, serverLevel);
+        }
     }
 
     private static void scheduleThirdPerson(LivingEntity entity, int duration) {

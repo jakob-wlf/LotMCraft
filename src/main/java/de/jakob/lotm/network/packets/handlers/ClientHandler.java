@@ -35,6 +35,7 @@ import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Random;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -347,6 +348,13 @@ public class ClientHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof IntrospectScreen screen) {
             screen.setAbilityWheelSlots(packet.abilityIds());
+        }
+    }
+
+    public static void handleUpdateAbilityBarPacket(ArrayList<String> abilities) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen instanceof IntrospectScreen screen) {
+            screen.setAbilityBarSlots(abilities);
         }
     }
 }

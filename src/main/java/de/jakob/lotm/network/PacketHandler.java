@@ -173,6 +173,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                UpdateAbilityBarPacket.TYPE,
+                UpdateAbilityBarPacket.STREAM_CODEC,
+                UpdateAbilityBarPacket::handle
+        );
+
+        registrar.playToClient(
                 ChangePlayerPerspectivePacket.TYPE,
                 ChangePlayerPerspectivePacket.STREAM_CODEC,
                 ChangePlayerPerspectivePacket::handle
@@ -310,6 +316,24 @@ public class PacketHandler {
                 BecomeBeyonderPacket.TYPE,
                 BecomeBeyonderPacket.STREAM_CODEC,
                 BecomeBeyonderPacket::handle
+        );
+
+        registrar.playToServer(
+                UseKeyboundAbilityPacket.TYPE,
+                UseKeyboundAbilityPacket.STREAM_CODEC,
+                UseKeyboundAbilityPacket::handle
+        );
+
+        registrar.playToServer(
+                SyncAbilityBarAbilitiesPacket.TYPE,
+                SyncAbilityBarAbilitiesPacket.STREAM_CODEC,
+                SyncAbilityBarAbilitiesPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestAbilityBarPacket.TYPE,
+                RequestAbilityBarPacket.STREAM_CODEC,
+                RequestAbilityBarPacket::handle
         );
 
         registrar.playToServer(
