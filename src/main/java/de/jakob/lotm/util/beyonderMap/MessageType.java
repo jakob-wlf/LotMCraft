@@ -64,8 +64,12 @@ public record MessageType(@Nullable String from, Long when, String title, String
     }
 
     public static MessageType fromNetwork(FriendlyByteBuf buf) {
+        String from = null;
+        if(buf.readBoolean())
+            from = buf.readUtf(MAX_NAME_LENGTH);
+
         return new MessageType(
-                buf.readUtf(MAX_NAME_LENGTH),
+                from,
                 buf.readLong(),
                 buf.readUtf(MAX_TITLE_LENGTH),
                 buf.readUtf(MAX_MESSAGE_LENGTH),
@@ -74,6 +78,8 @@ public record MessageType(@Nullable String from, Long when, String title, String
     }
 
     public void toNetwork(FriendlyByteBuf buf) {
+        buf.writeBoolean(from != null);
+
         if(from != null)
         buf.writeUtf(from, MAX_NAME_LENGTH);
 

@@ -15,8 +15,8 @@ public class AddMessageCommand {
         dispatcher.register(Commands.literal("addmessage")
                 .requires(source -> source.hasPermission(2))
                 .then(Commands.argument("target", EntityArgument.entity())
-                        .then(Commands.argument("title", StringArgumentType.string()))
-                        .then(Commands.argument("desc", StringArgumentType.string()))
+                        .then(Commands.argument("title", StringArgumentType.string())
+                        .then(Commands.argument("desc", StringArgumentType.string())
                         .executes(context -> {
                             CommandSourceStack source = context.getSource();
 
@@ -32,6 +32,8 @@ public class AddMessageCommand {
 
                             return executeAddMessageCommand(livingEntity, title, desc);
                         }
+                        )
+                        )
                         )
                 )
         );
