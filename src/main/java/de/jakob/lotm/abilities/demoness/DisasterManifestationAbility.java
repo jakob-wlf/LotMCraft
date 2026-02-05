@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.demoness;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ActiveShaderComponent;
 import de.jakob.lotm.attachments.FogComponent;
@@ -89,6 +90,7 @@ public class DisasterManifestationAbility extends SelectableAbility {
                     FogComponent fogComponent = player.getData(ModAttachments.FOG_COMPONENT);
                     fogComponent.setActiveAndSync(true, player);
                     fogComponent.setFogIndexAndSync(FogComponent.FOG_TYPE.BLIZZARD, player);
+                    fogComponent.setFogColorAndSync(new Vec3f(152 / 255f, 237 / 255f, 237 / 255f), player);
                 }
 
                 ActiveShaderComponent component = player.getData(ModAttachments.SHADER_COMPONENT);

@@ -1,5 +1,6 @@
 package de.jakob.lotm.abilities.tyrant;
 
+import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ActiveShaderComponent;
 import de.jakob.lotm.attachments.FogComponent;
@@ -110,6 +111,7 @@ public class CalamityCreationAbility extends SelectableAbility {
                 FogComponent fogComponent = player.getData(ModAttachments.FOG_COMPONENT);
                 fogComponent.setActiveAndSync(true, player);
                 fogComponent.setFogIndexAndSync(FogComponent.FOG_TYPE.BLIZZARD, player);
+                fogComponent.setFogColorAndSync(new Vec3f(152 / 255f, 237 / 255f, 237 / 255f), player);
 
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SNOWFLAKE, player.position(), 60, 5, 2, 5, .05);
                 ParticleUtil.spawnParticles(serverLevel, blizzardDust, player.position(), 200, 6, 3, 6, .05);
@@ -180,6 +182,7 @@ public class CalamityCreationAbility extends SelectableAbility {
                 FogComponent fogComponent = player.getData(ModAttachments.FOG_COMPONENT);
                 fogComponent.setActiveAndSync(true, player);
                 fogComponent.setFogIndexAndSync(FogComponent.FOG_TYPE.DROUGHT, player);
+                fogComponent.setFogColorAndSync(new Vec3f(209 / 255f, 130 / 255f, 69 / 255f), player);
 
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.FLAME, player.position(), 90, 6, 3, 6, .05);
                 ParticleUtil.spawnParticles(serverLevel, droughtDust, player.position(), 200, 8, 3, 8, .05);

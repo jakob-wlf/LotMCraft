@@ -23,6 +23,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -171,13 +172,15 @@ public class LuckEventHandler {
             return;
         }
 
-
         if(new Random().nextBoolean())
             ParticleUtil.spawnParticles(level, dust, event.getPos().getCenter(), 12, .6, .6, .6, 0);
 
         List<ItemEntity> drops = event.getDrops();
 
         if (!drops.isEmpty()) {
+            if(drops.stream().anyMatch(itemEntity -> itemEntity.getItem().is(Items.SHULKER_BOX))) {
+                return;
+            }
             ItemStack randomDrop = drops.get(level.getRandom().nextInt(drops.size())).getItem().copy();
 
             Block.popResource(level, event.getPos(), randomDrop);

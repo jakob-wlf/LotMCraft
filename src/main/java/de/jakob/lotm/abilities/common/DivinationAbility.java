@@ -117,9 +117,9 @@ public class DivinationAbility extends SelectableAbility {
     public static void performDreamDivination(Level level, Player player, BlockPos blockPos) {
         if(!(level instanceof ServerLevel serverLevel)) {
             ClientHandler.hideGUI();
-            ClientHandler.changeToThirdPerson();
+            ClientHandler.changeToThirdPerson(player);
             ClientScheduler.scheduleDelayed(20 * 10, ClientHandler::showGui);
-            ClientScheduler.scheduleDelayed(20 * 10, ClientHandler::changeToFirstPerson);
+            ClientScheduler.scheduleDelayed(20 * 10, () -> ClientHandler.changeToFirstPerson(player));
             return;
         }
 

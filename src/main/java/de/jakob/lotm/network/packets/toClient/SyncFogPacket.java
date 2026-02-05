@@ -9,7 +9,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SyncFogPacket(int entityId, boolean active, int index) implements CustomPacketPayload {
+public record SyncFogPacket(int entityId, boolean active, int index, float red, float green, float blue) implements CustomPacketPayload {
     
     public static final Type<SyncFogPacket> TYPE =
         new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sync_fog"));
@@ -21,6 +21,12 @@ public record SyncFogPacket(int entityId, boolean active, int index) implements 
         SyncFogPacket::active,
         ByteBufCodecs.INT,
         SyncFogPacket::index,
+        ByteBufCodecs.FLOAT,
+        SyncFogPacket::red,
+        ByteBufCodecs.FLOAT,
+        SyncFogPacket::green,
+        ByteBufCodecs.FLOAT,
+        SyncFogPacket::blue,
         SyncFogPacket::new
     );
     

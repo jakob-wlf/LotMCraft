@@ -173,15 +173,21 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                ClearPlayerListInTeleportationPacket.TYPE,
-                ClearPlayerListInTeleportationPacket.STREAM_CODEC,
-                ClearPlayerListInTeleportationPacket::handle
+                UpdateAbilityBarPacket.TYPE,
+                UpdateAbilityBarPacket.STREAM_CODEC,
+                UpdateAbilityBarPacket::handle
         );
 
         registrar.playToClient(
-                AddPlayerToTeleportationListPacket.TYPE,
-                AddPlayerToTeleportationListPacket.STREAM_CODEC,
-                AddPlayerToTeleportationListPacket::handle
+                ChangePlayerPerspectivePacket.TYPE,
+                ChangePlayerPerspectivePacket.STREAM_CODEC,
+                ChangePlayerPerspectivePacket::handle
+        );
+
+        registrar.playToClient(
+                SyncPlayerListPacket.TYPE,
+                SyncPlayerListPacket.STREAM_CODEC,
+                SyncPlayerListPacket::handle
         );
 
         registrar.playToClient(
@@ -310,6 +316,24 @@ public class PacketHandler {
                 BecomeBeyonderPacket.TYPE,
                 BecomeBeyonderPacket.STREAM_CODEC,
                 BecomeBeyonderPacket::handle
+        );
+
+        registrar.playToServer(
+                UseKeyboundAbilityPacket.TYPE,
+                UseKeyboundAbilityPacket.STREAM_CODEC,
+                UseKeyboundAbilityPacket::handle
+        );
+
+        registrar.playToServer(
+                SyncAbilityBarAbilitiesPacket.TYPE,
+                SyncAbilityBarAbilitiesPacket.STREAM_CODEC,
+                SyncAbilityBarAbilitiesPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestAbilityBarPacket.TYPE,
+                RequestAbilityBarPacket.STREAM_CODEC,
+                RequestAbilityBarPacket::handle
         );
 
         registrar.playToServer(

@@ -1,6 +1,7 @@
 package de.jakob.lotm.potions;
 
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AdvancementUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -31,7 +32,7 @@ public class BeyonderPotion extends Item {
     @Override
     public @NotNull ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (!level.isClientSide) {
-            BeyonderData.advance(entity, pathway, sequence);
+            AdvancementUtil.advance(entity, pathway, sequence);
         }
 
         return new ItemStack(PotionItemHandler.EMPTY_BOTTLE.get());

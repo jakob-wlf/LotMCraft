@@ -29,6 +29,12 @@ public class ClientEvents {
         LOTMCraft.openWheelToggleKey = new KeyMapping("key.beyonders.open_wheel_toggle", GLFW.GLFW_KEY_LEFT_ALT, "key.categories.beyonders");
         LOTMCraft.openWheelHoldKey = new KeyMapping("key.beyonders.open_wheel_hold", GLFW.GLFW_KEY_Y, "key.categories.beyonders");
         LOTMCraft.useSelectedAbilityKey = new KeyMapping("key.beyonders.use_ability", GLFW.GLFW_KEY_M, "key.categories.beyonders");
+        LOTMCraft.useAbilityBarAbility1 = new KeyMapping("key.beyonders.use_ability_bar_ability_1", GLFW.GLFW_KEY_1, "key.categories.beyonders");
+        LOTMCraft.useAbilityBarAbility2 = new KeyMapping("key.beyonders.use_ability_bar_ability_2", GLFW.GLFW_KEY_2, "key.categories.beyonders");
+        LOTMCraft.useAbilityBarAbility3 = new KeyMapping("key.beyonders.use_ability_bar_ability_3", GLFW.GLFW_KEY_3, "key.categories.beyonders");
+        LOTMCraft.useAbilityBarAbility4 = new KeyMapping("key.beyonders.use_ability_bar_ability_4", GLFW.GLFW_KEY_4, "key.categories.beyonders");
+        LOTMCraft.useAbilityBarAbility5 = new KeyMapping("key.beyonders.use_ability_bar_ability_5", GLFW.GLFW_KEY_5, "key.categories.beyonders");
+        LOTMCraft.useAbilityBarAbility6 = new KeyMapping("key.beyonders.use_ability_bar_ability_6", GLFW.GLFW_KEY_6, "key.categories.beyonders");
 
         event.register(LOTMCraft.pathwayInfosKey);
         event.register(LOTMCraft.toggleGriefingKey);
@@ -39,6 +45,12 @@ public class ClientEvents {
         event.register(LOTMCraft.openWheelToggleKey);
         event.register(LOTMCraft.openWheelHoldKey);
         event.register(LOTMCraft.useSelectedAbilityKey);
+        event.register(LOTMCraft.useAbilityBarAbility1);
+        event.register(LOTMCraft.useAbilityBarAbility2);
+        event.register(LOTMCraft.useAbilityBarAbility3);
+        event.register(LOTMCraft.useAbilityBarAbility4);
+        event.register(LOTMCraft.useAbilityBarAbility5);
+        event.register(LOTMCraft.useAbilityBarAbility6);
     }
 
     @SubscribeEvent

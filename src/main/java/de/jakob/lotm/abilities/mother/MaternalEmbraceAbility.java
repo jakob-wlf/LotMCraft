@@ -59,7 +59,7 @@ public class MaternalEmbraceAbility extends Ability {
         component.setTransformedAndSync(true, targetEntity);
         component.setTransformationIndexAndSync(TransformationComponent.TransformationType.COFFIN, targetEntity);
 
-        BeyonderData.disableAbilityUse(targetEntity, "maternal_embrace");
+        BeyonderData.disableAbilityUseWithTimeLimit(targetEntity, "maternal_embrace", 20 * 30);
         targetEntity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 30, 20, false, false, false));
         targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 30, 20, false, false, false));
         targetEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 30, 20, false, false, false));

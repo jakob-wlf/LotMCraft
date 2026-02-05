@@ -2,7 +2,11 @@ package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
+import de.jakob.lotm.network.packets.toServer.UseKeyboundAbilityPacket;
 import de.jakob.lotm.rendering.MiracleWheelOverlay;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -59,7 +63,13 @@ public class MiracleCreationAbility extends SelectableAbility {
         if(!(entity instanceof Player player)) return; // Will be handled later
         if(!level.isClientSide) return; // Client-side only for opening the wheel
         switch (abilityIndex) {
-            case 0 -> MiracleWheelOverlay.getInstance().open(player, "summon_village", "summon_end_city", "summon_pillager_outpost", "summon_desert_temple", "summon_evernight_church");
+            case 0 -> {
+                if(!BeyonderData.isGriefingEnabled(entity)) {
+                    player.displayClientMessage(Component.translatable("lotm.griefing_required").withColor(0xFF5555), true);
+                    return;
+                }
+                MiracleWheelOverlay.getInstance().open(player, "summon_village", "summon_end_city", "summon_pillager_outpost", "summon_desert_temple", "summon_evernight_church");
+            }
             case 1 -> MiracleWheelOverlay.getInstance().open(player, "summon_meteor", "summon_tornados", "summon_volcano", "summon_lightning");
             case 2 -> MiracleWheelOverlay.getInstance().open(player, "reverse_gravity", "slow_time", "make_ground_hot", "darkness");
             case 3 -> ClientHandler.openCoordinateScreen(player, "teleportation");

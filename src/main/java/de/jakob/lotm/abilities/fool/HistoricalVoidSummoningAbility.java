@@ -27,25 +27,51 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber
 public class HistoricalVoidSummoningAbility extends SelectableAbility {
     private static final String MARKED_ENTITIES_TAG = "MarkedEntities";
-    private static final String SUMMONED_COUNT_TAG = "SummonedCount_Session"; // Changed to session-only
     private static final String PLACED_BLOCKS_TAG = "VoidPlacedBlocks";
     private static final int MAX_MARKED_ENTITIES = 54;
     private static final int MAX_SUMMONED = 5;
-    private static final int SUMMON_DURATION_TICKS = 20 * 20;
+    private static final int SUMMON_DURATION_TICKS = 20 * 20; // 20 seconds
 
-    // Track placed blocks and their summon times
-    private static final Map<BlockPos, PlacedBlockData> placedBlocks = new HashMap<>();
+    // Track active summons per player (session-only, not persisted)
+    private static final Map<UUID, PlayerSummonData> activeSummons = new ConcurrentHashMap<>();
+
+    // Track placed blocks and their summon times (thread-safe)
+    private static final Map<BlockPos, PlacedBlockData> placedBlocks = new ConcurrentHashMap<>();
+
+    private static class PlayerSummonData {
+        int summonedCount = 0;
+        final Map<Long, SummonInfo> activeSummonTimes = new ConcurrentHashMap<>();
+    }
+
+    private static class SummonInfo {
+        final long summonTime;
+        final SummonType type;
+        final UUID entityUUID; // null for items
+
+        SummonInfo(long summonTime, SummonType type, UUID entityUUID) {
+            this.summonTime = summonTime;
+            this.type = type;
+            this.entityUUID = entityUUID;
+        }
+    }
+
+    private enum SummonType {
+        ITEM, ENTITY
+    }
 
     private static class PlacedBlockData {
-        long summonTime;
-        UUID playerUUID;
+        final long summonTime;
+        final UUID playerUUID;
 
         PlacedBlockData(long summonTime, UUID playerUUID) {
             this.summonTime = summonTime;
@@ -124,9 +150,13 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                         if(slotId >= 0 && slotId < 27) {
                             ItemStack clickedItem = displayContainer.getItem(slotId);
                             if(!clickedItem.isEmpty()) {
-                                createTemporaryItem(level, player, clickedItem.copy());
-                                incrementSummonedCount(player);
-                                player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.summoned_item", clickedItem.getHoverName().getString()).withStyle(ChatFormatting.GREEN));
+                                // Re-check count before summoning
+                                if(getSummonedCount(player) < MAX_SUMMONED) {
+                                    createTemporaryItem(level, player, clickedItem.copy());
+                                    player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.summoned_item", clickedItem.getHoverName().getString()).withStyle(ChatFormatting.GREEN));
+                                } else {
+                                    player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.max_summoned").withStyle(ChatFormatting.RED));
+                                }
                                 player.closeContainer();
                             }
                         }
@@ -135,8 +165,6 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                 Component.translatable("ability.lotmcraft.historical_void_summoning.select_item")
         ));
     }
-
-
 
     private void createTemporaryItem(ServerLevel level, ServerPlayer player, ItemStack item) {
         // Give the item to the player with NBT marking it as temporary
@@ -151,14 +179,22 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
         player.getInventory().add(item);
 
-        // Schedule removal after 2 minutes (2400 ticks)
+        // Track this summon
+        incrementSummonedCount(player, summonTime, SummonType.ITEM, null);
+
+        // Schedule removal after duration
         ServerScheduler.scheduleDelayed(SUMMON_DURATION_TICKS, () -> {
-            removeTemporaryItem(level, player, summonTime);
+            // Verify player is still online
+            ServerPlayer onlinePlayer = level.getServer().getPlayerList().getPlayer(player.getUUID());
+            if(onlinePlayer != null) {
+                removeTemporaryItem(level, onlinePlayer, summonTime);
+            }
         }, level);
     }
 
     private void removeTemporaryItem(ServerLevel level, ServerPlayer player, long summonTime) {
         // Find and remove the temporary item from player's inventory
+        boolean foundAndRemoved = false;
         for(int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);
             if(!stack.isEmpty()) {
@@ -170,8 +206,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                         UUID ownerId = tag.getUUID("VoidSummonOwner");
                         if(ownerId.equals(player.getUUID()) && itemSummonTime == summonTime) {
                             player.getInventory().removeItem(i, stack.getCount());
-                            player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.item_returned").withStyle(ChatFormatting.GRAY));
-                            decrementSummonedCount(player);
+                            foundAndRemoved = true;
                             break;
                         }
                     }
@@ -181,6 +216,19 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
         // Also remove any placed blocks from this summon
         removeTemporaryBlocks(level, player, summonTime);
+
+        // Decrement count and notify
+        if(foundAndRemoved || hasPlacedBlocksForSummon(player.getUUID(), summonTime)) {
+            decrementSummonedCount(player, summonTime);
+            if(player.isAlive()) {
+                player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.item_returned").withStyle(ChatFormatting.GRAY));
+            }
+        }
+    }
+
+    private boolean hasPlacedBlocksForSummon(UUID playerUUID, long summonTime) {
+        return placedBlocks.values().stream()
+                .anyMatch(data -> data.playerUUID.equals(playerUUID) && data.summonTime == summonTime);
     }
 
     private void removeTemporaryBlocks(ServerLevel level, ServerPlayer player, long summonTime) {
@@ -202,7 +250,6 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
     public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
         if(!(event.getEntity() instanceof ServerPlayer player)) return;
 
-        ItemStack placedItem = event.getPlacedBlock().getBlock().asItem().getDefaultInstance();
         ItemStack heldItem = player.getMainHandItem();
 
         if(heldItem.isEmpty()) {
@@ -250,20 +297,83 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
             CompoundTag tag = customData.copyTag();
             if(tag.contains("VoidSummonTime") && tag.contains("VoidSummonOwner")) {
                 // This is a summoned item being tossed - make it disappear
+                long summonTime = tag.getLong("VoidSummonTime");
+                UUID ownerId = tag.getUUID("VoidSummonOwner");
+
                 event.getEntity().discard();
+                event.setCanceled(true);
 
                 // Notify player and decrement count
-                UUID ownerId = tag.getUUID("VoidSummonOwner");
-                ServerPlayer player = (ServerPlayer) event.getPlayer();
-
-                if(player.getUUID().equals(ownerId)) {
+                if(event.getPlayer() instanceof ServerPlayer player && player.getUUID().equals(ownerId)) {
+                    decrementSummonedCount(player, summonTime);
                     player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.item_returned").withStyle(ChatFormatting.GRAY));
-                    decrementSummonedCount(player);
                 }
-
-                event.setCanceled(true);
             }
         }
+    }
+
+    // Event handler for player logout - cleanup all summoned items/entities
+    @SubscribeEvent
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        UUID playerUUID = player.getUUID();
+        ServerLevel level = (ServerLevel) player.level();
+
+        // Remove all summoned items from inventory
+        for(int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack stack = player.getInventory().getItem(i);
+            if(!stack.isEmpty()) {
+                net.minecraft.world.item.component.CustomData customData = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+                if(customData != null) {
+                    CompoundTag tag = customData.copyTag();
+                    if(tag.contains("VoidSummonOwner") && tag.getUUID("VoidSummonOwner").equals(playerUUID)) {
+                        player.getInventory().removeItem(i, stack.getCount());
+                    }
+                }
+            }
+        }
+
+        // Remove all summoned entities
+        PlayerSummonData summonData = activeSummons.get(playerUUID);
+        if(summonData != null) {
+            for(SummonInfo info : summonData.activeSummonTimes.values()) {
+                if(info.type == SummonType.ENTITY && info.entityUUID != null) {
+                    Entity entity = level.getEntity(info.entityUUID);
+                    if(entity != null && entity.getPersistentData().getBoolean("VoidSummoned")) {
+                        entity.remove(Entity.RemovalReason.DISCARDED);
+                    }
+                }
+            }
+        }
+
+        // Remove all placed blocks by this player
+        List<BlockPos> blocksToRemove = new ArrayList<>();
+        for(Map.Entry<BlockPos, PlacedBlockData> entry : placedBlocks.entrySet()) {
+            if(entry.getValue().playerUUID.equals(playerUUID)) {
+                level.removeBlock(entry.getKey(), false);
+                blocksToRemove.add(entry.getKey());
+            }
+        }
+        blocksToRemove.forEach(placedBlocks::remove);
+
+        // Clear session data
+        activeSummons.remove(playerUUID);
+    }
+
+    // Periodic cleanup of invalid entities/items
+    @SubscribeEvent
+    public static void onServerTick(ServerTickEvent.Post event) {
+        // Only run every 20 ticks (1 second)
+        if(event.getServer().getTickCount() % 20 != 0) return;
+
+        // Clean up activeSummons for offline players
+        Set<UUID> onlinePlayers = new HashSet<>();
+        for(ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
+            onlinePlayers.add(player.getUUID());
+        }
+
+        activeSummons.keySet().removeIf(uuid -> !onlinePlayers.contains(uuid));
     }
 
     private void summonEntity(ServerLevel level, ServerPlayer player) {
@@ -307,10 +417,15 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                                     CompoundTag tag = customData.copyTag();
                                     if(tag.contains("EntityData")) {
                                         CompoundTag entityData = tag.getCompound("EntityData");
-                                        // Execute on server thread to avoid threading issues
-                                        level.getServer().execute(() -> {
-                                            spawnTemporaryEntity(level, player, entityData);
-                                        });
+                                        // Re-check count before summoning
+                                        if(getSummonedCount(player) < MAX_SUMMONED) {
+                                            // Execute on server thread to avoid threading issues
+                                            level.getServer().execute(() -> {
+                                                spawnTemporaryEntity(level, player, entityData);
+                                            });
+                                        } else {
+                                            player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.max_summoned").withStyle(ChatFormatting.RED));
+                                        }
                                         player.closeContainer();
                                     }
                                 }
@@ -321,8 +436,6 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                 Component.translatable("ability.lotmcraft.historical_void_summoning.select_entity")
         ));
     }
-
-
 
     private ItemStack createEntityDisplayItem(CompoundTag entityData) {
         String entityId = entityData.getString("EntityType");
@@ -423,7 +536,11 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
             boolean spawned = level.addFreshEntity(entity);
 
             if(spawned) {
-                incrementSummonedCount(player);
+                final UUID entityUUID = entity.getUUID();
+
+                // Track this summon
+                incrementSummonedCount(player, summonTime, SummonType.ENTITY, entityUUID);
+
                 // Make the summoned entity an ally of the player
                 if(entity instanceof LivingEntity livingEntity) {
                     AllyUtil.makeAllies(player, livingEntity);
@@ -431,54 +548,63 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.summoned_entity", entity.getName().getString()).withStyle(ChatFormatting.GREEN));
 
-                // Schedule removal after 2 minutes
-                final UUID entityUUID = entity.getUUID();
+                // Schedule removal after duration
                 ServerScheduler.scheduleDelayed(SUMMON_DURATION_TICKS, () -> {
-                    removeTemporaryEntity(level, player, summonTime, entityUUID);
+                    // Verify player is still online
+                    ServerPlayer onlinePlayer = level.getServer().getPlayerList().getPlayer(player.getUUID());
+                    if(onlinePlayer != null) {
+                        removeTemporaryEntity(level, onlinePlayer, summonTime, entityUUID);
+                    }
                 }, level);
             } else {
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.failed_spawn_entity").withStyle(ChatFormatting.RED));
             }
         } catch(Exception e) {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.error_summoning", e.getMessage()).withStyle(ChatFormatting.RED));
+            e.printStackTrace();
         }
     }
 
     private void removeTemporaryEntity(ServerLevel level, ServerPlayer player, long summonTime, UUID entityUUID) {
-        // Find and remove the entity with matching summon time and UUID
+        boolean removed = false;
+
+        // Try direct UUID lookup first
         Entity entity = level.getEntity(entityUUID);
 
-        if(entity != null && entity.getPersistentData().contains("VoidSummoned")) {
+        if(entity != null && entity.getPersistentData().getBoolean("VoidSummoned")) {
             long entitySummonTime = entity.getPersistentData().getLong("VoidSummonTime");
             UUID ownerId = entity.getPersistentData().getUUID("VoidSummonOwner");
 
             if(entitySummonTime == summonTime && ownerId.equals(player.getUUID())) {
                 entity.remove(Entity.RemovalReason.DISCARDED);
-                if(player.isAlive()) {
-                    player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.entity_returned").withStyle(ChatFormatting.GRAY));
-                }
-                decrementSummonedCount(player);
-                return;
+                removed = true;
             }
         }
 
         // Fallback: search nearby if direct UUID lookup failed
-        AABB searchBox = new AABB(player.blockPosition()).inflate(100);
-        List<Entity> entities = level.getEntities((Entity)null, searchBox, e -> {
-            if(e.getPersistentData().contains("VoidSummoned")) {
-                long entitySummonTime = e.getPersistentData().getLong("VoidSummonTime");
-                UUID ownerId = e.getPersistentData().getUUID("VoidSummonOwner");
-                return entitySummonTime == summonTime && ownerId.equals(player.getUUID());
-            }
-            return false;
-        });
+        if(!removed) {
+            AABB searchBox = new AABB(player.blockPosition()).inflate(100);
+            List<Entity> entities = level.getEntities((Entity)null, searchBox, e -> {
+                if(e.getPersistentData().getBoolean("VoidSummoned")) {
+                    long entitySummonTime = e.getPersistentData().getLong("VoidSummonTime");
+                    UUID ownerId = e.getPersistentData().getUUID("VoidSummonOwner");
+                    return entitySummonTime == summonTime && ownerId.equals(player.getUUID());
+                }
+                return false;
+            });
 
-        for(Entity e : entities) {
-            e.remove(Entity.RemovalReason.DISCARDED);
+            for(Entity e : entities) {
+                e.remove(Entity.RemovalReason.DISCARDED);
+                removed = true;
+            }
+        }
+
+        // Decrement count and notify
+        if(removed) {
+            decrementSummonedCount(player, summonTime);
             if(player.isAlive()) {
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.entity_returned").withStyle(ChatFormatting.GRAY));
             }
-            decrementSummonedCount(player);
         }
     }
 
@@ -572,24 +698,26 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
     }
 
     private int getSummonedCount(ServerPlayer player) {
-        // Use a session-only tag that doesn't persist
-        if(!player.getPersistentData().contains(SUMMONED_COUNT_TAG)) {
-            player.getPersistentData().putInt(SUMMONED_COUNT_TAG, 0);
-        }
-        return player.getPersistentData().getInt(SUMMONED_COUNT_TAG);
+        PlayerSummonData data = activeSummons.get(player.getUUID());
+        return data != null ? data.summonedCount : 0;
     }
 
-    private void incrementSummonedCount(ServerPlayer player) {
-        int current = getSummonedCount(player);
-        player.getPersistentData().putInt(SUMMONED_COUNT_TAG, current + 1);
+    private void incrementSummonedCount(ServerPlayer player, long summonTime, SummonType type, UUID entityUUID) {
+        PlayerSummonData data = activeSummons.computeIfAbsent(player.getUUID(), k -> new PlayerSummonData());
+        data.summonedCount++;
+        data.activeSummonTimes.put(summonTime, new SummonInfo(summonTime, type, entityUUID));
     }
 
-    private static void decrementSummonedCount(ServerPlayer player) {
-        if(!player.getPersistentData().contains(SUMMONED_COUNT_TAG)) {
-            player.getPersistentData().putInt(SUMMONED_COUNT_TAG, 0);
-            return;
+    private static void decrementSummonedCount(ServerPlayer player, long summonTime) {
+        PlayerSummonData data = activeSummons.get(player.getUUID());
+        if(data != null) {
+            data.summonedCount = Math.max(0, data.summonedCount - 1);
+            data.activeSummonTimes.remove(summonTime);
+
+            // Clean up if no more summons
+            if(data.summonedCount == 0) {
+                activeSummons.remove(player.getUUID());
+            }
         }
-        int count = Math.max(0, player.getPersistentData().getInt(SUMMONED_COUNT_TAG) - 1);
-        player.getPersistentData().putInt(SUMMONED_COUNT_TAG, count);
     }
 }

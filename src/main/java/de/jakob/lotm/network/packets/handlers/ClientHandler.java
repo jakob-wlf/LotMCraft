@@ -1,5 +1,6 @@
 package de.jakob.lotm.network.packets.handlers;
 
+import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.door.PlayerTeleportationAbility;
@@ -34,6 +35,7 @@ import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Random;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,6 +61,14 @@ public class ClientHandler {
                     false,
                     0.0f
             );
+        }
+    }
+
+    // In ClientHandler.java
+    public static void handlePlayerListPacket(SyncPlayerListPacket packet) {
+        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+        if (mc.player != null) {
+            ClientPlayerListHandler.updatePlayerList(mc.player.getUUID(), packet.players());
         }
     }
 
@@ -173,14 +183,16 @@ public class ClientHandler {
         entity.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).setTransformationIndex(packet.transformationIndex());
     }
 
-    public static void changeToThirdPerson() {
+    public static void changeToThirdPerson(LivingEntity entity) {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+        if(minecraft.player == entity)
+            minecraft.options.setCameraType(CameraType.THIRD_PERSON_BACK);
     }
 
-    public static void changeToFirstPerson() {
+    public static void changeToFirstPerson(LivingEntity entity) {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.options.setCameraType(CameraType.FIRST_PERSON);
+        if(minecraft.player == entity)
+            minecraft.options.setCameraType(CameraType.FIRST_PERSON);
     }
 
     public static void handleShaderPacket(SyncShaderPacket packet) {
@@ -207,6 +219,7 @@ public class ClientHandler {
 
         entity.getData(ModAttachments.FOG_COMPONENT.get()).setActive(packet.active());
         entity.getData(ModAttachments.FOG_COMPONENT.get()).setFogIndex(packet.index());
+        entity.getData(ModAttachments.FOG_COMPONENT.get()).setColor(new Vec3f(packet.red(), packet.green(), packet.blue()));
     }
 
     public static void addEffect(int index, double x, double y, double z) {
@@ -218,10 +231,6 @@ public class ClientHandler {
                                             double endX, double endY, double endZ,
                                             int duration) {
         VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration);
-    }
-
-    public static void addPlayerToList(int id, String playerName, UUID playerUUID) {
-        PlayerTeleportationAbility.allPlayers.add(new PlayerTeleportationAbility.PlayerInfo(id, playerName, playerUUID));
     }
 
     public static void addMovableEffect(UUID effectId, int index,
@@ -339,6 +348,13 @@ public class ClientHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof IntrospectScreen screen) {
             screen.setAbilityWheelSlots(packet.abilityIds());
+        }
+    }
+
+    public static void handleUpdateAbilityBarPacket(ArrayList<String> abilities) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen instanceof IntrospectScreen screen) {
+            screen.setAbilityBarSlots(abilities);
         }
     }
 }

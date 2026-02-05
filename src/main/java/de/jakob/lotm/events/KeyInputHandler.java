@@ -106,16 +106,32 @@ public class KeyInputHandler {
         if(holdAbilityWheelCooldownTicks > 0) {
             holdAbilityWheelCooldownTicks--;
         }
+
+        if(LOTMCraft.useAbilityBarAbility1.consumeClick()) {
+            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(0));
+        }
+        if(LOTMCraft.useAbilityBarAbility2.consumeClick()) {
+            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(1));
+        }
+        if(LOTMCraft.useAbilityBarAbility3.consumeClick()) {
+            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(2));
+        }
+        if(LOTMCraft.useAbilityBarAbility4.consumeClick()) {
+            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(3));
+        }
+        if(LOTMCraft.useAbilityBarAbility5.consumeClick()) {
+            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(4));
+        }
+        if(LOTMCraft.useAbilityBarAbility6.consumeClick()) {
+            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(5));
+        }
     }
 
     @SubscribeEvent
     public static void onKeyReleased(ScreenEvent.KeyReleased.Post event) {
         if(event.getKeyCode() == LOTMCraft.openWheelHoldKey.getKey().getValue()) {
             if(Minecraft.getInstance().screen instanceof AbilityWheelScreen && wasWheelOpenedWithHold) {
-                LocalPlayer player = Minecraft.getInstance().player;
-                if (player != null) {
-                    player.closeContainer();
-                }
+                Minecraft.getInstance().screen.onClose();
                 PacketHandler.sendToServer(new CloseAbilityWheelPacket());
             }
         }

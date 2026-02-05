@@ -21,6 +21,10 @@ public class BeyonderMap extends SavedData {
     public static final String NBT_BEYONDER_MAP = "beyonder_map";
     public static final String NBT_BEYONDER_MAP_CLASS = "beyonder_map_class";
 
+    public final static Integer SEQ_0_AMOUNT = 1;
+    public final static Integer SEQ_1_AMOUNT = 3;
+    public final static Integer SEQ_2_AMOUNT = 9;
+
     public HashMap<UUID, StoredData> map;
 
     public BeyonderMap() {
@@ -46,7 +50,7 @@ public class BeyonderMap extends SavedData {
         map.put(entity.getUUID(), new StoredData(
                 pathway,
                 sequence,
-                isNull? HonorificName.EMPTY : data.honorificName(),
+                isNull ? HonorificName.EMPTY : data.honorificName(),
                 ((ServerPlayer) entity).getGameProfile().getName(),
                 isNull ? new LinkedList<>() : data.msgs(),
                 isNull ? new LinkedList<>() : data.knownNames()
@@ -212,13 +216,13 @@ public class BeyonderMap extends SavedData {
 
         switch (seq) {
             case 2:
-                if (seq_2 + seq_1 >= 9) return false;
+                if (seq_2 + seq_1 >= SEQ_2_AMOUNT) return false;
                 break;
             case 1:
-                if (seq_0 != 0 || seq_1 >= 3) return false;
+                if (seq_0 >= SEQ_0_AMOUNT || seq_1 >= SEQ_1_AMOUNT) return false;
                 break;
             case 0:
-                if (seq_0 != 0) return false;
+                if (seq_0 >= SEQ_0_AMOUNT) return false;
                 break;
         }
 

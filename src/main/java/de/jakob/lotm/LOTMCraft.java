@@ -73,6 +73,14 @@ public class LOTMCraft
     public static KeyMapping openWheelToggleKey;
     public static KeyMapping useSelectedAbilityKey;
 
+    public static KeyMapping useAbilityBarAbility1;
+    public static KeyMapping useAbilityBarAbility2;
+    public static KeyMapping useAbilityBarAbility3;
+    public static KeyMapping useAbilityBarAbility4;
+    public static KeyMapping useAbilityBarAbility5;
+    public static KeyMapping useAbilityBarAbility6;
+
+
     public static AbilityHandler abilityHandler;
 
     public static final ResourceLocation ANIMATION_LAYER_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "lotmcraft_animations");

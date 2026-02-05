@@ -5,7 +5,8 @@ import net.minecraft.network.chat.Component;
 public record PathwayInfos(
         String id,
         int color,
-        String[] sequenceNames
+        String[] sequenceNames,
+        String[] neighboringPathways
 ) {
    public static String getSequenceNameByRegisteredItemName(String sequenceName) {
 
