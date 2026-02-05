@@ -17,6 +17,13 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
     public static final String NBT_MESSAGES = "beyonder_map_messages";
     public static final String NBT_KNOWN_NAMES = "beyonder_map_known_names";
 
+    public String getShortInfo() {
+        return "Path: " + pathway
+                + " -- Seq: " + sequence
+                + " -- HN:" + (honorificName.isEmpty() ? 0 : 1)
+                + " -- TN: " + trueName;
+    }
+
     public void addMsg(MessageType msg){
         msgs.add(msg);
     }

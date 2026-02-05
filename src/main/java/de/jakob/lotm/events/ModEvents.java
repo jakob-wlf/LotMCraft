@@ -99,8 +99,8 @@ public class ModEvents {
         AllyRequestCommands.register(event.getDispatcher());
         SanityCommand.register(event.getDispatcher());
         DigestionCommand.register(event.getDispatcher());
-
-        AddMessageCommand.register(event.getDispatcher());
+        
+        BeyonderMapCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent
