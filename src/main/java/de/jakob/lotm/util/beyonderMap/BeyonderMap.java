@@ -10,10 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static de.jakob.lotm.util.BeyonderData.beyonderMap;
 
@@ -22,10 +19,10 @@ public class BeyonderMap extends SavedData {
     public static final String NBT_BEYONDER_MAP_CLASS = "beyonder_map_class";
 
     public final static Integer SEQ_0_AMOUNT = 1;
-    public final static Integer SEQ_1_AMOUNT = 3;
+    public final static Integer SEQ_1_AMOUNT = 1;
     public final static Integer SEQ_2_AMOUNT = 9;
 
-    public HashMap<UUID, StoredData> map;
+    private HashMap<UUID, StoredData> map;
 
     public BeyonderMap() {
         super();
@@ -172,6 +169,12 @@ public class BeyonderMap extends SavedData {
         setDirty();
     }
 
+    public void remove(UUID entity){
+        map.remove(entity);
+
+        setDirty();
+    }
+
     public boolean isDiffPathSeq(LivingEntity entity){
         if(!(entity instanceof ServerPlayer) ) return false;
         if(!contains(entity)) put(entity);
@@ -262,5 +265,19 @@ public class BeyonderMap extends SavedData {
                 BeyonderMap::new, BeyonderMap::load),
                 NBT_BEYONDER_MAP_CLASS
         );
+    }
+
+    public boolean isEmpty(){
+        return map.isEmpty();
+    }
+
+    public Set<Map.Entry<UUID, StoredData>> entrySet(){
+        return map.entrySet();
+    }
+
+    public void clear(){
+        map.clear();
+
+        setDirty();
     }
 }
