@@ -8,6 +8,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.sun.jdi.connect.Connector;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.beyonderMap.BeyonderMap;
 import de.jakob.lotm.util.beyonderMap.StoredData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -152,6 +153,48 @@ Available commands:
                 ;
     }
 
+    private static LiteralArgumentBuilder<CommandSourceStack> get() {
+        return Commands.literal("get")
+                .then(Commands.argument("target", EntityArgument.entity())
+                .executes(context -> {
+                    CommandSourceStack source = context.getSource();
+                    var targetEntity = EntityArgument.getEntity(context, "target");
+
+                    if (!(targetEntity instanceof LivingEntity livingEntity)
+                            || !(BeyonderData.isBeyonder(livingEntity))) {
+                        source.sendFailure(Component.literal("Target must be a living beyonder entity!"));
+                        return 0;
+                    }
+
+                    if(!BeyonderData.beyonderMap.contains(livingEntity)){
+                        source.sendFailure(Component.literal("BeyonderMap doesn't contain passed target!"));
+                        return 0;
+                    }
+
+                    source.sendSystemMessage(Component.literal(BeyonderData.
+                            beyonderMap.get(livingEntity).get().getShortInfo()));
+
+                    return 1;
+                }))
+                .then(Commands.argument("nickname", StringArgumentType.string())
+                        .executes(context -> {
+                            CommandSourceStack source = context.getSource();
+                            var targetNick = StringArgumentType.getString(context, "nickname");
+
+                            var UUID = BeyonderData.beyonderMap.getKeyByName(targetNick);
+
+                            if(UUID == null){
+                                source.sendFailure(Component.literal("BeyonderMap doesn't contain passed target!"));
+                                return 0;
+                            }
+
+                            source.sendSystemMessage(Component.literal(BeyonderData.
+                                    beyonderMap.get(UUID).get().getShortInfo()));
+
+                            return 1;
+                        }));
+    }
+
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("beyondermap")
                 .requires(source -> source.hasPermission(2))
@@ -159,6 +202,7 @@ Available commands:
                 .then(all())
                 .then(add())
                 .then(delete())
+                .then(get())
 
         );
     }

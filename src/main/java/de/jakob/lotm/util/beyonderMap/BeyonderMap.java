@@ -215,6 +215,12 @@ public class BeyonderMap extends SavedData {
         return Optional.of(map.get(entity.getUUID()));
     }
 
+    public Optional<StoredData> get(UUID entity){
+        if(!map.containsKey(entity)) return Optional.empty();
+
+        return Optional.of(map.get(entity));
+    }
+
     public int count(String path, int seq){
         int res = 0;
 
