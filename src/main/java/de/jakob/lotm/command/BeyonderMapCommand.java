@@ -172,7 +172,7 @@ Available commands:
                     }
 
                     source.sendSystemMessage(Component.literal(BeyonderData.
-                            beyonderMap.get(livingEntity).get().getShortInfo()));
+                            beyonderMap.get(livingEntity).get().getAllInfo()));
 
                     return 1;
                 }))
@@ -189,7 +189,7 @@ Available commands:
                             }
 
                             source.sendSystemMessage(Component.literal(BeyonderData.
-                                    beyonderMap.get(UUID).get().getShortInfo()));
+                                    beyonderMap.get(UUID).get().getAllInfo()));
 
                             return 1;
                         }));

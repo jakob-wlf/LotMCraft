@@ -23,6 +23,10 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 + " -- TN: " + trueName;
     }
 
+    public String getAllInfo(){
+        return getShortInfo();
+    }
+
     public void addMsg(MessageType msg){
         msgs.add(msg);
     }

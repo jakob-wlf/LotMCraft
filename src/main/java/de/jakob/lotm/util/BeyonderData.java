@@ -164,23 +164,25 @@ public class BeyonderData {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
 
-        LOTMCraft.LOGGER.info("setBeyonder Stage 1");
+        String nickname = entity.getDisplayName().getString();
+
+        LOTMCraft.LOGGER.info("setBeyonder Stage 1 for {}", nickname);
 
         if(entity instanceof ServerPlayer) {
-            LOTMCraft.LOGGER.info("setBeyonder Stage 1: check for free slots");
+            LOTMCraft.LOGGER.info("setBeyonder Stage 1: check for free slots for {}", nickname);
             if(!beyonderMap.check(pathway, sequence)) return;
         }
 
-        LOTMCraft.LOGGER.info("setBeyonder Stage 2");
+        LOTMCraft.LOGGER.info("setBeyonder Stage 2 for {}", nickname);
 
         if(Objects.equals(sequence, LOTMCraft.NON_BEYONDER_SEQ)
                 || pathway.equals("none")) {
-            LOTMCraft.LOGGER.info("setBeyonder Stage 2: check for set to non-beyonder");
+            LOTMCraft.LOGGER.info("setBeyonder Stage 2: check for set to non-beyonder for {}", nickname);
             clearBeyonderData(entity);
             return;
         }
 
-        LOTMCraft.LOGGER.info("setBeyonder Stage 3");
+        LOTMCraft.LOGGER.info("setBeyonder Stage 3 for {}", nickname);
 
         boolean griefing = !BeyonderData.isBeyonder(entity) || BeyonderData.isGriefingEnabled(entity);
 
@@ -194,22 +196,22 @@ public class BeyonderData {
         if(entity instanceof Player player)
             SpiritualityProgressTracker.setProgress(player.getUUID(), 1.0f);
 
-        LOTMCraft.LOGGER.info("setBeyonder Stage 4");
+        LOTMCraft.LOGGER.info("setBeyonder Stage 4 for {}", nickname);
 
         // Sync to client if this is server-side
         if (entity.level() instanceof ServerLevel serverLevel) {
-            LOTMCraft.LOGGER.info("setBeyonder Stage 4: server level check");
+            LOTMCraft.LOGGER.info("setBeyonder Stage 4: server level check for {}", nickname);
 
             callPassiveEffectsOnAdd(entity, serverLevel);
 
             if(entity instanceof ServerPlayer serverPlayer) {
-                LOTMCraft.LOGGER.info("setBeyonder Stage 4: put into beyonder map");
+                LOTMCraft.LOGGER.info("setBeyonder Stage 4: put into beyonder map for {}", nickname);
 
                 PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
                 beyonderMap.put(serverPlayer);
             }
             else {
-                LOTMCraft.LOGGER.info("setBeyonder Stage 4: else branch");
+                LOTMCraft.LOGGER.info("setBeyonder Stage 4: else branch for {}", nickname);
 
                 PacketHandler.syncBeyonderDataToEntity(entity);
             }
