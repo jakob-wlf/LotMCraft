@@ -1,5 +1,7 @@
 package de.jakob.lotm.command;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -7,6 +9,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.sun.jdi.connect.Connector;
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.beyonderMap.BeyonderMap;
 import de.jakob.lotm.util.beyonderMap.StoredData;
@@ -44,6 +47,7 @@ Available commands:
 4) delete <target> (or <target_nickname>, if target is offline) - will delete target from beyonderMap
 5) get <target> (or <target_nickname>) - will give all information about target
 6) edit <target> (or <target_nickname>) <json data> - will edit needed info
+    json format - {"name":"nickname","path":"needed_path","seq":<needed_seq_as_number>}
 7) delete all - will delete entire database
 """));
 
@@ -193,6 +197,54 @@ Available commands:
 
                             return 1;
                         }));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> edit() {
+        return Commands.literal("edit")
+                .then(Commands.argument("json", StringArgumentType.greedyString())
+                        .executes(context -> {
+                            CommandSourceStack source = context.getSource();
+                            String rawJson = StringArgumentType.getString(context, "json");
+
+                            try {
+                                JsonObject obj = JsonParser.parseString(rawJson).getAsJsonObject();
+
+                                String name = obj.get("name").getAsString();
+                                String path = obj.get("path").getAsString();
+                                int seq = obj.get("seq").getAsInt();
+
+                                var id = BeyonderData.beyonderMap.getKeyByName(name);
+
+                                if(id == null){
+                                    source.sendFailure(Component.literal("BeyonderMap doesn't contain passed target!"));
+                                    return 0;
+                                }
+
+                                if(!BeyonderData.implementedPathways.contains(path)){
+                                    source.sendFailure(Component.literal("Unimplemented or unknown pathway!"));
+                                    return 0;
+                                }
+
+                                if(BeyonderData.getHighestImplementedSequence(path) < seq || seq >= LOTMCraft.NON_BEYONDER_SEQ) {
+                                    source.sendFailure(Component.literal("Unimplemented or unknown sequence!"));
+                                    return 0;
+                                }
+
+                                StoredData data = BeyonderData.beyonderMap.get(id).get();
+
+                                BeyonderData.beyonderMap.put(id, StoredData.builder
+                                        .copyFrom(data)
+                                        .pathway(path)
+                                        .sequence(seq)
+                                        .build());
+
+                                return 1;
+                            } catch (Exception e) {
+                                source.sendFailure(Component.literal("Invalid json format!"));
+                                return 0;
+                            }
+                        })
+                );
     }
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {

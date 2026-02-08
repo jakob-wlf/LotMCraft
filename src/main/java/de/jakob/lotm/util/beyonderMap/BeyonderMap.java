@@ -48,15 +48,12 @@ public class BeyonderMap extends SavedData {
                 ((ServerPlayer) entity).getGameProfile().getName(), sequence, pathway,
                 isNull ? "none" : data.trueName(), isNull ? LOTMCraft.NON_BEYONDER_SEQ : data.sequence(), isNull ? "none" : data.pathway());
 
-        map.put(entity.getUUID(), new StoredData(
-                pathway,
-                sequence,
-                isNull ? HonorificName.EMPTY : data.honorificName(),
-                ((ServerPlayer) entity).getGameProfile().getName(),
-                isNull ? new LinkedList<>() : data.msgs(),
-                isNull ? new LinkedList<>() : data.knownNames()
-        ));
-
+        map.put(entity.getUUID(), StoredData.builder
+                .copyFrom(data)
+                .pathway(pathway)
+                .sequence(sequence)
+                .trueName(((ServerPlayer) entity).getGameProfile().getName())
+                .build());
 
         setDirty();
     }
@@ -69,13 +66,19 @@ public class BeyonderMap extends SavedData {
         setDirty();
     }
 
+    public void put(UUID entity, StoredData data){
+        map.put(entity, data);
+
+        setDirty();
+    }
+
     public void addHonorificName(LivingEntity entity, HonorificName name){
         if(!(entity instanceof ServerPlayer)) return;
 
         if(!contains(entity)) put(entity);
 
-        map.compute(entity.getUUID(), (k, data) -> new StoredData(data.pathway(),
-                data.sequence(), name, data.trueName(), data.msgs(), data.knownNames()));
+        map.compute(entity.getUUID(), (k, data) -> StoredData.builder
+                .copyFrom(data).honorificName(name).build());
 
         setDirty();
     }
