@@ -164,15 +164,23 @@ public class BeyonderData {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
 
+        LOTMCraft.LOGGER.info("setBeyonder Stage 1");
+
         if(entity instanceof ServerPlayer) {
+            LOTMCraft.LOGGER.info("setBeyonder Stage 1: check for free slots");
             if(!beyonderMap.check(pathway, sequence)) return;
         }
 
+        LOTMCraft.LOGGER.info("setBeyonder Stage 2");
+
         if(Objects.equals(sequence, LOTMCraft.NON_BEYONDER_SEQ)
                 || pathway.equals("none")) {
+            LOTMCraft.LOGGER.info("setBeyonder Stage 2: check for set to non-beyonder");
             clearBeyonderData(entity);
             return;
         }
+
+        LOTMCraft.LOGGER.info("setBeyonder Stage 3");
 
         boolean griefing = !BeyonderData.isBeyonder(entity) || BeyonderData.isGriefingEnabled(entity);
 
@@ -186,19 +194,26 @@ public class BeyonderData {
         if(entity instanceof Player player)
             SpiritualityProgressTracker.setProgress(player.getUUID(), 1.0f);
 
+        LOTMCraft.LOGGER.info("setBeyonder Stage 4");
+
         // Sync to client if this is server-side
         if (entity.level() instanceof ServerLevel serverLevel) {
+            LOTMCraft.LOGGER.info("setBeyonder Stage 4: server level check");
+
             callPassiveEffectsOnAdd(entity, serverLevel);
 
             if(entity instanceof ServerPlayer serverPlayer) {
+                LOTMCraft.LOGGER.info("setBeyonder Stage 4: put into beyonder map");
+
                 PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
                 beyonderMap.put(serverPlayer);
             }
             else {
+                LOTMCraft.LOGGER.info("setBeyonder Stage 4: else branch");
+
                 PacketHandler.syncBeyonderDataToEntity(entity);
             }
         }
-
 
     }
 
@@ -426,7 +441,7 @@ public class BeyonderData {
 
         if(entity instanceof Player player) {
             SpiritualityProgressTracker.removeProgress(player);
-            beyonderMap.put(player);
+            beyonderMap.remove(player);
         }
 
         // Sync to client if this is server-side

@@ -55,13 +55,15 @@ import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Mod(LOTMCraft.MOD_ID)
 public class LOTMCraft
 {
     public static final String MOD_ID = "lotmcraft";
 
-
+    public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public static final Integer NON_BEYONDER_SEQ = 10;
 

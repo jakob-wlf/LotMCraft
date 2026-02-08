@@ -20,7 +20,6 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
     public String getShortInfo() {
         return "Path: " + pathway
                 + " -- Seq: " + sequence
-                + " -- HN:" + (honorificName.isEmpty() ? 0 : 1)
                 + " -- TN: " + trueName;
     }
 

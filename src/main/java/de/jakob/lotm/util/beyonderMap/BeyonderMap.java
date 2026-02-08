@@ -44,6 +44,10 @@ public class BeyonderMap extends SavedData {
         var data = map.get(entity.getUUID());
         boolean isNull = data == null;
 
+        LOTMCraft.LOGGER.info("Put BeyonderMap: name {}, seq {}, path {}\n\tPrevious: name {}, seq {}, path {}",
+                ((ServerPlayer) entity).getGameProfile().getName(), sequence, pathway,
+                isNull ? "none" : data.trueName(), isNull ? LOTMCraft.NON_BEYONDER_SEQ : data.sequence(), isNull ? "none" : data.pathway());
+
         map.put(entity.getUUID(), new StoredData(
                 pathway,
                 sequence,
@@ -52,6 +56,7 @@ public class BeyonderMap extends SavedData {
                 isNull ? new LinkedList<>() : data.msgs(),
                 isNull ? new LinkedList<>() : data.knownNames()
         ));
+
 
         setDirty();
     }
@@ -164,6 +169,8 @@ public class BeyonderMap extends SavedData {
     }
 
     public void remove(LivingEntity entity){
+        LOTMCraft.LOGGER.info("Remove BeyonderMap: name {}", entity.getDisplayName().getString());
+
         map.remove(entity.getUUID());
 
         setDirty();
@@ -181,8 +188,15 @@ public class BeyonderMap extends SavedData {
 
         StoredData data = beyonderMap.get(entity).get();
 
-        return (!data.pathway().equals(BeyonderData.getPathway(entity))
-                || data.sequence() != BeyonderData.getSequence(entity));
+        var pathway = BeyonderData.getPathway(entity);
+        var sequence = BeyonderData.getSequence(entity);
+
+        LOTMCraft.LOGGER.info("isDiffPathSeq BeyonderMap: name {}, seq {}, path {}\n\tPrevious: name {}, seq {}, path {}",
+                ((ServerPlayer) entity).getGameProfile().getName(), sequence, pathway,
+                data.trueName(),data.sequence(), data.pathway());
+
+        return (!data.pathway().equals(pathway)
+                || !data.sequence().equals(sequence));
     }
 
     public @Nullable UUID getKeyByName(String name){
