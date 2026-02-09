@@ -1,6 +1,7 @@
 package de.jakob.lotm.util.beyonderMap;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -19,11 +20,9 @@ public class BeyonderMap extends SavedData {
     public static final String NBT_BEYONDER_MAP = "beyonder_map";
     public static final String NBT_BEYONDER_MAP_CLASS = "beyonder_map_class";
 
-    public final static Integer SEQ_0_AMOUNT = 1;
-    public final static Integer SEQ_1_AMOUNT = 1;
-    public final static Integer SEQ_2_AMOUNT = 9;
-
     private HashMap<UUID, StoredData> map;
+
+    private ServerLevel server;
 
     public BeyonderMap() {
         super();
@@ -258,13 +257,14 @@ public class BeyonderMap extends SavedData {
 
         switch (seq) {
             case 2:
-                if (seq_2 + seq_1 >= SEQ_2_AMOUNT) return false;
+                if (seq_2 + seq_1 >= server.getGameRules().getInt(ModGameRules.SEQ_2_AMOUNT)) return false;
                 break;
             case 1:
-                if (seq_0 >= SEQ_0_AMOUNT || seq_1 >= SEQ_1_AMOUNT) return false;
+                if (seq_0 >= server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)
+                        || seq_1 >= server.getGameRules().getInt(ModGameRules.SEQ_1_AMOUNT)) return false;
                 break;
             case 0:
-                if (seq_0 >= SEQ_0_AMOUNT) return false;
+                if (seq_0 >= server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)) return false;
                 break;
         }
 
@@ -304,6 +304,10 @@ public class BeyonderMap extends SavedData {
                 BeyonderMap::new, BeyonderMap::load),
                 NBT_BEYONDER_MAP_CLASS
         );
+    }
+
+    public void setLevel(ServerLevel level){
+        server = level;
     }
 
     public boolean isEmpty(){

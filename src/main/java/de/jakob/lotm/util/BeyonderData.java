@@ -132,6 +132,7 @@ public class BeyonderData {
 
     public static void initBeyonderMap(ServerLevel level){
         beyonderMap = BeyonderMap.get(level);
+        beyonderMap.setLevel(level);
     }
 
     public static void initPathwayInfos() {
