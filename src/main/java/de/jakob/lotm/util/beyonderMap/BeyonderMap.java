@@ -10,6 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import javax.annotation.Nullable;
+import javax.swing.text.StyledEditorKit;
 import java.util.*;
 
 import static de.jakob.lotm.util.BeyonderData.beyonderMap;
@@ -70,6 +71,21 @@ public class BeyonderMap extends SavedData {
         map.put(entity, data);
 
         setDirty();
+    }
+
+    public void markModified(UUID id, Boolean value){
+        map.compute(id, (k, data) -> StoredData.builder
+                .copyFrom(data).modified(value).build());
+
+        setDirty();
+    }
+
+    public void markModified(LivingEntity entity, Boolean value){
+        if(!(entity instanceof ServerPlayer)) return;
+
+        if(!contains(entity)) put(entity);
+
+        markModified(entity.getUUID(), value);
     }
 
     public void addHonorificName(LivingEntity entity, HonorificName name){

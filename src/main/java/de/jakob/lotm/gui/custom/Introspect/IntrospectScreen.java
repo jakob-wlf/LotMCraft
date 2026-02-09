@@ -172,17 +172,17 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         this.addRenderableWidget(toggleButton);
 
-        int messageButtonX = baseLeftPos - 65;
-        int messageButtonY = this.topPos + 35;
-
-        messageButton = Button.builder(Component.literal("Messages"),
-                button -> {
-                    openMessagesMenu();
-                 })
-                .bounds(messageButtonX, messageButtonY, 60, 20)
-                .build();
-
-        this.addRenderableWidget(messageButton);
+//        int messageButtonX = baseLeftPos - 65;
+//        int messageButtonY = this.topPos + 35;
+//
+//        messageButton = Button.builder(Component.literal("Messages"),
+//                button -> {
+//                    openMessagesMenu();
+//                 })
+//                .bounds(messageButtonX, messageButtonY, 60, 20)
+//                .build();
+//
+//        this.addRenderableWidget(messageButton);
 
         if (showAbilities) {
             // Add tab buttons

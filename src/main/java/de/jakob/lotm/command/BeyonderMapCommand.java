@@ -103,7 +103,7 @@ Available commands:
 
     private static LiteralArgumentBuilder<CommandSourceStack> delete() {
         return Commands.literal("delete")
-                .then(Commands.argument("target", EntityArgument.entity())
+                .then(Commands.argument("value", EntityArgument.entity())
                 .executes( context -> {
                     CommandSourceStack source = context.getSource();
                     var targetEntity = EntityArgument.getEntity(context, "target");
@@ -123,7 +123,7 @@ Available commands:
 
                     return 1;
                 }))
-                .then(Commands.argument("nickname", StringArgumentType.string())
+                .then(Commands.argument("value", StringArgumentType.string())
                         .executes(context -> {
                             CommandSourceStack source = context.getSource();
                             var targetNick = StringArgumentType.getString(context, "nickname");
@@ -159,10 +159,10 @@ Available commands:
 
     private static LiteralArgumentBuilder<CommandSourceStack> get() {
         return Commands.literal("get")
-                .then(Commands.argument("target", EntityArgument.entity())
+                .then(Commands.argument("value", EntityArgument.entity())
                 .executes(context -> {
                     CommandSourceStack source = context.getSource();
-                    var targetEntity = EntityArgument.getEntity(context, "target");
+                    var targetEntity = EntityArgument.getEntity(context, "value");
 
                     if (!(targetEntity instanceof LivingEntity livingEntity)
                             || !(BeyonderData.isBeyonder(livingEntity))) {
@@ -180,10 +180,10 @@ Available commands:
 
                     return 1;
                 }))
-                .then(Commands.argument("nickname", StringArgumentType.string())
+                .then(Commands.argument("value", StringArgumentType.string())
                         .executes(context -> {
                             CommandSourceStack source = context.getSource();
-                            var targetNick = StringArgumentType.getString(context, "nickname");
+                            var targetNick = StringArgumentType.getString(context, "value");
 
                             var UUID = BeyonderData.beyonderMap.getKeyByName(targetNick);
 
@@ -225,7 +225,7 @@ Available commands:
                                     return 0;
                                 }
 
-                                if(BeyonderData.getHighestImplementedSequence(path) < seq || seq >= LOTMCraft.NON_BEYONDER_SEQ) {
+                                if(BeyonderData.getHighestImplementedSequence(path) > seq || seq >= LOTMCraft.NON_BEYONDER_SEQ) {
                                     source.sendFailure(Component.literal("Unimplemented or unknown sequence!"));
                                     return 0;
                                 }
@@ -236,6 +236,7 @@ Available commands:
                                         .copyFrom(data)
                                         .pathway(path)
                                         .sequence(seq)
+                                        .modified(true)
                                         .build());
 
                                 return 1;
@@ -255,6 +256,7 @@ Available commands:
                 .then(add())
                 .then(delete())
                 .then(get())
+                .then(edit())
 
         );
     }

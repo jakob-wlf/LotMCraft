@@ -46,8 +46,11 @@ public class BeyonderEventHandler {
                 StoredData data = beyonderMap.get(serverPlayer).get();
 
                 // Only restore from map if player has NO beyonder data (data loss scenario)
-                if (!BeyonderData.isBeyonder(serverPlayer)) {
+                // Or when marked to do so by server admin
+                if (!BeyonderData.isBeyonder(serverPlayer) || data.modified()) {
                     BeyonderData.setBeyonder(serverPlayer, data.pathway(), data.sequence());
+                    beyonderMap.markModified(serverPlayer, false);
+
                 } else if (beyonderMap.isDiffPathSeq(serverPlayer)) {
                     // If they have data but it differs, update the map to match NBT (NBT is source of truth)
                     beyonderMap.put(serverPlayer);

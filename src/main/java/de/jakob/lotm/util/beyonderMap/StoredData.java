@@ -28,7 +28,11 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
     }
 
     public String getAllInfo(){
-        return getShortInfo();
+        return "Name: " + trueName
+                + "\n\t--- Path: " + pathway
+                + "\n\t--- Seq: " + sequence
+                + "\n\t--- Was modified: " + modified
+                ;
     }
 
     public void addMsg(MessageType msg){
