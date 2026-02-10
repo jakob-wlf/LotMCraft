@@ -50,10 +50,8 @@ public class ModCreativeModTabs {
                     .withTabsBefore(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "passive_abilities_tab"))
                     .title(Component.translatable("creativetab.lotmcraft.beyonder_potions_tab"))
                     .displayItems((parameters, output) -> {
-                        //String[] lastPathway = new String[]{"none"};
                         PotionItemHandler.ITEMS.getEntries().forEach(itemHolder -> {
                             output.accept(itemHolder.get());
-
                         });
                     })
                     .build());
