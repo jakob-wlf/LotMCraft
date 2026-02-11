@@ -30,7 +30,7 @@ public class ModGameRules {
         DIGESTION_RATE = GameRules.register(
                 "digestion_rate",
                 GameRules.Category.MISC,
-                GameRules.IntegerValue.create(100)
+                GameRules.IntegerValue.create(50)
         );
 
         REDUCE_REGEN_IN_BEYONDER_FIGHT = GameRules.register(

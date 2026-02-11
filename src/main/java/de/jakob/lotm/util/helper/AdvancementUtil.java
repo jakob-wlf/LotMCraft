@@ -99,7 +99,7 @@ public class AdvancementUtil {
         }
 
         // Calculate sequence difference (how many sequences jumping)
-        int difference = prevSequence - sequence;
+        int difference = Math.abs(prevSequence - sequence);
 
         // Calculate failure chance
         double failureChance = calculateFailureChance(difference, digestionProgress, sanity);
@@ -412,15 +412,11 @@ public class AdvancementUtil {
         double baseChance;
 
         if(sequence >= 9) {
-            baseChance = 0.0; // Starting at sequence 9 is safe
+            baseChance = 0.0;
         } else if(sequence >= 7) {
-            baseChance = 0.1; // Sequence 7-8: 10% base risk
-        } else if(sequence >= 5) {
-            baseChance = 0.3; // Sequence 5-6: 30% base risk
-        } else if(sequence >= 3) {
-            baseChance = 0.6; // Sequence 3-4: 60% base risk
+            baseChance = 0.85;
         } else {
-            baseChance = 0.8; // Sequence 1-2: 80% base risk
+            baseChance = 1;
         }
 
         // Sanity penalty - only matters below 0.8
@@ -457,10 +453,10 @@ public class AdvancementUtil {
                 // One condition met but not both
                 if(digestion >= 0.95f) {
                     // Good digestion but low sanity
-                    baseChance = 0.2; // 20% failure
+                    baseChance = 0.65; // 20% failure
                 } else {
                     // Good sanity but low digestion
-                    baseChance = 0.1; // 10% failure
+                    baseChance = 0.6; // 10% failure
                 }
             } else {
                 // Neither condition met
@@ -468,7 +464,7 @@ public class AdvancementUtil {
             }
         } else if(sequenceDifference == 2) {
             // Two sequences - very dangerous regardless
-            baseChance = 0.6; // 60% base failure
+            baseChance = 0.9; // 60% base failure
         } else {
             // This shouldn't happen due to the check above, but just in case
             return 1.0;
@@ -477,7 +473,7 @@ public class AdvancementUtil {
         // Digestion penalty - maximum +0.2 (20%) impact
         double digestionPenalty = 0;
         if(digestion < 0.95f) {
-            digestionPenalty = Math.min(0.2, (0.95f - digestion) * 0.21);
+            digestionPenalty = Math.min(0.5, (0.95f - digestion) * 0.4);
         }
 
         // Sanity penalty - only applies below 0.8, scales heavily

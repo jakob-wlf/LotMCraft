@@ -44,14 +44,23 @@ public class VillagerTradesEventHandler {
 
             for(Map.Entry<Item, Integer> entry : tradeableItems.entrySet()) {
                 int level = getLevelForItem(entry.getKey());
+                int sequence = getSequenceForItem(entry.getKey());
 
-                trades.get(level).add((entity, randomSource) -> new MerchantOffer(
-                        new ItemCost(Items.DIAMOND, Math.max(1, (new Random()).nextInt(entry.getValue() - 4, entry.getValue() + 5))),
-                        new ItemStack(entry.getKey(), 1),
-                        (new Random()).nextInt(1, 2),
-                        30 * level,
-                        .2f
-                ));
+                trades.get(level).add((entity, randomSource) -> {
+                    Random random = new Random();
+                    int diamondAmount = Math.max(1, random.nextInt(entry.getValue() - 4, entry.getValue() + 5));
+                    ItemCost diamondCost = new ItemCost(Items.DIAMOND, diamondAmount);
+                    java.util.Optional<ItemCost> additionalCost = getAdditionalCostForSequence(sequence, random);
+
+                    return new MerchantOffer(
+                            diamondCost,
+                            additionalCost,
+                            new ItemStack(entry.getKey(), 1),
+                            random.nextInt(1, 2),
+                            30 * level,
+                            0.005f
+                    );
+                });
             }
         }
 
@@ -73,15 +82,49 @@ public class VillagerTradesEventHandler {
 
         for(Map.Entry<Item, Integer> entry : tradeableItems.entrySet()) {
             int level = getLevelForItem(entry.getKey());
+            int sequence = getSequenceForItem(entry.getKey());
 
-            trades.get(level).add((entity, randomSource) -> new MerchantOffer(
-                    new ItemCost(Items.DIAMOND, Math.max(1, (new Random()).nextInt(entry.getValue() - 4, entry.getValue() + 5))),
-                    new ItemStack(entry.getKey(), 1),
-                    (new Random()).nextInt(1, 2),
-                    30 * level,
-                    .2f
-            ));
+            trades.get(level).add((entity, randomSource) -> {
+                Random random = new Random();
+                int diamondAmount = Math.max(1, random.nextInt(entry.getValue() - 4, entry.getValue() + 5));
+                ItemCost diamondCost = new ItemCost(Items.DIAMOND, diamondAmount);
+                java.util.Optional<ItemCost> additionalCost = getAdditionalCostForSequence(sequence, random);
+
+                return new MerchantOffer(
+                        diamondCost,
+                        additionalCost,
+                        new ItemStack(entry.getKey(), 1),
+                        random.nextInt(1, 2),
+                        30 * level,
+                        0.005f
+                );
+            });
         }
+    }
+
+    private static java.util.Optional<ItemCost> getAdditionalCostForSequence(int sequence, Random random) {
+        ItemCost cost = switch(sequence) {
+            case 5 -> new ItemCost(Items.ANCIENT_DEBRIS, 1);
+            case 4 -> new ItemCost(Items.NETHER_STAR, 1);
+            case 3 -> new ItemCost(Items.GOLD_BLOCK, 64);
+            case 2 -> new ItemCost(Items.NETHERITE_INGOT, random.nextInt(8, 13));
+            case 1 -> random.nextBoolean() ? new ItemCost(Items.NETHER_STAR, 10) : new ItemCost(Items.DRAGON_HEAD, 20);
+            default -> null;
+        };
+        return java.util.Optional.ofNullable(cost);
+    }
+
+    private static int getSequenceForItem(Item item) {
+        if(item instanceof PotionRecipeItem recipeItem) {
+            return recipeItem.getRecipe().potion().getSequence();
+        } else if(item instanceof BeyonderPotion potion) {
+            return potion.getSequence();
+        } else if(item instanceof PotionIngredient ingredient) {
+            return ingredient.getSequence();
+        } else if(item instanceof BeyonderCharacteristicItem characteristic) {
+            return characteristic.getSequence();
+        }
+        return 9; // Default to sequence 9 (no additional cost)
     }
 
     private static int getLevelForSequence(int sequence) {
@@ -117,24 +160,24 @@ public class VillagerTradesEventHandler {
         if(offers.isEmpty()) return;
 
         offers.removeIf(offer -> {
-            var item = offer.getResult().getItem();
+                    var item = offer.getResult().getItem();
 
-            if(item instanceof PotionIngredient obj){
-                for(var path : obj.getPathways()){
-                    return !BeyonderData.beyonderMap.check(path,obj.getSequence());
+                    if(item instanceof PotionIngredient obj){
+                        for(var path : obj.getPathways()){
+                            return !BeyonderData.beyonderMap.check(path,obj.getSequence());
+                        }
+                    }
+
+                    if(item instanceof BeyonderPotion potion){
+                        return !BeyonderData.beyonderMap.check(potion.getPathway(), potion.getSequence());
+                    }
+
+                    if(item instanceof BeyonderCharacteristicItem cha){
+                        return !BeyonderData.beyonderMap.check(cha.getPathway(), cha.getSequence());
+                    }
+
+                    return false;
                 }
-            }
-
-            if(item instanceof BeyonderPotion potion){
-                return !BeyonderData.beyonderMap.check(potion.getPathway(), potion.getSequence());
-            }
-
-            if(item instanceof BeyonderCharacteristicItem cha){
-                return !BeyonderData.beyonderMap.check(cha.getPathway(), cha.getSequence());
-            }
-
-            return false;
-            }
         );
     }
 

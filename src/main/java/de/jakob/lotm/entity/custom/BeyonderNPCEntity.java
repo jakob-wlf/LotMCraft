@@ -102,17 +102,21 @@ public class BeyonderNPCEntity extends PathfinderMob {
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String skinName) {
         this(entityType, level, hostile, skinName,
                 BeyonderData.implementedPathways.get((new Random()).nextInt(BeyonderData.implementedPathways.size())),
-                getWeightedHighSequence());
+                getWeightedHighSequenceMin3());
     }
 
-    private static int getWeightedHighSequence() {
+    public static int getWeightedHighSequenceMin3() {
         Random random = new Random();
-        // Quadratic weighting: square a random value to bias toward higher numbers
         double normalizedValue = random.nextDouble(); // 0.0 to 1.0
-        double weighted = Math.pow(normalizedValue, 0.5); // Square root gives strong bias toward higher values
 
-        return (int) Math.ceil(weighted * 9);
+        // Invert the value so higher probabilities map to higher sequences
+        double weighted = Math.pow(normalizedValue, 0.35);
+
+        // Map to range 3-9 (weighted now favors values close to 1.0, which maps to 9)
+        return 3 + (int) (weighted * 7);
     }
+
+
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String pathway, int sequence) {
         this(entityType, level, hostile, SKINS[new Random().nextInt(SKINS.length)], pathway, sequence);
     }

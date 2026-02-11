@@ -3,6 +3,7 @@ package de.jakob.lotm.loottables;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.util.BeyonderData;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -17,6 +18,8 @@ import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Random;
+
 public class DoubleLootModifier extends LootModifier {
     public static final MapCodec<DoubleLootModifier> CODEC = RecordCodecBuilder.mapCodec(inst ->
         codecStart(inst).apply(inst, DoubleLootModifier::new)
@@ -25,8 +28,6 @@ public class DoubleLootModifier extends LootModifier {
     protected DoubleLootModifier(LootItemCondition[] conditionsIn) {
         super(conditionsIn);
     }
-
-
     @Override
     protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         var player = context.getParamOrNull(LootContextParams.THIS_ENTITY);
@@ -78,8 +79,10 @@ public class DoubleLootModifier extends LootModifier {
                 }
             }
 
+            String pathway = BeyonderData.implementedPathways.get((new Random()).nextInt(BeyonderData.implementedPathways.size()));
+            int sequence = ChestLootModifier.getWeightedHighSequence();
 
-            generatedLoot.add(new ItemStack(ChestLootModifier.getRandomLoot()));
+            generatedLoot.add(new ItemStack(ChestLootModifier.getRandomLoot(pathway, sequence)));
         }
 
         return generatedLoot;
