@@ -13,7 +13,6 @@ import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.*;
-import de.jakob.lotm.entity.quests.QuestRegistry;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
@@ -31,6 +30,7 @@ import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.potions.PotionRecipes;
+import de.jakob.lotm.quest.QuestRegistry;
 import de.jakob.lotm.rendering.GuidingBookRenderer;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.structure.ModStructures;
@@ -121,6 +121,8 @@ public class LOTMCraft
         PassiveAbilityHandler.registerAbilities(modEventBus);
         PotionItemHandler.registerPotions(modEventBus);
 
+        QuestRegistry.init();
+
         abilityHandler = new AbilityHandler();
 
         modEventBus.addListener(this::addCreative);
@@ -203,7 +205,6 @@ public class LOTMCraft
 
         @SubscribeEvent
         public static void onCommonSetup(FMLCommonSetupEvent event) {
-            QuestRegistry.registerQuests();
             event.enqueueWork(PotionRecipes::initPotionRecipes);
             event.enqueueWork(PotionRecipeItemHandler::initializeRecipes);
         }

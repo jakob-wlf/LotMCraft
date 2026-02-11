@@ -8,14 +8,12 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.custom.goals.AbilityUseGoal;
 import de.jakob.lotm.entity.custom.goals.RangedCombatGoal;
-import de.jakob.lotm.entity.quests.PlayerQuestData;
-import de.jakob.lotm.entity.quests.Quest;
-import de.jakob.lotm.entity.quests.QuestRegistry;
-import de.jakob.lotm.entity.quests.impl.CompoundQuest;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItem;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.quest.QuestManager;
+import de.jakob.lotm.quest.QuestRegistry;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -28,6 +26,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -60,9 +59,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
     private static final EntityDataAccessor<Boolean> IS_PUPPET_WARRIOR = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> MAX_LIFETIME_IF_IS_PUPPET = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.INT);
 
-    private static final EntityDataAccessor<Boolean> HAS_QUEST = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> QUEST_ACCEPTED = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> QUEST_INDEX = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<String> QUEST_ID = SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.STRING);
 
     private String pathway = "none";
@@ -155,9 +151,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
         builder.define(SKIN_NAME, "amon");
         builder.define(PATHWAY, "none");
         builder.define(SEQUENCE, -1);
-        builder.define(HAS_QUEST, false);
-        builder.define(QUEST_INDEX, 0);
-        builder.define(QUEST_ACCEPTED, false);
         builder.define(QUEST_ID, "");
         builder.define(IS_PUPPET_WARRIOR, false);
         builder.define(MAX_LIFETIME_IF_IS_PUPPET, 20 * 60 * 4);
@@ -174,101 +167,15 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     @Override
-    public InteractionResult mobInteract(Player player, InteractionHand hand) {
-        if (this.level().isClientSide) {
-            return InteractionResult.CONSUME;
-        }
-
-        PlayerQuestData questData = player.getData(ModAttachments.PLAYER_QUEST_DATA.get());
-
-        // Check if player already has a quest from this NPC
-        Quest existingQuest = questData.getQuestByNPC(this.getUUID());
-
-        if (existingQuest != null) {
-            // Player has an active quest from this NPC
-            if (existingQuest.checkCompletion(player, this.level())) {
-                // Quest is complete, turn it in
-                existingQuest.onComplete(player);
-                questData.removeQuest(existingQuest);
-
-                // Mark this NPC as having no quest and not having one accepted
-                setHasQuest(false);
-                setQuestAccepted(false);
-
-                player.sendSystemMessage(Component.literal("§a§l[Quest Complete] §r§a" + existingQuest.getTitle()));
-                player.sendSystemMessage(Component.literal("§eRewards received!"));
-
-                return InteractionResult.SUCCESS;
-            } else {
-                // Quest in progress, show status
-                player.sendSystemMessage(Component.literal("§e[Quest In Progress] §r" + existingQuest.getTitle()));
-                player.sendSystemMessage(existingQuest.getProgressText());
-
-                // Show detailed progress for compound quests
-                if (existingQuest instanceof CompoundQuest compoundQuest) {
-                    for (Component progress : compoundQuest.getDetailedProgress()) {
-                        player.sendSystemMessage(progress);
-                    }
-                }
-
-                return InteractionResult.SUCCESS;
-            }
-        } else if (hasQuest() && !wasQuestAccepted()) {
-            // NPC has a quest to offer and it hasn't been accepted yet
-            Quest newQuest = QuestRegistry.getQuestById(getQuestId());
-
-            if (newQuest == null) {
-                // Generate a new quest if none exists
-                newQuest = QuestRegistry.getRandomQuest(new Random(), this.blockPosition());
-                if (newQuest != null) {
-                    setQuestId(newQuest.getQuestId());
-                }
-            } else {
-                // Create a new instance from the stored quest ID
-                newQuest = QuestRegistry.createQuestInstance(
-                        QuestRegistry.getQuestById(getQuestId()),
-                        new Random(),
-                        this.blockPosition()
-                );
-            }
-
-            if (newQuest != null) {
-                // Assign quest to player
-                newQuest.onAccept(player);
-                questData.addQuest(newQuest, this.getUUID());
-                setQuestAccepted(true);
-
-                player.sendSystemMessage(Component.literal("§6§l[New Quest] §r§6" + newQuest.getTitle()));
-                player.sendSystemMessage(Component.literal("§7" + newQuest.getDescription()));
-                player.sendSystemMessage(newQuest.getProgressText());
-
-                // Show detailed objectives for compound quests
-                if (newQuest instanceof CompoundQuest compoundQuest) {
-                    player.sendSystemMessage(Component.literal("§7Objectives:"));
-                    for (Component progress : compoundQuest.getDetailedProgress()) {
-                        player.sendSystemMessage(progress);
-                    }
-                }
-
-                return InteractionResult.SUCCESS;
-            }
-        }
-
-        return super.mobInteract(player, hand);
-    }
-
-    @Override
     public void onAddedToLevel() {
         super.onAddedToLevel();
         if (!this.level().isClientSide) {
-            // DISABLED FOR NOW
-            if (this.random.nextFloat() < 0f && !hasQuest() && !isPuppetWarrior() && !MarionetteUtils.isMarionette(this)) {
-                setHasQuest(true);
-
-                // Generate and store the quest ID
-                Quest quest = QuestRegistry.getRandomQuest(new Random(), this.blockPosition());
-                if (quest != null) {
-                    setQuestId(quest.getQuestId());
+            if (!this.getPersistentData().getBoolean("Initialized")) {
+                this.getPersistentData().putBoolean("Initialized", true);
+                if(random.nextFloat() < 0.125f) {
+                    String randomQuestId = QuestRegistry.getRandomQuestId();
+                    if(randomQuestId != null)
+                        setQuestId(randomQuestId);
                 }
             }
 
@@ -279,6 +186,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
             }
         }
     }
+
+
 
     @Override
     protected void registerGoals() {
@@ -343,6 +252,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.entityData.set(SKIN_NAME, skinName);
     }
 
+
     public ResourceLocation getSkinTexture() {
         String skinName = getSkinName();
         return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/npc/" + skinName + ".png");
@@ -364,29 +274,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
         }
     }
 
-    public boolean hasQuest() {
-        return this.entityData.get(HAS_QUEST);
-    }
-
-    public void setHasQuest(boolean hasQuest) {
-        this.entityData.set(HAS_QUEST, hasQuest);
-    }
-
-    public boolean wasQuestAccepted() {
-        return this.entityData.get(QUEST_ACCEPTED);
-    }
-
-    public void setQuestAccepted(boolean accepted) {
-        this.entityData.set(QUEST_ACCEPTED, accepted);
-    }
-
-    public int getQuestIndex() {
-        return this.entityData.get(QUEST_INDEX);
-    }
-
-    public void setQuestIndex(int index) {
-        this.entityData.set(QUEST_INDEX, index);
-    }
 
     public String getQuestId() {
         return this.entityData.get(QUEST_ID);
@@ -442,9 +329,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
         compound.putString("SkinName", getSkinName());
         compound.putString("Pathway", getPathway());
         compound.putInt("Sequence", getSequence());
-        compound.putInt("QuestIndex", getQuestIndex());
-        compound.putBoolean("HasQuest", hasQuest());
-        compound.putBoolean("QuestAccepted", wasQuestAccepted());
         compound.putString("QuestId", getQuestId());
         compound.putBoolean("IsPuppetWarrior", isPuppetWarrior());
         compound.putInt("MaxLifetimeIfPuppet", getMaxLifetimeIfPuppet());
@@ -454,9 +338,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.defaultHostile = compound.getBoolean("DefaultHostile");
-        setHasQuest(compound.getBoolean("HasQuest"));
-        setQuestIndex(compound.getInt("QuestIndex"));
-        setQuestAccepted(compound.getBoolean("QuestAccepted"));
         setPuppetWarrior(compound.getBoolean("IsPuppetWarrior"));
         setMaxLifetimeIfPuppet(compound.getInt("MaxLifetimeIfPuppet"));
 
@@ -544,14 +425,14 @@ public class BeyonderNPCEntity extends PathfinderMob {
             return;
         }
 
-        if(this.hasEffect(ModEffects.CONQUERED) || this.hasEffect(ModEffects.PETRIFICATION)){
-            setHasQuest(false);
-        }
-
         if(getTarget() != null) {
             if(!AbilityUtil.mayTarget(this, getTarget())) {
                 this.setTarget(null);
             }
+        }
+
+        if(MarionetteUtils.isMarionette(this) || this.hasEffect(ModEffects.CONQUERED) || this.hasEffect(ModEffects.PETRIFICATION) || this.hasEffect(ModEffects.MUTATED) || isPuppetWarrior()) {
+            setQuestId("");
         }
 
         if(tickCounter % 5 == 0) {
@@ -663,6 +544,20 @@ public class BeyonderNPCEntity extends PathfinderMob {
         }
 
         return controller == null || !controller.isAlive() ? null : controller;
+    }
+
+    @Override
+    protected @NotNull InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if(getQuestId().isEmpty()) return InteractionResult.PASS;
+
+        if(!(player instanceof ServerPlayer serverPlayer)) return InteractionResult.SUCCESS;
+
+        if(!QuestManager.acceptQuest(serverPlayer, getQuestId())) {
+            return InteractionResult.SUCCESS;
+        }
+
+        setQuestId("");
+        return InteractionResult.SUCCESS;
     }
 
     public ArrayList<Ability> getUsableAbilities() {

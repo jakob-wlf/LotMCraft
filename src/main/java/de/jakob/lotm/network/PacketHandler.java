@@ -38,6 +38,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncQuestDataPacket.TYPE,
+                SyncQuestDataPacket.STREAM_CODEC,
+                SyncQuestDataPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncAbilityActiveStatusPacket.TYPE,
                 SyncAbilityActiveStatusPacket.STREAM_CODEC,
                 SyncAbilityActiveStatusPacket::handle
@@ -316,6 +322,18 @@ public class PacketHandler {
                 BecomeBeyonderPacket.TYPE,
                 BecomeBeyonderPacket.STREAM_CODEC,
                 BecomeBeyonderPacket::handle
+        );
+
+        registrar.playToServer(
+                DiscardQuestPacket.TYPE,
+                DiscardQuestPacket.STREAM_CODEC,
+                DiscardQuestPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestQuestDataPacket.TYPE,
+                RequestQuestDataPacket.STREAM_CODEC,
+                RequestQuestDataPacket::handle
         );
 
         registrar.playToServer(

@@ -216,6 +216,7 @@ public class AbilityHandler {
         abilities.add(new SpiritualBaptismAbility("spiritual_baptism_ability"));
         abilities.add(new WordsOfMisfortuneAbility("words_of_misfortune_ability"));
         abilities.add(new ProphecyAbility("prophecy_ability"));
+        abilities.add(new CycleOfFateAbility("cycle_of_fate_ability"));
 
         // ERROR PATHWAY
         abilities.add(new TheftAbility("theft_ability"));

@@ -565,6 +565,8 @@
   "ability.lotmcraft.prophecy.disaster": "I prophesy a great Calamity will befall us",
   "ability.lotmcraft.prophecy.fortune": "I prophesy that a great fortune shall come to pass",
   "ability.lotmcraft.prophecy.misfortune_for_enemy": "I prophesy that great misfortune shall come to those who oppose me",
+  "lotmcraft.cycle_of_fate_ability": "Cycle of Fate",
+  "lotmcraft.cycle_of_fate_ability.description": "Create a cycle of fate in an area. Once triggered everything will return to how it was when the cycle was created",
 
   "lotmcraft.theft_ability": "Theft",
   "lotmcraft.theft_ability.description": "If used on Player, it will attempt to steal any item from his inventory. If used on Mob, it will give random drop related to them, like meat from animals or arrows from skeleton",
@@ -1116,6 +1118,18 @@
   "lotm.ally.request_denied_self": "Ally request denied",
   "lotm.ally.no_request": "No pending ally request",
   "lotm.ally.requester_offline": "Requester is no longer online",
+
+  "_comment014": "Quests-------------------------------------------------------------------------",
+  "lotm.quest.already_accepted": "You have already accepted/completed this quest",
+  "lotm.quest.already_active": "You already have an active quest",
+  "lotm.quest.accepted": "You have accepted the Quest: %s",
+  "lotm.quest.completed": "You have completed the Quest: %s",
+  "lotm.quest.progress": "Progress: %s",
+  "lotm.quest.discarded": "Quest discarded",
+
+  "lotm.quest.impl.kill_zombies": "Kill Zombies",
+  "lotm.quest.impl.kill_zombies.description": "Kill %s Zombies to complete this quest",
+
 
   "lotm.griefing": "Griefing Enabled",
   "lotm.griefing_required": "Griefing must be enabled",
