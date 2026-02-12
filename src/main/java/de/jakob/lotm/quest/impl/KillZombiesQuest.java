@@ -1,15 +1,22 @@
 package de.jakob.lotm.quest.impl;
 
+import de.jakob.lotm.potions.PotionRecipeItem;
+import de.jakob.lotm.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.potions.PotionRecipes;
 import de.jakob.lotm.quest.Quest;
 import de.jakob.lotm.quest.QuestManager;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static net.minecraft.world.item.Items.IRON_INGOT;
 
@@ -17,21 +24,37 @@ public class KillZombiesQuest extends Quest {
 
     private final int amount;
 
-    public KillZombiesQuest(String id, int amount) {
-        super(id);
+    public KillZombiesQuest(String id, int amount, int sequence) {
+        super(id, sequence);
         this.amount = amount;
     }
 
     @Override
-    public List<ItemStack> getRewards() {
-        return List.of(
-                new ItemStack(IRON_INGOT, 5)
-        );
+    public List<ItemStack> getRewards(ServerPlayer player) {
+        ArrayList<ItemStack> rewards = new ArrayList<>();
+        rewards.add(new ItemStack(IRON_INGOT, 10));
+
+        if(BeyonderData.isBeyonder(player) && BeyonderData.implementedRecipes.containsKey(BeyonderData.getPathway(player))) {
+            String pathway = BeyonderData.getPathway(player);
+            PotionRecipeItem potionRecipeItem = PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, 9);
+            if(potionRecipeItem != null) {
+                rewards.add(new ItemStack(potionRecipeItem));
+            }
+        }
+        else {
+            Random random = new Random(player.getUUID().getMostSignificantBits() ^ player.getUUID().getLeastSignificantBits());
+            PotionRecipeItem recipe = PotionRecipeItemHandler.selectRandomRecipeOfSequence(random, 9);
+            if(recipe != null) {
+                rewards.add(new ItemStack(recipe));
+            }
+        }
+
+        return rewards;
     }
 
     @Override
     public float getDigestionReward() {
-        return 0.05f;
+        return .25f;
     }
 
     @Override

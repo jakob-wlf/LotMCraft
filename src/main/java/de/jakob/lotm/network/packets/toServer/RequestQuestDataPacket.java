@@ -63,7 +63,7 @@ public record RequestQuestDataPacket() implements CustomPacketPayload {
                     if (quest != null) {
                         activeQuestName = quest.getName().getString();
                         activeQuestDescription = quest.getDescription().getString();
-                        activeQuestRewards = quest.getRewards();
+                        activeQuestRewards = quest.getRewards(serverPlayer);
                         activeQuestDigestionReward = (int) quest.getDigestionReward();
                     }
                 }

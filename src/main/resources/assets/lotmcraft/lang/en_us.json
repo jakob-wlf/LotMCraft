@@ -1126,9 +1126,18 @@
   "lotm.quest.completed": "You have completed the Quest: %s",
   "lotm.quest.progress": "Progress: %s",
   "lotm.quest.discarded": "Quest discarded",
+  "lotm.quest.acceptance.title": "Quest Offer",
+  "lotm.quest.acceptance.accept": "Accept Quest",
+  "lotm.quest.acceptance.decline": "Decline",
+  "lotm.quest.acceptance.lore": "Lore:",
+  "lotm.quest.acceptance.description": "Objective:",
+  "lotm.quest.acceptance.rewards": "Rewards:",
+  "lotm.quest.acceptance.digestion": "Digestion: %s",
+  "lotm.quest.acceptance.sequence": "Recommended Sequence: %s",
 
   "lotm.quest.impl.kill_zombies": "Kill Zombies",
   "lotm.quest.impl.kill_zombies.description": "Kill %s Zombies to complete this quest",
+  "lotm.quest.impl.kill_zombies.lore": "Zombies are plaguing the area. We need to thin their numbers.",
 
 
   "lotm.griefing": "Griefing Enabled",

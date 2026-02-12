@@ -22,7 +22,7 @@ public class QuestRegistry {
     }
 
     public static void init() {
-        registerQuest(new KillZombiesQuest("kill_zombies", 25));
+        registerQuest(new KillZombiesQuest("kill_zombies", 25, 10));
     }
 
     public static String getRandomQuestId() {

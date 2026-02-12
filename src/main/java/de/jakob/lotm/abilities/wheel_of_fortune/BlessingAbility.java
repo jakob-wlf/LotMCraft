@@ -21,6 +21,8 @@ import java.util.Map;
 public class BlessingAbility extends Ability {
     public BlessingAbility(String id) {
         super(id, 4);
+
+        canBeUsedByNPC = false;
     }
 
     @Override

@@ -315,6 +315,12 @@ public class PacketHandler {
                 AddMovableEffectPacket.STREAM_CODEC,
                 AddMovableEffectPacket::handle
         );
+
+        registrar.playToClient(
+                OpenQuestAcceptanceScreenPacket.TYPE,
+                OpenQuestAcceptanceScreenPacket.STREAM_CODEC,
+                OpenQuestAcceptanceScreenPacket::handle
+        );
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
@@ -328,6 +334,12 @@ public class PacketHandler {
                 DiscardQuestPacket.TYPE,
                 DiscardQuestPacket.STREAM_CODEC,
                 DiscardQuestPacket::handle
+        );
+
+        registrar.playToServer(
+                QuestAcceptanceResponsePacket.TYPE,
+                QuestAcceptanceResponsePacket.STREAM_CODEC,
+                QuestAcceptanceResponsePacket::handle
         );
 
         registrar.playToServer(

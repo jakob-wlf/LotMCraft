@@ -32,8 +32,8 @@ public abstract class Ability {
     public boolean canAlwaysBeUsed = false;
 
     public boolean doesNotIncreaseDigestion = false;
-    public boolean hasOptimalDistance = false;
-    public float optimalDistance = 1f;
+    public boolean hasOptimalDistance = true;
+    public float optimalDistance = 5f;
 
     protected final Random random = new Random();
 
@@ -62,7 +62,6 @@ public abstract class Ability {
 
         // Digest potion
         if(!doesNotIncreaseDigestion && entity instanceof Player player) {
-            System.out.println("Digesting ability use for " + getId() + " with progress " + getDigestionProgressForUse(entity));
             BeyonderData.digest(player, getDigestionProgressForUse(entity), true);
         }
 

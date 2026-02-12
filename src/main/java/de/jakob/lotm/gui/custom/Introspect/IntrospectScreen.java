@@ -69,7 +69,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private static final int QUESTS_PANEL_WIDTH = 140;
     private static final int COMPLETED_QUESTS_HEIGHT = 80;
     private static final int ACTIVE_QUEST_HEIGHT = 120;
-    private static final int QUEST_ITEM_SIZE = 12;
+    private static final int QUEST_ITEM_SIZE = 16;
 
     // Placeholder keybinds - easy to change later
     private static final String[] KEYBIND_LABELS = {"1", "2", "3", "4", "5", "6"};
@@ -445,7 +445,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         // Render progress bar
         float progress = ClientQuestData.getActiveQuestProgress();
         int barWidth = QUESTS_PANEL_WIDTH - 10;
-        int barHeight = 8;
+        int barHeight = 10;
 
         // Background
         guiGraphics.fill(panelX + 5, contentY, panelX + 5 + barWidth, contentY + barHeight, 0xFF333333);
@@ -476,15 +476,15 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         for (int i = 0; i < rewards.size() && i < 8; i++) {
             ItemStack reward = rewards.get(i);
-            int x = rewardX + (i % 4) * (QUEST_ITEM_SIZE + 3);
-            int y = rewardY + (i / 4) * (QUEST_ITEM_SIZE + 3);
+            int x = rewardX + (i % 4) * (QUEST_ITEM_SIZE + 6);
+            int y = rewardY + (i / 4) * (QUEST_ITEM_SIZE + 6);
 
             // Render item
             guiGraphics.renderItem(reward, x, y);
             guiGraphics.renderItemDecorations(this.font, reward, x, y);
         }
 
-        contentY += (((rewards.size() - 1) / 4) + 1) * (QUEST_ITEM_SIZE + 3) + 2;
+        contentY += (((rewards.size() - 1) / 4) + 1) * (QUEST_ITEM_SIZE + 6) + 2;
 
         // Render digestion reward
         int digestion = ClientQuestData.getActiveQuestDigestionReward();
@@ -498,7 +498,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (!ClientQuestData.hasActiveQuest()) return;
 
         int baseLeftPos = this.leftPos;
-        // Quest panel now on the right side
+        // Quest panel
         int panelX = baseLeftPos + this.imageWidth + 5;
         int panelY = this.topPos + COMPLETED_QUESTS_HEIGHT + 5;
 
@@ -509,8 +509,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         for (int i = 0; i < rewards.size() && i < 8; i++) {
             ItemStack reward = rewards.get(i);
-            int x = rewardX + (i % 4) * (QUEST_ITEM_SIZE + 3);
-            int y = rewardY + (i / 4) * (QUEST_ITEM_SIZE + 3);
+            int x = rewardX + (i % 4) * (QUEST_ITEM_SIZE + 6);
+            int y = rewardY + (i / 4) * (QUEST_ITEM_SIZE + 6);
 
             if (mouseX >= x && mouseX < x + QUEST_ITEM_SIZE &&
                     mouseY >= y && mouseY < y + QUEST_ITEM_SIZE) {
