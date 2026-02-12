@@ -1142,5 +1142,8 @@
   "lotm.selectable": "Selectable",
   "lotm.ability_wheel.title": "Ability Wheel",
   "lotm.ability_wheel.no_abilities": "No abilities available in wheel",
-  "lotmcraft.griefing_enabled_required": "Enable griefing for this ability to work"
+  "lotmcraft.griefing_enabled_required": "Enable griefing for this ability to work",
+
+  "lotmcraft.own_prayings": "You have heard your own prayings",
+  "lotmcraft.far_away_prayings": "You have heard whispers of prayings, but you are too far away to hear them clearly"
 }

@@ -14,7 +14,7 @@ public record HonorificName(LinkedList<String> lines) {
 
     static public final HonorificName EMPTY = new HonorificName(new LinkedList<>());
 
-    public static int MAX_LENGTH = 300;
+    public static int MAX_LENGTH = 200;
 
     public boolean contains(String str) {return lines.contains(str);}
 

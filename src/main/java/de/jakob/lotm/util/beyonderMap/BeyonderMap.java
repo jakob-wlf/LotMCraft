@@ -323,4 +323,60 @@ public class BeyonderMap extends SavedData {
 
         setDirty();
     }
+
+    public boolean containsHonorificNameWithFirstLine(String str) {
+        for(var data : map.values()){
+             if(!data.honorificName().isEmpty()
+                     && data.honorificName().lines().getFirst().equalsIgnoreCase(str))
+                 return true;
+        }
+
+        return false;
+    }
+
+    public boolean containsHonorificNameWithLastLine(String str) {
+        for(var data : map.values()){
+            if(!data.honorificName().isEmpty()
+                    && data.honorificName().lines().getLast().equalsIgnoreCase(str))
+                return true;
+        }
+
+        return false;
+    }
+
+    public @Nullable UUID findCandidat(LinkedList<String> list){
+        if(list.size() < 3) return null;
+
+        UUID originalTarget = null;
+
+        for(var obj : map.entrySet()){
+            if(obj.getValue().honorificName().lines().equals(list)) {
+                originalTarget = obj.getKey();
+                break;
+            }
+        }
+
+        LinkedList<UUID> possibleTargets = new LinkedList<>();
+
+        for(var obj : map.entrySet()){
+            if(obj.getKey().equals(originalTarget))
+                continue;
+
+            for(var str : list){
+                if(obj.getValue().honorificName().contains(str)){
+                    possibleTargets.add(obj.getKey());
+                }
+            }
+        }
+
+        if(!possibleTargets.isEmpty()){
+            for(var obj : possibleTargets){
+                if(map.get(obj).sequence() < map.get(originalTarget).sequence())
+                    return obj;
+            }
+        }
+
+        return originalTarget;
+    }
+
 }
