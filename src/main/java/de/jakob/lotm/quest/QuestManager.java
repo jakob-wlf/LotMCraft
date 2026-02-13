@@ -1,17 +1,15 @@
 package de.jakob.lotm.quest;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.QuestComponent;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenQuestAcceptanceScreenPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -45,7 +43,7 @@ public class QuestManager {
         float digestionReward = quest.getDigestionReward();
         if(BeyonderData.getSequence(player) < quest.sequence) {
             int sequenceDifference = quest.sequence - BeyonderData.getSequence(player);
-            digestionReward *= (1 / (float) Math.pow(sequenceDifference, 2.25) + 1);
+            digestionReward *= (1 / ((float) Math.pow(sequenceDifference, 2.25) + 1));
         }
         BeyonderData.digest(player, digestionReward, true);
         player.sendSystemMessage(Component.translatable("lotm.quest.completed", Component.translatable("lotm.quest.impl." + questId).getString()).withColor(0x2196F3));
@@ -55,7 +53,7 @@ public class QuestManager {
      * Opens the quest acceptance dialog for the player.
      * This sends a packet to the client to display the GUI.
      */
-    public static boolean openQuestDialog(ServerPlayer player, String questId) {
+    public static boolean openQuestDialog(ServerPlayer player, String questId, int npcId) {
         Quest quest = QuestRegistry.getQuest(questId);
         if(quest == null)
             return false;
@@ -65,6 +63,12 @@ public class QuestManager {
         // Check if player already has an active quest
         if(!component.getQuestProgress().isEmpty()) {
             player.sendSystemMessage(Component.translatable("lotm.quest.already_active").withColor(0xFF5722));
+            return false;
+        }
+
+        // Check if Quest can be accepted by player
+        if(!quest.canAccept(player)) {
+            player.sendSystemMessage(Component.translatable("lotm.quest.cannot_accept").withColor(0xFF5722));
             return false;
         }
 
@@ -78,7 +82,8 @@ public class QuestManager {
                 questId,
                 rewards,
                 digestionReward,
-                questSequence
+                questSequence,
+                npcId
         ));
 
         return true;
@@ -103,15 +108,8 @@ public class QuestManager {
         component.getQuestProgress().put(questId, 0f);
         player.sendSystemMessage(Component.translatable("lotm.quest.accepted", Component.translatable("lotm.quest.impl." + questId).getString()).withColor(0x4CAF50));
         player.sendSystemMessage(quest.getDescription().withColor(0x4CAF50));
+        quest.startQuest(player);
         return true;
-    }
-
-    /**
-     * @deprecated Use openQuestDialog instead to show the acceptance GUI
-     */
-    @Deprecated
-    public static boolean acceptQuest(ServerPlayer player, String questId) {
-        return openQuestDialog(player, questId);
     }
 
     public static void progressQuest(ServerPlayer player, String questId, float progress) {
@@ -126,6 +124,15 @@ public class QuestManager {
         if(newProgress >= 1f) {
             completeQuest(player, questId);
         }
+    }
+
+    public static void discardQuest(ServerPlayer player, String questId) {
+        QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
+        if(!component.getQuestProgress().containsKey(questId))
+            return;
+
+        component.getQuestProgress().remove(questId);
+        player.sendSystemMessage(Component.translatable("lotm.quest.discarded", Component.translatable("lotm.quest.impl." + questId).getString()).withColor(0xFF5722));
     }
 
     @SubscribeEvent
@@ -143,7 +150,7 @@ public class QuestManager {
     }
 
     @SubscribeEvent
-    public static void onLivingDeath(LivingDeathEvent event) {
+    public static void onLivingKilledByPlayer(LivingDeathEvent event) {
         if(!(event.getSource().getEntity() instanceof ServerPlayer player)) {
             return;
         }
@@ -153,6 +160,24 @@ public class QuestManager {
             Quest quest = QuestRegistry.getQuest(questId);
             if(quest != null) {
                 quest.onPlayerKillLiving(player, event.getEntity());
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingDeathNearPlayer(LivingDeathEvent event) {
+        List<Player> nearbyPlayers = event.getEntity().level().getEntitiesOfClass(Player.class, event.getEntity().getBoundingBox().inflate(100));
+
+        for(Player player : nearbyPlayers) {
+            if(!(player instanceof ServerPlayer serverPlayer))
+                continue;
+
+            QuestComponent component = serverPlayer.getData(ModAttachments.QUEST_COMPONENT);
+            for(String questId : component.getQuestProgress().keySet()) {
+                Quest quest = QuestRegistry.getQuest(questId);
+                if(quest != null) {
+                    quest.onLivingDeath(event.getEntity());
+                }
             }
         }
     }

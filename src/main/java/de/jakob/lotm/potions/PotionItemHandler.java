@@ -553,6 +553,22 @@ public class PotionItemHandler {
                 .toList();
     }
 
+    public static BeyonderPotion selectRandomPotionOfSequence(Random random, int sequence) {
+        List<BeyonderPotion> recipes = ITEMS.getEntries()
+                .stream()
+                .map(DeferredHolder::get)
+                .filter(i -> i instanceof BeyonderPotion)
+                .map(i -> ((BeyonderPotion) i))
+                .filter(i -> i.getSequence() == sequence)
+                .toList();
+
+        if (recipes.isEmpty()) {
+            return null;
+        }
+
+        return recipes.get(random.nextInt(recipes.size()));
+    }
+
     public static BeyonderPotion selectPotionOfPathwayAndSequence(Random random, String pathway, int sequence) {
         List<BeyonderPotion> potions = ITEMS.getEntries()
                 .stream()

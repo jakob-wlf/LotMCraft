@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.QuestAcceptanceResponsePacket;
-import de.jakob.lotm.quest.Quest;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
@@ -23,7 +22,7 @@ public class QuestAcceptanceScreen extends Screen {
             LOTMCraft.MOD_ID, "textures/gui/quest_acceptance.png");
     
     private static final int WINDOW_WIDTH = 256;
-    private static final int WINDOW_HEIGHT = 200;
+    private static final int WINDOW_HEIGHT = 220;
     
     private final String questId;
     private final Component questName;
@@ -32,12 +31,13 @@ public class QuestAcceptanceScreen extends Screen {
     private final List<ItemStack> rewards;
     private final float digestionReward;
     private final int questSequence;
-    
+    private final int npcId;
+
     private int leftPos;
     private int topPos;
     
-    public QuestAcceptanceScreen(String questId, Component questName, Component questDescription, 
-                                  List<ItemStack> rewards, float digestionReward, int questSequence) {
+    public QuestAcceptanceScreen(String questId, Component questName, Component questDescription,
+                                 List<ItemStack> rewards, float digestionReward, int questSequence, int npcId) {
         super(Component.translatable("lotm.quest.acceptance.title"));
         this.questId = questId;
         this.questName = questName;
@@ -46,6 +46,7 @@ public class QuestAcceptanceScreen extends Screen {
         this.rewards = rewards;
         this.digestionReward = digestionReward;
         this.questSequence = questSequence;
+        this.npcId = npcId;
     }
     
     @Override
@@ -191,12 +192,12 @@ public class QuestAcceptanceScreen extends Screen {
     }
     
     private void acceptQuest() {
-        PacketHandler.sendToServer(new QuestAcceptanceResponsePacket(questId, true));
+        PacketHandler.sendToServer(new QuestAcceptanceResponsePacket(questId, true, npcId));
         this.onClose();
     }
     
     private void declineQuest() {
-        PacketHandler.sendToServer(new QuestAcceptanceResponsePacket(questId, false));
+        PacketHandler.sendToServer(new QuestAcceptanceResponsePacket(questId, false, npcId));
         this.onClose();
     }
     

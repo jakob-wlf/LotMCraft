@@ -724,6 +724,7 @@
   "block.lotmcraft.brewing_cauldron": "Brewing Cauldron",
   "block.lotmcraft.void_block": "Void",
   "block.lotmcraft.solid_void_block": "Solid Void",
+  "block.lotmcraft.mystical_ring": "Mystical Ring",
 
   "_comment009": "Ingredients-----------------------------------------------------------------------------",
   "item.lotmcraft.lavos_squid_blood": "Lavos Squid Blood",
@@ -1134,11 +1135,35 @@
   "lotm.quest.acceptance.rewards": "Rewards:",
   "lotm.quest.acceptance.digestion": "Digestion: %s",
   "lotm.quest.acceptance.sequence": "Recommended Sequence: %s",
+  "lotm.quest.cannot_accept": "You cannot accept this quest",
 
   "lotm.quest.impl.kill_zombies": "Kill Zombies",
   "lotm.quest.impl.kill_zombies.description": "Kill %s Zombies to complete this quest",
   "lotm.quest.impl.kill_zombies.lore": "Zombies are plaguing the area. We need to thin their numbers.",
 
+  "lotm.quest.impl.defend_village": "Defend the Village",
+  "lotm.quest.impl.defend_village.description": "Kill all the monsters that are attacking the villagers",
+  "lotm.quest.impl.defend_village.lore": "The village is under attack! Defend the villagers and drive off the monsters!",
+
+  "lotm.quest.impl.kill_tyrant_seq4": "Kill the Sailor Demigod",
+  "lotm.quest.impl.kill_tyrant_seq4.description": "Search around for the structure to summon the Cataclysmic Interrer and defeat them",
+  "lotm.quest.impl.kill_tyrant_seq4.lore": "The Cataclysmic Interrer is terrorizing all who live here, defeat them and bring peace to the land!",
+
+  "lotm.quest.impl.kill_seq4": "Kill the Demigod",
+  "lotm.quest.impl.kill_seq4.description": "Search around for the structure to summon the Demigod and defeat them",
+  "lotm.quest.impl.kill_seq4.lore": "A Demigod has gone mad and is killing all who live here, defeat them before its too late!",
+
+  "lotm.quest.impl.kill_seq3": "Kill the Saint",
+  "lotm.quest.impl.kill_seq3.description": "Search around for the structure to summon the Saint and defeat them",
+  "lotm.quest.impl.kill_seq3.lore": "A Saint has strayed from the church and is bringing chaos, defeat them before its too late!",
+
+  "lotm.quest.impl.kill_seq2": "Kill the Angel",
+  "lotm.quest.impl.kill_seq2.description": "Search around for the structure to summon the Angel and defeat them",
+  "lotm.quest.impl.kill_seq2.lore": "An Angel has fallen and is killing all who live here, defeat them before its too late!",
+
+  "lotm.quest.impl.kill_seq1": "Kill the Archangel",
+  "lotm.quest.impl.kill_seq1.description": "Search around for the structure to summon the Archangel and defeat them",
+  "lotm.quest.impl.kill_seq1.lore": "An Archangel is on a rampage, defeat them before its too late!",
 
   "lotm.griefing": "Griefing Enabled",
   "lotm.griefing_required": "Griefing must be enabled",

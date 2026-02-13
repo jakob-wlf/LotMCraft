@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record OpenQuestAcceptanceScreenPacket(String questId, List<ItemStack> rewards, 
-                                               float digestionReward, int questSequence) implements CustomPacketPayload {
+                                               float digestionReward, int questSequence, int npcId) implements CustomPacketPayload {
     
     public static final CustomPacketPayload.Type<OpenQuestAcceptanceScreenPacket> TYPE = 
             new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "open_quest_acceptance_screen"));
@@ -34,6 +34,8 @@ public record OpenQuestAcceptanceScreenPacket(String questId, List<ItemStack> re
             OpenQuestAcceptanceScreenPacket::digestionReward,
             ByteBufCodecs.INT,
             OpenQuestAcceptanceScreenPacket::questSequence,
+            ByteBufCodecs.INT,
+            OpenQuestAcceptanceScreenPacket::npcId,
             OpenQuestAcceptanceScreenPacket::new
     );
     
@@ -58,7 +60,8 @@ public record OpenQuestAcceptanceScreenPacket(String questId, List<ItemStack> re
                     questDescription,
                     packet.rewards(),
                     packet.digestionReward(),
-                    packet.questSequence()
+                    packet.questSequence(),
+                    packet.npcId()
             ));
         });
     }

@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 
@@ -15,6 +16,7 @@ public class QuestComponent {
 
     private HashSet<String> completedQuests = new HashSet<>();
     private HashMap<String, Float> questProgress = new HashMap<>();
+    private HashMap<String, Vec3> questLocation = new HashMap<>();
 
     public QuestComponent() {}
 
@@ -24,6 +26,10 @@ public class QuestComponent {
 
     public HashMap<String, Float> getQuestProgress() {
         return questProgress;
+    }
+
+    public HashMap<String, Vec3> getQuestLocation() {
+        return questLocation;
     }
 
     public static final IAttachmentSerializer<CompoundTag, QuestComponent> SERIALIZER =
@@ -45,6 +51,17 @@ public class QuestComponent {
                         }
                     }
 
+                    if(tag.contains("QuestLocation", 10)) {
+                        CompoundTag locationTag = tag.getCompound("QuestLocation");
+                        for (String questId : locationTag.getAllKeys()) {
+                            CompoundTag vecTag = locationTag.getCompound(questId);
+                            float x = vecTag.getFloat("x");
+                            float y = vecTag.getFloat("y");
+                            float z = vecTag.getFloat("z");
+                            component.questLocation.put(questId, new Vec3(x, y, z));
+                        }
+                    }
+
                     return component;
                 }
 
@@ -62,6 +79,16 @@ public class QuestComponent {
                         progressTag.putFloat(questId, component.questProgress.get(questId));
                     }
                     tag.put("QuestProgress", progressTag);
+
+                    CompoundTag locationTag = new CompoundTag();
+                    for(String questId : component.questLocation.keySet()) {
+                        Vec3 vec = component.questLocation.get(questId);
+                        CompoundTag vecTag = new CompoundTag();
+                        vecTag.putFloat("x", (float) vec.x);
+                        vecTag.putFloat("y", (float) vec.y);
+                        vecTag.putFloat("z", (float) vec.z);
+                        locationTag.put(questId, vecTag);
+                    }
                     return tag;
                 }
             };

@@ -1,5 +1,6 @@
 package de.jakob.lotm.quest;
 
+import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,6 +18,20 @@ public abstract class Quest {
         this.sequence = sequence;
     }
 
+    public void tick(ServerPlayer player) {
+
+    };
+
+    protected void onPlayerKillLiving(ServerPlayer player, LivingEntity victim) {
+    }
+
+    protected void onLivingDeath(LivingEntity entity) {
+    }
+
+    public void startQuest(ServerPlayer player) {
+    }
+
+
     public String getId() {
         return id;
     }
@@ -29,11 +44,6 @@ public abstract class Quest {
 
     public abstract float getDigestionReward();
 
-    public abstract void tick(ServerPlayer player);
-
-    protected void onPlayerKillLiving(ServerPlayer player, LivingEntity victim) {
-    }
-
     public MutableComponent getDescription() {
         return Component.translatable("lotm.quest.impl." + id + ".description");
     }
@@ -42,10 +52,14 @@ public abstract class Quest {
         return Component.translatable("lotm.quest.impl." + id);
     }
 
-    /**
-     * Returns the lore text for this quest.
-     * This is displayed in the quest acceptance dialog.
-     */
+    public boolean canAccept(ServerPlayer player) {
+        return true;
+    }
+
+    public boolean canGiveQuest(BeyonderNPCEntity npc) {
+        return true;
+    }
+
     public MutableComponent getLore() {
         return Component.translatable("lotm.quest.impl." + id + ".lore");
     }

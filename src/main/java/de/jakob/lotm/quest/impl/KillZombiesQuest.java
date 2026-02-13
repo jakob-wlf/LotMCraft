@@ -1,5 +1,6 @@
 package de.jakob.lotm.quest.impl;
 
+import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.potions.PotionRecipeItem;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.potions.PotionRecipes;
@@ -32,7 +33,6 @@ public class KillZombiesQuest extends Quest {
     @Override
     public List<ItemStack> getRewards(ServerPlayer player) {
         ArrayList<ItemStack> rewards = new ArrayList<>();
-        rewards.add(new ItemStack(IRON_INGOT, 10));
 
         if(BeyonderData.isBeyonder(player) && BeyonderData.implementedRecipes.containsKey(BeyonderData.getPathway(player))) {
             String pathway = BeyonderData.getPathway(player);
@@ -48,18 +48,27 @@ public class KillZombiesQuest extends Quest {
                 rewards.add(new ItemStack(recipe));
             }
         }
-
+        rewards.add(new ItemStack(IRON_INGOT, 10));
         return rewards;
     }
 
     @Override
     public float getDigestionReward() {
-        return .25f;
+        return .2f;
     }
 
     @Override
     public void tick(ServerPlayer player) {
 
+    }
+
+    @Override
+    public boolean canGiveQuest(BeyonderNPCEntity npc) {
+        int sequence = BeyonderData.getSequence(npc);
+        if(sequence < 7) {
+            return false;
+        }
+        return true;
     }
 
     @Override

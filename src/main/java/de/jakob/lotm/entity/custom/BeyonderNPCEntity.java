@@ -1,8 +1,6 @@
 package de.jakob.lotm.entity.custom;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.PassiveAbilityHandler;
-import de.jakob.lotm.abilities.PassiveAbilityItem;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
@@ -177,7 +175,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
                 this.getPersistentData().putBoolean("Initialized", true);
 
                 if (random.nextFloat() < QUEST_SPAWN_CHANCE) {
-                    String randomQuestId = QuestRegistry.getRandomQuestId();
+                    String randomQuestId = QuestRegistry.getRandomMatchingQuest(this);
                     if (randomQuestId != null) {
                         setQuestId(randomQuestId);
                     }
@@ -567,8 +565,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         }
 
         // Open the quest dialog instead of immediately accepting
-        QuestManager.openQuestDialog(serverPlayer, getQuestId());
-        setQuestId("");
+        QuestManager.openQuestDialog(serverPlayer, getQuestId(), getId());
         return InteractionResult.SUCCESS;
     }
 
