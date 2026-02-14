@@ -248,6 +248,8 @@
   "lotmcraft.underwater_breathing_ability.description": "Create a thin, invisible air pipe which allows you to breath underwater",
   "lotmcraft.shapeshifting_ability": "Shapeshifting",
   "lotmcraft.shapeshifting_ability.description": "Shapeshift into anyone",
+  "ability.lotmcraft.shape_shifting_ability.change_shape": "Change Shape",
+  "ability.lotmcraft.shape_shifting_ability.reset_shape": "Reset Shape",
   "lotmcraft.puppeteering_ability": "Puppeteering",
   "lotmcraft.puppeteering_ability.description": "Manipulate Spirit Body Threads to turn anyone into your marionette and command them",
   "ability.lotmcraft.puppeteering.no_entity_found": "No Entity to control found",
