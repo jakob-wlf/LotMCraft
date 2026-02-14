@@ -50,6 +50,8 @@
   "lotmcraft.spirit_vision_ability": "Spirit Vision",
   "ability.lotmcraft.divination.danger_premonition": "Danger Premonition",
   "ability.lotmcraft.divination.dream_divination": "Dream Divination",
+  "ability.lotmcraft.divination.structure_divination": "Structure Divination",
+  "ability.lotmcraft.divination.player_divination": "Player Divination",
   "lotmcraft.angel_authority_ability": "Angel Authority",
   "lotmcraft.angel_authority_ability.description": "Angelic power that allows you to traverse the spirit world and shatter artifacts",
   "ability.lotmcraft.angel_authority.spirit_world_passage": "Spirit World Passage",

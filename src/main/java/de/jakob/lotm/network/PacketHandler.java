@@ -321,6 +321,18 @@ public class PacketHandler {
                 OpenQuestAcceptanceScreenPacket.STREAM_CODEC,
                 OpenQuestAcceptanceScreenPacket::handle
         );
+
+        registrar.playToClient(
+                OpenPlayerDivinationScreenPacket.TYPE,
+                OpenPlayerDivinationScreenPacket.STREAM_CODEC,
+                OpenPlayerDivinationScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenStructureDivinationScreenPacket.TYPE,
+                OpenStructureDivinationScreenPacket.STREAM_CODEC,
+                OpenStructureDivinationScreenPacket::handle
+        );
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
@@ -495,6 +507,16 @@ public class PacketHandler {
                 OpenMessagesMenuPacket.TYPE,
                 OpenMessagesMenuPacket.STREAM_CODEC,
                 OpenMessagesMenuPacket::handle);
+
+        registrar.playToServer(
+                PlayerDivinationSelectedPacket.TYPE,
+                PlayerDivinationSelectedPacket.STREAM_CODEC,
+                PlayerDivinationSelectedPacket::handle);
+
+        registrar.playToServer(
+                StructureDivinationSelectedPacket.TYPE,
+                StructureDivinationSelectedPacket.STREAM_CODEC,
+                StructureDivinationSelectedPacket::handle);
     }
 
     public static void sendToServer(CustomPacketPayload packet) {
