@@ -333,6 +333,24 @@ public class PacketHandler {
                 OpenStructureDivinationScreenPacket.STREAM_CODEC,
                 OpenStructureDivinationScreenPacket::handle
         );
+
+        registrar.playToClient(
+                OpenShapeShiftingScreenPacket.TYPE,
+                OpenShapeShiftingScreenPacket.STREAM_CODEC,
+                OpenShapeShiftingScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                NameSyncPacket.TYPE,
+                NameSyncPacket.CODEC,
+                NameSyncPacket::handle
+        );
+
+        registrar.playToClient(
+                ShapeShiftingSyncPacket.TYPE,
+                ShapeShiftingSyncPacket.STREAM_CODEC,
+                ShapeShiftingSyncPacket::handle
+        );
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
@@ -517,6 +535,11 @@ public class PacketHandler {
                 StructureDivinationSelectedPacket.TYPE,
                 StructureDivinationSelectedPacket.STREAM_CODEC,
                 StructureDivinationSelectedPacket::handle);
+
+        registrar.playToServer(
+                ShapeShiftingSelectedPacket.TYPE,
+                ShapeShiftingSelectedPacket.STREAM_CODEC,
+                ShapeShiftingSelectedPacket::handle);
     }
 
     public static void sendToServer(CustomPacketPayload packet) {

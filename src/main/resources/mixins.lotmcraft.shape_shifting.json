@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "package": "de.jakob.lotm.util.shapeShifting.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "AbstractClientPlayerMixin",
+    "EntityMixin",
+    "LivingEntityMixin",
+    "PlayerMixin"
+  ],
+  "client": [
+    "LimbAnimatorAccessor",
+    "PlayerRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
