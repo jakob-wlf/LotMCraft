@@ -567,6 +567,9 @@
   "ability.lotmcraft.prophecy.misfortune_for_enemy": "I prophesy that great misfortune shall come to those who oppose me",
   "lotmcraft.cycle_of_fate_ability": "Cycle of Fate",
   "lotmcraft.cycle_of_fate_ability.description": "Create a cycle of fate in an area. Once triggered everything will return to how it was when the cycle was created",
+  "ability.lotmcraft.cycle_of_fate.create_cycle": "Create Cycle of Fate",
+  "ability.lotmcraft.cycle_of_fate.trigger_cycle": "Trigger Cycle of Fate",
+  "ability.lotmcraft.cycle_of_fate.no_cycle": "No active Cycle of Fate found",
 
   "lotmcraft.theft_ability": "Theft",
   "lotmcraft.theft_ability.description": "If used on Player, it will attempt to steal any item from his inventory. If used on Mob, it will give random drop related to them, like meat from animals or arrows from skeleton",

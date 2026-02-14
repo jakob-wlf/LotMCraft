@@ -59,6 +59,7 @@ public class ModEvents {
         event.registerLayerDefinition(BloomingAreaModel.LAYER_LOCATION, BloomingAreaModel::createBodyLayer);
         event.registerLayerDefinition(DesolateAreaModel.LAYER_LOCATION, DesolateAreaModel::createBodyLayer);
         event.registerLayerDefinition(QuestMarkerModel.LAYER_LOCATION, QuestMarkerModel::createBodyLayer);
+        event.registerLayerDefinition(CycleOfFateModel.LAYER_LOCATION, CycleOfFateModel::createBodyLayer);
 
         event.registerLayerDefinition(TyrantMythicalCreatureModel.LAYER_LOCATION, TyrantMythicalCreatureModel::createBodyLayer);
         event.registerLayerDefinition(DoorMythicalCreatureModel.LAYER_LOCATION, DoorMythicalCreatureModel::createBodyLayer);

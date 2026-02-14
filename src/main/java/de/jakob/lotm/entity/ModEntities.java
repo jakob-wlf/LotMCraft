@@ -36,6 +36,18 @@ public class ModEntities {
                             .build("return_portal")
             );
 
+    public static final DeferredHolder<EntityType<?>, EntityType<CycleOfFateEntity>> CYCLE_OF_FATE =
+            ENTITY_TYPES.register("cycle_of_fate", () -> EntityType.Builder.of(
+                            CycleOfFateEntity::new,
+                            MobCategory.MISC
+                    )
+                    .sized(0.5F, 0.5F) // Small invisible entity
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .noSummon() // Cannot be summoned via commands
+                    .fireImmune()
+                    .build("cycle_of_fate"));
+
     public static final Supplier<EntityType<SpearOfDestructionProjectileEntity>> SPEAR_OF_DESTRUCTION =
             ENTITY_TYPES.register("spear_of_destruction", () -> EntityType.Builder.<SpearOfDestructionProjectileEntity>of(SpearOfDestructionProjectileEntity::new, MobCategory.MISC)
                     .sized(.35f, .35f).build("spear_of_destruction"));
