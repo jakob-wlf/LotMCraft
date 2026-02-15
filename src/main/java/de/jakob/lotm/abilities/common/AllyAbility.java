@@ -52,7 +52,7 @@ public class AllyAbility extends Ability {
         if (!(entity instanceof Player player)) return;
 
         // Get the target entity
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 1.5f, true);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 1.5f, true, true);
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("lotm.ally.no_target").withColor(0xF44336));

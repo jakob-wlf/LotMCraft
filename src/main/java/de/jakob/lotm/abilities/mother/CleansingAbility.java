@@ -54,7 +54,7 @@ public class CleansingAbility extends SelectableAbility {
 
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
 
-        for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 6)) {
+        for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 6, false, true)) {
             e.setRemainingFireTicks(0);
 
             e.getActiveEffects()
