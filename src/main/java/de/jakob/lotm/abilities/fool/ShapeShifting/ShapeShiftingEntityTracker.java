@@ -62,7 +62,14 @@ public class ShapeShiftingEntityTracker {
             String entityType = getEntityTypeString(entity);
             currentlyNearby.add(entityType);
 
+            // to exclude any other entities in the future
+            switch (entityType) {
+                case "minecraft:ender_dragon" : continue;
+                case "minecraft:wither" : continue;
+            }
+
             if (memorisedEntities.getMemorisedEntityTypes().contains(entityType)) continue;
+
 
             int currentTime = playerTracking.getOrDefault(entityType, 0) + CHECK_INTERVAL;
             playerTracking.put(entityType, currentTime);
