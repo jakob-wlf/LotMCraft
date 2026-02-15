@@ -53,7 +53,7 @@ public class HealingAbility extends SelectableAbility {
 
         float restoredHealth = entity.getMaxHealth() / 3f;
 
-        for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 6)) {
+        for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 6, false, true)) {
             e.setHealth(Math.max(e.getMaxHealth(), e.getHealth() + restoredHealth));
             ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.HEALING.get(), e.getEyePosition().subtract(0, .3, 0), 35, .9);
         }

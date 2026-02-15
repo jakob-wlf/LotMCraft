@@ -564,7 +564,12 @@ public class AbilityUtil {
 
     public static List<LivingEntity> getNearbyEntities(@Nullable LivingEntity exclude, ServerLevel level,
                                                        Vec3 center, double radius, boolean allowCreativeMode) {
-        return getNearbyEntitiesInternal(exclude, level, center, radius, allowCreativeMode, false);
+        return getNearbyEntitiesInternal(exclude, level, center, radius, allowCreativeMode, false, false);
+    }
+
+    public static List<LivingEntity> getNearbyEntities(@Nullable LivingEntity exclude, ServerLevel level,
+                                                       Vec3 center, double radius, boolean allowCreativeMode, Boolean allowAllies) {
+        return getNearbyEntitiesInternal(exclude, level, center, radius, allowCreativeMode, false, allowAllies);
     }
 
     public static List<Entity> getAllNearbyEntities(@Nullable LivingEntity exclude, ServerLevel level,
@@ -574,13 +579,13 @@ public class AbilityUtil {
 
     public static List<Entity> getAllNearbyEntities(@Nullable LivingEntity exclude, ServerLevel level,
                                                     Vec3 center, double radius, boolean allowCreativeMode) {
-        return getNearbyEntitiesInternal(exclude, level, center, radius, allowCreativeMode, true);
+        return getNearbyEntitiesInternal(exclude, level, center, radius, allowCreativeMode, true, false);
     }
 
     private static <T extends Entity> List<T> getNearbyEntitiesInternal(@Nullable LivingEntity exclude,
                                                                         ServerLevel level, Vec3 center,
                                                                         double radius, boolean allowCreativeMode,
-                                                                        boolean includeAllEntities) {
+                                                                        boolean includeAllEntities, boolean allowAllies) {
         AABB detectionBox = createDetectionBox(center, radius);
         double radiusSquared = radius * radius;
 
@@ -590,7 +595,7 @@ public class AbilityUtil {
                 .filter(e -> !(e instanceof Player player) || (!player.isCreative() || allowCreativeMode))
                 .filter(entity -> entity.position().distanceToSqr(center) <= radiusSquared)
                 .filter(entity -> entity != exclude)
-                .filter(e -> exclude == null || (!(e instanceof LivingEntity le) || mayTarget(exclude, le)))
+                .filter(e -> exclude == null || (!(e instanceof LivingEntity le) || mayTarget(exclude, le, allowAllies)))
                 .toList();
     }
 

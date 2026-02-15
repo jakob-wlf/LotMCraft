@@ -142,6 +142,14 @@ public class ModAttachments {
                     .build()
     );
 
+    public static final Supplier<AttachmentType<MemorisedEntities>> MEMORISED_ENTITIES =
+            ATTACHMENT_TYPES.register("memorised_entities", () ->
+                    AttachmentType.builder(() -> new MemorisedEntities())
+                            .serialize(MemorisedEntities.CODEC)
+                            .copyOnDeath()
+                            .build()
+            );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }
