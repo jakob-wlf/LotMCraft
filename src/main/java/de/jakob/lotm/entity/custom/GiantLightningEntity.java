@@ -4,6 +4,7 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -304,7 +305,7 @@ public class GiantLightningEntity extends Entity {
 
             ServerScheduler.scheduleDelayed(15, this::discardEntityAndBranches);
         } else {
-            ClientHandler.applyCameraShake(4f, 35);
+            ClientHandler.applyCameraShakeToPlayersInRadius(4f, 35, (ClientLevel) level(), pos, 60);
         }
     }
 
@@ -326,7 +327,7 @@ public class GiantLightningEntity extends Entity {
                 explode(hit.getLocation());
             ServerScheduler.scheduleDelayed(15, this::discardEntityAndBranches);
         } else {
-            ClientHandler.applyCameraShake(4f, 35);
+            ClientHandler.applyCameraShakeToPlayersInRadius(4f, 35, (ClientLevel) level(), hit.getLocation(), 60);
         }
     }
 

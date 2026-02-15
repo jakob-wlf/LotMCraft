@@ -129,6 +129,7 @@ public class AbilityHandler {
         abilities.add(new HorrorAuraAbility("horror_aura_ability"));
         abilities.add(new SurgeOfDarknessAbility("surge_of_darkness_ability"));
         abilities.add(new ConcealmentAbility("concealment_ability"));
+        abilities.add(new SwordOfDarknessAbility("sword_of_darkness_ability"));
 
         // DEMONESS PATHWAY
         abilities.add(new ShadowConcealmentAbility("shadow_concealment_ability"));

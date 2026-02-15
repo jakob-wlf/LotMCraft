@@ -6,6 +6,7 @@ import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -38,7 +39,7 @@ public class RoarOfTheThunderGodAbility extends Ability {
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) {
-            ClientHandler.applyCameraShake(2, 30);
+            ClientHandler.applyCameraShakeToPlayersInRadius(2, 30, (ClientLevel) level, entity.position(), 60);
             return;
         }
 

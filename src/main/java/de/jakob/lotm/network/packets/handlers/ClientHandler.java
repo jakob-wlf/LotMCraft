@@ -27,6 +27,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -127,6 +128,15 @@ public class ClientHandler {
     public static void applyCameraShake(float intensity, int duration) {
         shakeIntensity = intensity;
         shakeDuration = duration;
+    }
+
+    public static void applyCameraShakeToPlayersInRadius(float intensity, int duration, ClientLevel level, Vec3 center, float radius) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+
+        if (player.position().distanceTo(new Vec3(center.x(), center.y(), center.z())) <= radius && level == Minecraft.getInstance().level) {
+            applyCameraShake(intensity, duration);
+        }
     }
 
     @SubscribeEvent

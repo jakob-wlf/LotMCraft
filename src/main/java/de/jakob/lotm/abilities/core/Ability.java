@@ -37,7 +37,7 @@ public abstract class Ability {
 
     protected final Random random = new Random();
 
-    protected Ability(String id, float cooldown) {
+    public Ability(String id, float cooldown) {
         this.id = id;
         this.cooldown = Math.round(cooldown * 20);
     }
