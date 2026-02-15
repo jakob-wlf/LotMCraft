@@ -100,6 +100,7 @@ public class ModEvents {
         DigestionCommand.register(event.getDispatcher());
         
         BeyonderMapCommand.register(event.getDispatcher());
+        HonorificNameCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

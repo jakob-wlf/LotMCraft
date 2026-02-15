@@ -31,6 +31,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
         return "Name: " + trueName
                 + "\n\t--- Path: " + pathway
                 + "\n\t--- Seq: " + sequence
+                + "\n\t--- Honorific Name: " + honorificName.getAllInfo()
                 + "\n\t--- Was modified: " + modified
                 ;
     }

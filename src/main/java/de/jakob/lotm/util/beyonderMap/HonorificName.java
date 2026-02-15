@@ -22,6 +22,22 @@ public record HonorificName(LinkedList<String> lines) {
         return lines.isEmpty();
     }
 
+    public HonorificName addLine(String str){
+        LinkedList<String> result = new LinkedList<>(lines);
+        result.add(str);
+
+        return new HonorificName(result);
+    }
+
+    public String getAllInfo(){
+        return !lines.isEmpty()?
+                ("\nLine 1: " + lines.get(0)
+                + "\nLine 2: " + lines.get(1)
+                + "\nLine 3: " + lines.get(2)
+                + ((lines.size() == 4) ? ("\nLine 4" + lines.get(3)) : ""))
+                : "None";
+    }
+
     public CompoundTag toNBT(){
         CompoundTag tag = new CompoundTag();
 
