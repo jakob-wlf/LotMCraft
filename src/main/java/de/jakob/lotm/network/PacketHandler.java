@@ -321,6 +321,36 @@ public class PacketHandler {
                 OpenQuestAcceptanceScreenPacket.STREAM_CODEC,
                 OpenQuestAcceptanceScreenPacket::handle
         );
+
+        registrar.playToClient(
+                OpenPlayerDivinationScreenPacket.TYPE,
+                OpenPlayerDivinationScreenPacket.STREAM_CODEC,
+                OpenPlayerDivinationScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenStructureDivinationScreenPacket.TYPE,
+                OpenStructureDivinationScreenPacket.STREAM_CODEC,
+                OpenStructureDivinationScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenShapeShiftingScreenPacket.TYPE,
+                OpenShapeShiftingScreenPacket.STREAM_CODEC,
+                OpenShapeShiftingScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                NameSyncPacket.TYPE,
+                NameSyncPacket.CODEC,
+                NameSyncPacket::handle
+        );
+
+        registrar.playToClient(
+                ShapeShiftingSyncPacket.TYPE,
+                ShapeShiftingSyncPacket.STREAM_CODEC,
+                ShapeShiftingSyncPacket::handle
+        );
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
@@ -495,6 +525,21 @@ public class PacketHandler {
                 OpenMessagesMenuPacket.TYPE,
                 OpenMessagesMenuPacket.STREAM_CODEC,
                 OpenMessagesMenuPacket::handle);
+
+        registrar.playToServer(
+                PlayerDivinationSelectedPacket.TYPE,
+                PlayerDivinationSelectedPacket.STREAM_CODEC,
+                PlayerDivinationSelectedPacket::handle);
+
+        registrar.playToServer(
+                StructureDivinationSelectedPacket.TYPE,
+                StructureDivinationSelectedPacket.STREAM_CODEC,
+                StructureDivinationSelectedPacket::handle);
+
+        registrar.playToServer(
+                ShapeShiftingSelectedPacket.TYPE,
+                ShapeShiftingSelectedPacket.STREAM_CODEC,
+                ShapeShiftingSelectedPacket::handle);
     }
 
     public static void sendToServer(CustomPacketPayload packet) {
