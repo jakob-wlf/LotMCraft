@@ -65,7 +65,8 @@ public class PetrificationAbility extends SelectableAbility {
 
         ServerScheduler.scheduleForDuration(0, 1, 120, () -> {
             AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, radius.get(), true, true, false).forEach(b -> {
-                serverLevel.setBlockAndUpdate(b, Blocks.STONE.defaultBlockState());
+                if(serverLevel.getBlockState(b).getDestroySpeed(serverLevel, b) >= 0)
+                    serverLevel.setBlockAndUpdate(b, Blocks.STONE.defaultBlockState());
             });
 
             AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, radius.get(), false).forEach(e -> {
@@ -102,7 +103,7 @@ public class PetrificationAbility extends SelectableAbility {
             if(BeyonderData.isGriefingEnabled(entity)) {
                 BlockPos targetPos = AbilityUtil.getTargetBlock(entity, 15, false);
                 AbilityUtil.getBlocksInSphereRadius(serverLevel, targetPos.getCenter(), 2, true, true, false).forEach(b -> {
-                    if(!serverLevel.getBlockState(b).isAir()) {
+                    if(!serverLevel.getBlockState(b).isAir() && serverLevel.getBlockState(b).getDestroySpeed(serverLevel, b) >= 0) {
                         serverLevel.setBlockAndUpdate(b, Blocks.STONE.defaultBlockState());
                     }
                 });

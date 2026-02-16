@@ -112,7 +112,8 @@ public class SpearOfLightProjectileEntity extends AbstractArrow {
         if(griefing) {
             AbilityUtil.getBlocksInSphereRadius(serverLevel, result.getLocation(), 7, true, true, false).forEach(blockPos -> {
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, blockPos.getCenter(), 3, 0.1, 0);
-                level.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
+                if(serverLevel.getBlockState(blockPos).getDestroySpeed(serverLevel, blockPos) >= 0)
+                    level.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
             });
         }
     }

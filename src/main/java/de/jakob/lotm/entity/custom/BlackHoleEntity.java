@@ -52,7 +52,7 @@ public class BlackHoleEntity extends Entity {
         this.setSuckBlocks(suckBlocks);
         this.setOwner(owner);
 
-        blocks = AbilityUtil.getBlocksInSphereRadius((ServerLevel) level(), this.position(), getRadius() * 6, true, true, true);
+        blocks = AbilityUtil.getBlocksInSphereRadius((ServerLevel) level(), this.position(), getRadius() * 6, true, true, true).stream().filter(b -> level().getBlockState(b).getDestroySpeed(level(), b) >= 0).toList();
 
     }
     
@@ -120,7 +120,7 @@ public class BlackHoleEntity extends Entity {
 
         if(age == 0) {
             if(shouldSuckBlocks()) {
-                AbilityUtil.getBlocksInSphereRadius((ServerLevel) level(), this.position(), getRadius() * 1.5, true, false, false).forEach(b -> level().setBlockAndUpdate(b, Blocks.AIR.defaultBlockState()));
+                AbilityUtil.getBlocksInSphereRadius((ServerLevel) level(), this.position(), getRadius() * 1.5, true, false, false).stream().filter(b -> level().getBlockState(b).getDestroySpeed(level(), b) >= 0).forEach(b -> level().setBlockAndUpdate(b, Blocks.AIR.defaultBlockState()));
             }
         }
 
@@ -131,7 +131,7 @@ public class BlackHoleEntity extends Entity {
         }
 
         if(age % 20 == 0) {
-            blocks = AbilityUtil.getBlocksInSphereRadius((ServerLevel) level(), this.position(), getRadius() * 6, true, true, true);
+            blocks = AbilityUtil.getBlocksInSphereRadius((ServerLevel) level(), this.position(), getRadius() * 6, true, true, true).stream().filter(b -> level().getBlockState(b).getDestroySpeed(level(), b) >= 0).toList();
         }
 
         pullEntities();

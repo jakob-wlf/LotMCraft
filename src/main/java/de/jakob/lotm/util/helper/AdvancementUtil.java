@@ -4,14 +4,17 @@ import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.ChangePlayerPerspectivePacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -203,7 +206,12 @@ public class AdvancementUtil {
 
                 if(safeMaxDamage > 0) {
                     float finalDamage = Math.min(damage, safeMaxDamage);
-                    entity.hurt(entity.damageSources().magic(), finalDamage);
+                    DamageSource damageSource = new DamageSource(
+                            entity.level().registryAccess()
+                                    .registryOrThrow(Registries.DAMAGE_TYPE)
+                                    .getHolderOrThrow(ModDamageTypes.LOOSING_CONTROL)
+                    );
+                    entity.hurt(damageSource, finalDamage);
                 }
             }, serverLevel);
         }

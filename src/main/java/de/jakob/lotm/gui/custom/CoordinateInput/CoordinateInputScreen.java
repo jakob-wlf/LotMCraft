@@ -74,6 +74,11 @@ public class CoordinateInputScreen extends Screen {
             int y = Integer.parseInt(this.yBox.getValue());
             int z = Integer.parseInt(this.zBox.getValue());
 
+            if(x < -3000000 || x > 3000000 || z < -3000000 || z > 3000000 || y < -64 || y > 256) {
+                this.onClose();
+                return;
+            }
+
             switch (use) {
                 case "travelers_door" -> PacketHandler.sendToServer(new SyncTravelersDoorCoordinatesPacket(x, y, z, entity.getId()));
                 case "dream_divination" -> {

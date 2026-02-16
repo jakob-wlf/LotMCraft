@@ -79,7 +79,7 @@ public class RoarOfTheThunderGodAbility extends Ability {
 
         FallingBlockEntity block = FallingBlockEntity.fall(level, b.above(), state);
         block.setDeltaMovement(movement);
-        if(!griefing)
+        if(!griefing || state.getDestroySpeed(level, b) < 0)
             block.disableDrop();
         else {
             level.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState());

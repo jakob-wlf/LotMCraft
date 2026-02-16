@@ -58,11 +58,12 @@ public class SwordOfDarknessAbility extends Ability {
                 Vec3 slashDirection = currentSlashEnd.subtract(currentSlashStart).normalize();
                 double slashLength = currentSlashStart.distanceTo(currentSlashEnd);
                 for(double i = 0; i < slashLength; i += 0.25) {
-                    System.out.println(i);
                     Vec3 point = currentSlashStart.add(slashDirection.scale(i));
                     ParticleUtil.spawnParticles(serverLevel, ModParticles.BLACK.get(), point, 3, 0.2, 0);
                     AbilityUtil.damageNearbyEntities(serverLevel, entity, 3, multiplier(entity) * DamageLookup.lookupDamage(1, .8), point, true, false);
                     if(BeyonderData.isGriefingEnabled(entity)) {
+                        if(serverLevel.getBlockState(BlockPos.containing(point)).getDestroySpeed(level, BlockPos.containing(point)) < 0)
+                            continue;
                         serverLevel.setBlockAndUpdate(BlockPos.containing(point), Blocks.AIR.defaultBlockState());
                     }
                 }
