@@ -38,6 +38,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                FireEffectPacket.TYPE,
+                FireEffectPacket.STREAM_CODEC,
+                FireEffectPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncQuestDataPacket.TYPE,
                 SyncQuestDataPacket.STREAM_CODEC,
                 SyncQuestDataPacket::handle

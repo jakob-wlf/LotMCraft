@@ -13,6 +13,10 @@ public class StructureSelectionGui extends ButtonListGui<String> {
 
     @Override
     protected Component getItemName(String structure) {
+        int columnIndex = structure.indexOf(":");
+        if(columnIndex != -1 && columnIndex < structure.length() - 1) {
+            return Component.literal(structure.substring(columnIndex + 1));
+        }
         return Component.literal(structure);
     }
 

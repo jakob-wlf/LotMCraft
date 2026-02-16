@@ -13,6 +13,10 @@ public class ShapeShiftingSelectionGui extends ButtonListGui<String> {
 
     @Override
     protected Component getItemName(String shape) {
+        int columnIndex = shape.indexOf(":");
+        if(columnIndex != -1 && columnIndex < shape.length() - 1) {
+            return Component.literal(shape.substring(columnIndex + 1));
+        }
         return Component.literal(shape);
     }
 

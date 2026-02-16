@@ -367,4 +367,23 @@ public class ClientHandler {
             screen.setAbilityBarSlots(abilities);
         }
     }
+
+    public static void handleFireEffectPacket(boolean restore, List<BlockPos> blockPositions, int waveNumber) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        if (!restore) {
+            // Turn blocks black client-side
+            for (BlockPos pos : blockPositions) {
+                level.setBlock(pos, Blocks.FIRE.defaultBlockState(),
+                        Block.UPDATE_CLIENTS | Block.UPDATE_IMMEDIATE);
+            }
+        } else {
+            // Force client to re-sync these blocks from server
+            for (BlockPos pos : blockPositions) {
+                // Remove the fake block and request update from server
+                level.setBlock(pos, level.getBlockState(pos), Block.UPDATE_ALL);
+            }
+        }
+    }
 }

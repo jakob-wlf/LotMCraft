@@ -166,6 +166,8 @@ public class AbilityHandler {
         abilities.add(new MaternalEmbraceAbility("maternal_embrace_ability"));
         abilities.add(new AreaDesolationAbility("area_desolation_ability"));
         abilities.add(new BloomingAreaAbility("blooming_area_ability"));
+        abilities.add(new WorldCreationAbility("world_creation_ability"));
+        abilities.add(new WrathOfNatureAbility("wrath_of_nature_ability"));
 
         // DOOR PATHWAY
         abilities.add(new DoorOpeningAbility("door_opening_ability"));

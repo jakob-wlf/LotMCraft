@@ -36,6 +36,15 @@ public class ModEntities {
                             .build("return_portal")
             );
 
+    public static final DeferredHolder<EntityType<?>, EntityType<ReturnPortalEntity>> NATURE_RETURN_PORTAL =
+            ENTITY_TYPES.register("nature_return_portal", () ->
+                    EntityType.Builder.<ReturnPortalEntity>of(ReturnPortalEntity::new, MobCategory.MISC)
+                            .sized(1.0F, 1.0F)
+                            .clientTrackingRange(10)
+                            .updateInterval(20)
+                            .build("return_portal")
+            );
+
     public static final DeferredHolder<EntityType<?>, EntityType<CycleOfFateEntity>> CYCLE_OF_FATE =
             ENTITY_TYPES.register("cycle_of_fate", () -> EntityType.Builder.of(
                             CycleOfFateEntity::new,

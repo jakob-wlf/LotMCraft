@@ -87,7 +87,7 @@ public abstract class ButtonListGui<T> extends Screen {
             private final Button btn;
 
             Entry(T item) {
-                this.btn = Button.builder(getItemName(item).copy().withStyle(ChatFormatting.AQUA), b -> onItemSelected(item))
+                this.btn = Button.builder(getItemName(item).copy().withStyle(ChatFormatting.WHITE), b -> onItemSelected(item))
                         .size(panelWidth - 30, rowHeight - 4)
                         .build();
             }

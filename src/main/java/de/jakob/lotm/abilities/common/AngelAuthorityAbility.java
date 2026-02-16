@@ -1,5 +1,6 @@
 package de.jakob.lotm.abilities.common;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
@@ -11,6 +12,7 @@ import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -96,7 +98,7 @@ public class AngelAuthorityAbility extends SelectableAbility {
         Vec3 targetPos;
 
         if (!player.level().dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
-            ResourceKey spiritWorld = ResourceKey.create((ResourceKey) Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath("lotmcraft", "spirit_world"));
+            ResourceKey spiritWorld = ResourceKey.create((ResourceKey) Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world"));
             targetLevel = player.getServer().getLevel(spiritWorld);
             targetPos = SpiritWorldHandler.getCoordinatesInSpiritWorld(player.position());
             BlockPos pos = BlockPos.containing(targetPos);
@@ -124,7 +126,7 @@ public class AngelAuthorityAbility extends SelectableAbility {
             }
             player.teleportTo(targetLevel, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, player.getYRot(), player.getXRot());
         }
-        ParticleUtil.spawnParticles((ServerLevel)player.level(), ModParticles.LIGHTNING.get(), player.position(), 200, 2.0, 0.001);
+        ParticleUtil.spawnParticles((ServerLevel)player.level(), ParticleTypes.END_ROD, player.position(), 200, 2.0, 0.001);
         targetLevel.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 }
