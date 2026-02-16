@@ -118,6 +118,8 @@ public abstract class Ability {
 
         if(!(entity instanceof Player) && !canBeUsedByNPC) return false;
 
+        if(entity instanceof Player player && player.isSpectator()) return false;
+
         if(BeyonderData.isAbilityDisabled(entity) && !this.canAlwaysBeUsed) return false;
 
         if(BeyonderData.isSpecificAbilityDisabled(entity, getId())) return false;

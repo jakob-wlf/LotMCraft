@@ -73,8 +73,10 @@ public class ConceptualizationAbility extends ToggleAbility {
 
         // Disable Flying
         if(entity instanceof Player player) {
-            player.getAbilities().mayfly = false;
-            player.getAbilities().flying = false;
+            if(!player.isCreative()) {
+                player.getAbilities().mayfly = false;
+                player.getAbilities().flying = false;
+            }
             player.getAbilities().setFlyingSpeed(.05f);
             player.onUpdateAbilities();
         }
