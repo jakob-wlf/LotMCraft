@@ -2,6 +2,7 @@ package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.SelectionGui.PlayerSelectionGui;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.data.PlayerInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -47,7 +48,7 @@ public record OpenPlayerDivinationScreenPacket(List<PlayerInfo> players) impleme
     public static void handle(OpenPlayerDivinationScreenPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.flow().getReceptionSide().isClient()) {
-                Minecraft.getInstance().setScreen(new PlayerSelectionGui(packet.players()));
+                ClientHandler.handlePlayerDivinationScreenPacket(packet);
             }
         });
     }

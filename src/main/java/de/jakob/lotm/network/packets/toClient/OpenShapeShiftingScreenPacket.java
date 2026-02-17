@@ -2,6 +2,7 @@ package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.SelectionGui.ShapeShiftingSelectionGui;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -30,7 +31,7 @@ public record OpenShapeShiftingScreenPacket(List<String> entityTypes) implements
 
     public static void handle(OpenShapeShiftingScreenPacket payload, IPayloadContext context) {
         context.enqueueWork(() -> {
-            Minecraft.getInstance().setScreen(new ShapeShiftingSelectionGui(payload.entityTypes()));
+            ClientHandler.handleShapeShiftingScreenPacket(payload);
         });
     }
 }

@@ -197,12 +197,6 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                SyncPlayerListPacket.TYPE,
-                SyncPlayerListPacket.STREAM_CODEC,
-                SyncPlayerListPacket::handle
-        );
-
-        registrar.playToClient(
                 SyncGriefingGamerulePacket.TYPE,
                 SyncGriefingGamerulePacket.STREAM_CODEC,
                 SyncGriefingGamerulePacket::handle
@@ -344,6 +338,18 @@ public class PacketHandler {
                 OpenShapeShiftingScreenPacket.TYPE,
                 OpenShapeShiftingScreenPacket.STREAM_CODEC,
                 OpenShapeShiftingScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncPlayerTeleportationPlayerNamesPacket.TYPE,
+                SyncPlayerTeleportationPlayerNamesPacket.STREAM_CODEC,
+                SyncPlayerTeleportationPlayerNamesPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncPlayerTeleportationOnlinePlayersPacket.TYPE,
+                SyncPlayerTeleportationOnlinePlayersPacket.STREAM_CODEC,
+                SyncPlayerTeleportationOnlinePlayersPacket::handle
         );
 
         registrar.playToClient(

@@ -9,7 +9,13 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.gui.custom.CoordinateInput.CoordinateInputScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
+import de.jakob.lotm.gui.custom.Quest.QuestAcceptanceScreen;
+import de.jakob.lotm.gui.custom.SelectionGui.PlayerSelectionGui;
+import de.jakob.lotm.gui.custom.SelectionGui.ShapeShiftingSelectionGui;
+import de.jakob.lotm.gui.custom.SelectionGui.StructureSelectionGui;
 import de.jakob.lotm.network.packets.toClient.*;
+import de.jakob.lotm.quest.Quest;
+import de.jakob.lotm.quest.QuestRegistry;
 import de.jakob.lotm.rendering.*;
 import de.jakob.lotm.rendering.effectRendering.impl.VFXRenderer;
 import de.jakob.lotm.util.ClientBeyonderCache;
@@ -19,6 +25,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -62,14 +69,6 @@ public class ClientHandler {
                     false,
                     0.0f
             );
-        }
-    }
-
-    // In ClientHandler.java
-    public static void handlePlayerListPacket(SyncPlayerListPacket packet) {
-        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-        if (mc.player != null) {
-            ClientPlayerListHandler.updatePlayerList(mc.player.getUUID(), packet.players());
         }
     }
 
@@ -385,5 +384,37 @@ public class ClientHandler {
                 level.setBlock(pos, level.getBlockState(pos), Block.UPDATE_ALL);
             }
         }
+    }
+
+    public static void handleQuestScreenPacket(OpenQuestAcceptanceScreenPacket packet) {
+        Quest quest = QuestRegistry.getQuest(packet.questId());
+        if (quest == null) {
+            return;
+        }
+
+        Component questName = quest.getName();
+        Component questDescription = quest.getDescription();
+
+        Minecraft.getInstance().setScreen(new QuestAcceptanceScreen(
+                packet.questId(),
+                questName,
+                questDescription,
+                packet.rewards(),
+                packet.digestionReward(),
+                packet.questSequence(),
+                packet.npcId()
+        ));
+    }
+
+    public static void handlePlayerDivinationScreenPacket(OpenPlayerDivinationScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new PlayerSelectionGui(packet.players()));
+    }
+
+    public static void handleStructureDivinationScreenPacket(OpenStructureDivinationScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new StructureSelectionGui(packet.structureIds()));
+    }
+
+    public static void handleShapeShiftingScreenPacket(OpenShapeShiftingScreenPacket payload) {
+        Minecraft.getInstance().setScreen(new ShapeShiftingSelectionGui(payload.entityTypes()));
     }
 }

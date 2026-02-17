@@ -43,6 +43,10 @@ public class SefirotData extends SavedData {
             return false;
         }
 
+        if(claimedSefirah.containsValue(sefirot)) {
+            return false;
+        }
+
         claimedSefirah.put(uuid, sefirot);
         setDirty();
         return true;
