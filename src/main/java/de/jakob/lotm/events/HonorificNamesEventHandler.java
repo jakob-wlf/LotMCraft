@@ -29,8 +29,6 @@ public class HonorificNamesEventHandler {
 
         String DEBUG_nickname = event.getPlayer().getName().getString();
 
-        LOTMCraft.LOGGER.info("HN stage 0: pre input for {}", DEBUG_nickname);
-
         if(timeout.containsKey(playerUUID)
                 && timeout.get(playerUUID) <= System.currentTimeMillis() - 60000) {
 
@@ -42,11 +40,11 @@ public class HonorificNamesEventHandler {
 
             event.getPlayer().sendSystemMessage(Component.translatable("lotmcraft.honorific_timeout")
                     .withStyle(ChatFormatting.DARK_RED));
+
+            return;
         }
 
         String rawMessage = event.getRawText();
-
-        LOTMCraft.LOGGER.info("HN stage 1: after input {} for {}", rawMessage, DEBUG_nickname);
 
         if(isInTransferring.containsKey(playerUUID)){
             LOTMCraft.LOGGER.info("NH stage 2: is in transfer for {}", DEBUG_nickname);
@@ -75,16 +73,19 @@ public class HonorificNamesEventHandler {
             timeout.put(playerUUID, System.currentTimeMillis());
             return;
         }
-        else if (input.containsKey(playerUUID)){
+        else if (input.containsKey(playerUUID) && isHonorificNamePart(rawMessage)){
             LOTMCraft.LOGGER.info("NH stage 3: add line line of HN for {}, line {}", DEBUG_nickname, rawMessage);
-
             var list = input.get(playerUUID);
             list.add(rawMessage);
 
-            input.put(playerUUID, list);
+        } else if (!isHonorificNamePart(rawMessage)) {
+            return;
         }
 
-        if(isHonorificNameLastLine(rawMessage)){
+        if(input.containsKey(playerUUID)
+                && input.get(playerUUID).size() >= 3
+                && isHonorificNameLastLine(rawMessage)){
+
             LOTMCraft.LOGGER.info("NH stage 4: detected last line of HN for {}, line {}", DEBUG_nickname, rawMessage);
             var targetUUID = BeyonderData.beyonderMap.findCandidat(input.get(playerUUID));
 
@@ -106,7 +107,7 @@ public class HonorificNamesEventHandler {
                 return;
             }
 
-            if(targetUUID == playerUUID){
+            if(targetUUID.equals(playerUUID)){
                 LOTMCraft.LOGGER.info("NH stage 4: target is the same person as player for {}", DEBUG_nickname);
 
                 target.sendSystemMessage(Component.translatable("lotmcraft.own_prayings")
@@ -124,7 +125,7 @@ public class HonorificNamesEventHandler {
 
             isInTransferring.put(playerUUID, targetUUID);
 
-            LOTMCraft.LOGGER.info("NH stage 5: Form message for target for {}, target {}", DEBUG_nickname, target.getDisplayName().toString());
+            LOTMCraft.LOGGER.info("NH stage 5: Form message for target for {}, target {}", DEBUG_nickname, target.getName().toString());
 
             target.sendSystemMessage(formMessage(event.getPlayer(), target));
         }
@@ -138,13 +139,17 @@ public class HonorificNamesEventHandler {
         return BeyonderData.beyonderMap.containsHonorificNameWithLastLine(str);
     }
 
+    public static boolean isHonorificNamePart(String str){
+        return BeyonderData.beyonderMap.containsHonorificNamewithLine(str);
+    }
+
     public static Component formMessage(LivingEntity player, LivingEntity target){
         MutableComponent message = Component.empty();
 
         Component spacer = Component.literal("\n---").withStyle(ChatFormatting.DARK_GREEN);
 
         Component generalInfo = Component.translatable("lotmcraft.honorific_prayings",
-                player.getDisplayName().getString(), BeyonderData.getPathway(player),
+                player.getName().getString(), BeyonderData.getPathway(player),
                 BeyonderData.getSequence(player), player.getX(), player.getY(), player.getZ())
                 .withStyle(ChatFormatting.GREEN);
 
@@ -154,8 +159,8 @@ public class HonorificNamesEventHandler {
                         .withBold(true)
                         .withClickEvent(new ClickEvent(
                                 ClickEvent.Action.RUN_COMMAND,
-                                "/honorificname ui sendmessage " + player.getDisplayName().getString()
-                                        + " " + target.getDisplayName()
+                                "/honorificname ui sendmessage " + player.getName().getString()
+                                        + " " + target.getName().getString()
                         )));
 
         return message.append(generalInfo).append(spacer)

@@ -1,5 +1,6 @@
 package de.jakob.lotm.util.beyonderMap;
 
+import de.jakob.lotm.LOTMCraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -52,6 +53,8 @@ public record HonorificName(LinkedList<String> lines) {
     }
 
     public CompoundTag toNBT(){
+        LOTMCraft.LOGGER.info("Saving hn, size {}", lines.size());
+
         CompoundTag tag = new CompoundTag();
 
         ListTag list = new ListTag();
@@ -65,11 +68,33 @@ public record HonorificName(LinkedList<String> lines) {
     }
 
     static public HonorificName fromNBT(CompoundTag tag){
+        LOTMCraft.LOGGER.info("Loading hn");
+
         LinkedList<String> list = new LinkedList<>();
 
-        ListTag listTag = tag.getList(NBT_LINES, Tag.TAG_STRING);
-        for (var obj : listTag) {
-            list.add(obj.getAsString());
+        LOTMCraft.LOGGER.info("Loading hn: list created");
+
+        if (tag.contains(NBT_LINES, Tag.TAG_LIST)) {
+            LOTMCraft.LOGGER.info("Loading hn: contains nbt_lines");
+
+            ListTag listTag = tag.getList(NBT_LINES, Tag.TAG_STRING);
+
+            LOTMCraft.LOGGER.info("Loading hn: got listTag");
+            for (var obj : listTag) {
+                list.add(obj.getAsString());
+            }
+
+            LOTMCraft.LOGGER.info("Loading hn: filled list, size - {}", list.size());
+        }
+
+        for(int i = 0; i < list.size(); i++){
+            LOTMCraft.LOGGER.info("Loading hn: line {} - {}", i,list.get(i));
+        }
+
+        var buff = new HonorificName(list);
+
+        for(int i = 0; i < list.size(); i++){
+            LOTMCraft.LOGGER.info("Loading hn: hn line {} - {}", i, buff.lines().get(i));
         }
 
         return new HonorificName(list);

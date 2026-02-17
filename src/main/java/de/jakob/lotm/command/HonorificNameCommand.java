@@ -67,17 +67,26 @@ public class HonorificNameCommand {
                                 String line2 = obj.get("line2").getAsString();
                                 String line3 = obj.get("line3").getAsString();
                                 String line4 = null;
+                                String line5 = null;
 
                                 if(obj.has("line4"))
                                     line4 = obj.get("line4").getAsString();
+
+                                if(obj.has("line5"))
+                                    line5 = obj.get("line5").getAsString();
 
                                 if(BeyonderData.getSequence(source.getPlayer()) >= 4){
                                     source.sendFailure(Component.literal("You must be sequence 3 or higher to utilize honorific name!"));
                                     return 0;
                                 }
 
+                                if(BeyonderData.getSequence(source.getPlayer()) == 3 && (line4 == null || line5 == null)){
+                                    source.sendFailure(Component.literal("You must have 5 lines in honorific name as sequence 3"));
+                                    return 0;
+                                }
+
                                 if(BeyonderData.getSequence(source.getPlayer()) == 3 && line4 == null){
-                                    source.sendFailure(Component.literal("You must have 4 lines in honorific name as sequence 3"));
+                                    source.sendFailure(Component.literal("You must have 4 lines in honorific name as sequence 2"));
                                     return 0;
                                 }
 

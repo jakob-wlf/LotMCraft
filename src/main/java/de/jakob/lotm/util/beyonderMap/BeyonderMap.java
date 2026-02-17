@@ -5,6 +5,7 @@ import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,10 +25,29 @@ public class BeyonderMap extends SavedData {
 
     private ServerLevel server;
 
+    public static final SavedData.Factory<BeyonderMap> FACTORY = new SavedData.Factory<>(
+            BeyonderMap::new,
+            BeyonderMap::new,
+            null
+    );
+
+
     public BeyonderMap() {
         super();
 
         map = new HashMap<>(300);
+    }
+
+    public BeyonderMap(CompoundTag nbt, HolderLookup.Provider provider) {
+        this();
+
+        if (nbt.contains(NBT_BEYONDER_MAP, Tag.TAG_COMPOUND)) {
+            CompoundTag mapTag = nbt.getCompound(NBT_BEYONDER_MAP);
+
+            for (String key : mapTag.getAllKeys()) {
+                map.put(UUID.fromString(key), StoredData.fromNBT(mapTag.getCompound(key)));
+            }
+        }
     }
 
     public void put(LivingEntity entity) {
@@ -92,10 +112,7 @@ public class BeyonderMap extends SavedData {
 
         if(!contains(entity)) put(entity);
 
-        map.compute(entity.getUUID(), (k, data) -> StoredData.builder
-                .copyFrom(data).honorificName(name).build());
-
-        setDirty();
+        put(entity.getUUID(), StoredData.builder.copyFrom(map.get(entity.getUUID())).honorificName(name).build());
     }
 
     public void addKnownHonorificName(LivingEntity entity, HonorificName name){
@@ -281,6 +298,8 @@ public class BeyonderMap extends SavedData {
 
     @Override
     public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider provider) {
+        LOTMCraft.LOGGER.info("Saving BeyonderMap");
+
         CompoundTag tag = new CompoundTag();
         for(var obj : map.entrySet()){
             tag.put(obj.getKey().toString(), obj.getValue().toNBT());
@@ -291,23 +310,9 @@ public class BeyonderMap extends SavedData {
         return compoundTag;
     }
 
-    public static BeyonderMap load(CompoundTag compoundTag, HolderLookup.Provider provider) {
-        BeyonderMap data = new BeyonderMap();
-
-        CompoundTag tag = compoundTag.getCompound(NBT_BEYONDER_MAP);
-
-        for(var obj : tag.getAllKeys()){
-            data.map.put(UUID.fromString(obj), StoredData.fromNBT(tag.getCompound(obj)));
-        }
-
-        return data;
-    }
-
     public static BeyonderMap get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(new Factory<BeyonderMap>(
-                BeyonderMap::new, BeyonderMap::load),
-                NBT_BEYONDER_MAP_CLASS
-        );
+        LOTMCraft.LOGGER.info("Loading beyonderMap");
+        return level.getServer().overworld().getDataStorage().computeIfAbsent(FACTORY, NBT_BEYONDER_MAP_CLASS);
     }
 
     public void setLevel(ServerLevel level){
@@ -348,6 +353,16 @@ public class BeyonderMap extends SavedData {
         return false;
     }
 
+    public boolean  containsHonorificNamewithLine(String str){
+        for(var data : map.values()){
+            if(!data.honorificName().isEmpty()
+                    && data.honorificName().lines().contains(str))
+                return true;
+        }
+
+        return false;
+    }
+
     public @Nullable UUID findCandidat(LinkedList<String> list){
         if(list.size() < 3) return null;
 
@@ -374,9 +389,16 @@ public class BeyonderMap extends SavedData {
         }
 
         if(!possibleTargets.isEmpty()){
-            for(var obj : possibleTargets){
-                if(map.get(obj).sequence() < map.get(originalTarget).sequence())
-                    return obj;
+            if(originalTarget != null) {
+                for(var obj : possibleTargets){
+                    if (map.get(obj).sequence() < map.get(originalTarget).sequence())
+                        return obj;
+                }
+            }
+            else{
+               return possibleTargets.stream()
+                        .sorted(Comparator.comparingInt(e -> map.get(e).sequence()))
+                        .toList().getFirst();
             }
         }
 
