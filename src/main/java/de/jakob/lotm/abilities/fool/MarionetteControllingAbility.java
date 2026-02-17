@@ -5,6 +5,8 @@ import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSelectedMarionettePacket;
+import de.jakob.lotm.util.ControllingUtil;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -60,6 +62,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
         switch (abilityIndex) {
             case 0 -> activateSwap((ServerLevel) level, player);
             case 1 -> toggleAutoSwap(player);
+            case 2 -> control(level, player);
             case 3  -> getItem(player);
         }
 
@@ -261,6 +264,14 @@ public class MarionetteControllingAbility extends SelectableAbility {
             if(currentIndex >= marionettes.size())
                 currentIndex = 0;
             marionetteIndices.put(entity.getUUID(), currentIndex);
+        }
+    }
+
+    public static void control(Level level, ServerPlayer player) {
+        if (level.isClientSide) return;
+        LivingEntity target = AbilityUtil.getTargetEntity(player, 5, 1);
+        if (target != null) {
+            ControllingUtil.possess(player, target);
         }
     }
 }

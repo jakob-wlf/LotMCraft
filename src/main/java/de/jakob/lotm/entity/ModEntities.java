@@ -272,6 +272,11 @@ public class ModEntities {
                     .noSummon()
                     .build("error_avatar"));
 
+    public static final Supplier<EntityType<OriginalBodyEntity>> ORIGINAL_BODY =
+            ENTITY_TYPES.register("original_body", () -> EntityType.Builder.<OriginalBodyEntity>of(OriginalBodyEntity::new, MobCategory.MISC)
+                    .sized(0.6F, 1.8F)
+                    .build("original_body"));
+
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);
     }

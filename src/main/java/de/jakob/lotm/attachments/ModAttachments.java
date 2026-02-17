@@ -123,6 +123,22 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<OriginalBodyComponent>> ORIGINAL_BODY =
+            ATTACHMENT_TYPES.register("original_body", () ->
+                    AttachmentType.builder(OriginalBodyComponent::new)
+                            .serialize(OriginalBodyComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<CopiedInventoryComponent>> COPIED_INVENTORY =
+            ATTACHMENT_TYPES.register("copied_inventory", () ->
+                    AttachmentType.builder(CopiedInventoryComponent::new)
+                            .serialize(CopiedInventoryComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<WaypointComponent>> WAYPOINT_COMPONENT = ATTACHMENT_TYPES.register(
             "waypoint_component",
             () -> AttachmentType.builder(WaypointComponent::new)
@@ -141,6 +157,8 @@ public class ModAttachments {
                     })
                     .build()
     );
+
+
 
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);

@@ -3,6 +3,7 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.command.*;
 import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.entity.OriginalBodyEntity;
 import de.jakob.lotm.entity.client.*;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
@@ -69,6 +70,7 @@ public class ModEvents {
         event.put(ModEntities.FIRE_RAVEN.get(), FireRavenEntity.createAttributes().build());
         event.put(ModEntities.BEYONDER_NPC.get(), BeyonderNPCEntity.createAttributes().build());
         event.put(ModEntities.ERROR_AVATAR.get(), AvatarEntity.createAttributes().build());
+        event.put(ModEntities.ORIGINAL_BODY.get(), OriginalBodyEntity.createAttributes().build());
     }
 
     @SubscribeEvent

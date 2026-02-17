@@ -193,6 +193,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.MISFORTUNE_WORDS.get(), MisfortuneWordsRenderer::new);
             EntityRenderers.register(ModEntities.BLOOMING_AREA.get(), BloomingAreaRenderer::new);
             EntityRenderers.register(ModEntities.DESOLATE_AREA.get(), DesolateAreaRenderer::new);
+            EntityRenderers.register(ModEntities.ORIGINAL_BODY.get(), OriginalBodyRenderer::new);
 
             GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);
 
