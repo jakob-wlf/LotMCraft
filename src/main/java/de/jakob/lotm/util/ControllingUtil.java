@@ -8,6 +8,7 @@ import de.jakob.lotm.entity.OriginalBodyEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncLivingEntityBeyonderDataPacket;
+import de.jakob.lotm.network.packets.toServer.ShapeShiftingSelectedPacket;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundSetHealthPacket;
@@ -22,6 +23,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import static de.jakob.lotm.util.helper.AbilityWheelHelper.syncToClient;
 
@@ -59,6 +61,8 @@ public class ControllingUtil {
         level.addFreshEntity(originalBody);
 
         CompoundTag entityTag = new CompoundTag();
+
+        PacketDistributor.sendToServer(new ShapeShiftingSelectedPacket(EntityType.getKey(target.getType()).toString()));
 
         target.saveWithoutId(entityTag);
 
