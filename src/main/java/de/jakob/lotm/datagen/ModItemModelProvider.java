@@ -32,11 +32,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.SUN_ITEM.get());
         basicItem(ModItems.MOON_ITEM.get());
         basicItem(ModItems.GUIDING_BOOK.get());
-        basicItem(ModItems.SEALED_ARTIFACT.get());
-        basicItem(ModItems.SEALED_ARTIFACT_BELL.get());
-        basicItem(ModItems.SEALED_ARTIFACT_CHAIN.get());
-        basicItem(ModItems.SEALED_ARTIFACT_GEM.get());
-        basicItem(ModItems.SEALED_ARTIFACT_STAR.get());
+        tintableItem(ModItems.SEALED_ARTIFACT.get());
+        tintableItem(ModItems.SEALED_ARTIFACT_BELL.get());
+        tintableItem(ModItems.SEALED_ARTIFACT_CHAIN.get());
+        tintableItem(ModItems.SEALED_ARTIFACT_GEM.get());
+        tintableItem(ModItems.SEALED_ARTIFACT_STAR.get());
         basicItem(ModItems.BLOOD.get());
 
         PotionItemHandler.ITEMS.getEntries().forEach(i -> {
@@ -70,6 +70,14 @@ public class ModItemModelProvider extends ItemModelProvider {
     private void itemWithCustomDisplay(Item item) {
         String itemName = getItemName(item);
         itemWithCustomDisplay(item, itemName);
+    }
+
+    private void tintableItem(Item item) {
+        String itemName = getItemName(item);
+        getBuilder(itemName)
+                .parent(getExistingFile(mcLoc("item/generated")))
+                .texture("layer0", modLoc("item/" + itemName))
+                .texture("layer1", modLoc("item/" + itemName + "_tint"));
     }
 
     // Helper method for items that need custom display properties with custom texture name

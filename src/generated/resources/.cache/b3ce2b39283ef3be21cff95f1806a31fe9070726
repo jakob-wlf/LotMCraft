@@ -1,4 +1,4 @@
-// 1.21.1	2026-02-10T15:35:51.6690636	Item Models: lotmcraft
+// 1.21.1	2026-02-17T16:38:18.4785226	Item Models: lotmcraft
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
 65b6c713526448dd94ab6c94da2487f1a4242daf assets/lotmcraft/models/item/ancient_logbook.json
@@ -301,11 +301,11 @@ d1aa9c15583e8299bd23770fad275555cb0a1ae8 assets/lotmcraft/models/item/scribe_pot
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/seafarer.json
 bc079732c1039919d5215e7ecd82da8fe0d557ac assets/lotmcraft/models/item/seafarer_characteristic.json
 c377808f1bc8646fb59cfd5bda4b8b16d5ba4daf assets/lotmcraft/models/item/seafarer_potion.json
-e58ff859623b530e95336ed1e76b946b803b8ff8 assets/lotmcraft/models/item/sealed_artifact.json
-f2cab4cdf0e10d061c4331af072016114b80cc6d assets/lotmcraft/models/item/sealed_artifact_bell.json
-1752d29991bcfcf698dbf5d11c864fa6c6d9e086 assets/lotmcraft/models/item/sealed_artifact_chain.json
-0fc8f5fdd428c0966e0a6cb0922fb4f3db579f19 assets/lotmcraft/models/item/sealed_artifact_gem.json
-ebc7eefb41719381d3895194fad73b0e1f847c19 assets/lotmcraft/models/item/sealed_artifact_star.json
+01057cb4e86627c53edacba7291a0bbb43cb9ff2 assets/lotmcraft/models/item/sealed_artifact.json
+1cc542f0a3ef72392d1cb382f0bfd462ace35962 assets/lotmcraft/models/item/sealed_artifact_bell.json
+0a6b3d1be8cee88154d08efc1aef3af460175e5e assets/lotmcraft/models/item/sealed_artifact_chain.json
+164a7f36629bbd19da44bb257f2fc4efa8644d79 assets/lotmcraft/models/item/sealed_artifact_gem.json
+a9022b561248081b50d681f35d61bde2613c9582 assets/lotmcraft/models/item/sealed_artifact_star.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/sea_king.json
 5f874e927afb686094ef37fc9205452cda79f7ef assets/lotmcraft/models/item/sea_king_characteristic.json
 4ff7158c2e3372206cb49c9cca24fefbbf83c9d6 assets/lotmcraft/models/item/sea_king_potion.json

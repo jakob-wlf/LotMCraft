@@ -77,13 +77,13 @@ public class WorldCreationAbility extends Ability {
         // Teleport player to center of pocket dimension
         player.teleportTo(spaceLevel,
                 pocketCenter.getX() + 0.5,
-                100,
+                66,
                 pocketCenter.getZ() + 0.5,
                 player.getYRot(),
                 player.getXRot());
 
         ReturnFromNatureEntity portalEntity = new ReturnFromNatureEntity(spaceLevel,
-                new Vec3(pocketCenter.getX() + .5, 100, pocketCenter.getZ() + .5),
+                new Vec3(pocketCenter.getX() + .5, 66, pocketCenter.getZ() + .5),
                 returnPos,
                 returnDimension);
         spaceLevel.addFreshEntity(portalEntity);
