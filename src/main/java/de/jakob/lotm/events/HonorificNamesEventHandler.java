@@ -39,6 +39,9 @@ public class HonorificNamesEventHandler {
 
             timeout.remove(playerUUID);
             input.remove(playerUUID);
+
+            event.getPlayer().sendSystemMessage(Component.translatable("lotmcraft.honorific_timeout")
+                    .withStyle(ChatFormatting.DARK_RED));
         }
 
         String rawMessage = event.getRawText();

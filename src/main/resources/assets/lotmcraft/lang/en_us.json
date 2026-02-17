@@ -1148,5 +1148,6 @@
   "lotmcraft.far_away_prayings": "You have heard whispers of prayings, but you are too far away to hear them clearly",
   "lotmcraft.honorific_prayings": "You have heard prayings from %s\nTheir general info: pathway - %s; Sequence - %i; Position - %i %i %i",
   "lotmcraft.honorific_prayings_message": "You have heard message: %s",
-  "lotmcraft.honorific_prayings_send_message_button": "[ SEND MESSAGE ]"
+  "lotmcraft.honorific_prayings_send_message_button": "[ SEND MESSAGE ]",
+  "lotmcraft.honorific_timeout": "You have reached timeout for praying!"
 }
