@@ -2,14 +2,20 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.darkness.NightmareAbility;
+import de.jakob.lotm.artifacts.SealedArtifactData;
+import de.jakob.lotm.data.ModDataComponents;
+import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.InventoryOpenedPacket;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
@@ -51,6 +57,33 @@ public class ClientEvents {
         event.register(LOTMCraft.useAbilityBarAbility4);
         event.register(LOTMCraft.useAbilityBarAbility5);
         event.register(LOTMCraft.useAbilityBarAbility6);
+    }
+
+    @SubscribeEvent
+    public static void onRegisterItemColors(RegisterColorHandlersEvent.Item event) {
+        registerSealedArtifactTint(ModItems.SEALED_ARTIFACT.get(), event);
+        registerSealedArtifactTint(ModItems.SEALED_ARTIFACT_BELL.get(), event);
+        registerSealedArtifactTint(ModItems.SEALED_ARTIFACT_STAR.get(), event);
+        registerSealedArtifactTint(ModItems.SEALED_ARTIFACT_GEM.get(), event);
+        registerSealedArtifactTint(ModItems.SEALED_ARTIFACT_CHAIN.get(), event);
+    }
+
+    private static void registerSealedArtifactTint(Item item, RegisterColorHandlersEvent.Item event) {
+        event.register(
+                (stack, tintIndex) -> {
+                    if (tintIndex == 1) {
+                        // Read data from the stack however you like
+                        SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
+                        if (data != null) {
+                            String pathway = data.pathway();
+                            return BeyonderData.pathwayInfos.get(pathway).color();
+                        }
+                        return 0xFFFFFFFF; // white = no tint
+                    }
+                    return -1; // -1 = no tint for this layer
+                },
+                item
+        );
     }
 
     @SubscribeEvent

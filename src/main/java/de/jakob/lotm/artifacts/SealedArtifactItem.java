@@ -42,7 +42,7 @@ public class SealedArtifactItem extends Item {
         Ability ability = data.abilities().get(selectedIndex);
 
         // Use the ability
-        ability.useAbility((ServerLevel) level, player, false, false);
+        ability.useAbility((ServerLevel) level, player, false, false, true);
         return InteractionResultHolder.success(stack);
     }
 

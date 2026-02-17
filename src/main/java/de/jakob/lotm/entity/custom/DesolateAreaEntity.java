@@ -159,7 +159,15 @@ public class DesolateAreaEntity extends Entity {
         Block block = state.getBlock();
 
         // Convert grass blocks using Perlin-like noise for natural patches
-        if (block == Blocks.GRASS_BLOCK || block == Blocks.DIRT) {
+        if (block == Blocks.GRASS_BLOCK ||
+                block == Blocks.DIRT ||
+                block == Blocks.DIRT_PATH ||
+                block == Blocks.MOSS_BLOCK ||
+                block == Blocks.ROOTED_DIRT ||
+                block == Blocks.MUD ||
+                block == Blocks.MUDDY_MANGROVE_ROOTS ||
+                block == Blocks.MOSS_CARPET
+        ) {
             Block replacement = getGrassReplacement(pos);
             level.setBlock(pos, replacement.defaultBlockState(), 3);
             spawnCorruptionParticles(level, pos);

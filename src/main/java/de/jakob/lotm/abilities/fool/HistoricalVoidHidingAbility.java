@@ -11,6 +11,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.item.FlintAndSteelItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 

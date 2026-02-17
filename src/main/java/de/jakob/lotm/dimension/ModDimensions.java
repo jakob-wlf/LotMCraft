@@ -41,6 +41,14 @@ public class ModDimensions {
             ResourceKey.create(Registries.DIMENSION_TYPE,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space"));
 
+    public static final ResourceKey<LevelStem> WORLD_CREATION_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "nature"));
+
+    public static final ResourceKey<DimensionType> WORLD_CREATION_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "nature"));
+
     public static final ResourceKey<LevelStem> SPIRIT_WORLD_LEVEL_KEY =
             ResourceKey.create(Registries.LEVEL_STEM,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world"));
@@ -57,6 +65,10 @@ public class ModDimensions {
     public static final ResourceKey<Biome> SPACE_BIOME_KEY =
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space_biome"));
+
+    public static final ResourceKey<Biome> WORLD_CREATION_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "nature_biome"));
 
     public static final ResourceKey<Biome> SPIRIT_WORLD_BIOME_KEY =
             ResourceKey.create(Registries.BIOME,
@@ -95,6 +107,9 @@ public class ModDimensions {
 
     public static final Supplier<MapCodec<ConcealmentWorldChunkGenerator>> CONCEALMENT_WORLD_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("concealment_world", () -> ConcealmentWorldChunkGenerator.CODEC);
+
+    public static final Supplier<MapCodec<NatureDimensionWorldChunkGenerator>> NATURE_WORLD_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("nature", () -> NatureDimensionWorldChunkGenerator.CODEC);
 
     public static void register(IEventBus eventBus) {
         CHUNK_GENERATORS.register(eventBus);

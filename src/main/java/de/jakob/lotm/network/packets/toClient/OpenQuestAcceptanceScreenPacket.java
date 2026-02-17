@@ -2,6 +2,7 @@ package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.Quest.QuestAcceptanceScreen;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.quest.Quest;
 import de.jakob.lotm.quest.QuestRegistry;
 import io.netty.buffer.ByteBuf;
@@ -46,23 +47,7 @@ public record OpenQuestAcceptanceScreenPacket(String questId, List<ItemStack> re
     
     public static void handle(OpenQuestAcceptanceScreenPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            Quest quest = QuestRegistry.getQuest(packet.questId());
-            if (quest == null) {
-                return;
-            }
-            
-            Component questName = quest.getName();
-            Component questDescription = quest.getDescription();
-            
-            Minecraft.getInstance().setScreen(new QuestAcceptanceScreen(
-                    packet.questId(),
-                    questName,
-                    questDescription,
-                    packet.rewards(),
-                    packet.digestionReward(),
-                    packet.questSequence(),
-                    packet.npcId()
-            ));
+            ClientHandler.handleQuestScreenPacket(packet);
         });
     }
 }

@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "lotmcraft:item/sealed_artifact_gem"
+    "layer0": "lotmcraft:item/sealed_artifact_gem",
+    "layer1": "lotmcraft:item/sealed_artifact_gem_tint"
   }
 }

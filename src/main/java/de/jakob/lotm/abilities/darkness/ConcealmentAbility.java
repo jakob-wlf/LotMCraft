@@ -254,6 +254,11 @@ public class ConcealmentAbility extends SelectableAbility {
                     // Get the block state before removing it
                     BlockState blockState = serverLevel.getBlockState(blockPos);
 
+                    if(blockState.getDestroySpeed(serverLevel, blockPos) < 0) {
+                        processedBlocks.add(blockPos);
+                        return;
+                    }
+
                     if(blockState.isAir()) { // Skip air blocks when returning to overworld
                         processedBlocks.add(blockPos);
                         return;

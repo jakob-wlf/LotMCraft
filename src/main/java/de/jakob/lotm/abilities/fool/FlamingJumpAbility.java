@@ -17,6 +17,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.Blocks;
 
 import java.util.Comparator;
@@ -84,7 +85,7 @@ public class FlamingJumpAbility extends Ability {
 
         BlockPos nextBestBlock = AbilityUtil.getBlocksInSphereRadius(level, block.getCenter(), 3.2, true, false, false)
                 .stream()
-                .filter(b -> level.getBlockState(b).is(Blocks.FIRE))
+                .filter(b -> level.getBlockState(b).getBlock() instanceof BaseFireBlock)
                 .min(Comparator.comparing(b -> b.distToCenterSqr(block.getCenter()))).orElse(null);
 
         if(nextBestBlock != null) {

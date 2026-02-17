@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.demoness.passives;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
@@ -49,6 +50,10 @@ public class MirrorRevivalAbility extends PassiveAbilityItem {
         }
 
         if(!((MirrorRevivalAbility) PassiveAbilityHandler.MIRROR_REVIVAL.get()).shouldApplyTo(entity)) {
+            return;
+        }
+
+        if(event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) {
             return;
         }
 

@@ -166,7 +166,7 @@ public class LoopHoleCreationAbility extends Ability {
         Ability ability = event.getAbility();
         if (ability != null && user.level() instanceof ServerLevel serverLevel && ability.canBeUsedByNPC) {
             // Use the creator as the caster but potentially keep original targeting
-            ability.useAbility(serverLevel, creator, false, false);
+            ability.useAbility(serverLevel, creator, false, false, true);
         }
     }
 

@@ -401,8 +401,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
             return;
         }
 
-        System.out.println("Attempting to use ability. Hostile: " + isHostile() + ", In Combat: " + isInCombat() + ", Target: " + getTarget());
-
         // Get abilities that can be used right now
         List<Ability> availableAbilities = usableAbilities.stream()
                 .filter(a -> a.canUse(this))
@@ -411,8 +409,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
         if (availableAbilities.isEmpty()) {
             return;
         }
-
-        System.out.println("Available abilities: " + availableAbilities.size());
 
         // Separate abilities by combat suitability
         List<Ability> combatAbilities = availableAbilities.stream()
@@ -439,13 +435,10 @@ public class BeyonderNPCEntity extends PathfinderMob {
             toSelect = availableAbilities;
         }
 
-        System.out.println("Abilities considered for selection: " + toSelect.size());
-
         // Select and use ability
         Ability selectedAbility = selectWeightedAbility(toSelect, new Random());
         if(selectedAbility == null) return;
 
-        System.out.println(selectedAbility);
         selectedAbility.useAbility((ServerLevel) level, this);
     }
 

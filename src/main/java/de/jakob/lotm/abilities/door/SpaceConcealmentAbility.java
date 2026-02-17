@@ -414,7 +414,9 @@ public class SpaceConcealmentAbility extends SelectableAbility {
 
                         // Replace all blocks with air
                         if(!currentState.isAir() && BeyonderData.isGriefingEnabled(source)) {
-                            level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+                            if(currentState.getDestroySpeed(level, pos) >= 0) {
+                                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+                            }
                         }
                     }
                 }

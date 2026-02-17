@@ -38,6 +38,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                FireEffectPacket.TYPE,
+                FireEffectPacket.STREAM_CODEC,
+                FireEffectPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncQuestDataPacket.TYPE,
                 SyncQuestDataPacket.STREAM_CODEC,
                 SyncQuestDataPacket::handle
@@ -191,12 +197,6 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                SyncPlayerListPacket.TYPE,
-                SyncPlayerListPacket.STREAM_CODEC,
-                SyncPlayerListPacket::handle
-        );
-
-        registrar.playToClient(
                 SyncGriefingGamerulePacket.TYPE,
                 SyncGriefingGamerulePacket.STREAM_CODEC,
                 SyncGriefingGamerulePacket::handle
@@ -320,6 +320,48 @@ public class PacketHandler {
                 OpenQuestAcceptanceScreenPacket.TYPE,
                 OpenQuestAcceptanceScreenPacket.STREAM_CODEC,
                 OpenQuestAcceptanceScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenPlayerDivinationScreenPacket.TYPE,
+                OpenPlayerDivinationScreenPacket.STREAM_CODEC,
+                OpenPlayerDivinationScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenStructureDivinationScreenPacket.TYPE,
+                OpenStructureDivinationScreenPacket.STREAM_CODEC,
+                OpenStructureDivinationScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenShapeShiftingScreenPacket.TYPE,
+                OpenShapeShiftingScreenPacket.STREAM_CODEC,
+                OpenShapeShiftingScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncPlayerTeleportationPlayerNamesPacket.TYPE,
+                SyncPlayerTeleportationPlayerNamesPacket.STREAM_CODEC,
+                SyncPlayerTeleportationPlayerNamesPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncPlayerTeleportationOnlinePlayersPacket.TYPE,
+                SyncPlayerTeleportationOnlinePlayersPacket.STREAM_CODEC,
+                SyncPlayerTeleportationOnlinePlayersPacket::handle
+        );
+
+        registrar.playToClient(
+                NameSyncPacket.TYPE,
+                NameSyncPacket.CODEC,
+                NameSyncPacket::handle
+        );
+
+        registrar.playToClient(
+                ShapeShiftingSyncPacket.TYPE,
+                ShapeShiftingSyncPacket.STREAM_CODEC,
+                ShapeShiftingSyncPacket::handle
         );
     }
 
@@ -495,6 +537,21 @@ public class PacketHandler {
                 OpenMessagesMenuPacket.TYPE,
                 OpenMessagesMenuPacket.STREAM_CODEC,
                 OpenMessagesMenuPacket::handle);
+
+        registrar.playToServer(
+                PlayerDivinationSelectedPacket.TYPE,
+                PlayerDivinationSelectedPacket.STREAM_CODEC,
+                PlayerDivinationSelectedPacket::handle);
+
+        registrar.playToServer(
+                StructureDivinationSelectedPacket.TYPE,
+                StructureDivinationSelectedPacket.STREAM_CODEC,
+                StructureDivinationSelectedPacket::handle);
+
+        registrar.playToServer(
+                ShapeShiftingSelectedPacket.TYPE,
+                ShapeShiftingSelectedPacket.STREAM_CODEC,
+                ShapeShiftingSelectedPacket::handle);
     }
 
     public static void sendToServer(CustomPacketPayload packet) {
