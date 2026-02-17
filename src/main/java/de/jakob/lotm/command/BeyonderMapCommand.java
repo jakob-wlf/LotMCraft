@@ -18,6 +18,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -103,43 +104,17 @@ Available commands:
 
     private static LiteralArgumentBuilder<CommandSourceStack> delete() {
         return Commands.literal("delete")
-                .then(Commands.argument("value", EntityArgument.entity())
-                .executes( context -> {
-                    CommandSourceStack source = context.getSource();
-                    var targetEntity = EntityArgument.getEntity(context, "target");
+                .then(Commands.argument("targets", GameProfileArgument.gameProfile())
+                        .executes(context -> {
+                            CommandSourceStack source = context.getSource();
+                            var targets = GameProfileArgument.getGameProfiles(context, "targets");
 
-                    if (!(targetEntity instanceof LivingEntity livingEntity)
-                            || !(BeyonderData.isBeyonder(livingEntity))) {
-                        source.sendFailure(Component.literal("Target must be a living beyonder entity!"));
-                        return 0;
-                    }
-
-                    if(!BeyonderData.beyonderMap.contains(livingEntity)){
-                        source.sendFailure(Component.literal("BeyonderMap doesn't contain passed target!"));
-                        return 0;
-                    }
-
-                    BeyonderData.beyonderMap.remove(livingEntity);
+                            for(var obj : targets){
+                                BeyonderData.beyonderMap.remove(obj.getId());
+                            }
 
                     return 1;
                 }))
-                .then(Commands.argument("value", StringArgumentType.string())
-                        .executes(context -> {
-                            CommandSourceStack source = context.getSource();
-                            var targetNick = StringArgumentType.getString(context, "nickname");
-
-                            var UUID = BeyonderData.beyonderMap.getKeyByName(targetNick);
-
-                            if(UUID == null){
-                                source.sendFailure(Component.literal("BeyonderMap doesn't contain passed target!"));
-                                return 0;
-                            }
-
-                            BeyonderData.beyonderMap.remove(UUID);
-
-                            return 1;
-                        })
-                )
                 .then(Commands.literal("all")
                         .executes(context -> {
                             CommandSourceStack source = context.getSource();
@@ -159,44 +134,23 @@ Available commands:
 
     private static LiteralArgumentBuilder<CommandSourceStack> get() {
         return Commands.literal("get")
-                .then(Commands.argument("value", EntityArgument.entity())
+                .then(Commands.argument("targets", GameProfileArgument.gameProfile())
                 .executes(context -> {
                     CommandSourceStack source = context.getSource();
-                    var targetEntity = EntityArgument.getEntity(context, "value");
+                    var targets = GameProfileArgument.getGameProfiles(context, "targets");
 
-                    if (!(targetEntity instanceof LivingEntity livingEntity)
-                            || !(BeyonderData.isBeyonder(livingEntity))) {
-                        source.sendFailure(Component.literal("Target must be a living beyonder entity!"));
-                        return 0;
+                    for(var obj : targets){
+                        if(!BeyonderData.beyonderMap.contains(obj.getId())){
+                            source.sendFailure(Component.literal("BeyonderMap doesn't contain this player!"));
+                            continue;
+                        }
+
+                        source.sendSystemMessage(Component.literal(
+                                BeyonderData.beyonderMap.get(obj.getId()).get().getAllInfo() + "\n"));
                     }
-
-                    if(!BeyonderData.beyonderMap.contains(livingEntity)){
-                        source.sendFailure(Component.literal("BeyonderMap doesn't contain passed target!"));
-                        return 0;
-                    }
-
-                    source.sendSystemMessage(Component.literal(BeyonderData.
-                            beyonderMap.get(livingEntity).get().getAllInfo()));
 
                     return 1;
-                }))
-                .then(Commands.argument("value", StringArgumentType.string())
-                        .executes(context -> {
-                            CommandSourceStack source = context.getSource();
-                            var targetNick = StringArgumentType.getString(context, "value");
-
-                            var UUID = BeyonderData.beyonderMap.getKeyByName(targetNick);
-
-                            if(UUID == null){
-                                source.sendFailure(Component.literal("BeyonderMap doesn't contain passed target!"));
-                                return 0;
-                            }
-
-                            source.sendSystemMessage(Component.literal(BeyonderData.
-                                    beyonderMap.get(UUID).get().getAllInfo()));
-
-                            return 1;
-                        }));
+                }));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> edit() {

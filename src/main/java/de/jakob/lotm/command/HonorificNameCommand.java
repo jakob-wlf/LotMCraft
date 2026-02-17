@@ -68,7 +68,7 @@ public class HonorificNameCommand {
                                 String line3 = obj.get("line3").getAsString();
                                 String line4 = null;
 
-                                if(obj.has("line_4"))
+                                if(obj.has("line4"))
                                     line4 = obj.get("line4").getAsString();
 
                                 if(BeyonderData.getSequence(source.getPlayer()) >= 4){
@@ -81,14 +81,31 @@ public class HonorificNameCommand {
                                     return 0;
                                 }
 
-                                HonorificName name = new HonorificName((LinkedList<String>) List.of(line1, line2, line3));
+                                LinkedList<String> lines = new LinkedList<>(List.of(line1,line2,line3));
                                 if(line4 != null)
-                                    name = name.addLine(line4);
+                                    lines.add(line4);
+
+                               if(lines.stream().distinct().count() != lines.size())
+                                   throw new Exception("Each line must be different!");
+
+                               for(var str : lines){
+                                   if(str.length() >= HonorificName.MAX_LENGTH)
+                                       throw new Exception("Maximum length of the line is "
+                                               + HonorificName.MAX_LENGTH + "!");
+                               }
+
+                               String pathway = BeyonderData.getPathway(source.getPlayer());
+                               if(!HonorificName.validate(pathway, lines)){
+                                   throw new Exception("Honorific name must contain this words in each line: " +
+                                           HonorificName.getMustHaveWords(pathway));
+                               }
+
+                                HonorificName name = new HonorificName(lines);
 
                                 BeyonderData.setHonorificName(source.getPlayer(), name);
                             }
                             catch (Exception e) {
-                                source.sendFailure(Component.literal("Invalid json format!"));
+                                source.sendFailure(Component.literal("Invalid json format!\nMessage: " + e.getMessage()));
                                 return 0;
                             }
 

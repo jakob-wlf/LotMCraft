@@ -14,9 +14,22 @@ public record HonorificName(LinkedList<String> lines) {
 
     static public final HonorificName EMPTY = new HonorificName(new LinkedList<>());
 
+    static public LinkedList<String> getMustHaveWords(String path){
+        return new LinkedList<String>(
+                switch (path){
+            case "visionary" -> List.of("mind");
+            default -> List.of();
+        });
+    }
+
     public static int MAX_LENGTH = 200;
 
     public boolean contains(String str) {return lines.contains(str);}
+
+    public static boolean validate(String path, LinkedList<String> list){
+
+        return true;
+    }
 
     public boolean isEmpty(){
         return lines.isEmpty();
@@ -31,10 +44,10 @@ public record HonorificName(LinkedList<String> lines) {
 
     public String getAllInfo(){
         return !lines.isEmpty()?
-                ("\nLine 1: " + lines.get(0)
-                + "\nLine 2: " + lines.get(1)
-                + "\nLine 3: " + lines.get(2)
-                + ((lines.size() == 4) ? ("\nLine 4" + lines.get(3)) : ""))
+                ("\n  Line 1: " + lines.get(0)
+                + "\n  Line 2: " + lines.get(1)
+                + "\n  Line 3: " + lines.get(2)
+                + ((lines.size() == 4) ? ("\n  Line 4" + lines.get(3)) : ""))
                 : "None";
     }
 

@@ -29,10 +29,10 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
 
     public String getAllInfo(){
         return "Name: " + trueName
-                + "\n\t--- Path: " + pathway
-                + "\n\t--- Seq: " + sequence
-                + "\n\t--- Honorific Name: " + honorificName.getAllInfo()
-                + "\n\t--- Was modified: " + modified
+                + "\n--- Path: " + pathway
+                + "\n--- Seq: " + sequence
+                + "\n--- Honorific Name: " + honorificName.getAllInfo()
+                + "\n--- Was modified: " + modified
                 ;
     }
 
@@ -49,6 +49,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 .copyFrom(this)
                 .pathway((sequence + 1 == LOTMCraft.NON_BEYONDER_SEQ) ? "none" : pathway)
                 .sequence(sequence + 1)
+                .honorificName((sequence + 1 >= 3) ? HonorificName.EMPTY : honorificName)
                 .build();
     }
 

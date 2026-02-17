@@ -27,33 +27,54 @@ public class HonorificNamesEventHandler {
     public static void onChatMessageSent(ServerChatEvent event) {
         UUID playerUUID = event.getPlayer().getUUID();
 
+        String DEBUG_nickname = event.getPlayer().getName().getString();
+
+        LOTMCraft.LOGGER.info("HN stage 0: pre input for {}", DEBUG_nickname);
+
         if(timeout.containsKey(playerUUID)
                 && timeout.get(playerUUID) <= System.currentTimeMillis() - 60000) {
+
+            LOTMCraft.LOGGER.info("HN stage 0: {} --- {}, timed out for {}",
+                    System.currentTimeMillis() - 60000, timeout.get(playerUUID), DEBUG_nickname);
+
             timeout.remove(playerUUID);
             input.remove(playerUUID);
         }
 
         String rawMessage = event.getRawText();
 
+        LOTMCraft.LOGGER.info("HN stage 1: after input {} for {}", rawMessage, DEBUG_nickname);
+
         if(isInTransferring.containsKey(playerUUID)){
+            LOTMCraft.LOGGER.info("NH stage 2: is in transfer for {}", DEBUG_nickname);
+
             var target = event.getPlayer().server.getPlayerList().
                     getPlayer(isInTransferring.get(playerUUID));
 
             if(target != null){
                 target.sendSystemMessage(Component.translatable("lotmcraft.honorific_prayings_message", rawMessage)
                         .withStyle(ChatFormatting.DARK_GREEN));
+
+                LOTMCraft.LOGGER.info("NH stage 2: transferred from {} to {}", DEBUG_nickname, target.getDisplayName().toString());
             }
 
             isInTransferring.remove(playerUUID);
+
+            LOTMCraft.LOGGER.info("NH stage 2: delete from transfer for {}", DEBUG_nickname);
+
             return;
         }
 
         if(!input.containsKey(playerUUID) && isHonorificNameFirstLine(rawMessage)){
+            LOTMCraft.LOGGER.info("NH stage 3: detected first line of HN for {}, line {}", DEBUG_nickname, rawMessage);
+
             input.put(playerUUID, new LinkedList<>(List.of(rawMessage)));
             timeout.put(playerUUID, System.currentTimeMillis());
             return;
         }
         else if (input.containsKey(playerUUID)){
+            LOTMCraft.LOGGER.info("NH stage 3: add line line of HN for {}, line {}", DEBUG_nickname, rawMessage);
+
             var list = input.get(playerUUID);
             list.add(rawMessage);
 
@@ -61,9 +82,12 @@ public class HonorificNamesEventHandler {
         }
 
         if(isHonorificNameLastLine(rawMessage)){
+            LOTMCraft.LOGGER.info("NH stage 4: detected last line of HN for {}, line {}", DEBUG_nickname, rawMessage);
             var targetUUID = BeyonderData.beyonderMap.findCandidat(input.get(playerUUID));
 
             if(targetUUID == null){
+                LOTMCraft.LOGGER.info("NH stage 4: target not found for {}", DEBUG_nickname);
+
                 input.remove(playerUUID);
                 timeout.remove(playerUUID);
                 return;
@@ -72,24 +96,32 @@ public class HonorificNamesEventHandler {
             var target = event.getPlayer().server.getPlayerList().getPlayer(targetUUID);
 
             if(target == null){
+                LOTMCraft.LOGGER.info("NH stage 4: target is offline for {}", DEBUG_nickname);
+
                 input.remove(playerUUID);
                 timeout.remove(playerUUID);
                 return;
             }
 
             if(targetUUID == playerUUID){
+                LOTMCraft.LOGGER.info("NH stage 4: target is the same person as player for {}", DEBUG_nickname);
+
                 target.sendSystemMessage(Component.translatable("lotmcraft.own_prayings")
                         .withStyle(ChatFormatting.GREEN));
                 return;
             }
 
             if(BeyonderData.getSequence(target) == 3 && target.distanceTo(event.getPlayer()) >= 4000.0f){
+                LOTMCraft.LOGGER.info("NH stage 4: target is too far away from player for {}", DEBUG_nickname);
+
                 target.sendSystemMessage(Component.translatable("lotmcraft.far_away_prayings")
                         .withStyle(ChatFormatting.RED));
                 return;
             }
 
             isInTransferring.put(playerUUID, targetUUID);
+
+            LOTMCraft.LOGGER.info("NH stage 5: Form message for target for {}, target {}", DEBUG_nickname, target.getDisplayName().toString());
 
             target.sendSystemMessage(formMessage(event.getPlayer(), target));
         }

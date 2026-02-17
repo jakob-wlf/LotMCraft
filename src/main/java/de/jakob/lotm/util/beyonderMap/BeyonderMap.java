@@ -275,6 +275,10 @@ public class BeyonderMap extends SavedData {
         return map.containsKey(entity.getUUID());
     }
 
+    public boolean contains(UUID id){
+        return map.containsKey(id);
+    }
+
     @Override
     public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
