@@ -123,10 +123,10 @@ public class ModAttachments {
                             .build()
             );
 
-    public static final Supplier<AttachmentType<OriginalBodyComponent>> ORIGINAL_BODY =
-            ATTACHMENT_TYPES.register("original_body", () ->
-                    AttachmentType.builder(OriginalBodyComponent::new)
-                            .serialize(OriginalBodyComponent.SERIALIZER)
+    public static final Supplier<AttachmentType<ControllingDataComponent>> CONTROLLING_DATA =
+            ATTACHMENT_TYPES.register("controlling_data", () ->
+                    AttachmentType.builder(ControllingDataComponent::new)
+                            .serialize(ControllingDataComponent.SERIALIZER)
                             .copyOnDeath()
                             .build()
             );

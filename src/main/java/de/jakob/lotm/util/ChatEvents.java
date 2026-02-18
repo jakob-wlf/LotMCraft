@@ -18,7 +18,7 @@ public class ChatEvents {
         String messageText = message.getString();
 
         if (messageText.equalsIgnoreCase("fool")) {
-            ControllingUtil.reset(player, player.serverLevel());
+            ControllingUtil.reset(player, player.serverLevel(), true);
         }
     }
 }

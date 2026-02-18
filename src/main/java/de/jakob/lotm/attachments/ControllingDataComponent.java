@@ -7,13 +7,13 @@ import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 
 import java.util.UUID;
 
-public class OriginalBodyComponent {
+public class ControllingDataComponent {
     private UUID ownerUUID = null;
     private UUID bodyUUID = null;
     private UUID targetUUID = null;
     private CompoundTag targetEntity = null;
 
-    public OriginalBodyComponent() {}
+    public ControllingDataComponent() {}
 
     public UUID getOwnerUUID() {
         return ownerUUID;
@@ -66,11 +66,11 @@ public class OriginalBodyComponent {
     }
 
 
-    public static final IAttachmentSerializer<CompoundTag, OriginalBodyComponent> SERIALIZER =
+    public static final IAttachmentSerializer<CompoundTag, ControllingDataComponent> SERIALIZER =
             new IAttachmentSerializer<>() {
                 @Override
-                public OriginalBodyComponent read(IAttachmentHolder holder, CompoundTag tag, HolderLookup.Provider lookup) {
-                    OriginalBodyComponent component = new OriginalBodyComponent();
+                public ControllingDataComponent read(IAttachmentHolder holder, CompoundTag tag, HolderLookup.Provider lookup) {
+                    ControllingDataComponent component = new ControllingDataComponent();
                     if (tag.hasUUID("ownerUUID")) component.ownerUUID = tag.getUUID("ownerUUID");
                     if (tag.hasUUID("bodyUUID")) component.bodyUUID = tag.getUUID("bodyUUID");
                     if (tag.hasUUID("targetUUID")) component.targetUUID = tag.getUUID("targetUUID");
@@ -79,7 +79,7 @@ public class OriginalBodyComponent {
                 }
 
                 @Override
-                public CompoundTag write(OriginalBodyComponent component, HolderLookup.Provider lookup) {
+                public CompoundTag write(ControllingDataComponent component, HolderLookup.Provider lookup) {
                     CompoundTag tag = new CompoundTag();
                     if (component.ownerUUID != null) tag.putUUID("ownerUUID", component.ownerUUID);
                     if (component.bodyUUID != null) tag.putUUID("bodyUUID", component.bodyUUID);

@@ -4,10 +4,7 @@ import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.MemorisedEntities;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.packets.toClient.OpenShapeShiftingScreenPacket;
-import de.jakob.lotm.network.packets.toClient.ShapeShiftingSyncPacket;
-import de.jakob.lotm.util.shapeShifting.DimensionsRefresher;
-import de.jakob.lotm.util.shapeShifting.NameUtils;
-import de.jakob.lotm.util.shapeShifting.TransformData;
+import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -61,58 +58,6 @@ public class ShapeShiftingAbility extends SelectableAbility {
     }
 
     public void resetShape(ServerPlayer player) {
-        TransformData data = (TransformData) player;
-        data.setCurrentShape(null);
-        ((DimensionsRefresher) player).shape_refreshDimensions();
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player,
-                new ShapeShiftingSyncPacket(player.getUUID(), null));
-        NameUtils.resetPlayerName(player);
-
-        if (player.isCreative()) return;
-        player.getAbilities().mayfly = false;
-        player.getAbilities().flying = false;
-        player.onUpdateAbilities();
+        ShapeShiftingUtil.resetShape(player);
     }
-
-//    @Override
-//    public void onAbilityUse(Level level, LivingEntity entity) {
-//        if(level.isClientSide)
-//            return;
-//
-//        if(entity instanceof ServerPlayer player) {
-//            Component message = Component.translatable("lotm.not_implemented_yet").withStyle(ChatFormatting.RED);
-//            player.sendSystemMessage(message);
-//        }
-//        Minecraft.getInstance().setScreen(new UsernameInputScreen(entity));
-//
-//
-//
-//        if(attemptingToChangeSkin.containsKey(entity.getUUID()))
-//            return;
-//
-//        if(!(entity instanceof ServerPlayer player))
-//            return;
-//
-//        attemptingToChangeSkin.put(player.getUUID(), "None");
-//
-//        AtomicBoolean shouldStop = new AtomicBoolean(false);
-//
-//        ServerScheduler.scheduleUntil((ServerLevel) level, () -> {
-//            if(!attemptingToChangeSkin.containsKey(entity.getUUID())) {
-//                shouldStop.set(true);
-//                return;
-//            }
-//
-//            if(!attemptingToChangeSkin.get(entity.getUUID()).equals("None")) {
-//                shouldStop.set(true);
-//                String username = attemptingToChangeSkin.get(entity.getUUID());
-//                SkinChanger.exampleUsageWithDebug(player, username);
-//                attemptingToChangeSkin.remove(entity.getUUID());
-//                return;
-//            }
-//        }, 5, () -> {
-//            attemptingToChangeSkin.remove(entity.getUUID());
-//        }, shouldStop);
-//    }
-
 }
