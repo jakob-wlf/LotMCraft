@@ -18,8 +18,29 @@ public record HonorificName(LinkedList<String> lines) {
     static public LinkedList<String> getMustHaveWords(String path){
         return new LinkedList<String>(
                 switch (path){
-            case "visionary" -> List.of("mind");
-            default -> List.of();
+                    case "fool" -> List.of("history", "mystery", "bizarreness", "change", "wishes", "miracles", "drama", "performances", "fools");
+                    case "error" -> List.of("time", "deceit", "trickery", "loopholes", "tampering", "exploitation", "bugs", "theft", "errors");
+                    case "door" -> List.of("space", "stars", "cosmos", "worlds", "concealment", "seals", "travels", "chronicles", "doors");
+                    case "visionary" -> List.of("mind", "dreams", "dream", "visions", "fantasies", "fantasy" ,"imagination");
+                    case "sun" -> List.of("light", "order", "holiness", "contracts", "justice", "energy", "sun");
+                    case "tyrant" -> List.of("storms", "calamities", "seas", "skies", "tsunamis", "undersea", "creatures", "tyranny");
+                    case "white_tower" -> List.of("Knowledge", "Observation", "Reasoning", "Cognition", "Wisdom", "Reason", "Omniscience");
+                    case "hanged_man" -> List.of("Degeneration", "Corruption", "Mutation", "Shadows", "Darkness", "Whispers", "Sacrifice");
+                    case "darkness" -> List.of("Darkness", "Dreams", "Silence", "Horror", "Repose", "Misfortune", "Concealment", "Stars");
+                    case "death" -> List.of("Death", "Undeath", "Spirits", "Underworld", "Pallor", "Styx", "Dead", "Eternal", "Rest");
+                    case "twilight_light" -> List.of("Twilight", "Decay", "Glory", "Passage","Time", "Dawn", "Dusk", "Power", "Combat");
+                    case "demoness" -> List.of("Chaos", "Catastrophes","Mirror", "Disasters", "Apocalypse", "Strife", "Plagues", "Primordium");
+                    case "red_priest" -> List.of("War", "Calamity", "Iron","Blood", "Battlefield", "Strife", "Chaos", "Destruction");
+                    case "hermit" -> List.of("Knowledge", "Information", "Symbols", "Magic", "Data", "Numbers");
+                    case "paragon" -> List.of("Technology", "Logic", "Machinery", "Physics", "Civilizations", "Structure", "Essence");
+                    case "wheel_of_fortune" -> List.of("Fate", "Luck", "Misfortune", "Fortune", "River", "Calamities", "Probability", "Madness", "Chaos");
+                    case "mother" -> List.of("Earth", "Fertility", "Reproduction", "Desolation", "Nature", "Origin", "Life");
+                    case "moon" -> List.of("Moon", "Fertility", "Reproduction", "Spirituality", "Beauty", "Proliferation", "Moonlight");
+                    case "abyss" -> List.of("Devils", "Evil", "Desires", "Corruption", "Blood", "Malice", "Blathers", "Corrosion", "Filth");
+                    case "chained" -> List.of("Chains", "Temperance", "Deviants", "Restraint", "Indulgence", "Unity", "Binding", "Curses");
+                    case "black_emperor" -> List.of("Disorder", "Distortion", "Exploitation", "Entropy", "Abolition", "Frenzy", "Domination", "Black");
+                    case "justiciar" -> List.of("Laws", "Rules", "Balance", "Discipline", "Justice", "Judgement", "Order", "White");
+                    default -> List.of();
         });
     }
 
@@ -53,8 +74,6 @@ public record HonorificName(LinkedList<String> lines) {
     }
 
     public CompoundTag toNBT(){
-        LOTMCraft.LOGGER.info("Saving hn, size {}", lines.size());
-
         CompoundTag tag = new CompoundTag();
 
         ListTag list = new ListTag();
@@ -68,33 +87,14 @@ public record HonorificName(LinkedList<String> lines) {
     }
 
     static public HonorificName fromNBT(CompoundTag tag){
-        LOTMCraft.LOGGER.info("Loading hn");
-
         LinkedList<String> list = new LinkedList<>();
 
-        LOTMCraft.LOGGER.info("Loading hn: list created");
-
         if (tag.contains(NBT_LINES, Tag.TAG_LIST)) {
-            LOTMCraft.LOGGER.info("Loading hn: contains nbt_lines");
-
             ListTag listTag = tag.getList(NBT_LINES, Tag.TAG_STRING);
 
-            LOTMCraft.LOGGER.info("Loading hn: got listTag");
             for (var obj : listTag) {
                 list.add(obj.getAsString());
             }
-
-            LOTMCraft.LOGGER.info("Loading hn: filled list, size - {}", list.size());
-        }
-
-        for(int i = 0; i < list.size(); i++){
-            LOTMCraft.LOGGER.info("Loading hn: line {} - {}", i,list.get(i));
-        }
-
-        var buff = new HonorificName(list);
-
-        for(int i = 0; i < list.size(); i++){
-            LOTMCraft.LOGGER.info("Loading hn: hn line {} - {}", i, buff.lines().get(i));
         }
 
         return new HonorificName(list);

@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.events.HonorificNamesEventHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.beyonderMap.HonorificName;
@@ -12,6 +13,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.LinkedList;
@@ -35,7 +37,52 @@ public class HonorificNameCommand {
                                         return 0;
                                     }
 
+                                    if(!HonorificNamesEventHandler.answerState.contains(new Pair<>(target.getUUID(), player.getUUID()))){
+                                        source.sendFailure(Component.literal("You must not use this command directly!"));
+                                        return 0;
+                                    }
+
                                     HonorificNamesEventHandler.isInTransferring.put(target.getUUID(), player.getUUID());
+
+                                    HonorificNamesEventHandler.answerState.remove(new Pair<>(target.getUUID(), player.getUUID()));
+                                    return 1;
+                                }))
+                );
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> teleport() {
+        return Commands.literal("teleport")
+                .then(Commands.argument("player", EntityArgument.entity())
+                        .then(Commands.argument("target", EntityArgument.entity())
+                                .executes(context -> {
+                                    CommandSourceStack source = context.getSource();
+
+                                    var playerEntity = EntityArgument.getEntity(context, "player");
+                                    var targetEntity = EntityArgument.getEntity(context, "target");
+
+                                    if(!(targetEntity instanceof LivingEntity target)
+                                            || (!(playerEntity instanceof LivingEntity player))){
+                                        source.sendFailure(Component.literal("Targets must be a living entities!"));
+                                        return 0;
+                                    }
+
+                                    if(!HonorificNamesEventHandler.answerState.contains(new Pair<>(target.getUUID(), player.getUUID()))){
+                                        source.sendFailure(Component.literal("You must not use this command directly!"));
+                                        return 0;
+                                    }
+
+                                    if (player instanceof ServerPlayer serverPlayer && target instanceof ServerPlayer targetPlayer) {
+                                       targetPlayer.teleportTo(
+                                               serverPlayer.serverLevel(),
+                                               serverPlayer.getX(),
+                                               serverPlayer.getY(),
+                                               serverPlayer.getZ(),
+                                               serverPlayer.getYRot(),
+                                               serverPlayer.getXRot()
+                                        );
+                                    }
+
+                                    HonorificNamesEventHandler.answerState.remove(new Pair<>(target.getUUID(), player.getUUID()));
                                     return 1;
                                 }))
                 );
@@ -43,13 +90,14 @@ public class HonorificNameCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> ui() {
         return Commands.literal("ui")
-                .then(sendMessage());
+                .then(sendMessage())
+                .then(teleport());
     }
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("honorificname")
-                .then(ui())
                 .then(set())
+                .then(ui())
         );
     }
 
@@ -114,7 +162,7 @@ public class HonorificNameCommand {
                                 BeyonderData.setHonorificName(source.getPlayer(), name);
                             }
                             catch (Exception e) {
-                                source.sendFailure(Component.literal("Invalid json format!\nMessage: " + e.getMessage()));
+                                source.sendFailure(Component.literal("Invalid format!\nMessage: " + e.getMessage()));
                                 return 0;
                             }
 

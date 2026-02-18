@@ -1,11 +1,13 @@
 package de.jakob.lotm.events;
 
+import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,6 +15,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.ServerChatEvent;
+import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -22,6 +25,8 @@ public class HonorificNamesEventHandler {
     public static HashMap<UUID, LinkedList<String>> input = new HashMap<>();
     public static HashMap<UUID, Long> timeout = new HashMap<>();
     public static HashMap<UUID, UUID> isInTransferring = new HashMap<>();
+
+    public static LinkedList<Pair<UUID, UUID>> answerState = new LinkedList<>();
 
     @SubscribeEvent
     public static void onChatMessageSent(ServerChatEvent event) {
@@ -144,9 +149,11 @@ public class HonorificNamesEventHandler {
     }
 
     public static Component formMessage(LivingEntity player, LivingEntity target){
+        answerState.add(new Pair<>(target.getUUID(), player.getUUID()));
+
         MutableComponent message = Component.empty();
 
-        Component spacer = Component.literal("\n---").withStyle(ChatFormatting.DARK_GREEN);
+        Component spacer = Component.literal("\n--- ").withStyle(ChatFormatting.DARK_GREEN);
 
         Component generalInfo = Component.translatable("lotmcraft.honorific_prayings",
                 player.getName().getString(), BeyonderData.getPathway(player),
@@ -161,9 +168,60 @@ public class HonorificNamesEventHandler {
                                 ClickEvent.Action.RUN_COMMAND,
                                 "/honorificname ui sendmessage " + player.getName().getString()
                                         + " " + target.getName().getString()
-                        )));
+                        ))
+                        .withHoverEvent(new HoverEvent(
+                                HoverEvent.Action.SHOW_TEXT,
+                                Component.translatable("lotmcraft.honorific_prayings_send_message_desc")
+                                        .withStyle(ChatFormatting.GRAY)
+                        ))
+                );
+
+        Component teleportButton = Component.translatable( "lotmcraft.honorific_prayings_teleport_button")
+                .withStyle(style -> style
+                        .withColor(ChatFormatting.GOLD)
+                        .withBold(true)
+                        .withClickEvent(new ClickEvent(
+                                ClickEvent.Action.RUN_COMMAND,
+                                "/honorificname ui teleport " + player.getName().getString()
+                                        + " " + target.getName().getString()
+                        ))
+                        .withHoverEvent(new HoverEvent(
+                                HoverEvent.Action.SHOW_TEXT,
+                                Component.translatable("lotmcraft.honorific_prayings_teleport_desc")
+                                        .withStyle(ChatFormatting.GRAY)
+                        ))
+                );
+
+        Component useSkillButton = (BeyonderData.getSequence(target) >= 2) ?
+                Component.translatable( "lotmcraft.honorific_prayings_use_skill_button")
+                .withStyle(style -> style
+                        .withColor(ChatFormatting.GOLD)
+                        .withBold(true)
+//                        .withClickEvent(new ClickEvent(
+//                                ClickEvent.Action.RUN_COMMAND,
+//                                "/honorificname ui teleport " + player.getName().getString()
+//                                        + " " + target.getName().getString()
+//                        ))
+                        .withHoverEvent(new HoverEvent(
+                                HoverEvent.Action.SHOW_TEXT,
+                                Component.translatable("lotmcraft.honorific_prayings_use_skill_desc")
+                                        .withStyle(ChatFormatting.GRAY)
+                        ))
+                )
+                : Component.translatable( "lotmcraft.honorific_prayings_not_met_req_button")
+                .withStyle(style -> style
+                        .withColor(ChatFormatting.GOLD)
+                        .withBold(true)
+                        .withHoverEvent(new HoverEvent(
+                                HoverEvent.Action.SHOW_TEXT,
+                                Component.translatable("lotmcraft.honorific_prayings_not_met_req_desc")
+                                        .withStyle(ChatFormatting.GRAY)
+                        ))
+                );;
 
         return message.append(generalInfo).append(spacer)
-                .append(sendMessageButton).append(spacer);
+                .append(sendMessageButton).append(spacer)
+                .append(teleportButton).append(spacer)
+                .append(useSkillButton);
     }
 }

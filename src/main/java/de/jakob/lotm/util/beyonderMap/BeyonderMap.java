@@ -14,6 +14,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import javax.annotation.Nullable;
 import javax.swing.text.StyledEditorKit;
 import java.util.*;
+import java.util.stream.IntStream;
 
 import static de.jakob.lotm.util.BeyonderData.beyonderMap;
 
@@ -369,7 +370,7 @@ public class BeyonderMap extends SavedData {
         UUID originalTarget = null;
 
         for(var obj : map.entrySet()){
-            if(obj.getValue().honorificName().lines().equals(list)) {
+            if(ListHelper.compareLists(obj.getValue().honorificName().lines(), list)) {
                 originalTarget = obj.getKey();
                 break;
             }
@@ -382,7 +383,7 @@ public class BeyonderMap extends SavedData {
                 continue;
 
             for(var str : list){
-                if(obj.getValue().honorificName().contains(str)){
+                if(ListHelper.containsString(obj.getValue().honorificName().lines(), str)){
                     possibleTargets.add(obj.getKey());
                 }
             }
@@ -405,4 +406,17 @@ public class BeyonderMap extends SavedData {
         return originalTarget;
     }
 
+}
+
+class ListHelper{
+    public static boolean compareLists(List<String> list1, List<String> list2){
+        if (list1.size() != list2.size()) return false;
+
+        return IntStream.range(0, list1.size())
+                .allMatch(i -> list1.get(i).equalsIgnoreCase(list2.get(i)));
+    }
+
+    public static boolean containsString(List<String> list, String str){
+        return list.stream().anyMatch(line -> line.equalsIgnoreCase(str));
+    }
 }
