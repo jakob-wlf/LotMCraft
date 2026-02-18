@@ -49,6 +49,15 @@ public record HonorificName(LinkedList<String> lines) {
     public boolean contains(String str) {return lines.contains(str);}
 
     public static boolean validate(String path, LinkedList<String> list){
+        var mustHave = getMustHaveWords(path);
+
+        for (var str : list){
+            var words = List.of(str.split(", "));
+            if(!words.stream().
+                    anyMatch(input -> mustHave.stream().
+                            anyMatch(target -> target.equalsIgnoreCase(input))))
+                return false;
+        }
 
         return true;
     }

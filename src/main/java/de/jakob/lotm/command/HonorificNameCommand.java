@@ -153,7 +153,7 @@ public class HonorificNameCommand {
 
                                String pathway = BeyonderData.getPathway(source.getPlayer());
                                if(!HonorificName.validate(pathway, lines)){
-                                   throw new Exception("Honorific name must contain this words in each line: " +
+                                   throw new Exception("Honorific name must contain this words in each line:\n " +
                                            HonorificName.getMustHaveWords(pathway));
                                }
 

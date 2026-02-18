@@ -357,7 +357,7 @@ public class BeyonderMap extends SavedData {
     public boolean  containsHonorificNamewithLine(String str){
         for(var data : map.values()){
             if(!data.honorificName().isEmpty()
-                    && data.honorificName().lines().contains(str))
+                    && ListHelper.containsString(data.honorificName().lines(), str))
                 return true;
         }
 
