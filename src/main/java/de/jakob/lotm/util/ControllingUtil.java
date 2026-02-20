@@ -1,6 +1,7 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.entity.ModEntities;
@@ -229,9 +230,26 @@ public class ControllingUtil {
         targetBarData.setAbilities(sourceBarData.getAbilities());
 
         // copy persistent data for beyonders
-        target.getPersistentData().putString("beyonder_pathway", source.getPersistentData().getString("beyonder_pathway"));
-        target.getPersistentData().putInt("beyonder_sequence", source.getPersistentData().getInt("beyonder_sequence"));
-        target.getPersistentData().putFloat("beyonder_spirituality", source.getPersistentData().getFloat("beyonder_spirituality"));
+        if (source.getPersistentData().getString("beyonder_pathway").isEmpty()) {
+            target.getPersistentData().remove("beyonder_pathway");
+            PhysicalEnhancementsAbility.resetEnhancements(target.getUUID());
+        } else {
+            target.getPersistentData().putString("beyonder_pathway", source.getPersistentData().getString("beyonder_pathway"));
+        }
+
+        if (source.getPersistentData().getInt("beyonder_sequence") == 0) {
+            target.getPersistentData().remove("beyonder_sequence");
+            PhysicalEnhancementsAbility.resetEnhancements(target.getUUID());
+        } else {
+            target.getPersistentData().putInt("beyonder_sequence", source.getPersistentData().getInt("beyonder_sequence"));
+        }
+
+        if (source.getPersistentData().getFloat("beyonder_spirituality") == 0.0f) {
+            target.getPersistentData().remove("beyonder_spirituality");
+            PhysicalEnhancementsAbility.resetEnhancements(target.getUUID());
+        } else {
+            target.getPersistentData().putFloat("beyonder_spirituality", source.getPersistentData().getFloat("beyonder_spirituality"));
+        }
 
         // sync the changes to the client
         if(target instanceof ServerPlayer serverPlayer) {
