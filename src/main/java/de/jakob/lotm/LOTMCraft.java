@@ -195,6 +195,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.DESOLATE_AREA.get(), DesolateAreaRenderer::new);
             EntityRenderers.register(ModEntities.CYCLE_OF_FATE.get(), CycleOfFateRenderer::new);
             EntityRenderers.register(ModEntities.NATURE_RETURN_PORTAL.get(), ReturnFromNaturelRenderer::new);
+            EntityRenderers.register(ModEntities.GRAFTING_LOCATION_ENTITY.get(), GraftingLocationRenderer::new);
 
             GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);
 

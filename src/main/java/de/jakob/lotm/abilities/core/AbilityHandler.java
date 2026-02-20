@@ -119,6 +119,7 @@ public class AbilityHandler {
         abilities.add(new HistoricalVoidSummoningAbility("historical_void_summoning_ability"));
         abilities.add(new HistoricalVoidHidingAbility("historical_void_hiding_ability"));
         abilities.add(new MiracleCreationAbility("miracle_creation_ability"));
+        abilities.add(new GraftingAbility("grafting_ability"));
 
         // DARKNESS PATHWAY
         abilities.add(new MidnightPoemAbility("midnight_poem_ability"));
@@ -273,6 +274,7 @@ public class AbilityHandler {
         return new ArrayList<>(
                 abilities.stream()
                         .filter(ability -> ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) >= sequence)
+                        .sorted(Comparator.comparing(Ability::getId))
                         .sorted(Comparator.comparing(ability -> ability.getRequirements().get(pathway)))
                         .toList()
         );

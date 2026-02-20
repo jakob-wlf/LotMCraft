@@ -311,6 +311,15 @@
   "ability.lotmcraft.miracle_creation.miracle.slow_time": "Slow Time",
   "ability.lotmcraft.miracle_creation.miracle.darkness": "Summon Darkness",
   "ability.lotmcraft.miracle_creation.miracle.forbid_godhood": "Forbid Godhood",
+  "lotmcraft.grafting_ability": "Grafting",
+  "lotmcraft.grafting_ability.description": "Graft together different things, such as locations, health an more. To remove certain Graftings, use ability in proximity while holding shift. For some sub-abilities, to select yourself as the target, just don't select a target.",
+  "ability.lotmcraft.grafting.locations": "Graft Locations together",
+  "ability.lotmcraft.grafting.damage": "Graft Damage onto another",
+  "ability.lotmcraft.grafting.abilities": "Graft Ability Uses",
+  "ability.lotmcraft.grafting.change_target": "Change Target of Someone",
+  "ability.lotmcraft.grafting.selected": "Selected %s",
+  "ability.lotmcraft.grafting.already_grafted": "That is already tampered with",
+  "ability.lotmcraft.grafting.same_entity": "You cannot choose the same entity as both source and target",
 
 
   "lotmcraft.midnight_poem_ability": "Midnight Poem",

@@ -19,6 +19,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 
 import java.util.*;
 
@@ -32,6 +33,13 @@ public class MarionetteOverlayRenderer {
         event.registerAbove(VanillaGuiLayers.HOTBAR, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "marionette_overlay"), (guiGraphics, deltaTracker) -> {
             renderOverlay(guiGraphics);
         });
+    }
+
+    @SubscribeEvent
+    public static void onLeave(EntityLeaveLevelEvent event) {
+        if(event.getEntity() instanceof LivingEntity livingEntity) {
+            currentMarionette.remove(livingEntity.getUUID());
+        }
     }
 
     private static void renderOverlay(GuiGraphics guiGraphics) {

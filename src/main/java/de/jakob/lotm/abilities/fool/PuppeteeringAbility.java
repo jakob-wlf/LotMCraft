@@ -238,7 +238,7 @@ public class PuppeteeringAbility extends Ability {
             if(BeyonderData.isBeyonder(target)) {
                 int sequence = BeyonderData.getSequence(target);
                 String pathway = BeyonderData.getPathway(target);
-                target.setHealth(0);
+                target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
                 target = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), target.level(), false, pathway, sequence);
             }
             else {

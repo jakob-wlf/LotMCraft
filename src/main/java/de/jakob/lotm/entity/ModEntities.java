@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.entity.client.GraftingLocationRenderer;
 import de.jakob.lotm.entity.custom.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -43,6 +44,16 @@ public class ModEntities {
                             .clientTrackingRange(10)
                             .updateInterval(20)
                             .build("return_portal")
+            );
+
+    public static final DeferredHolder<EntityType<?>, EntityType<LocationGraftingEntity>> GRAFTING_LOCATION_ENTITY =
+            ENTITY_TYPES.register("grafting_location", () ->
+                    EntityType.Builder.<LocationGraftingEntity>of(LocationGraftingEntity::new, MobCategory.MISC)
+                            .sized(1.0F, 1.0F)
+                            .clientTrackingRange(10)
+                            .updateInterval(20)
+                            .noSummon()
+                            .build("grafting_location")
             );
 
     public static final DeferredHolder<EntityType<?>, EntityType<CycleOfFateEntity>> CYCLE_OF_FATE =
