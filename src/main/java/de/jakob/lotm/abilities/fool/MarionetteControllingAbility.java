@@ -3,6 +3,8 @@ package de.jakob.lotm.abilities.fool;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSelectedMarionettePacket;
 import de.jakob.lotm.util.ControllingUtil;
@@ -10,6 +12,8 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
@@ -17,6 +21,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Phantom;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -27,6 +32,8 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.*;
 import java.util.stream.StreamSupport;
+
+import static de.jakob.lotm.item.ModItems.MARIONETTE_CONTROLLER;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MarionetteControllingAbility extends SelectableAbility {
@@ -269,7 +276,30 @@ public class MarionetteControllingAbility extends SelectableAbility {
 
     public static void control(Level level, ServerPlayer player) {
         if (level.isClientSide) return;
-        LivingEntity target = AbilityUtil.getTargetEntity(player, 5, 1);
+        TransformationComponent transformationComponent = player.getData(ModAttachments.TRANSFORMATION_COMPONENT);
+        if (transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.FOG_OF_HISTORY.getIndex() && transformationComponent.isTransformed()) return;
+
+        LivingEntity target = AbilityUtil.getTargetEntity(player, 5, 1, false, false, true);
+
+        if (target == null) {
+            System.out.println("1");
+            ItemStack item = player.getMainHandItem();
+            if (!item.is(ModItems.MARIONETTE_CONTROLLER.get())) {
+                item = player.getOffhandItem();
+                if (!item.is(ModItems.MARIONETTE_CONTROLLER.get())) return;
+            }
+            CompoundTag tag = item.get(DataComponents.CUSTOM_DATA).copyTag();
+            if (tag.contains("MarionetteUUID")) {
+                String marionetteId = tag.getString("MarionetteUUID");
+                UUID marionetteUUID = UUID.fromString(marionetteId);
+                if (level instanceof ServerLevel serverLevel) {
+                    Entity entity = serverLevel.getEntity(marionetteUUID);
+                    if (entity instanceof LivingEntity livingEntity) {
+                        target = livingEntity;
+                    }
+                }
+            }
+        }
         if (target != null) {
             ControllingUtil.possess(player, target);
         }

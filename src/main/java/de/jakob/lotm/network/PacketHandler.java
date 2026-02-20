@@ -363,6 +363,12 @@ public class PacketHandler {
                 ShapeShiftingSyncPacket.STREAM_CODEC,
                 ShapeShiftingSyncPacket::handle
         );
+
+        registrar.playToClient(
+                SyncOriginalBodyOwnerPacket.TYPE,
+                SyncOriginalBodyOwnerPacket.STREAM_CODEC,
+                SyncOriginalBodyOwnerPacket::handle
+        );
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
@@ -552,6 +558,11 @@ public class PacketHandler {
                 ShapeShiftingSelectedPacket.TYPE,
                 ShapeShiftingSelectedPacket.STREAM_CODEC,
                 ShapeShiftingSelectedPacket::handle);
+
+        registrar.playToServer(
+                ReturnToMainBodyPacket.TYPE,
+                ReturnToMainBodyPacket.STREAM_CODEC,
+                ReturnToMainBodyPacket::handle);
     }
 
     public static void sendToServer(CustomPacketPayload packet) {

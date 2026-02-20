@@ -41,6 +41,8 @@ public class ClientEvents {
         LOTMCraft.useAbilityBarAbility4 = new KeyMapping("key.beyonders.use_ability_bar_ability_4", GLFW.GLFW_KEY_4, "key.categories.beyonders");
         LOTMCraft.useAbilityBarAbility5 = new KeyMapping("key.beyonders.use_ability_bar_ability_5", GLFW.GLFW_KEY_5, "key.categories.beyonders");
         LOTMCraft.useAbilityBarAbility6 = new KeyMapping("key.beyonders.use_ability_bar_ability_6", GLFW.GLFW_KEY_6, "key.categories.beyonders");
+        LOTMCraft.returnToMainBody = new KeyMapping("key.beyonders.return_to_main_body", GLFW.GLFW_KEY_P, "key.categories.beyonders");
+
 
         event.register(LOTMCraft.pathwayInfosKey);
         event.register(LOTMCraft.toggleGriefingKey);
@@ -57,6 +59,7 @@ public class ClientEvents {
         event.register(LOTMCraft.useAbilityBarAbility4);
         event.register(LOTMCraft.useAbilityBarAbility5);
         event.register(LOTMCraft.useAbilityBarAbility6);
+        event.register(LOTMCraft.returnToMainBody);
     }
 
     @SubscribeEvent

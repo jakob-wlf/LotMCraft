@@ -9,9 +9,11 @@ import java.util.UUID;
 
 public class ControllingDataComponent {
     private UUID ownerUUID = null;
+    private String ownerName = null;
     private UUID bodyUUID = null;
     private UUID targetUUID = null;
     private CompoundTag targetEntity = null;
+    private CompoundTag bodyEntity = null;
 
     public ControllingDataComponent() {}
 
@@ -25,6 +27,19 @@ public class ControllingDataComponent {
 
     public void removeOwnerUUID() {
         this.ownerUUID = null;
+    }
+
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String controllerUUID) {
+        this.ownerName = controllerUUID;
+    }
+
+    public void removeOwnerName() {
+        this.ownerName = null;
     }
 
 
@@ -53,6 +68,7 @@ public class ControllingDataComponent {
         this.targetUUID = null;
     }
 
+
     public CompoundTag getTargetEntity() {
         return targetEntity;
     }
@@ -66,15 +82,30 @@ public class ControllingDataComponent {
     }
 
 
+    public CompoundTag getBodyEntity() {
+        return bodyEntity;
+    }
+
+    public void setBodyEntity(CompoundTag controllerUUID) {
+        this.bodyEntity = controllerUUID;
+    }
+
+    public void removeBodyEntity() {
+        this.bodyEntity = null;
+    }
+
+
     public static final IAttachmentSerializer<CompoundTag, ControllingDataComponent> SERIALIZER =
             new IAttachmentSerializer<>() {
                 @Override
                 public ControllingDataComponent read(IAttachmentHolder holder, CompoundTag tag, HolderLookup.Provider lookup) {
                     ControllingDataComponent component = new ControllingDataComponent();
                     if (tag.hasUUID("ownerUUID")) component.ownerUUID = tag.getUUID("ownerUUID");
+                    if (tag.hasUUID("ownerName")) component.ownerName = tag.getString("ownerName");
                     if (tag.hasUUID("bodyUUID")) component.bodyUUID = tag.getUUID("bodyUUID");
                     if (tag.hasUUID("targetUUID")) component.targetUUID = tag.getUUID("targetUUID");
                     if (tag.hasUUID("targetEntity")) component.targetEntity = tag.getCompound("targetEntity");
+                    if (tag.hasUUID("bodyEntity")) component.bodyEntity = tag.getCompound("bodyEntity");
                     return component;
                 }
 
@@ -82,9 +113,11 @@ public class ControllingDataComponent {
                 public CompoundTag write(ControllingDataComponent component, HolderLookup.Provider lookup) {
                     CompoundTag tag = new CompoundTag();
                     if (component.ownerUUID != null) tag.putUUID("ownerUUID", component.ownerUUID);
+                    if (component.ownerName != null) tag.putString("ownerName", component.ownerName);
                     if (component.bodyUUID != null) tag.putUUID("bodyUUID", component.bodyUUID);
                     if (component.targetUUID != null) tag.putUUID("targetUUID", component.targetUUID);
                     if (component.targetEntity != null) tag.put("targetEntity", component.targetEntity);
+                    if (component.bodyEntity != null) tag.put("bodyEntity", component.bodyEntity);
                     return tag;
                 }
             };

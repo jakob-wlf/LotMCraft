@@ -1,6 +1,8 @@
-package de.jakob.lotm.entity;
+package de.jakob.lotm.entity.custom;
 
 import de.jakob.lotm.attachments.ModAttachments;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -8,15 +10,16 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 
 import java.util.*;
 
 public class OriginalBodyEntity extends LivingEntity {
     private final Map<EquipmentSlot, ItemStack> equipment = new EnumMap<>(EquipmentSlot.class);
+    private ChunkPos lastLockedChunk = null;
+
 
     public final SimpleContainer inventory = new SimpleContainer(41);
 
@@ -62,5 +65,34 @@ public class OriginalBodyEntity extends LivingEntity {
                 .add(Attributes.ARMOR, 0.0)
                 .add(Attributes.ARMOR_TOUGHNESS, 0.0)
                 .add(Attributes.FOLLOW_RANGE, 32.0);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (!this.level().isClientSide && this.level() instanceof ServerLevel serverLevel) {
+
+            ChunkPos currentChunk = new ChunkPos(this.blockPosition());
+
+            if (lastLockedChunk == null || !currentChunk.equals(lastLockedChunk)) {
+
+                // release the old chunk so it can unload normally
+                if (lastLockedChunk != null) {
+                    serverLevel.setChunkForced(lastLockedChunk.x, lastLockedChunk.z, false);
+                }
+                // force the new chunk to stay loaded
+                serverLevel.setChunkForced(currentChunk.x, currentChunk.z, true);
+                this.lastLockedChunk = currentChunk;
+            }
+        }
+    }
+    @Override
+    public Component getCustomName() {
+        String ownerName = this.getData(ModAttachments.CONTROLLING_DATA).getOwnerName();
+        if (ownerName != null && !ownerName.isEmpty()){
+            return Component.literal(ownerName);
+        } else {
+            return Component.translatable("entity.lotmcraft.original_body");
+        }
     }
 }

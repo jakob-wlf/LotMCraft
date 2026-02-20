@@ -104,4 +104,11 @@ public abstract class ToggleAbility extends Ability {
         }
         return new HashSet<>(activeAbilities.get(entity.getUUID()));
     }
+
+    public static void setActiveAbilities(LivingEntity entity, HashSet<ToggleAbility> newAbilities) {
+        // clear the old ones
+        cleanUp((ServerLevel) entity.level(), entity);
+
+        activeAbilities.put(entity.getUUID(), newAbilities);
+    }
 }

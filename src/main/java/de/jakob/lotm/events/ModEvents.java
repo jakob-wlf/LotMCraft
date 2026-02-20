@@ -3,7 +3,7 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.command.*;
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.OriginalBodyEntity;
+import de.jakob.lotm.entity.custom.OriginalBodyEntity;
 import de.jakob.lotm.entity.client.*;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;

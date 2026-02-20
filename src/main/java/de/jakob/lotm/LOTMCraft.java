@@ -74,6 +74,7 @@ public class LOTMCraft
     public static KeyMapping openWheelHoldKey;
     public static KeyMapping openWheelToggleKey;
     public static KeyMapping useSelectedAbilityKey;
+    public static KeyMapping returnToMainBody;
 
     public static KeyMapping useAbilityBarAbility1;
     public static KeyMapping useAbilityBarAbility2;
