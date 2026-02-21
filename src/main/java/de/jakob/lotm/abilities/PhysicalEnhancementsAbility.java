@@ -781,4 +781,11 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             return valuePerLevel;
         }
     }
+
+    public static void resetEnhancements(UUID uuid){
+        entityEnhancements.remove(uuid);
+        temporaryEnhancements.remove(uuid);
+        enhancementBoosts.remove(uuid);
+    }
+
 }

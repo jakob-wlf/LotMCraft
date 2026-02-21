@@ -3,11 +3,9 @@ package de.jakob.lotm.abilities.fool.ShapeShifting;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.MemorisedEntities;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -15,6 +13,8 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.*;
+
+import static de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil.getEntityTypeString;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ShapeShiftingEntityTracker {
@@ -70,7 +70,6 @@ public class ShapeShiftingEntityTracker {
 
             if (memorisedEntities.getMemorisedEntityTypes().contains(entityType)) continue;
 
-
             int currentTime = playerTracking.getOrDefault(entityType, 0) + CHECK_INTERVAL;
             playerTracking.put(entityType, currentTime);
 
@@ -83,16 +82,6 @@ public class ShapeShiftingEntityTracker {
 
         playerTracking.keySet().removeIf(type -> !currentlyNearby.contains(type));
         if (playerTracking.isEmpty()) trackingData.remove(playerId);
-    }
-
-    private static String getEntityTypeString(Entity entity) {
-        if (entity instanceof ServerPlayer player) {
-            return String.format("player:%s:%s", player.getGameProfile().getName(), player.getUUID());
-        }
-        if (entity instanceof BeyonderNPCEntity npc) {
-            return "lotmcraft:beyonder_npc:" + npc.getSkinName();
-        }
-        return EntityType.getKey(entity.getType()).toString();
     }
 
     private static void sendSuccessMessage(ServerPlayer player, String entityName) {

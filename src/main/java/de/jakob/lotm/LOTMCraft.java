@@ -74,6 +74,7 @@ public class LOTMCraft
     public static KeyMapping openWheelHoldKey;
     public static KeyMapping openWheelToggleKey;
     public static KeyMapping useSelectedAbilityKey;
+    public static KeyMapping returnToMainBody;
 
     public static KeyMapping useAbilityBarAbility1;
     public static KeyMapping useAbilityBarAbility2;
@@ -193,9 +194,11 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.MISFORTUNE_WORDS.get(), MisfortuneWordsRenderer::new);
             EntityRenderers.register(ModEntities.BLOOMING_AREA.get(), BloomingAreaRenderer::new);
             EntityRenderers.register(ModEntities.DESOLATE_AREA.get(), DesolateAreaRenderer::new);
+            EntityRenderers.register(ModEntities.ORIGINAL_BODY.get(), OriginalBodyRenderer::new);
             EntityRenderers.register(ModEntities.CYCLE_OF_FATE.get(), CycleOfFateRenderer::new);
             EntityRenderers.register(ModEntities.NATURE_RETURN_PORTAL.get(), ReturnFromNaturelRenderer::new);
             EntityRenderers.register(ModEntities.GRAFTING_LOCATION_ENTITY.get(), GraftingLocationRenderer::new);
+
 
             GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);
 
@@ -219,7 +222,6 @@ public class LOTMCraft
         @SubscribeEvent
         public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
             event.registerSpriteSet(ModParticles.HOLY_FLAME.get(), HolyFlameParticle.Provider::new);
-            event.registerSpriteSet(ModParticles.BLACK.get(), BlackParticle.Provider::new);
             event.registerSpriteSet(ModParticles.DARKER_FLAME.get(), DarkerFlameParticle.Provider::new);
             event.registerSpriteSet(ModParticles.CRIMSON_LEAF.get(), CrimsonLeafParticle.Provider::new);
             event.registerSpriteSet(ModParticles.TOXIC_SMOKE.get(), ToxicSmokeParticle.Provider::new);

@@ -3,10 +3,10 @@ package de.jakob.lotm.network.packets.handlers;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
-import de.jakob.lotm.abilities.door.PlayerTeleportationAbility;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.entity.custom.OriginalBodyEntity;
 import de.jakob.lotm.gui.custom.CoordinateInput.CoordinateInputScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.Quest.QuestAcceptanceScreen;
@@ -24,13 +24,10 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -40,7 +37,6 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Random;
 
 import java.util.ArrayList;
@@ -416,5 +412,13 @@ public class ClientHandler {
 
     public static void handleShapeShiftingScreenPacket(OpenShapeShiftingScreenPacket payload) {
         Minecraft.getInstance().setScreen(new ShapeShiftingSelectionGui(payload.entityTypes()));
+    }
+
+    public static void handleOriginalBodyOwnerSyncPacket(SyncOriginalBodyOwnerPacket packet) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level != null && mc.level.getEntity(packet.entityId()) instanceof OriginalBodyEntity body) {
+            body.getData(ModAttachments.CONTROLLING_DATA).setOwnerUUID(packet.ownerUUID());
+            body.getData(ModAttachments.CONTROLLING_DATA).setOwnerName(packet.ownerName());
+        }
     }
 }

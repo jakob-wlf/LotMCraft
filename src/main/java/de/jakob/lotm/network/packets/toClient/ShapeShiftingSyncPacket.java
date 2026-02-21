@@ -47,7 +47,7 @@ public record ShapeShiftingSyncPacket(UUID playerId, String shapeString) impleme
             Minecraft mc = Minecraft.getInstance();
             if (mc.level == null) return;
 
-            // update local player's transformation
+            // update local player's transformation (ITS ABSOLUTELY NEEDED... MAN)
             Player player = mc.level.getPlayerByUUID(packet.playerId);
             if (player instanceof TransformData data) {
                 data.setCurrentShape(packet.shapeString);

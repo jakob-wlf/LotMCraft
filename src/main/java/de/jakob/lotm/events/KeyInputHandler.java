@@ -125,6 +125,10 @@ public class KeyInputHandler {
         if(LOTMCraft.useAbilityBarAbility6.consumeClick()) {
             PacketHandler.sendToServer(new UseKeyboundAbilityPacket(5));
         }
+
+        if (LOTMCraft.returnToMainBody.consumeClick()) {
+            PacketHandler.sendToServer(new ReturnToMainBodyPacket());
+        }
     }
 
     @SubscribeEvent

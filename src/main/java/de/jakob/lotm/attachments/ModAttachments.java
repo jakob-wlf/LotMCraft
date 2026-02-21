@@ -123,6 +123,22 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<ControllingDataComponent>> CONTROLLING_DATA =
+            ATTACHMENT_TYPES.register("controlling_data", () ->
+                    AttachmentType.builder(ControllingDataComponent::new)
+                            .serialize(ControllingDataComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<CopiedInventoryComponent>> COPIED_INVENTORY =
+            ATTACHMENT_TYPES.register("copied_inventory", () ->
+                    AttachmentType.builder(CopiedInventoryComponent::new)
+                            .serialize(CopiedInventoryComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<WaypointComponent>> WAYPOINT_COMPONENT = ATTACHMENT_TYPES.register(
             "waypoint_component",
             () -> AttachmentType.builder(WaypointComponent::new)
