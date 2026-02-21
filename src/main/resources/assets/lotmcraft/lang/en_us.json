@@ -321,6 +321,8 @@
   "ability.lotmcraft.grafting.selected": "Selected %s",
   "ability.lotmcraft.grafting.already_grafted": "That is already tampered with",
   "ability.lotmcraft.grafting.same_entity": "You cannot choose the same entity as both source and target",
+  "ability.lotmcraft.grafting.failed": "The Grafting failed",
+  "ability.lotmcraft.grafting.no_target": "No Target found",
 
 
   "lotmcraft.midnight_poem_ability": "Midnight Poem",

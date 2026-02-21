@@ -4,7 +4,10 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.LocationGraftingEntity;
+import de.jakob.lotm.events.custom.TargetEntityEvent;
+import de.jakob.lotm.events.custom.TargetLocationEvent;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.EntityLocation;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -37,6 +40,9 @@ public class GraftingAbility extends SelectableAbility {
     private static final HashMap<UUID, LivingEntity> graftingAbilitiesEntities = new HashMap<>();
     private static final List<Pair<UUID, UUID>> graftingAbilitiesPairs = new ArrayList<>();
 
+    private static final HashMap<UUID, LivingEntity> graftingTargetsEntities = new HashMap<>();
+    private static final List<Pair<UUID, Location>> graftingTargetsPairs = new ArrayList<>();
+
 
     public GraftingAbility(String id) {
         super(id, 1);
@@ -66,7 +72,61 @@ public class GraftingAbility extends SelectableAbility {
             case 0 -> graftLocations(level, entity);
             case 1 -> graftDamage(level, entity);
             case 2 -> graftAbilities(level, entity);
+            case 3 -> graftTarget(level, entity);
         }
+    }
+
+    private void graftTarget(Level level, LivingEntity entity) {
+        if(!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        int color = BeyonderData.pathwayInfos.get("fool").color();
+
+        if(!graftingTargetsEntities.containsKey(entity.getUUID())) {
+            LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 30, 2);
+            if(targetEntity == null) {
+                AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.grafting.no_target").withColor(color));
+                return;
+            }
+
+            UUID targetUUID = targetEntity.getUUID();
+            if(graftingTargetsPairs.stream().anyMatch(pair -> pair.getA() == targetUUID)) {
+                AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.grafting.already_grafted").withColor(color));
+                return;
+            }
+
+            ParticleUtil.createParticleSpirals(serverLevel, ParticleTypes.WITCH, targetEntity.position(), 1.2, 1.2, 1.5, 1, 4, 30, 10, 1);
+
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.grafting.selected", targetEntity.getName().getString()).withColor(color));
+
+            graftingTargetsEntities.put(entity.getUUID(), targetEntity);
+            return;
+        }
+
+        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 30, 2);
+        LivingEntity graftingStartEntity = graftingTargetsEntities.get(entity.getUUID());
+
+        if(graftingStartEntity == null) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.grafting.failed", targetEntity.getName().getString()).withColor(color));
+            graftingTargetsEntities.remove(entity.getUUID());
+            return;
+        }
+
+        if(targetEntity == graftingStartEntity) {
+            graftingAbilitiesEntities.remove(entity.getUUID());
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.grafting.same_entity", targetEntity.getName().getString()).withColor(color));
+            return;
+        }
+
+        Location targetLocation = targetEntity != null ? new EntityLocation(targetEntity) : new Location(AbilityUtil.getTargetLocation(entity, 30, 2), entity.level());
+
+        ParticleUtil.createParticleSpirals(serverLevel, ParticleTypes.WITCH, targetLocation.getPosition(), 1.2, 1.2, 1.5, 1, 4, 30, 10, 1);
+
+        graftingTargetsPairs.add(new Pair<>(graftingStartEntity.getUUID(), targetLocation));
+        graftingTargetsEntities.remove(entity.getUUID());
+
+        ServerScheduler.scheduleDelayed(20 * 30, () -> graftingTargetsPairs.removeIf(pair -> pair.getA() == graftingStartEntity.getUUID() || pair.getB() == targetLocation));
     }
 
     private void graftAbilities(Level level, LivingEntity entity) {
@@ -231,21 +291,50 @@ public class GraftingAbility extends SelectableAbility {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void onAbilityUse(TargetLocationEvent event) {
+        LivingEntity source = event.getSourceEntity();
+        if(!(source.level() instanceof ServerLevel serverLevel)) return;
+        if(graftingTargetsPairs.stream().anyMatch(pair -> pair.getA() == source.getUUID())) {
+            Location loc = graftingTargetsPairs.stream().filter(pair -> pair.getA() == source.getUUID()).findFirst().map(Pair::getB).orElse(null);
+            if(loc == null || loc.getLevel() != source.level()) {
+                graftingTargetsPairs.removeIf(pair -> pair.getA() == source.getUUID());
+                return;
+            }
+
+            event.setTargetLocation(loc.getPosition());
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void onAbilityUse(TargetEntityEvent event) {
+        LivingEntity source = event.getSourceEntity();
+        if(!(source.level() instanceof ServerLevel serverLevel)) return;
+        if(graftingTargetsPairs.stream().anyMatch(pair -> pair.getA() == source.getUUID())) {
+            Location loc = graftingTargetsPairs.stream().filter(pair -> pair.getA() == source.getUUID()).findFirst().map(Pair::getB).orElse(null);
+            if(loc == null || loc.getLevel() != source.level()) {
+                graftingTargetsPairs.removeIf(pair -> pair.getA() == source.getUUID());
+                return;
+            }
+
+            if(!(loc instanceof EntityLocation entityLocation) || !(entityLocation.getEntity() instanceof LivingEntity newTarget)) {
+                return;
+            }
+
+            event.setTargetEntity(newTarget);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onAbilityUse(AbilityUseEvent event) {
-        System.out.println("Ability used: " + event.getAbility().getId());
         LivingEntity used = event.getEntity();
         if(!(used.level() instanceof ServerLevel serverLevel)) return;
         if(graftingAbilitiesPairs.stream().anyMatch(pair -> pair.getA() == used.getUUID())) {
-            System.out.println("Grafting ability triggered for entity: " + used.getName().getString());
             UUID otherEntityUUID = graftingAbilitiesPairs.stream().filter(pair -> pair.getA() == used.getUUID()).findFirst().map(Pair::getB).orElse(null);
             if(otherEntityUUID == null) return;
-
-            System.out.println("Other entity UUID: " + otherEntityUUID);
 
             LivingEntity otherEntity = (LivingEntity) serverLevel.getEntity(otherEntityUUID);
             if(otherEntity == null) return;
 
-            System.out.println("Other entity found: " + otherEntity.getName().getString());
 
             event.setEntity(otherEntity);
         }
