@@ -131,6 +131,7 @@ public class BeyonderData {
 
     public static void initBeyonderMap(ServerLevel level){
         beyonderMap = BeyonderMap.get(level);
+        beyonderMap.setLevel(level);
     }
 
     public static void initPathwayInfos() {
@@ -163,6 +164,8 @@ public class BeyonderData {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
 
+        String nickname = entity.getDisplayName().getString();
+
         if(entity instanceof ServerPlayer) {
             if(!beyonderMap.check(pathway, sequence)) return;
         }
@@ -172,6 +175,7 @@ public class BeyonderData {
             clearBeyonderData(entity);
             return;
         }
+
 
         boolean griefing = !BeyonderData.isBeyonder(entity) || BeyonderData.isGriefingEnabled(entity);
 
@@ -187,6 +191,7 @@ public class BeyonderData {
 
         // Sync to client if this is server-side
         if (entity.level() instanceof ServerLevel serverLevel) {
+
             callPassiveEffectsOnAdd(entity, serverLevel);
 
             if(entity instanceof ServerPlayer serverPlayer) {
@@ -197,7 +202,6 @@ public class BeyonderData {
                 PacketHandler.syncBeyonderDataToEntity(entity);
             }
         }
-
 
     }
 
@@ -425,7 +429,7 @@ public class BeyonderData {
 
         if(entity instanceof Player player) {
             SpiritualityProgressTracker.removeProgress(player);
-            beyonderMap.put(player);
+            beyonderMap.remove(player);
         }
 
         // Sync to client if this is server-side

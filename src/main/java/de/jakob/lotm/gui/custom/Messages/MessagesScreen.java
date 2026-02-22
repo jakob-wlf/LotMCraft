@@ -26,7 +26,10 @@ public class MessagesScreen extends AbstractContainerScreen<MessagesMenu> {
     protected void init() {
         super.init();
 
-        // Example: open message button
+        if (menu.getMessages().isEmpty()) {
+            menu.selectMessage(-1);
+        }
+
         this.addRenderableWidget(
                 Button.builder(Component.literal("Open"), btn -> openSelected())
                         .bounds(leftPos + 10, topPos + 160, 50, 20)
@@ -66,11 +69,10 @@ public class MessagesScreen extends AbstractContainerScreen<MessagesMenu> {
                     inboxY,
                     inboxX + 80,
                     inboxY + 12,
-                    0x80FFFFFF   // translucent white
+                    0x80FFFFFF
             );
         }
 
-        // 3️⃣ Unread message markers
         var messages = menu.getMessages();
         for (int i = 0; i < messages.size(); i++) {
             if (!messages.get(i).read()) {
@@ -82,12 +84,11 @@ public class MessagesScreen extends AbstractContainerScreen<MessagesMenu> {
                         dotY,
                         dotX + 4,
                         dotY + 4,
-                        0xFFFFAA00   // orange dot
+                        0xFFFFAA00
                 );
             }
         }
 
-        // 4️⃣ Divider line (inbox → message)
         gfx.fill(
                 x + 96,
                 y + 12,
@@ -111,11 +112,12 @@ public class MessagesScreen extends AbstractContainerScreen<MessagesMenu> {
             if (idx >= messages.size()) break;
 
             var msg = messages.get(idx);
+
             gfx.drawString(
                     font,
                     msg.from() == null ? "Unknown" : msg.from(),
-                    10,
-                    20 + i * 12,
+                    10,              // NO leftPos
+                    20 + i * 12,     // NO topPos
                     0xFFFFFF
             );
         }
@@ -123,11 +125,28 @@ public class MessagesScreen extends AbstractContainerScreen<MessagesMenu> {
 
     private void drawMessage(GuiGraphics gfx) {
         int index = menu.getSelectedMessageIndex();
-        if (index < 0) return;
+        var messages = menu.getMessages();
 
-        MessageType msg = menu.getMessages().get(index);
-        gfx.drawString(font, msg.title(), 100, 20, 0xFFFFFF);
-        gfx.drawWordWrap(font, Component.literal(msg.desc()), 100, 40, 150, 0xCCCCCC);
+        if (index < 0 || index >= messages.size()) return;
+
+        MessageType msg = messages.get(index);
+
+        gfx.drawString(
+                font,
+                msg.title(),
+                100,
+                20,
+                0xFFFFFF
+        );
+
+        gfx.drawWordWrap(
+                font,
+                Component.literal(msg.desc()),
+                100,
+                40,
+                150,
+                0xCCCCCC
+        );
     }
 
     @Override
@@ -135,15 +154,21 @@ public class MessagesScreen extends AbstractContainerScreen<MessagesMenu> {
         int listX = leftPos + 10;
         int listY = topPos + 20;
 
+        var messages = menu.getMessages();
+
         for (int i = 0; i < 6; i++) {
+            int idx = i + scrollOffset;
+            if (idx >= messages.size()) break;
+
             int y = listY + i * 12;
             if (mouseX >= listX && mouseX <= listX + 80 &&
                     mouseY >= y && mouseY <= y + 12) {
 
-                menu.selectMessage(i + scrollOffset);
+                menu.selectMessage(idx);
                 return true;
             }
         }
+
         return super.mouseClicked(mouseX, mouseY, button);
     }
 }

@@ -8,7 +8,8 @@ import net.minecraft.nbt.StringTag;
 import java.util.LinkedList;
 
 public record StoredData(String pathway, Integer sequence, HonorificName honorificName,
-                         String trueName, LinkedList<MessageType> msgs, LinkedList<HonorificName> knownNames) {
+                         String trueName, LinkedList<MessageType> msgs, LinkedList<HonorificName> knownNames,
+                         Boolean modified) {
 
     public static final String NBT_PATHWAY = "beyonder_map_pathway";
     public static final String NBT_SEQUENCE = "beyonder_map_sequence";
@@ -16,6 +17,24 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
     public static final String NBT_TRUE_NAME = "beyonder_map_true_name";
     public static final String NBT_MESSAGES = "beyonder_map_messages";
     public static final String NBT_KNOWN_NAMES = "beyonder_map_known_names";
+    public static final String NBT_MODIFIED = "beyonder_map_modified";
+
+    public static StoredDataBuilder builder = new StoredDataBuilder();
+
+    public String getShortInfo() {
+        return "Path: " + pathway
+                + " -- Seq: " + sequence
+                + " -- TN: " + trueName;
+    }
+
+    public String getAllInfo(){
+        return "Name: " + trueName
+                + "\n--- Path: " + pathway
+                + "\n--- Seq: " + sequence
+                + "\n--- Honorific Name: " + honorificName.getAllInfo()
+                + "\n--- Was modified: " + modified
+                ;
+    }
 
     public void addMsg(MessageType msg){
         msgs.add(msg);
@@ -26,9 +45,12 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
     }
 
     public StoredData regressSeq(){
-        return new StoredData(sequence + 1 == LOTMCraft.NON_BEYONDER_SEQ ?
-                "none" : pathway, sequence + 1,
-                honorificName, trueName, msgs, knownNames);
+        return builder
+                .copyFrom(this)
+                .pathway((sequence + 1 == LOTMCraft.NON_BEYONDER_SEQ) ? "none" : pathway)
+                .sequence(sequence + 1)
+                .honorificName((sequence + 1 >= 3) ? HonorificName.EMPTY : honorificName)
+                .build();
     }
 
 
@@ -56,6 +78,8 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
 
         tag.put(NBT_KNOWN_NAMES, list2);
 
+        tag.putBoolean(NBT_MODIFIED, modified);
+
         return tag;
     }
 
@@ -77,7 +101,9 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 names.add(HonorificName.fromNBT(compTag));
         }
 
-        return new StoredData(path, seq, name, trueName, list, names);
+        Boolean modified = tag.getBoolean(NBT_MODIFIED);
+
+        return new StoredData(path, seq, name, trueName, list, names, modified);
     }
 
 }

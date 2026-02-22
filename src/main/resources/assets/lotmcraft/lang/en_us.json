@@ -1223,5 +1223,20 @@
   "lotm.selectable": "Selectable",
   "lotm.ability_wheel.title": "Ability Wheel",
   "lotm.ability_wheel.no_abilities": "No abilities available in wheel",
-  "lotmcraft.griefing_enabled_required": "Enable griefing for this ability to work"
+  "lotmcraft.griefing_enabled_required": "Enable griefing for this ability to work",
+
+  "lotmcraft.own_prayings": "You have heard your own prayings",
+  "lotmcraft.far_away_prayings": "You have heard whispers of prayings, but you are too far away to hear them clearly",
+  "lotmcraft.honorific_prayings": "You have heard prayings from %1$s\nTheir general info: Pathway - %2$s; Sequence - %3$d; Position - %4$d %5$d %6$d",
+  "lotmcraft.honorific_prayings_message": "You have heard message: %s",
+  "lotmcraft.honorific_timeout": "You have reached timeout for praying!",
+
+  "lotmcraft.honorific_prayings_send_message_button": "[ SEND MESSAGE ]",
+  "lotmcraft.honorific_prayings_send_message_desc": "Will send the next message you type in chat to the prayer",
+  "lotmcraft.honorific_prayings_teleport_button": "[ TELEPORT ]",
+  "lotmcraft.honorific_prayings_teleport_desc": "Will teleport your original body to the prayer",
+  "lotmcraft.honorific_prayings_not_met_req_button": "[ INACCESSIBLE ]",
+  "lotmcraft.honorific_prayings_not_met_req_desc": "You have not met requirements to use this option",
+  "lotmcraft.honorific_prayings_use_skill_button": "[ USE SKILL ]",
+  "lotmcraft.honorific_prayings_use_skill_desc": "Will use one of your abilities for/against the prayer"
 }

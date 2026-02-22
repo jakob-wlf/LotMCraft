@@ -1,6 +1,8 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.artifacts.SealedArtifactData;
+import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.PotionIngredient;
 import de.jakob.lotm.network.PacketHandler;
@@ -46,8 +48,11 @@ public class BeyonderEventHandler {
                 StoredData data = beyonderMap.get(serverPlayer).get();
 
                 // Only restore from map if player has NO beyonder data (data loss scenario)
-                if (!BeyonderData.isBeyonder(serverPlayer)) {
+                // Or when marked to do so by server admin
+                if (!BeyonderData.isBeyonder(serverPlayer) || data.modified()) {
                     BeyonderData.setBeyonder(serverPlayer, data.pathway(), data.sequence());
+                    beyonderMap.markModified(serverPlayer, false);
+
                 } else if (beyonderMap.isDiffPathSeq(serverPlayer)) {
                     // If they have data but it differs, update the map to match NBT (NBT is source of truth)
                     beyonderMap.put(serverPlayer);
@@ -170,6 +175,14 @@ public class BeyonderEventHandler {
                 else if (item instanceof BeyonderCharacteristicItem cha) {
                     if (!BeyonderData.beyonderMap.check(
                             cha.getPathway(), cha.getSequence())) {
+                        slot.set(ItemStack.EMPTY);
+                    }
+                }
+
+                else{
+                    SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
+                    if (data != null
+                            && !beyonderMap.check(data.pathway(), data.sequence())) {
                         slot.set(ItemStack.EMPTY);
                     }
                 }

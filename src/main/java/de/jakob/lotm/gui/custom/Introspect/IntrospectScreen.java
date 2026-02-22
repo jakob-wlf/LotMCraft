@@ -1,3 +1,4 @@
+// FILE 1: IntrospectScreen.java (updated with proper JEI support indicator)
 // Modified IntrospectScreen.java with Quest UI integration
 package de.jakob.lotm.gui.custom.Introspect;
 
@@ -28,6 +29,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private boolean showAbilities = false;
     private Button toggleAbilitiesButton;
     private Button clearWheelButton;
+    private Button messageButton;
     private Button clearBarButton;
 
     // Quest section
@@ -203,6 +205,18 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         // Add quests toggle button to the left, below abilities button
         int questsButtonX = baseLeftPos - 65;
         int questsButtonY = this.topPos + 35;
+
+//        int messageButtonX = baseLeftPos - 65;
+//        int messageButtonY = this.topPos + 35;
+//
+//        messageButton = Button.builder(Component.literal("Messages"),
+//                button -> {
+//                    openMessagesMenu();
+//                 })
+//                .bounds(messageButtonX, messageButtonY, 60, 20)
+//                .build();
+//
+//        this.addRenderableWidget(messageButton);
 
         toggleQuestsButton = Button.builder(Component.literal(showQuests ? "< Hide" : "Quests >"),
                         button -> {

@@ -1,0 +1,247 @@
+package de.jakob.lotm.command;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.datafixers.util.Pair;
+import de.jakob.lotm.events.HonorificNamesEventHandler;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.beyonderMap.HonorificName;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+
+import java.util.LinkedList;
+import java.util.List;
+
+public class HonorificNameCommand {
+
+    private static LiteralArgumentBuilder<CommandSourceStack> sendMessage() {
+        return Commands.literal("sendmessage")
+                .then(Commands.argument("player", EntityArgument.entity())
+                        .then(Commands.argument("target", EntityArgument.entity())
+                                .executes(context -> {
+                                    CommandSourceStack source = context.getSource();
+
+                                    var playerEntity = EntityArgument.getEntity(context, "player");
+                                    var targetEntity = EntityArgument.getEntity(context, "target");
+
+                                    if(!(targetEntity instanceof LivingEntity target)
+                                            || (!(playerEntity instanceof LivingEntity player))){
+                                        source.sendFailure(Component.literal("Targets must be a living entities!"));
+                                        return 0;
+                                    }
+
+                                    if(!HonorificNamesEventHandler.answerState.contains(new Pair<>(target.getUUID(), player.getUUID()))){
+                                        source.sendFailure(Component.literal("You must not use this command directly!"));
+                                        return 0;
+                                    }
+
+                                    HonorificNamesEventHandler.isInTransferring.put(target.getUUID(), player.getUUID());
+
+                                    HonorificNamesEventHandler.answerState.remove(new Pair<>(target.getUUID(), player.getUUID()));
+                                    return 1;
+                                }))
+                );
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> teleport() {
+        return Commands.literal("teleport")
+                .then(Commands.argument("player", EntityArgument.entity())
+                        .then(Commands.argument("target", EntityArgument.entity())
+                                .executes(context -> {
+                                    CommandSourceStack source = context.getSource();
+
+                                    var playerEntity = EntityArgument.getEntity(context, "player");
+                                    var targetEntity = EntityArgument.getEntity(context, "target");
+
+                                    if(!(targetEntity instanceof LivingEntity target)
+                                            || (!(playerEntity instanceof LivingEntity player))){
+                                        source.sendFailure(Component.literal("Targets must be a living entities!"));
+                                        return 0;
+                                    }
+
+                                    if(!HonorificNamesEventHandler.answerState.contains(new Pair<>(target.getUUID(), player.getUUID()))){
+                                        source.sendFailure(Component.literal("You must not use this command directly!"));
+                                        return 0;
+                                    }
+
+                                    if (player instanceof ServerPlayer serverPlayer && target instanceof ServerPlayer targetPlayer) {
+                                       targetPlayer.teleportTo(
+                                               serverPlayer.serverLevel(),
+                                               serverPlayer.getX(),
+                                               serverPlayer.getY(),
+                                               serverPlayer.getZ(),
+                                               serverPlayer.getYRot(),
+                                               serverPlayer.getXRot()
+                                        );
+                                    }
+
+                                    HonorificNamesEventHandler.answerState.remove(new Pair<>(target.getUUID(), player.getUUID()));
+                                    return 1;
+                                }))
+                );
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> ui() {
+        return Commands.literal("ui")
+                .then(sendMessage())
+                .then(teleport());
+    }
+
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        dispatcher.register(Commands.literal("honorificname")
+                .then(set())
+                .then(ui())
+                .then(get())
+                .then(help())
+        );
+    }
+
+    public static LiteralArgumentBuilder<CommandSourceStack> set() {
+        return Commands.literal("set")
+                .then(Commands.argument("json", StringArgumentType.greedyString())
+                        .executes(context ->{
+                            CommandSourceStack source = context.getSource();
+                            String rawJson = StringArgumentType.getString(context, "json");
+
+                            try {
+                                JsonObject obj = JsonParser.parseString(rawJson).getAsJsonObject();
+
+                                String line1 = obj.get("line1").getAsString();
+                                String line2 = obj.get("line2").getAsString();
+                                String line3 = obj.get("line3").getAsString();
+                                String line4 = null;
+                                String line5 = null;
+
+                                if(obj.has("line4"))
+                                    line4 = obj.get("line4").getAsString();
+
+                                if(obj.has("line5"))
+                                    line5 = obj.get("line5").getAsString();
+
+                                if(BeyonderData.getSequence(source.getPlayer()) >= 4){
+                                    source.sendFailure(Component.literal("You must be sequence 3 or higher to utilize honorific name!"));
+                                    return 0;
+                                }
+
+                                if(BeyonderData.getSequence(source.getPlayer()) == 3 && (line4 == null || line5 == null)){
+                                    source.sendFailure(Component.literal("You must have 5 lines in honorific name as sequence 3"));
+                                    return 0;
+                                }
+
+                                if(BeyonderData.getSequence(source.getPlayer()) == 2 && line4 == null){
+                                    source.sendFailure(Component.literal("You must have 4 lines in honorific name as sequence 2"));
+                                    return 0;
+                                }
+
+                                LinkedList<String> lines = new LinkedList<>(List.of(line1,line2,line3));
+                                if(line4 != null)
+                                    lines.add(line4);
+
+                                if(line5 != null)
+                                    lines.add(line5);
+
+                               if(lines.stream().distinct().count() != lines.size())
+                                   throw new Exception("Each line must be different!");
+
+                               for(var str : lines){
+                                   if(str.length() >= HonorificName.MAX_LENGTH)
+                                       throw new Exception("Maximum length of the line is "
+                                               + HonorificName.MAX_LENGTH + "!");
+                               }
+
+                               String pathway = BeyonderData.getPathway(source.getPlayer());
+                               if(!HonorificName.validate(pathway, lines)){
+                                   throw new Exception("Honorific name must contain this words in each line:\n " +
+                                           HonorificName.getMustHaveWords(pathway));
+                               }
+
+                                source.sendSystemMessage(Component.literal("Before: " + lines));
+
+                                HonorificName name = new HonorificName(lines);
+
+                                source.sendSystemMessage(Component.literal("After: " + name.lines()));
+
+                                BeyonderData.setHonorificName(source.getPlayer(), name);
+                            }
+                            catch (Exception e) {
+                                source.sendFailure(Component.literal("Invalid format!\nMessage: " + e.getMessage()));
+                                return 0;
+                            }
+
+                            return 1;
+                        })
+                );
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> get() {
+        return Commands.literal("get")
+                .executes(context -> {
+                    CommandSourceStack source = context.getSource();
+
+                    var player = source.getPlayer();
+
+                    if(!BeyonderData.beyonderMap.contains(player)){
+                        source.sendFailure(Component.literal("You must be beyonder!"));
+                        return 0;
+                    }
+
+                    var data = BeyonderData.beyonderMap.get(player).get();
+
+                    if(data.sequence() > 3){
+                        source.sendFailure(Component.literal("You must be sequence 3 or higher!"));
+                        return 0;
+                    }
+
+                    if(data.honorificName().isEmpty()){
+                        source.sendFailure(Component.literal("You must have honorific name"));
+                        return 0;
+                    }
+
+                    source.sendSystemMessage(Component.literal(data.honorificName().getAllInfo()));
+
+                    return 1;
+                })
+                .then(Commands.literal("words")
+                        .executes(context -> {
+                            var source = context.getSource();
+
+                            var player = source.getPlayer();
+
+                            if(BeyonderData.getPathway(player).equals("none")){
+                                source.sendFailure(Component.literal("You must be the beyonder!"));
+                                return 0;
+                            }
+
+                            source.sendSystemMessage(Component.literal(
+                                    HonorificName.getMustHaveWords(BeyonderData.getPathway(player))
+                                            .toString()));
+
+                            return 1;
+                        })
+                )
+                ;
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> help() {
+        return Commands.literal("help")
+                .executes(context -> {
+                    var source = context.getSource();
+
+                    source.sendSystemMessage(Component.literal("1. ui - is not for direct usage, just ignore it" +
+                            "\n2. set - will set honorific name, but you have to follow json format" +
+                            "\n{\"line1\":\"Your line\", \"line2\":\"Your next line\", etc}" +
+                            "\nEvery line must contain specific words that describes your path" +
+                            "\n3. get - will show your current honorific name" +
+                            "\n3.1 get words - will show must have words for your pathway"));
+
+                    return 1;
+                });
+    }
+}
