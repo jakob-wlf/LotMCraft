@@ -6,13 +6,13 @@ import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import javax.annotation.Nullable;
-import javax.swing.text.StyledEditorKit;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -354,7 +354,7 @@ public class BeyonderMap extends SavedData {
         return false;
     }
 
-    public boolean  containsHonorificNamewithLine(String str){
+    public boolean containsHonorificNameWithLine(String str){
         for(var data : map.values()){
             if(!data.honorificName().isEmpty()
                     && ListHelper.containsString(data.honorificName().lines(), str))

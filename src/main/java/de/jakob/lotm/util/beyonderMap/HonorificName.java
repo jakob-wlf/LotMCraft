@@ -33,7 +33,7 @@ public record HonorificName(LinkedList<String> lines) {
                     case "red_priest" -> List.of("War", "Calamity", "Iron","Blood", "Battlefield", "Strife", "Chaos", "Destruction");
                     case "hermit" -> List.of("Knowledge", "Information", "Symbols", "Magic", "Data", "Numbers");
                     case "paragon" -> List.of("Technology", "Logic", "Machinery", "Physics", "Civilizations", "Structure", "Essence");
-                    case "wheel_of_fortune" -> List.of("Fate", "Luck", "Misfortune", "Fortune", "River", "Calamities", "Probability", "Madness", "Chaos");
+                    case "wheel_of_fortune" -> List.of("Fate", "Luck", "Lucky", "Misfortune", "Fortune", "River", "Calamities", "Probability", "Madness", "Chaos");
                     case "mother" -> List.of("Earth", "Fertility", "Reproduction", "Desolation", "Nature", "Origin", "Life");
                     case "moon" -> List.of("Moon", "Fertility", "Reproduction", "Spirituality", "Beauty", "Proliferation", "Moonlight");
                     case "abyss" -> List.of("Devils", "Evil", "Desires", "Corruption", "Blood", "Malice", "Blathers", "Corrosion", "Filth");
@@ -52,7 +52,7 @@ public record HonorificName(LinkedList<String> lines) {
         var mustHave = getMustHaveWords(path);
 
         for (var str : list){
-            var words = List.of(str.split(", "));
+            var words = List.of(str.split(" "));
             if(!words.stream().
                     anyMatch(input -> mustHave.stream().
                             anyMatch(target -> target.equalsIgnoreCase(input))))
@@ -78,7 +78,8 @@ public record HonorificName(LinkedList<String> lines) {
                 ("\n  Line 1: " + lines.get(0)
                 + "\n  Line 2: " + lines.get(1)
                 + "\n  Line 3: " + lines.get(2)
-                + ((lines.size() == 4) ? ("\n  Line 4" + lines.get(3)) : ""))
+                + ((lines.size() >= 4) ? ("\n  Line 4: " + lines.get(3)) : "")
+                + ((lines.size() == 5) ? ("\n  Line 5: " + lines.get(4)) : ""))
                 : "None";
     }
 

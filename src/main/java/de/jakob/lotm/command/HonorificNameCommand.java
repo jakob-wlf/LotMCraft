@@ -98,6 +98,8 @@ public class HonorificNameCommand {
         dispatcher.register(Commands.literal("honorificname")
                 .then(set())
                 .then(ui())
+                .then(get())
+                .then(help())
         );
     }
 
@@ -133,7 +135,7 @@ public class HonorificNameCommand {
                                     return 0;
                                 }
 
-                                if(BeyonderData.getSequence(source.getPlayer()) == 3 && line4 == null){
+                                if(BeyonderData.getSequence(source.getPlayer()) == 2 && line4 == null){
                                     source.sendFailure(Component.literal("You must have 4 lines in honorific name as sequence 2"));
                                     return 0;
                                 }
@@ -141,6 +143,9 @@ public class HonorificNameCommand {
                                 LinkedList<String> lines = new LinkedList<>(List.of(line1,line2,line3));
                                 if(line4 != null)
                                     lines.add(line4);
+
+                                if(line5 != null)
+                                    lines.add(line5);
 
                                if(lines.stream().distinct().count() != lines.size())
                                    throw new Exception("Each line must be different!");
@@ -157,7 +162,11 @@ public class HonorificNameCommand {
                                            HonorificName.getMustHaveWords(pathway));
                                }
 
+                                source.sendSystemMessage(Component.literal("Before: " + lines));
+
                                 HonorificName name = new HonorificName(lines);
+
+                                source.sendSystemMessage(Component.literal("After: " + name.lines()));
 
                                 BeyonderData.setHonorificName(source.getPlayer(), name);
                             }
@@ -169,5 +178,70 @@ public class HonorificNameCommand {
                             return 1;
                         })
                 );
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> get() {
+        return Commands.literal("get")
+                .executes(context -> {
+                    CommandSourceStack source = context.getSource();
+
+                    var player = source.getPlayer();
+
+                    if(!BeyonderData.beyonderMap.contains(player)){
+                        source.sendFailure(Component.literal("You must be beyonder!"));
+                        return 0;
+                    }
+
+                    var data = BeyonderData.beyonderMap.get(player).get();
+
+                    if(data.sequence() > 3){
+                        source.sendFailure(Component.literal("You must be sequence 3 or higher!"));
+                        return 0;
+                    }
+
+                    if(data.honorificName().isEmpty()){
+                        source.sendFailure(Component.literal("You must have honorific name"));
+                        return 0;
+                    }
+
+                    source.sendSystemMessage(Component.literal(data.honorificName().getAllInfo()));
+
+                    return 1;
+                })
+                .then(Commands.literal("words")
+                        .executes(context -> {
+                            var source = context.getSource();
+
+                            var player = source.getPlayer();
+
+                            if(BeyonderData.getPathway(player).equals("none")){
+                                source.sendFailure(Component.literal("You must be the beyonder!"));
+                                return 0;
+                            }
+
+                            source.sendSystemMessage(Component.literal(
+                                    HonorificName.getMustHaveWords(BeyonderData.getPathway(player))
+                                            .toString()));
+
+                            return 1;
+                        })
+                )
+                ;
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> help() {
+        return Commands.literal("help")
+                .executes(context -> {
+                    var source = context.getSource();
+
+                    source.sendSystemMessage(Component.literal("1. ui - is not for direct usage, just ignore it" +
+                            "\n2. set - will set honorific name, but you have to follow json format" +
+                            "\n{\"line1\":\"Your line\", \"line2\":\"Your next line\", etc}" +
+                            "\nEvery line must contain specific words that describes your path" +
+                            "\n3. get - will show your current honorific name" +
+                            "\n3.1 get words - will show must have words for your pathway"));
+
+                    return 1;
+                });
     }
 }

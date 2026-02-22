@@ -55,8 +55,6 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
 
 
     public CompoundTag toNBT(){
-        LOTMCraft.LOGGER.info("Saving storedData");
-
         CompoundTag tag = new CompoundTag();
 
         tag.putString(NBT_PATHWAY, pathway);
@@ -86,8 +84,6 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
     }
 
     public static StoredData fromNBT(CompoundTag tag){
-        LOTMCraft.LOGGER.info("Loading storedData");
-
         String path = tag.getString(NBT_PATHWAY);
         Integer seq = tag.getInt(NBT_SEQUENCE);
         HonorificName name = HonorificName.fromNBT(tag.getCompound(NBT_HONORIFIC_NAME));
