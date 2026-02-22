@@ -93,7 +93,7 @@ public class ControllingUtil {
 
         // change the player shape to the target
         String entityType = ShapeShiftingUtil.getEntityTypeString(target);
-        ShapeShiftingUtil.shapeShift(player, entityType);
+        ShapeShiftingUtil.shapeShift(player, entityType, false);
 
         // add the original body and remove the target
         level.addFreshEntity(originalBody);
@@ -102,8 +102,6 @@ public class ControllingUtil {
         PacketDistributor.sendToPlayersTrackingEntity(originalBody,
                 new SyncOriginalBodyOwnerPacket(originalBody.getId(), player.getUUID(), player.getName().getString())
         );
-        ControllingDataComponent bodyData = originalBody.getData(ModAttachments.CONTROLLING_DATA);
-        System.out.println("body uuid owner : " + bodyData.getOwnerUUID());
         target.discard();
     }
 

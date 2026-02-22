@@ -64,65 +64,29 @@ public abstract class EntityMixin implements DimensionsRefresher {
 
     @Inject(method = "getBbWidth", at = @At("HEAD"), cancellable = true)
     private void getBbWidth(CallbackInfoReturnable<Float> cir) {
-        Entity self = (Entity)(Object)this;
-        if (self instanceof Player player) {
-            Entity shape = createShapeEntity(((TransformData) player).getCurrentShape(), player);
-            if (shape != null) cir.setReturnValue(shape.getBbWidth());
+        if ((Entity)(Object)this instanceof Player player) {
+            cir.setReturnValue(this.dimensions.width());
         }
     }
 
     @Inject(method = "getBbHeight", at = @At("HEAD"), cancellable = true)
     private void getBbHeight(CallbackInfoReturnable<Float> cir) {
-        Entity self = (Entity)(Object)this;
-        if (self instanceof Player player) {
-            Entity shape = createShapeEntity(((TransformData) player).getCurrentShape(), player);
-            if (shape != null) cir.setReturnValue(shape.getBbHeight());
+        if ((Entity)(Object)this instanceof Player player) {
+            cir.setReturnValue(this.dimensions.height());
         }
     }
 
     @Inject(method = "getEyeHeight()F", at = @At("HEAD"), cancellable = true)
     private void getEyeHeight(CallbackInfoReturnable<Float> cir) {
-        Entity self = (Entity)(Object)this;
-        if (self instanceof Player player) {
-            Entity shape = createShapeEntity(((TransformData) player).getCurrentShape(), player);
-            if (shape != null) cir.setReturnValue(shape.getEyeHeight());
+        if ((Entity)(Object)this instanceof Player player) {
+            cir.setReturnValue(this.eyeHeight);
         }
     }
 
-    @Inject(method = "getEyeHeight(Lnet/minecraft/world/entity/Pose;)F", at = @At("HEAD"), cancellable = true)
-    private void getEyeHeightWithPose(Pose pose, CallbackInfoReturnable<Float> cir) {
-        Entity self = (Entity)(Object)this;
-        if (self instanceof Player player) {
-            TransformData data = (TransformData) player;
-            Entity shape = createShapeEntity(data.getCurrentShape(), player);
-            if (shape != null) cir.setReturnValue(shape.getEyeHeight(pose));
-        }
+    @Inject(method = "refreshDimensions", at = @At("TAIL"))
+    private void onRefreshDimensions(org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
+        this.shape_refreshDimensions();
     }
-
-    @Inject(method = "getBoundingBox", at = @At("HEAD"), cancellable = true)
-    private void getBoundingBox(CallbackInfoReturnable<AABB> cir) {
-        Entity self = (Entity)(Object)this;
-        if (self instanceof Player player) {
-            Entity shape = createShapeEntity(((TransformData) player).getCurrentShape(), player);
-            if (shape != null) {
-                shape.setPos(self.getX(), self.getY(), self.getZ());
-                cir.setReturnValue(shape.getBoundingBox());
-            }
-        }
-    }
-
-    @Inject(method = "getBoundingBoxForCulling", at = @At("HEAD"), cancellable = true)
-    private void getBoundingBoxForCulling(CallbackInfoReturnable<AABB> cir) {
-        Entity self = (Entity)(Object)this;
-        if (self instanceof Player player) {
-            Entity shape = createShapeEntity(((TransformData) player).getCurrentShape(), player);
-            if (shape != null) {
-                shape.setPos(self.getX(), self.getY(), self.getZ());
-                cir.setReturnValue(shape.getBoundingBoxForCulling());
-            }
-        }
-    }
-
 
     // refreshes entity dimensions
     @Override
@@ -135,10 +99,21 @@ public abstract class EntityMixin implements DimensionsRefresher {
                 Pose pose = player.getPose();
                 EntityDimensions shapeDims = shape.getDimensions(pose);
                 this.dimensions = shapeDims;
-                this.eyeHeight = shape.getEyeHeight(pose);
+
+                // for changing eye height based on player pose even for other entities
+                float baseEye = shape.getEyeHeight(pose);
+
+                if (pose == Pose.SWIMMING || pose == Pose.FALL_FLYING) {
+                    this.eyeHeight = baseEye * 0.35f;
+                } else if (pose == Pose.CROUCHING) {
+                    this.eyeHeight = baseEye * 0.92f;
+                } else {
+                    this.eyeHeight = baseEye;
+                }
 
                 double x = self.getX(), y = self.getY(), z = self.getZ();
-                double w = shapeDims.width(), h = shapeDims.height();
+                double w = shapeDims.width();
+                double h = shapeDims.height();
                 self.setBoundingBox(new AABB(x-w/2, y, z-w/2, x+w/2, y+h, z+w/2));
                 return;
             }

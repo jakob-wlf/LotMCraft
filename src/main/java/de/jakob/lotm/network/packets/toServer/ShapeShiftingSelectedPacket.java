@@ -1,6 +1,7 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -9,10 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-
-import static de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil.shapeShift;
-
-public record ShapeShiftingSelectedPacket (String entityType)implements CustomPacketPayload {
+public record ShapeShiftingSelectedPacket (String entityType, boolean sequenceRestrict)implements CustomPacketPayload {
 
     public static final Type<ShapeShiftingSelectedPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "player_shape_shifting_selected"));
@@ -21,6 +19,8 @@ public record ShapeShiftingSelectedPacket (String entityType)implements CustomPa
             StreamCodec.composite(
                     ByteBufCodecs.STRING_UTF8,
                     ShapeShiftingSelectedPacket::entityType,
+                    ByteBufCodecs.BOOL,
+                    ShapeShiftingSelectedPacket::sequenceRestrict,
                     ShapeShiftingSelectedPacket::new
             );
 
@@ -33,7 +33,7 @@ public record ShapeShiftingSelectedPacket (String entityType)implements CustomPa
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
 
-            shapeShift(player, packet.entityType);
+            ShapeShiftingUtil.shapeShift(player, packet.entityType, packet.sequenceRestrict);
         });
     }
 }

@@ -11,18 +11,27 @@ import java.util.List;
 
 public class ShapeShiftingUtil {
 
-    public static void shapeShift(ServerPlayer player, Entity entity) {
+    public static void shapeShift(ServerPlayer player, Entity entity, boolean sequenceRestrict) {
         String entityType = getEntityTypeString(entity);
-        shapeShift(player,entityType);
+        shapeShift(player, entityType, sequenceRestrict);
     }
 
-    public static void shapeShift(ServerPlayer player, String entityType) {
+    public static void shapeShift(ServerPlayer player, String entityType, boolean sequenceRestrict) {
         if (!player.isCreative()) {
             player.getAbilities().mayfly = false;
             player.getAbilities().flying = false;
             player.onUpdateAbilities();
         }
-
+        if (sequenceRestrict) {
+            String entityName = entityType;
+            entityName = entityName.contains(":") ? entityName.split(":")[1] : entityName;
+            if (List.of("bat", "phantom", "blaze", "allay", "bee", "ghast", "parrot", "vex").contains(entityName)) {
+                System.out.println(" pers : " + player.getPersistentData().getInt("beyonder_sequence"));
+                if (player.getPersistentData().getInt("beyonder_sequence") > 4) {
+                    return;
+                }
+            }
+        }
         TransformData data = (TransformData) player;
         data.setCurrentShape(entityType);
         ((DimensionsRefresher) player).shape_refreshDimensions();

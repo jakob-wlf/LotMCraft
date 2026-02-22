@@ -85,7 +85,9 @@ public class ShapeShiftingEntityTracker {
     }
 
     private static void sendSuccessMessage(ServerPlayer player, String entityName) {
-        String name = entityName.split(":")[1];
-        player.sendSystemMessage(Component.literal("§fYou memorised the shape of §b" + name));
+        if (player.getPersistentData().getString("beyonder_pathway").equals("fool")) {
+            String name = entityName.split(":")[1];
+            player.sendSystemMessage(Component.literal("§fYou memorised the shape of §b" + name));
+        }
     }
 }

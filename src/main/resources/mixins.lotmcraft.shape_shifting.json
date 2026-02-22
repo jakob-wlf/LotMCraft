@@ -10,7 +10,8 @@
   ],
   "client": [
     "LimbAnimatorAccessor",
-    "PlayerRendererMixin"
+    "PlayerRendererMixin",
+    "ItemInHandRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
