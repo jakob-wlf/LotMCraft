@@ -34,6 +34,7 @@
   "key.beyonders.use_ability_bar_ability_4": "Use Ability Bar Ability 4",
   "key.beyonders.use_ability_bar_ability_5": "Use Ability Bar Ability 5",
   "key.beyonders.use_ability_bar_ability_6": "Use Ability Bar Ability 6",
+  "key.beyonders.return_to_main_body": "Return to Main Body",
 
 
 
@@ -50,6 +51,12 @@
   "lotmcraft.spirit_vision_ability": "Spirit Vision",
   "ability.lotmcraft.divination.danger_premonition": "Danger Premonition",
   "ability.lotmcraft.divination.dream_divination": "Dream Divination",
+  "ability.lotmcraft.divination.structure_divination": "Structure Divination",
+  "ability.lotmcraft.divination.player_divination": "Player Divination",
+  "lotmcraft.angel_authority_ability": "Angel Authority",
+  "lotmcraft.angel_authority_ability.description": "Angelic power that allows you to traverse the spirit world and shatter artifacts",
+  "ability.lotmcraft.angel_authority.spirit_world_passage": "Spirit World Passage",
+  "ability.lotmcraft.angel_authority.artifact_shattering": "Artifact Shattering",
 
   "lotmcraft.illuminate_ability": "Illuminate",
   "lotmcraft.illuminate_ability.description": "Create a small light",
@@ -242,6 +249,8 @@
   "lotmcraft.underwater_breathing_ability.description": "Create a thin, invisible air pipe which allows you to breath underwater",
   "lotmcraft.shapeshifting_ability": "Shapeshifting",
   "lotmcraft.shapeshifting_ability.description": "Shapeshift into anyone",
+  "ability.lotmcraft.shape_shifting_ability.change_shape": "Change Shape",
+  "ability.lotmcraft.shape_shifting_ability.reset_shape": "Reset Shape",
   "lotmcraft.puppeteering_ability": "Puppeteering",
   "lotmcraft.puppeteering_ability.description": "Manipulate Spirit Body Threads to turn anyone into your marionette and command them",
   "ability.lotmcraft.puppeteering.no_entity_found": "No Entity to control found",
@@ -303,6 +312,17 @@
   "ability.lotmcraft.miracle_creation.miracle.slow_time": "Slow Time",
   "ability.lotmcraft.miracle_creation.miracle.darkness": "Summon Darkness",
   "ability.lotmcraft.miracle_creation.miracle.forbid_godhood": "Forbid Godhood",
+  "lotmcraft.grafting_ability": "Grafting",
+  "lotmcraft.grafting_ability.description": "Graft together different things, such as locations, health an more. To remove certain Graftings, use ability in proximity while holding shift. For some sub-abilities, to select yourself as the target, just don't select a target.",
+  "ability.lotmcraft.grafting.locations": "Graft Locations together",
+  "ability.lotmcraft.grafting.damage": "Graft Damage onto another",
+  "ability.lotmcraft.grafting.abilities": "Graft Ability Uses",
+  "ability.lotmcraft.grafting.change_target": "Change Target of Someone",
+  "ability.lotmcraft.grafting.selected": "Selected %s",
+  "ability.lotmcraft.grafting.already_grafted": "That is already tampered with",
+  "ability.lotmcraft.grafting.same_entity": "You cannot choose the same entity as both source and target",
+  "ability.lotmcraft.grafting.failed": "The Grafting failed",
+  "ability.lotmcraft.grafting.no_target": "No Target found",
 
 
   "lotmcraft.midnight_poem_ability": "Midnight Poem",
@@ -332,6 +352,8 @@
   "lotmcraft.concealment_ability.description": "Conceal everything around you, effectively erasing it",
   "ability.lotmcraft.concealment.enter_concealed_area": "Enter Concealed Area",
   "ability.lotmcraft.concealment.surroundings": "Conceal Surroundings",
+  "lotmcraft.sword_of_darkness_ability": "Sword of Darkness",
+  "lotmcraft.sword_of_darkness_ability.description": "Create a giant slash that cuts everything in its way",
 
   "lotmcraft.mighty_blow_ability": "Mighty Blow",
   "lotmcraft.mighty_blow_ability.description": "Strike your target with one single powerful blow",
@@ -438,6 +460,14 @@
   "lotmcraft.area_desolation_ability.description": "Designate an area (200x200) that will become desolate and lifeless. Use the ability again in the same area to revert it back to normal",
   "lotmcraft.blooming_area_ability": "Blooming Area",
   "lotmcraft.blooming_area_ability.description": "Designate an area (200x200) that will become lush and flourish greatly. Inside there wil be no hunger and other various effects. Use the ability again in the same area to revert it back to normal",
+  "lotmcraft.world_creation_ability": "World Creation",
+  "lotmcraft.world_creation_ability.description": "Create and nurture a pocket world",
+  "lotmcraft.wrath_of_nature_ability": "Wrath of Nature",
+  "lotmcraft.wrath_of_nature_ability.description": "Command nature to attack your foes in various ways",
+  "ability.lotmcraft.wrath_of_nature.lightning": "Lightning",
+  "ability.lotmcraft.wrath_of_nature.fire": "Wildfire",
+  "ability.lotmcraft.wrath_of_nature.moon": "Moon",
+  "ability.lotmcraft.wrath_of_nature.moon_on_cooldown": "The Moon is already shining",
 
   "lotmcraft.door_opening_ability": "Door Opening",
   "lotmcraft.door_opening_ability.description": "Use on solid walls to pass through them",
@@ -565,6 +595,11 @@
   "ability.lotmcraft.prophecy.disaster": "I prophesy a great Calamity will befall us",
   "ability.lotmcraft.prophecy.fortune": "I prophesy that a great fortune shall come to pass",
   "ability.lotmcraft.prophecy.misfortune_for_enemy": "I prophesy that great misfortune shall come to those who oppose me",
+  "lotmcraft.cycle_of_fate_ability": "Cycle of Fate",
+  "lotmcraft.cycle_of_fate_ability.description": "Create a cycle of fate in an area. Once triggered everything will return to how it was when the cycle was created",
+  "ability.lotmcraft.cycle_of_fate.create_cycle": "Create Cycle of Fate",
+  "ability.lotmcraft.cycle_of_fate.trigger_cycle": "Trigger Cycle of Fate",
+  "ability.lotmcraft.cycle_of_fate.no_cycle": "No active Cycle of Fate found",
 
   "lotmcraft.theft_ability": "Theft",
   "lotmcraft.theft_ability.description": "If used on Player, it will attempt to steal any item from his inventory. If used on Mob, it will give random drop related to them, like meat from animals or arrows from skeleton",
@@ -722,6 +757,7 @@
   "block.lotmcraft.brewing_cauldron": "Brewing Cauldron",
   "block.lotmcraft.void_block": "Void",
   "block.lotmcraft.solid_void_block": "Solid Void",
+  "block.lotmcraft.mystical_ring": "Mystical Ring",
 
   "_comment009": "Ingredients-----------------------------------------------------------------------------",
   "item.lotmcraft.lavos_squid_blood": "Lavos Squid Blood",
@@ -1116,6 +1152,51 @@
   "lotm.ally.request_denied_self": "Ally request denied",
   "lotm.ally.no_request": "No pending ally request",
   "lotm.ally.requester_offline": "Requester is no longer online",
+
+  "_comment014": "Quests-------------------------------------------------------------------------",
+  "lotm.quest.already_accepted": "You have already accepted/completed this quest",
+  "lotm.quest.already_active": "You already have an active quest",
+  "lotm.quest.accepted": "You have accepted the Quest: %s",
+  "lotm.quest.completed": "You have completed the Quest: %s",
+  "lotm.quest.progress": "Progress: %s",
+  "lotm.quest.discarded": "Quest discarded",
+  "lotm.quest.acceptance.title": "Quest Offer",
+  "lotm.quest.acceptance.accept": "Accept Quest",
+  "lotm.quest.acceptance.decline": "Decline",
+  "lotm.quest.acceptance.lore": "Lore:",
+  "lotm.quest.acceptance.description": "Objective:",
+  "lotm.quest.acceptance.rewards": "Rewards:",
+  "lotm.quest.acceptance.digestion": "Digestion: %s",
+  "lotm.quest.acceptance.sequence": "Recommended Sequence: %s",
+  "lotm.quest.cannot_accept": "You cannot accept this quest",
+
+  "lotm.quest.impl.kill_zombies": "Kill Zombies",
+  "lotm.quest.impl.kill_zombies.description": "Kill %s Zombies to complete this quest",
+  "lotm.quest.impl.kill_zombies.lore": "Zombies are plaguing the area. We need to thin their numbers.",
+
+  "lotm.quest.impl.defend_village": "Defend the Village",
+  "lotm.quest.impl.defend_village.description": "Kill all the monsters that are attacking the villagers",
+  "lotm.quest.impl.defend_village.lore": "The village is under attack! Defend the villagers and drive off the monsters!",
+
+  "lotm.quest.impl.kill_tyrant_seq4": "Kill the Sailor Demigod",
+  "lotm.quest.impl.kill_tyrant_seq4.description": "Search around for the structure to summon the Cataclysmic Interrer and defeat them",
+  "lotm.quest.impl.kill_tyrant_seq4.lore": "The Cataclysmic Interrer is terrorizing all who live here, defeat them and bring peace to the land!",
+
+  "lotm.quest.impl.kill_seq4": "Kill the Demigod",
+  "lotm.quest.impl.kill_seq4.description": "Search around for the structure to summon the Demigod and defeat them",
+  "lotm.quest.impl.kill_seq4.lore": "A Demigod has gone mad and is killing all who live here, defeat them before its too late!",
+
+  "lotm.quest.impl.kill_seq3": "Kill the Saint",
+  "lotm.quest.impl.kill_seq3.description": "Search around for the structure to summon the Saint and defeat them",
+  "lotm.quest.impl.kill_seq3.lore": "A Saint has strayed from the church and is bringing chaos, defeat them before its too late!",
+
+  "lotm.quest.impl.kill_seq2": "Kill the Angel",
+  "lotm.quest.impl.kill_seq2.description": "Search around for the structure to summon the Angel and defeat them",
+  "lotm.quest.impl.kill_seq2.lore": "An Angel has fallen and is killing all who live here, defeat them before its too late!",
+
+  "lotm.quest.impl.kill_seq1": "Kill the Archangel",
+  "lotm.quest.impl.kill_seq1.description": "Search around for the structure to summon the Archangel and defeat them",
+  "lotm.quest.impl.kill_seq1.lore": "An Archangel is on a rampage, defeat them before its too late!",
 
   "lotm.griefing": "Griefing Enabled",
   "lotm.griefing_required": "Griefing must be enabled",

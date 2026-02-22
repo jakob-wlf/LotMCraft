@@ -57,7 +57,7 @@ public class SelectedAbilityRenderer {
         Component message2 = Component.translatable(ability.getSelectedAbility(mc.player)).withColor(color);
 
         int height = mc.font.lineHeight * 2 + 6;
-        int width = Math.max(mc.font.width(message1), mc.font.width(message2)) + 30;
+        int width = Math.max(mc.font.width(message1), mc.font.width(message2)) + 15;
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
 

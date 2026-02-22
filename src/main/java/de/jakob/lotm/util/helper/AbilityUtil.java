@@ -142,14 +142,14 @@ public class AbilityUtil {
      * This is stricter than mayDamage and includes additional targeting restrictions.
      */
     public static boolean mayTarget(LivingEntity source, LivingEntity target) {
-        return mayTarget(source, target, false);
+        return mayTarget(source, target, false, false);
     }
 
     /**
      * Checks if the source entity may target the target entity.
      * @param allowAllies If true, allows targeting allies (for support abilities)
      */
-    public static boolean mayTarget(LivingEntity source, LivingEntity target, boolean allowAllies) {
+    public static boolean mayTarget(LivingEntity source, LivingEntity target, boolean allowAllies, boolean targetMarionettes) {
         if (source == null || target == null) return true;
 
         // If we're allowing allies for support abilities, skip the mayDamage check
@@ -167,10 +167,11 @@ public class AbilityUtil {
             return true;
         }
 
-        // Marionette targeting restrictions
-        if (!mayTargetMarionette(source, target)) {
+        // Marionette targeting restrictions - invert for targeting only your marionettes
+        if (!mayTargetMarionette(source, target) ^ targetMarionettes) {
             return false;
         }
+
 
         // Subordinate targeting restrictions
         if (!mayTargetSubordinate(source, target)) {
@@ -321,13 +322,19 @@ public class AbilityUtil {
 
     @Nullable
     public static LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius) {
-        return getTargetEntity(entity, radius, entityDetectionRadius, false, false);
+        return getTargetEntity(entity, radius, entityDetectionRadius, false, false, false);
     }
 
     @Nullable
     public static LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius,
                                                boolean onlyAllowWithLineOfSight) {
-        return getTargetEntity(entity, radius, entityDetectionRadius, onlyAllowWithLineOfSight, false);
+        return getTargetEntity(entity, radius, entityDetectionRadius, onlyAllowWithLineOfSight, false, false);
+    }
+
+    @Nullable
+    public static LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius,
+                                               boolean onlyAllowWithLineOfSight, boolean allowAllies) {
+        return getTargetEntity(entity, radius, entityDetectionRadius, onlyAllowWithLineOfSight, allowAllies, false);
     }
 
     /**
@@ -340,9 +347,9 @@ public class AbilityUtil {
      */
     @Nullable
     public static LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius,
-                                               boolean onlyAllowWithLineOfSight, boolean allowAllies) {
+                                               boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes) {
         LivingEntity targetEntity = getTargetEntityInternal(entity, radius, entityDetectionRadius,
-                onlyAllowWithLineOfSight, allowAllies);
+                onlyAllowWithLineOfSight, allowAllies, targetMarionettes);
 
         // Only fire event if we're not being called from getTargetLocation
         if (!INSIDE_GET_TARGET_LOCATION.get()) {
@@ -358,7 +365,7 @@ public class AbilityUtil {
      */
     @Nullable
     private static LivingEntity getTargetEntityInternal(LivingEntity entity, int radius, float entityDetectionRadius,
-                                                        boolean onlyAllowWithLineOfSight, boolean allowAllies) {
+                                                        boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes) {
         // Check for existing targets first (unless line of sight only)
         if (!onlyAllowWithLineOfSight) {
             LivingEntity currentTarget = getCurrentTarget(entity);
@@ -385,7 +392,7 @@ public class AbilityUtil {
             List<LivingEntity> nearbyEntities = entity.level().getEntities(entity, detectionBox).stream()
                     .filter(e -> e instanceof LivingEntity && e != entity)
                     .map(e -> (LivingEntity) e)
-                    .filter(e -> mayTarget(entity, e, allowAllies))
+                    .filter(e -> mayTarget(entity, e, allowAllies, targetMarionettes))
                     .toList();
 
             if (!nearbyEntities.isEmpty()) {
@@ -449,7 +456,7 @@ public class AbilityUtil {
 
                 List<Entity> nearbyEntities = entity.level().getEntities(entity, detectionBox).stream()
                         .filter(e -> e instanceof LivingEntity && e != entity)
-                        .filter(e -> mayTarget(entity, (LivingEntity) e, allowAllies))
+                        .filter(e -> mayTarget(entity, (LivingEntity) e, allowAllies, false))
                         .toList();
 
                 if (!nearbyEntities.isEmpty()) {
@@ -564,7 +571,12 @@ public class AbilityUtil {
 
     public static List<LivingEntity> getNearbyEntities(@Nullable LivingEntity exclude, ServerLevel level,
                                                        Vec3 center, double radius, boolean allowCreativeMode) {
-        return getNearbyEntitiesInternal(exclude, level, center, radius, allowCreativeMode, false);
+        return getNearbyEntitiesInternal(exclude, level, center, radius, allowCreativeMode, false, false);
+    }
+
+    public static List<LivingEntity> getNearbyEntities(@Nullable LivingEntity exclude, ServerLevel level,
+                                                       Vec3 center, double radius, boolean allowCreativeMode, Boolean allowAllies) {
+        return getNearbyEntitiesInternal(exclude, level, center, radius, allowCreativeMode, false, allowAllies);
     }
 
     public static List<Entity> getAllNearbyEntities(@Nullable LivingEntity exclude, ServerLevel level,
@@ -574,13 +586,13 @@ public class AbilityUtil {
 
     public static List<Entity> getAllNearbyEntities(@Nullable LivingEntity exclude, ServerLevel level,
                                                     Vec3 center, double radius, boolean allowCreativeMode) {
-        return getNearbyEntitiesInternal(exclude, level, center, radius, allowCreativeMode, true);
+        return getNearbyEntitiesInternal(exclude, level, center, radius, allowCreativeMode, true, false);
     }
 
     private static <T extends Entity> List<T> getNearbyEntitiesInternal(@Nullable LivingEntity exclude,
                                                                         ServerLevel level, Vec3 center,
                                                                         double radius, boolean allowCreativeMode,
-                                                                        boolean includeAllEntities) {
+                                                                        boolean includeAllEntities, boolean allowAllies) {
         AABB detectionBox = createDetectionBox(center, radius);
         double radiusSquared = radius * radius;
 
@@ -590,7 +602,7 @@ public class AbilityUtil {
                 .filter(e -> !(e instanceof Player player) || (!player.isCreative() || allowCreativeMode))
                 .filter(entity -> entity.position().distanceToSqr(center) <= radiusSquared)
                 .filter(entity -> entity != exclude)
-                .filter(e -> exclude == null || (!(e instanceof LivingEntity le) || mayTarget(exclude, le)))
+                .filter(e -> exclude == null || (!(e instanceof LivingEntity le) || mayTarget(exclude, le, allowAllies, false)))
                 .toList();
     }
 

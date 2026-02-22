@@ -2,6 +2,7 @@ package de.jakob.lotm.block;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.block.custom.BrewingCauldronBlock;
+import de.jakob.lotm.block.custom.MysticalRingBlock;
 import de.jakob.lotm.block.custom.VoidBlock;
 import de.jakob.lotm.item.ModItems;
 import net.minecraft.world.item.BlockItem;
@@ -36,6 +37,17 @@ public class ModBlocks {
                     .noLootTable()
                     .strength(-1.0f, 3600000.0F)
             ));
+
+    public static final DeferredBlock<MysticalRingBlock> MYSTICAL_RING = BLOCKS.register("mystical_ring",
+            () -> new MysticalRingBlock(BlockBehaviour.Properties.of()
+                    .strength(0.1f)
+                    .sound(SoundType.WOOL)
+                    .noOcclusion()
+                    .lightLevel(state -> 7)
+                    .isViewBlocking((state, level, pos) -> false)
+                    .isSuffocating((state, level, pos) -> false)
+            )
+    );
 
     public static final DeferredBlock<Block> SOLID_VOID = registerBlock("solid_void_block",
             () -> new VoidBlock(BlockBehaviour.Properties.of()

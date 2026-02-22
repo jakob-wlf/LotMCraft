@@ -1,13 +1,16 @@
-// 1.21.1	2026-01-30T10:58:44.5424726	Registries
+// 1.21.1	2026-02-15T16:08:35.8375613	Registries
 ad1f9c204b84ffc483c59eddf94a32609834f0cf data/lotmcraft/dimension/concealment_world.json
+265447ceafa0ec5201a1ba64639d4acfd42ced07 data/lotmcraft/dimension/nature.json
 39fb1ccb874d73bc88489ed601724591b8d5a491 data/lotmcraft/dimension/sefirah_castle.json
 d6506f9996732ef9e64030ded2b68f435269ae84 data/lotmcraft/dimension/space.json
 e488df81b76c00be105a7c368ad04bc331335014 data/lotmcraft/dimension/spirit_world.json
 ad706f5c8b11e97baefcbc4beec6105b63f8995d data/lotmcraft/dimension_type/concealment_world.json
+07cd96e432ce218401485377b3189e0afdfc1d8e data/lotmcraft/dimension_type/nature.json
 a0fc1fedca1cf3bbdb139457f4cd907af4be4e92 data/lotmcraft/dimension_type/sefirah_castle.json
 178500223b85fe18060b25f0a0f770d04f529123 data/lotmcraft/dimension_type/space.json
 b4de84f7dcb1749b55a0d35ea1418899424d5a55 data/lotmcraft/dimension_type/spirit_world.json
 5edb70021ed096fa001bd52874ca52815d19ac05 data/lotmcraft/worldgen/biome/concealment_world_biome.json
+9bc28055fe09a4f35604f753bca08ab433b93cc7 data/lotmcraft/worldgen/biome/nature_biome.json
 29b94866cbdb6bf9dded74109e04469896b5a116 data/lotmcraft/worldgen/biome/sefirah_castle_biome.json
 3119f86dbafc0f4c9ad0be8b76851a1e51e92a4b data/lotmcraft/worldgen/biome/space_biome.json
 fd7983c759ed531b8151c69bee8442f14ebd02ff data/lotmcraft/worldgen/biome/spirit_world_biome.json

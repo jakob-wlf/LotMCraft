@@ -18,24 +18,46 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     public BrewingCauldronMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
-        this(pContainerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(2));
+        this(pContainerId, inv,
+                extraData != null ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null,
+                new SimpleContainerData(2));
     }
 
     public BrewingCauldronMenu(int pContainerId, Inventory inv, BlockEntity entity, ContainerData data) {
         super(ModMenuTypes.BREWING_CAULDRON_MENU.get(), pContainerId);
-        this.blockEntity = ((BrewingCauldronBlockEntity) entity);
-        this.level = inv.player.level();
-        this.data = data;
 
-        addPlayerInventory(inv);
-        addPlayerHotbar(inv);
+        // Handle null entity gracefully (can happen on client side or in spectator mode)
+        if (entity instanceof BrewingCauldronBlockEntity brewingCauldronBlockEntity) {
+            this.blockEntity = brewingCauldronBlockEntity;
+            this.level = inv.player.level();
+            this.data = data;
 
-        this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 0, 48, 37));
-        this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 1, 112, 37));
-        this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 2, 80, 72));
-        this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 3, 80, 122));
+            addPlayerInventory(inv);
+            addPlayerHotbar(inv);
 
-        addDataSlots(data);
+            this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 0, 48, 37));
+            this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 1, 112, 37));
+            this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 2, 80, 72));
+            this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 3, 80, 122));
+
+            addDataSlots(data);
+        } else {
+            // Client-side fallback when block entity isn't available
+            this.blockEntity = null;
+            this.level = inv.player.level();
+            this.data = data;
+
+            addPlayerInventory(inv);
+            addPlayerHotbar(inv);
+
+            // Add dummy slots (they won't work but prevent crashes)
+            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(4), 0, 48, 37));
+            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(4), 1, 112, 37));
+            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(4), 2, 80, 72));
+            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(4), 3, 80, 122));
+
+            addDataSlots(data);
+        }
     }
 
     public boolean isCrafting() {

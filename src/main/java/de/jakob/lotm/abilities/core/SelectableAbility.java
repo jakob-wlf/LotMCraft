@@ -14,7 +14,7 @@ public abstract class SelectableAbility extends Ability {
 
     protected final HashMap<UUID, Integer> selectedAbilities = new HashMap<>();
 
-    protected SelectableAbility(String id, float cooldown) {
+    public SelectableAbility(String id, float cooldown) {
         super(id, cooldown);
     }
 
@@ -96,13 +96,4 @@ public abstract class SelectableAbility extends Ability {
         selectedAbilities.put(entity.getUUID(), selectedAbility);
         PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
     }
-
-//    public void handleLeftClickInAir(Player player) {
-//        if (player.level().isClientSide && getAbilityNames().length > 0) {
-//            if(ClientAbilityWheelHelper.isWheelOpen() && ClientAbilityWheelHelper.getCurrentAbilityItem() == this) {
-//                return;
-//            }
-//            ClientAbilityWheelHelper.openWheel(this, player);
-//        }
-//    }
 }

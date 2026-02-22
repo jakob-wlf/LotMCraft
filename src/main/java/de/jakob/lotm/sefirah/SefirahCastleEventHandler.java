@@ -57,7 +57,7 @@ public class SefirahCastleEventHandler {
         }
 
         // Claim Sefirah Castle
-        if (!SefirahHandler.claimSefirot(event.getPlayer(), "sefirah_castle") && !SefirahHandler.getClaimedSefirot(event.getPlayer()).equalsIgnoreCase("sefirah_castle")) {
+        if (!SefirahHandler.claimSefirot(event.getPlayer(), "sefirah_castle")) {
             AbilityUtil.sendActionBar(event.getPlayer(), Component.translatable("lotm.sefirot.sefirah_castle_already_occupied").withColor(0x942de3));
             return;
         }

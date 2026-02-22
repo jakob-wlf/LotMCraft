@@ -115,6 +115,28 @@ public class PotionRecipeItemHandler {
         return recipes.get(0);
     }
 
+    public static PotionRecipeItem selectRandomRecipeOfSequence(Random random, int sequence) {
+        if(!PotionRecipes.initialized) {
+            PotionRecipes.initPotionRecipes();
+            initializeRecipes();
+        }
+
+        List<PotionRecipeItem> recipes = ITEMS.getEntries()
+                .stream()
+                .map(DeferredHolder::get)
+                .filter(i -> i instanceof PotionRecipeItem)
+                .map(i -> ((PotionRecipeItem) i))
+                .filter(i -> i.getRecipe() != null)
+                .filter(i -> i.getRecipe().potion().getSequence() == sequence)
+                .toList();
+
+        if (recipes.isEmpty()) {
+            return null;
+        }
+
+        return recipes.get(random.nextInt(recipes.size()));
+    }
+
     public static List<PotionRecipeItem> getAllRecipes() {
         if(!PotionRecipes.initialized) {
             PotionRecipes.initPotionRecipes();

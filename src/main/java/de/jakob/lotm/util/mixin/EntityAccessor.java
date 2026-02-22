@@ -9,6 +9,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface EntityAccessor {
     @Accessor("DATA_SHARED_FLAGS_ID")
     static EntityDataAccessor<Byte> getSharedFlagsId() {
-        throw new AssertionError(); // Mixin replaces this at runtime
+        throw new AssertionError();
     }
 }

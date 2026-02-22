@@ -79,18 +79,26 @@ public class FrostAbility extends SelectableAbility {
 
             if(BeyonderData.isGriefingEnabled(entity)) {
                 AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos, radius.get(), 100).forEach(b -> {
+                    if(level.getBlockState(b).getDestroySpeed(level, b) < 0)
+                        return;
                     if(!level.getBlockState(b).isAir())
                         level.setBlockAndUpdate(b, Blocks.PACKED_ICE.defaultBlockState());
                 });
                 AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.add(0, 1, 0), radius.get(), 100).forEach(b -> {
+                    if(level.getBlockState(b).getDestroySpeed(level, b) < 0)
+                        return;
                     if(!level.getBlockState(b).isAir())
                         level.setBlockAndUpdate(b, Blocks.PACKED_ICE.defaultBlockState());
                 });
                 AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), radius.get(), 100).forEach(b -> {
+                    if(level.getBlockState(b).getDestroySpeed(level, b) < 0)
+                        return;
                     if(!level.getBlockState(b).isAir())
                         level.setBlockAndUpdate(b, Blocks.PACKED_ICE.defaultBlockState());
                 });
                 AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 2, 0), radius.get(), 100).forEach(b -> {
+                    if(level.getBlockState(b).getDestroySpeed(level, b) < 0)
+                        return;
                     if(!level.getBlockState(b).isAir())
                         level.setBlockAndUpdate(b, Blocks.PACKED_ICE.defaultBlockState());
                 });

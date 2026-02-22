@@ -34,6 +34,7 @@ public class AbilityHandler {
         abilities.add(new DivinationAbility("divination_ability"));
         abilities.add(new SpiritVisionAbility("spirit_vision_ability"));
         abilities.add(new CurseOfMisfortuneAbility("curse_of_misfortune_ability"));
+        abilities.add(new AngelAuthorityAbility("angel_authority_ability"));
 
         // SUN PATHWAY
         abilities.add(new HolySongAbility("holy_song_ability"));
@@ -118,6 +119,7 @@ public class AbilityHandler {
         abilities.add(new HistoricalVoidSummoningAbility("historical_void_summoning_ability"));
         abilities.add(new HistoricalVoidHidingAbility("historical_void_hiding_ability"));
         abilities.add(new MiracleCreationAbility("miracle_creation_ability"));
+        abilities.add(new GraftingAbility("grafting_ability"));
 
         // DARKNESS PATHWAY
         abilities.add(new MidnightPoemAbility("midnight_poem_ability"));
@@ -129,6 +131,7 @@ public class AbilityHandler {
         abilities.add(new HorrorAuraAbility("horror_aura_ability"));
         abilities.add(new SurgeOfDarknessAbility("surge_of_darkness_ability"));
         abilities.add(new ConcealmentAbility("concealment_ability"));
+        abilities.add(new SwordOfDarknessAbility("sword_of_darkness_ability"));
 
         // DEMONESS PATHWAY
         abilities.add(new ShadowConcealmentAbility("shadow_concealment_ability"));
@@ -164,6 +167,8 @@ public class AbilityHandler {
         abilities.add(new MaternalEmbraceAbility("maternal_embrace_ability"));
         abilities.add(new AreaDesolationAbility("area_desolation_ability"));
         abilities.add(new BloomingAreaAbility("blooming_area_ability"));
+        abilities.add(new WorldCreationAbility("world_creation_ability"));
+        abilities.add(new WrathOfNatureAbility("wrath_of_nature_ability"));
 
         // DOOR PATHWAY
         abilities.add(new DoorOpeningAbility("door_opening_ability"));
@@ -216,6 +221,7 @@ public class AbilityHandler {
         abilities.add(new SpiritualBaptismAbility("spiritual_baptism_ability"));
         abilities.add(new WordsOfMisfortuneAbility("words_of_misfortune_ability"));
         abilities.add(new ProphecyAbility("prophecy_ability"));
+        abilities.add(new CycleOfFateAbility("cycle_of_fate_ability"));
 
         // ERROR PATHWAY
         abilities.add(new TheftAbility("theft_ability"));
@@ -268,6 +274,7 @@ public class AbilityHandler {
         return new ArrayList<>(
                 abilities.stream()
                         .filter(ability -> ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) >= sequence)
+                        .sorted(Comparator.comparing(Ability::getId))
                         .sorted(Comparator.comparing(ability -> ability.getRequirements().get(pathway)))
                         .toList()
         );

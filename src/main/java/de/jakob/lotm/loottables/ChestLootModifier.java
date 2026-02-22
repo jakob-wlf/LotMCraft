@@ -6,6 +6,7 @@ import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.util.BeyonderData;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +35,9 @@ public class ChestLootModifier extends LootModifier {
         if (context.getQueriedLootTableId().getPath().contains("chests/")) {
             if (context.getRandom().nextFloat() < 0.45f) {
 
-                Item item = getRandomLoot();
+                String pathway = BeyonderData.implementedPathways.get(random.nextInt(BeyonderData.implementedPathways.size()));
+                int sequence = getWeightedHighSequence();
+                Item item = getRandomLoot(pathway, sequence);
 
                 if (item != null) {
                     generatedLoot.add(new ItemStack(item));
@@ -45,12 +48,22 @@ public class ChestLootModifier extends LootModifier {
         return generatedLoot;
     }
 
-    public static Item getRandomLoot() {
+    public static int getWeightedHighSequence() {
+        Random random = new Random();
+        double normalizedValue = random.nextDouble(); // 0.0 to 1.0
+
+        double weighted = Math.pow(normalizedValue, 0.35); // Lower exponent = stronger bias toward high values
+
+        // Map to range 1-9 (weighted now favors values close to 1.0, which maps to 9)
+        return 1 + (int) (weighted * 9);
+    }
+
+    public static Item getRandomLoot(String pathway, int sequence) {
         return switch(random.nextInt(4)) {
-            case 1 -> ModIngredients.selectRandomIngredient(random);
-            case 2 -> PotionRecipeItemHandler.selectRandomrecipe(random);
-            case 3 -> BeyonderCharacteristicItemHandler.selectRandomCharacteristic(random);
-            default -> PotionItemHandler.selectRandomPotion(random);
+            case 1 -> ModIngredients.selectRandomIngredientOfPathwayAndSequence(random, pathway, sequence);
+            case 2 -> PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, sequence);
+            case 3 -> BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, sequence);
+            default -> PotionItemHandler.selectPotionOfPathwayAndSequence(random, pathway, sequence);
         };
     }
 

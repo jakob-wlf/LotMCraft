@@ -46,6 +46,11 @@ public class BrewingCauldronBlock extends BaseEntityBlock {
     @Override
     protected ItemInteractionResult useItemOn(ItemStack pStack, BlockState pState, Level pLevel, BlockPos pPos,
                                               Player pPlayer, InteractionHand pHand, BlockHitResult pHitResult) {
+        // Return early for spectators with a proper failure response
+        if (pPlayer.isSpectator()) {
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
+
         if (!pLevel.isClientSide()) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if(entity instanceof BrewingCauldronBlockEntity brewingCauldronBlockEntity) {

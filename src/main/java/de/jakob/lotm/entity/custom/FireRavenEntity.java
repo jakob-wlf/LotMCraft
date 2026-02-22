@@ -185,13 +185,13 @@ public class FireRavenEntity extends Animal {
             this.setupAnimationStates();
         }
         else {
-            if(!hasTarget)
-                return;
-
             if(tickCount > 20 * 60) {
                 this.discard();
                 return;
             }
+
+            if(!hasTarget)
+                return;
 
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.FLAME, position().add(0, .4, 0), 2, .4, .04);
 

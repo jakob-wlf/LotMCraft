@@ -15,14 +15,38 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncOnHoldAbilityPacket;
 import de.jakob.lotm.network.packets.toClient.SyncToggleAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderDataTickHandler {
+
+    @SubscribeEvent
+    public static void onEntity(EntityTickEvent.Post event) {
+        Entity entity = event.getEntity();
+
+        if(!(entity instanceof LivingEntity livingEntity)) {
+            return;
+        }
+
+        // Tick cooldowns
+        AbilityCooldownComponent component = livingEntity.getData(ModAttachments.COOLDOWN_COMPONENT);
+        component.tick();
+
+        if(BeyonderData.isBeyonder(livingEntity)) {
+            // Tick Passive Abilities, Toggle Abilities and onHold for currently selected Ability
+            if(entity.tickCount % 5 == 0)
+                tickAbilities(livingEntity);
+        }
+
+    }
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
@@ -36,18 +60,10 @@ public class BeyonderDataTickHandler {
             player.kill();
         }
 
-        // Tick cooldowns
-        AbilityCooldownComponent component = player.getData(ModAttachments.COOLDOWN_COMPONENT);
-        component.tick();
-
         if (BeyonderData.isBeyonder(player)) {
             // Regenerate Spirituality
             float amount = BeyonderData.getMaxSpirituality(BeyonderData.getSequence(player)) * 0.0006f;
             BeyonderData.incrementSpirituality(player, amount);
-
-            // Tick Passive Abilities, Toggle Abilities and onHold for currently selected Ability
-            if(player.tickCount % 5 == 0)
-                tickAbilities(serverPlayer);
 
             // Slowly digest potion
             if(player.tickCount % 20 == 0) {
@@ -67,33 +83,37 @@ public class BeyonderDataTickHandler {
         }
     }
 
-    private static void tickAbilities(ServerPlayer player) {
+    private static void tickAbilities(LivingEntity entity) {
+        if(!(entity.level() instanceof ServerLevel serverLevel)) return;
+
         // Passive Abilities
         PassiveAbilityHandler.ITEMS.getEntries().forEach(itemHolder -> {
             if (itemHolder.get() instanceof PassiveAbilityItem abilityItem) {
-                if (abilityItem.shouldApplyTo(player)) {
-                    abilityItem.tick(player.level(), player);
+                if (abilityItem.shouldApplyTo(entity)) {
+                    abilityItem.tick(entity.level(), entity);
                 }
             }
         });
 
         // Tick Toggle Abilities
-        ToggleAbility.getActiveAbilitiesForEntity(player).forEach(toggleAbility -> {
-            toggleAbility.prepareTick(player.serverLevel(), player);
-            PacketHandler.sendToAllPlayersInSameLevel(new SyncToggleAbilityPacket(player.getId(), toggleAbility.getId(), SyncToggleAbilityPacket.Action.TICK.getValue()), player.serverLevel());
+        ToggleAbility.getActiveAbilitiesForEntity(entity).forEach(toggleAbility -> {
+            toggleAbility.prepareTick(entity.level(), entity);
+            PacketHandler.sendToAllPlayersInSameLevel(new SyncToggleAbilityPacket(entity.getId(), toggleAbility.getId(), SyncToggleAbilityPacket.Action.TICK.getValue()), serverLevel);
         });
 
-        // Sync on Hold for currently selected Ability
-        AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
-        if(component.getSelectedAbility() < 0 || component.getSelectedAbility() >= component.getAbilities().size()) {
-            return;
-        }
+        if(entity instanceof ServerPlayer player) {
+            // Sync on Hold for currently selected Ability
+            AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
+            if(component.getSelectedAbility() < 0 || component.getSelectedAbility() >= component.getAbilities().size()) {
+                return;
+            }
 
-        String abilityId = component.getAbilities().get(component.getSelectedAbility());
-        Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
-        if(ability != null) {
-            ability.onHold(player.serverLevel(), player);
-            PacketHandler.sendToAllPlayers(new SyncOnHoldAbilityPacket(player.getId(), abilityId));
+            String abilityId = component.getAbilities().get(component.getSelectedAbility());
+            Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+            if(ability != null) {
+                ability.onHold(player.serverLevel(), player);
+                PacketHandler.sendToAllPlayers(new SyncOnHoldAbilityPacket(player.getId(), abilityId));
+            }
         }
     }
 }

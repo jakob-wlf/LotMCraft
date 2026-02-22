@@ -2,7 +2,9 @@ package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.artifacts.SealedArtifactItem;
+import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.item.custom.*;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -71,6 +73,10 @@ public class ModItems {
             () -> new SealedArtifactItem(new Item.Properties()
                     .stacksTo(1)
                     .fireResistant()));
+
+    public static final DeferredItem<BlockItem> MYSTICAL_RING = ITEMS.register("mystical_ring",
+            () -> new BlockItem(ModBlocks.MYSTICAL_RING.get(), new Item.Properties())
+    );
 
     public static PotionIngredient selectRandomIngredient(List<PotionIngredient> ingredients, Random random) {
         if (ingredients == null || ingredients.isEmpty()) {

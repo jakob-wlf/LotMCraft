@@ -4,14 +4,17 @@ import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.ChangePlayerPerspectivePacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -99,7 +102,7 @@ public class AdvancementUtil {
         }
 
         // Calculate sequence difference (how many sequences jumping)
-        int difference = prevSequence - sequence;
+        int difference = Math.abs(prevSequence - sequence);
 
         // Calculate failure chance
         double failureChance = calculateFailureChance(difference, digestionProgress, sanity);
@@ -203,7 +206,12 @@ public class AdvancementUtil {
 
                 if(safeMaxDamage > 0) {
                     float finalDamage = Math.min(damage, safeMaxDamage);
-                    entity.hurt(entity.damageSources().magic(), finalDamage);
+                    DamageSource damageSource = new DamageSource(
+                            entity.level().registryAccess()
+                                    .registryOrThrow(Registries.DAMAGE_TYPE)
+                                    .getHolderOrThrow(ModDamageTypes.LOOSING_CONTROL)
+                    );
+                    entity.hurt(damageSource, finalDamage);
                 }
             }, serverLevel);
         }
@@ -412,15 +420,11 @@ public class AdvancementUtil {
         double baseChance;
 
         if(sequence >= 9) {
-            baseChance = 0.0; // Starting at sequence 9 is safe
+            baseChance = 0.0;
         } else if(sequence >= 7) {
-            baseChance = 0.1; // Sequence 7-8: 10% base risk
-        } else if(sequence >= 5) {
-            baseChance = 0.3; // Sequence 5-6: 30% base risk
-        } else if(sequence >= 3) {
-            baseChance = 0.6; // Sequence 3-4: 60% base risk
+            baseChance = 0.85;
         } else {
-            baseChance = 0.8; // Sequence 1-2: 80% base risk
+            baseChance = 1;
         }
 
         // Sanity penalty - only matters below 0.8
@@ -457,10 +461,10 @@ public class AdvancementUtil {
                 // One condition met but not both
                 if(digestion >= 0.95f) {
                     // Good digestion but low sanity
-                    baseChance = 0.2; // 20% failure
+                    baseChance = 0.65; // 20% failure
                 } else {
                     // Good sanity but low digestion
-                    baseChance = 0.1; // 10% failure
+                    baseChance = 0.6; // 10% failure
                 }
             } else {
                 // Neither condition met
@@ -468,7 +472,7 @@ public class AdvancementUtil {
             }
         } else if(sequenceDifference == 2) {
             // Two sequences - very dangerous regardless
-            baseChance = 0.6; // 60% base failure
+            baseChance = 0.9; // 60% base failure
         } else {
             // This shouldn't happen due to the check above, but just in case
             return 1.0;
@@ -477,7 +481,7 @@ public class AdvancementUtil {
         // Digestion penalty - maximum +0.2 (20%) impact
         double digestionPenalty = 0;
         if(digestion < 0.95f) {
-            digestionPenalty = Math.min(0.2, (0.95f - digestion) * 0.21);
+            digestionPenalty = Math.min(0.5, (0.95f - digestion) * 0.4);
         }
 
         // Sanity penalty - only applies below 0.8, scales heavily

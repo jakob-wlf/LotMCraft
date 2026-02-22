@@ -4,6 +4,7 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.RingEffectManager;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -126,7 +127,7 @@ public class JusticeSwordEntity extends Entity {
 
     private void playHitAnimation() {
         if(level().isClientSide()) {
-            ClientHandler.applyCameraShake(4f, 35);
+            ClientHandler.applyCameraShakeToPlayersInRadius(4f, 35, (ClientLevel) level(), position(), 60);
         }
         else {
             RingEffectManager.createRingForAll(position(), 8, 35, 252 / 255f, 177 / 255f, 3 / 255f, .75f, 1f, 4f, (ServerLevel) level());

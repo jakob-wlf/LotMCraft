@@ -22,6 +22,7 @@ public class ModParticles {
     public static final Supplier<SimpleParticleType> CRIMSON_LEAF = PARTICLE_TYPES.register("crimson_leaf_particles", () -> new SimpleParticleType(true));
     public static final Supplier<SimpleParticleType> BLACK_NOTE = PARTICLE_TYPES.register("black_note_particles", () -> new SimpleParticleType(true));
     public static final Supplier<SimpleParticleType> GOLDEN_NOTE = PARTICLE_TYPES.register("golden_note_particles", () -> new SimpleParticleType(true));
+    public static final Supplier<SimpleParticleType> BLACK = PARTICLE_TYPES.register("black_particles", () -> new SimpleParticleType(true));
     public static final Supplier<SimpleParticleType> DISEASE = PARTICLE_TYPES.register("disease_particles", () -> new SimpleParticleType(true));
     public static final Supplier<SimpleParticleType> EARTHQUAKE = PARTICLE_TYPES.register("earthquake_particles", () -> new SimpleParticleType(true));
     public static final Supplier<SimpleParticleType> LIGHTNING = PARTICLE_TYPES.register("lightning_particles", () -> new SimpleParticleType(true));

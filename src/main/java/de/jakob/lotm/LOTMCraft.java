@@ -13,7 +13,6 @@ import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.*;
-import de.jakob.lotm.entity.quests.QuestRegistry;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
@@ -31,6 +30,7 @@ import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.potions.PotionRecipes;
+import de.jakob.lotm.quest.QuestRegistry;
 import de.jakob.lotm.rendering.GuidingBookRenderer;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.structure.ModStructures;
@@ -39,6 +39,8 @@ import de.jakob.lotm.util.Config;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.villager.ModVillagers;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -76,6 +78,7 @@ public class LOTMCraft
     public static KeyMapping openWheelHoldKey;
     public static KeyMapping openWheelToggleKey;
     public static KeyMapping useSelectedAbilityKey;
+    public static KeyMapping returnToMainBody;
 
     public static KeyMapping useAbilityBarAbility1;
     public static KeyMapping useAbilityBarAbility2;
@@ -124,6 +127,8 @@ public class LOTMCraft
 
         PassiveAbilityHandler.registerAbilities(modEventBus);
         PotionItemHandler.registerPotions(modEventBus);
+
+        QuestRegistry.init();
 
         abilityHandler = new AbilityHandler();
 
@@ -193,10 +198,17 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.MISFORTUNE_WORDS.get(), MisfortuneWordsRenderer::new);
             EntityRenderers.register(ModEntities.BLOOMING_AREA.get(), BloomingAreaRenderer::new);
             EntityRenderers.register(ModEntities.DESOLATE_AREA.get(), DesolateAreaRenderer::new);
+            EntityRenderers.register(ModEntities.ORIGINAL_BODY.get(), OriginalBodyRenderer::new);
+            EntityRenderers.register(ModEntities.CYCLE_OF_FATE.get(), CycleOfFateRenderer::new);
+            EntityRenderers.register(ModEntities.NATURE_RETURN_PORTAL.get(), ReturnFromNaturelRenderer::new);
+            EntityRenderers.register(ModEntities.GRAFTING_LOCATION_ENTITY.get(), GraftingLocationRenderer::new);
+
 
             GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);
 
             event.enqueueWork(() -> {
+                ItemBlockRenderTypes.setRenderLayer(ModBlocks.MYSTICAL_RING.get(), RenderType.cutout());
+
                 PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(ANIMATION_LAYER_ID, 1000,
                         player -> new PlayerAnimationController(player,
                                 (controller, state, animSetter) -> PlayState.STOP
@@ -207,7 +219,6 @@ public class LOTMCraft
 
         @SubscribeEvent
         public static void onCommonSetup(FMLCommonSetupEvent event) {
-            QuestRegistry.registerQuests();
             event.enqueueWork(PotionRecipes::initPotionRecipes);
             event.enqueueWork(PotionRecipeItemHandler::initializeRecipes);
         }

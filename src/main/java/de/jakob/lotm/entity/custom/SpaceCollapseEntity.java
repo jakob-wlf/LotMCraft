@@ -112,6 +112,8 @@ public class SpaceCollapseEntity extends Entity {
 
     private void breakBlocks(float radius) {
         AbilityUtil.getBlocksInSphereRadius((ServerLevel) level(), this.position(), radius, true).forEach(pos -> {
+            if(level().getBlockState(pos).getDestroySpeed(level(), pos) < 0)
+                return;
             level().setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         });
     }

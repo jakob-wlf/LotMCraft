@@ -366,8 +366,6 @@ public class MiracleHandler {
             );
         });
 
-        System.out.println("Successfully generated " + structureName + " at " + pos);
-
         // Mark chunks for saving
         ChunkPos.rangeClosed(minChunk, maxChunk).forEach((chunkPos) -> {
             level.getChunk(chunkPos.x, chunkPos.z).setUnsaved(true);

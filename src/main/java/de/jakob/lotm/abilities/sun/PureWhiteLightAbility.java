@@ -66,7 +66,8 @@ public class PureWhiteLightAbility extends Ability {
         ServerScheduler.scheduleForDuration(29, 2, 110, () -> {
             if(BeyonderData.isGriefingEnabled(entity)) {
                 AbilityUtil.getBlocksInSphereRadius(serverLevel, finalTargetLoc, radius.get(), true, true, false).forEach(blockPos -> {
-                    serverLevel.setBlockAndUpdate(blockPos, Blocks.LIGHT.defaultBlockState());
+                    if(serverLevel.getBlockState(blockPos).getDestroySpeed(serverLevel, blockPos) >= 0)
+                        serverLevel.setBlockAndUpdate(blockPos, Blocks.LIGHT.defaultBlockState());
                 });
             }
 

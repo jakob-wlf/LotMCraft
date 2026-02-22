@@ -17,7 +17,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SpiritualBaptismAbility extends Ability {
     public SpiritualBaptismAbility(String id) {
@@ -57,11 +59,13 @@ public class SpiritualBaptismAbility extends Ability {
 
         target.setRemainingFireTicks(0);
 
-        target.getActiveEffects()
+        // Collect harmful effects first, then remove them
+        List<MobEffectInstance> harmfulEffects = target.getActiveEffects()
                 .stream()
-                .map(MobEffectInstance::getEffect)
-                .filter(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL)
-                .forEach(target::removeEffect);
+                .filter(effectInstance -> effectInstance.getEffect().value().getCategory() == MobEffectCategory.HARMFUL)
+                .toList();
+
+        harmfulEffects.forEach(effectInstance -> target.removeEffect(effectInstance.getEffect()));
 
         if(target instanceof Player player) {
             player.getFoodData().setSaturation(20);

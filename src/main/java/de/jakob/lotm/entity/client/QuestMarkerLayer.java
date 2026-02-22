@@ -2,7 +2,6 @@ package de.jakob.lotm.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import net.minecraft.client.Minecraft;
@@ -13,10 +12,11 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.Entity;
 
 public class QuestMarkerLayer extends RenderLayer<BeyonderNPCEntity, PlayerModel<BeyonderNPCEntity>> {
-    private static final ResourceLocation QUEST_MARKER = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/npc/quest_marker.png");
+    private static QuestMarkerModel<Entity> model;
+    private static final ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/npc/quest_marker.png");
 
     public QuestMarkerLayer(RenderLayerParent<BeyonderNPCEntity, PlayerModel<BeyonderNPCEntity>> parent) {
         super(parent);
@@ -26,47 +26,29 @@ public class QuestMarkerLayer extends RenderLayer<BeyonderNPCEntity, PlayerModel
     public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
                        BeyonderNPCEntity entity, float limbSwing, float limbSwingAmount,
                        float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (!entity.hasQuest()) {
+        if (entity.getQuestId().isEmpty()) {
             return;
         }
 
+        if (model == null) {
+            model = new QuestMarkerModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(QuestMarkerModel.LAYER_LOCATION)
+            );
+        }
+
         poseStack.pushPose();
+        poseStack.scale(2, 2, 2);
+        poseStack.translate(0, -2, 0);
 
-        // Scale the marker (make it bigger for testing)
-        poseStack.scale(1.25F, -1.25F, 1.25F);
-        poseStack.translate(0, entity.getEyeHeight() - .65, 0);
+        // Get the vertex consumer with your texture
+        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
 
-        poseStack.mulPose(Axis.YP.rotationDegrees(-entity.getYRot()));
-        poseStack.mulPose(Axis.XP.rotationDegrees(-entity.getXRot()));
 
-        Player player = Minecraft.getInstance().player;
-        double dx = player.getX() - entity.getX();
-        double dz = player.getZ() - entity.getZ();
 
-        float yaw = (float)(Math.atan2(dz, dx) * (180.0F / Math.PI)) - 90.0F;
-
-        poseStack.mulPose(Axis.YP.rotationDegrees(yaw + 180.0F));
-
-        // Render the texture with bright light
-        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(QUEST_MARKER));
-        PoseStack.Pose pose = poseStack.last();
-
-        // Draw a quad (corrected vertex order for proper facing)
-        vertex(vertexConsumer, pose, 240, -0.5F, 0.5F, 0, 0, 0);
-        vertex(vertexConsumer, pose, 240, 0.5F, 0.5F, 0, 1, 0);
-        vertex(vertexConsumer, pose, 240, 0.5F, -0.5F, 0, 1, 1);
-        vertex(vertexConsumer, pose, 240, -0.5F, -0.5F, 0, 0, 1);
+        model.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
 
         poseStack.popPose();
     }
 
-    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose,
-                               int light, float x, float y, float z, float u, float v) {
-        consumer.addVertex(pose.pose(), x, y, z)
-                .setColor(255, 255, 255, 255)
-                .setUv(u, v)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(light)
-                .setNormal(0.0F, 1.0F, 0.0F);
-    }
 }

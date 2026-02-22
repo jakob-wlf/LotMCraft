@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.entity.client.GraftingLocationRenderer;
 import de.jakob.lotm.entity.custom.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -35,6 +36,37 @@ public class ModEntities {
                             .updateInterval(20)
                             .build("return_portal")
             );
+
+    public static final DeferredHolder<EntityType<?>, EntityType<ReturnPortalEntity>> NATURE_RETURN_PORTAL =
+            ENTITY_TYPES.register("nature_return_portal", () ->
+                    EntityType.Builder.<ReturnPortalEntity>of(ReturnPortalEntity::new, MobCategory.MISC)
+                            .sized(1.0F, 1.0F)
+                            .clientTrackingRange(10)
+                            .updateInterval(20)
+                            .build("return_portal")
+            );
+
+    public static final DeferredHolder<EntityType<?>, EntityType<LocationGraftingEntity>> GRAFTING_LOCATION_ENTITY =
+            ENTITY_TYPES.register("grafting_location", () ->
+                    EntityType.Builder.<LocationGraftingEntity>of(LocationGraftingEntity::new, MobCategory.MISC)
+                            .sized(1.0F, 1.0F)
+                            .clientTrackingRange(10)
+                            .updateInterval(20)
+                            .noSummon()
+                            .build("grafting_location")
+            );
+
+    public static final DeferredHolder<EntityType<?>, EntityType<CycleOfFateEntity>> CYCLE_OF_FATE =
+            ENTITY_TYPES.register("cycle_of_fate", () -> EntityType.Builder.of(
+                            CycleOfFateEntity::new,
+                            MobCategory.MISC
+                    )
+                    .sized(0.5F, 0.5F) // Small invisible entity
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .noSummon() // Cannot be summoned via commands
+                    .fireImmune()
+                    .build("cycle_of_fate"));
 
     public static final Supplier<EntityType<SpearOfDestructionProjectileEntity>> SPEAR_OF_DESTRUCTION =
             ENTITY_TYPES.register("spear_of_destruction", () -> EntityType.Builder.<SpearOfDestructionProjectileEntity>of(SpearOfDestructionProjectileEntity::new, MobCategory.MISC)
@@ -271,6 +303,11 @@ public class ModEntities {
                     .updateInterval(2)
                     .noSummon()
                     .build("error_avatar"));
+
+    public static final Supplier<EntityType<OriginalBodyEntity>> ORIGINAL_BODY =
+            ENTITY_TYPES.register("original_body", () -> EntityType.Builder.<OriginalBodyEntity>of(OriginalBodyEntity::new, MobCategory.MISC)
+                    .sized(0.6F, 1.8F)
+                    .build("original_body"));
 
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);

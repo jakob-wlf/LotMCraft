@@ -32,18 +32,18 @@ public abstract class Ability {
     public boolean canAlwaysBeUsed = false;
 
     public boolean doesNotIncreaseDigestion = false;
-    public boolean hasOptimalDistance = false;
-    public float optimalDistance = 1f;
+    public boolean hasOptimalDistance = true;
+    public float optimalDistance = 5f;
 
     protected final Random random = new Random();
 
-    protected Ability(String id, float cooldown) {
+    public Ability(String id, float cooldown) {
         this.id = id;
         this.cooldown = Math.round(cooldown * 20);
     }
 
-    public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToMeetRequirements) {
-        if(!canUse(entity) && hasToMeetRequirements) {
+    public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements) {
+        if(!canUse(entity, hasToHaveAbility, consumeSpirituality) && hasToMeetRequirements) {
             return;
         }
 
@@ -55,28 +55,32 @@ public abstract class Ability {
             return;
         }
 
+        LivingEntity newUser = event.getEntity();
+        if(!canUse(newUser, false, consumeSpirituality)) {
+            return;
+        }
+
         // Consume spirituality
-        if(shouldConsumeSpirituality(entity) && consumeSpirituality) {
-            BeyonderData.reduceSpirituality(entity, getSpiritualityCost());
+        if(shouldConsumeSpirituality(newUser) && consumeSpirituality) {
+            BeyonderData.reduceSpirituality(newUser, getSpiritualityCost());
         }
 
         // Digest potion
-        if(!doesNotIncreaseDigestion && entity instanceof Player player) {
-            System.out.println("Digesting ability use for " + getId() + " with progress " + getDigestionProgressForUse(entity));
-            BeyonderData.digest(player, getDigestionProgressForUse(entity), true);
+        if(!doesNotIncreaseDigestion && newUser instanceof Player player) {
+            BeyonderData.digest(player, getDigestionProgressForUse(newUser), true);
         }
 
         // Handle Cooldown
-        AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
+        AbilityCooldownComponent component = newUser.getData(ModAttachments.COOLDOWN_COMPONENT);
         component.setCooldown(id, cooldown);
 
         // Use ability client and server sided
-        onAbilityUse(serverLevel, entity);
-        PacketHandler.sendToAllPlayersInSameLevel(new UseAbilityPacket(getId(), entity.getId()), serverLevel);
+        onAbilityUse(serverLevel, newUser);
+        PacketHandler.sendToAllPlayersInSameLevel(new UseAbilityPacket(getId(), newUser.getId()), serverLevel);
     }
 
     public void useAbility(ServerLevel serverLevel, LivingEntity entity) {
-        useAbility(serverLevel, entity, true, true);
+        useAbility(serverLevel, entity, true, true, true);
     }
 
     public abstract void onAbilityUse(Level level, LivingEntity entity);
@@ -110,14 +114,20 @@ public abstract class Ability {
     }
 
     public boolean canUse(LivingEntity entity) {
-        if(!hasAbility(entity)) return false;
+        return canUse(entity, true, true);
+    }
+
+    public boolean canUse(LivingEntity entity, boolean hasToHaveAbility, boolean doesConsumeSpirituality) {
+        if(!hasAbility(entity) && hasToHaveAbility) return false;
 
         AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
         if(component.isOnCooldown(id)) return false;
 
-        if(shouldConsumeSpirituality(entity) && BeyonderData.getSpirituality(entity) <= getSpiritualityCost()) return false;
+        if(shouldConsumeSpirituality(entity) && doesConsumeSpirituality && BeyonderData.getSpirituality(entity) <= getSpiritualityCost()) return false;
 
         if(!(entity instanceof Player) && !canBeUsedByNPC) return false;
+
+        if(entity instanceof Player player && player.isSpectator()) return false;
 
         if(BeyonderData.isAbilityDisabled(entity) && !this.canAlwaysBeUsed) return false;
 

@@ -25,6 +25,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MirrorWorldTraversalAbility extends Ability {
@@ -74,6 +75,8 @@ public class MirrorWorldTraversalAbility extends Ability {
         PacketHandler.sendToPlayer(serverPlayer, new SyncMirrorWorldPacket(component.isInMirrorWorld()));
     }
 
+    private static final HashMap<UUID, Vec3> lastPositions = new HashMap<>();
+
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
@@ -97,6 +100,16 @@ public class MirrorWorldTraversalAbility extends Ability {
             PacketHandler.sendToPlayer(serverPlayer, new SyncMirrorWorldPacket(false));
             return;
         }
+
+        // Make sure spectator doesn't teleport
+        if(lastPositions.containsKey(serverPlayer.getUUID())) {
+            Vec3 lastPos = lastPositions.get(serverPlayer.getUUID());
+            if(serverPlayer.position().distanceTo(lastPos) > 35) {
+                serverPlayer.teleportTo(lastPos.x, lastPos.y, lastPos.z);
+            }
+        }
+        lastPositions.put(serverPlayer.getUUID(), serverPlayer.position());
+
 
         BlockPos glassPos = getNearestGlassBlock(serverLevel, player.position(), 4);
 

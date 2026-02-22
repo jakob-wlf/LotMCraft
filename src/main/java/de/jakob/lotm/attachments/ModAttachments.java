@@ -1,7 +1,6 @@
 package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.quests.PlayerQuestData;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.minecraft.core.HolderLookup;
@@ -53,6 +52,14 @@ public class ModAttachments {
             "ally_component",
             () -> AttachmentType.builder(() -> new AllyComponent())
                     .serialize(AllyComponent.CODEC)
+                    .copyOnDeath()
+                    .build()
+    );
+
+    public static final Supplier<AttachmentType<QuestComponent>> QUEST_COMPONENT = ATTACHMENT_TYPES.register(
+            "quest_component",
+            () -> AttachmentType.builder(QuestComponent::new)
+                    .serialize(QuestComponent.SERIALIZER)
                     .copyOnDeath()
                     .build()
     );
@@ -116,24 +123,21 @@ public class ModAttachments {
                             .build()
             );
 
-    public static final Supplier<AttachmentType<PlayerQuestData>> PLAYER_QUEST_DATA = ATTACHMENT_TYPES.register(
-            "player_quest_data",
-            () -> AttachmentType.builder(() -> new PlayerQuestData())
-                    .serialize(new IAttachmentSerializer<CompoundTag, PlayerQuestData>() {
-                        @Override
-                        public PlayerQuestData read(IAttachmentHolder holder, CompoundTag tag, HolderLookup.Provider provider) {
-                            PlayerQuestData data = new PlayerQuestData();
-                            data.loadFromNBT(tag);
-                            return data;
-                        }
+    public static final Supplier<AttachmentType<ControllingDataComponent>> CONTROLLING_DATA =
+            ATTACHMENT_TYPES.register("controlling_data", () ->
+                    AttachmentType.builder(ControllingDataComponent::new)
+                            .serialize(ControllingDataComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
 
-                        @Override
-                        public CompoundTag write(PlayerQuestData attachment, HolderLookup.Provider provider) {
-                            return attachment.saveToNBT();
-                        }
-                    })
-                    .build()
-    );
+    public static final Supplier<AttachmentType<CopiedInventoryComponent>> COPIED_INVENTORY =
+            ATTACHMENT_TYPES.register("copied_inventory", () ->
+                    AttachmentType.builder(CopiedInventoryComponent::new)
+                            .serialize(CopiedInventoryComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
 
     public static final Supplier<AttachmentType<WaypointComponent>> WAYPOINT_COMPONENT = ATTACHMENT_TYPES.register(
             "waypoint_component",
@@ -153,6 +157,14 @@ public class ModAttachments {
                     })
                     .build()
     );
+
+    public static final Supplier<AttachmentType<MemorisedEntities>> MEMORISED_ENTITIES =
+            ATTACHMENT_TYPES.register("memorised_entities", () ->
+                    AttachmentType.builder(() -> new MemorisedEntities())
+                            .serialize(MemorisedEntities.CODEC)
+                            .copyOnDeath()
+                            .build()
+            );
 
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);

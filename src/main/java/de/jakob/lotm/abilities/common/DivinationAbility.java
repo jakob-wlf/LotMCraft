@@ -6,16 +6,24 @@ import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toClient.OpenCoordinateScreenPacket;
+import de.jakob.lotm.network.packets.toClient.OpenPlayerDivinationScreenPacket;
+import de.jakob.lotm.network.packets.toClient.OpenStructureDivinationScreenPacket;
 import de.jakob.lotm.network.packets.toClient.SyncDangerPremonitionAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PlayerInfo;
 import de.jakob.lotm.util.scheduling.ClientScheduler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,7 +36,6 @@ public class DivinationAbility extends SelectableAbility {
 
         canBeCopied = false;
         canBeUsedByNPC = false;
-        doesNotIncreaseDigestion = true;
     }
 
     @Override
@@ -49,7 +56,12 @@ public class DivinationAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[] {"ability.lotmcraft.divination.danger_premonition", "ability.lotmcraft.divination.dream_divination"};
+        return new String[] {
+                "ability.lotmcraft.divination.danger_premonition",
+                "ability.lotmcraft.divination.dream_divination",
+                "ability.lotmcraft.divination.structure_divination",
+                "ability.lotmcraft.divination.player_divination"
+        };
     }
 
     @Override
@@ -57,6 +69,8 @@ public class DivinationAbility extends SelectableAbility {
         switch(abilityIndex) {
             case 0 -> dangerPremonition(level, entity);
             case 1 -> dreamDivination(level, entity);
+            case 2 -> structureDivination(level, entity);
+            case 3 -> playerDivination(level, entity);
         }
     }
 
@@ -148,6 +162,42 @@ public class DivinationAbility extends SelectableAbility {
             previousCoordinates.remove(player.getUUID());
         }, serverLevel);
 
+    }
+
+    private void playerDivination(Level level, LivingEntity entity) {
+        if (!(entity instanceof ServerPlayer player)) return;
+
+        var server = player.getServer();
+        if (server == null) return;
+
+        List<PlayerInfo> players = server.getPlayerList()
+                .getPlayers()
+                .stream()
+                .filter(p -> p != player)
+                .map(p -> new PlayerInfo(p.getUUID(), p.getGameProfile().getName()))
+                .toList();
+
+        PacketDistributor.sendToPlayer(
+                player,
+                new OpenPlayerDivinationScreenPacket(players)
+        );
+    }
+
+    private void structureDivination(Level level, Entity entity) {
+        if (!(entity instanceof ServerPlayer player)) return;
+
+        Registry<Structure> registry = player.serverLevel().registryAccess()
+                .registry(Registries.STRUCTURE).orElseThrow();
+
+        List<String> structureIds = registry.holders()
+                .map(holder -> holder.key().location().toString())
+                .sorted()
+                .toList();
+
+        PacketDistributor.sendToPlayer(
+                player,
+                new OpenStructureDivinationScreenPacket(structureIds)
+        );
     }
 
     public static void cleanupOnLogout(Player player) {

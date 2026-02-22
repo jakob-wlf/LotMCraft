@@ -50,6 +50,24 @@ public class DimensionProvider {
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
                                                     .build()
                                     );
+                                    bootstrap.register(ModDimensions.WORLD_CREATION_BIOME_KEY,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.0f)
+                                                    .downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0xcafa96) // Very dark sky
+                                                            .fogColor(0x000000) // Dark fog
+                                                            .waterColor(0x1b5ee3)
+                                                            .waterFogColor(0x050533)
+                                                            .grassColorOverride(0x4ad145) // Jungle grass color
+                                                            .foliageColorOverride(0x30BB00) // Dense jungle foliage
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build()
+                                    );
                                     bootstrap.register(ModDimensions.SEFIRAH_CASTLE_BIOME_KEY,
                                             new Biome.BiomeBuilder()
                                                     .hasPrecipitation(false) // No rain/snow
@@ -129,6 +147,23 @@ public class DimensionProvider {
                                             1.0f, // ambient light level
                                             new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 7), 0)
                                     ));
+                                    bootstrap.register(ModDimensions.WORLD_CREATION_TYPE_KEY, new DimensionType(
+                                            OptionalLong.empty(), // fixed time (no day/night cycle)
+                                            true, // has skylight
+                                            false, // has ceiling
+                                            false, // ultrawarm
+                                            false, // natural
+                                            1.0, // coordinate scale
+                                            true, // bed works
+                                            false, // respawn anchor works
+                                            -64, // min y
+                                            384, // height
+                                            384, // logical height
+                                            BlockTags.INFINIBURN_OVERWORLD,
+                                            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "nature"), // effects location
+                                            1.0f, // ambient light level
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 7), 0)
+                                    ));
                                     bootstrap.register(ModDimensions.SEFIRAH_CASTLE_TYPE_KEY, new DimensionType(
                                             OptionalLong.of(6000), // Fixed time (noon, no day/night cycle)
                                             false, // NO skylight - disables sun/moon rendering
@@ -195,6 +230,16 @@ public class DimensionProvider {
 
                                     bootstrap.register(ModDimensions.SPACE_LEVEL_KEY,
                                             new LevelStem(dimensionTypes.getOrThrow(ModDimensions.SPACE_TYPE_KEY), chunkGenerator)
+                                    );
+
+                                    var natureBiomeSource = new FixedBiomeSource(
+                                            biomeRegistry.getOrThrow(ModDimensions.WORLD_CREATION_BIOME_KEY)
+                                    );
+
+                                    var natureChunkGenerator = new NatureDimensionWorldChunkGenerator(natureBiomeSource);
+
+                                    bootstrap.register(ModDimensions.WORLD_CREATION_LEVEL_KEY,
+                                            new LevelStem(dimensionTypes.getOrThrow(ModDimensions.WORLD_CREATION_TYPE_KEY), natureChunkGenerator)
                                     );
 
                                     var spiritBiomeSource = new FixedBiomeSource(

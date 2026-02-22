@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
@@ -66,6 +67,10 @@ public class MirrorSubstituteAbility extends Ability {
     public static void takeDamage(LivingDamageEvent.Pre event) {
         if(!figurineNumbers.containsKey(event.getEntity().getUUID()))
             return;
+
+        if(event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) {
+            return;
+        }
 
         int num = figurineNumbers.get(event.getEntity().getUUID());
 

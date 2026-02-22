@@ -126,7 +126,7 @@ public class MarionetteControllerItem extends Item {
                 if(player.isShiftKeyDown()) {
                     component.setMarionette(false);
                     component.setControllerUUID("");
-                    livingEntity.setHealth(0);
+                    livingEntity.hurt(livingEntity.damageSources().generic(), Float.MAX_VALUE);
                     stack.shrink(1);
                     player.sendSystemMessage(Component.translatable("ability.lotm.puppeteering.entity_released").withColor(0xa26fc9));
                     return InteractionResultHolder.sidedSuccess(stack, false);

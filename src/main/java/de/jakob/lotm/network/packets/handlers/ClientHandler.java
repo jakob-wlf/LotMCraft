@@ -3,13 +3,19 @@ package de.jakob.lotm.network.packets.handlers;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
-import de.jakob.lotm.abilities.door.PlayerTeleportationAbility;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.entity.custom.OriginalBodyEntity;
 import de.jakob.lotm.gui.custom.CoordinateInput.CoordinateInputScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
+import de.jakob.lotm.gui.custom.Quest.QuestAcceptanceScreen;
+import de.jakob.lotm.gui.custom.SelectionGui.PlayerSelectionGui;
+import de.jakob.lotm.gui.custom.SelectionGui.ShapeShiftingSelectionGui;
+import de.jakob.lotm.gui.custom.SelectionGui.StructureSelectionGui;
 import de.jakob.lotm.network.packets.toClient.*;
+import de.jakob.lotm.quest.Quest;
+import de.jakob.lotm.quest.QuestRegistry;
 import de.jakob.lotm.rendering.*;
 import de.jakob.lotm.rendering.effectRendering.impl.VFXRenderer;
 import de.jakob.lotm.util.ClientBeyonderCache;
@@ -18,21 +24,19 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Random;
 
 import java.util.ArrayList;
@@ -61,14 +65,6 @@ public class ClientHandler {
                     false,
                     0.0f
             );
-        }
-    }
-
-    // In ClientHandler.java
-    public static void handlePlayerListPacket(SyncPlayerListPacket packet) {
-        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-        if (mc.player != null) {
-            ClientPlayerListHandler.updatePlayerList(mc.player.getUUID(), packet.players());
         }
     }
 
@@ -127,6 +123,15 @@ public class ClientHandler {
     public static void applyCameraShake(float intensity, int duration) {
         shakeIntensity = intensity;
         shakeDuration = duration;
+    }
+
+    public static void applyCameraShakeToPlayersInRadius(float intensity, int duration, ClientLevel level, Vec3 center, float radius) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+
+        if (player.position().distanceTo(new Vec3(center.x(), center.y(), center.z())) <= radius && level == Minecraft.getInstance().level) {
+            applyCameraShake(intensity, duration);
+        }
     }
 
     @SubscribeEvent
@@ -355,6 +360,65 @@ public class ClientHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof IntrospectScreen screen) {
             screen.setAbilityBarSlots(abilities);
+        }
+    }
+
+    public static void handleFireEffectPacket(boolean restore, List<BlockPos> blockPositions, int waveNumber) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        if (!restore) {
+            // Turn blocks black client-side
+            for (BlockPos pos : blockPositions) {
+                level.setBlock(pos, Blocks.FIRE.defaultBlockState(),
+                        Block.UPDATE_CLIENTS | Block.UPDATE_IMMEDIATE);
+            }
+        } else {
+            // Force client to re-sync these blocks from server
+            for (BlockPos pos : blockPositions) {
+                // Remove the fake block and request update from server
+                level.setBlock(pos, level.getBlockState(pos), Block.UPDATE_ALL);
+            }
+        }
+    }
+
+    public static void handleQuestScreenPacket(OpenQuestAcceptanceScreenPacket packet) {
+        Quest quest = QuestRegistry.getQuest(packet.questId());
+        if (quest == null) {
+            return;
+        }
+
+        Component questName = quest.getName();
+        Component questDescription = quest.getDescription();
+
+        Minecraft.getInstance().setScreen(new QuestAcceptanceScreen(
+                packet.questId(),
+                questName,
+                questDescription,
+                packet.rewards(),
+                packet.digestionReward(),
+                packet.questSequence(),
+                packet.npcId()
+        ));
+    }
+
+    public static void handlePlayerDivinationScreenPacket(OpenPlayerDivinationScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new PlayerSelectionGui(packet.players()));
+    }
+
+    public static void handleStructureDivinationScreenPacket(OpenStructureDivinationScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new StructureSelectionGui(packet.structureIds()));
+    }
+
+    public static void handleShapeShiftingScreenPacket(OpenShapeShiftingScreenPacket payload) {
+        Minecraft.getInstance().setScreen(new ShapeShiftingSelectionGui(payload.entityTypes()));
+    }
+
+    public static void handleOriginalBodyOwnerSyncPacket(SyncOriginalBodyOwnerPacket packet) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level != null && mc.level.getEntity(packet.entityId()) instanceof OriginalBodyEntity body) {
+            body.getData(ModAttachments.CONTROLLING_DATA).setOwnerUUID(packet.ownerUUID());
+            body.getData(ModAttachments.CONTROLLING_DATA).setOwnerName(packet.ownerName());
         }
     }
 }

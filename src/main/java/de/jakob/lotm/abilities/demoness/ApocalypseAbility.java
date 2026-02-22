@@ -50,6 +50,9 @@ public class ApocalypseAbility extends Ability {
         ServerScheduler.scheduleForDuration(0, 2, 110, () -> {
             if(BeyonderData.isGriefingEnabled(entity)) {
                 AbilityUtil.getBlocksInSphereRadius(serverLevel, loc, radius.get(), true, true, false).forEach(blockPos -> {
+                    if(level.getBlockState(blockPos).getDestroySpeed(level, blockPos) < 0) {
+                        return;
+                    }
                     if(blockPos.getY() <= yLevel && random.nextBoolean()) {
                         serverLevel.setBlockAndUpdate(blockPos, Blocks.OBSIDIAN.defaultBlockState());
                     }
