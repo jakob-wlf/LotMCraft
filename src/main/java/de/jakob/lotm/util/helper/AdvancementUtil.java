@@ -1,6 +1,7 @@
 package de.jakob.lotm.util.helper;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
+import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
@@ -29,6 +30,13 @@ public class AdvancementUtil {
     public static void advance(LivingEntity entity, String pathway, int sequence) {
         if(entity instanceof Player player && player.isCreative()) {
             setBeyonder(entity, pathway, sequence);
+            return;
+        }
+
+        // if drinking potion while controlling marionette - failure
+        ControllingDataComponent data = entity.getData(ModAttachments.CONTROLLING_DATA);
+        if (data.getTargetUUID() != null) {
+            entity.hurt(entity.damageSources().magic(), Float.MAX_VALUE);
             return;
         }
 

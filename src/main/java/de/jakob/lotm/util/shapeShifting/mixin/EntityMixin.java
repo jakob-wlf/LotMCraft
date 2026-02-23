@@ -24,19 +24,16 @@ public abstract class EntityMixin implements DimensionsRefresher {
     @Shadow public abstract EntityDimensions getDimensions(Pose pose);
     @Shadow public abstract float getEyeHeight(Pose pose);
     @Shadow public abstract AABB getBoundingBox();
-    @Shadow public abstract void setBoundingBox(AABB aabb);
     @Shadow public abstract void move(MoverType type, Vec3 vec);
     @Shadow public abstract double getX();
     @Shadow public abstract double getY();
     @Shadow public abstract double getZ();
 
     private Entity createShapeEntity(String shapeKey, Player player) {
-
         // skip for players and beyonders because same shape, if in the future beyonders had new models this will change
         if (shapeKey == null || shapeKey.startsWith("player:") || shapeKey.startsWith("lotmcraft:beyonder_npc:")) return null;
 
         EntityType<?> type = null;
-
         ResourceLocation id = ResourceLocation.tryParse(shapeKey);
         if (id != null) {
             type = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.get(id);
@@ -45,10 +42,8 @@ public abstract class EntityMixin implements DimensionsRefresher {
         if (type == null) return null;
 
         Entity shape = type.create(player.level());
-
         if (shape != null) {
             shape.setPose(player.getPose());
-
             if (shape instanceof BeyonderNPCEntity npc
                     && shapeKey.startsWith("lotmcraft:beyonder_npc:")) {
 
@@ -58,7 +53,6 @@ public abstract class EntityMixin implements DimensionsRefresher {
                 }
             }
         }
-
         return shape;
     }
 

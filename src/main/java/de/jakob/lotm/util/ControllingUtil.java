@@ -11,11 +11,11 @@ import de.jakob.lotm.network.packets.toClient.SyncOriginalBodyOwnerPacket;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.protocol.game.ClientboundSetHealthPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -51,7 +51,6 @@ public class ControllingUtil {
 
         // making the original body and setting his owner
         OriginalBodyEntity originalBody = new OriginalBodyEntity(ModEntities.ORIGINAL_BODY.get(), level);
-
 
         // setting body data to the player
         data.setBodyUUID(originalBody.getUUID());
@@ -115,11 +114,11 @@ public class ControllingUtil {
         // returning the target before returning to main body
         if (targetTag != null) {
             Entity targetEntity = EntityType.loadEntityRecursive(targetTag, level, (entity) -> {
-                entity.moveTo(player.position());
+                entity.setPos(player.getX(), player.getY(), player.getZ());
 
                 // copy player inventory to the target, otherwise items will be lost
                 if (entity instanceof LivingEntity target) {
-                    copyEntitiesInventories(player, target);
+                    copyInventories(player, target);
                 }
                 return entity;
             });
@@ -136,6 +135,11 @@ public class ControllingUtil {
                 AbilityBarComponent sourceBarData = player.getData(ModAttachments.ABILITY_BAR_COMPONENT);
                 AbilityBarComponent targetBarData = targetEntity.getData(ModAttachments.ABILITY_BAR_COMPONENT);
                 targetBarData.setAbilities(sourceBarData.getAbilities());
+
+                // preserve the targets health
+                if (targetEntity instanceof LivingEntity target) {
+                    target.setHealth(player.getHealth());
+                }
 
                 // clear data
                 if (resetData) {
@@ -160,7 +164,7 @@ public class ControllingUtil {
                 Entity bodyEntity = EntityType.loadEntityRecursive(bodyTag, level, (entity) -> {
                     ListTag posList = bodyTag.getList("Pos", 6);
                     if (posList.size() >= 3) {
-                        entity.moveTo(posList.getDouble(0),posList.getDouble(1),posList.getDouble(2));
+                        entity.setPos(posList.getDouble(0),posList.getDouble(1),posList.getDouble(2));
                     }
                     return entity;
                 });
@@ -209,9 +213,8 @@ public class ControllingUtil {
         }
     }
 
-    public static void copyEntities (LivingEntity source, LivingEntity target) {
-        copyEntitiesInventories(source, target);
-
+    public static void copyData(LivingEntity source, LivingEntity target) {
+        // copy togglable abilities
         ToggleAbility.setActiveAbilities(target, ToggleAbility.getActiveAbilitiesForEntity(source));
 
         // copy wheel abilities
@@ -228,25 +231,21 @@ public class ControllingUtil {
         targetBarData.setAbilities(sourceBarData.getAbilities());
 
         // copy persistent data for beyonders
-        if (source.getPersistentData().getString("beyonder_pathway").isEmpty()) {
-            target.getPersistentData().remove("beyonder_pathway");
+        CompoundTag sourceData = source.getPersistentData();
+        CompoundTag targetData = target.getPersistentData();
+        if (sourceData.getString("beyonder_pathway").isEmpty()) {
+            targetData.remove("beyonder_pathway");
+            targetData.remove("beyonder_sequence");
+            targetData.remove("beyonder_spirituality");
+            targetData.remove("beyonder_digestion_progress");
+            targetData.remove("beyonder_griefing_enabled");
             PhysicalEnhancementsAbility.resetEnhancements(target.getUUID());
         } else {
-            target.getPersistentData().putString("beyonder_pathway", source.getPersistentData().getString("beyonder_pathway"));
-        }
-
-        if (source.getPersistentData().getInt("beyonder_sequence") == 0) {
-            target.getPersistentData().remove("beyonder_sequence");
-            PhysicalEnhancementsAbility.resetEnhancements(target.getUUID());
-        } else {
-            target.getPersistentData().putInt("beyonder_sequence", source.getPersistentData().getInt("beyonder_sequence"));
-        }
-
-        if (source.getPersistentData().getFloat("beyonder_spirituality") == 0.0f) {
-            target.getPersistentData().remove("beyonder_spirituality");
-            PhysicalEnhancementsAbility.resetEnhancements(target.getUUID());
-        } else {
-            target.getPersistentData().putFloat("beyonder_spirituality", source.getPersistentData().getFloat("beyonder_spirituality"));
+            targetData.putString("beyonder_pathway", sourceData.getString("beyonder_pathway"));
+            targetData.putInt("beyonder_sequence", sourceData.getInt("beyonder_sequence"));
+            targetData.putFloat("beyonder_spirituality", sourceData.getFloat("beyonder_spirituality"));
+            targetData.putFloat("beyonder_digestion_progress", sourceData.getFloat("beyonder_digestion_progress"));
+            targetData.putBoolean("beyonder_griefing_enabled", sourceData.getBoolean("beyonder_griefing_enabled"));
         }
 
         // sync the changes to the client
@@ -257,25 +256,62 @@ public class ControllingUtil {
             PacketHandler.syncBeyonderDataToEntity(target);
         }
 
+    }
+
+    public static void copyEntities (LivingEntity source, LivingEntity target) {
+        copyInventories(source, target);
+        copyData(source, target);
+
+
         AttributeMap sourceMap = source.getAttributes();
         AttributeMap targetMap = target.getAttributes();
 
-        AttributeInstance sourceHealth = sourceMap.getInstance(Attributes.MAX_HEALTH);
-
-        if (sourceHealth == null) {
-            sourceHealth.setBaseValue(source.getHealth());
-        }
+        boolean healthSynced = false;
+        boolean armorSynced = false;
+        boolean armorToughnessSynced = false;
+        boolean attackDamageSynced = false;
 
         for (AttributeInstance sourceInstance : sourceMap.getSyncableAttributes()) {
             AttributeInstance targetInstance = targetMap.getInstance(sourceInstance.getAttribute());
 
+            // for movement speed "correct" the value
+            if (sourceInstance.getAttribute().equals(Attributes.MOVEMENT_SPEED)) {
+                AttributeInstance sourceSpeed = source.getAttribute(Attributes.MOVEMENT_SPEED);
+                AttributeInstance targetSpeed = target.getAttribute(Attributes.MOVEMENT_SPEED);
+
+                var sourceDefaultAttributes = DefaultAttributes.getSupplier((EntityType<? extends LivingEntity>) source.getType());
+                var targetDefaultAttributes = DefaultAttributes.getSupplier((EntityType<? extends LivingEntity>) target.getType());
+
+                double sourceDefault = sourceDefaultAttributes.getBaseValue(Attributes.MOVEMENT_SPEED);
+                double targetDefault = targetDefaultAttributes.getBaseValue(Attributes.MOVEMENT_SPEED);
+
+                double ratio = sourceSpeed.getBaseValue() / sourceDefault;
+
+                targetSpeed.getModifiers().forEach(mod -> {
+                    targetSpeed.removeModifier(mod.id());
+                });
+
+                targetSpeed.setBaseValue(targetDefault * ratio);
+
+                for (AttributeModifier modifier : sourceSpeed.getModifiers()) {
+                    targetSpeed.addTransientModifier(modifier);
+                }
+                continue;
+            }
+
             // pass attributes that can't be applied to the entity
             if (targetInstance == null) continue;
 
+            // mark core attributes as synced
+            if (targetInstance.getAttribute().equals(Attributes.MAX_HEALTH)) {
+                healthSynced = true;
+                }
+            if (targetInstance.getAttribute().equals(Attributes.ARMOR)) armorSynced = true;
+            if (targetInstance.getAttribute().equals(Attributes.ARMOR_TOUGHNESS)) armorToughnessSynced = true;
+            if (targetInstance.getAttribute().equals(Attributes.ATTACK_DAMAGE)) attackDamageSynced = true;
+
             // remove old modifiers to not stack
-            targetInstance.getModifiers().forEach(mod ->
-                    targetInstance.removeModifier(mod.id())
-            );
+            targetInstance.getModifiers().forEach(mod -> targetInstance.removeModifier(mod.id()));
 
             // copy attribute base values
             targetInstance.setBaseValue(sourceInstance.getBaseValue());
@@ -284,6 +320,9 @@ public class ControllingUtil {
             for (AttributeModifier modifier : sourceInstance.getModifiers()) {
                 targetInstance.addTransientModifier(modifier);
             }
+
+            // sync max health
+            if (targetInstance.getAttribute().equals(Attributes.MAX_HEALTH)) {}
         }
 
         // copy effects
@@ -291,20 +330,53 @@ public class ControllingUtil {
         for (MobEffectInstance effect : source.getActiveEffects()) {
             target.addEffect(new MobEffectInstance(effect));
         }
-        // copy health after effects
+
+        // force health
+        if (!healthSynced) {
+            syncDefaultAttribute(source, target, Attributes.MAX_HEALTH);
+        }
+
+        // force armor
+        if (!armorSynced) {
+            syncDefaultAttribute(source, target, Attributes.ARMOR);
+        }
+
+        // force armor toughness
+        if (!armorToughnessSynced) {
+            syncDefaultAttribute(source, target, Attributes.ARMOR_TOUGHNESS);
+        }
+
+        // force attack damage
+        if (!attackDamageSynced) {
+            syncDefaultAttribute(source, target, Attributes.ATTACK_DAMAGE);
+        }
+
+        // set current health
         target.setHealth(source.getHealth());
 
-        // sync food, health, and saturation as well
-        if (target instanceof ServerPlayer serverPlayer) {
-            serverPlayer.connection.send(new ClientboundSetHealthPacket(
-                    serverPlayer.getHealth(),
-                    serverPlayer.getFoodData().getFoodLevel(),
-                    serverPlayer.getFoodData().getSaturationLevel()
-            ));
+        // copy water bubbles
+        target.setAirSupply(source.getAirSupply());
+
+        // copy fire lit state
+        target.setRemainingFireTicks(source.getRemainingFireTicks());
+
+    }
+
+    private static void syncDefaultAttribute(LivingEntity source, LivingEntity target, Holder<Attribute> attribute) {
+        AttributeInstance sourceInst = source.getAttribute(attribute);
+        AttributeInstance targetInst = target.getAttribute(attribute);
+        if (targetInst != null) {
+            targetInst.getModifiers().forEach(mod -> targetInst.removeModifier(mod.id()));
+            if (sourceInst != null) {
+                targetInst.setBaseValue(sourceInst.getBaseValue());
+            } else {
+                // if source doesn't have an attribute, remove all modifiers for it
+                targetInst.getModifiers().forEach(mod -> targetInst.removeModifier(mod.id()));
+            }
         }
     }
 
-    public static void copyEntitiesInventories(LivingEntity source, LivingEntity target) {
+    public static void copyInventories(LivingEntity source, LivingEntity target) {
         // dont wanna think too much about this for now, probably there is a better way to do it but will change in the future
         if (source instanceof Player player) {
             SimpleContainer targetInv = target.getData(ModAttachments.COPIED_INVENTORY).getInv();
@@ -351,7 +423,6 @@ public class ControllingUtil {
                 ServerPlayer player = getPlayerByUUID(originalBodyData.getOwnerUUID());
 
                 if (player == null) return;
-
                 event.setCanceled(true);
 
                 // reset the player
@@ -373,23 +444,25 @@ public class ControllingUtil {
     }
 
     @SubscribeEvent
-    public static void onPlayerDeath(LivingDeathEvent event){
+    public static void onPlayerDeath(LivingIncomingDamageEvent event){
         LivingEntity entity = event.getEntity();
+        float damage = event.getAmount();
+        if (damage >= entity.getHealth()) {
+            if (entity instanceof ServerPlayer serverPlayer) {
+                ControllingDataComponent data = serverPlayer.getData(ModAttachments.CONTROLLING_DATA);
+                if (data.getTargetUUID() == null) return;
+                event.setCanceled(true);
 
-        if (entity instanceof ServerPlayer serverPlayer) {
-            ControllingDataComponent data = serverPlayer.getData(ModAttachments.CONTROLLING_DATA);
-            if (data.getTargetUUID() == null) return ;
-            event.setCanceled(true);
-
-            // reset the player
-            if (entity.level() instanceof ServerLevel serverLevel) {
-                reset(serverPlayer,serverLevel, false);
-                // kill the target entity instead
-                serverLevel.getEntity(data.getTargetUUID()).hurt(event.getSource(), Float.MAX_VALUE);
-                data.removeTargetEntity();
-                data.removeOwnerUUID();
-                data.removeBodyUUID();
-                data.removeTargetUUID();
+                // reset the player
+                if (entity.level() instanceof ServerLevel serverLevel) {
+                    reset(serverPlayer, serverLevel, false);
+                    // kill the target entity instead
+                    serverLevel.getEntity(data.getTargetUUID()).hurt(event.getSource(), Float.MAX_VALUE);
+                    data.removeTargetEntity();
+                    data.removeOwnerUUID();
+                    data.removeBodyUUID();
+                    data.removeTargetUUID();
+                }
             }
         }
     }
@@ -415,6 +488,18 @@ public class ControllingUtil {
             ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
             if (data.getTargetUUID() != null || data.getBodyUUID() != null) {
                 reset(serverPlayer,serverLevel, true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onBodyTracking(PlayerEvent.StartTracking event) {
+        if (event.getTarget() instanceof OriginalBodyEntity body) {
+            ControllingDataComponent data = body.getData(ModAttachments.CONTROLLING_DATA);
+            if (data.getOwnerUUID() != null && data.getOwnerName() != null) {
+                PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(),
+                        new SyncOriginalBodyOwnerPacket(body.getId(), data.getOwnerUUID(), data.getOwnerName())
+                );
             }
         }
     }
