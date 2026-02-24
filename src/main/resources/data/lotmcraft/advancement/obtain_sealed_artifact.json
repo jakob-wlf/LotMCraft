@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_beyonder",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:sealed_artifact"
+    },
+    "title": "Sealed Power",
+    "description": "Obtain a Sealed Artifact.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "obtain_sealed_artifact": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

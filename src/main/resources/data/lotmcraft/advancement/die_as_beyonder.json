@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_beyonder",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:blood"
+    },
+    "title": "Losing Yourself",
+    "description": "Die while being a Beyonder.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "die_as_beyonder": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
