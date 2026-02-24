@@ -29,6 +29,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import oshi.util.tuples.Pair;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class GraftingAbility extends SelectableAbility {
@@ -42,6 +43,10 @@ public class GraftingAbility extends SelectableAbility {
 
     private static final HashMap<UUID, LivingEntity> graftingTargetsEntities = new HashMap<>();
     private static final List<Pair<UUID, Location>> graftingTargetsPairs = new ArrayList<>();
+
+    // Maps source entity UUID to the caster UUID, for sequence resistance checks
+    private static final HashMap<UUID, UUID> graftingDamageCasters = new HashMap<>();
+    private static final HashMap<UUID, UUID> graftingAbilitiesCasters = new HashMap<>();
 
 
     public GraftingAbility(String id) {
@@ -163,11 +168,24 @@ public class GraftingAbility extends SelectableAbility {
             return;
         }
 
-        graftingAbilitiesPairs.add(new Pair<>(graftingStartEntity.getUUID(), targetEntity.getUUID()));
+        // Check if the source entity (graftingStartEntity) can resist ability grafting
+        double failureChance = AbilityUtil.getSequenceFailureChance(entity, graftingStartEntity);
+        if (ThreadLocalRandom.current().nextDouble() < failureChance) {
+            graftingAbilitiesEntities.remove(entity.getUUID());
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.grafting.resisted").withColor(color));
+            return;
+        }
+
+        UUID startUUID = graftingStartEntity.getUUID();
+        graftingAbilitiesPairs.add(new Pair<>(startUUID, targetEntity.getUUID()));
+        graftingAbilitiesCasters.put(startUUID, entity.getUUID());
 
         graftingAbilitiesEntities.remove(entity.getUUID());
 
-        ServerScheduler.scheduleDelayed(20 * 30, () -> graftingAbilitiesPairs.removeIf(pair -> pair.getA() == graftingStartEntity.getUUID() || pair.getB() == targetUUID));
+        ServerScheduler.scheduleDelayed(20 * 30, () -> {
+            graftingAbilitiesPairs.removeIf(pair -> startUUID.equals(pair.getA()) && targetUUID.equals(pair.getB()));
+            graftingAbilitiesCasters.remove(startUUID);
+        });
     }
 
     private void graftDamage(Level level, LivingEntity entity) {
@@ -204,11 +222,24 @@ public class GraftingAbility extends SelectableAbility {
             return;
         }
 
-        graftingDamagePairs.add(new Pair<>(graftingStartEntity.getUUID(), targetEntity.getUUID()));
+        // Check if the source entity (graftingStartEntity) can resist the graft
+        double failureChance = AbilityUtil.getSequenceFailureChance(entity, graftingStartEntity);
+        if (ThreadLocalRandom.current().nextDouble() < failureChance) {
+            graftingDamageEntities.remove(entity.getUUID());
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.grafting.resisted").withColor(color));
+            return;
+        }
+
+        UUID startUUID = graftingStartEntity.getUUID();
+        graftingDamagePairs.add(new Pair<>(startUUID, targetEntity.getUUID()));
+        graftingDamageCasters.put(startUUID, entity.getUUID());
 
         graftingDamageEntities.remove(entity.getUUID());
 
-        ServerScheduler.scheduleDelayed(20 * 30, () -> graftingDamagePairs.removeIf(pair -> pair.getA() == graftingStartEntity.getUUID() || pair.getB() == targetUUID));
+        ServerScheduler.scheduleDelayed(20 * 30, () -> {
+            graftingDamagePairs.removeIf(pair -> startUUID.equals(pair.getA()) && targetUUID.equals(pair.getB()));
+            graftingDamageCasters.remove(startUUID);
+        });
     }
 
     private void graftLocations(Level level, LivingEntity entity) {
@@ -285,8 +316,17 @@ public class GraftingAbility extends SelectableAbility {
             LivingEntity otherEntity = (LivingEntity) serverLevel.getEntity(otherEntityUUID);
             if(otherEntity == null) return;
 
+            // Look up the caster to compare sequences with the hurt entity
+            UUID casterUUID = graftingDamageCasters.get(hurt.getUUID());
+            LivingEntity caster = casterUUID != null ? (LivingEntity) serverLevel.getEntity(casterUUID) : null;
+
+            double resistance = AbilityUtil.getSequenceResistanceFactor(caster, hurt);
+            float redirected = (float)(event.getAmount() * (1.0 - resistance));
+
             event.setCanceled(true);
-            otherEntity.hurt(serverLevel.damageSources().generic(), event.getAmount());
+            if (redirected > 0) {
+                otherEntity.hurt(serverLevel.damageSources().generic(), redirected);
+            }
         }
     }
 
@@ -335,6 +375,13 @@ public class GraftingAbility extends SelectableAbility {
             LivingEntity otherEntity = (LivingEntity) serverLevel.getEntity(otherEntityUUID);
             if(otherEntity == null) return;
 
+            // Check if the used entity can resist per-event (resistance = chance graft breaks)
+            UUID casterUUID = graftingAbilitiesCasters.get(used.getUUID());
+            LivingEntity caster = casterUUID != null ? (LivingEntity) serverLevel.getEntity(casterUUID) : null;
+            double resistance = AbilityUtil.getSequenceResistanceFactor(caster, used);
+            if (ThreadLocalRandom.current().nextDouble() < resistance) {
+                return; // Entity resisted the ability graft this time
+            }
 
             event.setEntity(otherEntity);
         }

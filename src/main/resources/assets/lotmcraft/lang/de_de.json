@@ -546,5 +546,8 @@
   "lotm.pathway": "Pfad",
   "lotm.sequence": "Sequenz",
   "lotm.potion": "Trank",
-  "lotm.spirituality": "Spiritualität"
+  "lotm.spirituality": "Spiritualität",
+  "ability.lotmcraft.grafting.resisted": "Die Sequenz des Ziels ist zu hoch zum Pfropfen",
+  "ability.lotmcraft.fate_siphoning.resisted": "Die Sequenz des Ziels ist zu hoch für Schicksalssiphon",
+  "ability.lotmcraft.curse_of_misfortune.resisted": "Die Sequenz des Ziels ist zu hoch für den Fluch des Unglücks"
 }

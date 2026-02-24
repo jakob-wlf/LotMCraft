@@ -22,6 +22,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import java.lang.reflect.AccessFlag;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class LoopHoleCreationAbility extends Ability {
@@ -74,9 +75,12 @@ public class LoopHoleCreationAbility extends Ability {
             // Update entities in loophole
             updateEntitiesInLoophole(loopholeData);
 
-            // Teleport entities to loophole center
+            // Teleport entities to loophole center – high-sequence entities may resist
             AbilityUtil.getNearbyEntities(entity, serverLevel, targetLoc, 3).forEach(e -> {
-                e.teleportTo(targetLoc.x, targetLoc.y, targetLoc.z);
+                double resistance = AbilityUtil.getSequenceResistanceFactor(entity, e);
+                if (ThreadLocalRandom.current().nextDouble() >= resistance) {
+                    e.teleportTo(targetLoc.x, targetLoc.y, targetLoc.z);
+                }
             });
         });
 
@@ -156,6 +160,14 @@ public class LoopHoleCreationAbility extends Ability {
 
         // Don't intercept if the user IS the creator
         if (entityId.equals(loopholeData.creatorId)) {
+            return;
+        }
+
+        // Higher-sequence entities may break free from the loophole's ability interception.
+        // The escape probability combines both the category-gap failure chance and the
+        // within-category resistance factor (resistance is always >= failure chance).
+        double escapeChance = AbilityUtil.getSequenceResistanceFactor(creator, user);
+        if (ThreadLocalRandom.current().nextDouble() < escapeChance) {
             return;
         }
 
