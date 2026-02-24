@@ -2,17 +2,17 @@
   "parent": "lotmcraft:root",
   "display": {
     "icon": {
-      "id": "lotmcraft:lotm_icon"
+      "id": "minecraft:blue_candle"
     },
-    "title": "The Start of a Journey",
-    "description": "Consume a Potion and become a Beyonder.",
+    "title": "Into the Night",
+    "description": "Enter the Evernight Church.",
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
   },
   "criteria": {
-    "consume_beyonder_potion": {
+    "enter_evernight_church": {
       "trigger": "minecraft:impossible"
     }
   }

@@ -35,9 +35,9 @@ public class RecipeMenu extends AbstractContainerMenu {
             }
         };
 
-        this.addSlot(new SlotItemHandler(itemHandler, 0, 38, 30));
-        this.addSlot(new SlotItemHandler(itemHandler, 1, 86, 30));
-        this.addSlot(new SlotItemHandler(itemHandler, 2, 63, 58));
+        this.addSlot(new SlotItemHandler(itemHandler, 0, 61, 49));
+        this.addSlot(new SlotItemHandler(itemHandler, 1, 133, 49));
+        this.addSlot(new SlotItemHandler(itemHandler, 2, 98, 91));
 
         if(!ingredients.isEmpty()) {
             int size = Math.min(ingredients.size(), itemHandler.getSlots());

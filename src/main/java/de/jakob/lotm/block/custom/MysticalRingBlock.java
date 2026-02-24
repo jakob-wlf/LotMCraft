@@ -128,6 +128,8 @@ public class MysticalRingBlock extends Block implements EntityBlock {
 
         ParticleUtil.createParticleSpirals(level, dustParticle, pos.getCenter(), 1, 1.75, 2, .5, 2, 20 * 8, 8, 4);
 
+        player.getPersistentData().putBoolean("lotm_summoned_beyonder_with_ring", true);
+
         int finalSequence = sequence;
         String finalPathway = pathway;
         ServerScheduler.scheduleDelayed(20 * 8, () -> {

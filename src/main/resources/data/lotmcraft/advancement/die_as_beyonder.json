@@ -1,18 +1,18 @@
 {
-  "parent": "lotmcraft:become_beyonder",
+  "parent": "lotmcraft:root",
   "display": {
     "icon": {
-      "id": "lotmcraft:sailor_potion"
+      "id": "lotmcraft:blood"
     },
-    "title": "Setting Sail",
-    "description": "Consume a Potion and advance to Sailor.",
+    "title": "Losing Yourself",
+    "description": "Die while being a Beyonder.",
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": false,
     "hidden": true
   },
   "criteria": {
-    "consume_beyonder_potion": {
+    "die_as_beyonder": {
       "trigger": "minecraft:impossible"
     }
   }

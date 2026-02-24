@@ -2,17 +2,17 @@
   "parent": "lotmcraft:root",
   "display": {
     "icon": {
-      "id": "lotmcraft:lotm_icon"
+      "id": "lotmcraft:mystical_ring"
     },
-    "title": "The Start of a Journey",
-    "description": "Consume a Potion and become a Beyonder.",
+    "title": "Master of Summoning",
+    "description": "Use the Mystical Ring to summon a Beyonder.",
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
   },
   "criteria": {
-    "consume_beyonder_potion": {
+    "summon_beyonder_with_ring": {
       "trigger": "minecraft:impossible"
     }
   }

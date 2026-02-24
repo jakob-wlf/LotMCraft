@@ -4,15 +4,15 @@
     "icon": {
       "id": "lotmcraft:lotm_icon"
     },
-    "title": "The Start of a Journey",
-    "description": "Consume a Potion and become a Beyonder.",
-    "frame": "task",
+    "title": "Power Incarnate",
+    "description": "Advance to Sequence 7 on any pathway.",
+    "frame": "goal",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
   },
   "criteria": {
-    "consume_beyonder_potion": {
+    "reach_sequence_7": {
       "trigger": "minecraft:impossible"
     }
   }

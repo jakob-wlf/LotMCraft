@@ -2,17 +2,17 @@
   "parent": "lotmcraft:root",
   "display": {
     "icon": {
-      "id": "lotmcraft:lotm_icon"
+      "id": "lotmcraft:blood"
     },
-    "title": "The Start of a Journey",
-    "description": "Consume a Potion and become a Beyonder.",
+    "title": "Rogue Slayer",
+    "description": "Kill a Rogue Beyonder.",
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
   },
   "criteria": {
-    "consume_beyonder_potion": {
+    "kill_rogue_beyonder": {
       "trigger": "minecraft:impossible"
     }
   }

@@ -2,17 +2,17 @@
   "parent": "lotmcraft:root",
   "display": {
     "icon": {
-      "id": "lotmcraft:lotm_icon"
+      "id": "lotmcraft:sealed_artifact"
     },
-    "title": "The Start of a Journey",
-    "description": "Consume a Potion and become a Beyonder.",
+    "title": "Sealed Power",
+    "description": "Obtain a Sealed Artifact.",
     "frame": "task",
     "show_toast": true,
-    "announce_to_chat": true,
+    "announce_to_chat": false,
     "hidden": false
   },
   "criteria": {
-    "consume_beyonder_potion": {
+    "obtain_sealed_artifact": {
       "trigger": "minecraft:impossible"
     }
   }

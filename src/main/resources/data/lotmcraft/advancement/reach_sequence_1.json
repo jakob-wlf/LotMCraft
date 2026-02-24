@@ -1,18 +1,18 @@
 {
-  "parent": "lotmcraft:root",
+  "parent": "lotmcraft:reach_sequence_4",
   "display": {
     "icon": {
       "id": "lotmcraft:lotm_icon"
     },
-    "title": "The Start of a Journey",
-    "description": "Consume a Potion and become a Beyonder.",
-    "frame": "task",
+    "title": "Archangel",
+    "description": "Advance to Sequence 1 on any pathway.",
+    "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
   },
   "criteria": {
-    "consume_beyonder_potion": {
+    "reach_sequence_1": {
       "trigger": "minecraft:impossible"
     }
   }
