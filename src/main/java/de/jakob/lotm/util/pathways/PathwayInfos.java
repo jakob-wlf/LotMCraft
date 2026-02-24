@@ -23,6 +23,12 @@ public record PathwayInfos(
         return Component.translatable("lotm.sequence." + sequenceNames[sequence]).getString();
     }
 
+    public String getRawSequenceName(int sequence) {
+        if(sequence < 0 || sequence > sequenceNames.length)
+            return "";
+        return sequenceNames[sequence];
+    }
+
     public int getSequenceIndex(String sequence) {
         for(int i = 0; i < sequenceNames.length; i++) {
             if(sequenceNames[i].equals(sequence))

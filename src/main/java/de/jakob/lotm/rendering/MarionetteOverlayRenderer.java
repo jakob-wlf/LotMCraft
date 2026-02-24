@@ -20,6 +20,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.*;
 
@@ -36,10 +37,8 @@ public class MarionetteOverlayRenderer {
     }
 
     @SubscribeEvent
-    public static void onLeave(EntityLeaveLevelEvent event) {
-        if(event.getEntity() instanceof LivingEntity livingEntity) {
-            currentMarionette.remove(livingEntity.getUUID());
-        }
+    public static void onLeave(PlayerEvent.PlayerLoggedOutEvent event) {
+        currentMarionette.remove(event.getEntity().getUUID());
     }
 
     private static void renderOverlay(GuiGraphics guiGraphics) {
@@ -96,10 +95,10 @@ public class MarionetteOverlayRenderer {
 
     private static void renderOutLine(GuiGraphics guiGraphics, int x, int y, int width, int height) {
         guiGraphics.fill(x, y, x + width, y + height, 0x77000000);
-        guiGraphics.fill(x, y, x + width, y + 2, 0xFFa742f5);
-        guiGraphics.fill(x, y + height - 2, x + width, y + height, 0xFFa742f5);
-        guiGraphics.fill(x, y + 2, x + 2, y + height - 2, 0xFFa742f5);
-        guiGraphics.fill(x + width - 2, y + 2, x + width, y + height - 2, 0xFFa742f5);
+        guiGraphics.fill(x, y, x + width, y + 1, 0xFFa742f5);
+        guiGraphics.fill(x, y + height - 1, x + width, y + height, 0xFFa742f5);
+        guiGraphics.fill(x, y + 1, x + 1, y + height - 1, 0xFFa742f5);
+        guiGraphics.fill(x + width - 1, y + 1, x + width, y + height - 1, 0xFFa742f5);
     }
 
     private static final Attribute[] attributesThatShouldGetDisplayed = new Attribute[]{

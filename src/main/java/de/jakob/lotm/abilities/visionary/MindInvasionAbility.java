@@ -1,6 +1,9 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -24,6 +27,9 @@ public class MindInvasionAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
+        if(level.isClientSide)
+            return;
 
+        AbilityUtil.sendActionBar(entity, Component.translatable("lotm.not_implemented_yet").withStyle(ChatFormatting.RED));
     }
 }

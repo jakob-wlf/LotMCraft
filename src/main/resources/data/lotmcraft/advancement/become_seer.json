@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_beyonder",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:seer_potion"
+    },
+    "title": "I See everything",
+    "description": "Consume a Potion and advance to Seer.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

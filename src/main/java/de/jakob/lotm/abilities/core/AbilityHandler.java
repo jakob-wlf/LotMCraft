@@ -237,6 +237,7 @@ public class AbilityHandler {
         abilities.add(new LoopHoleCreationAbility("loophole_creation_ability"));
         abilities.add(new FateSiphoningAbility("fate_siphoning_ability"));
         abilities.add(new ConceptualTheftAbility("conceptual_theft_ability"));
+        abilities.add(new TimeManipulationAbility("time_manipulation_ability"));
     }
 
     public HashSet<Ability> getAbilities() {

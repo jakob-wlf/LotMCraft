@@ -206,18 +206,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int questsButtonX = baseLeftPos - 65;
         int questsButtonY = this.topPos + 35;
 
-//        int messageButtonX = baseLeftPos - 65;
-//        int messageButtonY = this.topPos + 35;
-//
-//        messageButton = Button.builder(Component.literal("Messages"),
-//                button -> {
-//                    openMessagesMenu();
-//                 })
-//                .bounds(messageButtonX, messageButtonY, 60, 20)
-//                .build();
-//
-//        this.addRenderableWidget(messageButton);
-
         toggleQuestsButton = Button.builder(Component.literal(showQuests ? "< Hide" : "Quests >"),
                         button -> {
                             showQuests = !showQuests;
@@ -231,6 +219,18 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 .build();
 
         this.addRenderableWidget(toggleQuestsButton);
+
+        int messageButtonX = baseLeftPos - 65;
+        int messageButtonY = this.topPos + 60;
+
+        messageButton = Button.builder(Component.literal("Messages"),
+                button -> {
+                    openMessagesMenu();
+                 })
+                .bounds(messageButtonX, messageButtonY, 60, 20)
+                .build();
+
+        //this.addRenderableWidget(messageButton);
 
         // Add abilities panel buttons if shown
         if (showAbilities) {

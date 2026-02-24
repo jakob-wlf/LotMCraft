@@ -651,6 +651,7 @@
   "lotmcraft.conceptual_theft_ability.description": "Steal Concepts, Steal Day, making it Night, or Steal Night, making it Day. You can also steal an Area and save it in your inventory",
   "ability.lotmcraft.conceptual_theft.day_night": "Steal Day/Night",
   "ability.lotmcraft.conceptual_theft.area": "Steal Area",
+  "lotmcraft.time_manipulation_ability": "Time Manipulation",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",
