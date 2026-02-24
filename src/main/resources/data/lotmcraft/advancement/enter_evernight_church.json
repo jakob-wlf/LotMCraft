@@ -1,8 +1,8 @@
 {
-  "parent": "lotmcraft:become_beyonder",
+  "parent": "lotmcraft:root",
   "display": {
     "icon": {
-      "id": "lotmcraft:lotm_icon"
+      "id": "minecraft:blue_candle"
     },
     "title": "Into the Night",
     "description": "Enter the Evernight Church.",

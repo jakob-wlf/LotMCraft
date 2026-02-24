@@ -1,18 +1,18 @@
 {
-  "parent": "lotmcraft:become_beyonder",
+  "parent": "lotmcraft:root",
   "display": {
     "icon": {
       "id": "lotmcraft:lotm_icon"
     },
     "title": "Power Incarnate",
-    "description": "Advance to Sequence 5 on any pathway.",
+    "description": "Advance to Sequence 7 on any pathway.",
     "frame": "goal",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
   },
   "criteria": {
-    "reach_sequence_5": {
+    "reach_sequence_7": {
       "trigger": "minecraft:impossible"
     }
   }

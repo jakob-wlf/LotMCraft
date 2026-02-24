@@ -2,7 +2,7 @@
   "parent": "lotmcraft:kill_rogue_beyonder",
   "display": {
     "icon": {
-      "id": "lotmcraft:blood"
+      "id": "minecraft:diamond_sword"
     },
     "title": "Beyonder Hunter",
     "description": "Kill 10 Beyonders.",

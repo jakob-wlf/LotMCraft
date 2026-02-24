@@ -1,8 +1,8 @@
 {
-  "parent": "lotmcraft:become_beyonder",
+  "parent": "lotmcraft:root",
   "display": {
     "icon": {
-      "id": "lotmcraft:lotm_icon"
+      "id": "lotmcraft:apprentice_characteristic"
     },
     "title": "The Essence",
     "description": "Obtain a Beyonder Characteristic.",

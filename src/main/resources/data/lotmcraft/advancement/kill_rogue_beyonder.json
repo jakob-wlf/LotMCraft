@@ -1,11 +1,11 @@
 {
-  "parent": "lotmcraft:become_beyonder",
+  "parent": "lotmcraft:root",
   "display": {
     "icon": {
       "id": "lotmcraft:blood"
     },
     "title": "Rogue Slayer",
-    "description": "Kill a hostile Rogue Beyonder.",
+    "description": "Kill a Rogue Beyonder.",
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": true,

@@ -1,18 +1,18 @@
 {
-  "parent": "lotmcraft:reach_sequence_5",
+  "parent": "lotmcraft:reach_sequence_7",
   "display": {
     "icon": {
       "id": "lotmcraft:lotm_icon"
     },
     "title": "Transcending Mortality",
-    "description": "Advance to Sequence 3 on any pathway.",
+    "description": "Advance to Sequence 4 on any pathway.",
     "frame": "goal",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
   },
   "criteria": {
-    "reach_sequence_3": {
+    "reach_sequence_4": {
       "trigger": "minecraft:impossible"
     }
   }

@@ -1,5 +1,5 @@
 {
-  "parent": "lotmcraft:become_beyonder",
+  "parent": "lotmcraft:root",
   "display": {
     "icon": {
       "id": "lotmcraft:sealed_artifact"

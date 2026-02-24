@@ -1,14 +1,14 @@
 {
-  "parent": "lotmcraft:root",
   "display": {
     "icon": {
       "id": "lotmcraft:lotm_icon"
     },
-    "title": "The Start of a Journey",
-    "description": "Consume a Potion and become a Beyonder.",
+    "title": "A Dangerous World",
+    "description": "Enter the World of Mysticism and Beyonders.",
     "frame": "task",
+    "background": "minecraft:textures/block/obsidian.png",
     "show_toast": true,
-    "announce_to_chat": true,
+    "announce_to_chat": false,
     "hidden": false
   },
   "criteria": {

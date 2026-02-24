@@ -57,7 +57,7 @@ public class AdvancementsEventHandler {
         Entity killer = event.getSource().getEntity();
 
         // Award advancement for killing a rogue beyonder
-        if (entity instanceof BeyonderNPCEntity npc && npc.isHostile()
+        if (entity instanceof BeyonderNPCEntity
                 && killer instanceof ServerPlayer player) {
             grantAdvancement(player, "kill_rogue_beyonder");
 
@@ -71,6 +71,13 @@ public class AdvancementsEventHandler {
         // Award advancement for dying as a beyonder
         if (entity instanceof ServerPlayer player && BeyonderData.isBeyonder(player)) {
             grantAdvancement(player, "die_as_beyonder");
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerJoin(PlayerTickEvent.Post event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            grantAdvancement(player, "root");
         }
     }
 

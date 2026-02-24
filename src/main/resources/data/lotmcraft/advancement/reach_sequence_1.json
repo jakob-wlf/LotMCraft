@@ -1,10 +1,10 @@
 {
-  "parent": "lotmcraft:reach_sequence_3",
+  "parent": "lotmcraft:reach_sequence_4",
   "display": {
     "icon": {
       "id": "lotmcraft:lotm_icon"
     },
-    "title": "Demigod",
+    "title": "Archangel",
     "description": "Advance to Sequence 1 on any pathway.",
     "frame": "challenge",
     "show_toast": true,

@@ -16,8 +16,8 @@ public class RecipeScreen extends AbstractContainerScreen<RecipeMenu> {
 
         this.containerBackground = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/recipe.png");
 
-        this.imageHeight = 89;
-        this.imageWidth = 144;
+        this.imageHeight = 134;
+        this.imageWidth = 216;
     }
     
     @Override
@@ -44,12 +44,12 @@ public class RecipeScreen extends AbstractContainerScreen<RecipeMenu> {
         int x = (this.width - this.imageWidth) / 2;
         int y = (this.height - this.imageHeight) / 2;
 
-        guiGraphics.blit(containerBackground, x, y, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
+        guiGraphics.blit(containerBackground, x, y, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
         RenderSystem.disableBlend();
     }
 
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.drawString(this.font, this.title.getString(), this.titleLabelX, this.titleLabelY, 0xCCCCCC, true);
+        guiGraphics.drawString(this.font, this.title.getString(), this.titleLabelX, this.titleLabelY, 0x999999, true);
     }
 }
