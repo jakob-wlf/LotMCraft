@@ -322,6 +322,7 @@
   "ability.lotmcraft.grafting.already_grafted": "That is already tampered with",
   "ability.lotmcraft.grafting.same_entity": "You cannot choose the same entity as both source and target",
   "ability.lotmcraft.grafting.failed": "The Grafting failed",
+  "ability.lotmcraft.grafting.resisted": "The target's Sequence is too high to be Grafted",
   "ability.lotmcraft.grafting.no_target": "No Target found",
 
 
@@ -586,6 +587,7 @@
   "lotmcraft.blessing_ability.description": "Give a blessing gifted to your allies",
   "lotmcraft.curse_of_misfortune_ability": "Curse of Misfortune",
   "lotmcraft.curse_of_misfortune_ability.description": "Curse your enemies with misfortune",
+  "ability.lotmcraft.curse_of_misfortune.resisted": "The target's Sequence is too high to be Cursed",
   "lotmcraft.spiritual_baptism_ability": "Spiritual Baptism",
   "lotmcraft.spiritual_baptism_ability.description": "Make the targets spirit clean and stable, effectively removing all mental effects",
   "lotmcraft.words_of_misfortune_ability": "Words of Misfortune",
@@ -646,6 +648,7 @@
   "lotmcraft.fate_siphoning_ability": "Fate Siphoning",
   "lotmcraft.fate_siphoning_ability.description": "Siphon someone's Fate, anything that is going to harm you, will be transferred",
   "ability.lotmcraft.fate_siphoning.no_target": "No Target found",
+  "ability.lotmcraft.fate_siphoning.resisted": "The target's Sequence is too high for Fate Siphoning",
   "ability.lotmcraft.fate_siphoning.already_swapping": "No Target found",
   "lotmcraft.conceptual_theft_ability": "Conceptual Theft",
   "lotmcraft.conceptual_theft_ability.description": "Steal Concepts, Steal Day, making it Night, or Steal Night, making it Day. You can also steal an Area and save it in your inventory",

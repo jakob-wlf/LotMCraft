@@ -19,6 +19,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class FateSiphoningAbility extends Ability {
@@ -51,6 +52,13 @@ public class FateSiphoningAbility extends Ability {
             return;
         }
 
+        // High-sequence opponents may outright resist the fate link being established
+        double failureChance = AbilityUtil.getSequenceFailureChance(entity, target);
+        if (ThreadLocalRandom.current().nextDouble() < failureChance) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.fate_siphoning.resisted").withColor(0x6d32a8));
+            return;
+        }
+
         DirectionalEffectManager.playEffect(DirectionalEffectManager.DirectionalEffect.FATE_SIPHONING, entity.getEyePosition().x, entity.getEyePosition().y, entity.getEyePosition().z,
                 target.getX(), target.getY() + target.getEyeHeight() * 0.5, target.getZ(),
                 40,
@@ -79,10 +87,19 @@ public class FateSiphoningAbility extends Ability {
         if(target instanceof LivingEntity targetLiving) {
             float damage = event.getAmount();
             DamageSource source = serverLevel.damageSources().generic();
-            targetLiving.hurt(source, damage);
+
+            // The target's sequence may reduce how much fate can be siphoned onto them
+            double resistance = AbilityUtil.getSequenceResistanceFactor(entity, targetLiving);
+            float redirected = (float)(damage * (1.0 - resistance));
+            if (redirected > 0) {
+                targetLiving.hurt(source, redirected);
+            }
         }
 
+        // Always cancel to protect the caster: the fate link absorbs the incoming damage
+        // regardless of how much is actually redirected to the target. When the target's
+        // sequence reduces the redirect, that portion is simply lost rather than
+        // returning to the caster.
         event.setCanceled(true);
-
     }
 }

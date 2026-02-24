@@ -97,6 +97,74 @@ public class AbilityUtil {
         return false;
     }
 
+    /**
+     * Returns the sequence category for the given sequence number.
+     * Sequences 9-5 = 1 (low/mid), 4-3 = 2 (demigods), 2-1 = 3 (angels), 0 = 4 (beyond).
+     * Non-beyonder sequences (>= 10) return 0.
+     */
+    public static int getSequenceCategory(int sequence) {
+        if (sequence <= 0) return 4;
+        if (sequence <= 2) return 3;
+        if (sequence <= 4) return 2;
+        if (sequence <= 9) return 1;
+        return 0; // non-beyonder (sequence 10+)
+    }
+
+    /**
+     * Returns a resistance factor (0.0 = no resistance, 1.0 = full immunity) representing
+     * how well the opponent resists an ability used by the caster, based on sequence comparison.
+     * Resistance is especially pronounced when the opponent is in a higher sequence category.
+     * A null or non-beyonder caster is treated as sequence 10 (non-beyonder).
+     */
+    public static double getSequenceResistanceFactor(LivingEntity caster, LivingEntity opponent) {
+        if (opponent == null || !BeyonderData.isBeyonder(opponent)) return 0.0;
+
+        int casterSeq = (caster != null && BeyonderData.isBeyonder(caster)) ? BeyonderData.getSequence(caster) : 10;
+        int opponentSeq = BeyonderData.getSequence(opponent);
+
+        // Opponent weaker or same sequence: no resistance
+        if (opponentSeq >= casterSeq) return 0.0;
+
+        int casterCat = getSequenceCategory(casterSeq);
+        int opponentCat = getSequenceCategory(opponentSeq);
+        int catDiff = opponentCat - casterCat; // positive = opponent is in a stronger category
+
+        if (catDiff == 0) {
+            // Same category, opponent is a few levels stronger
+            int levelDiff = casterSeq - opponentSeq;
+            return Math.min(0.35, levelDiff * 0.1);
+        } else if (catDiff == 1) {
+            return 0.65;
+        } else if (catDiff == 2) {
+            return 0.85;
+        } else {
+            return 0.95;
+        }
+    }
+
+    /**
+     * Returns the probability (0.0–1.0) that an ability completely fails when used by caster on
+     * opponent because the opponent is in a higher sequence category. Failure is only possible
+     * when the opponent is in a strictly higher category than the caster.
+     */
+    public static double getSequenceFailureChance(LivingEntity caster, LivingEntity opponent) {
+        if (opponent == null || !BeyonderData.isBeyonder(opponent)) return 0.0;
+
+        int casterSeq = (caster != null && BeyonderData.isBeyonder(caster)) ? BeyonderData.getSequence(caster) : 10;
+        int opponentSeq = BeyonderData.getSequence(opponent);
+
+        if (opponentSeq >= casterSeq) return 0.0;
+
+        int casterCat = getSequenceCategory(casterSeq);
+        int opponentCat = getSequenceCategory(opponentSeq);
+        int catDiff = opponentCat - casterCat;
+
+        if (catDiff <= 0) return 0.0;
+        if (catDiff == 1) return 0.35;
+        if (catDiff == 2) return 0.70;
+        return 0.95;
+    }
+
     // ==================== TARGETING VALIDATION METHODS ====================
 
     /**

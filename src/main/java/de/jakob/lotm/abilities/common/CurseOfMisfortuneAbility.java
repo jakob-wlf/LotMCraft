@@ -17,6 +17,7 @@ import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class CurseOfMisfortuneAbility extends Ability {
     public CurseOfMisfortuneAbility(String id) {
@@ -53,12 +54,23 @@ public class CurseOfMisfortuneAbility extends Ability {
             return;
         }
 
+        // Higher sequence opponents resist – and may fully negate – the curse
+        double failureChance = AbilityUtil.getSequenceFailureChance(entity, target);
+        if (ThreadLocalRandom.current().nextDouble() < failureChance) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.curse_of_misfortune.resisted").withColor(0xFFc0f6fc));
+            return;
+        }
+
         EffectManager.playEffect(EffectManager.Effect.MISFORTUNE_CURSE, target.getX(), target.getY(), target.getZ(), serverLevel);
 
         double eyeHeight = target.getEyeHeight();
         ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, eyeHeight / 2, 0), 120, .3, eyeHeight / 2, .3, 0);
 
-        int amplifier = (int) Math.round(multiplier(entity) * 6.25f);
+        double resistance = AbilityUtil.getSequenceResistanceFactor(entity, target);
+        int amplifier = (int) Math.round(multiplier(entity) * 6.25f * (1.0 - resistance));
+        if (amplifier <= 0) {
+            return; // Full resistance – curse has no meaningful effect
+        }
         target.addEffect(new MobEffectInstance(ModEffects.UNLUCK, 20 * 60 * 17, amplifier));
     }
 }
