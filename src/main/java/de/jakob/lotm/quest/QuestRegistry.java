@@ -5,7 +5,11 @@ import de.jakob.lotm.quest.impl.DefendVillageQuest;
 import de.jakob.lotm.quest.impl.KillZombiesQuest;
 import de.jakob.lotm.quest.impl.kill_beyonder_quests.KillBeyonderGenericQuest;
 import de.jakob.lotm.quest.impl.kill_beyonder_quests.KillTyrantSeq4Quest;
-
+import de.jakob.lotm.quest.impl.FindStructureQuest;
+import de.jakob.lotm.quest.impl.KillPlayerQuest;
+import de.jakob.lotm.quest.impl.CollectCharacteristicsQuest;
+import de.jakob.lotm.quest.impl.HelpBeyonderQuest;
+import de.jakob.lotm.quest.impl.DeliverQuest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +38,11 @@ public class QuestRegistry {
         registerQuest(new KillBeyonderGenericQuest("kill_seq3", 4, 3));
         registerQuest(new KillBeyonderGenericQuest("kill_seq2", 3, 2));
         registerQuest(new KillBeyonderGenericQuest("kill_seq1", 2, 1));
+        registerQuest(new CollectCharacteristicsQuest("collect_low_seq_characteristics", 6, 3));
+        registerQuest(new FindStructureQuest("find_random_structures", 8));
+        registerQuest(new KillPlayerQuest("kill_player_target", 5));
+        registerQuest(new HelpBeyonderQuest("help_beyonder", 8, 20));
+        registerQuest(new DeliverQuest("deliver_item", 9));
     }
 
     public static String getRandomQuestId() {

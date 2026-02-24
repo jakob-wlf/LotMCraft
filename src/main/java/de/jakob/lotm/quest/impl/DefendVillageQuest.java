@@ -21,6 +21,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +105,11 @@ public class DefendVillageQuest extends Quest {
     private Entity createRandomMonster(ServerLevel level) {
         return switch (new Random().nextInt(7)) {
             default -> new Husk(EntityType.HUSK, level);
-            case 1 -> new Pillager(EntityType.PILLAGER, level);
+            case 1 -> {
+                Pillager pillager = new Pillager(EntityType.PILLAGER, level);
+                pillager.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
+                yield pillager;
+            }
             case 2 -> new Spider(EntityType.SPIDER, level);
             case 3 -> new EnderMan(EntityType.ENDERMAN, level);
             case 4 -> new Witch(EntityType.WITCH, level);

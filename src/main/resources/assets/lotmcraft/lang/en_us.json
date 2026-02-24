@@ -1199,6 +1199,26 @@
   "lotm.quest.impl.kill_seq1.description": "Search around for the structure to summon the Archangel and defeat them",
   "lotm.quest.impl.kill_seq1.lore": "An Archangel is on a rampage, defeat them before its too late!",
 
+  "lotm.quest.impl.collect_low_seq_characteristics": "Collect Beyonder Characteristics",
+  "lotm.quest.impl.collect_low_seq_characteristics.description": "Bring %s low-sequence Beyonder Characteristics (Seq 7-9).",
+  "lotm.quest.impl.collect_low_seq_characteristics.lore": "Power attracts power. Gather characteristics and hand them over for advancement materials.",
+
+  "lotm.quest.impl.find_random_structures": "Find Ancient Structures",
+  "lotm.quest.impl.find_random_structures.description": "Find Ancient Structure and show it to world.",
+  "lotm.quest.impl.find_random_structures.lore": "Forgotten places contain forgotten truths. Find them and return.",
+
+  "lotm.quest.impl.kill_player_target": "Assassinate Target",
+  "lotm.quest.impl.kill_player_target.description": "Eliminate the marked player target.",
+  "lotm.quest.impl.kill_player_target.lore": "A name has been chosen. Blood must be drawn.",
+
+  "lotm.quest.impl.help_beyonder": "Help this Beyonder overcome his enemies",
+  "lotm.quest.impl.help_beyonder.description": "Face a wave of enemies and defeat them all.",
+  "lotm.quest.impl.help_beyonder.lore": "This beyonder have angered forces that are beyond his power.",
+
+  "lotm.quest.impl.deliver_item": "Deliver the Package",
+  "lotm.quest.impl.deliver_item.description": "Deliver an item to the marked location.",
+  "lotm.quest.impl.deliver_item.lore": "Discrete delivery. No mistakes.",
+
   "lotm.griefing": "Griefing Enabled",
   "lotm.griefing_required": "Griefing must be enabled",
   "lotm.temporarily_disabled": "This ability is temporarily disabled and will be reenabled shortly",
