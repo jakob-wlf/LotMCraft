@@ -14,6 +14,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+import java.util.concurrent.CompletableFuture;
+
 public record StructureDivinationSelectedPacket(String structureId) implements CustomPacketPayload {
 
     public static final Type<StructureDivinationSelectedPacket> TYPE =
@@ -32,61 +34,62 @@ public record StructureDivinationSelectedPacket(String structureId) implements C
     }
 
     public static void handle(StructureDivinationSelectedPacket packet, IPayloadContext context) {
-        context.enqueueWork(() -> {
-            if (!(context.player() instanceof ServerPlayer player)) return;
+        if (!(context.player() instanceof ServerPlayer player)) return;
 
-            ServerLevel level = player.serverLevel();
-            ResourceLocation structureKey = ResourceLocation.tryParse(packet.structureId());
+        ServerLevel level = player.serverLevel();
+        ResourceLocation structureKey = ResourceLocation.tryParse(packet.structureId());
 
-            if (structureKey == null) {
-                player.sendSystemMessage(Component.literal("§cInvalid structure id"));
-                return;
-            }
+        if (structureKey == null) {
+            player.sendSystemMessage(Component.literal("§cInvalid structure id"));
+            return;
+        }
 
-            var structureRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
-            var structureHolder = structureRegistry.getHolder(structureKey).orElse(null);
+        CompletableFuture.runAsync(() -> {
+                    var structureRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
+                    var structureHolder = structureRegistry.getHolder(structureKey).orElse(null);
 
-            if (structureHolder == null) {
-                return;
-            }
+                    if (structureHolder == null) return;
 
-            var result = level.getChunkSource()
-                    .getGenerator()
-                    .findNearestMapStructure(
-                            level,
-                            HolderSet.direct(structureHolder),
-                            player.blockPosition(),
-                            5000,
-                            false
-                    );
 
-            if (result == null) {
-                player.sendSystemMessage(Component.literal("§cNo structure nearby in 5000 blocks"));
-                return;
-            }
+                    var result = level.getChunkSource()
+                            .getGenerator()
+                            .findNearestMapStructure(
+                                    level,
+                                    HolderSet.direct(structureHolder),
+                                    player.blockPosition(),
+                                    5000,
+                                    false
+                            );
 
-            BlockPos structurePos = result.getFirst();
-            BlockPos playerPos = player.blockPosition();
+            context.enqueueWork(() -> {
+                if (result == null) {
+                    player.sendSystemMessage(Component.literal("§cNo structure nearby in 5000 blocks"));
+                    return;
+                }
 
-            int dx = structurePos.getX() - playerPos.getX();
-            int dz = structurePos.getZ() - playerPos.getZ();
-            int distance = (int) Math.sqrt(dx * dx + dz * dz);
+                BlockPos structurePos = result.getFirst();
+                BlockPos playerPos = player.blockPosition();
 
-            String direction = getDirection(dx, dz);
-            String structureName = packet.structureId();
+                int dx = structurePos.getX() - playerPos.getX();
+                int dz = structurePos.getZ() - playerPos.getZ();
+                int distance = (int) Math.sqrt(dx * dx + dz * dz);
 
-            int colonIndex = structureName.indexOf(':');
-            if (colonIndex != -1) {
-                structureName = structureName.substring(colonIndex + 1);
-            }
-            structureName = structureName.replace('_', ' ');
+                String direction = getDirection(dx, dz);
+                String structureName = packet.structureId();
 
-            player.sendSystemMessage(Component.literal(String.format(
-                    "§5You sense §d%s§5 to the §d%s§5, about §d%d blocks §5away...",
-                    structureName,
-                    direction,
-                    distance
-            )));
+                int colonIndex = structureName.indexOf(':');
+                if (colonIndex != -1) {
+                    structureName = structureName.substring(colonIndex + 1);
+                }
+                structureName = structureName.replace('_', ' ');
+
+                player.sendSystemMessage(Component.literal(String.format(
+                        "§5You sense §d%s§5 to the §d%s§5, about §d%d blocks §5away...",
+                        structureName,
+                        direction,
+                        distance
+                )));
+            });
         });
     }
 

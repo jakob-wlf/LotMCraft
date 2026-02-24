@@ -60,6 +60,7 @@ public class OriginalBodyEntity extends LivingEntity {
     public static AttributeSupplier.Builder createAttributes() {
         return LivingEntity.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, 20.0)
+                .add(Attributes.ATTACK_DAMAGE, 2.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.25)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.0)
                 .add(Attributes.ARMOR, 0.0)
@@ -86,6 +87,7 @@ public class OriginalBodyEntity extends LivingEntity {
             }
         }
     }
+
     @Override
     public Component getCustomName() {
         String ownerName = this.getData(ModAttachments.CONTROLLING_DATA).getOwnerName();

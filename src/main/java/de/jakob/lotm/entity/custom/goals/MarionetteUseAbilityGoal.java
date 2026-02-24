@@ -55,7 +55,10 @@ public class MarionetteUseAbilityGoal extends TargetGoal {
         }
         if(random.nextInt(100) >= 40) {
             List<Ability> abilityItems = usableAbilities();
-            abilityItems.get(random.nextInt(abilityItems.size())).useAbility((ServerLevel) marionette.level(), marionette);
+            // simple check because it was crashing
+            if (!abilityItems.isEmpty()) {
+                abilityItems.get(random.nextInt(abilityItems.size())).useAbility((ServerLevel) marionette.level(), marionette);
+            }
         }
     }
 

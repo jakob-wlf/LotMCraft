@@ -123,9 +123,7 @@ public class MarionetteControllerItem extends Item {
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_teleport").withColor(0xa26fc9));
             } else {
                 // Release marionette
-                if(player.isShiftKeyDown()) {
-                    component.setMarionette(false);
-                    component.setControllerUUID("");
+                if(player.isShiftKeyDown()) {   
                     livingEntity.hurt(livingEntity.damageSources().generic(), Float.MAX_VALUE);
                     stack.shrink(1);
                     player.sendSystemMessage(Component.translatable("ability.lotm.puppeteering.entity_released").withColor(0xa26fc9));

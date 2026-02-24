@@ -22,7 +22,7 @@ public class ShapeShiftingSelectionGui extends ButtonListGui<String> {
 
     @Override
     protected void onItemSelected(String entityType) {
-        PacketDistributor.sendToServer(new ShapeShiftingSelectedPacket(entityType));
+        PacketDistributor.sendToServer(new ShapeShiftingSelectedPacket(entityType, true));
         minecraft.setScreen(null);
     }
 }

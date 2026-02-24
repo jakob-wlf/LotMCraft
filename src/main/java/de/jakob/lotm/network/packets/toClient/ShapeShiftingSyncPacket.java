@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.ProfileResult;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.util.shapeShifting.DimensionsRefresher;
 import de.jakob.lotm.util.shapeShifting.PlayerSkinData;
 import de.jakob.lotm.util.shapeShifting.TransformData;
 import net.minecraft.client.Minecraft;
@@ -47,10 +48,14 @@ public record ShapeShiftingSyncPacket(UUID playerId, String shapeString) impleme
             Minecraft mc = Minecraft.getInstance();
             if (mc.level == null) return;
 
-            // update local player's transformation (ITS ABSOLUTELY NEEDED... MAN)
+            // update client player's transformation (ITS ABSOLUTELY NEEDED... MAN)
             Player player = mc.level.getPlayerByUUID(packet.playerId);
             if (player instanceof TransformData data) {
                 data.setCurrentShape(packet.shapeString);
+            }
+            // update client player dimension
+            if (player instanceof DimensionsRefresher refresher) {
+                refresher.shape_refreshDimensions();
             }
 
             // get skin if transforming into another player
