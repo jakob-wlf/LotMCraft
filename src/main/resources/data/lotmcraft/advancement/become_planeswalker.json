@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_wanderer",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:planeswalker_potion"
+    },
+    "title": "Walking the Planes",
+    "description": "Consume a Potion and advance to Planeswalker.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

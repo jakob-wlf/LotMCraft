@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_soul_assurer",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:spirit_warlock_potion"
+    },
+    "title": "Pact with Shadows",
+    "description": "Consume a Potion and advance to Spirit Warlock.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

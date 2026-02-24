@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_instigator",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:witch_potion"
+    },
+    "title": "Brewing Trouble",
+    "description": "Consume a Potion and advance to Witch.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

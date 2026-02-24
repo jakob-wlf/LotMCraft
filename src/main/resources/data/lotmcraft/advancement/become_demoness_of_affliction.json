@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_demoness_of_pleasure",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:demoness_of_affliction_potion"
+    },
+    "title": "Pain is a Gift",
+    "description": "Consume a Potion and advance to Demoness of Affliction.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

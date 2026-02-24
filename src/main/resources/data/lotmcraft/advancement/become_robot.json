@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_monster",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:robot_potion"
+    },
+    "title": "Running on Fate",
+    "description": "Consume a Potion and advance to Robot.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

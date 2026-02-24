@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_dream_stealer",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:parasite_potion"
+    },
+    "title": "Living Off Others",
+    "description": "Consume a Potion and advance to Parasite.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

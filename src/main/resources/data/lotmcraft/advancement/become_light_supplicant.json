@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_bard",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:light_supplicant_potion"
+    },
+    "title": "Bathed in Radiance",
+    "description": "Consume a Potion and advance to Light Supplicant.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

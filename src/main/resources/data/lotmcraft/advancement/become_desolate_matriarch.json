@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_pallbearer",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:desolate_matriarch_potion"
+    },
+    "title": "Queen of Desolation",
+    "description": "Consume a Potion and advance to Desolate Matriarch.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

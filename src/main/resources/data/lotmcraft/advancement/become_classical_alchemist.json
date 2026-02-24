@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_druid",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:classical_alchemist_potion"
+    },
+    "title": "Transmuting Nature",
+    "description": "Consume a Potion and advance to Classical Alchemist.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

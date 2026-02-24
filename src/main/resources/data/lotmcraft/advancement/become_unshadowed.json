@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_priest_of_light",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:unshadowed_potion"
+    },
+    "title": "No Shadow follows Me",
+    "description": "Consume a Potion and advance to Unshadowed.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

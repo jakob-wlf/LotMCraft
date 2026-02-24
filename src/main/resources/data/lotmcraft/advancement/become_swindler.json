@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_marauder",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:swindler_potion"
+    },
+    "title": "Nothing Up My Sleeve",
+    "description": "Consume a Potion and advance to Swindler.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_criminal",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:unwinged_angel_potion"
+    },
+    "title": "Fallen from Grace",
+    "description": "Consume a Potion and advance to Unwinged Angel.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

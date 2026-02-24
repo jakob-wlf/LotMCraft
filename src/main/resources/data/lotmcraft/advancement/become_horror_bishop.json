@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_nightwatcher",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:horror_bishop_potion"
+    },
+    "title": "The Horror Bishop",
+    "description": "Consume a Potion and advance to Horror Bishop.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
