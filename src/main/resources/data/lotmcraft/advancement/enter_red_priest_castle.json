@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_beyonder",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:lotm_icon"
+    },
+    "title": "The Crimson Keep",
+    "description": "Enter the Red Priest Castle.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "enter_red_priest_castle": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

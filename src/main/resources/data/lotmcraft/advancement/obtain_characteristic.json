@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_beyonder",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:lotm_icon"
+    },
+    "title": "The Essence",
+    "description": "Obtain a Beyonder Characteristic.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "obtain_characteristic": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
