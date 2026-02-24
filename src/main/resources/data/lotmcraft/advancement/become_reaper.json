@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_conspirer",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:reaper_potion"
+    },
+    "title": "Death Comes for You",
+    "description": "Consume a Potion and advance to Reaper.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

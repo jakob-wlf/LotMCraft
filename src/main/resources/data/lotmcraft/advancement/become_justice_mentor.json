@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_unshadowed",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:justice_mentor_potion"
+    },
+    "title": "The Law is Absolute",
+    "description": "Consume a Potion and advance to Justice Mentor.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

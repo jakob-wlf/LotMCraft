@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_dreamwalker",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:manipulator_potion"
+    },
+    "title": "Strings Attached",
+    "description": "Consume a Potion and advance to Manipulator.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

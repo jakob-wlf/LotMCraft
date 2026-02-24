@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_hypnotist",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:dreamwalker_potion"
+    },
+    "title": "Walking Between Dreams",
+    "description": "Consume a Potion and advance to Dreamwalker.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
