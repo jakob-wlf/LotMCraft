@@ -36,6 +36,7 @@ import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -52,15 +53,16 @@ public class BeyonderNPCEntity extends PathfinderMob {
             "amon", "steampunk_1", "steampunk_2", "mage", "sorcerer",
             "medieval_guy", "gentleman", "victorian_1", "victorian_2",
             "victorian_3", "victorian_4", "victorian_5", "victorian_6",
-            "victorian_7", "victorian_8", "victorian_9", "victorian_10"
+            "victorian_7", "victorian_8", "victorian_9", "victorian_10",
+            "victorian_11", "victorian_12", "victorian_13", "victorian_14",
+            "victorian_15", "victorian_16", "gehrman_sparrow"
     };
 
     private static final int MIN_SEQUENCE = 3;
     private static final int MAX_SEQUENCE = 9;
     private static final double SEQUENCE_WEIGHT_EXPONENT = 0.35;
-    private static final float QUEST_SPAWN_CHANCE = 0.20f;
+    private static final float QUEST_SPAWN_CHANCE = 0.55f;
     private static final int RECIPE_DROP_CHANCE = 4;
-    private static final int PASSIVE_ABILITY_TICK_INTERVAL = 5;
     private static final int DEFAULT_PUPPET_LIFETIME = 20 * 60 * 4; // 4 minutes
 
     // ========================= Entity Data Accessors =========================
