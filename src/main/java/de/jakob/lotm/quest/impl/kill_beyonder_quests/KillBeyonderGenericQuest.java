@@ -1,5 +1,6 @@
 package de.jakob.lotm.quest.impl.kill_beyonder_quests;
 
+import de.jakob.lotm.attachments.QuestComponent;
 import de.jakob.lotm.potions.BeyonderPotion;
 import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.util.BeyonderData;
@@ -31,7 +32,12 @@ public class KillBeyonderGenericQuest extends KillBeyonderQuest {
             }
         }
         else {
-            Random random = new Random(player.getUUID().getMostSignificantBits() ^ player.getUUID().getLeastSignificantBits());
+            QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
+            int completedQuestCount = component.getCompletedQuests().size();
+
+            long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
+            Random random = new Random(randomSeed);
+
             BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, beyonderSequence);
             if(potion != null) {
                 rewards.add(new ItemStack(potion));

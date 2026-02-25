@@ -1,5 +1,7 @@
 package de.jakob.lotm.quest.impl;
 
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.QuestComponent;
 import de.jakob.lotm.quest.Quest;
 import de.jakob.lotm.quest.QuestManager;
 import de.jakob.lotm.potions.BeyonderPotion;
@@ -59,8 +61,15 @@ public class FindStructureQuest extends Quest {
     @Override
     public List<ItemStack> getRewards(ServerPlayer player) {
         List<ItemStack> rewards = new ArrayList<>();
-        int seq = new Random().nextBoolean() ? 7 : 8;
-        BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(new Random(), seq);
+
+        QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
+        int completedQuestCount = component.getCompletedQuests().size();
+
+        long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
+        Random random = new Random(randomSeed);
+
+        int seq = random.nextBoolean() ? 7 : 8;
+        BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, seq);
         if (potion != null) {
             rewards.add(new ItemStack(potion));
         }

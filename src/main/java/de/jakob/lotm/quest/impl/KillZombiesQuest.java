@@ -1,5 +1,7 @@
 package de.jakob.lotm.quest.impl;
 
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.QuestComponent;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.potions.PotionRecipeItem;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
@@ -42,7 +44,12 @@ public class KillZombiesQuest extends Quest {
             }
         }
         else {
-            Random random = new Random(player.getUUID().getMostSignificantBits() ^ player.getUUID().getLeastSignificantBits());
+            QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
+            int completedQuestCount = component.getCompletedQuests().size();
+
+            long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
+            Random random = new Random(randomSeed);
+
             PotionRecipeItem recipe = PotionRecipeItemHandler.selectRandomRecipeOfSequence(random, 9);
             if(recipe != null) {
                 rewards.add(new ItemStack(recipe));

@@ -49,7 +49,11 @@ public class DefendVillageQuest extends Quest {
             }
         }
         else {
-            Random random = new Random(player.getUUID().getMostSignificantBits() ^ player.getUUID().getLeastSignificantBits());
+            QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
+            int completedQuestCount = component.getCompletedQuests().size();
+
+            long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
+            Random random = new Random(randomSeed);
             BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, 8);
             if(potion != null) {
                 rewards.add(new ItemStack(potion));

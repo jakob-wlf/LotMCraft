@@ -63,24 +63,7 @@ public record RequestQuestDataPacket() implements CustomPacketPayload {
                     if (quest != null) {
                         activeQuestName = quest.getName().getString();
                         activeQuestDescription = quest.getDescription().getString();
-                        List<ItemStack> cachedRewards = component.getQuestRewardCache().get(activeQuestId);
-                        if (cachedRewards != null && !cachedRewards.isEmpty()) {
-                            activeQuestRewards = new ArrayList<>();
-                            for (ItemStack stack : cachedRewards) {
-                                activeQuestRewards.add(stack.copy());
-                            }
-                        } else {
-                            List<ItemStack> generatedRewards = quest.getRewards(serverPlayer);
-                            activeQuestRewards = new ArrayList<>();
-                            List<ItemStack> toCache = new ArrayList<>();
-                            for (ItemStack stack : generatedRewards) {
-                                if (!stack.isEmpty()) {
-                                    activeQuestRewards.add(stack.copy());
-                                    toCache.add(stack.copy());
-                                }
-                            }
-                            component.getQuestRewardCache().put(activeQuestId, toCache);
-                        }
+                        activeQuestRewards = quest.getRewards(serverPlayer);
                         activeQuestDigestionReward = (int) quest.getDigestionReward();
                     }
                 }

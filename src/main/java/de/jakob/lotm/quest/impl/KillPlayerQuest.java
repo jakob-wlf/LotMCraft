@@ -1,5 +1,7 @@
 package de.jakob.lotm.quest.impl;
 
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.QuestComponent;
 import de.jakob.lotm.potions.BeyonderPotion;
 import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.quest.Quest;
@@ -75,7 +77,14 @@ public class KillPlayerQuest extends Quest {
         List<ItemStack> rewards = new ArrayList<>();
         int currentSequence = BeyonderData.getSequence(player);
         int rewardSequence = Math.min(9, currentSequence + 1);
-        BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(new Random(), rewardSequence);
+
+        QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
+        int completedQuestCount = component.getCompletedQuests().size();
+
+        long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
+        Random random = new Random(randomSeed);
+
+        BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, rewardSequence);
         if (potion != null) {
             rewards.add(new ItemStack(potion));
         }

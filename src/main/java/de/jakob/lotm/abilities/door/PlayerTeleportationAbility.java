@@ -109,7 +109,11 @@ public class PlayerTeleportationAbility extends SelectableAbility {
         if(onlinePlayers.isEmpty()) {
             return;
         }
-        PacketHandler.sendToAllPlayers(new SyncPlayerTeleportationOnlinePlayersPacket(new ArrayList<>(onlinePlayers.stream().map(UUID::toString).toList())));
+        List<UUID> snapshot = List.copyOf(onlinePlayers);
+
+        PacketHandler.sendToAllPlayers(new SyncPlayerTeleportationOnlinePlayersPacket(
+                new ArrayList<>(snapshot.stream().map(UUID::toString).toList())
+        ));
     }
 
     public static void setOnlinePlayers(List<UUID> players) {

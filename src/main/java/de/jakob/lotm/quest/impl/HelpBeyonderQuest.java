@@ -116,7 +116,13 @@ public class HelpBeyonderQuest extends Quest {
                 rewards.add(new ItemStack(Items.GOLD_BLOCK, 2));
             }
             case TOP -> {
-                int potionSequence = random.nextBoolean() ? 3 : 4;
+                QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
+                int completedQuestCount = component.getCompletedQuests().size();
+
+                long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
+                Random r = new Random(randomSeed);
+
+                int potionSequence = r.nextBoolean() ? 3 : 4;
                 BeyonderPotion potion = getSequencePotion(potionSequence);
                 if (potion != null) {
                     rewards.add(new ItemStack(potion));
