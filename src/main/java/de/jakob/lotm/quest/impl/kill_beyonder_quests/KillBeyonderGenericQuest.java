@@ -1,5 +1,6 @@
 package de.jakob.lotm.quest.impl.kill_beyonder_quests;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.QuestComponent;
 import de.jakob.lotm.potions.BeyonderPotion;
 import de.jakob.lotm.potions.PotionItemHandler;
