@@ -309,6 +309,13 @@ public class ModEntities {
                     .sized(0.6F, 1.8F)
                     .build("original_body"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<DamageTrackerEntity>> DAMAGE_TRACKER =
+            ENTITY_TYPES.register("damage_tracker", () -> EntityType.Builder.<DamageTrackerEntity>of(DamageTrackerEntity::new, MobCategory.MISC)
+                    .sized(0.6F, 1.8F)
+                    .clientTrackingRange(32)
+                    .updateInterval(1)
+                    .build("damage_tracker"));
+
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);
     }

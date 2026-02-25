@@ -7,6 +7,7 @@ import de.jakob.lotm.entity.custom.OriginalBodyEntity;
 import de.jakob.lotm.entity.client.*;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.entity.custom.DamageTrackerEntity;
 import de.jakob.lotm.entity.custom.FireRavenEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.rendering.models.DoorMythicalCreatureModel;
@@ -72,6 +73,7 @@ public class ModEvents {
         event.put(ModEntities.BEYONDER_NPC.get(), BeyonderNPCEntity.createAttributes().build());
         event.put(ModEntities.ERROR_AVATAR.get(), AvatarEntity.createAttributes().build());
         event.put(ModEntities.ORIGINAL_BODY.get(), OriginalBodyEntity.createAttributes().build());
+        event.put(ModEntities.DAMAGE_TRACKER.get(), DamageTrackerEntity.createAttributes().build());
     }
 
     @SubscribeEvent
