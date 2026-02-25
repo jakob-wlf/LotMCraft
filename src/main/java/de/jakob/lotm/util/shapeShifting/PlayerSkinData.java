@@ -8,27 +8,45 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerSkinData {
     private static final Map<UUID, ResourceLocation> SKIN_TEXTURES = new ConcurrentHashMap<>();
     private static final Map<UUID, PlayerSkin.Model> SKIN_MODELS = new ConcurrentHashMap<>();
 
-    public static void fetchAndCacheSkin(UUID playerId, GameProfile profile) {
-        SkinManager skinManager = Minecraft.getInstance().getSkinManager();
+    public static void fetchAndCacheSkin(UUID playerId) {
+        Minecraft mc = Minecraft.getInstance();
 
-        skinManager.getOrLoad(profile).thenAccept(skin -> {
-            ResourceLocation texture = skin.texture();
-            PlayerSkin.Model model = skin.model();
-            SKIN_TEXTURES.put(playerId, texture);
-            SKIN_MODELS.put(playerId, model);
-        }).exceptionally(throwable -> {
-            throwable.printStackTrace();
+        // run in background thread to not lag the server
+        CompletableFuture.runAsync(() -> {
+            // get server profile from players UUID
+            var sessionService = mc.getMinecraftSessionService();
+            var profileResult = sessionService.fetchProfile(playerId, false);
 
-            PlayerSkin defaultSkin = skinManager.getInsecureSkin(profile);
-            SKIN_TEXTURES.put(playerId, defaultSkin.texture());
-            SKIN_MODELS.put(playerId, defaultSkin.model());
-            return null;
+            if (profileResult == null) return;
+            GameProfile resolvedProfile = profileResult.profile();
+
+            // I think this should happen on main thread
+            // get the skins and map them
+            mc.execute(() -> {
+                SkinManager skinManager = mc.getSkinManager();
+
+                skinManager.getOrLoad(resolvedProfile).thenAccept(skin -> {
+                    ResourceLocation texture = skin.texture();
+                    PlayerSkin.Model model = skin.model();
+
+
+                    SKIN_TEXTURES.put(playerId, texture);
+                    SKIN_MODELS.put(playerId, model);
+                }).exceptionally(throwable -> {
+
+                    PlayerSkin defaultSkin = skinManager.getInsecureSkin(resolvedProfile);
+                    SKIN_TEXTURES.put(playerId, defaultSkin.texture());
+                    SKIN_MODELS.put(playerId, defaultSkin.model());
+                    return null;
+                });
+            });
         });
     }
 
@@ -37,7 +55,6 @@ public class PlayerSkinData {
         return texture;
     }
 
-    // optional but i wanted to do it
     public static boolean isSlimModel(UUID playerId) {
         PlayerSkin.Model model = SKIN_MODELS.get(playerId);
         boolean slim = model == PlayerSkin.Model.SLIM;

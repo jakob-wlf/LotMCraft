@@ -65,18 +65,11 @@ public record ShapeShiftingSyncPacket(UUID playerId, String shapeString) impleme
                 if (parts.length >= 3) {
                     try {
                         UUID targetUUID = UUID.fromString(parts[2]);
-                        String targetName = parts[1];
 
-                        // get profile or fall back to default skin
-                        MinecraftSessionService sessionService = mc.getMinecraftSessionService();
-                        ProfileResult result = sessionService.fetchProfile(targetUUID, true);
-                        if (result != null) {
-                            GameProfile fullProfile = result.profile();
-                            PlayerSkinData.fetchAndCacheSkin(targetUUID, fullProfile);
-                        } else {
-                            GameProfile fallbackProfile = new GameProfile(targetUUID, targetName);
-                            PlayerSkinData.fetchAndCacheSkin(targetUUID, fallbackProfile);
+                        if (PlayerSkinData.getSkinTexture(targetUUID) == null) {
+                            PlayerSkinData.fetchAndCacheSkin(targetUUID);
                         }
+
                     } catch (Exception ignored) {}
                 }
             }

@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity.client;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.logging.LogUtils;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.OriginalBodyEntity;
@@ -33,7 +34,7 @@ public class OriginalBodyRenderer extends LivingEntityRenderer<OriginalBodyEntit
         ResourceLocation location = PlayerSkinData.getSkinTexture(ownerUUID);
 
         if (location == null) {
-            PlayerSkinData.fetchAndCacheSkin(ownerUUID, new GameProfile(ownerUUID, ""));
+            PlayerSkinData.fetchAndCacheSkin(ownerUUID);
 
             return DefaultPlayerSkin.getDefaultTexture();
         }
