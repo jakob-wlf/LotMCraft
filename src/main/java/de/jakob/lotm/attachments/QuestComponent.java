@@ -3,20 +3,25 @@ package de.jakob.lotm.attachments;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class QuestComponent {
 
     private HashSet<String> completedQuests = new HashSet<>();
     private HashMap<String, Float> questProgress = new HashMap<>();
     private HashMap<String, Vec3> questLocation = new HashMap<>();
+    private HashMap<String, List<ItemStack>> questRewardCache = new HashMap<>();
 
     public QuestComponent() {}
 
@@ -30,6 +35,10 @@ public class QuestComponent {
 
     public HashMap<String, Vec3> getQuestLocation() {
         return questLocation;
+    }
+
+    public HashMap<String, List<ItemStack>> getQuestRewardCache() {
+        return questRewardCache;
     }
 
     public static final IAttachmentSerializer<CompoundTag, QuestComponent> SERIALIZER =
@@ -62,6 +71,24 @@ public class QuestComponent {
                         }
                     }
 
+                    if (tag.contains("QuestRewardCache", Tag.TAG_COMPOUND)) {
+                        CompoundTag rewardTag = tag.getCompound("QuestRewardCache");
+                        for (String questId : rewardTag.getAllKeys()) {
+                            ListTag rewardList = rewardTag.getList(questId, Tag.TAG_COMPOUND);
+                            List<ItemStack> cachedRewards = new ArrayList<>();
+                            for (int i = 0; i < rewardList.size(); i++) {
+                                Tag stackTag = rewardList.get(i);
+                                ItemStack stack = ItemStack.OPTIONAL_CODEC.parse(NbtOps.INSTANCE, stackTag)
+                                        .result()
+                                        .orElse(ItemStack.EMPTY);
+                                if (!stack.isEmpty()) {
+                                    cachedRewards.add(stack);
+                                }
+                            }
+                            component.questRewardCache.put(questId, cachedRewards);
+                        }
+                    }
+
                     return component;
                 }
 
@@ -89,6 +116,19 @@ public class QuestComponent {
                         vecTag.putFloat("z", (float) vec.z);
                         locationTag.put(questId, vecTag);
                     }
+
+                    CompoundTag rewardTag = new CompoundTag();
+                    for (String questId : component.questRewardCache.keySet()) {
+                        ListTag rewardList = new ListTag();
+                        for (ItemStack stack : component.questRewardCache.get(questId)) {
+                            ItemStack.OPTIONAL_CODEC.encodeStart(NbtOps.INSTANCE, stack)
+                                    .result()
+                                    .ifPresent(rewardList::add);
+                        }
+                        rewardTag.put(questId, rewardList);
+                    }
+                    tag.put("QuestRewardCache", rewardTag);
+
                     return tag;
                 }
             };

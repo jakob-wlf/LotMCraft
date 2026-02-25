@@ -16,6 +16,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -34,11 +35,12 @@ public class QuestManager {
         component.getQuestProgress().remove(questId);
         component.getCompletedQuests().add(questId);
 
-        for(ItemStack reward : quest.getRewards(player)) {
+        for(ItemStack reward : getOrCreateCachedRewards(player, questId, quest)) {
             if(!player.addItem(reward)) {
                 player.drop(reward, false);
             }
         }
+        component.getQuestRewardCache().remove(questId);
 
         float digestionReward = quest.getDigestionReward();
         if(BeyonderData.getSequence(player) < quest.sequence) {
@@ -106,6 +108,7 @@ public class QuestManager {
         }
 
         component.getQuestProgress().put(questId, 0f);
+        getOrCreateCachedRewards(player, questId, quest);
         player.sendSystemMessage(Component.translatable("lotm.quest.accepted", Component.translatable("lotm.quest.impl." + questId).getString()).withColor(0x4CAF50));
         player.sendSystemMessage(quest.getDescription().withColor(0x4CAF50));
         quest.startQuest(player);
@@ -132,7 +135,26 @@ public class QuestManager {
             return;
 
         component.getQuestProgress().remove(questId);
+        component.getQuestRewardCache().remove(questId);
         player.sendSystemMessage(Component.translatable("lotm.quest.discarded", Component.translatable("lotm.quest.impl." + questId).getString()).withColor(0xFF5722));
+    }
+
+    private static List<ItemStack> getOrCreateCachedRewards(ServerPlayer player, String questId, Quest quest) {
+        QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
+        List<ItemStack> cached = component.getQuestRewardCache().get(questId);
+        if (cached != null && !cached.isEmpty()) {
+            return cached;
+        }
+
+        List<ItemStack> generated = quest.getRewards(player);
+        List<ItemStack> stored = new ArrayList<>();
+        for (ItemStack stack : generated) {
+            if (!stack.isEmpty()) {
+                stored.add(stack.copy());
+            }
+        }
+        component.getQuestRewardCache().put(questId, stored);
+        return stored;
     }
 
     @SubscribeEvent
