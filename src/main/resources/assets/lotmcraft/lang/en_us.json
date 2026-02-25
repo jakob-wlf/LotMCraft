@@ -737,6 +737,7 @@
 
   "_comment005": "Entities-----------------------------------------------------------------------------",
   "entity.lotmcraft.fire_raven": "Fire Raven",
+  "entity.lotmcraft.damage_tracker": "Damage Tracker",
   "entity.lotmcraft.flaming_spear": "Flaming Spear",
   "entity.lotmcraft.fireball": "Fireball",
   "entity.lotmcraft.paper_dagger": "Paper Dagger",
