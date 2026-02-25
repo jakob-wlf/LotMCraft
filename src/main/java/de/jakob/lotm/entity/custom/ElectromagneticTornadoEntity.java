@@ -230,7 +230,8 @@ public class ElectromagneticTornadoEntity extends Entity {
                 }
                 float distance = this.distanceTo(entity);
                 if (distance < 6.0f) {
-                    entity.hurt(this.damageSources().lightningBolt(), getDamage());
+                    if(this.tickCount % 18 == 0)
+                        entity.hurt(this.damageSources().lightningBolt(), getDamage());
 
                     Vec3 direction = this.position().subtract(entity.position()).normalize();
                     entity.push(direction.x * 0.3, 0.3, direction.z * 0.3);

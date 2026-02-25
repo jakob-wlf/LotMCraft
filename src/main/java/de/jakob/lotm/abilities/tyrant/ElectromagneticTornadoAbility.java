@@ -35,7 +35,9 @@ public class ElectromagneticTornadoAbility extends Ability {
 
         Vec3 pos = AbilityUtil.getTargetLocation(entity, 12, 2);
 
-        ElectromagneticTornadoEntity tornado = target == null ? new ElectromagneticTornadoEntity(ModEntities.ELECTROMAGNETIC_TORNADO.get(), level, .4f, (float) DamageLookup.lookupDamage(1, .8) * (float) multiplier(entity), entity) : new ElectromagneticTornadoEntity(ModEntities.ELECTROMAGNETIC_TORNADO.get(), level, .4f, 80 * (float) multiplier(entity), entity, target);
+        ElectromagneticTornadoEntity tornado = target == null ?
+                new ElectromagneticTornadoEntity(ModEntities.ELECTROMAGNETIC_TORNADO.get(), level, .4f, (float) DamageLookup.lookupDamage(1, .65) * (float) multiplier(entity), entity) :
+                new ElectromagneticTornadoEntity(ModEntities.ELECTROMAGNETIC_TORNADO.get(), level, .4f, (float) DamageLookup.lookupDamage(1, .65) * (float) multiplier(entity), entity, target);
         tornado.setPos(pos);
         level.addFreshEntity(tornado);
     }

@@ -32,21 +32,21 @@ public class QuestManager {
         if(!component.getQuestProgress().containsKey(questId))
             return;
 
-        component.getQuestProgress().remove(questId);
-        component.getCompletedQuests().add(questId);
-
-        for(ItemStack reward : getOrCreateCachedRewards(player, questId, quest)) {
+        for(ItemStack reward : quest.getRewards(player)) {
             if(!player.addItem(reward)) {
                 player.drop(reward, false);
             }
         }
-        component.getQuestRewardCache().remove(questId);
 
         float digestionReward = quest.getDigestionReward();
         if(BeyonderData.getSequence(player) < quest.sequence) {
             int sequenceDifference = quest.sequence - BeyonderData.getSequence(player);
             digestionReward *= (1 / ((float) Math.pow(sequenceDifference, 2.25) + 1));
         }
+
+        component.getQuestProgress().remove(questId);
+        component.getCompletedQuests().add(questId);
+
         BeyonderData.digest(player, digestionReward, true);
         player.sendSystemMessage(Component.translatable("lotm.quest.completed", Component.translatable("lotm.quest.impl." + questId).getString()).withColor(0x2196F3));
     }
@@ -108,7 +108,6 @@ public class QuestManager {
         }
 
         component.getQuestProgress().put(questId, 0f);
-        getOrCreateCachedRewards(player, questId, quest);
         player.sendSystemMessage(Component.translatable("lotm.quest.accepted", Component.translatable("lotm.quest.impl." + questId).getString()).withColor(0x4CAF50));
         player.sendSystemMessage(quest.getDescription().withColor(0x4CAF50));
         quest.startQuest(player);
@@ -135,26 +134,7 @@ public class QuestManager {
             return;
 
         component.getQuestProgress().remove(questId);
-        component.getQuestRewardCache().remove(questId);
         player.sendSystemMessage(Component.translatable("lotm.quest.discarded", Component.translatable("lotm.quest.impl." + questId).getString()).withColor(0xFF5722));
-    }
-
-    private static List<ItemStack> getOrCreateCachedRewards(ServerPlayer player, String questId, Quest quest) {
-        QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
-        List<ItemStack> cached = component.getQuestRewardCache().get(questId);
-        if (cached != null && !cached.isEmpty()) {
-            return cached;
-        }
-
-        List<ItemStack> generated = quest.getRewards(player);
-        List<ItemStack> stored = new ArrayList<>();
-        for (ItemStack stack : generated) {
-            if (!stack.isEmpty()) {
-                stored.add(stack.copy());
-            }
-        }
-        component.getQuestRewardCache().put(questId, stored);
-        return stored;
     }
 
     @SubscribeEvent

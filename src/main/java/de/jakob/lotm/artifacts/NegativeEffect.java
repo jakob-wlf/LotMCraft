@@ -2,12 +2,15 @@ package de.jakob.lotm.artifacts;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.Random;
@@ -68,8 +71,6 @@ public class NegativeEffect {
                     player.getFoodData().setFoodLevel(player.getFoodData().getFoodLevel() - 1);
                 }
                 break;
-            case ATTRACT_MOBS:
-                break;
             case RANDOM_TELEPORT:
                 if (player.tickCount % getTeleportIntervalForSequence(sequence) == 0) {
                     double range = 5 + (10 - sequence) * 2;
@@ -81,8 +82,23 @@ public class NegativeEffect {
             case HEARING_WHISPERS:
                 if (player.tickCount % getWhisperIntervalForSequence(sequence) == 0) {
                     player.displayClientMessage(Component.translatable("lotm.whisper." + player.getRandom().nextInt(5)), true);
+                    SanityComponent sanityComponent = player.getData(ModAttachments.SANITY_COMPONENT);
+                    sanityComponent.increaseSanityAndSync(-0.01f * (10 - sequence), player);
                 }
                 break;
+
+            case SLOWNESS:
+                if (player.tickCount % 20 == 0) {
+                    player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 2, false, false));
+                }
+                break;
+
+            case BLINDNESS:
+                if (player.tickCount % 20 == 0) {
+                    player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 40, 2, false, false));
+                }
+                break;
+
         }
     }
 
@@ -165,8 +181,9 @@ public class NegativeEffect {
         POTION_EFFECT,
         DRAIN_HEALTH,
         DRAIN_HUNGER,
-        ATTRACT_MOBS,
         RANDOM_TELEPORT,
+        BLINDNESS,
+        SLOWNESS,
         HEARING_WHISPERS;
 
         public static NegativeEffectType getGenericEffect(Random random) {

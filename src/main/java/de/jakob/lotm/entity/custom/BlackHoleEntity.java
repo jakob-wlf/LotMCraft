@@ -33,7 +33,7 @@ public class BlackHoleEntity extends Entity {
     private LivingEntity cachedOwner;
     
     private static final double PULL_STRENGTH = 0.5;
-    private static final int duration = 20 * 60 * 4;
+    private static final int duration = 20 * 60;
     private int age = 0;
 
     private List<BlockPos> blocks;
@@ -125,7 +125,7 @@ public class BlackHoleEntity extends Entity {
         }
 
         age++;
-        if (age >= duration) {
+        if (tickCount >= duration) {
             this.remove(RemovalReason.DISCARDED);
             return;
         }
