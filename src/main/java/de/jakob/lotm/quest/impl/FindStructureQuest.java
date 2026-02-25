@@ -37,23 +37,21 @@ public class FindStructureQuest extends Quest {
 
     @Override
     public void startQuest(ServerPlayer player) {
-        String target = STRUCTURE_IDS.get(new Random().nextInt(STRUCTURE_IDS.size()));
-        targetStructureByPlayer.put(player.getUUID(), target);
+        String target = ensureTargetStructure(player);
         player.sendSystemMessage(Component.literal("Target structure selected: " + toDisplayName(target)));
     }
 
     @Override
     public void tick(ServerPlayer player) {
         ServerLevel level = player.serverLevel();
-        String targetStructure = targetStructureByPlayer.computeIfAbsent(player.getUUID(), ignored ->
-                STRUCTURE_IDS.get(new Random().nextInt(STRUCTURE_IDS.size())));
+        String targetStructure = ensureTargetStructure(player);
 
         BlockPos structurePos = findNearestStructure(level, player.blockPosition(), targetStructure);
         if (structurePos == null) {
             return;
         }
 
-        if (structurePos.distSqr(player.blockPosition()) <= 160 * 160) {
+        if (horizontalDistance(structurePos, player.blockPosition()) <= 180) {
             QuestManager.progressQuest(player, id, 1f);
         }
     }
@@ -79,6 +77,12 @@ public class FindStructureQuest extends Quest {
         return Component.translatable("lotm.quest.impl." + id + ".description");
     }
 
+
+    private String ensureTargetStructure(ServerPlayer player) {
+        return targetStructureByPlayer.computeIfAbsent(player.getUUID(), ignored ->
+                STRUCTURE_IDS.get(new Random().nextInt(STRUCTURE_IDS.size())));
+    }
+
     private BlockPos findNearestStructure(ServerLevel level, BlockPos origin, String structureId) {
         ResourceLocation structureKey = ResourceLocation.tryParse(structureId);
         if (structureKey == null) {
@@ -99,6 +103,12 @@ public class FindStructureQuest extends Quest {
                 false
         );
         return result == null ? null : result.getFirst();
+    }
+
+    private double horizontalDistance(BlockPos a, BlockPos b) {
+        double dx = a.getX() - b.getX();
+        double dz = a.getZ() - b.getZ();
+        return Math.sqrt(dx * dx + dz * dz);
     }
 
     private String toDisplayName(String structureId) {

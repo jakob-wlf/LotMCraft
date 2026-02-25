@@ -135,6 +135,7 @@ public class HelpBeyonderQuest extends Quest {
         return .3f;
     }
 
+
     private void spawnEnemies(ServerPlayer player) {
         Tier tier = tierFor(player);
         int spawnCount = getScaledKillAmount(player);
@@ -232,7 +233,7 @@ public class HelpBeyonderQuest extends Quest {
                 }
             }
         } catch (Exception ignored) {
-
+            // Keep behavior safe if method signature differs in current mappings.
         }
     }
 
@@ -269,7 +270,7 @@ public class HelpBeyonderQuest extends Quest {
                 .toList();
 
         if (!matching.isEmpty()) {
-            rewards.add(new ItemStack(matching.get(0)));
+            rewards.add(new ItemStack(matching.get(random.nextInt(matching.size()))));
             return;
         }
 
