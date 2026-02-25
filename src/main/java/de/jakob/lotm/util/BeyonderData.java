@@ -167,10 +167,12 @@ public class BeyonderData {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
 
-        String nickname = entity.getDisplayName().getString();
-
-        if(entity instanceof ServerPlayer) {
+        if(entity instanceof ServerPlayer player) {
             if(!beyonderMap.check(pathway, sequence)) return;
+
+            if(!BeyonderData.getPathway(player).equals(pathway)
+                    || BeyonderData.getSequence(player) < sequence)
+                beyonderMap.removeHonorificName(player);
         }
 
         if(Objects.equals(sequence, LOTMCraft.NON_BEYONDER_SEQ)
@@ -178,7 +180,6 @@ public class BeyonderData {
             clearBeyonderData(entity);
             return;
         }
-
 
         boolean griefing = !BeyonderData.isBeyonder(entity) || BeyonderData.isGriefingEnabled(entity);
 

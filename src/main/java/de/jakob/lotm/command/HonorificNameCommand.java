@@ -38,9 +38,11 @@ public class HonorificNameCommand {
                                     }
 
                                     if(!HonorificNamesEventHandler.answerState.contains(new Pair<>(target.getUUID(), player.getUUID()))){
-                                        source.sendFailure(Component.literal("You must not use this command directly!"));
+                                        source.sendFailure(Component.literal("You already answered to this praying!"));
                                         return 0;
                                     }
+
+                                    source.sendSystemMessage(Component.literal("Transferring your next message:"));
 
                                     HonorificNamesEventHandler.isInTransferring.put(target.getUUID(), player.getUUID());
 
@@ -67,7 +69,7 @@ public class HonorificNameCommand {
                                     }
 
                                     if(!HonorificNamesEventHandler.answerState.contains(new Pair<>(target.getUUID(), player.getUUID()))){
-                                        source.sendFailure(Component.literal("You must not use this command directly!"));
+                                        source.sendFailure(Component.literal("You already answered to this prayings!"));
                                         return 0;
                                     }
 
@@ -162,11 +164,7 @@ public class HonorificNameCommand {
                                            HonorificName.getMustHaveWords(pathway));
                                }
 
-                                source.sendSystemMessage(Component.literal("Before: " + lines));
-
                                 HonorificName name = new HonorificName(lines);
-
-                                source.sendSystemMessage(Component.literal("After: " + name.lines()));
 
                                 BeyonderData.setHonorificName(source.getPlayer(), name);
                             }

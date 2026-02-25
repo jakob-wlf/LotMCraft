@@ -6,7 +6,6 @@ import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -114,6 +113,18 @@ public class BeyonderMap extends SavedData {
         if(!contains(entity)) put(entity);
 
         put(entity.getUUID(), StoredData.builder.copyFrom(map.get(entity.getUUID())).honorificName(name).build());
+    }
+
+    public void removeHonorificName(LivingEntity entity){
+        if(!(entity instanceof ServerPlayer)) return;
+
+        if(!contains(entity)) {
+            put(entity);
+
+            return;
+        }
+
+        put(entity.getUUID(), StoredData.builder.copyFrom(map.get(entity.getUUID())).honorificName(HonorificName.EMPTY).build());
     }
 
     public void addKnownHonorificName(LivingEntity entity, HonorificName name){
@@ -364,7 +375,7 @@ public class BeyonderMap extends SavedData {
         return false;
     }
 
-    public @Nullable UUID findCandidat(LinkedList<String> list){
+    public @Nullable UUID findCandidate(LinkedList<String> list){
         if(list.size() < 3) return null;
 
         UUID originalTarget = null;

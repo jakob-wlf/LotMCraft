@@ -48,7 +48,7 @@ public class HonorificNamesEventHandler {
                     getPlayer(isInTransferring.get(playerUUID));
 
             if(target != null){
-                target.sendSystemMessage(Component.translatable("lotmcraft.honorific_prayings_message", rawMessage)
+                target.sendSystemMessage(Component.translatable("lotmcraft.honorific_praying_message", rawMessage)
                         .withStyle(ChatFormatting.DARK_GREEN));
             }
 
@@ -75,7 +75,7 @@ public class HonorificNamesEventHandler {
                 && input.get(playerUUID).size() >= 3
                 && isHonorificNameLastLine(rawMessage)){
 
-            var targetUUID = BeyonderData.beyonderMap.findCandidat(input.get(playerUUID));
+            var targetUUID = BeyonderData.beyonderMap.findCandidate(input.get(playerUUID));
 
             if(targetUUID == null){
                 input.remove(playerUUID);
@@ -94,13 +94,13 @@ public class HonorificNamesEventHandler {
             }
 
             if(targetUUID.equals(playerUUID)){
-                target.sendSystemMessage(Component.translatable("lotmcraft.own_prayings")
+                target.sendSystemMessage(Component.translatable("lotmcraft.own_praying")
                         .withStyle(ChatFormatting.GREEN));
                 return;
             }
 
             if(BeyonderData.getSequence(target) == 3 && target.distanceTo(event.getPlayer()) >= 4000.0f){
-                target.sendSystemMessage(Component.translatable("lotmcraft.far_away_prayings")
+                target.sendSystemMessage(Component.translatable("lotmcraft.far_away_praying")
                         .withStyle(ChatFormatting.RED));
                 return;
             }
@@ -130,12 +130,12 @@ public class HonorificNamesEventHandler {
 
         Component spacer = Component.literal("\n--- ").withStyle(ChatFormatting.DARK_GREEN);
 
-        Component generalInfo = Component.translatable("lotmcraft.honorific_prayings",
+        Component generalInfo = Component.translatable("lotmcraft.honorific_praying",
                 player.getName().getString(), BeyonderData.getPathway(player),
                 BeyonderData.getSequence(player), player.getX(), player.getY(), player.getZ())
                 .withStyle(ChatFormatting.GREEN);
 
-        Component sendMessageButton = Component.translatable( "lotmcraft.honorific_prayings_send_message_button")
+        Component sendMessageButton = Component.translatable( "lotmcraft.honorific_praying_send_message_button")
                 .withStyle(style -> style
                         .withColor(ChatFormatting.GOLD)
                         .withBold(true)
@@ -146,12 +146,12 @@ public class HonorificNamesEventHandler {
                         ))
                         .withHoverEvent(new HoverEvent(
                                 HoverEvent.Action.SHOW_TEXT,
-                                Component.translatable("lotmcraft.honorific_prayings_send_message_desc")
+                                Component.translatable("lotmcraft.honorific_praying_send_message_desc")
                                         .withStyle(ChatFormatting.GRAY)
                         ))
                 );
 
-        Component teleportButton = Component.translatable( "lotmcraft.honorific_prayings_teleport_button")
+        Component teleportButton = Component.translatable( "lotmcraft.honorific_praying_teleport_button")
                 .withStyle(style -> style
                         .withColor(ChatFormatting.GOLD)
                         .withBold(true)
@@ -162,41 +162,13 @@ public class HonorificNamesEventHandler {
                         ))
                         .withHoverEvent(new HoverEvent(
                                 HoverEvent.Action.SHOW_TEXT,
-                                Component.translatable("lotmcraft.honorific_prayings_teleport_desc")
+                                Component.translatable("lotmcraft.honorific_praying_teleport_desc")
                                         .withStyle(ChatFormatting.GRAY)
                         ))
                 );
 
-        Component useSkillButton = (BeyonderData.getSequence(target) >= 2) ?
-                Component.translatable( "lotmcraft.honorific_prayings_use_skill_button")
-                .withStyle(style -> style
-                        .withColor(ChatFormatting.GOLD)
-                        .withBold(true)
-//                        .withClickEvent(new ClickEvent(
-//                                ClickEvent.Action.RUN_COMMAND,
-//                                "/honorificname ui teleport " + player.getName().getString()
-//                                        + " " + target.getName().getString()
-//                        ))
-                        .withHoverEvent(new HoverEvent(
-                                HoverEvent.Action.SHOW_TEXT,
-                                Component.translatable("lotmcraft.honorific_prayings_use_skill_desc")
-                                        .withStyle(ChatFormatting.GRAY)
-                        ))
-                )
-                : Component.translatable( "lotmcraft.honorific_prayings_not_met_req_button")
-                .withStyle(style -> style
-                        .withColor(ChatFormatting.GOLD)
-                        .withBold(true)
-                        .withHoverEvent(new HoverEvent(
-                                HoverEvent.Action.SHOW_TEXT,
-                                Component.translatable("lotmcraft.honorific_prayings_not_met_req_desc")
-                                        .withStyle(ChatFormatting.GRAY)
-                        ))
-                );;
-
         return message.append(generalInfo).append(spacer)
                 .append(sendMessageButton).append(spacer)
-                .append(teleportButton).append(spacer)
-                .append(useSkillButton);
+                .append(teleportButton);
     }
 }

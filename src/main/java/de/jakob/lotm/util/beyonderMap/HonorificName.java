@@ -18,7 +18,7 @@ public record HonorificName(LinkedList<String> lines) {
     static public LinkedList<String> getMustHaveWords(String path){
         return new LinkedList<String>(
                 switch (path){
-                    case "fool" -> List.of("history", "mystery", "bizarreness", "change", "wishes", "miracles", "drama", "performances", "fools");
+                    case "fool" -> List.of("history", "mystery", "bizarreness", "change", "wishes", "miracles", "drama", "performances", "fools", "fool");
                     case "error" -> List.of("time", "deceit", "trickery", "loopholes", "tampering", "exploitation", "bugs", "theft", "errors");
                     case "door" -> List.of("space", "stars", "cosmos", "worlds", "concealment", "seals", "travels", "chronicles", "doors");
                     case "visionary" -> List.of("mind", "dreams", "dream", "visions", "fantasies", "fantasy" ,"imagination");
@@ -52,7 +52,7 @@ public record HonorificName(LinkedList<String> lines) {
         var mustHave = getMustHaveWords(path);
 
         for (var str : list){
-            var words = List.of(str.split(" "));
+            var words = List.of(str.split("[ ,]"));
             if(!words.stream().
                     anyMatch(input -> mustHave.stream().
                             anyMatch(target -> target.equalsIgnoreCase(input))))
