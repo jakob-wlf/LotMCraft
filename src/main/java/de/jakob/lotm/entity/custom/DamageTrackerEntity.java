@@ -64,7 +64,8 @@ public class DamageTrackerEntity extends PathfinderMob {
         float actualDamage = amount;
 
         accumulatedDamage += actualDamage;
-        regenCountdown = getRegenDelayTicks();
+        if(regenCountdown <= 0)
+            regenCountdown = getRegenDelayTicks();
 
         // Print individual hit damage to all players on the server
         broadcastMessage(Component.literal(
@@ -81,6 +82,8 @@ public class DamageTrackerEntity extends PathfinderMob {
         if (this.level().isClientSide) {
             return;
         }
+
+        this.setRemainingFireTicks(0);
 
         if (regenCountdown > 0) {
             regenCountdown--;

@@ -62,7 +62,7 @@ public class ApocalypseAbility extends Ability {
                 });
             }
 
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get() - 2.1, radius.get() + 2.1, DamageLookup.lookupDps(1, 1, 2, 30) * multiplier(entity), loc, true, false, true, 0);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), DamageLookup.lookupDamage(1, .8) * multiplier(entity), loc, true, false, false, 30);
 
             radius.addAndGet(0.8);
         });

@@ -71,7 +71,7 @@ public class PureWhiteLightAbility extends Ability {
                 });
             }
 
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get() - 2.1, radius.get() + 2.1, DamageLookup.lookupDamage(1, .8) * multiplier(entity), finalTargetLoc, true, false, true, 0);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), DamageLookup.lookupDamage(1, .8) * multiplier(entity), finalTargetLoc, true, false, false, 15);
 
             radius.addAndGet(0.8);
         });
