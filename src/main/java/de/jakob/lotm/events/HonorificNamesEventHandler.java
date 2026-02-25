@@ -2,6 +2,7 @@ package de.jakob.lotm.events;
 
 import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
@@ -106,6 +107,8 @@ public class HonorificNamesEventHandler {
             }
 
             isInTransferring.put(playerUUID, targetUUID);
+
+            target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(.01f, target);
 
             target.sendSystemMessage(formMessage(event.getPlayer(), target));
         }
