@@ -18,28 +18,28 @@ public record HonorificName(LinkedList<String> lines) {
     static public LinkedList<String> getMustHaveWords(String path){
         return new LinkedList<String>(
                 switch (path){
-                    case "fool" -> List.of("history", "mystery", "bizarreness", "change", "wishes", "miracles", "drama", "performances", "fools", "fool");
-                    case "error" -> List.of("time", "deceit", "trickery", "loopholes", "tampering", "exploitation", "bugs", "theft", "errors");
-                    case "door" -> List.of("space", "stars", "cosmos", "worlds", "concealment", "seals", "travels", "chronicles", "doors");
-                    case "visionary" -> List.of("mind", "dreams", "dream", "visions", "fantasies", "fantasy" ,"imagination");
-                    case "sun" -> List.of("light", "order", "holiness", "contracts", "justice", "energy", "sun");
-                    case "tyrant" -> List.of("storms", "calamities", "seas", "skies", "tsunamis", "undersea", "creatures", "tyranny");
-                    case "white_tower" -> List.of("Knowledge", "Observation", "Reasoning", "Cognition", "Wisdom", "Reason", "Omniscience");
-                    case "hanged_man" -> List.of("Degeneration", "Corruption", "Mutation", "Shadows", "Darkness", "Whispers", "Sacrifice");
-                    case "darkness" -> List.of("Darkness", "Dreams", "Silence", "Horror", "Repose", "Misfortune", "Concealment", "Stars");
+                    case "fool" -> List.of("History", "Mystery", "Bizarreness", "Change", "Wishes", "Miracles", "Drama", "Performances", "Fools");
+                    case "error" -> List.of("Time", "Deceit", "Trickery", "Loopholes", "Tampering", "Exploitation", "Bugs", "Theft", "Errors");
+                    case "door" -> List.of("Space", "Stars", "Cosmos", "Worlds", "Concealment", "Seals", "Travels", "Chronicles", "Doors");
+                    case "visionary" -> List.of("Mind", "Dreams", "Visions", "Fantasies", "Imagination", "Discernment", "Psyche", "Coincidence", "Arrangements");
+                    case "sun" -> List.of( "Light", "Order", "Holiness", "Contracts", "Justice", "Energy", "Sun", "Daytime", "Inextinguishable");
+                    case "tyrant" -> List.of("Storms", "Calamities", "Seas", "Skies", "Tsunamis", "Undersea", "Creatures", "Tyranny", "Wrath");
+                    case "white_tower" -> List.of("Knowledge", "Observation", "Reasoning", "Cognition", "Wisdom", "Reason", "Omniscience", "Learning", "Madness");
+                    case "hanged_man" -> List.of("Degeneration", "Corruption", "Mutation", "Shadows", "Darkness", "Whispers", "Sacrifice", "Depravity", "Words");
+                    case "darkness" -> List.of("Darkness", "Dreams", "Silence", "Horror", "Repose", "Misfortune", "Concealment", "Stars", "Night");
                     case "death" -> List.of("Death", "Undeath", "Spirits", "Underworld", "Pallor", "Styx", "Dead", "Eternal", "Rest");
                     case "twilight_light" -> List.of("Twilight", "Decay", "Glory", "Passage","Time", "Dawn", "Dusk", "Power", "Combat");
-                    case "demoness" -> List.of("Chaos", "Catastrophes","Mirror", "Disasters", "Apocalypse", "Strife", "Plagues", "Primordium");
-                    case "red_priest" -> List.of("War", "Calamity", "Iron","Blood", "Battlefield", "Strife", "Chaos", "Destruction");
-                    case "hermit" -> List.of("Knowledge", "Information", "Symbols", "Magic", "Data", "Numbers");
-                    case "paragon" -> List.of("Technology", "Logic", "Machinery", "Physics", "Civilizations", "Structure", "Essence");
+                    case "demoness" -> List.of("Chaos", "Catastrophes","Mirror", "Disasters", "Apocalypse", "Strife", "Plagues", "Primordium", "Femininity");
+                    case "red_priest" -> List.of("War", "Calamity", "Iron","Blood", "Battlefield", "Strife", "Chaos", "Destruction", "Masculinity");
+                    case "hermit" -> List.of("Knowledge", "Information", "Symbols", "Magic", "Data", "Numbers", "Education", "Stories", "Mysticism");
+                    case "paragon" -> List.of("Technology", "Logic", "Machinery", "Physics", "Civilizations", "Structure", "Essence", "Education", "Enlightenment");
                     case "wheel_of_fortune" -> List.of("Fate", "Luck", "Lucky", "Misfortune", "Fortune", "River", "Calamities", "Probability", "Madness", "Chaos");
-                    case "mother" -> List.of("Earth", "Fertility", "Reproduction", "Desolation", "Nature", "Origin", "Life");
-                    case "moon" -> List.of("Moon", "Fertility", "Reproduction", "Spirituality", "Beauty", "Proliferation", "Moonlight");
+                    case "mother" -> List.of("Earth", "Fertility", "Reproduction", "Desolation", "Nature", "Origin", "Life", "Harvest", "Bounty");
+                    case "moon" -> List.of("Moon", "Fertility", "Reproduction", "Spirituality", "Beauty", "Proliferation", "Moonlight", "Silver", "Crimson");
                     case "abyss" -> List.of("Devils", "Evil", "Desires", "Corruption", "Blood", "Malice", "Blathers", "Corrosion", "Filth");
-                    case "chained" -> List.of("Chains", "Temperance", "Deviants", "Restraint", "Indulgence", "Unity", "Binding", "Curses");
-                    case "black_emperor" -> List.of("Disorder", "Distortion", "Exploitation", "Entropy", "Abolition", "Frenzy", "Domination", "Black");
-                    case "justiciar" -> List.of("Laws", "Rules", "Balance", "Discipline", "Justice", "Judgement", "Order", "White");
+                    case "chained" -> List.of("Chains", "Temperance", "Deviants", "Restraint", "Indulgence", "Unity", "Binding", "Curses", "Thorns");
+                    case "black_emperor" -> List.of("Disorder", "Distortion", "Exploitation", "Entropy", "Abolition", "Frenzy", "Domination", "Black", "Shadow");
+                    case "justiciar" -> List.of("Laws", "Rules", "Balance", "Discipline", "Justice", "Judgement", "Order", "White", "Punishment");
                     default -> List.of();
         });
     }
