@@ -2,9 +2,12 @@ package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.CycleOfFateEntity;
+import de.jakob.lotm.util.ControllingUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
 
@@ -41,6 +44,12 @@ public class CycleOfFateHelper {
             return null;
         }
 
+        AbilityUtil.getNearbyEntities(null, level, pos.getCenter(), 55, true, true).forEach(e -> {
+            if(e instanceof ServerPlayer serverPlayer) {
+                ControllingUtil.reset(serverPlayer, serverPlayer.serverLevel(), true);
+            }
+        });
+
         // Set position and owner
         entity.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
         entity.setOwner(owner);
@@ -53,6 +62,20 @@ public class CycleOfFateHelper {
         }
 
         return null;
+    }
+
+    public static boolean isInsideOfCycleOfFate(LivingEntity entity) {
+        if (!(entity.level() instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+
+        for (CycleOfFateEntity cycle : serverLevel.getEntitiesOfClass(CycleOfFateEntity.class,
+                entity.getBoundingBox().inflate(200))) {
+            if(AbilityUtil.getNearbyEntities(null, serverLevel, cycle.blockPosition().getCenter(), 60, true, true).contains(entity)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

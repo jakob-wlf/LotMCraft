@@ -360,7 +360,6 @@ public class CycleOfFateEntity extends Entity {
         final float xRot;
 
         // Living entity specific data
-        final Float health;
         final Integer airSupply;
         final List<MobEffectInstance> effects;
         final CompoundTag inventoryData;
@@ -377,7 +376,6 @@ public class CycleOfFateEntity extends Entity {
             this.motion = motion;
             this.yRot = yRot;
             this.xRot = xRot;
-            this.health = health;
             this.airSupply = airSupply;
             this.effects = effects;
             this.inventoryData = inventoryData;
@@ -452,9 +450,6 @@ public class CycleOfFateEntity extends Entity {
 
             // Restore living entity data
             if (entity instanceof LivingEntity livingEntity) {
-                if (health != null) {
-                    livingEntity.setHealth(health);
-                }
                 if (airSupply != null) {
                     livingEntity.setAirSupply(airSupply);
                 }

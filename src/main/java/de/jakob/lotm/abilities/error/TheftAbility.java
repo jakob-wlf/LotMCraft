@@ -37,7 +37,7 @@ public class TheftAbility extends Ability {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(player, 8 * (int) multiplier(entity), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(player, 8 * (int) (multiplier(entity) * multiplier(entity)), 1.5f);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.theft.no_target").withColor(0x4742c9));
             return;

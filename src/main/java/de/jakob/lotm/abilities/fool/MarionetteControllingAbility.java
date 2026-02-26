@@ -9,6 +9,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSelectedMarionettePacket;
 import de.jakob.lotm.util.ControllingUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.CycleOfFateHelper;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -279,6 +280,11 @@ public class MarionetteControllingAbility extends SelectableAbility {
 
     public static void control(Level level, ServerPlayer player) {
         if (level.isClientSide) return;
+
+        if(CycleOfFateHelper.isInsideOfCycleOfFate(player)) {
+            return;
+        }
+
         TransformationComponent transformationComponent = player.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         if (transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.FOG_OF_HISTORY.getIndex() && transformationComponent.isTransformed()) return;
 
