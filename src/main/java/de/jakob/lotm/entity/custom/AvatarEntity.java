@@ -391,33 +391,35 @@ public class AvatarEntity extends PathfinderMob {
     }
 
     // ========================= Loot and Drops =========================
-    @Override
-    protected void dropCustomDeathLoot(@NotNull ServerLevel level, @NonNull DamageSource damageSource, boolean recentlyHit) {
-        if (!BeyonderData.beyonderMap.check(pathway, sequence)) {
-            super.dropCustomDeathLoot(level, damageSource, recentlyHit);
-            return;
-        }
-
-        Random random = new Random();
-
-        // Drop characteristic
-        BeyonderCharacteristicItem characteristicItem =
-                BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, sequence);
-        if (characteristicItem != null) {
-            this.spawnAtLocation(characteristicItem);
-        }
-
-        // Drop recipe with chance
-        if (random.nextInt(RECIPE_DROP_CHANCE) == 0) {
-            PotionRecipeItem recipeItem =
-                    PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, sequence);
-            if (recipeItem != null) {
-                this.spawnAtLocation(recipeItem);
-            }
-        }
-
-        super.dropCustomDeathLoot(level, damageSource, recentlyHit);
-    }
+    // commented out for now, to prevent
+//    @Override
+//    protected void dropCustomDeathLoot(@NotNull ServerLevel level, @NonNull DamageSource damageSource, boolean recentlyHit) {
+//        if (!BeyonderData.beyonderMap.check(pathway, sequence)) {
+//            super.dropCustomDeathLoot(level, damageSource, recentlyHit);
+//            return;
+//        }
+//
+//
+//        Random random = new Random();
+//
+//        // Drop characteristic
+//        BeyonderCharacteristicItem characteristicItem =
+//                BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, sequence);
+//        if (characteristicItem != null) {
+//            this.spawnAtLocation(characteristicItem);
+//        }
+//
+//        // Drop recipe with chance
+//        if (random.nextInt(RECIPE_DROP_CHANCE) == 0) {
+//            PotionRecipeItem recipeItem =
+//                    PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, sequence);
+//            if (recipeItem != null) {
+//                this.spawnAtLocation(recipeItem);
+//            }
+//        }
+//
+//        super.dropCustomDeathLoot(level, damageSource, recentlyHit);
+//    }
 
     @Override
     protected void dropFromLootTable(DamageSource damageSource, boolean attackedRecently) {

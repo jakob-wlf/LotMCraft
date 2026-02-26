@@ -27,6 +27,7 @@ import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -486,6 +487,17 @@ public class ControllingUtil {
         Player player = event.getEntity();
         if (player.level() instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer) {
             ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
+            if (data.getTargetUUID() != null || data.getBodyUUID() != null) {
+                reset(serverPlayer,serverLevel, true);
+            }
+        }
+    }
+
+    // reset before logout
+    @SubscribeEvent
+    public static void onPlayerChangedDimension (EntityTravelToDimensionEvent event){
+        if (event.getEntity().level() instanceof ServerLevel serverLevel && event.getEntity() instanceof ServerPlayer serverPlayer) {
+            ControllingDataComponent data = serverPlayer.getData(ModAttachments.CONTROLLING_DATA);
             if (data.getTargetUUID() != null || data.getBodyUUID() != null) {
                 reset(serverPlayer,serverLevel, true);
             }

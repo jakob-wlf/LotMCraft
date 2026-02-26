@@ -94,12 +94,14 @@ public class MirrorWorldTraversalAbility extends Ability {
             return;
         }
 
+
         if(serverPlayer.gameMode.getGameModeForPlayer() != GameType.SPECTATOR) {
             component.setInMirrorWorld(false);
             component.setPreviousGameModeIndex(0);
             PacketHandler.sendToPlayer(serverPlayer, new SyncMirrorWorldPacket(false));
             return;
         }
+
 
         // Make sure spectator doesn't teleport
         if(lastPositions.containsKey(serverPlayer.getUUID())) {
@@ -110,9 +112,7 @@ public class MirrorWorldTraversalAbility extends Ability {
         }
         lastPositions.put(serverPlayer.getUUID(), serverPlayer.position());
 
-
         BlockPos glassPos = getNearestGlassBlock(serverLevel, player.position(), 4);
-
         if (glassPos == null) {
             return;
         }
@@ -146,6 +146,9 @@ public class MirrorWorldTraversalAbility extends Ability {
 
         Vec3 targetPos = glassPos.getCenter();
         player.teleportTo(targetPos.x, targetPos.y, targetPos.z);
+
+        // set the position again to prevent random teleportation
+        lastPositions.put(player.getUUID(), player.position());
     }
 
     private static BlockPos getNearestGlassBlock(ServerLevel level, Vec3 pos, int searchRadius) {

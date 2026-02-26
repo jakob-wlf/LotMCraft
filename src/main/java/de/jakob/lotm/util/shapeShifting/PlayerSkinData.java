@@ -15,6 +15,7 @@ public class PlayerSkinData {
     private static final Map<UUID, ResourceLocation> SKIN_TEXTURES = new ConcurrentHashMap<>();
     private static final Map<UUID, PlayerSkin.Model> SKIN_MODELS = new ConcurrentHashMap<>();
 
+
     public static void fetchAndCacheSkin(UUID playerId) {
         Minecraft mc = Minecraft.getInstance();
 
@@ -25,23 +26,22 @@ public class PlayerSkinData {
             var profileResult = sessionService.fetchProfile(playerId, false);
 
             if (profileResult == null) return;
-            GameProfile resolvedProfile = profileResult.profile();
+            GameProfile profile = profileResult.profile();
 
             // I think this should happen on main thread
             // get the skins and map them
             mc.execute(() -> {
                 SkinManager skinManager = mc.getSkinManager();
 
-                skinManager.getOrLoad(resolvedProfile).thenAccept(skin -> {
+                skinManager.getOrLoad(profile).thenAccept(skin -> {
                     ResourceLocation texture = skin.texture();
                     PlayerSkin.Model model = skin.model();
-
 
                     SKIN_TEXTURES.put(playerId, texture);
                     SKIN_MODELS.put(playerId, model);
                 }).exceptionally(throwable -> {
 
-                    PlayerSkin defaultSkin = skinManager.getInsecureSkin(resolvedProfile);
+                    PlayerSkin defaultSkin = skinManager.getInsecureSkin(profile);
                     SKIN_TEXTURES.put(playerId, defaultSkin.texture());
                     SKIN_MODELS.put(playerId, defaultSkin.model());
                     return null;

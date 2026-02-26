@@ -1,7 +1,5 @@
 package de.jakob.lotm.entity.client;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.logging.LogUtils;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.OriginalBodyEntity;

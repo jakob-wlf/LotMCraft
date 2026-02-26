@@ -4,7 +4,6 @@ import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.mother.handler.HybridMobData;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.network.packets.toClient.HybridMobSyncPacket;
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -21,6 +20,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -51,8 +51,14 @@ public class CrossbreedingAbility extends Ability {
         if(!(level instanceof ServerLevel serverLevel))
             return;
 
+        // entities to exclude from
+        List<EntityType<?>> notValidTargets = List.of(
+                EntityType.ENDER_DRAGON,
+                EntityType.WITHER
+        );
+
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2);
-        if(target == null || target instanceof BeyonderNPCEntity || target instanceof Player) {
+        if(target == null || target instanceof BeyonderNPCEntity || target instanceof Player || notValidTargets.contains(target.getType())) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.crossbreeding.not_valid_mob").withColor(0xFF88c276));
             return;
         }
