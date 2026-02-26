@@ -2,6 +2,7 @@ package de.jakob.lotm.gui.custom.HonorificNames;
 
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.SetHonorificNamePacket;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.beyonderMap.HonorificName;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -51,7 +52,7 @@ public class SetHonorificNameScreen extends Screen {
         lineBoxes.clear();
 
         int centerX = this.width / 2;
-        int startY = this.height / 2 - (lineCount * 25) / 2;
+        int startY = this.height / 2 - (lineCount * 25) / 2 + 20;
 
         for (int i = 0; i < lineCount; i++) {
             EditBox box = new EditBox(this.font,
@@ -122,7 +123,7 @@ public class SetHonorificNameScreen extends Screen {
         gfx.drawCenteredString(font, title, centerX, startY - 40, COL_TITLE);
 
         // Pathway / sequence info
-        String pathInfo = pathway + "  •  Sequence " + sequence;
+        String pathInfo = BeyonderData.pathwayInfos.get(pathway).getSequenceName(sequence);
         gfx.drawCenteredString(font, pathInfo, centerX, startY - 28, COL_LABEL);
 
         // Required words hint

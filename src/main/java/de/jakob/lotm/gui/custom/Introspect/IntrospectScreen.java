@@ -230,6 +230,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 .bounds(messageButtonX, messageButtonY, 60, 20)
                 .build();
 
+
         this.addRenderableWidget(messageButton);
 
         // Add abilities panel buttons if shown
@@ -328,6 +329,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private void openHonorificNamesMenu() {
+        if(menu.getSequence() >= 4) {
+            return;
+        }
         PacketHandler.sendToServer(new OpenHonorificNamesMenuPacket());
     }
 

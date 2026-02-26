@@ -79,6 +79,10 @@ public class LuckEventHandler {
             return;
         }
 
+        if(event.getAmount() > 500) {
+            return;
+        }
+
         int amplifier = event.getEntity().getEffect(ModEffects.LUCK).getAmplifier();
         double dodgeChance = getDodgeChance(amplifier);
 

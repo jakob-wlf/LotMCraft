@@ -2,6 +2,7 @@ package de.jakob.lotm.gui.custom.HonorificNames;
 
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.HonorificNamesRespondPacket;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.beyonderMap.HonorificName;
 import de.jakob.lotm.util.beyonderMap.PendingPrayer;
 import net.minecraft.client.Minecraft;
@@ -20,7 +21,7 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
     private static final int COL_BG_INNER   = 0xFF141422; // slightly lighter
     private static final int COL_BORDER_LO  = 0xFF2A1A4A; // deep purple
     private static final int COL_BORDER_HI  = 0xFF6A3A9A; // bright purple
-    private static final int COL_TITLE      = 0xFFD4AF37; // antique gold
+    private static final int COL_TITLE      = 0xFFFFFFFF; // antique gold
     private static final int COL_LABEL      = 0xFF9090D0; // soft blue-purple
     private static final int COL_TEXT       = 0xFFCCCCCC; // light grey text
     private static final int COL_DIVIDER    = 0xFF3A2A6A; // muted purple divider
@@ -226,7 +227,7 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
         // NOTE: coordinates here are relative to (leftPos, topPos)
 
         // ── Title ──
-        String titleStr = "✦  Honorific Names  ✦";
+        String titleStr = "Honorific Name";
         int titleX = (W - font.width(titleStr)) / 2;
         gfx.drawString(font, titleStr, titleX, 7, COL_TITLE, false);
 
@@ -256,8 +257,7 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
             }
         }
 
-        // Pathway / sequence badge at the right of the section
-        String badge = menu.getPathway() + "  •  Seq " + menu.getSequence();
+        String badge = BeyonderData.pathwayInfos.get(menu.getPathway()).getSequenceName(menu.getSequence());
         int badgeX = W - PADDING - font.width(badge) - 2;
         gfx.drawString(font, badge, badgeX, TITLE_H + 6, 0xFF7777AA, false);
     }
