@@ -550,6 +550,11 @@ public class PacketHandler {
                 HonorificNamesRespondPacket::handle);
 
         registrar.playToServer(
+                SetHonorificNamePacket.TYPE,
+                SetHonorificNamePacket.STREAM_CODEC,
+                SetHonorificNamePacket::handle);
+
+        registrar.playToServer(
                 OpenMessagesMenuPacket.TYPE,
                 OpenMessagesMenuPacket.STREAM_CODEC,
                 OpenMessagesMenuPacket::handle);
