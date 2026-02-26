@@ -1,5 +1,6 @@
 package de.jakob.lotm.abilities.darkness;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncNightmareAbilityPacket;
@@ -12,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -26,7 +28,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -36,11 +41,17 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class NightmareAbility extends SelectableAbility {
     private static final HashMap<UUID, NightmareCenter> activeNightmaresServer = new HashMap<>();
     private static final HashMap<UUID, NightmareCenter> activeNightmaresClient = new HashMap<>();
     private static final HashSet<UUID> isReshaping = new HashSet<>();
     private static final HashMap<UUID, RegionSnapshot> storedRegions = new HashMap<>();
+    private static final HashMap<ResourceKey<Level>, HashSet<BlockPos>> noDropPositions = new HashMap<>();
+
+    public static HashMap<ResourceKey<Level>, HashSet<BlockPos>> getNoDropPositions() {
+        return noDropPositions;
+    }
 
     public NightmareAbility(String id) {
         super(id, .15f);
@@ -325,6 +336,11 @@ public class NightmareAbility extends SelectableAbility {
         storedRegions.remove(uuid);
         activeNightmaresServer.remove(uuid);
 
+        HashSet<BlockPos> set = noDropPositions.get(level.dimension());
+        if (set != null) {
+            set.removeIf(pos -> pos.getCenter().distanceToSqr(center.pos()) <= (radius * radius));
+        }
+
         PacketHandler.sendToAllPlayers(new SyncNightmareAbilityPacket(0, 0, 0, 0, false));
     }
 
@@ -390,11 +406,37 @@ public class NightmareAbility extends SelectableAbility {
                         // Only replace passable blocks (air, water, lava, etc.)
                         if (currentState.getCollisionShape(level, pos).isEmpty() && isBlockInRadius(pos.getCenter(), casterUuid)) {
                             level.setBlock(pos, block.defaultBlockState(), 3);
+                            markNoDrop(level, pos);
                         }
                     }
                 }
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onBlockDrops(BlockDropsEvent event) {
+        BlockPos pos = event.getPos();
+        ResourceKey<Level> dimension = event.getLevel().dimension();
+
+        if (isNoDropMarked(dimension, pos)) {
+            event.getDrops().clear();
+            unmarkNoDrop((ServerLevel) event.getLevel(), pos);
+        }
+    }
+
+    private static void markNoDrop(ServerLevel level, BlockPos pos) {
+        noDropPositions.computeIfAbsent(level.dimension(), k -> new HashSet<>()).add(pos.immutable());
+    }
+
+    private static void unmarkNoDrop(ServerLevel level, BlockPos pos) {
+        HashSet<BlockPos> set = noDropPositions.get(level.dimension());
+        if (set != null) set.remove(pos);
+    }
+
+    private static boolean isNoDropMarked(ResourceKey<Level> dimension, BlockPos pos) {
+        HashSet<BlockPos> set = noDropPositions.get(dimension);
+        return set != null && set.contains(pos);
     }
 
     @OnlyIn(Dist.CLIENT)

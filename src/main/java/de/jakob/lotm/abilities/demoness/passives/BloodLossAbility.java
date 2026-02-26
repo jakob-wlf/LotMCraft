@@ -42,7 +42,7 @@ public class BloodLossAbility extends PassiveAbilityItem {
             return;
         }
 
-        if((new Random()).nextDouble() < .4) {
+        if((new Random()).nextDouble() < .4 && entity.distanceTo(event.getEntity()) < 2) {
             ItemStack blood = new ItemStack(ModItems.BLOOD.get());
             blood.set(ModDataComponents.BLOOD_OWNER, event.getEntity().getUUID().toString());
             event.getEntity().spawnAtLocation(blood);

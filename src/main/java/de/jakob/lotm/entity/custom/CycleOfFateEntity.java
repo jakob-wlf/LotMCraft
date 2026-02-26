@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.util.ControllingUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -8,6 +9,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
@@ -209,14 +211,24 @@ public class CycleOfFateEntity extends Entity {
             }
         }
 
+
+
         // Remove entities that weren't in the recording
         AABB boundingBox = new AABB(centerPos).inflate(RECORD_RADIUS);
         List<Entity> currentEntities = serverLevel.getEntities(this, boundingBox, entity ->
                 !(entity instanceof CycleOfFateEntity) && !(entity.getUUID().equals(ownerUUID)));
 
         for (Entity entity : currentEntities) {
-            if (!trackedEntityUUIDs.contains(entity.getUUID())) {
+            if (!trackedEntityUUIDs.contains(entity.getUUID()) && !(entity instanceof Player)) {
                 entity.discard();
+            }
+        }
+
+        // Undo Marionette Controlling
+        List<Player> players = serverLevel.getEntitiesOfClass(Player.class, boundingBox);
+        for(Player player : players) {
+            if(player instanceof ServerPlayer serverPlayer) {
+                ControllingUtil.reset(serverPlayer, serverPlayer.serverLevel(), true);
             }
         }
 

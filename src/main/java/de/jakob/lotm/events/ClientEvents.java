@@ -28,7 +28,6 @@ public class ClientEvents {
     public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
         LOTMCraft.pathwayInfosKey = new KeyMapping("key.beyonders.pathway_infos", GLFW.GLFW_KEY_J, "key.categories.beyonders");
         LOTMCraft.toggleGriefingKey = new KeyMapping("key.beyonders.toggle_griefing", GLFW.GLFW_KEY_K, "key.categories.beyonders");
-        LOTMCraft.showPassiveAbilitiesKey = new KeyMapping("key.beyonders.show_passives", GLFW.GLFW_KEY_I, "key.categories.beyonders");
         LOTMCraft.nextAbilityKey = new KeyMapping("key.beyonders.next_ability", GLFW.GLFW_KEY_V, "key.categories.beyonders");
         LOTMCraft.previousAbilityKey = new KeyMapping("key.beyonders.previous_ability", GLFW.GLFW_KEY_X, "key.categories.beyonders");
         LOTMCraft.enterSefirotKey = new KeyMapping("key.beyonders.enter_sefirot", GLFW.GLFW_KEY_U, "key.categories.beyonders");
@@ -46,7 +45,6 @@ public class ClientEvents {
 
         event.register(LOTMCraft.pathwayInfosKey);
         event.register(LOTMCraft.toggleGriefingKey);
-        event.register(LOTMCraft.showPassiveAbilitiesKey);
         event.register(LOTMCraft.nextAbilityKey);
         event.register(LOTMCraft.previousAbilityKey);
         event.register(LOTMCraft.enterSefirotKey);

@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class SetHonorificNameScreen extends Screen {
 
-    private static final int COL_TITLE   = 0xFFD4AF37;
+    private static final int COL_TITLE   = 0xFFFFFFFF;
     private static final int COL_LABEL   = 0xFF9090D0;
     private static final int COL_ERROR   = 0xFFFF5555;
     private static final int COL_HINT    = 0xFF7777AA;
@@ -52,11 +52,11 @@ public class SetHonorificNameScreen extends Screen {
         lineBoxes.clear();
 
         int centerX = this.width / 2;
-        int startY = this.height / 2 - (lineCount * 25) / 2 + 20;
+        int startY = this.height / 2 - (lineCount * 30) / 2 + 20;
 
         for (int i = 0; i < lineCount; i++) {
             EditBox box = new EditBox(this.font,
-                    centerX - 130, startY + i * 25,
+                    centerX - 130, startY + i * 30,
                     260, 20,
                     Component.literal("Line " + (i + 1)));
             box.setMaxLength(HonorificName.MAX_LENGTH - 1);
@@ -65,7 +65,7 @@ public class SetHonorificNameScreen extends Screen {
             lineBoxes.add(box);
         }
 
-        int confirmY = startY + lineCount * 25 + 8;
+        int confirmY = startY + lineCount * 30 + 8;
         this.addRenderableWidget(
                 Button.builder(Component.literal("Confirm"), btn -> onConfirm())
                         .bounds(centerX - 55, confirmY, 110, 20)
@@ -74,7 +74,7 @@ public class SetHonorificNameScreen extends Screen {
 
         this.addRenderableWidget(
                 Button.builder(Component.literal("Cancel"), btn -> onClose())
-                        .bounds(centerX - 55, confirmY + 25, 110, 20)
+                        .bounds(centerX - 55, confirmY + 30, 110, 20)
                         .build()
         );
     }
@@ -116,7 +116,7 @@ public class SetHonorificNameScreen extends Screen {
         super.render(gfx, mouseX, mouseY, partialTick);
 
         int centerX = this.width / 2;
-        int startY = this.height / 2 - (lineCount * 25) / 2;
+        int startY = this.height / 2 - (lineCount * 30) / 2;
 
         // Title
         String title = "Set Honorific Name";
@@ -140,13 +140,13 @@ public class SetHonorificNameScreen extends Screen {
                         wordsStr.length() - 3));
                 wordsStr = wordsStr.substring(0, truncIndex) + "...";
             }
-            gfx.drawCenteredString(font, wordsStr, centerX, startY - 6, 0xFF8888CC);
+            gfx.drawCenteredString(font, wordsStr, centerX, startY - 3, 0xFF8888CC);
         }
 
         // Error message
         if (!errorMessage.isEmpty()) {
             gfx.drawCenteredString(font, errorMessage, centerX,
-                    startY + lineCount * 25 + 64, COL_ERROR);
+                    startY + lineCount * 30 + 64, COL_ERROR);
         }
     }
 

@@ -72,7 +72,6 @@ public class LOTMCraft
 
     public static KeyMapping pathwayInfosKey;
     public static KeyMapping toggleGriefingKey;
-    public static KeyMapping showPassiveAbilitiesKey;
     public static KeyMapping nextAbilityKey;
     public static KeyMapping previousAbilityKey;
     public static KeyMapping enterSefirotKey;
