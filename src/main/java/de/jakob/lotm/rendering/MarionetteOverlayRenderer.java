@@ -28,6 +28,8 @@ import java.util.*;
 public class MarionetteOverlayRenderer {
 
     public static HashMap<UUID, MarionetteInfos> currentMarionette = new HashMap<>();
+    private static final Map<UUID, MarionetteInfos> cachedMarionette = new HashMap<>();
+    private static final Map<UUID, Long> nullSinceTime = new HashMap<>();
 
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
@@ -38,7 +40,10 @@ public class MarionetteOverlayRenderer {
 
     @SubscribeEvent
     public static void onLeave(PlayerEvent.PlayerLoggedOutEvent event) {
-        currentMarionette.remove(event.getEntity().getUUID());
+        UUID uuid = event.getEntity().getUUID();
+        currentMarionette.remove(uuid);
+        cachedMarionette.remove(uuid);
+        nullSinceTime.remove(uuid);
     }
 
     private static void renderOverlay(GuiGraphics guiGraphics) {
@@ -46,51 +51,68 @@ public class MarionetteOverlayRenderer {
         if (mc.player == null || mc.level == null) return;
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
+        UUID playerUUID = mc.player.getUUID();
 
-        if (currentMarionette.containsKey(mc.player.getUUID())) {
-            MarionetteInfos infos = currentMarionette.get(mc.player.getUUID());
-            if(infos != null) {
-                int width =  (screenWidth / 3);
-                int height = 45;
-
-                int barWidth = (int) (width / 1.3);
-                int barHeight = 14;
-
-                int x = screenWidth - barWidth - 40;
-                int y = 15;
-
-                renderOutLine(guiGraphics, x, y, width, height);
-
-                //Marionette Label
-                String label = Component.translatable("lotm.marionette").getString() + ":";
-                int labelY = y + 5;
-                int labelX = x + (width / 2);
-                guiGraphics.drawCenteredString(mc.font, label, labelX, labelY, 0xFFFFFFFF);
-
-                //Entity name
-                String name = infos.name();
-                int nameY = y + 5 + mc.font.lineHeight;
-                int nameX = x + (width / 2);
-                guiGraphics.drawCenteredString(mc.font, name, nameX, nameY, 0xFFFFFFFF);
-
-                //Health Bar
-                int barY = y + height - barHeight - 5;
-                int barX = x + (width / 2) - (barWidth / 2);
-
-                guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0x88000000);
-
-                double fillPercentage = infos.health() / infos.maxHealth();
-                int filledBarWidth = (int) (barWidth * fillPercentage);
-
-                if(filledBarWidth > 0)
-                    drawHorizontalGradient(guiGraphics, barX, barY, filledBarWidth, barHeight, 0xFFFF0000, 0xFFe43fa3);
-
-                //Health String
-                guiGraphics.drawCenteredString(mc.font, infos.health() + " ❤", barX + (barWidth / 2), barY + 1 + ((barHeight - mc.font.lineHeight) / 2), 0xFFFFFFFF);
-
-                //displayStats(guiGraphics, entity, screenWidth);
+        if (currentMarionette.containsKey(playerUUID)) {
+            MarionetteInfos infos = currentMarionette.get(playerUUID);
+            if (infos != null) {
+                // Update cache and clear null timer
+                cachedMarionette.put(playerUUID, infos);
+                nullSinceTime.remove(playerUUID);
+            } else {
+                // infos is null — start or continue null timer
+                nullSinceTime.putIfAbsent(playerUUID, System.currentTimeMillis());
             }
         }
+
+        // Decide which infos to render
+        MarionetteInfos infos = currentMarionette.getOrDefault(playerUUID, null);
+        if (infos == null) {
+            long nullSince = nullSinceTime.getOrDefault(playerUUID, System.currentTimeMillis());
+            if (System.currentTimeMillis() - nullSince < 500) {
+                infos = cachedMarionette.get(playerUUID); // use cached during grace period
+            }
+        }
+
+        if (infos == null) return;
+
+        int width = (screenWidth / 3);
+        int height = 45;
+
+        int barWidth = (int) (width / 1.3);
+        int barHeight = 14;
+
+        int x = screenWidth - barWidth - 40;
+        int y = 15;
+
+        renderOutLine(guiGraphics, x, y, width, height);
+
+        //Marionette Label
+        String label = Component.translatable("lotm.marionette").getString() + ":";
+        int labelY = y + 5;
+        int labelX = x + (width / 2);
+        guiGraphics.drawCenteredString(mc.font, label, labelX, labelY, 0xFFFFFFFF);
+
+        //Entity name
+        String name = infos.name();
+        int nameY = y + 5 + mc.font.lineHeight;
+        int nameX = x + (width / 2);
+        guiGraphics.drawCenteredString(mc.font, name, nameX, nameY, 0xFFFFFFFF);
+
+        //Health Bar
+        int barY = y + height - barHeight - 5;
+        int barX = x + (width / 2) - (barWidth / 2);
+
+        guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0x88000000);
+
+        double fillPercentage = infos.health() / infos.maxHealth();
+        int filledBarWidth = (int) (barWidth * fillPercentage);
+
+        if (filledBarWidth > 0)
+            drawHorizontalGradient(guiGraphics, barX, barY, filledBarWidth, barHeight, 0xFFFF0000, 0xFFe43fa3);
+
+        //Health String
+        guiGraphics.drawCenteredString(mc.font, infos.health() + " ❤", barX + (barWidth / 2), barY + 1 + ((barHeight - mc.font.lineHeight) / 2), 0xFFFFFFFF);
     }
 
     private static void renderOutLine(GuiGraphics guiGraphics, int x, int y, int width, int height) {
