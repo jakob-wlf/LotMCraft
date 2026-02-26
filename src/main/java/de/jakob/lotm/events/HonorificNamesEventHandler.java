@@ -157,7 +157,7 @@ public class HonorificNamesEventHandler {
                         sender.getName().getString(),
                         BeyonderData.getPathway(sender),
                         BeyonderData.getSequence(sender),
-                        sender.getX(), sender.getY(), sender.getZ())
+                                (int) sender.getX(), (int) sender.getY(), (int) sender.getZ())
                         .withStyle(ChatFormatting.GREEN))
                 .append(Component.literal("\n→ Open your ")
                         .withStyle(ChatFormatting.DARK_GREEN))

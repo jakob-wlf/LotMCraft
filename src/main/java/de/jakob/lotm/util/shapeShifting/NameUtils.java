@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -35,6 +36,7 @@ public class NameUtils {
     public static void onTabListNameFormat(PlayerEvent.TabListNameFormat event) {
         Player player = event.getEntity();
         String nickname = NameStorage.mapping.get(player.getUUID());
+
         if (nickname != null && !nickname.isEmpty()) {
             event.setDisplayName(Component.literal(nickname));
         }
@@ -45,6 +47,7 @@ public class NameUtils {
     public static void onNameFormat(PlayerEvent.NameFormat event) {
         Player player = event.getEntity();
         String nickname = NameStorage.mapping.get(player.getUUID());
+
         if (nickname != null && !nickname.isEmpty()) {
             event.setDisplayname(Component.literal(nickname));
         }
@@ -87,6 +90,24 @@ public class NameUtils {
                 otherPlayer.connection.send(packet);
             }
             resetPlayerName(player);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onServerChat(ServerChatEvent event) {
+        ServerPlayer player = event.getPlayer();
+
+        String realName = player.getGameProfile().getName();
+        String nickname = NameStorage.mapping.get(player.getUUID());
+
+        if(realName.equals(nickname)) return;
+
+        String message = event.getMessage().getString();
+
+        if (nickname != null && !nickname.isEmpty()) {
+            String logMessage = "SHAPESHIFTED <" + realName + "> ->" + nickname + ": " + message;
+
+           LOTMCraft.LOGGER.info(logMessage);
         }
     }
 }
