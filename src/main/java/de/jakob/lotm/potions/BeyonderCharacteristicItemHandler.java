@@ -16,8 +16,6 @@ import java.util.Random;
 public class BeyonderCharacteristicItemHandler {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(LOTMCraft.MOD_ID);
 
-
-
     public static void registerCharacteristics(IEventBus eventBus) {
         for(String pathway : BeyonderData.pathways) {
             if(!BeyonderData.implementedRecipes.containsKey(pathway))

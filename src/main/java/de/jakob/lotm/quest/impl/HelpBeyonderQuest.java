@@ -1,5 +1,6 @@
 package de.jakob.lotm.quest.impl;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.QuestComponent;
 import de.jakob.lotm.entity.ModEntities;
@@ -122,13 +123,13 @@ public class HelpBeyonderQuest extends Quest {
                 rewards.add(new ItemStack(Items.GOLD_BLOCK, 2));
             }
             case TOP -> {
-
-
                 int potionSequence = r.nextBoolean() ? 3 : 4;
                 BeyonderPotion potion = getSequencePotion(potionSequence, r);
+
                 if (potion != null) {
                     rewards.add(new ItemStack(potion));
                 }
+
                 addCharacteristicInRange(rewards, 1, 2, r);
                 rewards.add(new ItemStack(Items.NETHER_STAR));
                 rewards.add(new ItemStack(Items.BEACON));
@@ -288,6 +289,7 @@ public class HelpBeyonderQuest extends Quest {
                 .map(BeyonderCharacteristicItem.class::cast)
                 .filter(item -> item.getSequence() <= maxSeq)
                 .toList();
+
         if (!lowSeqFallback.isEmpty()) {
             rewards.add(new ItemStack(lowSeqFallback.get(r.nextInt(lowSeqFallback.size()))));
         }
@@ -305,7 +307,8 @@ public class HelpBeyonderQuest extends Quest {
         if (matching.isEmpty()) {
             return PotionItemHandler.selectRandomPotionOfSequence(r, sequence);
         }
-        return matching.get(0);
+
+        return matching.get(r.nextInt(matching.size()));
     }
 
     private Tier tierFor(ServerPlayer player) {
