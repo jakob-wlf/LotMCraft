@@ -36,28 +36,28 @@ public class MysticalRingBlock extends Block implements EntityBlock {
     private static final Map<Block, String> BLOCK_TO_PATHWAY = new HashMap<>();
 
     static {
+        BLOCK_TO_PATHWAY.put(Blocks.AMETHYST_BLOCK, "fool");
+        BLOCK_TO_PATHWAY.put(Blocks.COPPER_BLOCK, "error");
+        BLOCK_TO_PATHWAY.put(Blocks.END_STONE, "door");
+        BLOCK_TO_PATHWAY.put(Blocks.SEA_LANTERN, "visionary");
+        BLOCK_TO_PATHWAY.put(Blocks.GLOWSTONE, "sun");
+        BLOCK_TO_PATHWAY.put(Blocks.IRON_BLOCK, "tyrant");
+        BLOCK_TO_PATHWAY.put(Blocks.QUARTZ_BLOCK, "white_tower");
+        BLOCK_TO_PATHWAY.put(Blocks.DARK_PRISMARINE, "hanged_man");
+        BLOCK_TO_PATHWAY.put(Blocks.COAL_BLOCK, "darkness");
+        BLOCK_TO_PATHWAY.put(Blocks.STONE, "death");
+        BLOCK_TO_PATHWAY.put(Blocks.PURPUR_BLOCK, "twilight_giant");
+        BLOCK_TO_PATHWAY.put(Blocks.RED_SANDSTONE, "demoness");
         BLOCK_TO_PATHWAY.put(Blocks.NETHERRACK, "red_priest");
-        BLOCK_TO_PATHWAY.put(Blocks.STONE, "pathway_placeholder_1");
-        BLOCK_TO_PATHWAY.put(Blocks.OBSIDIAN, "pathway_placeholder_2");
-        BLOCK_TO_PATHWAY.put(Blocks.DIAMOND_BLOCK, "pathway_placeholder_3");
-        BLOCK_TO_PATHWAY.put(Blocks.GOLD_BLOCK, "pathway_placeholder_4");
-        BLOCK_TO_PATHWAY.put(Blocks.IRON_BLOCK, "pathway_placeholder_5");
-        BLOCK_TO_PATHWAY.put(Blocks.EMERALD_BLOCK, "pathway_placeholder_6");
-        BLOCK_TO_PATHWAY.put(Blocks.LAPIS_BLOCK, "pathway_placeholder_7");
-        BLOCK_TO_PATHWAY.put(Blocks.REDSTONE_BLOCK, "pathway_placeholder_8");
-        BLOCK_TO_PATHWAY.put(Blocks.COAL_BLOCK, "pathway_placeholder_9");
-        BLOCK_TO_PATHWAY.put(Blocks.QUARTZ_BLOCK, "pathway_placeholder_10");
-        BLOCK_TO_PATHWAY.put(Blocks.PRISMARINE, "pathway_placeholder_11");
-        BLOCK_TO_PATHWAY.put(Blocks.END_STONE, "pathway_placeholder_12");
-        BLOCK_TO_PATHWAY.put(Blocks.PURPUR_BLOCK, "pathway_placeholder_13");
-        BLOCK_TO_PATHWAY.put(Blocks.SANDSTONE, "pathway_placeholder_14");
-        BLOCK_TO_PATHWAY.put(Blocks.RED_SANDSTONE, "pathway_placeholder_15");
-        BLOCK_TO_PATHWAY.put(Blocks.NETHER_BRICKS, "pathway_placeholder_16");
-        BLOCK_TO_PATHWAY.put(Blocks.DARK_PRISMARINE, "pathway_placeholder_17");
-        BLOCK_TO_PATHWAY.put(Blocks.SEA_LANTERN, "pathway_placeholder_18");
-        BLOCK_TO_PATHWAY.put(Blocks.GLOWSTONE, "pathway_placeholder_19");
-        BLOCK_TO_PATHWAY.put(Blocks.AMETHYST_BLOCK, "pathway_placeholder_20");
-        BLOCK_TO_PATHWAY.put(Blocks.COPPER_BLOCK, "pathway_placeholder_21");
+        BLOCK_TO_PATHWAY.put(Blocks.SANDSTONE, "hermit");
+        BLOCK_TO_PATHWAY.put(Blocks.EMERALD_BLOCK, "paragon");
+        BLOCK_TO_PATHWAY.put(Blocks.GOLD_BLOCK, "wheel_of_fortune");
+        BLOCK_TO_PATHWAY.put(Blocks.PRISMARINE, "mother");
+        BLOCK_TO_PATHWAY.put(Blocks.LAPIS_BLOCK, "moon");
+        BLOCK_TO_PATHWAY.put(Blocks.OBSIDIAN, "abyss");
+        BLOCK_TO_PATHWAY.put(Blocks.NETHER_BRICKS, "chained");
+        BLOCK_TO_PATHWAY.put(Blocks.REDSTONE_BLOCK, "black_emperor");
+        BLOCK_TO_PATHWAY.put(Blocks.DIAMOND_BLOCK, "justiciar");
     }
 
     public MysticalRingBlock(Properties properties) {
