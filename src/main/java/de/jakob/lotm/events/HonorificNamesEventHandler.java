@@ -4,11 +4,9 @@ import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.beyonderMap.PendingPrayer;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -23,6 +21,23 @@ public class HonorificNamesEventHandler {
     public static HashMap<UUID, UUID> isInTransferring = new HashMap<>();
 
     public static LinkedList<Pair<UUID, UUID>> answerState = new LinkedList<>();
+
+    /** Pending prayers per target player UUID: target → list of prayers addressed to them. */
+    private static final HashMap<UUID, LinkedList<PendingPrayer>> pendingPrayers = new HashMap<>();
+
+    /** Returns a copy of the pending prayers for the given target player, or an empty list. */
+    public static LinkedList<PendingPrayer> getPendingPrayers(UUID targetUUID) {
+        return new LinkedList<>(pendingPrayers.getOrDefault(targetUUID, new LinkedList<>()));
+    }
+
+    /** Removes a specific pending prayer (identified by sender UUID) for a target player. */
+    public static void removePendingPrayer(UUID targetUUID, UUID senderUUID) {
+        LinkedList<PendingPrayer> list = pendingPrayers.get(targetUUID);
+        if (list != null) {
+            list.removeIf(p -> p.senderUUID().equals(senderUUID));
+            if (list.isEmpty()) pendingPrayers.remove(targetUUID);
+        }
+    }
 
     @SubscribeEvent
     public static void onChatMessageSent(ServerChatEvent event) {
@@ -110,68 +125,65 @@ public class HonorificNamesEventHandler {
 
             target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(.01f, target);
 
-            target.sendSystemMessage(formMessage(event.getPlayer(), target));
+            storePendingPrayer(event.getPlayer(), target);
+
+            target.sendSystemMessage(formNotification(event.getPlayer()));
         }
     }
 
-    public static boolean isHonorificNameFirstLine(String str){
+    /**
+     * Stores the incoming prayer so the target can respond via the Honorific Names menu.
+     */
+    private static void storePendingPrayer(LivingEntity sender, LivingEntity target) {
+        answerState.add(new Pair<>(target.getUUID(), sender.getUUID()));
+
+        PendingPrayer prayer = new PendingPrayer(
+                sender.getUUID(),
+                sender.getName().getString(),
+                BeyonderData.getPathway(sender),
+                BeyonderData.getSequence(sender),
+                sender.getX(), sender.getY(), sender.getZ()
+        );
+
+        pendingPrayers.computeIfAbsent(target.getUUID(), k -> new LinkedList<>()).add(prayer);
+    }
+
+    /**
+     * Sends a simple notification chat message to the target player, pointing them to the menu.
+     */
+    public static Component formNotification(LivingEntity sender) {
+        return Component.empty()
+                .append(Component.translatable("lotmcraft.honorific_praying",
+                        sender.getName().getString(),
+                        BeyonderData.getPathway(sender),
+                        BeyonderData.getSequence(sender),
+                        sender.getX(), sender.getY(), sender.getZ())
+                        .withStyle(ChatFormatting.GREEN))
+                .append(Component.literal("\n→ Open your ")
+                        .withStyle(ChatFormatting.DARK_GREEN))
+                .append(Component.literal("Honorific Names menu")
+                        .withStyle(style -> style
+                                .withColor(ChatFormatting.GOLD)
+                                .withBold(true)))
+                .append(Component.literal(" in the Introspect screen to respond.")
+                        .withStyle(ChatFormatting.DARK_GREEN));
+    }
+
+    /** @deprecated Use the Honorific Names menu instead. Kept for command-based fallback. */
+    @Deprecated
+    public static Component formMessage(LivingEntity player, LivingEntity target) {
+        return formNotification(player);
+    }
+
+    public static boolean isHonorificNameFirstLine(String str) {
         return BeyonderData.beyonderMap.containsHonorificNameWithFirstLine(str);
     }
 
-    public static boolean isHonorificNameLastLine(String str){
+    public static boolean isHonorificNameLastLine(String str) {
         return BeyonderData.beyonderMap.containsHonorificNameWithLastLine(str);
     }
 
-    public static boolean isHonorificNamePart(String str){
+    public static boolean isHonorificNamePart(String str) {
         return BeyonderData.beyonderMap.containsHonorificNameWithLine(str);
-    }
-
-    public static Component formMessage(LivingEntity player, LivingEntity target){
-        answerState.add(new Pair<>(target.getUUID(), player.getUUID()));
-
-        MutableComponent message = Component.empty();
-
-        Component spacer = Component.literal("\n--- ").withStyle(ChatFormatting.DARK_GREEN);
-
-        Component generalInfo = Component.translatable("lotmcraft.honorific_praying",
-                player.getName().getString(), BeyonderData.getPathway(player),
-                BeyonderData.getSequence(player), player.getX(), player.getY(), player.getZ())
-                .withStyle(ChatFormatting.GREEN);
-
-        Component sendMessageButton = Component.translatable( "lotmcraft.honorific_praying_send_message_button")
-                .withStyle(style -> style
-                        .withColor(ChatFormatting.GOLD)
-                        .withBold(true)
-                        .withClickEvent(new ClickEvent(
-                                ClickEvent.Action.RUN_COMMAND,
-                                "/honorificname ui sendmessage " + player.getName().getString()
-                                        + " " + target.getName().getString()
-                        ))
-                        .withHoverEvent(new HoverEvent(
-                                HoverEvent.Action.SHOW_TEXT,
-                                Component.translatable("lotmcraft.honorific_praying_send_message_desc")
-                                        .withStyle(ChatFormatting.GRAY)
-                        ))
-                );
-
-        Component teleportButton = Component.translatable( "lotmcraft.honorific_praying_teleport_button")
-                .withStyle(style -> style
-                        .withColor(ChatFormatting.GOLD)
-                        .withBold(true)
-                        .withClickEvent(new ClickEvent(
-                                ClickEvent.Action.RUN_COMMAND,
-                                "/honorificname ui teleport " + player.getName().getString()
-                                        + " " + target.getName().getString()
-                        ))
-                        .withHoverEvent(new HoverEvent(
-                                HoverEvent.Action.SHOW_TEXT,
-                                Component.translatable("lotmcraft.honorific_praying_teleport_desc")
-                                        .withStyle(ChatFormatting.GRAY)
-                        ))
-                );
-
-        return message.append(generalInfo).append(spacer)
-                .append(sendMessageButton).append(spacer)
-                .append(teleportButton);
     }
 }

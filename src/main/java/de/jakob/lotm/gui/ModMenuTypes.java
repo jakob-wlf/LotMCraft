@@ -1,6 +1,7 @@
 package de.jakob.lotm.gui;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesMenu;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelMenu;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
@@ -32,6 +33,10 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<MessagesMenu>> MESSAGES_MENU =
             MENU_TYPES.register("messages_menu", () ->
                     IMenuTypeExtension.create(MessagesMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<HonorificNamesMenu>> HONORIFIC_NAMES_MENU =
+            MENU_TYPES.register("honorific_names_menu", () ->
+                    IMenuTypeExtension.create(HonorificNamesMenu::new));
 
     public static final DeferredHolder<MenuType<?>, MenuType<AbilityWheelMenu>> ABILITY_WHEEL_MENU = MENU_TYPES.register(
             "ability_wheel_menu",

@@ -540,6 +540,16 @@ public class PacketHandler {
                 OpenMessagePacket::handle);
 
         registrar.playToServer(
+                OpenHonorificNamesMenuPacket.TYPE,
+                OpenHonorificNamesMenuPacket.STREAM_CODEC,
+                OpenHonorificNamesMenuPacket::handle);
+
+        registrar.playToServer(
+                HonorificNamesRespondPacket.TYPE,
+                HonorificNamesRespondPacket.STREAM_CODEC,
+                HonorificNamesRespondPacket::handle);
+
+        registrar.playToServer(
                 OpenMessagesMenuPacket.TYPE,
                 OpenMessagesMenuPacket.STREAM_CODEC,
                 OpenMessagesMenuPacket::handle);

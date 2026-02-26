@@ -223,14 +223,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int messageButtonX = baseLeftPos - 65;
         int messageButtonY = this.topPos + 60;
 
-        messageButton = Button.builder(Component.literal("Messages"),
+        messageButton = Button.builder(Component.literal("Honorific"),
                 button -> {
-                    openMessagesMenu();
+                    openHonorificNamesMenu();
                  })
                 .bounds(messageButtonX, messageButtonY, 60, 20)
                 .build();
 
-        //this.addRenderableWidget(messageButton);
+        this.addRenderableWidget(messageButton);
 
         // Add abilities panel buttons if shown
         if (showAbilities) {
@@ -325,6 +325,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
             this.addRenderableWidget(discardQuestButton);
         }
+    }
+
+    private void openHonorificNamesMenu() {
+        PacketHandler.sendToServer(new OpenHonorificNamesMenuPacket());
     }
 
     private void openMessagesMenu() {
