@@ -325,7 +325,7 @@ public class LuckEventHandler {
     }
 
     private static double getDodgeChance(int amplifier) {
-        return Math.max(Math.min(0.05 * (amplifier + 1), 0.9), 0.05);
+        return Math.max(Math.min(0.035 * (amplifier + 1), 0.65), 0.035);
     }
 
     private static double getMultipleBlocksWhenMiningChance(int amplifier) {

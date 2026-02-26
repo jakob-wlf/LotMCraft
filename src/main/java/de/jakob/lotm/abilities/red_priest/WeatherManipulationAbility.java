@@ -86,7 +86,7 @@ public class WeatherManipulationAbility extends SelectableAbility {
 
         ServerScheduler.scheduleForDuration(0, 4, 20 * 30, () -> {
             // Damage and Effects
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60, DamageLookup.lookupDps(2, .9, 4, 30) * (float) multiplier(entity), startPos, true, false);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60, DamageLookup.lookupDps(2, .5, 4, 30) * (float) multiplier(entity), startPos, true, false);
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 60, startPos,
                     new MobEffectInstance(MobEffects.WEAKNESS, 20 * 5, 1, false, false, false),
                     new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 7, false, false, false));
@@ -157,7 +157,7 @@ public class WeatherManipulationAbility extends SelectableAbility {
 
         ServerScheduler.scheduleForDuration(0, 4, 20 * 30, () -> {
             // Damage and Effects
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 90, DamageLookup.lookupDps(2, .9, 4, 30) * (float) multiplier(entity), startPos, true, false, 20 * 10);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 90, DamageLookup.lookupDps(2, .5, 4, 30) * (float) multiplier(entity), startPos, true, false, 20 * 10);
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 90, startPos,
                     new MobEffectInstance(MobEffects.WEAKNESS, 20 * 5, 1, false, false, false),
                     new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 4, false, false, false));
@@ -218,7 +218,7 @@ public class WeatherManipulationAbility extends SelectableAbility {
 
         Vec3 pos = AbilityUtil.getTargetLocation(entity, 12, 2);
 
-        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .75) * (float) multiplier(entity), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, 32.5f * (float) multiplier(entity), entity, target);
+        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35) * (float) multiplier(entity), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, 32.5f * (float) multiplier(entity), entity, target);
         tornado.setPos(pos);
         serverLevel.addFreshEntity(tornado);
 

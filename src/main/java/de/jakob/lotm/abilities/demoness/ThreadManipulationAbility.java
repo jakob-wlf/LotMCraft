@@ -86,7 +86,7 @@ public class ThreadManipulationAbility extends SelectableAbility {
             }
 
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 10, false, false, false));
-            entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 3, false, false, false));
+            entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 2, false, false, false));
             entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20 * 6, 2, false, false, false));
             entity.setDeltaMovement(new Vec3(0, 0, 0));
             entity.hurtMarked = true;

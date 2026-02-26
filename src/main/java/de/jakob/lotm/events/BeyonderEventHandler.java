@@ -26,6 +26,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
@@ -58,6 +59,15 @@ public class BeyonderEventHandler {
                     beyonderMap.put(serverPlayer);
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onTotemUsed(LivingUseTotemEvent event) {
+        LivingEntity entity = event.getEntity();
+
+        if(BeyonderData.isBeyonder(entity)) {
+            event.setCanceled(true);
         }
     }
 

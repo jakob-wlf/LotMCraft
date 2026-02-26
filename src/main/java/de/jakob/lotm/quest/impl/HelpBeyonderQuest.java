@@ -103,31 +103,33 @@ public class HelpBeyonderQuest extends Quest {
         List<ItemStack> rewards = new ArrayList<>();
         Tier tier = tierFor(player);
 
+        QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
+        int completedQuestCount = component.getCompletedQuests().size();
+
+        long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
+        Random r = new Random(randomSeed);
+
         switch (tier) {
-            case LOW -> addCharacteristicInRange(rewards, 8, 9);
+            case LOW -> addCharacteristicInRange(rewards, 8, 9, r);
             case MID -> {
-                addCharacteristicInRange(rewards, 5, 7);
+                addCharacteristicInRange(rewards, 5, 7, r);
                 rewards.add(new ItemStack(Items.DIAMOND, 8));
             }
             case HIGH -> {
-                addCharacteristicInRange(rewards, 3, 4);
+                addCharacteristicInRange(rewards, 3, 4, r);
                 rewards.add(new ItemStack(Items.NETHERITE_SCRAP, 2));
                 rewards.add(new ItemStack(Items.DIAMOND, 10));
                 rewards.add(new ItemStack(Items.GOLD_BLOCK, 2));
             }
             case TOP -> {
-                QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
-                int completedQuestCount = component.getCompletedQuests().size();
 
-                long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
-                Random r = new Random(randomSeed);
 
                 int potionSequence = r.nextBoolean() ? 3 : 4;
-                BeyonderPotion potion = getSequencePotion(potionSequence);
+                BeyonderPotion potion = getSequencePotion(potionSequence, r);
                 if (potion != null) {
                     rewards.add(new ItemStack(potion));
                 }
-                addCharacteristicInRange(rewards, 1, 2);
+                addCharacteristicInRange(rewards, 1, 2, r);
                 rewards.add(new ItemStack(Items.NETHER_STAR));
                 rewards.add(new ItemStack(Items.BEACON));
             }
@@ -266,7 +268,7 @@ public class HelpBeyonderQuest extends Quest {
         };
     }
 
-    private void addCharacteristicInRange(List<ItemStack> rewards, int minSeq, int maxSeq) {
+    private void addCharacteristicInRange(List<ItemStack> rewards, int minSeq, int maxSeq, Random r) {
         List<BeyonderCharacteristicItem> matching = BeyonderCharacteristicItemHandler.ITEMS.getEntries().stream()
                 .map(DeferredHolder::get)
                 .filter(BeyonderCharacteristicItem.class::isInstance)
@@ -276,7 +278,7 @@ public class HelpBeyonderQuest extends Quest {
                 .toList();
 
         if (!matching.isEmpty()) {
-            rewards.add(new ItemStack(matching.get(random.nextInt(matching.size()))));
+            rewards.add(new ItemStack(matching.get(r.nextInt(matching.size()))));
             return;
         }
 
@@ -287,11 +289,11 @@ public class HelpBeyonderQuest extends Quest {
                 .filter(item -> item.getSequence() <= maxSeq)
                 .toList();
         if (!lowSeqFallback.isEmpty()) {
-            rewards.add(new ItemStack(lowSeqFallback.get(random.nextInt(lowSeqFallback.size()))));
+            rewards.add(new ItemStack(lowSeqFallback.get(r.nextInt(lowSeqFallback.size()))));
         }
     }
 
-    private BeyonderPotion getSequencePotion(int sequence) {
+    private BeyonderPotion getSequencePotion(int sequence, Random r) {
         List<BeyonderPotion> matching = PotionItemHandler.ITEMS.getEntries().stream()
                 .map(DeferredHolder::get)
                 .filter(BeyonderPotion.class::isInstance)
@@ -301,7 +303,7 @@ public class HelpBeyonderQuest extends Quest {
                 .toList();
 
         if (matching.isEmpty()) {
-            return PotionItemHandler.selectRandomPotionOfSequence(random, sequence);
+            return PotionItemHandler.selectRandomPotionOfSequence(r, sequence);
         }
         return matching.get(0);
     }

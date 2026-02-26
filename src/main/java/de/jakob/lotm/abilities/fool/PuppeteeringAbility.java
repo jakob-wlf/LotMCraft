@@ -164,6 +164,7 @@ public class PuppeteeringAbility extends Ability {
         }
 
         AtomicDouble health = new AtomicDouble(target.getHealth());
+        AtomicDouble casterHealth = new AtomicDouble(entity.getHealth());
 
         ServerScheduler.scheduleForDuration(0, 2, time, () -> {
             if(stopped.get()) {
@@ -183,6 +184,12 @@ public class PuppeteeringAbility extends Ability {
             }
 
             if(target.getHealth() < health.get()) {
+                entitiesBeingManipulated.remove(entity.getUUID());
+                stopped.set(true);
+                return;
+            }
+
+            if(entity.getHealth() < casterHealth.get() * 0.5) {
                 entitiesBeingManipulated.remove(entity.getUUID());
                 stopped.set(true);
                 return;

@@ -110,7 +110,7 @@ public class SteelMasteryAbility extends SelectableAbility {
 
             BeyonderData.reduceSpirituality(entity, 4);
 
-            entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 3, false, false, false));
+            entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 2, false, false, false));
             ParticleUtil.spawnParticles(level, dust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 10, .4, entity.getEyeHeight() / 2, .4, 0);
         }, 2, () -> castingSteelSkin.remove(entity.getUUID()), shouldStop);
     }

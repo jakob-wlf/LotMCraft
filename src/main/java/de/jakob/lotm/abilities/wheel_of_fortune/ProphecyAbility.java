@@ -167,8 +167,7 @@ public class ProphecyAbility extends Ability {
     private ItemStack getGoodItem() {
         return switch (random.nextInt(10)) {
             case 0 -> new ItemStack(Items.EMERALD, random.nextInt(1, 20));
-            case 1 -> new ItemStack(Items.TOTEM_OF_UNDYING, 1);
-            case 2 -> new ItemStack(Items.DIAMOND, random.nextInt(1, 20));
+            case 1, 2 -> new ItemStack(Items.DIAMOND, random.nextInt(1, 20));
             case 3 -> new ItemStack(Items.GOLD_INGOT, random.nextInt(1, 64));
             case 4 -> new ItemStack(Items.IRON_BLOCK, random.nextInt(1, 25));
             case 5 -> new ItemStack(Items.SHULKER_SHELL, random.nextInt(1, 20));

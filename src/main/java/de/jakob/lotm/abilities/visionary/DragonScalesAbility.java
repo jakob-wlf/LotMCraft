@@ -39,7 +39,7 @@ public class DragonScalesAbility extends ToggleAbility {
         if(level.isClientSide)
             return;
 
-        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 2, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 1, false, false, false));
         ParticleUtil.spawnParticles((ServerLevel) level, dust, entity.getEyePosition(), 5, .45f, .8, .45f, 0);
     }
 

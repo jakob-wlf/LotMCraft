@@ -405,6 +405,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         for (int i = startIndex; i < endIndex; i++) {
             String questId = completedQuests.get(i);
             Component questName = Component.translatable("lotm.quest.impl." + questId);
+            if(questName.getString().length() > 24) {
+                questName = Component.literal(questName.getString().substring(0, 21).strip() + "…");
+            }
 
             int textY = listY + (i - startIndex) * lineHeight;
             guiGraphics.drawString(this.font, "✓", panelX + 5, textY, 0xFF4CAF50, false);
@@ -444,6 +447,13 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         Component questName = Component.literal(ClientQuestData.getActiveQuestName())
                 .withStyle(ChatFormatting.BOLD)
                 .withColor(BeyonderData.pathwayInfos.get(menu.getPathway()).color());
+
+        if(questName.getString().length() > 24) {
+            questName = Component.literal(questName.getString().substring(0, 21).strip() + "…")
+                    .withStyle(ChatFormatting.BOLD)
+                    .withColor(BeyonderData.pathwayInfos.get(menu.getPathway()).color());
+        }
+
         guiGraphics.drawString(this.font, questName, panelX + 5, contentY, 0xFFFFFFFF, false);
         contentY += this.font.lineHeight + 3;
 
@@ -519,7 +529,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         // Calculate rewards position (simplified - adjust based on actual layout)
         List<ItemStack> rewards = ClientQuestData.getActiveQuestRewards();
         int rewardX = panelX + 5;
-        int rewardY = panelY + 70; // Approximate position
+        int rewardY = panelY + 80; // Approximate position
 
         for (int i = 0; i < rewards.size() && i < 8; i++) {
             ItemStack reward = rewards.get(i);

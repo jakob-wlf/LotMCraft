@@ -2,6 +2,7 @@ package de.jakob.lotm.entity.custom;
 
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -128,6 +129,10 @@ public class DesolateAreaEntity extends Entity {
 
                 entity.addEffect(new MobEffectInstance(MobEffects.HUNGER, 60, amplifier, false, false));
                 entity.addEffect(new MobEffectInstance(MobEffects.WITHER, 60, amplifier, false, false));
+            }
+
+            if(this.tickCount % 40 == 0) {
+                entity.hurt(entity.damageSources().generic(), (float) DamageLookup.lookupDamage(2, .5))
             }
         }
     }
