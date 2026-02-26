@@ -111,20 +111,18 @@ public record HonorificName(LinkedList<String> lines) {
     }
 
     public static HonorificName fromNetwork(FriendlyByteBuf buf) {
-//        return new HonorificName(
-//                buf.readUtf(MAX_LENGTH),
-//                buf.readUtf(MAX_LENGTH),
-//                buf.readUtf(MAX_LENGTH),
-//                buf.readUtf(MAX_LENGTH)
-//        );
-
-        return HonorificName.EMPTY;
+        int size = buf.readVarInt();
+        LinkedList<String> list = new LinkedList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(buf.readUtf(MAX_LENGTH));
+        }
+        return new HonorificName(list);
     }
 
     public void toNetwork(FriendlyByteBuf buf) {
-//        buf.writeUtf(first, MAX_LENGTH);
-//        buf.writeUtf(second, MAX_LENGTH);
-//        buf.writeUtf(third, MAX_LENGTH);
-//        buf.writeUtf(trueName, MAX_LENGTH);
+        buf.writeVarInt(lines.size());
+        for (String line : lines) {
+            buf.writeUtf(line, MAX_LENGTH);
+        }
     }
 }
