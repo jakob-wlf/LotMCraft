@@ -56,13 +56,14 @@ public class MarionetteOverlayRenderer {
         if (currentMarionette.containsKey(playerUUID)) {
             MarionetteInfos infos = currentMarionette.get(playerUUID);
             if (infos != null) {
-                // Update cache and clear null timer
                 cachedMarionette.put(playerUUID, infos);
                 nullSinceTime.remove(playerUUID);
             } else {
-                // infos is null — start or continue null timer
                 nullSinceTime.putIfAbsent(playerUUID, System.currentTimeMillis());
             }
+        } else if (cachedMarionette.containsKey(playerUUID)) {
+            // Key removed entirely — still need to start the null timer
+            nullSinceTime.putIfAbsent(playerUUID, System.currentTimeMillis());
         }
 
         // Decide which infos to render
