@@ -132,7 +132,7 @@ public class DesolateAreaEntity extends Entity {
             }
 
             if(this.tickCount % 40 == 0) {
-                entity.hurt(entity.damageSources().generic(), (float) DamageLookup.lookupDamage(2, .5))
+                entity.hurt(entity.damageSources().generic(), (float) DamageLookup.lookupDamage(2, .5));
             }
         }
     }
