@@ -4,6 +4,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.HonorificNamesRespondPacket;
 import de.jakob.lotm.util.beyonderMap.HonorificName;
 import de.jakob.lotm.util.beyonderMap.PendingPrayer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -28,10 +29,10 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
 
     // Layout
     private static final int W = 280;
-    private static final int H = 220;
+    private static final int H = 240;
     private static final int PADDING = 10;
     private static final int TITLE_H = 24;
-    private static final int OWN_NAME_H = 80;
+    private static final int OWN_NAME_H = 100;
     private static final int DIVIDER_H = 6;
     private static final int PRAYER_ENTRY_H = 44;
 
@@ -53,6 +54,17 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
     /** Re-create all buttons based on current scroll position. */
     private void rebuildButtons() {
         this.clearWidgets();
+
+        // "Set Name" button in the own-name section
+        if (menu.getSequence() < 4) {
+            this.addRenderableWidget(
+                    Button.builder(Component.literal("Set Name"),
+                                    btn -> Minecraft.getInstance().setScreen(
+                                            new SetHonorificNameScreen(menu.getPathway(), menu.getSequence())))
+                            .bounds(leftPos + W - PADDING - 80, topPos + TITLE_H + OWN_NAME_H - 20, 80, 16)
+                            .build()
+            );
+        }
 
         List<PendingPrayer> prayers = menu.getPendingPrayers();
         int listTop = listTop();
@@ -231,7 +243,7 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
 
         HonorificName name = menu.getOwnName();
         if (name.isEmpty()) {
-            String hint = "Not set — use /honorificname set {...}";
+            String hint = "Not set — click \"Set Name\" to set it";
             gfx.drawString(font, hint, PADDING + 2, sectionY + 12, 0xFF666688, false);
         } else {
             int lineY = sectionY + 13;

@@ -235,6 +235,7 @@ public class HonorificNameCommand {
                     source.sendSystemMessage(Component.literal("1. ui - is not for direct usage, just ignore it" +
                             "\n2. set - will set honorific name, but you have to follow json format" +
                             "\n{\"line1\":\"Your line\", \"line2\":\"Your next line\", etc}" +
+                            "\nAlternatively, open the Honorific Names menu and click \"Set Name\"." +
                             "\nEvery line must contain specific words that describes your path" +
                             "\n3. get - will show your current honorific name" +
                             "\n3.1 get words - will show must have words for your pathway"));
