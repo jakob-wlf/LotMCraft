@@ -209,7 +209,7 @@ public class FireOfLightAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
-        if (level.isClientSide) return; // Always guard for server-side only
+        if (level.isClientSide) return; // Return on client — ability logic runs server-side only
 
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 10, 1.4f);
 
@@ -286,7 +286,7 @@ public class WingsOfLightAbility extends ToggleAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 5; // Costs 5 spirituality PER TICK while active
+        return 5; // Costs 5 spirituality PER TICK while active (= 100/second at 20 tps)
     }
 
     @Override
@@ -932,7 +932,7 @@ MovableEffectManager.removeEffect(uuid, serverLevel);
 
 **Location:** `de.jakob.lotm.util.beyonderMap/`
 
-The `BeyonderMap` is a **global persistent data store** that tracks all players' Beyonder progression. It extends Minecraft's `SavedData` and is saved to the world's NBT data.
+The `BeyonderMap` is a **persistent data store per world** that tracks all players' Beyonder progression. It extends Minecraft's `SavedData` and is saved to the world's NBT data.
 
 ### Core Concept
 
