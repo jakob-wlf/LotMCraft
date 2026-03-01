@@ -233,7 +233,10 @@ public class AdvancementUtil {
             if(entity.isDeadOrDying()) return;
 
             PacketHandler.sendToPlayer(serverPlayer, new ChangePlayerPerspectivePacket(entity.getId(), ChangePlayerPerspectivePacket.PERSPECTIVE.THIRD.getValue()));
-        });
+        }, () -> {
+            PacketHandler.sendToPlayer(serverPlayer, new ChangePlayerPerspectivePacket(entity.getId(), ChangePlayerPerspectivePacket.PERSPECTIVE.FIRST.getValue()));
+        },serverPlayer.serverLevel());
+
     }
 
     private static void scheduleFloating(LivingEntity entity, int duration) {

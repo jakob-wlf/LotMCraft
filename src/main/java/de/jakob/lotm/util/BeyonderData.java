@@ -4,8 +4,6 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.SanityComponent;
-import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
@@ -17,17 +15,12 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.pathways.PathwayInfos;
-import de.jakob.lotm.util.scheduling.ServerScheduler;
-import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -249,22 +242,27 @@ public class BeyonderData {
     }
 
     public static int getSequence(LivingEntity entity) {
+        return getSequence(entity, false);
+    }
+
+    public static int getSequence(LivingEntity entity, boolean returnTrueMarionetteLvl) {
         if(entity.level().isClientSide) {
             return ClientBeyonderCache.getSequence(entity.getUUID());
         }
 
-        MarionetteComponent marionetteComponent = entity.getData(ModAttachments.MARIONETTE_COMPONENT);
-        if(marionetteComponent.isMarionette()) {
-            UUID controllerUUID = UUID.fromString(marionetteComponent.getControllerUUID());
-            Entity owner = ((ServerLevel) entity.level()).getEntity(controllerUUID);
-            if(owner instanceof LivingEntity ownerLiving) {
-                int ownerSequence = getSequence(ownerLiving);
-                if (!entity.getPersistentData().contains(NBT_SEQUENCE)) {
-                    return ownerSequence;
+        if (!returnTrueMarionetteLvl) {
+            MarionetteComponent marionetteComponent = entity.getData(ModAttachments.MARIONETTE_COMPONENT);
+            if(marionetteComponent.isMarionette()) {
+                UUID controllerUUID = UUID.fromString(marionetteComponent.getControllerUUID());
+                Entity owner = ((ServerLevel) entity.level()).getEntity(controllerUUID);
+                if(owner instanceof LivingEntity ownerLiving) {
+                    int ownerSequence = getSequence(ownerLiving);
+                    if (!entity.getPersistentData().contains(NBT_SEQUENCE)) {
+                        return ownerSequence;
+                    }
+                    return Math.max(entity.getPersistentData().getInt(NBT_SEQUENCE), ownerSequence);
                 }
-                return Math.max(entity.getPersistentData().getInt(NBT_SEQUENCE), ownerSequence);
             }
-
         }
 
         if (!entity.getPersistentData().contains(NBT_SEQUENCE)) {
