@@ -130,7 +130,7 @@ public class MundaneConceptualTheft extends SelectableAbility {
     }
 
     private void stealHealth(LivingEntity entity, LivingEntity target) {
-        float healthToSteal = (float) (DamageLookup.lookupDamage(5, 1f) * multiplier(entity));
+        float healthToSteal = (float) (DamageLookup.lookupDamage(BeyonderData.getSequence(entity), 1f) * multiplier(entity));
         target.hurt(entity.damageSources().magic(), healthToSteal);
         entity.setHealth(Math.min(entity.getMaxHealth(), entity.getHealth() + healthToSteal));
     }
