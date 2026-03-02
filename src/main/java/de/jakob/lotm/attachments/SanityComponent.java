@@ -5,6 +5,7 @@ import de.jakob.lotm.network.packets.toClient.SyncSanityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
@@ -32,7 +33,7 @@ public class SanityComponent {
         else if(this.sanity > 1.0f)
             this.sanity = 1.0f;
 
-        PacketHandler.sendToAllPlayers(new SyncSanityPacket(sanity, entity.getId()));
+        PacketHandler.sendToPlayer((ServerPlayer) entity, new SyncSanityPacket(sanity, entity.getId()));
     }
 
     public void increaseSanityAndSync(float amount, LivingEntity entity) {
@@ -47,7 +48,7 @@ public class SanityComponent {
         else if(this.sanity < 0.0f)
             this.sanity = 0.0f;
 
-        PacketHandler.sendToAllPlayers(new SyncSanityPacket(sanity, entity.getId()));
+        PacketHandler.sendToPlayer((ServerPlayer) entity, new SyncSanityPacket(sanity, entity.getId()));
     }
 
     public static final IAttachmentSerializer<CompoundTag, SanityComponent> SERIALIZER =
