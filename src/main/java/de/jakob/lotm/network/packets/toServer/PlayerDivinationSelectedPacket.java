@@ -2,6 +2,7 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -48,8 +49,8 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid) implements
                 return;
             }
 
-            int playerSequence = player.getPersistentData().getInt("beyonder_sequence");
-            int targetSequence = targetPlayer.getPersistentData().getInt("beyonder_sequence");
+            int playerSequence = BeyonderData.getSequence(player);
+            int targetSequence = BeyonderData.getSequence(targetPlayer);
 
             if (targetSequence > 4) {
                 if (playerSequence > targetSequence + 2){
@@ -74,7 +75,17 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid) implements
 
             int distance = (int) Math.sqrt(dx * dx + dz * dz);
 
-            if (distance >= 1000) {
+            // distance still isn't balanced
+            int maxDistance = switch (playerSequence) {
+                case 9, 8, 7, 6, 5 -> 100 * (10 - playerSequence);
+                case 4             -> 750;
+                case 3             -> 1000;
+                case 2             -> 1500;
+                case 1             -> 2000;
+                default            -> 0;
+            };
+
+            if (distance >= maxDistance) {
                 player.sendSystemMessage(Component.literal("§cPlayer is very far from you"));
                 return;
             };
@@ -91,8 +102,6 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid) implements
     }
 
     private static String getDirection(int dx, int dz) {
-        if (dx == 0 && dz == 0) return "directly below/above";
-
         double angle = Math.toDegrees(Math.atan2(dz, dx));
         if (angle < 0) angle += 360;
 
