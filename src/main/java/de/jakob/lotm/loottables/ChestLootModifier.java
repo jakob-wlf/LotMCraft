@@ -39,7 +39,7 @@ public class ChestLootModifier extends LootModifier {
                 int sequence = getWeightedHighSequence();
                 Item item = getRandomLoot(pathway, sequence);
 
-                if (item != null && (sequence >= 8)) {
+                if (item != null && (sequence >= 7)) {
                     generatedLoot.add(new ItemStack(item));
                 }
             }
