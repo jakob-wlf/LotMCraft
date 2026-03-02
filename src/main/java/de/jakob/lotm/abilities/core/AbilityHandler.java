@@ -35,6 +35,7 @@ public class AbilityHandler {
         abilities.add(new SpiritVisionAbility("spirit_vision_ability"));
         abilities.add(new CurseOfMisfortuneAbility("curse_of_misfortune_ability"));
         abilities.add(new AngelAuthorityAbility("angel_authority_ability"));
+        abilities.add(new AngelFlightAbility("angel_authority_flight"));
 
         // SUN PATHWAY
         abilities.add(new HolySongAbility("holy_song_ability"));

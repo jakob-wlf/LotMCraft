@@ -208,7 +208,7 @@ public class BeyonderEventHandler {
         LivingEntity victim = event.getEntity();
         DamageSource source = event.getSource();
 
-        if(!(victim instanceof ServerPlayer)) return;
+        if(!(victim instanceof Player)) return;
 
         if (source.getEntity() instanceof Player player) {
             if (player.level().isClientSide) return;

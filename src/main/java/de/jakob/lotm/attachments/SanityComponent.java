@@ -26,6 +26,8 @@ public class SanityComponent {
     }
 
     public void setSanityAndSync(float sanity, LivingEntity entity) {
+        if(!(entity instanceof ServerPlayer player)) return;
+
         this.sanity = sanity;
 
         if(this.sanity < 0.0f)
@@ -33,12 +35,14 @@ public class SanityComponent {
         else if(this.sanity > 1.0f)
             this.sanity = 1.0f;
 
-        PacketHandler.sendToPlayer((ServerPlayer) entity, new SyncSanityPacket(sanity, entity.getId()));
+        PacketHandler.sendToPlayer(player, new SyncSanityPacket(sanity, entity.getId()));
     }
 
     public void increaseSanityAndSync(float amount, LivingEntity entity) {
-        if(amount < 0 && BeyonderData.isBeyonder(entity)) {
-            amount *= (float) BeyonderData.getSanityDecreaseMultiplierForSequence(BeyonderData.getSequence(entity));
+        if(!(entity instanceof ServerPlayer player)) return;
+
+        if(amount < 0 && BeyonderData.isBeyonder(player)) {
+            amount *= (float) BeyonderData.getSanityDecreaseMultiplierForSequence(BeyonderData.getSequence(player));
         }
 
         this.sanity += amount;
@@ -48,7 +52,7 @@ public class SanityComponent {
         else if(this.sanity < 0.0f)
             this.sanity = 0.0f;
 
-        PacketHandler.sendToPlayer((ServerPlayer) entity, new SyncSanityPacket(sanity, entity.getId()));
+        PacketHandler.sendToPlayer(player, new SyncSanityPacket(sanity, entity.getId()));
     }
 
     public static final IAttachmentSerializer<CompoundTag, SanityComponent> SERIALIZER =
