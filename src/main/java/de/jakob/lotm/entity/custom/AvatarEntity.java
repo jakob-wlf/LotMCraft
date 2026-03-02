@@ -423,10 +423,12 @@ public class AvatarEntity extends PathfinderMob {
 
     @Override
     protected void dropFromLootTable(DamageSource damageSource, boolean attackedRecently) {
-        if (!BeyonderData.beyonderMap.check(pathway, sequence)) {
-            return;
-        }
-        super.dropFromLootTable(damageSource, attackedRecently);
+        return;
+
+//        if (!BeyonderData.beyonderMap.check(pathway, sequence)) {
+//            return;
+//        }
+//        super.dropFromLootTable(damageSource, attackedRecently);
     }
 
     // ========================= Attributes =========================
