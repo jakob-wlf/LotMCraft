@@ -39,23 +39,23 @@ public class IdentityAvatarAbility extends Ability {
         }
 
         if(entity instanceof AvatarEntity previousAvatar) {
-            Entity originalOwner = serverLevel.getEntity(previousAvatar.getOriginalOwner());
-            if(!(originalOwner instanceof LivingEntity originalLivingOwner)) {
-                return;
-            }
-
-            if(!BeyonderData.isBeyonder(originalLivingOwner) || BeyonderData.getSequence(originalLivingOwner) > 2) {
-                return;
-            }
-
-            if(BeyonderData.getSequence(previousAvatar) - BeyonderData.getSequence(originalLivingOwner) > 1) {
-                return;
-            }
-
-            int sequence = BeyonderData.getSequence(entity) + 1;
-            AvatarEntity avatar = new AvatarEntity(ModEntities.ERROR_AVATAR.get(), level, previousAvatar.getOriginalOwner(), "visionary", sequence);
-            avatar.setPos(entity.getX(), entity.getY(), entity.getZ());
-            level.addFreshEntity(avatar);
+//            Entity originalOwner = serverLevel.getEntity(previousAvatar.getOriginalOwner());
+//            if(!(originalOwner instanceof LivingEntity originalLivingOwner)) {
+//                return;
+//            }
+//
+//            if(!BeyonderData.isBeyonder(originalLivingOwner) || BeyonderData.getSequence(originalLivingOwner) > 2) {
+//                return;
+//            }
+//
+//            if(BeyonderData.getSequence(previousAvatar) - BeyonderData.getSequence(originalLivingOwner) > 1) {
+//                return;
+//            }
+//
+//            int sequence = BeyonderData.getSequence(entity) + 1;
+//            AvatarEntity avatar = new AvatarEntity(ModEntities.ERROR_AVATAR.get(), level, previousAvatar.getOriginalOwner(), "visionary", sequence);
+//            avatar.setPos(entity.getX(), entity.getY(), entity.getZ());
+//            level.addFreshEntity(avatar);
             return;
         }
 
