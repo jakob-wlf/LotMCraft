@@ -8,6 +8,7 @@ import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobCategory;
 
 import java.util.UUID;
 
@@ -148,6 +149,9 @@ public class AllyUtil {
      */
     public static boolean canBeAllied(LivingEntity entity) {
         if (entity == null) return false;
+
+        if(entity.getType().getCategory() == MobCategory.MONSTER) return false;
+
         return !BeyonderData.isBeyonder(entity);
     }
 

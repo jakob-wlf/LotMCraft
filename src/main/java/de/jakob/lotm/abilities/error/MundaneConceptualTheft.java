@@ -121,7 +121,9 @@ public class MundaneConceptualTheft extends SelectableAbility {
     }
 
     private void stealDistance(ServerLevel level, LivingEntity entity) {
-        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, 8, true).getCenter().add(0, 1, 0);
+        if(BeyonderData.getSequence(entity) > 6) return;
+
+        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, (1 << (9 - BeyonderData.getSequence(entity))), true).getCenter().add(0, 1, 0);
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
 
         entity.teleportTo(targetLoc.x, targetLoc.y, targetLoc.z);

@@ -252,14 +252,16 @@ public class AbilityHandler {
     public HashSet<Ability> getByPathwayAndSequenceExact(String pathway, int sequence) {
         return abilities
                 .stream()
-                .filter(ability -> ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) == sequence)
+                .filter(ability ->
+                        ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) == sequence)
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
     public HashSet<Ability> getByPathwayAndSequence(String pathway, int sequence) {
         return abilities
                 .stream()
-                .filter(ability -> ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) >= sequence)
+                .filter(ability ->
+                        ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) >= sequence)
                 .collect(Collectors.toCollection(HashSet::new));
     }
 

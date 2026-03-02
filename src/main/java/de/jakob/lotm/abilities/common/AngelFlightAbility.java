@@ -18,6 +18,8 @@ public class AngelFlightAbility extends ToggleAbility {
     public AngelFlightAbility(String id) {
         super(id);
         this.canBeUsedByNPC = false;
+
+        this.shouldBeHidden = true;
     }
 
     @Override
@@ -63,9 +65,10 @@ public class AngelFlightAbility extends ToggleAbility {
         });
     }
 
+
     @Override
     public Map<String, Integer> getRequirements() {
-        Map<String, Integer> reqs = new HashMap<>();
+        Map<String, Integer> reqs = new HashMap();
 
         for(String pathway : BeyonderData.pathways) {
             reqs.put(pathway, 2);
