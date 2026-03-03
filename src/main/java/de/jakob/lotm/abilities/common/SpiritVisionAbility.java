@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSpiritVisionAbilityPacket;
@@ -83,12 +84,17 @@ public class SpiritVisionAbility extends ToggleAbility {
             LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
             PacketHandler.sendToPlayer(player,  new SyncSpiritVisionAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
 
-            if(lookedAt != null && shouldLooseControl(entity, lookedAt)){
-                entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 25, 4, false, false, false));
-                return;
+            if(lookedAt != null){
+                if(shouldLooseControl(entity, lookedAt)){
+                    if(!entity.hasEffect(ModEffects.LOOSING_CONTROL))
+                        entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 25, 4, false, false, false));
+
+                    return;
+                }
             }
 
-            entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 25, 1, false, false, false));
+            entity.addEffect(new MobEffectInstance(
+                    MobEffects.NIGHT_VISION, 20 * 25, 1, false, false, false));
 
             List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 30)
                     .stream()
@@ -107,13 +113,13 @@ public class SpiritVisionAbility extends ToggleAbility {
         int playerSeq = BeyonderData.getSequence(player);
         int targetSeq = BeyonderData.getSequence(target);
 
+        if(player.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(target.getUUID()))
+            return false;
+
         if(playerSeq >= targetSeq)
             return false;
 
-        if(targetSeq >= 5)
-            return false;
-
-        return true;
+        return targetSeq < 5;
     }
 
     public static void setGlowingForPlayer(Entity entity, ServerPlayer player, boolean glowing) {
