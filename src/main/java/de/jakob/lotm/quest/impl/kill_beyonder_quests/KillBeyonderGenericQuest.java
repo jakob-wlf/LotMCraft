@@ -33,11 +33,7 @@ public class KillBeyonderGenericQuest extends KillBeyonderQuest {
             }
         }
         else {
-            QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
-            int completedQuestCount = component.getCompletedQuests().size();
-
-            long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
-            Random random = new Random(randomSeed);
+            Random random = new Random();
 
             BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, beyonderSequence);
             if(potion != null) {

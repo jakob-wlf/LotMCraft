@@ -104,11 +104,7 @@ public class HelpBeyonderQuest extends Quest {
         List<ItemStack> rewards = new ArrayList<>();
         Tier tier = tierFor(player);
 
-        QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
-        int completedQuestCount = component.getCompletedQuests().size();
-
-        long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
-        Random r = new Random(randomSeed);
+        Random r = new Random();
 
         switch (tier) {
             case LOW -> addCharacteristicInRange(rewards, 8, 9, r);
@@ -144,6 +140,20 @@ public class HelpBeyonderQuest extends Quest {
         return .3f;
     }
 
+    @Override
+    public float getDigestionReward(ServerPlayer player) {
+        return switch (tierFor(player)) {
+            case LOW -> 0.3f;
+            case MID -> 0.45f;
+            case HIGH -> 0.65f;
+            case TOP -> 0.9f;
+        };
+    }
+
+    @Override
+    public boolean shouldScaleDigestionBySequence() {
+        return false;
+    }
 
     private void spawnEnemies(ServerPlayer player) {
         Tier tier = tierFor(player);

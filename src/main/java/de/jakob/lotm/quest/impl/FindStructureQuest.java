@@ -1,7 +1,5 @@
 package de.jakob.lotm.quest.impl;
 
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.QuestComponent;
 import de.jakob.lotm.quest.Quest;
 import de.jakob.lotm.quest.QuestManager;
 import de.jakob.lotm.potions.BeyonderPotion;
@@ -39,7 +37,7 @@ public class FindStructureQuest extends Quest {
 
     @Override
     public void startQuest(ServerPlayer player) {
-        String target = ensureTargetStructure(player);
+        String target = selectNewTargetStructure(player);
         player.sendSystemMessage(Component.literal("Target structure selected: " + toDisplayName(target)));
     }
 
@@ -53,7 +51,7 @@ public class FindStructureQuest extends Quest {
             return;
         }
 
-        if (horizontalDistance(structurePos, player.blockPosition()) <= 180) {
+        if (horizontalDistance(structurePos, player.blockPosition()) <= 30) {
             QuestManager.progressQuest(player, id, 1f);
         }
     }
@@ -62,11 +60,7 @@ public class FindStructureQuest extends Quest {
     public List<ItemStack> getRewards(ServerPlayer player) {
         List<ItemStack> rewards = new ArrayList<>();
 
-        QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
-        int completedQuestCount = component.getCompletedQuests().size();
-
-        long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
-        Random random = new Random(randomSeed);
+        Random random = new Random();
 
         int seq = random.nextBoolean() ? 7 : 8;
         BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, seq);
@@ -82,14 +76,29 @@ public class FindStructureQuest extends Quest {
     }
 
     @Override
-    public MutableComponent getDescription() {
-        return Component.translatable("lotm.quest.impl." + id + ".description");
+    public MutableComponent getDescription(ServerPlayer player) {
+        String targetStructure = targetStructureByPlayer.get(player.getUUID());
+        if (targetStructure == null) {
+            return Component.translatable("lotm.quest.impl." + id + ".description");
+        }
+
+        return Component.translatable("lotm.quest.impl." + id + ".description")
+                .append(" Target: " + toDisplayName(targetStructure));
     }
 
 
     private String ensureTargetStructure(ServerPlayer player) {
-        return targetStructureByPlayer.computeIfAbsent(player.getUUID(), ignored ->
-                STRUCTURE_IDS.get(new Random().nextInt(STRUCTURE_IDS.size())));
+        return targetStructureByPlayer.computeIfAbsent(player.getUUID(), ignored -> randomStructureId());
+    }
+
+    private String selectNewTargetStructure(ServerPlayer player) {
+        String target = randomStructureId();
+        targetStructureByPlayer.put(player.getUUID(), target);
+        return target;
+    }
+
+    private String randomStructureId() {
+        return STRUCTURE_IDS.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(STRUCTURE_IDS.size()));
     }
 
     private BlockPos findNearestStructure(ServerLevel level, BlockPos origin, String structureId) {

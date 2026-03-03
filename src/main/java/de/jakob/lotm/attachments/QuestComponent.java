@@ -15,12 +15,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 public class QuestComponent {
 
     private HashSet<String> completedQuests = new HashSet<>();
     private HashMap<String, Float> questProgress = new HashMap<>();
     private HashMap<String, Vec3> questLocation = new HashMap<>();
+    private HashMap<String, List<ItemStack>> lockedQuestRewards = new HashMap<>();
+    private HashMap<String, Float> lockedQuestDigestionRewards = new HashMap<>();
 
     public QuestComponent() {}
 
@@ -34,6 +37,14 @@ public class QuestComponent {
 
     public HashMap<String, Vec3> getQuestLocation() {
         return questLocation;
+    }
+
+    public HashMap<String, List<ItemStack>> getLockedQuestRewards() {
+        return lockedQuestRewards;
+    }
+
+    public HashMap<String, Float> getLockedQuestDigestionRewards() {
+        return lockedQuestDigestionRewards;
     }
 
 
@@ -67,6 +78,27 @@ public class QuestComponent {
                         }
                     }
 
+                    if (tag.contains("LockedQuestRewards", Tag.TAG_COMPOUND)) {
+                        CompoundTag rewardsTag = tag.getCompound("LockedQuestRewards");
+                        for (String questId : rewardsTag.getAllKeys()) {
+                            ListTag rewardListTag = rewardsTag.getList(questId, Tag.TAG_COMPOUND);
+                            List<ItemStack> rewards = new ArrayList<>();
+                            for (Tag rewardTag : rewardListTag) {
+                                ItemStack.CODEC.parse(lookup.createSerializationContext(NbtOps.INSTANCE), rewardTag)
+                                        .result()
+                                        .ifPresent(rewards::add);
+                            }
+                            component.lockedQuestRewards.put(questId, rewards);
+                        }
+                    }
+
+                    if (tag.contains("LockedQuestDigestionRewards", Tag.TAG_COMPOUND)) {
+                        CompoundTag digestionTag = tag.getCompound("LockedQuestDigestionRewards");
+                        for (String questId : digestionTag.getAllKeys()) {
+                            component.lockedQuestDigestionRewards.put(questId, digestionTag.getFloat(questId));
+                        }
+                    }
+
                     return component;
                 }
 
@@ -94,6 +126,26 @@ public class QuestComponent {
                         vecTag.putFloat("z", (float) vec.z);
                         locationTag.put(questId, vecTag);
                     }
+
+                    tag.put("QuestLocation", locationTag);
+
+                    CompoundTag lockedRewardsTag = new CompoundTag();
+                    for (Map.Entry<String, List<ItemStack>> entry : component.lockedQuestRewards.entrySet()) {
+                        ListTag rewardListTag = new ListTag();
+                        for (ItemStack reward : entry.getValue()) {
+                            ItemStack.CODEC.encodeStart(lookup.createSerializationContext(NbtOps.INSTANCE), reward)
+                                    .result()
+                                    .ifPresent(rewardListTag::add);
+                        }
+                        lockedRewardsTag.put(entry.getKey(), rewardListTag);
+                    }
+                    tag.put("LockedQuestRewards", lockedRewardsTag);
+
+                    CompoundTag digestionTag = new CompoundTag();
+                    for (Map.Entry<String, Float> entry : component.lockedQuestDigestionRewards.entrySet()) {
+                        digestionTag.putFloat(entry.getKey(), entry.getValue());
+                    }
+                    tag.put("LockedQuestDigestionRewards", digestionTag);
 
                     return tag;
                 }

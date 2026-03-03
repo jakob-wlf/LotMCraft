@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.jakob.lotm.quest.QuestManager;
 import de.jakob.lotm.quest.QuestRegistry;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.QuestComponent;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -19,8 +21,18 @@ public class QuestCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("quest")
-                .requires(source -> source.hasPermission(2))
+                .then(Commands.literal("discard")
+                        .executes(context -> discardFor(context.getSource(), context.getSource().getPlayerOrException()))
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .requires(source -> source.hasPermission(2))
+                                .executes(context -> discardFor(context.getSource(), EntityArgument.getPlayer(context, "target")))))
+                .then(Commands.literal("finish")
+                        .executes(context -> finishFor(context.getSource(), context.getSource().getPlayerOrException()))
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .requires(source -> source.hasPermission(2))
+                                .executes(context -> finishFor(context.getSource(), EntityArgument.getPlayer(context, "target")))))
                 .then(Commands.literal("give")
+                        .requires(source -> source.hasPermission(2))
                         .then(Commands.argument("target", EntityArgument.player())
                                 .then(Commands.argument("quest_id", StringArgumentType.word())
                                         .suggests(QUEST_ID_SUGGESTIONS)
@@ -43,6 +55,39 @@ public class QuestCommand {
                                             source.sendSuccess(() -> Component.literal("Assigned quest '" + questId + "' to " + target.getName().getString()), true);
                                             return 1;
                                         })))));
-        ;
+
     }
+
+
+private static int discardFor(CommandSourceStack source, ServerPlayer target) {
+    String activeQuestId = getActiveQuestId(target);
+    if (activeQuestId == null) {
+        source.sendFailure(Component.literal(target.getName().getString() + " has no active quest."));
+        return 0;
+    }
+
+    QuestManager.discardQuest(target, activeQuestId);
+    source.sendSuccess(() -> Component.literal("Discarded active quest for " + target.getName().getString()), true);
+    return 1;
+}
+
+private static int finishFor(CommandSourceStack source, ServerPlayer target) {
+    String activeQuestId = getActiveQuestId(target);
+    if (activeQuestId == null) {
+        source.sendFailure(Component.literal(target.getName().getString() + " has no active quest."));
+        return 0;
+    }
+
+    QuestManager.completeQuest(target, activeQuestId);
+    source.sendSuccess(() -> Component.literal("Finished active quest for " + target.getName().getString()), true);
+    return 1;
+}
+
+private static String getActiveQuestId(ServerPlayer player) {
+    QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
+    if (component.getQuestProgress().isEmpty()) {
+        return null;
+    }
+    return component.getQuestProgress().keySet().iterator().next();
+}
 }

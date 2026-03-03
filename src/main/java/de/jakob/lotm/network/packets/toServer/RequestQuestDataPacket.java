@@ -62,9 +62,14 @@ public record RequestQuestDataPacket() implements CustomPacketPayload {
                     Quest quest = QuestRegistry.getQuest(activeQuestId);
                     if (quest != null) {
                         activeQuestName = quest.getName().getString();
-                        activeQuestDescription = quest.getDescription().getString();
-                        activeQuestRewards = quest.getRewards(serverPlayer);
-                        activeQuestDigestionReward = (int) quest.getDigestionReward();
+                        activeQuestDescription = quest.getDescription(serverPlayer).getString();
+                        activeQuestRewards = component.getLockedQuestRewards().getOrDefault(activeQuestId, quest.getRewards(serverPlayer))
+                                .stream()
+                                .map(ItemStack::copy)
+                                .toList();
+                        activeQuestDigestionReward = component.getLockedQuestDigestionRewards()
+                                .getOrDefault(activeQuestId, quest.getDigestionReward(serverPlayer))
+                                .intValue();
                     }
                 }
 
