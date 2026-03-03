@@ -23,7 +23,7 @@ public class FindStructureQuest extends Quest {
     private static final List<String> STRUCTURE_IDS = List.of(
             "minecraft:stronghold",
             "minecraft:jungle_pyramid",
-            "minecraft:woodland_mansion",
+            "minecraft:mansion",
             "minecraft:trial_chambers",
             "minecraft:desert_pyramid",
             "minecraft:monument"
@@ -46,12 +46,7 @@ public class FindStructureQuest extends Quest {
         ServerLevel level = player.serverLevel();
         String targetStructure = ensureTargetStructure(player);
 
-        BlockPos structurePos = findNearestStructure(level, player.blockPosition(), targetStructure);
-        if (structurePos == null) {
-            return;
-        }
-
-        if (horizontalDistance(structurePos, player.blockPosition()) <= 30) {
+        if (isPlayerInsideStructure(level, player.blockPosition(), targetStructure)) {
             QuestManager.progressQuest(player, id, 1f);
         }
     }
@@ -101,28 +96,18 @@ public class FindStructureQuest extends Quest {
         return STRUCTURE_IDS.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(STRUCTURE_IDS.size()));
     }
 
-    private BlockPos findNearestStructure(ServerLevel level, BlockPos origin, String structureId) {
+    private boolean isPlayerInsideStructure(ServerLevel level, BlockPos pos, String structureId) {
         ResourceLocation structureKey = ResourceLocation.tryParse(structureId);
-        if (structureKey == null) {
-            return null;
-        }
+        if (structureKey == null) return false;
 
         var structureRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
-        Optional<Holder.Reference<Structure>> structureHolder = structureRegistry.getHolder(structureKey);
-        if (structureHolder.isEmpty()) {
-            return null;
-        }
+        Optional<Holder.Reference<Structure>> holder = structureRegistry.getHolder(structureKey);
+        if (holder.isEmpty()) return false;
 
-        var result = level.getChunkSource().getGenerator().findNearestMapStructure(
-                level,
-                HolderSet.direct(structureHolder.get()),
-                origin,
-                500,
-                false
-        );
-        return result == null ? null : result.getFirst();
+        return level.structureManager()
+                .getStructureWithPieceAt(pos, holder.get().value())
+                .isValid();
     }
-
     private double horizontalDistance(BlockPos a, BlockPos b) {
         double dx = a.getX() - b.getX();
         double dz = a.getZ() - b.getZ();

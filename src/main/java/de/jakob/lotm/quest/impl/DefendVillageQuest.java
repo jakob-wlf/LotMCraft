@@ -43,7 +43,7 @@ public class DefendVillageQuest extends Quest {
 
         if(BeyonderData.isBeyonder(player) && BeyonderData.implementedRecipes.containsKey(BeyonderData.getPathway(player))) {
             String pathway = BeyonderData.getPathway(player);
-            BeyonderPotion potion = PotionItemHandler.selectPotionOfPathwayAndSequence(new Random(), pathway, 8);
+            BeyonderPotion potion = PotionItemHandler.selectPotionOfPathwayAndSequence(new Random(), pathway, 7);
             if(potion != null) {
                 rewards.add(new ItemStack(potion));
             }
@@ -54,7 +54,7 @@ public class DefendVillageQuest extends Quest {
 
             long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
             Random random = new Random(randomSeed);
-            BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, 8);
+            BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, 7);
             if(potion != null) {
                 rewards.add(new ItemStack(potion));
             }

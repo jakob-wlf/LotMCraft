@@ -41,12 +41,6 @@ public class DeliverQuest extends Quest {
 
         player.addItem(new ItemStack(Items.AMETHYST_SHARD));
 
-        // Show only one coordinate as requested.
-        if (new Random().nextBoolean()) {
-            player.sendSystemMessage(Component.literal("Delivery clue: X = " + chestPos.getX()));
-        } else {
-            player.sendSystemMessage(Component.literal("Delivery clue: Z = " + chestPos.getZ()));
-        }
     }
 
     @Override
@@ -103,7 +97,7 @@ public class DeliverQuest extends Quest {
 
         BlockPos pos = BlockPos.containing(location);
         return Component.translatable("lotm.quest.impl." + id + ".description")
-                .append(" Target: chest near X=" + pos.getX() + ", Z=" + pos.getZ());
+                .append(" Target: chest near" + " X=" + pos.getX() );
     }
 
     private BlockPos createDeliveryChest(ServerLevel level, BlockPos origin) {
