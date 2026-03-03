@@ -8,6 +8,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.rendering.models.DoorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.TyrantMythicalCreatureModel;
+import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -58,11 +59,30 @@ public class TransformationRenderer {
                     event.getPackedLight(), entity, event.getPartialTick());
             case 6 -> renderEnergyMass(event.getPoseStack(), event.getMultiBufferSource(),
                     event.getPackedLight(), entity, event.getPartialTick());
-            case 101 -> renderTyrantMythicalCreature(event.getPoseStack(), event.getMultiBufferSource(),
-                    event.getPackedLight(), entity, event.getPartialTick());
-            case 102 -> renderDoorMythicalCreature(event.getPoseStack(), event.getMultiBufferSource(),
-                    event.getPackedLight(), entity, event.getPartialTick());
+            case 101 -> {
+                if(!renderMythicalCreature(ClientBeyonderCache.getPathway(entity.getUUID()),event.getPoseStack(), event.getMultiBufferSource(),
+                    event.getPackedLight(), entity, event.getPartialTick()))
+                    event.setCanceled(false);
+            }
+
         }
+    }
+
+    private static boolean renderMythicalCreature(String path,
+            PoseStack poseStack, MultiBufferSource multiBufferSource,
+            int packedLight, LivingEntity entity, float partialTick)
+    {
+        switch (path){
+            case "tyrant" -> renderTyrantMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "door" -> renderDoorMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            default -> {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static void renderDoorMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {

@@ -20,6 +20,7 @@ public class AngelFlightAbility extends ToggleAbility {
         this.canBeUsedByNPC = false;
 
         this.shouldBeHidden = true;
+        this.canBeCopied = false;
     }
 
     @Override
@@ -38,7 +39,8 @@ public class AngelFlightAbility extends ToggleAbility {
 
         // Stop when overridden by another transformation
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
-        if (transformationComponent.isTransformed()) {
+        if (transformationComponent.isTransformed() && transformationComponent.getTransformationIndex()
+                != TransformationComponent.TransformationType.MYTHICAL_CREATURE.getIndex()) {
             cancel((ServerLevel) level, entity);
             return;
         }

@@ -40,89 +40,88 @@ public class MythicalCreatureFormTyrantAbility extends ToggleAbility {
 
     @Override
     public void start(Level level, LivingEntity entity) {
-        if(!(level instanceof ServerLevel serverLevel)) {
-            ClientHandler.changeToThirdPerson(entity);
-            return;
-        }
-
-        // Get the previous value of the Scale Attribute and save it
-        AttributeInstance scaleAttribute = entity.getAttribute(Attributes.SCALE);
-        if(scaleAttribute != null) {
-            previousScale.put(entity.getUUID(), scaleAttribute.getValue());
-        }
-
-        TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
-        transformationComponent.setTransformedAndSync(true, entity);
-        transformationComponent.setTransformationIndexAndSync(TransformationComponent.TransformationType.TYRANT_MYTHICAL_CREATURE, entity);
-
+//        if(!(level instanceof ServerLevel serverLevel)) {
+//            ClientHandler.changeToThirdPerson(entity);
+//            return;
+//        }
+//
+//        // Get the previous value of the Scale Attribute and save it
+//        AttributeInstance scaleAttribute = entity.getAttribute(Attributes.SCALE);
+//        if(scaleAttribute != null) {
+//            previousScale.put(entity.getUUID(), scaleAttribute.getValue());
+//        }
+//
+//        TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
+//        transformationComponent.setTransformedAndSync(true, entity);
+//        transformationComponent.setTransformationIndexAndSync(TransformationComponent.TransformationType.TYRANT_MYTHICAL_CREATURE, entity);
     }
 
     @Override
     public void tick(Level level, LivingEntity entity) {
-        if(!(level instanceof ServerLevel serverLevel)) {
-            ClientHandler.changeToThirdPerson(entity);
-            return;
-        }
-
-        // Constantly set it to be bigger so the camera is positioned better
-        AttributeInstance scaleAttribute = entity.getAttribute(Attributes.SCALE);
-        if(scaleAttribute != null) {
-            scaleAttribute.setBaseValue(2.75);
-        }
-
-        // Buff user
-        BeyonderData.addModifier(entity, "mythical_creature_form", 1.5);
-
-        // Make all entities lower than you loose control when seeing you
-        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 30).forEach(e -> {
-            if(!AbilityUtil.isTargetSignificantlyWeaker(entity, e)) {
-                return;
-            }
-
-            if(AbilityUtil.getTargetEntity(e, 30, 5f) != entity) {
-                return;
-            }
-
-            if(!e.hasEffect(ModEffects.LOOSING_CONTROL)) { // Only apply effect when effect wasn't applied already, otherwise they would never actually die
-                e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, random.nextInt(4, 6)));
-            }
-
-            if(random.nextInt(6) == 0) {
-                LightningEntity lightning = new LightningEntity(level, entity, e.position(), 50, 6, DamageLookup.lookupDamage(4, .7) * multiplier(entity), false, 4, 200, 0x11A8DD);
-                level.addFreshEntity(lightning);
-            }
-        });
-
-        // Stop when overridden by another transformation
-        TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
-        if (!transformationComponent.isTransformed() || transformationComponent.getTransformationIndex() != TransformationComponent.TransformationType.TYRANT_MYTHICAL_CREATURE.getIndex()) {
-            cancel((ServerLevel) level, entity);
-            return;
-        }
+//        if(!(level instanceof ServerLevel serverLevel)) {
+//            ClientHandler.changeToThirdPerson(entity);
+//            return;
+//        }
+//
+//        // Constantly set it to be bigger so the camera is positioned better
+//        AttributeInstance scaleAttribute = entity.getAttribute(Attributes.SCALE);
+//        if(scaleAttribute != null) {
+//            scaleAttribute.setBaseValue(2.75);
+//        }
+//
+//        // Buff user
+//        BeyonderData.addModifier(entity, "mythical_creature_form", 1.5);
+//
+//        // Make all entities lower than you loose control when seeing you
+//        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 30).forEach(e -> {
+//            if(!AbilityUtil.isTargetSignificantlyWeaker(entity, e)) {
+//                return;
+//            }
+//
+//            if(AbilityUtil.getTargetEntity(e, 30, 5f) != entity) {
+//                return;
+//            }
+//
+//            if(!e.hasEffect(ModEffects.LOOSING_CONTROL)) { // Only apply effect when effect wasn't applied already, otherwise they would never actually die
+//                e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, random.nextInt(4, 6)));
+//            }
+//
+//            if(random.nextInt(6) == 0) {
+//                LightningEntity lightning = new LightningEntity(level, entity, e.position(), 50, 6, DamageLookup.lookupDamage(4, .7) * multiplier(entity), false, 4, 200, 0x11A8DD);
+//                level.addFreshEntity(lightning);
+//            }
+//        });
+//
+//        // Stop when overridden by another transformation
+//        TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
+//        if (!transformationComponent.isTransformed() || transformationComponent.getTransformationIndex() != TransformationComponent.TransformationType.TYRANT_MYTHICAL_CREATURE.getIndex()) {
+//            cancel((ServerLevel) level, entity);
+//            return;
+//        }
 
     }
 
     @Override
     public void stop(Level level, LivingEntity entity) {
-        if(!(level instanceof ServerLevel serverLevel)) {
-            ClientHandler.changeToFirstPerson(entity);
-            return;
-        }
-
-        // Reset the scale
-        AttributeInstance scaleAttribute = entity.getAttribute(Attributes.SCALE);
-        if(scaleAttribute != null && previousScale.containsKey(entity.getUUID())) {
-            scaleAttribute.setBaseValue(previousScale.get(entity.getUUID()));
-            previousScale.remove(entity.getUUID());
-        }
-
-        // Remove buff
-        BeyonderData.removeModifier(entity, "mythical_creature_form");
-
-        TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
-        if(transformationComponent.isTransformed() && transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.TYRANT_MYTHICAL_CREATURE.getIndex()) {
-            transformationComponent.setTransformedAndSync(false, entity);
-        }
+//        if(!(level instanceof ServerLevel serverLevel)) {
+//            ClientHandler.changeToFirstPerson(entity);
+//            return;
+//        }
+//
+//        // Reset the scale
+//        AttributeInstance scaleAttribute = entity.getAttribute(Attributes.SCALE);
+//        if(scaleAttribute != null && previousScale.containsKey(entity.getUUID())) {
+//            scaleAttribute.setBaseValue(previousScale.get(entity.getUUID()));
+//            previousScale.remove(entity.getUUID());
+//        }
+//
+//        // Remove buff
+//        BeyonderData.removeModifier(entity, "mythical_creature_form");
+//
+//        TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
+//        if(transformationComponent.isTransformed() && transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.TYRANT_MYTHICAL_CREATURE.getIndex()) {
+//            transformationComponent.setTransformedAndSync(false, entity);
+//        }
 
     }
 }

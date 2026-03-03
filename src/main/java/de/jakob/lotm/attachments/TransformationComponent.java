@@ -92,8 +92,7 @@ public class TransformationComponent {
         PARASTATION(8),
         COFFIN(9),
         DREAM_DIVINATION(10),
-        TYRANT_MYTHICAL_CREATURE(101),
-        DOOR_MYTHICAL_CREATURE(102);
+        MYTHICAL_CREATURE(101);
 
         private final int index;
         TransformationType(int index) {
