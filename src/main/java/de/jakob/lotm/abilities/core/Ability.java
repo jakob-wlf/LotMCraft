@@ -26,6 +26,7 @@ public abstract class Ability {
     private final String id;
     protected final int cooldown;
 
+    protected boolean shouldBeHidden = false;
 
     public boolean canBeUsedByNPC = true;
     public boolean canBeCopied = true;
@@ -43,6 +44,10 @@ public abstract class Ability {
     }
 
     public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements) {
+        if(LOTMCraft.abilityHandler.isDisabled(this)) {
+            return;
+        }
+
         if(!canUse(entity, hasToHaveAbility, consumeSpirituality) && hasToMeetRequirements) {
             return;
         }
@@ -133,6 +138,8 @@ public abstract class Ability {
 
         if(BeyonderData.isSpecificAbilityDisabled(entity, getId())) return false;
 
+        if(LOTMCraft.abilityHandler.isDisabled(this)) return false;
+
         return true;
     }
 
@@ -197,5 +204,9 @@ public abstract class Ability {
 
     public String getId() {
         return id;
+    }
+
+    public boolean getShouldBeHidden(){
+        return shouldBeHidden;
     }
 }

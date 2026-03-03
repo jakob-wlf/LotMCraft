@@ -14,6 +14,7 @@ import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.beyonderMap.StoredData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -200,7 +201,28 @@ public class BeyonderEventHandler {
 
             container.broadcastChanges();
         });
-
     }
+
+    @SubscribeEvent
+    public static void onLivingDeath(LivingDeathEvent event) {
+        LivingEntity victim = event.getEntity();
+        DamageSource source = event.getSource();
+
+        if(!(victim instanceof Player)) return;
+
+        if (source.getEntity() instanceof Player player) {
+            if (player.level().isClientSide) return;
+
+            if(!BeyonderData.isBeyonder(player) || !BeyonderData.isBeyonder(victim)) return;
+
+            float diff = BeyonderData.getSequence(player) - BeyonderData.getSequence(victim);
+
+            if(diff >= 0){
+                BeyonderData.digest(player, (0.01f + (diff * 0.1f)), true);
+            }
+        }
+    }
+
+
 
 }

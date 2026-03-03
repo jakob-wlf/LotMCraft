@@ -63,7 +63,7 @@ public class BlessingAbility extends Ability {
         double eyeHeight = target.getEyeHeight();
         ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, eyeHeight / 2, 0), 120, .3, eyeHeight / 2, .3, 0);
 
-        int amplifier = (int) Math.round(multiplier(entity) * 6.25f);
+        int amplifier = Math.round(multiplier(entity) * 6.25f);
         target.addEffect(new MobEffectInstance(ModEffects.LUCK, 20 * 60 * 17, amplifier));
     }
 }

@@ -93,6 +93,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private void initializeAbilities() {
         availableAbilities.addAll(LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence()));
 
+        availableAbilities.removeIf(Ability::getShouldBeHidden);
+
         // Calculate max scroll
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
         int rows = (int) Math.ceil((double) availableAbilities.size() / iconsPerRow);
