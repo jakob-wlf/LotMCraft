@@ -7,6 +7,7 @@ import de.jakob.lotm.entity.custom.PaperDaggerProjectileEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
@@ -51,6 +52,9 @@ public class PaperDaggersAbility extends PassiveAbilityItem {
             return;
 
         if(!((PaperDaggersAbility) PassiveAbilityHandler.PAPER_DAGGERS.get()).shouldApplyTo(event.getEntity()))
+            return;
+
+        if(event.getHand() != InteractionHand.MAIN_HAND)
             return;
 
         level.playSound(null, event.getPos(), SoundEvents.SNOWBALL_THROW, event.getEntity().getSoundSource(), 1, 1);

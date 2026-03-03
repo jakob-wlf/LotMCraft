@@ -14,6 +14,9 @@ import java.util.Map;
 public class DivineKingdomManifestationAbility extends Ability {
     public DivineKingdomManifestationAbility(String id) {
         super(id, 20 * 60 * 3);
+
+        canBeCopied = false;
+        canBeUsedByNPC = false;
     }
 
     @Override

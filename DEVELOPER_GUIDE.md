@@ -1114,8 +1114,9 @@ ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.HOLY_FLAME.get(),
    ```
 2. Create a particle class extending an appropriate base (e.g., `RisingParticle`)
 3. Create a `Provider` inner class for the factory registration
-4. Add particle textures in `textures/particle/`
-5. Define the particle JSON in `particles/my_particle.json`
+4. Register the Particle in the main Mod Class
+5. Add particle textures in `textures/particle/`
+6. Define the particle JSON in `particles/my_particle.json`
 
 ---
 

@@ -36,7 +36,7 @@ public class AngelAuthorityAbility extends SelectableAbility {
     private AngelFlightAbility flightSkill;
 
     public AngelAuthorityAbility(String id) {
-        super(id, 5.0f);
+        super(id, 2.0f);
         this.canBeUsedByNPC = false;
         this.canBeCopied = false;
 
@@ -85,6 +85,8 @@ public class AngelAuthorityAbility extends SelectableAbility {
     public void flight(Player player, ServerLevel level){
         if(flightSkill == null)
             flightSkill = (AngelFlightAbility) LOTMCraft.abilityHandler.getById("angel_authority_flight");
+
+        if(flightSkill == null) return;
 
         flightSkill.useAbility(level, player);
     }

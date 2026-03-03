@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class AbilityHandler {
 
     private final HashSet<Ability> abilities = new HashSet<>();
+    private final HashSet<Ability> disabledAbilities = new HashSet<>();
 
     public AbilityHandler() {
         registerAbilities();
@@ -35,8 +36,8 @@ public class AbilityHandler {
         abilities.add(new SpiritVisionAbility("spirit_vision_ability"));
         abilities.add(new CurseOfMisfortuneAbility("curse_of_misfortune_ability"));
         abilities.add(new AngelAuthorityAbility("angel_authority_ability"));
-        abilities.add(new AngelFlightAbility("angel_authority_flight"));
-        abilities.add(new MythicalCreatureFormAbility("mythical_creature_form"));
+        //abilities.add(new AngelFlightAbility("angel_authority_flight"));
+        //abilities.add(new MythicalCreatureFormAbility("mythical_creature_form"));
 
         // SUN PATHWAY
         abilities.add(new HolySongAbility("holy_song_ability"));
@@ -212,9 +213,9 @@ public class AbilityHandler {
         abilities.add(new MentalPlagueAbility("mental_plague_ability"));
         abilities.add(new MindInvasionAbility("mind_invasion_ability"));
         abilities.add(new IdentityAvatarAbility("identity_avatar_ability"));
-        abilities.add(new PsycheStormAbility("psyche_storm_ability"));
 
         // WHEEL OF FORTUNE PATHWAY
+        abilities.add(new PsycheStormAbility("psyche_storm_ability"));
         abilities.add(new CalamityAttractionAbility("calamity_attraction_ability"));
         abilities.add(new LuckReleaseAbility("luck_release_ability"));
         abilities.add(new MisfortuneGiftingAbility("misfortune_gifting_ability"));
@@ -273,6 +274,17 @@ public class AbilityHandler {
                         .sorted(Comparator.comparing(ability -> ability.getRequirements().get(pathway)))
                         .toList()
         );
+    }
+
+    public void disableAbility(Ability ability) {
+        disabledAbilities.add(ability);
+    }
+
+    public void enableAbility(Ability ability) {
+        disabledAbilities.remove(ability);
+    }
+    public boolean isDisabled(Ability ability) {
+        return disabledAbilities.contains(ability);
     }
 
     public ArrayList<Ability> getByPathwayAndSequenceOrderedBySequence(String pathway, int sequence) {

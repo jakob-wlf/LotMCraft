@@ -83,7 +83,7 @@ public class SpiritVisionAbility extends ToggleAbility {
             LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
             PacketHandler.sendToPlayer(player,  new SyncSpiritVisionAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
 
-            if(shouldLooseControl(entity, lookedAt)){
+            if(lookedAt != null && shouldLooseControl(entity, lookedAt)){
                 entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 25, 4, false, false, false));
                 return;
             }

@@ -44,6 +44,10 @@ public abstract class Ability {
     }
 
     public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements) {
+        if(LOTMCraft.abilityHandler.isDisabled(this)) {
+            return;
+        }
+
         if(!canUse(entity, hasToHaveAbility, consumeSpirituality) && hasToMeetRequirements) {
             return;
         }
@@ -133,6 +137,8 @@ public abstract class Ability {
         if(BeyonderData.isAbilityDisabled(entity) && !this.canAlwaysBeUsed) return false;
 
         if(BeyonderData.isSpecificAbilityDisabled(entity, getId())) return false;
+
+        if(LOTMCraft.abilityHandler.isDisabled(this)) return false;
 
         return true;
     }

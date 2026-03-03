@@ -106,6 +106,8 @@ public class ModEvents {
         DigestionCommand.register(event.getDispatcher());
         QuestCommand.register(event.getDispatcher());
         BeyonderMapCommand.register(event.getDispatcher());
+        DisableAbilityCommand.register(event.getDispatcher());
+        EnableAbilityCommand.register(event.getDispatcher());
         HonorificNameCommand.register(event.getDispatcher());
     }
 
