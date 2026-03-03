@@ -1,5 +1,6 @@
 package de.jakob.lotm.abilities.common;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
@@ -84,6 +85,7 @@ public class SpiritVisionAbility extends ToggleAbility {
             LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
             PacketHandler.sendToPlayer(player,  new SyncSpiritVisionAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
 
+
             if(lookedAt != null){
                 if(shouldLooseControl(entity, lookedAt)){
                     if(!entity.hasEffect(ModEffects.LOOSING_CONTROL))
@@ -116,10 +118,7 @@ public class SpiritVisionAbility extends ToggleAbility {
         if(player.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(target.getUUID()))
             return false;
 
-        if(playerSeq >= targetSeq)
-            return false;
-
-        return targetSeq < 5;
+        return targetSeq <= 4 && playerSeq > targetSeq;
     }
 
     public static void setGlowingForPlayer(Entity entity, ServerPlayer player, boolean glowing) {

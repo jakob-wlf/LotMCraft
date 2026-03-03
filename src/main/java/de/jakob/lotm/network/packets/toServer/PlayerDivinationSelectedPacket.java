@@ -78,10 +78,10 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid) implements
             // distance still isn't balanced
             int maxDistance = switch (playerSequence) {
                 case 9, 8, 7, 6, 5 -> 100 * (10 - playerSequence);
-                case 4             -> 750;
-                case 3             -> 1000;
-                case 2             -> 1500;
-                case 1             -> 2000;
+                case 4             -> 1000;
+                case 3             -> 2000;
+                case 2             -> 5000;
+                case 1             -> 10000;
                 default            -> 0;
             };
 
