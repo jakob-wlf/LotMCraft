@@ -25,11 +25,34 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderDataTickHandler {
 
+    public static final HashSet<PassiveAbilityItem> passiveAbilities = new HashSet<>();
+
+    // In BeyonderDataTickHandler
+    private static final Map<UUID, Set<PassiveAbilityItem>> cachedAbilities = new HashMap<>();
+
+    public static void invalidateCache(LivingEntity entity) {
+        cachedAbilities.remove(entity.getUUID());
+    }
+
+    private static Set<PassiveAbilityItem> getApplicableAbilities(LivingEntity entity) {
+        if(passiveAbilities.isEmpty()) {
+            BeyonderDataTickHandler.passiveAbilities.addAll(PassiveAbilityHandler.ITEMS.getEntries().stream().map(entry -> (PassiveAbilityItem) entry.get()).toList());
+        }
+        return cachedAbilities.computeIfAbsent(entity.getUUID(), k ->
+                passiveAbilities.stream()
+                        .filter(a -> a.shouldApplyTo(entity))
+                        .collect(Collectors.toSet())
+        );
+    }
+
     @SubscribeEvent
-    public static void onEntity(EntityTickEvent.Post event) {
+    public static void onEntityTick(EntityTickEvent.Post event) {
         Entity entity = event.getEntity();
 
         if(!(entity instanceof LivingEntity livingEntity)) {
@@ -45,7 +68,6 @@ public class BeyonderDataTickHandler {
             if(entity.tickCount % 5 == 0)
                 tickAbilities(livingEntity);
         }
-
     }
 
     @SubscribeEvent
@@ -87,12 +109,8 @@ public class BeyonderDataTickHandler {
         if(!(entity.level() instanceof ServerLevel serverLevel)) return;
 
         // Passive Abilities
-        PassiveAbilityHandler.ITEMS.getEntries().forEach(itemHolder -> {
-            if (itemHolder.get() instanceof PassiveAbilityItem abilityItem) {
-                if (abilityItem.shouldApplyTo(entity)) {
-                    abilityItem.tick(entity.level(), entity);
-                }
-            }
+        getApplicableAbilities(entity).forEach(abilityItem -> {
+            abilityItem.tick(entity.level(), entity);
         });
 
         // Tick Toggle Abilities
@@ -112,7 +130,9 @@ public class BeyonderDataTickHandler {
             Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
             if(ability != null) {
                 ability.onHold(player.serverLevel(), player);
-                PacketHandler.sendToAllPlayers(new SyncOnHoldAbilityPacket(player.getId(), abilityId));
+                PacketHandler.sendToAllPlayersInSameLevel(
+                        new SyncOnHoldAbilityPacket(player.getId(), abilityId), player.serverLevel()
+                );
             }
         }
     }
