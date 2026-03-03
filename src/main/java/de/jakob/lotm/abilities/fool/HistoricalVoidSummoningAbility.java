@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.ChatFormatting;
@@ -36,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber
 public class HistoricalVoidSummoningAbility extends SelectableAbility {
-    private static final String MARKED_ENTITIES_TAG = "MarkedEntities";
+    public static final String MARKED_ENTITIES_TAG = "MarkedEntities";
     private static final String PLACED_BLOCKS_TAG = "VoidPlacedBlocks";
     private static final int MAX_MARKED_ENTITIES = 54;
     private static final int MAX_SUMMONED = 5;
@@ -125,7 +126,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
     private void summonItem(ServerLevel level, ServerPlayer player) {
         int currentSummoned = getSummonedCount(player);
-        if(currentSummoned >= MAX_SUMMONED) {
+        if(currentSummoned >= getMaxSummoned(player)) {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.max_summoned").withStyle(ChatFormatting.RED));
             return;
         }
@@ -151,7 +152,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                             ItemStack clickedItem = displayContainer.getItem(slotId);
                             if(!clickedItem.isEmpty()) {
                                 // Re-check count before summoning
-                                if(getSummonedCount(player) < MAX_SUMMONED) {
+                                if(getSummonedCount(player) < getMaxSummoned(player)) {
                                     createTemporaryItem(level, player, clickedItem.copy());
                                     player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.summoned_item", clickedItem.getHoverName().getString()).withStyle(ChatFormatting.GREEN));
                                 } else {
@@ -183,7 +184,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         incrementSummonedCount(player, summonTime, SummonType.ITEM, null);
 
         // Schedule removal after duration
-        ServerScheduler.scheduleDelayed(SUMMON_DURATION_TICKS, () -> {
+        ServerScheduler.scheduleDelayed(getSummonDurationTicks(player), () -> {
             // Verify player is still online
             ServerPlayer onlinePlayer = level.getServer().getPlayerList().getPlayer(player.getUUID());
             if(onlinePlayer != null) {
@@ -378,7 +379,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
     private void summonEntity(ServerLevel level, ServerPlayer player) {
         int currentSummoned = getSummonedCount(player);
-        if(currentSummoned >= MAX_SUMMONED) {
+        if(currentSummoned >= getMaxSummoned(player)) {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.max_summoned").withStyle(ChatFormatting.RED));
             return;
         }
@@ -418,7 +419,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                                     if(tag.contains("EntityData")) {
                                         CompoundTag entityData = tag.getCompound("EntityData");
                                         // Re-check count before summoning
-                                        if(getSummonedCount(player) < MAX_SUMMONED) {
+                                        if(getSummonedCount(player) < getMaxSummoned(player)) {
                                             // Execute on server thread to avoid threading issues
                                             level.getServer().execute(() -> {
                                                 spawnTemporaryEntity(level, player, entityData);
@@ -549,7 +550,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.summoned_entity", entity.getName().getString()).withStyle(ChatFormatting.GREEN));
 
                 // Schedule removal after duration
-                ServerScheduler.scheduleDelayed(SUMMON_DURATION_TICKS, () -> {
+                ServerScheduler.scheduleDelayed(getSummonDurationTicks(player), () -> {
                     // Verify player is still online
                     ServerPlayer onlinePlayer = level.getServer().getPlayerList().getPlayer(player.getUUID());
                     if(onlinePlayer != null) {
@@ -719,5 +720,23 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                 activeSummons.remove(player.getUUID());
             }
         }
+    }
+
+    // scale max summoned items
+    private static int getMaxSummoned(ServerPlayer serverPlayer){
+        int maxSummonedItems = 5 * (4 - BeyonderData.getSequence(serverPlayer));
+        if (maxSummonedItems == 0){
+            return 5;
+        }
+        return maxSummonedItems;
+    }
+
+    // scale max summoned items
+    private static int getSummonDurationTicks(ServerPlayer serverPlayer){
+        int maxSummonedItems = 20 * 20 * (4 - BeyonderData.getSequence(serverPlayer));
+        if (maxSummonedItems == 0){
+            return 5;
+        }
+        return maxSummonedItems;
     }
 }

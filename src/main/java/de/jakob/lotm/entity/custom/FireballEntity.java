@@ -103,7 +103,12 @@ public class FireballEntity extends AbstractArrow {
             return;
         LivingEntity target = (LivingEntity) result.getEntity();
         level.explode(owner, target.position().x, target.position().y, target.position().z, 3.5f, griefing, Level.ExplosionInteraction.NONE);
-        target.hurt(this.damageSources().mobAttack(owner), (float) damage);
+        // check if the owner exists before - to not crash
+        if (this.getOwner() instanceof LivingEntity livingOwner) {
+            target.hurt(this.damageSources().mobAttack(livingOwner), (float) damage);
+        } else {
+            target.hurt(this.damageSources().thrown(this, null), (float) damage);
+        }
         target.setRemainingFireTicks(target.getRemainingFireTicks() + 20 * 6);
     }
 
