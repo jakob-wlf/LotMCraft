@@ -35,6 +35,8 @@ public class AbilityHandler {
         abilities.add(new SpiritVisionAbility("spirit_vision_ability"));
         abilities.add(new CurseOfMisfortuneAbility("curse_of_misfortune_ability"));
         abilities.add(new AngelAuthorityAbility("angel_authority_ability"));
+        abilities.add(new AngelFlightAbility("angel_authority_flight"));
+        abilities.add(new MythicalCreatureFormAbility("mythical_creature_form"));
 
         // SUN PATHWAY
         abilities.add(new HolySongAbility("holy_song_ability"));
@@ -92,7 +94,7 @@ public class AbilityHandler {
         abilities.add(new ThunderclapAbility("thunderclap_ability"));
         abilities.add(new LightningBranchAbility("lightning_branch_ability"));
         abilities.add(new CalamityCreationAbility("calamity_creation_ability"));
-        abilities.add(new MythicalCreatureFormTyrantAbility("mythical_creature_tyrant_ability"));
+        //abilities.add(new MythicalCreatureFormTyrantAbility("mythical_creature_tyrant_ability"));
         abilities.add(new EnergyTransformationAbility("energy_transformation_ability"));
         abilities.add(new HeavenlyPunishmentAbility("heavenly_punishment_ability"));
         abilities.add(new ElectromagneticTornadoAbility("electromagnetic_tornado_ability"));
@@ -189,7 +191,7 @@ public class AbilityHandler {
         abilities.add(new AreaMiniaturizationAbility("area_miniaturization_ability"));
         abilities.add(new SpaceDistortionAbility("space_distortion_ability"));
         abilities.add(new PocketDimensionAbility("pocket_dimension_ability"));
-        abilities.add(new MythicalCreatureFormDoorAbility("mythical_creature_door_ability"));
+        //abilities.add(new MythicalCreatureFormDoorAbility("mythical_creature_door_ability"));
         abilities.add(new SpaceTimeStormAbility("space_time_storm_ability"));
         abilities.add(new BlackHoleAbility("black_hole_ability"));
         abilities.add(new PlayerTeleportationAbility("player_teleportation_ability"));
@@ -251,14 +253,16 @@ public class AbilityHandler {
     public HashSet<Ability> getByPathwayAndSequenceExact(String pathway, int sequence) {
         return abilities
                 .stream()
-                .filter(ability -> ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) == sequence)
+                .filter(ability ->
+                        ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) == sequence)
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
     public HashSet<Ability> getByPathwayAndSequence(String pathway, int sequence) {
         return abilities
                 .stream()
-                .filter(ability -> ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) >= sequence)
+                .filter(ability ->
+                        ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) >= sequence)
                 .collect(Collectors.toCollection(HashSet::new));
     }
 

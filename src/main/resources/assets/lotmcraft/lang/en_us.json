@@ -42,6 +42,7 @@
 
   "lotmcraft.mythical_creature_tyrant_ability": "Mythical Creature Form",
   "lotmcraft.mythical_creature_door_ability": "Mythical Creature Form",
+  "lotmcraft.mythical_creature_form": "Mythical Creature Form",
 
   "lotmcraft.ally_ability": "Ally Designator",
   "lotmcraft.ally_ability.description": "Designate an entity as your ally",
@@ -57,6 +58,7 @@
   "lotmcraft.angel_authority_ability.description": "Angelic power that allows you to traverse the spirit world and shatter artifacts",
   "ability.lotmcraft.angel_authority.spirit_world_passage": "Spirit World Passage",
   "ability.lotmcraft.angel_authority.artifact_shattering": "Artifact Shattering",
+  "ability.lotmcraft.angel_authority.flight": "Flight",
 
   "lotmcraft.illuminate_ability": "Illuminate",
   "lotmcraft.illuminate_ability.description": "Create a small light",

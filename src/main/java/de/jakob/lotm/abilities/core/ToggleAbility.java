@@ -20,6 +20,7 @@ public abstract class ToggleAbility extends Ability {
         super(id, 0);
 
         canBeUsedByNPC = false;
+        doesNotIncreaseDigestion = true;
     }
 
     @Override

@@ -26,6 +26,7 @@ public abstract class Ability {
     private final String id;
     protected final int cooldown;
 
+    protected boolean shouldBeHidden = false;
 
     public boolean canBeUsedByNPC = true;
     public boolean canBeCopied = true;
@@ -197,5 +198,9 @@ public abstract class Ability {
 
     public String getId() {
         return id;
+    }
+
+    public boolean getShouldBeHidden(){
+        return shouldBeHidden;
     }
 }

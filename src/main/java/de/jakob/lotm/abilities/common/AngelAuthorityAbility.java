@@ -33,9 +33,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AngelAuthorityAbility extends SelectableAbility {
+    private AngelFlightAbility flightSkill;
+
     public AngelAuthorityAbility(String id) {
         super(id, 5.0f);
         this.canBeUsedByNPC = false;
+        this.canBeCopied = false;
+
+        flightSkill = null;
     }
 
     protected float getSpiritualityCost() {
@@ -52,7 +57,10 @@ public class AngelAuthorityAbility extends SelectableAbility {
     }
 
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.angel_authority.spirit_world_passage", "ability.lotmcraft.angel_authority.artifact_shattering"};
+        return new String[]{"ability.lotmcraft.angel_authority.spirit_world_passage",
+                "ability.lotmcraft.angel_authority.artifact_shattering",
+                "ability.lotmcraft.angel_authority.flight"
+        };
     }
 
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
@@ -65,8 +73,20 @@ public class AngelAuthorityAbility extends SelectableAbility {
                 case 1:
                     this.artifactShattering(player, level, player.getX(), player.getY(), player.getZ());
                     break;
+
+                case 2:
+                    flight(player, (ServerLevel) level);
+                    break;
+
             }
         }
+    }
+
+    public void flight(Player player, ServerLevel level){
+        if(flightSkill == null)
+            flightSkill = (AngelFlightAbility) LOTMCraft.abilityHandler.getById("angel_authority_flight");
+
+        flightSkill.useAbility(level, player);
     }
 
     public void artifactShattering(Player player, Level level, double x, double y, double z){
