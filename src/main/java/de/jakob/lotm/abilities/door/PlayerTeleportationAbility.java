@@ -44,7 +44,8 @@ public class PlayerTeleportationAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return onlinePlayers.stream().map(uuid -> namesForPlayer.getOrDefault(uuid, "Unknown Player")).toArray(String[]::new).clone();
+        ArrayList<UUID> players = new ArrayList<>(onlinePlayers);
+        return players.stream().map(uuid -> namesForPlayer.getOrDefault(uuid, "Unknown Player")).toArray(String[]::new).clone();
     }
 
     @Override
