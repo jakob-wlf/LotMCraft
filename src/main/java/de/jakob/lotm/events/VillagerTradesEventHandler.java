@@ -84,7 +84,7 @@ public class VillagerTradesEventHandler {
             int level = getLevelForItem(entry.getKey());
             int sequence = getSequenceForItem(entry.getKey());
 
-            if(sequence > 5) {
+            if(sequence >= 5) {
                 trades.get(level).add((entity, randomSource) -> {
                     Random random = new Random();
                     int diamondAmount = Math.max(1, random.nextInt(entry.getValue() - 4, entry.getValue() + 5));
