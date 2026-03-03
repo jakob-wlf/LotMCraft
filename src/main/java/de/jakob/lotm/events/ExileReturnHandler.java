@@ -33,39 +33,40 @@ public class ExileReturnHandler {
             return;
         long gameTime = server.overworld().getGameTime();
 
-        for (ServerLevel level : server.getAllLevels()) {
-            for (Entity entity : level.getEntities(EntityTypeTest.forClass(LivingEntity.class), e -> true)) {
-                if(level.dimension() != Level.END)
-                    continue;
-                CompoundTag tag = entity.getPersistentData();
-                if (tag.getBoolean("Exiled")) {
-                    long returnTime = tag.getLong("ReturnTime");
-                    if (gameTime >= returnTime) {
-                        // Now handle teleport back
-                        String returnLevelStr = tag.getString("ReturnLevel");
-                        ResourceKey<Level> returnLevelKey =
-                                ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(returnLevelStr));
-                        ServerLevel returnLevel = server.getLevel(returnLevelKey);
-                        if (returnLevel != null) {
-                            double x = tag.getDouble("ReturnX");
-                            double y = tag.getDouble("ReturnY");
-                            double z = tag.getDouble("ReturnZ");
-                            entity.teleportTo(returnLevel, x, y, z, Set.of(), entity.getYRot(), entity.getXRot());
-                            entity.resetFallDistance();
-                            ParticleUtil.spawnParticles((ServerLevel) entity.level(), ModParticles.STAR.get(), entity.position(), 100, 1, 2, 1, .1);
-                            ParticleUtil.spawnParticles((ServerLevel) entity.level(), ParticleTypes.PORTAL, entity.position(), 100, 1, 2, 1, .1);
-                            entity.level().playSound(null, entity.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 2.0f, 0.5f + entity.level().random.nextFloat());
-                        }
+        if(gameTime % 20 != 0)
+            return;
 
-                        // Clear data
-                        tag.remove("Exiled");
-                        tag.remove("ReturnTime");
-                        tag.remove("ReturnLevel");
-                        tag.remove("ReturnX");
-                        tag.remove("ReturnY");
-                        tag.remove("ReturnZ");
-                    }
+        ServerLevel endLevel = server.getLevel(Level.END);
+        if(endLevel == null)
+            return;
+
+        for (Entity entity : endLevel.getEntities(EntityTypeTest.forClass(LivingEntity.class), e -> e.getPersistentData().getBoolean("Exiled"))) {
+            CompoundTag tag = entity.getPersistentData();
+            long returnTime = tag.getLong("ReturnTime");
+            if (gameTime >= returnTime) {
+                // Now handle teleport back
+                String returnLevelStr = tag.getString("ReturnLevel");
+                ResourceKey<Level> returnLevelKey =
+                        ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(returnLevelStr));
+                ServerLevel returnLevel = server.getLevel(returnLevelKey);
+                if (returnLevel != null) {
+                    double x = tag.getDouble("ReturnX");
+                    double y = tag.getDouble("ReturnY");
+                    double z = tag.getDouble("ReturnZ");
+                    entity.teleportTo(returnLevel, x, y, z, Set.of(), entity.getYRot(), entity.getXRot());
+                    entity.resetFallDistance();
+                    ParticleUtil.spawnParticles((ServerLevel) entity.level(), ModParticles.STAR.get(), entity.position(), 100, 1, 2, 1, .1);
+                    ParticleUtil.spawnParticles((ServerLevel) entity.level(), ParticleTypes.PORTAL, entity.position(), 100, 1, 2, 1, .1);
+                    entity.level().playSound(null, entity.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 2.0f, 0.5f + entity.level().random.nextFloat());
                 }
+
+                // Clear data
+                tag.remove("Exiled");
+                tag.remove("ReturnTime");
+                tag.remove("ReturnLevel");
+                tag.remove("ReturnX");
+                tag.remove("ReturnY");
+                tag.remove("ReturnZ");
             }
         }
     }
