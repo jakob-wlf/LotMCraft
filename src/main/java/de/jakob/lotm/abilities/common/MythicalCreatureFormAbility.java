@@ -53,19 +53,22 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
 
         // Make all entities lower than you loose control when seeing you
         AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 30).forEach(e -> {
-            if(!AbilityUtil.isTargetSignificantlyWeaker(entity, e)) {
-                return;
-            }
+                    if (!AbilityUtil.isTargetSignificantlyWeaker(entity, e)) {
+                        return;
+                    }
 
-            if(AbilityUtil.getTargetEntity(e, 30, 5f) != entity) {
-                return;
-            }
+                    if (AbilityUtil.getTargetEntity(e, 30, 5f) != entity) {
+                        return;
+                    }
 
-            if(!e.hasEffect(ModEffects.LOOSING_CONTROL)) { // Only apply effect when effect wasn't applied already, otherwise they would never actually die
-                e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, amplifier));
-            }
+                    if (!entity.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(e.getUUID())) {
 
-            doPathRelatedEffect(BeyonderData.getPathway(entity), level, entity, e);
+                        if (!e.hasEffect(ModEffects.LOOSING_CONTROL)) { // Only apply effect when effect wasn't applied already, otherwise they would never actually die
+                            e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, amplifier));
+                        }
+
+                        doPathRelatedEffect(BeyonderData.getPathway(entity), level, entity, e);
+                    }
         });
 
         // Stop when overridden by another transformation
