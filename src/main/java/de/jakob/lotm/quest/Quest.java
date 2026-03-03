@@ -44,9 +44,22 @@ public abstract class Quest {
 
     public abstract float getDigestionReward();
 
+    public float getDigestionReward(ServerPlayer player) {
+        return getDigestionReward();
+    }
+
+    public boolean shouldScaleDigestionBySequence() {
+        return true;
+    }
+
     public MutableComponent getDescription() {
         return Component.translatable("lotm.quest.impl." + id + ".description");
     }
+
+    public MutableComponent getDescription(ServerPlayer player) {
+        return getDescription();
+    }
+
 
     public MutableComponent getName() {
         return Component.translatable("lotm.quest.impl." + id);
