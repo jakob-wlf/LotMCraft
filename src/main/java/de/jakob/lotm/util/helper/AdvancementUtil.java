@@ -1,6 +1,7 @@
 package de.jakob.lotm.util.helper;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -8,6 +9,8 @@ import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.ChangePlayerPerspectivePacket;
+import de.jakob.lotm.potions.BeyonderPotion;
+import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -19,13 +22,38 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.joml.Vector3f;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static de.jakob.lotm.util.BeyonderData.*;
 
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class AdvancementUtil {
+
+    private static final HashMap<UUID, BeyonderPotion> activeAdvancements = new HashMap<>();
+
+    @SubscribeEvent
+    public static void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
+        if(activeAdvancements.containsKey(event.getEntity().getUUID())) {
+            Player player = event.getEntity();
+            BeyonderPotion potion = activeAdvancements.get(player.getUUID());
+            if(!player.getInventory().add(potion.getDefaultInstance()))
+                player.drop(potion.getDefaultInstance(), false);
+            activeAdvancements.remove(player.getUUID());
+
+            int index = player.getInventory().findSlotMatchingItem(PotionItemHandler.EMPTY_BOTTLE.get().getDefaultInstance());
+            if(index != -1) {
+                player.getInventory().removeItem(index, 1);
+            }
+        }
+    }
 
     public static void advance(LivingEntity entity, String pathway, int sequence) {
         if(entity instanceof Player player && player.isCreative()) {
@@ -43,6 +71,11 @@ public class AdvancementUtil {
         SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
         float sanity = sanityComp.getSanity();
 
+        // Add to active advancements to give back potion in case of logging out
+        if(entity instanceof Player player) {
+            activeAdvancements.put(player.getUUID(), PotionItemHandler.selectPotionOfPathwayAndSequence(null, pathway, sequence));
+        }
+
         // First time becoming a beyonder
         if(!isBeyonder(entity)) {
             double failureChance = calculateFailureChanceForFirstTime(sequence, sanity);
@@ -59,6 +92,7 @@ public class AdvancementUtil {
                 // Advancement will fail - death at random point during advancement
                 int deathTime = (int)(Math.random() * duration);
                 ServerScheduler.scheduleDelayed(deathTime, () -> {
+                    activeAdvancements.remove(entity.getUUID());
                     if(!entity.isDeadOrDying())
                         entity.hurt(entity.damageSources().magic(), Float.MAX_VALUE);
                 });
@@ -66,6 +100,7 @@ public class AdvancementUtil {
             }
 
             ServerScheduler.scheduleDelayed(duration, () -> {
+                activeAdvancements.remove(entity.getUUID());
                 setBeyonder(entity, pathway, sequence);
                 if(entity instanceof ServerPlayer serverPlayer) {
                     PacketHandler.sendToPlayer(serverPlayer, new ChangePlayerPerspectivePacket(entity.getId(), ChangePlayerPerspectivePacket.PERSPECTIVE.THIRD.getValue()));
@@ -89,6 +124,7 @@ public class AdvancementUtil {
 
             int deathTime = (int)(Math.random() * duration);
             ServerScheduler.scheduleDelayed(deathTime, () -> {
+                activeAdvancements.remove(entity.getUUID());
                 if(!entity.isDeadOrDying())
                     entity.hurt(entity.damageSources().magic(), Float.MAX_VALUE);
             });
@@ -128,6 +164,7 @@ public class AdvancementUtil {
             // Advancement will fail - death at random point during advancement
             int deathTime = (int)(Math.random() * duration);
             ServerScheduler.scheduleDelayed(deathTime, () -> {
+                activeAdvancements.remove(entity.getUUID());
                 if(!entity.isDeadOrDying())
                     entity.hurt(entity.damageSources().magic(), Float.MAX_VALUE);
             });
@@ -137,6 +174,7 @@ public class AdvancementUtil {
         // Advancement will succeed - apply after full duration
         ServerScheduler.scheduleDelayed(duration, () -> {
             if(!entity.isDeadOrDying()) {
+                activeAdvancements.remove(entity.getUUID());
                 setBeyonder(entity, pathway, sequence);
                 if(entity instanceof ServerPlayer serverPlayer) {
                     PacketHandler.sendToPlayer(serverPlayer, new ChangePlayerPerspectivePacket(entity.getId(), ChangePlayerPerspectivePacket.PERSPECTIVE.THIRD.getValue()));

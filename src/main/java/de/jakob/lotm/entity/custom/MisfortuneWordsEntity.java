@@ -8,16 +8,25 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.Optional;
+import java.util.UUID;
+
 public class MisfortuneWordsEntity extends Entity {
+
+    private static final EntityDataAccessor<Optional<UUID>> OWNER =
+            SynchedEntityData.defineId(MisfortuneWordsEntity.class, EntityDataSerializers.OPTIONAL_UUID);
 
     public MisfortuneWordsEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -27,6 +36,7 @@ public class MisfortuneWordsEntity extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(OWNER, Optional.empty());
     }
 
     public MisfortuneWordsEntity(Level level, Vec3 pos) {
@@ -45,9 +55,32 @@ public class MisfortuneWordsEntity extends Entity {
                 if(BeyonderData.isBeyonder(e) && BeyonderData.getPathway(e).equalsIgnoreCase("wheel_of_fortune") && BeyonderData.getSequence(e) <= 2)
                     return;
 
+                if(getCasterEntity() != null && !AbilityUtil.mayTarget(getCasterEntity(), e))
+                    return;
+
                 e.addEffect(new MobEffectInstance(ModEffects.UNLUCK, 20 * 60 * 5, 12, false, false, false));
             });
         }
+    }
+
+    public LivingEntity getCasterEntity() {
+        if(level().isClientSide) {
+            return null;
+        }
+        UUID casterUUID = this.getCasterUUID();
+        if (casterUUID == null) {
+            return null;
+        }
+        return ((ServerLevel) level()).getEntity(casterUUID) != null && ((ServerLevel) level()).getEntity(casterUUID) instanceof LivingEntity livingEntity ?
+                livingEntity: null;
+    }
+
+    public void setCasterUUID(UUID uuid) {
+        this.entityData.set(OWNER, Optional.ofNullable(uuid));
+    }
+
+    public UUID getCasterUUID() {
+        return this.entityData.get(OWNER).orElse(null);
     }
 
 
@@ -63,10 +96,18 @@ public class MisfortuneWordsEntity extends Entity {
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compoundTag) {
+        if (compoundTag.hasUUID("owner")) {
+            setCasterUUID(compoundTag.getUUID("owner"));
+        } else {
+            setCasterUUID(null);
+        }
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
+        if (getCasterUUID() != null) {
+            compoundTag.putUUID("owner", getCasterUUID());
+        }
     }
 
 

@@ -220,6 +220,8 @@ public class AbilityUtil {
     public static boolean mayTarget(LivingEntity source, LivingEntity target, boolean allowAllies, boolean targetMarionettes) {
         if (source == null || target == null) return true;
 
+        if(source == target) return false;
+
         // If we're allowing allies for support abilities, skip the mayDamage check
         if (!allowAllies && !mayDamage(source, target)) {
             return false;
