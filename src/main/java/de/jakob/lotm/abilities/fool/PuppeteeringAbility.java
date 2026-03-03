@@ -66,8 +66,8 @@ public class PuppeteeringAbility extends Ability {
     private int getManipulationTime(int sequence) {
         return switch (sequence) {
             default -> 20 * 11;
-            case 4 -> 80;
-            case 3 -> 60;
+            case 4 -> 20 * 6;
+            case 3 -> 20 * 5;
             case 0, 1, 2 -> 20;
         };
     }
@@ -75,30 +75,35 @@ public class PuppeteeringAbility extends Ability {
     private int getManipulationTimeBySequenceAndSequenceDifference(int sequence, int targetSequence) {
         int difference = targetSequence - sequence;
 
-        int baseTime = 900; // ~45 seconds (20 ticks = 1 second)
+        int baseTime = 20 * 120; // ~120 seconds (20 ticks = 1 second)
 
         int manipulationTime;
 
         if (difference == 0) {
             // Same sequence - faster depending on how low the controller's sequence is
             if (sequence <= 2) {
-                manipulationTime = 20 * 10; // ~10s for seq 0-2
+                manipulationTime = 20 * 60; // ~60s for seq 0-2
             } else if (sequence == 3) {
-                manipulationTime = 20 * 12; // ~12s for seq 3
+                manipulationTime = 20 * 80; // ~80s for seq 3
             } else if (sequence == 4) {
-                manipulationTime = 20 * 15; // ~15s for seq 4
+                manipulationTime = 20 * 100; // ~100s for seq 4
             } else {
-                manipulationTime = baseTime; // ~45s for seq 5+
+                manipulationTime = baseTime; // ~120s for seq 5+
             }
         } else {
             // Stronger advantage when higher sequence controls lower sequence
-            if (sequence <= 2 && targetSequence >= 3) {
-                manipulationTime = 20 * 8; // ~8s for seq 1-2 vs 3+
-            } else if ((sequence == 3 || sequence == 4) && targetSequence >= 5) {
-                manipulationTime = 20 * 10; // ~10s for seq 3-4 vs 5+
-            } else {
+            if (sequence <= 2) {
+                if(targetSequence >= 3 && targetSequence <= 4)
+                    manipulationTime = 20 * 10; // ~10s for seq 1-2 vs 3-4
+                else
+                    manipulationTime = 20 * 5; // 5s for seq 1-2 vs 5+
+            }
+            else if ((sequence == 3 || sequence == 4) && targetSequence >= 5) {
+                manipulationTime = 20 * 25; // ~25s for seq 3-4 vs 5+
+            }
+            else {
                 // Default scaling: faster with bigger difference
-                int reduction = difference * (5 * 20);
+                int reduction = (-difference) * (10 * 20); // if fool's seq is higher difference will be negative
                 manipulationTime = Math.max(baseTime - reduction, 20 * 5); // minimum 5s
             }
         }
@@ -137,12 +142,14 @@ public class PuppeteeringAbility extends Ability {
 
         if(BeyonderData.isBeyonder(target)) {
             int targetSequence = BeyonderData.getSequence(target);
-            if(BeyonderData.getSequence(target) < BeyonderData.getSequence(entity)) {
+
+            if(targetSequence < sequence) {
                 if((targetSequence <= 4 && sequence >= 5) || (targetSequence <= 2 && sequence >= 3) || (targetSequence == 0)) {
-                    entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 8, 4, false, false, false));
+                    entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 8, 5, false, false, false));
                     return;
                 }
-                time *= 6;
+
+                time *= 8;
             } else {
                 time = getManipulationTimeBySequenceAndSequenceDifference(sequence, targetSequence);
             }
