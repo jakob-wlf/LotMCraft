@@ -261,8 +261,8 @@ public class ControllingUtil {
 
     public static void copyEntities (LivingEntity source, LivingEntity target) {
         copyInventories(source, target);
-        copyData(source, target);
 
+        copyData(source, target);
 
         AttributeMap sourceMap = source.getAttributes();
         AttributeMap targetMap = target.getAttributes();
@@ -386,6 +386,9 @@ public class ControllingUtil {
             for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                 targetInv.setItem(i, player.getInventory().getItem(i).copy());
             }
+            // hand slots as well
+            target.setItemSlot(EquipmentSlot.MAINHAND, source.getMainHandItem().copy());
+            target.setItemSlot(EquipmentSlot.OFFHAND, source.getOffhandItem().copy());
         }
         else if (target instanceof Player player) {
             SimpleContainer sourceInv = source.getData(ModAttachments.COPIED_INVENTORY).getInv();
@@ -402,16 +405,16 @@ public class ControllingUtil {
             for (int i = 0; i < sourceInv.getContainerSize(); i++) {
                 targetInv.setItem(i, sourceInv.getItem(i).copy());
             }
+            // hand slots as well
+            target.setItemSlot(EquipmentSlot.MAINHAND, source.getMainHandItem().copy());
+            target.setItemSlot(EquipmentSlot.OFFHAND, source.getOffhandItem().copy());
         }
         // make the entity equip armor - doesnt work for now
         target.setItemSlot(EquipmentSlot.HEAD, source.getItemBySlot(EquipmentSlot.HEAD).copy());
         target.setItemSlot(EquipmentSlot.CHEST, source.getItemBySlot(EquipmentSlot.CHEST).copy());
         target.setItemSlot(EquipmentSlot.LEGS, source.getItemBySlot(EquipmentSlot.LEGS).copy());
         target.setItemSlot(EquipmentSlot.FEET, source.getItemBySlot(EquipmentSlot.FEET).copy());
-
-        // hand slots as well
-        target.setItemSlot(EquipmentSlot.MAINHAND, source.getMainHandItem().copy());
-        target.setItemSlot(EquipmentSlot.OFFHAND, source.getOffhandItem().copy());
+        
     }
 
     @SubscribeEvent
