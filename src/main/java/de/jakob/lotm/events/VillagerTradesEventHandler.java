@@ -176,16 +176,16 @@ public class VillagerTradesEventHandler {
 
                     if(item instanceof PotionIngredient obj){
                         for(var path : obj.getPathways()){
-                            return !BeyonderData.beyonderMap.check(path,obj.getSequence());
+                            return !BeyonderData.beyonderMap.check(path,obj.getSequence()) || obj.getSequence() < 4;
                         }
                     }
 
                     if(item instanceof BeyonderPotion potion){
-                        return !BeyonderData.beyonderMap.check(potion.getPathway(), potion.getSequence());
+                        return !BeyonderData.beyonderMap.check(potion.getPathway(), potion.getSequence()) || potion.getSequence() < 4;
                     }
 
                     if(item instanceof BeyonderCharacteristicItem cha){
-                        return !BeyonderData.beyonderMap.check(cha.getPathway(), cha.getSequence());
+                        return !BeyonderData.beyonderMap.check(cha.getPathway(), cha.getSequence()) || cha.getSequence() < 4;
                     }
 
                     return false;
