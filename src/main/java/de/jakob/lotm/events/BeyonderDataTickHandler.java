@@ -15,7 +15,6 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncOnHoldAbilityPacket;
 import de.jakob.lotm.network.packets.toClient.SyncToggleAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -106,7 +105,7 @@ public class BeyonderDataTickHandler {
     }
 
     private static void tickAbilities(LivingEntity entity) {
-        if(!(entity.level() instanceof ServerLevel serverLevel)) return;
+        if(entity.level().isClientSide) return;
 
         // Passive Abilities
         getApplicableAbilities(entity).forEach(abilityItem -> {
@@ -116,7 +115,7 @@ public class BeyonderDataTickHandler {
         // Tick Toggle Abilities
         ToggleAbility.getActiveAbilitiesForEntity(entity).forEach(toggleAbility -> {
             toggleAbility.prepareTick(entity.level(), entity);
-            PacketHandler.sendToAllPlayersInSameLevel(new SyncToggleAbilityPacket(entity.getId(), toggleAbility.getId(), SyncToggleAbilityPacket.Action.TICK.getValue()), serverLevel);
+            PacketHandler.sendToTrackingAndSelf(entity, new SyncToggleAbilityPacket(entity.getId(), toggleAbility.getId(), SyncToggleAbilityPacket.Action.TICK.getValue()));
         });
 
         if(entity instanceof ServerPlayer player) {
@@ -130,9 +129,7 @@ public class BeyonderDataTickHandler {
             Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
             if(ability != null) {
                 ability.onHold(player.serverLevel(), player);
-                PacketHandler.sendToAllPlayersInSameLevel(
-                        new SyncOnHoldAbilityPacket(player.getId(), abilityId), player.serverLevel()
-                );
+                PacketHandler.sendToTrackingAndSelf(player, new SyncOnHoldAbilityPacket(player.getId(), abilityId));
             }
         }
     }

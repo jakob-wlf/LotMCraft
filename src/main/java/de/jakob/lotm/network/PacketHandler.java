@@ -616,6 +616,11 @@ public class PacketHandler {
         PacketDistributor.sendToPlayersTrackingEntity(entity, payload);
     }
 
+    public static void sendToTrackingAndSelf(Entity entity, CustomPacketPayload payload) {
+        if (!(entity.level() instanceof ServerLevel)) return;
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, payload);
+    }
+
     public static void syncSkinDataToAllPlayers(String playerName, String skinTexture, String skinSignature) {
         SkinDataPacket packet = new SkinDataPacket(playerName, skinTexture, skinSignature);
         sendToAllPlayers(packet);
