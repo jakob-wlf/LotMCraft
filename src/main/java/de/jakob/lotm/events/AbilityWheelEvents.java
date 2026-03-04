@@ -2,6 +2,7 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
+import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -18,6 +19,7 @@ public class AbilityWheelEvents {
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             AbilityWheelHelper.syncToClient(serverPlayer);
+            CopiedAbilityHelper.syncToClient(serverPlayer);
         }
     }
 
@@ -29,6 +31,7 @@ public class AbilityWheelEvents {
     public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             AbilityWheelHelper.syncToClient(serverPlayer);
+            CopiedAbilityHelper.syncToClient(serverPlayer);
         }
     }
 
@@ -42,6 +45,7 @@ public class AbilityWheelEvents {
             // Small delay to ensure player is fully loaded
             serverPlayer.getServer().execute(() -> {
                 AbilityWheelHelper.syncToClient(serverPlayer);
+                CopiedAbilityHelper.syncToClient(serverPlayer);
             });
         }
     }

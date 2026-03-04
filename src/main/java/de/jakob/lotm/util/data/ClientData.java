@@ -10,7 +10,6 @@ public class ClientData {
     private static List<String> copiedAbilityIds = new ArrayList<>();
     private static List<String> copiedAbilityCopyTypes = new ArrayList<>();
     private static List<Integer> copiedAbilityRemainingUses = new ArrayList<>();
-    private static boolean shouldOpenCopiedWheel = false;
 
     public static List<String> getAbilityWheelAbilities() {
         return abilityWheelAbilities;
@@ -41,17 +40,5 @@ public class ClientData {
         copiedAbilityIds = abilityIds;
         copiedAbilityCopyTypes = copyTypes;
         copiedAbilityRemainingUses = remainingUses;
-    }
-
-    public static void openCopiedAbilityWheel() {
-        shouldOpenCopiedWheel = true;
-    }
-
-    public static boolean shouldOpenCopiedWheel() {
-        return shouldOpenCopiedWheel;
-    }
-
-    public static void clearCopiedWheelFlag() {
-        shouldOpenCopiedWheel = false;
     }
 }
