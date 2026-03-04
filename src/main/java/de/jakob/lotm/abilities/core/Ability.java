@@ -82,6 +82,9 @@ public abstract class Ability {
         // Use ability client and server sided
         onAbilityUse(serverLevel, newUser);
         PacketHandler.sendToAllPlayersInSameLevel(new UseAbilityPacket(getId(), newUser.getId()), serverLevel);
+
+        // Track ability use for Recording/Replicating detection
+        AbilityUseTracker.trackUse(newUser, this, newUser.position(), serverLevel);
     }
 
     public void useAbility(ServerLevel serverLevel, LivingEntity entity) {

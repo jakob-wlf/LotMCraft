@@ -166,6 +166,11 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<CopiedAbilityComponent>> COPIED_ABILITY_COMPONENT =
+            ATTACHMENT_TYPES.register("copied_ability_component", () ->
+                    AttachmentType.serializable(CopiedAbilityComponent::new).copyOnDeath().build()
+            );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }
