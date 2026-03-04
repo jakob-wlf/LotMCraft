@@ -46,21 +46,24 @@ public class VillagerTradesEventHandler {
                 int level = getLevelForItem(entry.getKey());
                 int sequence = getSequenceForItem(entry.getKey());
 
-                trades.get(level).add((entity, randomSource) -> {
-                    Random random = new Random();
-                    int diamondAmount = Math.max(1, random.nextInt(entry.getValue() - 4, entry.getValue() + 5));
-                    ItemCost diamondCost = new ItemCost(Items.DIAMOND, diamondAmount);
-                    java.util.Optional<ItemCost> additionalCost = getAdditionalCostForSequence(sequence, random);
+                // limit the sequence of items
+                if(sequence >= 4) {
+                    trades.get(level).add((entity, randomSource) -> {
+                        Random random = new Random();
+                        int diamondAmount = Math.max(1, random.nextInt(entry.getValue() - 4, entry.getValue() + 5));
+                        ItemCost diamondCost = new ItemCost(Items.DIAMOND, diamondAmount);
+                        java.util.Optional<ItemCost> additionalCost = getAdditionalCostForSequence(sequence, random);
 
-                    return new MerchantOffer(
-                            diamondCost,
-                            additionalCost,
-                            new ItemStack(entry.getKey(), 1),
-                            random.nextInt(1, 2),
-                            30 * level,
-                            0.005f
-                    );
-                });
+                        return new MerchantOffer(
+                                diamondCost,
+                                additionalCost,
+                                new ItemStack(entry.getKey(), 1),
+                                random.nextInt(1, 2),
+                                30 * level,
+                                0.005f
+                        );
+                    });
+                }
             }
         }
 
