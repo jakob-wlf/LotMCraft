@@ -2,6 +2,7 @@ package de.jakob.lotm.gui.custom.AbilityWheel;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.events.KeyInputHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.UpdateSelectedAbilityPacket;
@@ -253,6 +254,17 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
             // If texture doesn't exist, render placeholder
             int padding = size / 5;
             guiGraphics.fill(x + padding, y + padding, x + size - padding, y + size - padding, 0xFF8B6914);
+        }
+
+        // Show ability name tooltip on hover
+        if (isHovered) {
+            Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+            if (ability != null) {
+                Component name = ability.getNameFormatted();
+                int textWidth = net.minecraft.client.Minecraft.getInstance().font.width(name);
+                guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, name,
+                        pos.x - textWidth / 2, pos.y - size / 2 - 12, 0xFFFFFF, true);
+            }
         }
     }
 

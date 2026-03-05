@@ -92,6 +92,9 @@ public class AdvancementUtil {
                 // Advancement will fail - death at random point during advancement
                 int deathTime = (int)(Math.random() * duration);
                 ServerScheduler.scheduleDelayed(deathTime, () -> {
+                    if(!activeAdvancements.containsKey(entity.getUUID())) {
+                        return; // Player logged out and back in during advancement, potion was removed from inventory, cancel advancement
+                    }
                     activeAdvancements.remove(entity.getUUID());
                     if(!entity.isDeadOrDying())
                         entity.hurt(entity.damageSources().magic(), Float.MAX_VALUE);
@@ -100,6 +103,9 @@ public class AdvancementUtil {
             }
 
             ServerScheduler.scheduleDelayed(duration, () -> {
+                if(!activeAdvancements.containsKey(entity.getUUID())) {
+                    return; // Player logged out and back in during advancement, potion was removed from inventory, cancel advancement
+                }
                 activeAdvancements.remove(entity.getUUID());
                 setBeyonder(entity, pathway, sequence);
                 if(entity instanceof ServerPlayer serverPlayer) {
@@ -124,6 +130,9 @@ public class AdvancementUtil {
 
             int deathTime = (int)(Math.random() * duration);
             ServerScheduler.scheduleDelayed(deathTime, () -> {
+                if(!activeAdvancements.containsKey(entity.getUUID())) {
+                    return; // Player logged out and back in during advancement, potion was removed from inventory, cancel advancement
+                }
                 activeAdvancements.remove(entity.getUUID());
                 if(!entity.isDeadOrDying())
                     entity.hurt(entity.damageSources().magic(), Float.MAX_VALUE);
@@ -164,6 +173,9 @@ public class AdvancementUtil {
             // Advancement will fail - death at random point during advancement
             int deathTime = (int)(Math.random() * duration);
             ServerScheduler.scheduleDelayed(deathTime, () -> {
+                if(!activeAdvancements.containsKey(entity.getUUID())) {
+                    return; // Player logged out and back in during advancement, potion was removed from inventory, cancel advancement
+                }
                 activeAdvancements.remove(entity.getUUID());
                 if(!entity.isDeadOrDying())
                     entity.hurt(entity.damageSources().magic(), Float.MAX_VALUE);
@@ -174,6 +186,9 @@ public class AdvancementUtil {
         // Advancement will succeed - apply after full duration
         ServerScheduler.scheduleDelayed(duration, () -> {
             if(!entity.isDeadOrDying()) {
+                if(!activeAdvancements.containsKey(entity.getUUID())) {
+                    return; // Player logged out and back in during advancement, potion was removed from inventory, cancel advancement
+                }
                 activeAdvancements.remove(entity.getUUID());
                 setBeyonder(entity, pathway, sequence);
                 if(entity instanceof ServerPlayer serverPlayer) {

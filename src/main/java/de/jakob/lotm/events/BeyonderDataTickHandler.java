@@ -63,6 +63,10 @@ public class BeyonderDataTickHandler {
         component.tick();
 
         if(BeyonderData.isBeyonder(livingEntity)) {
+            if(entity.tickCount % 200 == 0) {
+                invalidateCache(livingEntity);
+            }
+
             // Tick Passive Abilities, Toggle Abilities and onHold for currently selected Ability
             if(entity.tickCount % 5 == 0)
                 tickAbilities(livingEntity);
