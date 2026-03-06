@@ -85,6 +85,18 @@ public class PacketHandler {
                 SyncAbilityWheelPacket::handle
         );
 
+        registrar.playToClient(
+                SyncCopiedAbilitiesPacket.TYPE,
+                SyncCopiedAbilitiesPacket.STREAM_CODEC,
+                SyncCopiedAbilitiesPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenCopiedAbilityWheelPacket.TYPE,
+                OpenCopiedAbilityWheelPacket.STREAM_CODEC,
+                OpenCopiedAbilityWheelPacket::handle
+        );
+
 
         registrar.playToClient(
                 HybridMobSyncPacket.TYPE,
@@ -457,6 +469,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                UseCopiedAbilityPacket.TYPE,
+                UseCopiedAbilityPacket.STREAM_CODEC,
+                UseCopiedAbilityPacket::handle
+        );
+
+        registrar.playToServer(
                 AllyRequestResponsePacket.TYPE,
                 AllyRequestResponsePacket.STREAM_CODEC,
                 AllyRequestResponsePacket::handle
@@ -614,6 +632,11 @@ public class PacketHandler {
     public static void sendToTracking(Entity entity, CustomPacketPayload payload) {
         if (!(entity.level() instanceof ServerLevel)) return;
         PacketDistributor.sendToPlayersTrackingEntity(entity, payload);
+    }
+
+    public static void sendToTrackingAndSelf(Entity entity, CustomPacketPayload payload) {
+        if (!(entity.level() instanceof ServerLevel)) return;
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, payload);
     }
 
     public static void syncSkinDataToAllPlayers(String playerName, String skinTexture, String skinSignature) {

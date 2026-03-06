@@ -7,8 +7,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public abstract class ToggleAbility extends Ability {
@@ -33,7 +35,7 @@ public abstract class ToggleAbility extends Ability {
             activeAbilities.putIfAbsent(entity.getUUID(), new HashSet<>());
             activeAbilities.get(entity.getUUID()).add(this);
             start(level, entity);
-            PacketHandler.sendToAllPlayersInSameLevel(new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.START.getValue()), (ServerLevel) level);
+            PacketHandler.sendToTrackingAndSelf(entity, new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.START.getValue()));
             return;
         }
 
@@ -45,7 +47,7 @@ public abstract class ToggleAbility extends Ability {
             activeAbilities.get(entity.getUUID()).remove(this);
         }
         stop(level, entity);
-        PacketHandler.sendToAllPlayersInSameLevel(new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.STOP.getValue()), level);
+        PacketHandler.sendToTrackingAndSelf(entity, new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.STOP.getValue()));
     }
 
     public static void cleanUp(ServerLevel serverLevel, LivingEntity entity) {
@@ -99,9 +101,9 @@ public abstract class ToggleAbility extends Ability {
 
     }
 
-    public static HashSet<ToggleAbility> getActiveAbilitiesForEntity(LivingEntity entity) {
+    public static Set<ToggleAbility> getActiveAbilitiesForEntity(LivingEntity entity) {
         if(!activeAbilities.containsKey(entity.getUUID())) {
-            return new HashSet<>();
+            return Collections.emptySet();
         }
         return new HashSet<>(activeAbilities.get(entity.getUUID()));
     }

@@ -34,6 +34,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
+import java.util.HashSet;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -216,7 +217,7 @@ public class ControllingUtil {
 
     public static void copyData(LivingEntity source, LivingEntity target) {
         // copy togglable abilities
-        ToggleAbility.setActiveAbilities(target, ToggleAbility.getActiveAbilitiesForEntity(source));
+        ToggleAbility.setActiveAbilities(target, new HashSet<>(ToggleAbility.getActiveAbilitiesForEntity(source)));
 
         // copy wheel abilities
         AbilityWheelComponent sourceWheelData = source.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
