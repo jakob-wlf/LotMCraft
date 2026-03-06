@@ -20,6 +20,7 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -49,6 +50,7 @@ public class DivinationUtil {
         if (sequence <= 1) divinationPower += getSequenceOneDivinationPower(pathway);
 
         divinationPower += getDivinationItemInInventory(serverPlayer);
+        divinationPower += getDivinationItemInHand(serverPlayer);
 
         return divinationPower;
     }
@@ -191,11 +193,21 @@ public class DivinationUtil {
         return addedValue;
     }
 
+    private static int getDivinationItemInHand(ServerPlayer serverPlayer){
+        int addedValue = 0;
+        if (serverPlayer.getItemInHand(InteractionHand.MAIN_HAND).is(ModItems.CANE) ||serverPlayer.getItemInHand(InteractionHand.OFF_HAND).is(ModItems.CANE)) {
+            addedValue += 2;
+        }
+        if (serverPlayer.getItemInHand(InteractionHand.MAIN_HAND).is(ModItems.CRYSTAL_BALL) ||serverPlayer.getItemInHand(InteractionHand.OFF_HAND).is(ModItems.CRYSTAL_BALL)) {
+            addedValue += 3;
+        }
+        return addedValue;
+    }
+
     // get active abilities
     private static int getConcealmentAbilities(ServerPlayer serverPlayer) {
         int addedValue = 0;
-        if(!(serverPlayer.level() instanceof ServerLevel serverLevel)) return addedValue;
-        HashSet<ToggleAbility> activeAbilities = ToggleAbility.getActiveAbilitiesForEntity(serverPlayer);
+        Set<ToggleAbility> activeAbilities = ToggleAbility.getActiveAbilitiesForEntity(serverPlayer);
 
         if (activeAbilities.stream().anyMatch(ability -> ability instanceof HistoricalVoidHidingAbility)) {
             addedValue += 99;
@@ -262,7 +274,7 @@ public class DivinationUtil {
                     }
                 }
 
-                // seq 9 ability (seq9 scaling) - Space Concealment - Door
+                // seq 9 ability - Anti Divination - Common
                 else if (event.getAbility() instanceof DivinationAbility divinationAbility) {
                     if (divinationAbility.getSelectedAbility(user).equals("ability.lotmcraft.divination.anti_divination")) {
                         durationMultiplier = (10 - sequence);

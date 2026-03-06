@@ -32,6 +32,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.SUN_ITEM.get());
         basicItem(ModItems.MOON_ITEM.get());
         basicItem(ModItems.GUIDING_BOOK.get());
+        basicItem(ModItems.CRYSTAL_BALL.get());
+        basicItem(ModItems.CANE.get());
         tintableItem(ModItems.SEALED_ARTIFACT.get());
         tintableItem(ModItems.SEALED_ARTIFACT_BELL.get());
         tintableItem(ModItems.SEALED_ARTIFACT_CHAIN.get());
