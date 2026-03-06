@@ -23,7 +23,7 @@ public class ShapeShiftingUtil {
     }
 
     public static void shapeShift(ServerPlayer player, String entityType, boolean sequenceRestrict) {
-        if (!player.isCreative()) {
+        if (!player.isCreative() && !player.isSpectator()) {
             player.getAbilities().mayfly = false;
             player.getAbilities().flying = false;
             player.onUpdateAbilities();
@@ -66,7 +66,7 @@ public class ShapeShiftingUtil {
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(player,
                 new ShapeShiftingSyncPacket(player.getUUID(), null));
         NameUtils.resetPlayerName(player);
-        if (!player.isCreative()) {
+        if (!player.isCreative() && !player.isSpectator()) {
             player.getAbilities().mayfly = false;
             player.getAbilities().flying = false;
             player.onUpdateAbilities();

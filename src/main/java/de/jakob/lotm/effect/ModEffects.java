@@ -43,6 +43,9 @@ public class ModEffects {
             () -> new LoosingControlEffect(MobEffectCategory.HARMFUL, 0x493269)
                     .addAttributeModifier(Attributes.MOVEMENT_SPEED, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "loosing_control"), -.45f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
 
+    public static final Holder<MobEffect> CONCEALMENT = MOB_EFFECTS.register("concealment",
+            () -> new ConcealmentEffect(MobEffectCategory.BENEFICIAL, 0x161718));
+
     public static void register(IEventBus eventBus) {
         MOB_EFFECTS.register(eventBus);
     }
