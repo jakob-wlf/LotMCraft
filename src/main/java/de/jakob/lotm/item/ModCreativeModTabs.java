@@ -27,6 +27,8 @@ public class ModCreativeModTabs {
                     .title(Component.translatable("creativetab.lotmcraft.lotm_tab"))
                     .displayItems((parameters, output) -> {
                         output.accept(ModItems.FOOL_Card.get());
+                        output.accept(ModItems.CRYSTAL_BALL.get());
+                        output.accept(ModItems.CANE.get());
                         output.accept(ModItems.GUIDING_BOOK.get());
                         output.accept(ModBlocks.BREWING_CAULDRON.get());
                         output.accept(ModBlocks.VOID);

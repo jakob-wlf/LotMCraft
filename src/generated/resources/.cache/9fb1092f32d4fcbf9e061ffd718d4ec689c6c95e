@@ -1,7 +1,11 @@
-// 1.21.1	2026-02-13T12:38:09.9748572	Recipes
+// 1.21.1	2026-03-06T18:18:33.6420117	Recipes
 762c1b878d8f226d315039ec60edc5b33da90099 data/lotmcraft/advancement/recipes/building_blocks/brewing_cauldron.json
+9af041dab04ca6145193fcf67413aff632f87aaf data/lotmcraft/advancement/recipes/misc/cane.json
+77f3fb79a40ec9431960cb0adf3813c94ab8bf46 data/lotmcraft/advancement/recipes/misc/crystal_ball.json
 dac629d3026e96643fc2b4ad635901d7b380faf7 data/lotmcraft/advancement/recipes/misc/guiding_book.json
 e8864f6d0cdac87eaa6d87e8952c9568f8491836 data/lotmcraft/advancement/recipes/misc/mystical_ring.json
 5a64385c6182d1a3086fce4916032f6915e87700 data/lotmcraft/recipe/brewing_cauldron.json
+fcf7dd494dce3da898ceb3e2a695478eb2459ea6 data/lotmcraft/recipe/cane.json
+bf338c32e33dc138a062c3b65598d2103bfcc959 data/lotmcraft/recipe/crystal_ball.json
 c8d4344bfdd17693f63e50e5e3cf6f608789ff22 data/lotmcraft/recipe/guiding_book.json
 a4180ee1fb41150a6c1cdb3f11942d18fb7d18ec data/lotmcraft/recipe/mystical_ring.json

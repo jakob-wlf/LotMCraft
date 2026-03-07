@@ -7,6 +7,8 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncPlayerTeleportationOnlinePlayersPacket;
 import de.jakob.lotm.network.packets.toClient.SyncPlayerTeleportationPlayerNamesPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.util.DivinationUtil;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -73,6 +75,10 @@ public class PlayerTeleportationAbility extends SelectableAbility {
             return;
         }
 
+        if (14 <= DivinationUtil.getConcealmentPower(targetPlayer)) {
+            player.sendSystemMessage(Component.literal("Failed to locate the target"));
+            return
+        }
         if ((targetPlayer.level().dimension().location().equals(ModDimensions.SEFIRAH_CASTLE_TYPE_KEY.location()))
                 || (targetPlayer.level().dimension().location().equals(ModDimensions.SPACE_TYPE_KEY.location()))
                 || (targetPlayer.level().dimension().equals(ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY))

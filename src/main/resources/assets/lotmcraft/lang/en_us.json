@@ -1,5 +1,7 @@
 {
   "item.lotmcraft.fool_card": "Fool Card",
+  "item.lotmcraft.crystal_ball": "Crystal Ball",
+  "item.lotmcraft.cane": "Cane",
   "item.lotmcraft.guiding_book": "Guiding Book",
   "item.lotmcraft.blood": "Blood",
   "item.lotmcraft.sun": "Sun",
@@ -54,6 +56,7 @@
   "ability.lotmcraft.divination.dream_divination": "Dream Divination",
   "ability.lotmcraft.divination.structure_divination": "Structure Divination",
   "ability.lotmcraft.divination.player_divination": "Player Divination",
+  "ability.lotmcraft.divination.anti_divination": "Anti Divination",
   "lotmcraft.angel_authority_ability": "Angel Authority",
   "lotmcraft.angel_authority_ability.description": "Angelic power that allows you to traverse the spirit world and shatter artifacts",
   "ability.lotmcraft.angel_authority.spirit_world_passage": "Spirit World Passage",
@@ -747,6 +750,7 @@
   "effect.lotmcraft.mental_plague": "Mental Plague",
   "effect.lotmcraft.conquered": "Conquered",
   "effect.lotmcraft.mutation": "Mutated",
+  "effect.lotmcraft.concealment": "Concealment",
 
   "_comment004": "Sounds-----------------------------------------------------------------------------",
   "sounds.lotmcraft.midnight_poem": "Midnight Poem",
