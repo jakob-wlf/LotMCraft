@@ -24,3 +24,6 @@ runs
 run-data
 
 repo
+
+# hunt-api runtime data
+hunt-api/data.json

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hunt Admin Dashboard</title>
+    <style>
+        :root {
+            --primary: #4472C4;
+            --primary-dark: #365FA0;
+            --success: #548235;
+            --success-dark: #3E6228;
+            --danger: #C0392B;
+            --bg: #F0F2F5;
+            --card-bg: #FFFFFF;
+            --text: #2C3E50;
+            --text-light: #7F8C8D;
+            --border: #E0E4E8;
+            --gold: #F1C40F;
+            --silver: #BDC3C7;
+            --bronze: #E67E22;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 24px 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        header h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        header p {
+            opacity: 0.85;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section h2 .icon {
+            font-size: 24px;
+        }
+
+        .leaderboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .leaderboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .board-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .board-card .board-header {
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 16px;
+            color: white;
+        }
+
+        .board-card.free .board-header {
+            background: var(--primary);
+        }
+
+        .board-card.paid .board-header {
+            background: var(--success);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            text-align: left;
+            padding: 10px 14px;
+            background: #F8F9FA;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            border-bottom: 2px solid var(--border);
+        }
+
+        table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        table tr:last-child td {
+            border-bottom: none;
+        }
+
+        table tr:hover td {
+            background: #F8F9FA;
+        }
+
+        .placement-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 13px;
+            color: white;
+        }
+
+        .placement-1 { background: var(--gold); color: #333; }
+        .placement-2 { background: var(--silver); color: #333; }
+        .placement-3 { background: var(--bronze); color: white; }
+        .placement-other { background: #95A5A6; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(68,114,196,0.15);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: var(--success-dark);
+        }
+
+        .btn-row {
+            margin-top: 16px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 14px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s, opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+
+        .empty-state {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .refresh-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            color: var(--text-light);
+            margin-left: auto;
+            transition: background 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: #F8F9FA;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .toolbar .btn {
+            font-size: 13px;
+            padding: 6px 14px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🎯 Hunt Admin Dashboard</h1>
+    <p>Manage leaderboards, giftcards, and track winnings</p>
+</header>
+
+<div class="container">
+
+    <!-- Leaderboard Section -->
+    <div class="section">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+            <h2><span class="icon">🏆</span> Leaderboards</h2>
+            <div style="display:flex; gap:8px;">
+                <button class="refresh-btn" onclick="loadLeaderboards()">↻ Refresh</button>
+                <button class="btn btn-primary" style="font-size:13px; padding:6px 14px;" onclick="exportExcel()">📥 Export Excel</button>
+            </div>
+        </div>
+        <div class="leaderboard-grid">
+            <div class="board-card free">
+                <div class="board-header">🆓 Free Leaderboard</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="free-leaderboard-body">
+                        <tr><td colspan="4" class="empty-state">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="board-card paid">
+                <div class="board-header">💎 Paid Leaderboard</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paid-leaderboard-body">
+                        <tr><td colspan="4" class="empty-state">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Giftcard Section -->
+    <div class="section">
+        <h2><span class="icon">🎁</span> Add Giftcard to User</h2>
+        <p style="color: var(--text-light); margin-bottom: 16px; font-size: 14px;">
+            Create a giftcard and automatically assign it to a user.
+        </p>
+        <form id="giftcard-form" onsubmit="handleGiftcardSubmit(event)">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="gc-username">Username</label>
+                    <input type="text" id="gc-username" placeholder="e.g. player123" required>
+                </div>
+                <div class="form-group">
+                    <label for="gc-value">Giftcard Value</label>
+                    <input type="number" id="gc-value" placeholder="e.g. 25" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="gc-code">Giftcard Code</label>
+                    <input type="text" id="gc-code" placeholder="e.g. GIFT-ABCD-1234" required>
+                </div>
+                <div class="form-group">
+                    <label for="gc-type">Giftcard Type</label>
+                    <input type="text" id="gc-type" placeholder="e.g. Amazon, Steam, PayPal">
+                </div>
+            </div>
+            <div class="btn-row">
+                <button type="submit" class="btn btn-success">🎁 Create &amp; Assign Giftcard</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    const API_BASE = "https://api.pydir.com/hunt/api";
+
+    // ---- Toast notifications ----
+    function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.className = "toast " + type + " show";
+        setTimeout(() => { toast.className = "toast"; }, 3500);
+    }
+
+    // ---- Placement badge helper ----
+    function placementBadge(n) {
+        let cls = "placement-other";
+        if (n === 1) cls = "placement-1";
+        else if (n === 2) cls = "placement-2";
+        else if (n === 3) cls = "placement-3";
+        return `<span class="placement-badge ${cls}">${n}</span>`;
+    }
+
+    // ---- Render leaderboard table body ----
+    function renderBoard(tbodyId, entries) {
+        const tbody = document.getElementById(tbodyId);
+        if (!entries || entries.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No entries yet</td></tr>';
+            return;
+        }
+        tbody.innerHTML = entries.map((e, i) => `
+            <tr>
+                <td>${placementBadge(e.placement || i + 1)}</td>
+                <td><strong>${escapeHtml(e.username || "")}</strong></td>
+                <td>${escapeHtml(e.email || "")}</td>
+                <td>${e.score ?? 0}</td>
+            </tr>
+        `).join("");
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.appendChild(document.createTextNode(text));
+        return div.innerHTML;
+    }
+
+    // ---- Load leaderboards ----
+    async function loadLeaderboards() {
+        try {
+            const [freeRes, paidRes] = await Promise.all([
+                fetch(API_BASE + "/leaderboard/free"),
+                fetch(API_BASE + "/leaderboard/paid"),
+            ]);
+            const freeData = await freeRes.json();
+            const paidData = await paidRes.json();
+            renderBoard("free-leaderboard-body", freeData);
+            renderBoard("paid-leaderboard-body", paidData);
+        } catch (err) {
+            console.error("Failed to load leaderboards:", err);
+            showToast("Failed to load leaderboards. Check your connection.", "error");
+        }
+    }
+
+    // ---- Export Excel ----
+    function exportExcel() {
+        window.open(API_BASE + "/export", "_blank");
+    }
+
+    // ---- Handle giftcard form submission ----
+    async function handleGiftcardSubmit(e) {
+        e.preventDefault();
+        const username = document.getElementById("gc-username").value.trim();
+        const value = parseFloat(document.getElementById("gc-value").value);
+        const code = document.getElementById("gc-code").value.trim();
+        const type = document.getElementById("gc-type").value.trim();
+
+        if (!username || !code || isNaN(value)) {
+            showToast("Please fill in all required fields.", "error");
+            return;
+        }
+
+        try {
+            // Step 1: Create the giftcard
+            const createRes = await fetch(API_BASE + "/giftcard", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code, value, type }),
+            });
+            const createData = await createRes.json();
+            if (!createRes.ok) {
+                showToast("Error creating giftcard: " + (createData.error || "Unknown error"), "error");
+                return;
+            }
+
+            // Step 2: Assign the giftcard to the user
+            const assignRes = await fetch(API_BASE + "/giftcard/assign", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code, username }),
+            });
+            const assignData = await assignRes.json();
+            if (!assignRes.ok) {
+                showToast("Error assigning giftcard: " + (assignData.error || "Unknown error"), "error");
+                return;
+            }
+
+            showToast(`Giftcard ${code} (${type || "N/A"}, $${value}) assigned to ${username}!`, "success");
+            document.getElementById("giftcard-form").reset();
+        } catch (err) {
+            console.error("Giftcard submission failed:", err);
+            showToast("Network error. Please try again.", "error");
+        }
+    }
+
+    // ---- Initial load ----
+    document.addEventListener("DOMContentLoaded", loadLeaderboards);
+</script>
+
+</body>
+</html>
