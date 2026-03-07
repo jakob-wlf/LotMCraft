@@ -67,7 +67,7 @@ public class FindStructureQuest extends Quest {
 
     @Override
     public float getDigestionReward() {
-        return .3f;
+        return .2f;
     }
 
     @Override

@@ -100,7 +100,7 @@ public class KillPlayerQuest extends Quest {
 
     @Override
     public float getDigestionReward() {
-        return .5f;
+        return .4f;
     }
 
 
