@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncPlayerTeleportationOnlinePlayersPacket;
 import de.jakob.lotm.network.packets.toClient.SyncPlayerTeleportationPlayerNamesPacket;
@@ -11,7 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -70,6 +70,13 @@ public class PlayerTeleportationAbility extends SelectableAbility {
 
         ServerPlayer targetPlayer = (ServerPlayer) targetLevel.getPlayerByUUID(targetPlayerUUID);
         if(targetPlayer == null) {
+            return;
+        }
+
+        if ((targetPlayer.level().dimension().location().equals(ModDimensions.SEFIRAH_CASTLE_TYPE_KEY.location()))
+                || (targetPlayer.level().dimension().location().equals(ModDimensions.SPACE_TYPE_KEY.location()))
+                || (targetPlayer.level().dimension().equals(ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY))
+                || (targetPlayer.level().dimension().location().equals(ModDimensions.WORLD_CREATION_LEVEL_KEY.location()))) {
             return;
         }
 

@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -156,6 +157,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                         if(slotId >= 0 && slotId < 27) {
                             ItemStack clickedItem = displayContainer.getItem(slotId);
                             if(!clickedItem.isEmpty()) {
+                                if (clickedItem.is(Items.SHULKER_BOX)) return;
                                 // Re-check count before summoning
                                 if(getSummonedCount(player) < getMaxSummoned(player)) {
                                     createTemporaryItem(level, player, clickedItem.copy());
@@ -454,7 +456,6 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
                             if(tag.contains("isDeleteMode")) {
                                 this.isDeleting = !this.isDeleting;
-                                player.sendSystemMessage(Component.literal("Deletion Mode: " + (isDeleting ? "ON" : "OFF")).withStyle(isDeleting ? ChatFormatting.RED : ChatFormatting.GREEN));
                                 return;
                             }
 
@@ -464,7 +465,6 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                                     // remove logic
                                     removedMarkedEntity(player, entityData);
                                     player.closeContainer();
-                                    player.sendSystemMessage(Component.literal("Entity removed from history.").withStyle(ChatFormatting.YELLOW));
                                 } else {
                                     // Re-check count before summoning
                                     if(getSummonedCount(player) < getMaxSummoned(player)) {
