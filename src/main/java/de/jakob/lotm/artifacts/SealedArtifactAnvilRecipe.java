@@ -3,7 +3,9 @@ package de.jakob.lotm.artifacts;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
@@ -21,6 +23,11 @@ public class SealedArtifactAnvilRecipe {
 
         // Check if right slot has a beyonder characteristic
         if (!(right.getItem() instanceof BeyonderCharacteristicItem characteristic)) {
+            return;
+        }
+
+        // check if the item is historical summoned
+        if (right.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).contains("VoidSummonTime")) {
             return;
         }
 
