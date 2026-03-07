@@ -262,22 +262,22 @@ public class DivinationUtil {
 
                 // seq3 ability - Lightning Storm - Tyrant
                 if (event.getAbility() instanceof LightningStormAbility) {
-                    durationMultiplier = 1 + (4 - sequence);
-                    powerMultiplier = 2 + (4 - sequence);
+                    durationMultiplier = 3;
+                    powerMultiplier = (sequence < 4) ?  2 + (4 - sequence) : 2;
                 }
 
                 // seq 4 ability - Space Concealment - Door
                 else if (event.getAbility() instanceof SpaceConcealmentAbility spaceAbility) {
                     if (spaceAbility.getSelectedAbility(user).equals("ability.lotmcraft.space_concealment.self")) {
-                        durationMultiplier = (5 - sequence);
-                        powerMultiplier = 2 + (5 - sequence);
+                        durationMultiplier = 4;
+                        powerMultiplier = (sequence < 5) ? 2 + (5 - sequence) : 2;
                     }
                 }
 
                 // seq 9 ability - Anti Divination - Common
                 else if (event.getAbility() instanceof DivinationAbility divinationAbility) {
                     if (divinationAbility.getSelectedAbility(user).equals("ability.lotmcraft.divination.anti_divination")) {
-                        durationMultiplier = (10 - sequence);
+                        durationMultiplier = 4;
                         powerMultiplier = (10 - sequence);
                     }
                 }
@@ -285,8 +285,8 @@ public class DivinationUtil {
                 // seq4 ability - Night Domain - Darkness
                 else if (event.getAbility() instanceof NightDomainAbility) {
                     Vec3 startPos = user.position();
-                    final int durationMultiplierFinal = 1 + (5 - sequence);
-                    final int powerMultiplierFinal = 3 + (5 - sequence);
+                    final int durationMultiplierFinal = 8;
+                    final int powerMultiplierFinal = (sequence < 5) ? 3 + (5 - sequence) : 3;
 
                     ServerScheduler.scheduleForDuration(0, 2, 20 * 25, () -> {
                         // Using your existing Utility method to find targets
