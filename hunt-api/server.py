@@ -1,7 +1,7 @@
 import os
 import time
 import json
-import uuid
+import threading
 from io import BytesIO
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
@@ -12,25 +12,30 @@ app = Flask(__name__)
 CORS(app)
 
 DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.json")
+_data_lock = threading.Lock()
+
+_DEFAULT_DATA = {
+    "users": {},
+    "leaderboard_free": [],
+    "leaderboard_paid": [],
+    "giftcards": {},
+    "user_giftcards": {},
+    "winnings_last_checked": {},
+}
 
 
 def load_data():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r") as f:
-            return json.load(f)
-    return {
-        "users": {},
-        "leaderboard_free": [],
-        "leaderboard_paid": [],
-        "giftcards": {},
-        "user_giftcards": {},
-        "winnings_last_checked": {},
-    }
+    with _data_lock:
+        if os.path.exists(DATA_FILE):
+            with open(DATA_FILE, "r") as f:
+                return json.load(f)
+        return {k: v.copy() if isinstance(v, (dict, list)) else v for k, v in _DEFAULT_DATA.items()}
 
 
 def save_data(data):
-    with open(DATA_FILE, "w") as f:
-        json.dump(data, f, indent=2)
+    with _data_lock:
+        with open(DATA_FILE, "w") as f:
+            json.dump(data, f, indent=2)
 
 
 # ---------------------------------------------------------------------------
@@ -57,7 +62,9 @@ def get_paid_leaderboard():
 
 @app.route("/api/leaderboard", methods=["POST"])
 def update_leaderboard_entry():
-    body = request.get_json(force=True)
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify({"error": "invalid or missing JSON body"}), 400
     username = body.get("username")
     email = body.get("email", "")
     score = body.get("score", 0)
@@ -91,7 +98,9 @@ def update_leaderboard_entry():
 
 @app.route("/api/giftcard", methods=["POST"])
 def create_giftcard():
-    body = request.get_json(force=True)
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify({"error": "invalid or missing JSON body"}), 400
     code = body.get("code")
     value = body.get("value")
     card_type = body.get("type", "")
@@ -115,7 +124,9 @@ def create_giftcard():
 
 @app.route("/api/giftcard/assign", methods=["POST"])
 def assign_giftcard():
-    body = request.get_json(force=True)
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify({"error": "invalid or missing JSON body"}), 400
     code = body.get("code")
     username = body.get("username")
 
@@ -272,4 +283,7 @@ def _fill_giftcards_sheet(ws, giftcards):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    debug = os.environ.get("FLASK_DEBUG", "false").lower() in ("1", "true")
+    host = os.environ.get("FLASK_HOST", "127.0.0.1")
+    port = int(os.environ.get("FLASK_PORT", "5000"))
+    app.run(host=host, port=port, debug=debug)
