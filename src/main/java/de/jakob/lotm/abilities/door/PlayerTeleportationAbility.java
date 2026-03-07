@@ -77,7 +77,7 @@ public class PlayerTeleportationAbility extends SelectableAbility {
 
         if (14 <= DivinationUtil.getConcealmentPower(targetPlayer)) {
             player.sendSystemMessage(Component.literal("Failed to locate the target"));
-            return
+            return;
         }
         if ((targetPlayer.level().dimension().location().equals(ModDimensions.SEFIRAH_CASTLE_TYPE_KEY.location()))
                 || (targetPlayer.level().dimension().location().equals(ModDimensions.SPACE_TYPE_KEY.location()))
