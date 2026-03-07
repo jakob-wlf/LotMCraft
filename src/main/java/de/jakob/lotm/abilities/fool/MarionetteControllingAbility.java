@@ -7,7 +7,6 @@ import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSelectedMarionettePacket;
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ControllingUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CycleOfFateHelper;
@@ -33,8 +32,6 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.*;
 import java.util.stream.StreamSupport;
-
-import static de.jakob.lotm.item.ModItems.MARIONETTE_CONTROLLER;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MarionetteControllingAbility extends SelectableAbility {
@@ -291,7 +288,6 @@ public class MarionetteControllingAbility extends SelectableAbility {
         LivingEntity target = AbilityUtil.getTargetEntity(player, 5, 1, false, false, true);
 
         if (target == null) {
-            System.out.println("1");
             ItemStack item = player.getMainHandItem();
             if (!item.is(ModItems.MARIONETTE_CONTROLLER.get())) {
                 item = player.getOffhandItem();

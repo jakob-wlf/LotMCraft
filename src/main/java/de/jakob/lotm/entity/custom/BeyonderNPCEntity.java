@@ -521,6 +521,12 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
         Random random = new Random();
 
+        // don't drop anything if historical summoned
+        if (this.getPersistentData().contains("VoidSummoned")) {
+            super.dropCustomDeathLoot(level, damageSource, recentlyHit);
+            return;
+        }
+
         // Drop characteristic
         BeyonderCharacteristicItem characteristicItem =
                 BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, sequence);
