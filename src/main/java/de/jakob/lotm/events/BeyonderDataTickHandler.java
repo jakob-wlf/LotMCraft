@@ -3,6 +3,7 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
@@ -21,6 +22,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
@@ -65,6 +67,8 @@ public class BeyonderDataTickHandler {
         if(BeyonderData.isBeyonder(livingEntity)) {
             if(entity.tickCount % 200 == 0) {
                 invalidateCache(livingEntity);
+                PhysicalEnhancementsAbility.resetEnhancements(event.getEntity().getUUID());
+                invalidateCache(livingEntity); // also re-filter applicable abilities
             }
 
             // Tick Passive Abilities, Toggle Abilities and onHold for currently selected Ability
@@ -106,6 +110,12 @@ public class BeyonderDataTickHandler {
                 SubordinateControllerItem.onHold(player, player.getMainHandItem());
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerClone(PlayerEvent.Clone event) {
+        PhysicalEnhancementsAbility.resetEnhancements(event.getEntity().getUUID());
+        invalidateCache(event.getEntity()); // also re-filter applicable abilities
     }
 
     private static void tickAbilities(LivingEntity entity) {
