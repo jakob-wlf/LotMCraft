@@ -312,8 +312,11 @@ public class DivinationUtil {
         Map<String, AbilityPower> activeAbilities = PLAYER_ABILITY_MAP.computeIfAbsent(entity.getUUID(), k -> new HashMap<>());
 
         // if the abilities already exits with the same power lvl, return
-        AbilityPower existing = activeAbilities.get(key);
-        if (existing != null && existing.power == power) {
+        if (activeAbilities.get(key) != null && activeAbilities.get(key).power == power) {
+            if (System.currentTimeMillis() > activeAbilities.get(key).expiryTime) {
+                activeAbilities.entrySet().removeIf(entry -> System.currentTimeMillis() > entry.getValue().expiryTime);
+                updateEffect(entity, key, power, durationMultiplier);
+            }
             return;
         }
 
@@ -321,7 +324,6 @@ public class DivinationUtil {
         long expiryTime = System.currentTimeMillis() + (durationTicks * 50L);
         activeAbilities.put(key, new AbilityPower(power, expiryTime));
 
-        activeAbilities.entrySet().removeIf(entry -> System.currentTimeMillis() > entry.getValue().expiryTime);
         int totalPower = activeAbilities.values().stream().mapToInt(a -> a.power).sum();
 
         if (totalPower > 0) {
