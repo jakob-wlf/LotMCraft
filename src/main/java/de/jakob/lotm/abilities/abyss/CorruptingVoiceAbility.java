@@ -141,9 +141,8 @@ public class CorruptingVoiceAbility extends ToggleAbility {
     }
 
     private static void applyRandomNegativeEffects(LivingEntity entity) {
-        int effectCount = 1 + RANDOM.nextInt(3);
-        for (int i = 0; i < effectCount; i++) {
-            int effectChoice = RANDOM.nextInt(10);
+        for (int i = 0; i < 3; i++) {
+            int effectChoice = RANDOM.nextInt(8);
             int amplifier = RANDOM.nextInt(5);
             int duration = 20 * (10 + RANDOM.nextInt(21));
 
