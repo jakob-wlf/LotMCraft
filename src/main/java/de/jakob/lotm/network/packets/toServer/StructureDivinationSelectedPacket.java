@@ -1,6 +1,7 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
@@ -44,6 +45,16 @@ public record StructureDivinationSelectedPacket(String structureId) implements C
             return;
         }
 
+        int playerSequence = BeyonderData.getSequence(player);
+        int maxDistance = switch (playerSequence) {
+            case 9, 8, 7, 6, 5 -> 500 * (10 - playerSequence);
+            case 4             -> 5000;
+            case 3             -> 15000;
+            case 2             -> ((int) (player.level().getWorldBorder().getSize() * 0.001) > 15000) ? (int) (player.level().getWorldBorder().getSize() * 0.001) : 30000;
+            case 1             -> ((int) (player.level().getWorldBorder().getSize() * 0.01) > 30000) ? (int) (player.level().getWorldBorder().getSize() * 0.01) : 60000;
+            default            -> 0;
+        };
+
         CompletableFuture.runAsync(() -> {
                     var structureRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
                     var structureHolder = structureRegistry.getHolder(structureKey).orElse(null);
@@ -57,7 +68,7 @@ public record StructureDivinationSelectedPacket(String structureId) implements C
                                     level,
                                     HolderSet.direct(structureHolder),
                                     player.blockPosition(),
-                                    5000,
+                                    maxDistance,
                                     false
                             );
 
