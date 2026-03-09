@@ -5,6 +5,7 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -13,12 +14,13 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class DemonicSpellsAbility extends SelectableAbility {
     private final Random random = new Random();
@@ -27,7 +29,7 @@ public class DemonicSpellsAbility extends SelectableAbility {
     private final DustParticleOptions redDust = new DustParticleOptions(new Vector3f(0.9f, 0.2f, 0.2f), 1.2f);
 
     public DemonicSpellsAbility(String id) {
-        super(id, 1.5f);
+        super(id, 3f);
     }
 
     @Override
@@ -37,7 +39,7 @@ public class DemonicSpellsAbility extends SelectableAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 120;
+        return 400;
     }
 
     @Override
@@ -68,7 +70,7 @@ public class DemonicSpellsAbility extends SelectableAbility {
 
         level.playSound(null, entity.blockPosition(), SoundEvents.SLIME_BLOCK_BREAK, entity.getSoundSource(), 2f, 0.8f);
 
-        double swampRadius = 20;
+        double swampRadius = 15;
         double damage = DamageLookup.lookupDamage(4, 0.7) * multiplier(entity);
 
         AbilityUtil.getNearbyEntities(entity, level, entity.position(), swampRadius)
@@ -107,17 +109,22 @@ public class DemonicSpellsAbility extends SelectableAbility {
     }
 
     private void createClone(ServerLevel level, LivingEntity caster, Vec3 startPos, LivingEntity target) {
+        boolean[] exploded = {false};
+
         ServerScheduler.scheduleForDuration(0, 1, 20 * 5, () -> {
+            if (exploded[0]) return;
+
             if (target != null && target.isAlive()) {
                 double distance = startPos.distanceTo(target.position());
                 if (distance < 2) {
+                    exploded[0] = true;
                     explodeClone(level, caster, target.position());
                     return;
                 }
             }
             ParticleUtil.spawnParticles(level, purpleDust, startPos, 2, 0.5, 0.05);
         }, () -> {
-            if (target == null) {
+            if (!exploded[0]) {
                 explodeClone(level, caster, startPos);
             }
         }, level);
@@ -129,7 +136,7 @@ public class DemonicSpellsAbility extends SelectableAbility {
         level.playSound(null, explosionPos.x, explosionPos.y, explosionPos.z, SoundEvents.GENERIC_EXPLODE, caster.getSoundSource(), 1.5f, 1.0f);
 
         double explosionDamage = DamageLookup.lookupDamage(4, 0.65) * multiplier(caster);
-        AbilityUtil.getNearbyEntities(caster, level, explosionPos, 10)
+        AbilityUtil.getNearbyEntities(caster, level, explosionPos, 15)
                 .stream()
                 .filter(target -> AbilityUtil.mayDamage(caster, target))
                 .forEach(target -> {
@@ -141,11 +148,33 @@ public class DemonicSpellsAbility extends SelectableAbility {
     }
 
     private void castHellfireWall(ServerLevel level, LivingEntity entity) {
-        double wallRadius = 25;
+        double wallRadius = 13;
         int particleCount = 60;
         double damage = DamageLookup.lookupDamage(4, 0.6) * multiplier(entity);
 
+        final double centerX = entity.getX();
+        final double centerY = entity.getY();
+        final double centerZ = entity.getZ();
+        final Vec3 center = new Vec3(centerX, centerY, centerZ);
+
         level.playSound(null, entity.blockPosition(), SoundEvents.FIRE_AMBIENT, entity.getSoundSource(), 2.0f, 0.9f);
+
+        List<BlockPos> wallBlocks = new ArrayList<>();
+        int blockCount = (int)(2 * Math.PI * wallRadius * 2);
+
+        for (int i = 0; i < blockCount; i++) {
+            double angle = (i / (double) blockCount) * Math.PI * 2;
+            int bx = (int) Math.round(centerX + Math.cos(angle) * wallRadius);
+            int bz = (int) Math.round(centerZ + Math.sin(angle) * wallRadius);
+
+            for (int height = 0; height < 30; height++) {
+                BlockPos pos = new BlockPos(bx,(int) Math.floor(centerY) + height, bz);
+                if (!level.getBlockState(pos).isSolid()) {
+                    level.setBlock(pos, Blocks.BARRIER.defaultBlockState(), 3);
+                    wallBlocks.add(pos);
+                }
+            }
+        }
 
         for (int i = 0; i < particleCount; i++) {
             double angle = (i / (double) particleCount) * Math.PI * 2;
@@ -159,20 +188,31 @@ public class DemonicSpellsAbility extends SelectableAbility {
                 double angle = (i / (double) particleCount) * Math.PI * 2;
                 double x = entity.getX() + Math.cos(angle) * wallRadius;
                 double z = entity.getZ() + Math.sin(angle) * wallRadius;
-                ParticleUtil.spawnParticles(level, redDust, new Vec3(x, entity.getY() + 1, z), 2, 0.2, 0.05);
-                ParticleUtil.spawnParticles(level, ParticleTypes.FLAME, new Vec3(x, entity.getY() + 2, z), 3, 0.3, 0.1);
+                ParticleUtil.spawnParticles(level, redDust, new Vec3(x, centerY + 1, z), 2, 0.2, 0.05);
+                ParticleUtil.spawnParticles(level, ParticleTypes.FLAME, new Vec3(x, centerY + 2, z), 3, 0.3, 0.1);
             }
 
-            AbilityUtil.getNearbyEntities(entity, level, entity.position(), wallRadius + 2)
+            AbilityUtil.getNearbyEntities(entity, level, center, wallRadius + 2)
                     .stream()
                     .filter(target -> AbilityUtil.mayDamage(entity, target))
                     .forEach(target -> {
-                        double distFromCenter = target.position().distanceTo(entity.position());
-                        if (Math.abs(distFromCenter - wallRadius) < 3) {
+                        double dx = target.getX() - centerX;
+                        double dz = target.getZ() - centerZ;
+                        double distFromCenter = Math.sqrt(dx * dx + dz * dz);
+                        if (Math.abs(distFromCenter - wallRadius) < 2) {
                             target.hurt(level.damageSources().magic(), (float) damage);
                             target.setRemainingFireTicks(60);
+
                         }
                     });
+        }, level);
+
+        ServerScheduler.scheduleDelayed(20 * 8 + 1, () -> {
+            for (BlockPos pos : wallBlocks) {
+                if (level.getBlockState(pos).is(Blocks.BARRIER)) {
+                    level.removeBlock(pos, false);
+                }
+            }
         }, level);
     }
 }
