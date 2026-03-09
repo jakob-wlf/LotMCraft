@@ -109,6 +109,8 @@ public class AbilityHandler {
         abilities.add(new DemonicSpellsAbility("demonic_spells_ability"));
         abilities.add(new MindFogAbility("mind_fog_ability"));
         abilities.add(new DesireControlAbility("desire_control_ability"));
+        abilities.add(new CorruptingVoiceAbility("corrupting_voice_ability"));
+
 
         // FOOL PATHWAY
         abilities.add(new AirBulletAbility("air_bullet_ability"));

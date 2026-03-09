@@ -246,6 +246,11 @@
   "lotmcraft.desire_control_ability.description": "Manipulate the desires of your enemies, forcing them to lose control",
   "ability.lotmcraft.desire_control.single_target": "Single Target Control",
   "ability.lotmcraft.desire_control.aoe": "Area Desire Explosion",
+  "lotmcraft.corrupting_voice_ability": "Corrupting Voice",
+  "lotmcraft.corrupting_voice_ability.description": "While active, typing in chat emits a corrupting sound wave that deals damage and applies random negative effects to all entities within 50 blocks. Damage scales with the length of your message.",
+  "ability.lotmcraft.corrupting_voice.activated": "Corrupting Voice: Active",
+  "ability.lotmcraft.corrupting_voice.deactivated": "Corrupting Voice: Deactivated",
+  "ability.lotmcraft.corrupting_voice.triggered": "Corrupting Voice: ",
 
   "lotmcraft.flame_controlling_ability": "Flame Controlling",
   "lotmcraft.flame_controlling_ability.description": "Shoot out flames",
@@ -695,6 +700,8 @@
   "item.lotmcraft.fire_resistance_ability": "Fire Resistance",
 
   "item.lotmcraft.fire_resistance_abyss_ability": "Fire Resistance",
+  "item.lotmcraft.word_immunity_abyss_ability": "Word Immunity",
+  "item.lotmcraft.word_immunity_abyss_ability.": "Grants immunity to Nausea and Blindness effects.",
 
   "item.lotmcraft.passive_theft_ability": "Passive Theft",
   "item.lotmcraft.passive_theft_ability.description": "You have a chance to steal items from mobs or players you hit",
