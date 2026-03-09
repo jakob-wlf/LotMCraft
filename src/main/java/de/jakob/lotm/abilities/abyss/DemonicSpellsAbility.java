@@ -17,8 +17,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
-import java.util.ArrayList;
-import java.util.List;
 
 import java.util.*;
 
@@ -109,22 +107,17 @@ public class DemonicSpellsAbility extends SelectableAbility {
     }
 
     private void createClone(ServerLevel level, LivingEntity caster, Vec3 startPos, LivingEntity target) {
-        boolean[] exploded = {false};
-
         ServerScheduler.scheduleForDuration(0, 1, 20 * 5, () -> {
-            if (exploded[0]) return;
-
             if (target != null && target.isAlive()) {
                 double distance = startPos.distanceTo(target.position());
                 if (distance < 2) {
-                    exploded[0] = true;
                     explodeClone(level, caster, target.position());
                     return;
                 }
             }
             ParticleUtil.spawnParticles(level, purpleDust, startPos, 2, 0.5, 0.05);
         }, () -> {
-            if (!exploded[0]) {
+            if (target == null) {
                 explodeClone(level, caster, startPos);
             }
         }, level);
