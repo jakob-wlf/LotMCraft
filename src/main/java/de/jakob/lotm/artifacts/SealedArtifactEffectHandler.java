@@ -52,12 +52,12 @@ public class SealedArtifactEffectHandler {
 
     private static void applyNegativeEffect(Player player, ItemStack stack, boolean inMainHand) {
         SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
-        if (data == null) {
+        if (data == null || data.negativeEffect() == null) {
             return;
         }
 
-        NegativeEffect effect = data.negativeEffect();
-        if (effect != null) {
+        // loop through every effect in the list and apply it
+        for (NegativeEffect effect : data.negativeEffect()) {
             effect.apply(player, inMainHand);
         }
     }
@@ -69,10 +69,11 @@ public class SealedArtifactEffectHandler {
             return;
         }
 
-        NegativeEffect effect = data.negativeEffect();
-        if (effect != null && effect.getType() == NegativeEffect.NegativeEffectType.HEARING_WHISPERS) {
-            // Some effects like whispers can still occur even when in inventory
-            effect.apply(player, false);
+        for (NegativeEffect effect : data.negativeEffect()) {
+            if (effect != null && effect.getType() == NegativeEffect.NegativeEffectType.HEARING_WHISPERS) {
+                // Some effects like whispers can still occur even when in inventory
+                effect.apply(player, false);
+            }
         }
     }
 }

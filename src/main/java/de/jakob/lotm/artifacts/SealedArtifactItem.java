@@ -90,9 +90,11 @@ public class SealedArtifactItem extends Item {
                 .append(":")
                 .withStyle(ChatFormatting.DARK_PURPLE));
 
-        tooltipComponents.add(Component.literal("  ")
-                .append(data.negativeEffect().getDisplayName())
-                .withStyle(ChatFormatting.DARK_PURPLE));
+        for (NegativeEffect effect : data.negativeEffect()) {
+            tooltipComponents.add(Component.literal("  - ")
+                    .append(effect.getDisplayName())
+                    .withStyle(ChatFormatting.DARK_PURPLE));
+        }
     }
 
 

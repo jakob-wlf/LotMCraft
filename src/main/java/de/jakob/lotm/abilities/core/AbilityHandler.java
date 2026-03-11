@@ -14,9 +14,7 @@ import de.jakob.lotm.abilities.tyrant.*;
 import de.jakob.lotm.abilities.visionary.*;
 import de.jakob.lotm.abilities.wheel_of_fortune.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AbilityHandler {
@@ -274,6 +272,16 @@ public class AbilityHandler {
                         .sorted(Comparator.comparing(ability -> ability.getRequirements().get(pathway)))
                         .toList()
         );
+    }
+
+    public Ability getRandomAbility(String pathway, int sequence, Random random) {
+        List<Ability> pool = new ArrayList<>(getByPathwayAndSequence(pathway, sequence));
+
+        if (pool.isEmpty()) {
+            return null;
+        }
+
+        return pool.get(random.nextInt(pool.size()));
     }
 
     public void disableAbility(Ability ability) {

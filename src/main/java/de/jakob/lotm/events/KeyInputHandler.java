@@ -3,15 +3,17 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.artifacts.SealedArtifactData;
+import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.ClientData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -21,6 +23,7 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class KeyInputHandler {
@@ -129,6 +132,9 @@ public class KeyInputHandler {
         if (LOTMCraft.returnToMainBody.consumeClick()) {
             PacketHandler.sendToServer(new ReturnToMainBodyPacket());
         }
+        if (LOTMCraft.openArtifactWheel.consumeClick()) {
+            openArtifactWheel();
+        }
     }
 
     @SubscribeEvent
@@ -190,6 +196,24 @@ public class KeyInputHandler {
             mc.player.displayClientMessage(Component.translatable("lotm.ability_wheel.no_abilities"), true);
         } else {
             PacketHandler.sendToServer(new OpenAbilityWheelPacket());
+        }
+    }
+
+    private static void openArtifactWheel() {
+        Minecraft mc = Minecraft.getInstance();
+        ItemStack stack = mc.player.getMainHandItem();
+        SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
+        if (data == null || data.abilities().isEmpty()) {
+            return;
+        }
+        List<String> abilityNames = data.abilities().stream()
+                .map(ability -> ability.getId())
+                .toList();
+
+        if (abilityNames.isEmpty()) {
+            mc.player.displayClientMessage(Component.translatable("lotm.ability_wheel.no_abilities"), true);
+        } else {
+            PacketHandler.sendToServer(new OpenArtifactWheelPacket(abilityNames));
         }
     }
 }

@@ -22,5 +22,11 @@
     "sounds": [
       "lotmcraft:song_of_courage"
     ]
+  },
+  "bad_sound": {
+    "subtitle": "sounds.lotmcraft.loud_sound_1",
+    "sounds": [
+      "lotmcraft:loud_sound_1"
+    ]
   }
 }
