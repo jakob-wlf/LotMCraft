@@ -84,7 +84,7 @@ public class DeliverQuest extends Quest {
 
     @Override
     public float getDigestionReward() {
-        return .25f;
+        return .15f;
     }
 
     @Override

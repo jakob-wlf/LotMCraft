@@ -73,11 +73,11 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid) implements
 
             // distance still isn't balanced
             int maxDistance = switch (playerSequence) {
-                case 9, 8, 7, 6, 5 -> 100 * (10 - playerSequence);
-                case 4             -> 1000;
-                case 3             -> 2000;
-                case 2             -> 5000;
-                case 1             -> 10000;
+                case 9, 8, 7, 6, 5 -> 200 * (10 - playerSequence);
+                case 4             -> 2500;
+                case 3             -> 5000;
+                case 2             -> ((int) (player.level().getWorldBorder().getSize() * 0.001) > 5000) ? (int) (player.level().getWorldBorder().getSize() * 0.001) : 7500;
+                case 1             -> ((int) (player.level().getWorldBorder().getSize() * 0.01) > 7500) ? (int) (player.level().getWorldBorder().getSize() * 0.01) : 15000;
                 default            -> 0;
             };
 
@@ -107,9 +107,12 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid) implements
             }
             else if (divinationDifference >= 10) {
                 player.sendSystemMessage(Component.literal(String.format(
-                        "§5You sense §d%s§5 at cords §d%s§5, about §d%d blocks §5away...",
+                        "§5You sense §d%s§5 to the §d%s§5 at cords §d%d, %d, %d§5, about §d%d blocks §5away...",
                         targetPlayer.getGameProfile().getName(),
-                        targetPlayer.position(),
+                        getDirection(dx, dz),
+                        targetPlayer.blockPosition().getX(),
+                        targetPlayer.blockPosition().getY(),
+                        targetPlayer.blockPosition().getZ(),
                         distance
                 )));
             }

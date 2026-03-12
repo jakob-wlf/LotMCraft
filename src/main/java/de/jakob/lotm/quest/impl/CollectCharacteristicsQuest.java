@@ -51,7 +51,7 @@ public class CollectCharacteristicsQuest extends Quest {
 
     @Override
     public float getDigestionReward() {
-        return 0.5f;
+        return 0.2f;
     }
 
     @Override
