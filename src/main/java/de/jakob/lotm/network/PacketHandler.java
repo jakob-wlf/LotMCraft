@@ -601,6 +601,12 @@ public class PacketHandler {
                 OpenArtifactWheelPacket.TYPE,
                 OpenArtifactWheelPacket.STREAM_CODEC,
                 OpenArtifactWheelPacket::handle);
+
+        registrar.playToServer(
+                SyncArtifactAbilityWheel.TYPE,
+                SyncArtifactAbilityWheel.STREAM_CODEC,
+                SyncArtifactAbilityWheel::handle
+        );
     }
 
     public static void sendToServer(CustomPacketPayload packet) {

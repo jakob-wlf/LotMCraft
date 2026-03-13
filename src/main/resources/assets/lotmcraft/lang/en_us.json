@@ -1293,6 +1293,7 @@
   "lotm.description": "Description",
   "lotm.digested": "Digested the Potion",
   "lotm.marionette": "Marionette",
+  "lotm.ability": "Ability",
   "lotm.selected": "Selected",
   "lotm.potion_recipe": "Potion Recipe",
   "lotm.beyonder_message.full": "Become a Beyonder of the %s Pathway at Sequence %s",
