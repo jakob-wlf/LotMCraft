@@ -95,7 +95,7 @@ public class HairEntanglementAbility extends Ability {
             targetEntity.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 20, 10, false, false, false));
             targetEntity.setDeltaMovement(new Vec3(0, 0, 0));
             targetEntity.hurtMarked = true;
-        });
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
 
 
         ServerScheduler.scheduleDelayed(duration, () -> pacifiedEntities.remove(targetEntity.getUUID()));
@@ -121,6 +121,6 @@ public class HairEntanglementAbility extends Ability {
             }
 
             tick.addAndGet(1);
-        });
+        }, null, level, () -> AbilityUtil.getTimeInArea(null, startLoc));
     }
 }

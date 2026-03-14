@@ -77,6 +77,6 @@ public class UnshadowedDomainAbility extends Ability {
             BlockState state = level.getBlockState(b);
             if(state.is(Blocks.LIGHT))
                 level.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState());
-        }), (ServerLevel) level);
+        }), (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
     }
 }

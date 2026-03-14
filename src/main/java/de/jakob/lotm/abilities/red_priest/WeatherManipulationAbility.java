@@ -132,7 +132,7 @@ public class WeatherManipulationAbility extends SelectableAbility {
                     }
                 }
             }
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(startPos, serverLevel)));
     }
 
     private final DustParticleOptions droughtDust = new DustParticleOptions(new Vector3f(217 / 255f, 121 / 255f, 65 / 255f), 10.0f);
@@ -210,7 +210,7 @@ public class WeatherManipulationAbility extends SelectableAbility {
                     }
                 }
             }
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(startPos, serverLevel)));
     }
 
     private void createTornados(ServerLevel serverLevel, LivingEntity entity) {

@@ -677,6 +677,10 @@
   "ability.lotmcraft.conceptual_theft.day_night": "Steal Day/Night",
   "ability.lotmcraft.conceptual_theft.area": "Steal Area",
   "lotmcraft.time_manipulation_ability": "Time Manipulation",
+  "lotmcraft.time_manipulation_ability.description": "Manipulate Time in an area in certain ways",
+  "ability.lotmcraft.time_manipulation.stop_time": "Stop Time",
+  "ability.lotmcraft.time_manipulation.accelerate_time": "Accelerate Time",
+  "ability.lotmcraft.time_manipulation.slow_time": "Slow down Time",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",

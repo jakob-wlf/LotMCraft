@@ -5,9 +5,11 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.entity.custom.TimeChangeEntity;
 import de.jakob.lotm.events.custom.TargetEntityEvent;
 import de.jakob.lotm.events.custom.TargetLocationEvent;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.minecraft.core.BlockPos;
@@ -29,10 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class AbilityUtil {
 
@@ -1030,6 +1029,26 @@ public class AbilityUtil {
         }
 
         return true;
+    }
+
+    // ==================== TIME METHODS ====================
+
+    public static double getTimeInArea(@Nullable LivingEntity entity, Location location) {
+        Level level = location.getLevel();
+        TimeChangeEntity timeChangeEntity = level.getEntitiesOfClass(TimeChangeEntity.class,
+                new AABB(BlockPos.containing(location.getPosition())).inflate(100))
+                .stream()
+                .filter(e -> entity == null || e.getCasterEntity() == null || AbilityUtil.mayTarget(e.getCasterEntity(), entity))
+                .min(Comparator.comparingDouble(e -> e.position().distanceTo(location.getPosition())))
+                .orElse(null);
+
+        if(timeChangeEntity == null) {
+            return 1.0;
+        }
+
+        if(location.getPosition().distanceTo(timeChangeEntity.position()) <= timeChangeEntity.getRadius()) return timeChangeEntity.getTimeMultiplier();
+
+        return 1.0;
     }
 
     // ==================== UI UTILITY METHODS ====================

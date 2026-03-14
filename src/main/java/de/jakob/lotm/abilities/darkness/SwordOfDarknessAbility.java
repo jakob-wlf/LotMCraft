@@ -70,7 +70,7 @@ public class SwordOfDarknessAbility extends Ability {
 
                 distance.addAndGet(.5);
             }
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), serverLevel)));
     }
 
     @Override

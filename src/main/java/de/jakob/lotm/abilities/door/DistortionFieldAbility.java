@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.DistortionFieldEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -121,7 +122,7 @@ public class DistortionFieldAbility extends Ability {
             AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, 45).forEach(e -> {
                 BeyonderData.enableAbilityUse(e, "distortion_field");
             });
-        }, serverLevel);
+        }, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 
     @Override

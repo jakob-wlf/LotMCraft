@@ -69,12 +69,12 @@ public class MaternalEmbraceAbility extends Ability {
                 return;
             }
             targetEntity.setPos(coffinEntity.getX(), coffinEntity.getY(), coffinEntity.getZ());
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(targetEntity, new de.jakob.lotm.util.data.Location(coffinEntity.position(), serverLevel)));
 
         ServerScheduler.scheduleDelayed(20 * 30, () -> {
             component.setTransformedAndSync(false, targetEntity);
             component.setTransformationIndexAndSync(0, targetEntity);
             coffinEntity.discard();
-        });
+        }, serverLevel, () -> AbilityUtil.getTimeInArea(targetEntity, new de.jakob.lotm.util.data.Location(coffinEntity.position(), serverLevel)));
     }
 }

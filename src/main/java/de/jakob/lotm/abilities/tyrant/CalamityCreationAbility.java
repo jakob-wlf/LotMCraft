@@ -9,6 +9,7 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.TornadoEntity;
 import de.jakob.lotm.entity.custom.VolcanoEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -142,7 +143,7 @@ public class CalamityCreationAbility extends SelectableAbility {
                     }
                 }
             }
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 
     private final DustParticleOptions droughtDust = new DustParticleOptions(new Vector3f(217 / 255f, 121 / 255f, 65 / 255f), 10.0f);
@@ -220,7 +221,7 @@ public class CalamityCreationAbility extends SelectableAbility {
                     }
                 }
             }
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 
     private void createTornados(ServerLevel serverLevel, LivingEntity entity) {

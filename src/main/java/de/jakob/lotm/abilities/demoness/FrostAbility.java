@@ -105,7 +105,7 @@ public class FrostAbility extends SelectableAbility {
             }
 
             radius.addAndGet(.5);
-        }, (ServerLevel) level);
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
     }
 
     private void spear(Level level, LivingEntity entity) {
@@ -159,6 +159,6 @@ public class FrostAbility extends SelectableAbility {
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SNOWFLAKE, pos, 45, 0.25, 0.02);
 
             currentPos.set(pos.add(direction));
-        }, (ServerLevel) level);
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
     }
 }

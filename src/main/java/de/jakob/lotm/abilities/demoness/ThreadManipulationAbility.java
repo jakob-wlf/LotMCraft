@@ -164,11 +164,7 @@ public class ThreadManipulationAbility extends SelectableAbility {
         if(!BeyonderData.isBeyonder(targetEntity) || BeyonderData.getSequence(targetEntity) - 1 > BeyonderData.getSequence(entity)) {
             if(targetEntity instanceof Mob) {
                 ((Mob) targetEntity).setNoAi(true);
-                ServerScheduler.scheduleDelayed(duration, () -> ((Mob) targetEntity).setNoAi(false));
-            }
-            if(BeyonderData.isBeyonder(targetEntity)) {
-                BeyonderData.disableAbilityUse(targetEntity, "threads");
-                ServerScheduler.scheduleDelayed(duration, () -> BeyonderData.enableAbilityUse(targetEntity, "requiem"));
+                ServerScheduler.scheduleDelayed(duration, () -> ((Mob) targetEntity).setNoAi(false), level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
             }
         }
 
@@ -185,7 +181,7 @@ public class ThreadManipulationAbility extends SelectableAbility {
 
             loc.setLevel(targetEntity.level());
             loc.setPosition(targetEntity.position());
-        });
+        }, null, level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
 
 
         ServerScheduler.scheduleDelayed(duration, () -> boundEntities.remove(targetEntity.getUUID()));
@@ -211,7 +207,7 @@ public class ThreadManipulationAbility extends SelectableAbility {
             }
 
             tick.addAndGet(1);
-        });
+        }, null, level, () -> AbilityUtil.getTimeInArea(null, new Location(startLoc.getPosition(), level)));
     }
 
 }

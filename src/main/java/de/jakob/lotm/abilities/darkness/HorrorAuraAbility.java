@@ -65,6 +65,6 @@ public class HorrorAuraAbility extends Ability {
                 sanityComponent.increaseSanityAndSync(-.0033f, e);
             });
             ticks.getAndIncrement();
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 }

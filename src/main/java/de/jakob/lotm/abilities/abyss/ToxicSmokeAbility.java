@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.abyss;
 
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -56,6 +57,6 @@ public class ToxicSmokeAbility extends Ability {
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, 5, pos,
                     new MobEffectInstance(MobEffects.POISON, 30, 1),
                     new MobEffectInstance(MobEffects.BLINDNESS, 10, 0));
-            }, (ServerLevel) level);
+            }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(pos, level)));
     }
 }

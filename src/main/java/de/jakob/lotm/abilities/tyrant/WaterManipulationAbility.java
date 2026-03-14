@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.tyrant;
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -165,7 +166,7 @@ public class WaterManipulationAbility extends SelectableAbility {
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.BUBBLE, pos, 12, 0.24, 0.02);
 
             currentPos.set(pos.add(direction));
-        }, (ServerLevel) level);
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 
     final Vec3 eastFacing = new Vec3(1, 0, 0);
@@ -187,7 +188,7 @@ public class WaterManipulationAbility extends SelectableAbility {
                 if (level.getBlockState(targetBlock).is(Blocks.LIGHT)) {
                     level.setBlock(targetBlock, Blocks.AIR.defaultBlockState(), 3);
                 }
-            }, (ServerLevel) level);
+            }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
 
         }
     }

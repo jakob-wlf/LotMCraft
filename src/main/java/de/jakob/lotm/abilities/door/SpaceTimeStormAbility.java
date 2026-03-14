@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -52,6 +53,6 @@ public class SpaceTimeStormAbility extends Ability {
                 blocks.stream().filter(b -> random.nextInt(175) == 0 && !serverLevel.getBlockState(b).is(ModBlocks.VOID.get())).forEach(b -> serverLevel.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState()));
                 blocks.stream().filter(b -> random.nextInt(60) == 0 && !serverLevel.getBlockState(b).isAir()).forEach(b -> serverLevel.setBlockAndUpdate(b, ModBlocks.VOID.get().defaultBlockState()));
             }
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(center, level)));
     }
 }

@@ -48,6 +48,6 @@ public class PlagueAbility extends Ability {
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 70, entity.position(), new MobEffectInstance(MobEffects.BLINDNESS, 20, 4, false, false, false));
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 70, entity.position(), new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 2, false, false, false));
             AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 70, DamageLookup.lookupDps(4, .3, 20, 20) * (float) multiplier(entity), entity.position(), true, false, true, 0);
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
     }
 }

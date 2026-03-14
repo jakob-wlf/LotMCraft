@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
@@ -82,6 +83,6 @@ public class WallOfLightAbility extends Ability {
                     level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
                 }
             }
-        }, (ServerLevel) level);
+        }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 }
