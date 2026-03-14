@@ -27,12 +27,14 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderDataTickHandler {
 
-    public static final HashSet<PassiveAbilityItem> passiveAbilities = new HashSet<>();
+    private static final Set<PassiveAbilityItem> passiveAbilities = ConcurrentHashMap.newKeySet();
+
 
     // In BeyonderDataTickHandler
     private static final Map<UUID, Set<PassiveAbilityItem>> cachedAbilities = new HashMap<>();
@@ -41,10 +43,25 @@ public class BeyonderDataTickHandler {
         cachedAbilities.remove(entity.getUUID());
     }
 
+    private static final Object INIT_LOCK = new Object();
+
     private static Set<PassiveAbilityItem> getApplicableAbilities(LivingEntity entity) {
-        if(passiveAbilities.isEmpty()) {
-            BeyonderDataTickHandler.passiveAbilities.addAll(PassiveAbilityHandler.ITEMS.getEntries().stream().map(entry -> (PassiveAbilityItem) entry.get()).toList());
+        if (passiveAbilities.isEmpty()) {
+            synchronized (INIT_LOCK) {
+                // Double-checked locking: re-test inside the lock
+                if (passiveAbilities.isEmpty()) {
+                    List<PassiveAbilityItem> items = PassiveAbilityHandler.ITEMS
+                            .getEntries()
+                            .stream()
+                            .map(entry -> (PassiveAbilityItem) entry.get())
+                            .toList();
+                    // addAll into a CopyOnWriteArraySet (or synchronizedSet)
+                    // so concurrent readers on the stream below are safe
+                    passiveAbilities.addAll(items);
+                }
+            }
         }
+
         return cachedAbilities.computeIfAbsent(entity.getUUID(), k ->
                 passiveAbilities.stream()
                         .filter(a -> a.shouldApplyTo(entity))

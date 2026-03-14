@@ -40,7 +40,7 @@ public class ApocalypseAbility extends Ability {
         Vec3 loc = entity.position();
 
         // Play effect
-        EffectManager.playEffect(EffectManager.Effect.APOCALYPSE, loc.x, loc.y, loc.z, serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.APOCALYPSE, loc.x, loc.y, loc.z, serverLevel, entity);
 
         double yLevel = loc.y - 1;
 

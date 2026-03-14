@@ -227,21 +227,34 @@ public class ClientHandler {
         entity.getData(ModAttachments.FOG_COMPONENT.get()).setColor(new Vec3f(packet.red(), packet.green(), packet.blue()));
     }
 
-    public static void addEffect(int index, double x, double y, double z) {
-        VFXRenderer.addActiveEffect(index, x, y, z);
+    public static void addEffect(int index, double x, double y, double z, int entityId) {
+        if (entityId == AddEffectPacket.NO_ENTITY) {
+            VFXRenderer.addActiveEffect(index, x, y, z);
+        } else {
+            VFXRenderer.addActiveEffect(index, x, y, z, entityId);
+        }
     }
 
     public static void addDirectionalEffect(int index,
                                             double startX, double startY, double startZ,
                                             double endX, double endY, double endZ,
-                                            int duration) {
-        VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration);
+                                            int duration, int entityId) {
+        if (entityId == AddDirectionalEffectPacket.NO_ENTITY) {
+            VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration);
+        } else {
+            VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration, entityId);
+        }
     }
 
     public static void addMovableEffect(UUID effectId, int index,
                                         double x, double y, double z,
-                                        int duration, boolean infinite) {
-        VFXRenderer.addActiveMovableEffect(effectId, index, x, y, z, duration, infinite);
+                                        int duration, boolean infinite,
+                                        int entityId) {
+        if (entityId == AddMovableEffectPacket.NO_ENTITY) {
+            VFXRenderer.addActiveMovableEffect(effectId, index, x, y, z, duration, infinite);
+        } else {
+            VFXRenderer.addActiveMovableEffect(effectId, index, x, y, z, duration, infinite, entityId);
+        }
     }
 
     public static void updateMovableEffectPosition(UUID effectId, double x, double y, double z) {

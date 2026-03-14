@@ -238,7 +238,7 @@ public class ConcealmentAbility extends SelectableAbility {
             return; // Exit early if destination world doesn't exist
         }
 
-        EffectManager.playEffect(EffectManager.Effect.CONCEALMENT, entity.getX(), entity.getY(), entity.getZ(), serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.CONCEALMENT, entity.getX(), entity.getY(), entity.getZ(), serverLevel, entity);
 
         AtomicDouble radius = new AtomicDouble(2);
         Vec3 finalTargetLoc = entity.position();

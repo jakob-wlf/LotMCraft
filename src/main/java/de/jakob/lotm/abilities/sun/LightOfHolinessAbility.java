@@ -59,7 +59,7 @@ public class LightOfHolinessAbility extends Ability {
 
             level.playSound(null, initialPos.x, initialPos.y - 18, initialPos.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 3.0f, 1.0f);
 
-            EffectManager.playEffect(EffectManager.Effect.LIGHT_OF_HOLINESS, initialPos.x, initialPos.y - 18, initialPos.z, (ServerLevel) level);
+            EffectManager.playEffect(EffectManager.Effect.LIGHT_OF_HOLINESS, initialPos.x, initialPos.y - 18, initialPos.z, (ServerLevel) level, entity);
 
             ServerScheduler.scheduleForDuration(0, 1, 22, () -> {
                 Vec3 pos = currentPos.get();

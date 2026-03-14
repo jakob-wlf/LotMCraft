@@ -60,7 +60,7 @@ public class LoopHoleCreationAbility extends Ability {
         UUID loopholeId = UUID.randomUUID();
 
         if(entity instanceof ServerPlayer serverPlayer) {
-            EffectManager.playEffect(EffectManager.Effect.LOOPHOLE, targetLoc.x, targetLoc.y, targetLoc.z, serverPlayer);
+            EffectManager.playEffect(EffectManager.Effect.LOOPHOLE, targetLoc.x, targetLoc.y, targetLoc.z, serverPlayer, entity);
         }
 
         // Register the loophole

@@ -73,7 +73,7 @@ public class AbilityTheftAbility extends SelectableAbility {
         }
 
         if (entity instanceof ServerPlayer serverPlayer) {
-            EffectManager.playEffect(EffectManager.Effect.ABILITY_THEFT, target.position().x, target.position().y + target.getEyeHeight(), target.position().z, serverPlayer);
+            EffectManager.playEffect(EffectManager.Effect.ABILITY_THEFT, target.position().x, target.position().y + target.getEyeHeight(), target.position().z, serverPlayer, entity);
         }
 
         if (!BeyonderData.isBeyonder(target)) {

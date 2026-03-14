@@ -61,7 +61,7 @@ public class GiftAbility extends Ability {
             return;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player);
+        EffectManager.playEffect(EffectManager.Effect.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
 
         if(!isItemWithEffect(offHandItem)) {
             var capability = target.getCapability(Capabilities.ItemHandler.ENTITY);

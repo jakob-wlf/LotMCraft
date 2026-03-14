@@ -33,6 +33,12 @@ import java.util.stream.Collectors;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class TimeChangeEntity extends Entity {
 
+    /** How long (ticks) a peer-strength entity stays under the effect before being released. */
+    private static final int PARTIAL_DURATION = 100; // 5 seconds
+
+    /** How long (ticks) resistance lasts after a peer-strength entity is released. */
+    private static final int RESISTANCE_DURATION = 600; // 30 seconds
+
     private static final EntityDataAccessor<Integer> DURATION =
             SynchedEntityData.defineId(TimeChangeEntity.class, EntityDataSerializers.INT);
 
@@ -45,8 +51,21 @@ public class TimeChangeEntity extends Entity {
     private static final EntityDataAccessor<Optional<UUID>> OWNER =
             SynchedEntityData.defineId(TimeChangeEntity.class, EntityDataSerializers.OPTIONAL_UUID);
 
+    // UUID -> time multiplier for all entities currently being slowed/sped up
     private static final Map<UUID, Float> controlledEntities = new ConcurrentHashMap<>();
-    private static final Map<UUID, Float> tickAccumulators = new ConcurrentHashMap<>();
+    private static final Map<UUID, Float> tickAccumulators   = new ConcurrentHashMap<>();
+
+    /**
+     * Tracks peer-strength entities: UUID -> server tick at which they entered the effect.
+     * Once (currentTick - entryTick) >= PARTIAL_DURATION they are ejected and given resistance.
+     */
+    private static final Map<UUID, Long> partialEntryTick = new ConcurrentHashMap<>();
+
+    /**
+     * Resistance tracking: UUID -> server tick at which resistance expires.
+     * While the world tick is below this value the entity cannot be re-added.
+     */
+    private static final Map<UUID, Long> resistanceExpiry = new ConcurrentHashMap<>();
 
     public TimeChangeEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -55,20 +74,16 @@ public class TimeChangeEntity extends Entity {
         setTimeMultiplier(1f);
         this.noPhysics = true;
         this.noCulling = true;
-
     }
 
     @Override
     public void onAddedToLevel() {
         super.onAddedToLevel();
 
-        if(level().isClientSide)
-            return;
+        if (level().isClientSide) return;
 
-        if(getDuration() <= 0)
-            setDuration(20 * 60 * 2);
-        if(getRadius() <= 0)
-            setRadius(25);
+        if (getDuration() <= 0) setDuration(20 * 60 * 2);
+        if (getRadius()   <= 0) setRadius(25);
     }
 
     public TimeChangeEntity(EntityType<?> entityType, Level level, int ticks, UUID casterUUID, int radius, float timeMultiplier) {
@@ -91,14 +106,15 @@ public class TimeChangeEntity extends Entity {
 
         lifetime++;
         if (lifetime >= getDuration()) {
-            // Release all entities we were controlling
             releaseAll();
             discard();
             return;
         }
 
         float multiplier = getTimeMultiplier();
-        int radius = getRadius();
+        int   radius     = getRadius();
+        long  worldTick  = level().getGameTime();
+        LivingEntity caster = getCasterEntity();
 
         AABB searchBox = new AABB(
                 getX() - radius, getY() - radius, getZ() - radius,
@@ -109,23 +125,76 @@ public class TimeChangeEntity extends Entity {
                 .getEntitiesOfClass(Entity.class, searchBox,
                         e -> e.distanceTo(this) <= radius
                                 && e != this
-                                && (!(e instanceof LivingEntity le) || AbilityUtil.mayTarget(getCasterEntity(), le)))
+                                && (!(e instanceof LivingEntity le) || AbilityUtil.mayTarget(caster, le)))
                 .stream()
                 .map(Entity::getUUID)
                 .collect(Collectors.toSet());
 
-        // Release entities that left the radius
+        // --- Release entities that left the radius entirely ---
         controlledEntities.keySet().stream()
                 .filter(uuid -> !currentInZone.contains(uuid))
+                .toList()
                 .forEach(uuid -> {
                     controlledEntities.remove(uuid);
                     tickAccumulators.remove(uuid);
+                    partialEntryTick.remove(uuid);
                 });
 
-        // Register/update entities currently in radius
+        // --- Expire stale resistance entries to keep the map lean ---
+        resistanceExpiry.entrySet().removeIf(e -> worldTick >= e.getValue());
+
+        // --- Process entities currently in radius ---
         for (UUID uuid : currentInZone) {
-            controlledEntities.put(uuid, multiplier);
-            tickAccumulators.putIfAbsent(uuid, 0f);
+            // Resolve the actual entity so we can compare sequences
+            Entity raw = ((ServerLevel) level()).getEntity(uuid);
+            LivingEntity target = (raw instanceof LivingEntity le) ? le : null;
+
+            // ── Significantly stronger → immune, skip entirely ──────────────────
+            if (target != null && caster != null
+                    && AbilityUtil.isTargetSignificantlyStronger(caster, target)) {
+                // Make sure we're not accidentally controlling them
+                controlledEntities.remove(uuid);
+                tickAccumulators.remove(uuid);
+                partialEntryTick.remove(uuid);
+                continue;
+            }
+
+            // ── Under resistance cooldown → skip ────────────────────────────────
+            Long expiry = resistanceExpiry.get(uuid);
+            if (expiry != null && worldTick < expiry) {
+                continue;
+            }
+
+            // ── Significantly weaker (or not a beyonder) → full, permanent effect ─
+            boolean fullEffect = target == null
+                    || caster == null
+                    || AbilityUtil.isTargetSignificantlyWeaker(caster, target);
+
+            if (fullEffect) {
+                controlledEntities.put(uuid, multiplier);
+                tickAccumulators.putIfAbsent(uuid, 0f);
+                // Remove any leftover partial tracking in case they weakened mid-combat
+                partialEntryTick.remove(uuid);
+            } else {
+                // ── Peer strength → partial, time-limited effect ─────────────────
+                if (!controlledEntities.containsKey(uuid)) {
+                    // First time entering: start the partial clock
+                    controlledEntities.put(uuid, multiplier);
+                    tickAccumulators.putIfAbsent(uuid, 0f);
+                    partialEntryTick.put(uuid, worldTick);
+                } else {
+                    // Already controlled — check if partial duration has elapsed
+                    long entryTick = partialEntryTick.getOrDefault(uuid, worldTick);
+                    if (worldTick - entryTick >= PARTIAL_DURATION) {
+                        // Eject and grant resistance
+                        controlledEntities.remove(uuid);
+                        tickAccumulators.remove(uuid);
+                        partialEntryTick.remove(uuid);
+                        resistanceExpiry.put(uuid, worldTick + RESISTANCE_DURATION);
+                    }
+                    // else: keep controlling, nothing to do
+                }
+            }
         }
     }
 
@@ -138,7 +207,13 @@ public class TimeChangeEntity extends Entity {
     private void releaseAll() {
         controlledEntities.clear();
         tickAccumulators.clear();
+        partialEntryTick.clear();
+        // Intentionally keep resistanceExpiry: resistance should persist even after
+        // the TimeChangeEntity expires so peers can't be immediately re-affected
+        // by a new cast. Clear it here if you prefer not to carry resistance over.
     }
+
+    // ─── Tick event hooks ────────────────────────────────────────────────────────
 
     @SubscribeEvent
     public static void onEntityTickPre(EntityTickEvent.Pre event) {
@@ -151,10 +226,8 @@ public class TimeChangeEntity extends Entity {
         float acc = tickAccumulators.getOrDefault(uuid, 0f) + multiplier;
 
         if (acc >= 1.0f) {
-            // Allow one tick, carry over remainder for Post to consume
             tickAccumulators.put(uuid, acc - 1.0f);
         } else {
-            // Not enough credit — skip
             tickAccumulators.put(uuid, acc);
             event.setCanceled(true);
         }
@@ -167,7 +240,6 @@ public class TimeChangeEntity extends Entity {
         UUID uuid = event.getEntity().getUUID();
         if (!controlledEntities.containsKey(uuid)) return;
 
-        // Fire extra ticks for all remaining credit above 1.0
         float acc = tickAccumulators.getOrDefault(uuid, 0f);
         while (acc >= 1.0f) {
             event.getEntity().tick();
@@ -176,81 +248,52 @@ public class TimeChangeEntity extends Entity {
         tickAccumulators.put(uuid, acc);
     }
 
-    public void setDuration(int duration) {
-        this.entityData.set(DURATION, duration);
-    }
+    // ─── Synched data getters/setters ────────────────────────────────────────────
 
-    public int getDuration() {
-        return this.entityData.get(DURATION);
-    }
+    public void setDuration(int duration) { this.entityData.set(DURATION, duration); }
+    public int  getDuration()             { return this.entityData.get(DURATION); }
 
-    public void setCasterUUID(UUID uuid) {
-        this.entityData.set(OWNER, Optional.ofNullable(uuid));
-    }
+    public void setCasterUUID(UUID uuid)  { this.entityData.set(OWNER, Optional.ofNullable(uuid)); }
+    public UUID getCasterUUID()           { return this.entityData.get(OWNER).orElse(null); }
 
-    public UUID getCasterUUID() {
-        return this.entityData.get(OWNER).orElse(null);
-    }
+    public int  getRadius()               { return this.entityData.get(RADIUS); }
+    public void setRadius(int radius)     { this.entityData.set(RADIUS, radius); }
 
-    public int getRadius() {
-        return this.entityData.get(RADIUS);
-    }
-
-    public void setRadius(int radius) {
-        this.entityData.set(RADIUS, radius);
-    }
-
-    public float getTimeMultiplier() {
-        return this.entityData.get(TIME_MULTIPLIER);
-    }
-
-    public void setTimeMultiplier(float multiplier) {
-        this.entityData.set(TIME_MULTIPLIER, multiplier);
-    }
-
+    public float getTimeMultiplier()              { return this.entityData.get(TIME_MULTIPLIER); }
+    public void  setTimeMultiplier(float mult)    { this.entityData.set(TIME_MULTIPLIER, mult); }
 
     public LivingEntity getCasterEntity() {
-        if(level().isClientSide) {
-            return null;
-        }
-        UUID casterUUID = this.getCasterUUID();
-        if (casterUUID == null) {
-            return null;
-        }
+        if (level().isClientSide) return null;
+        UUID casterUUID = getCasterUUID();
+        if (casterUUID == null) return null;
         Entity entity = ((ServerLevel) level()).getEntity(casterUUID);
-        if (entity instanceof LivingEntity livingEntity) {
-            return livingEntity;
-        }
-        return null;
+        return entity instanceof LivingEntity le ? le : null;
     }
+
+    // ─── Entity data boilerplate ─────────────────────────────────────────────────
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DURATION, 20 * 60 * 2);
-        builder.define(OWNER, Optional.empty());
-        builder.define(RADIUS, 25);
+        builder.define(DURATION,        20 * 60 * 2);
+        builder.define(OWNER,           Optional.empty());
+        builder.define(RADIUS,          25);
         builder.define(TIME_MULTIPLIER, 1f);
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compoundTag) {
-        setDuration(compoundTag.getInt("duration"));
-        setRadius(compoundTag.getInt("radius"));
-        setTimeMultiplier(compoundTag.getFloat("time_multiplier"));
-        if (compoundTag.hasUUID("owner")) {
-            setCasterUUID(compoundTag.getUUID("owner"));
-        } else {
-            setCasterUUID(null);
-        }
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        setDuration(tag.getInt("duration"));
+        setRadius(tag.getInt("radius"));
+        setTimeMultiplier(tag.getFloat("time_multiplier"));
+        if (tag.hasUUID("owner")) setCasterUUID(tag.getUUID("owner"));
+        else                      setCasterUUID(null);
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compoundTag) {
-        compoundTag.putInt("duration", getDuration());
-        compoundTag.putInt("radius", getRadius());
-        compoundTag.putFloat("time_multiplier", getTimeMultiplier());
-        if (getCasterUUID() != null) {
-            compoundTag.putUUID("owner", getCasterUUID());
-        }
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        tag.putInt("duration", getDuration());
+        tag.putInt("radius", getRadius());
+        tag.putFloat("time_multiplier", getTimeMultiplier());
+        if (getCasterUUID() != null) tag.putUUID("owner", getCasterUUID());
     }
 }

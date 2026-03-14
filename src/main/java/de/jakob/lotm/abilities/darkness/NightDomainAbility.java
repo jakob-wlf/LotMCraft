@@ -46,7 +46,7 @@ public class NightDomainAbility extends Ability {
 
         Vec3 startPos = entity.position();
 
-        EffectManager.playEffect(EffectManager.Effect.NIGHT_DOMAIN, entity.position().x, entity.position().y, entity.position().z, serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.NIGHT_DOMAIN, entity.position().x, entity.position().y, entity.position().z, serverLevel, entity);
 
         ServerScheduler.scheduleForDuration(0, 2, 20 * 25, () -> {
             ParticleUtil.spawnParticles(serverLevel, dust, startPos, 80, 35, .25, 35, 0);

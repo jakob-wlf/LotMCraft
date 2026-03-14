@@ -59,7 +59,7 @@ public class PureWhiteLightAbility extends Ability {
         }
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 10.0f, 1.0f);
 
-        EffectManager.playEffect(EffectManager.Effect.PURE_WHITE_LIGHT, targetLoc.x, targetLoc.y, targetLoc.z, serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.PURE_WHITE_LIGHT, targetLoc.x, targetLoc.y, targetLoc.z, serverLevel, entity);
 
         AtomicDouble radius = new AtomicDouble(2);
 

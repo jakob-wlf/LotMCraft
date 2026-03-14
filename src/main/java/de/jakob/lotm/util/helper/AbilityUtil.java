@@ -1046,7 +1046,9 @@ public class AbilityUtil {
             return 1.0;
         }
 
-        if(location.getPosition().distanceTo(timeChangeEntity.position()) <= timeChangeEntity.getRadius()) return timeChangeEntity.getTimeMultiplier();
+        if(location.getPosition().distanceTo(timeChangeEntity.position()) <= timeChangeEntity.getRadius()) {
+            return timeChangeEntity.getTimeMultiplier();
+        }
 
         return 1.0;
     }

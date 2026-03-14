@@ -43,7 +43,7 @@ public class SpaceTimeStormAbility extends Ability {
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
         Vec3 center = AbilityUtil.getTargetLocation(entity, 60, 3);
 
-        EffectManager.playEffect(EffectManager.Effect.SPACE_FRAGMENTATION, center.x, center.y, center.z, serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.SPACE_FRAGMENTATION, center.x, center.y, center.z, serverLevel, entity);
 
         List<BlockPos> blocks = AbilityUtil.getBlocksInSphereRadius(serverLevel, center, 35, true, true, false);
         ServerScheduler.scheduleForDuration(0, 2, 20 * 12, () -> {

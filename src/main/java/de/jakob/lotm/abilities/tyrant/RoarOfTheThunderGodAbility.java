@@ -57,7 +57,7 @@ public class RoarOfTheThunderGodAbility extends Ability {
             e.setDeltaMovement(knockBack);
         });
 
-        EffectManager.playEffect(EffectManager.Effect.THUNDER_EXPLOSION, startPos.x, startPos.y + .5, startPos.z, (ServerLevel) level);
+        EffectManager.playEffect(EffectManager.Effect.THUNDER_EXPLOSION, startPos.x, startPos.y + .5, startPos.z, (ServerLevel) level, entity);
 
         for(int y = 0; y < 3; y++) {
             for (int i = 3; i < 27; i+=2) {
