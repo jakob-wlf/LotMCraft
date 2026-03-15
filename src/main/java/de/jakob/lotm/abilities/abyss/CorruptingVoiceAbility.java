@@ -27,7 +27,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class CorruptingVoiceAbility extends ToggleAbility {
+public class
+CorruptingVoiceAbility extends ToggleAbility {
 
     private static final Random RANDOM = new Random();
     private static final DustParticleOptions DARK_DUST = new DustParticleOptions(new Vector3f(0.15f, 0.0f, 0.25f), 1.8f);
