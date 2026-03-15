@@ -91,7 +91,8 @@ public class MovableEffectManager {
     public enum MovableEffect {
         HORROR_AURA(0),
         LIFE_AURA(1),
-        FEAR_AURA(2);
+        FEAR_AURA(2),
+        ACID_SWAMP(3);
 
         private final int index;
 

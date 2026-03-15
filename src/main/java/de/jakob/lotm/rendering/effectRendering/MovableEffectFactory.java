@@ -1,5 +1,6 @@
 package de.jakob.lotm.rendering.effectRendering;
 
+import de.jakob.lotm.rendering.effectRendering.impl.AcidSwampEffect;
 import de.jakob.lotm.rendering.effectRendering.impl.FearAuraEffect;
 import de.jakob.lotm.rendering.effectRendering.impl.HorrorAuraEffect;
 import de.jakob.lotm.rendering.effectRendering.impl.LifeAuraEffect;
@@ -13,6 +14,7 @@ public class MovableEffectFactory {
             case 0 -> new HorrorAuraEffect(location, duration, infinite);
             case 1 -> new LifeAuraEffect(location, duration, infinite);
             case 2 -> new FearAuraEffect(location, duration, infinite);
+            case 3 -> new AcidSwampEffect(location, duration, infinite);
             default -> throw new IllegalArgumentException("Unknown movable effect index: " + effectIndex);
         };
     }

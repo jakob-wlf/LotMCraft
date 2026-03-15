@@ -1,6 +1,11 @@
 package de.jakob.lotm.abilities.abyss;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.entity.custom.AvatarEntity;
+import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -13,6 +18,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
@@ -21,7 +27,6 @@ import org.joml.Vector3f;
 import java.util.*;
 
 public class DemonicSpellsAbility extends SelectableAbility {
-    private final Random random = new Random();
     private final DustParticleOptions greenDust = new DustParticleOptions(new Vector3f(0.2f, 0.8f, 0.2f), 1.2f);
     private final DustParticleOptions purpleDust = new DustParticleOptions(new Vector3f(0.6f, 0.2f, 0.8f), 1.2f);
     private final DustParticleOptions redDust = new DustParticleOptions(new Vector3f(0.9f, 0.2f, 0.2f), 1.2f);
@@ -63,17 +68,19 @@ public class DemonicSpellsAbility extends SelectableAbility {
     }
 
     private void castAcidSwamp(ServerLevel level, LivingEntity entity) {
-        ParticleUtil.spawnSphereParticles(level, ParticleTypes.ITEM_SLIME, entity.position().add(0, 0.5, 0), 12, 150);
-        ParticleUtil.spawnSphereParticles(level, greenDust, entity.position().add(0, 0.5, 0), 12, 80);
+        Vec3 swampCenter = entity.position();
+
+        ParticleUtil.spawnSphereParticles(level, ParticleTypes.ITEM_SLIME, swampCenter.add(0, 0.5, 0), 12, 150);
+        ParticleUtil.spawnSphereParticles(level, greenDust, swampCenter.add(0, 0.5, 0), 12, 80);
 
         level.playSound(null, entity.blockPosition(), SoundEvents.SLIME_BLOCK_BREAK, entity.getSoundSource(), 2f, 0.8f);
 
         double swampRadius = 15;
         double damage = DamageLookup.lookupDamage(4, 0.7) * multiplier(entity);
 
-        AbilityUtil.damageNearbyEntities(level, entity, swampRadius, damage, entity.position(), true, false);
+        AbilityUtil.damageNearbyEntities(level, entity, swampRadius, damage, swampCenter, true, false);
 
-        AbilityUtil.getNearbyEntities(entity, level, entity.position(), swampRadius)
+        AbilityUtil.getNearbyEntities(entity, level, swampCenter, swampRadius)
                 .stream()
                 .filter(target -> AbilityUtil.mayDamage(entity, target))
                 .forEach(target -> {
@@ -82,45 +89,37 @@ public class DemonicSpellsAbility extends SelectableAbility {
                     target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 4, 2, false, false));
                 });
 
-        ServerScheduler.scheduleForDuration(0, 2, 60, () -> {
-            for (int i = 0; i < 16; i++) {
-                double angle = (i / 16.0) * Math.PI * 2;
-                double x = entity.getX() + Math.cos(angle) * 15;
-                double z = entity.getZ() + Math.sin(angle) * 15;
-                ParticleUtil.spawnParticles(level, greenDust, new Vec3(x, entity.getY() + 0.5, z), 3, 1, 0.05);
-            }
-        }, level);
+        Location loc = new Location(swampCenter, level);
+        MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.ACID_SWAMP, loc, 20 * 8, false, level);
     }
 
     private void castFilthyIllusion(ServerLevel level, LivingEntity entity) {
+        Vec3 clonePos = entity.position();
+
         entity.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 20 * 8, 0, false, false));
 
-        ParticleUtil.spawnSphereParticles(level, purpleDust, entity.position(), 8, 100);
-        level.playSound(null, entity.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, entity.getSoundSource(), 1.5f, 1.2f);
+        ParticleUtil.spawnSphereParticles(level, purpleDust, clonePos, 8, 100);
+        level.playSound(null, entity.blockPosition(), SoundEvents.ENDERMAN_TELEPORT,
+                entity.getSoundSource(), 1.5f, 1.2f);
 
-        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 30, 2.0f);
+        String pathway = BeyonderData.getPathway(entity);
+        int sequence = BeyonderData.getSequence(entity);
+        AvatarEntity clone = new AvatarEntity(ModEntities.ERROR_AVATAR.get(), level,
+                entity.getUUID(), pathway, sequence);
+        clone.setPos(clonePos.x, clonePos.y, clonePos.z);
+        level.addFreshEntity(clone);
 
-        if (targetEntity == null) {
-            Vec3 clonePos = entity.position().add(entity.getLookAngle().scale(5));
-            createClone(level, entity, clonePos, null);
-        } else {
-            createClone(level, entity, entity.position(), targetEntity);
-        }
-    }
-
-    private void createClone(ServerLevel level, LivingEntity caster, Vec3 startPos, LivingEntity target) {
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 5, () -> {
-            if (target != null && target.isAlive()) {
-                double distance = startPos.distanceTo(target.position());
-                if (distance < 2) {
-                    explodeClone(level, caster, target.position());
-                    return;
-                }
+        AbilityUtil.getNearbyEntities(entity, level, clonePos, 20).forEach(e -> {
+            if (e instanceof Mob mob && mob.getTarget() != null
+                    && mob.getTarget().getUUID().equals(entity.getUUID())) {
+                mob.setTarget(clone);
             }
-            ParticleUtil.spawnParticles(level, purpleDust, startPos, 2, 0.5, 0.05);
-        }, () -> {
-            if (target == null) {
-                explodeClone(level, caster, startPos);
+        });
+
+        ServerScheduler.scheduleDelayed(20 * 5, () -> {
+            if (clone.isAlive()) {
+                explodeClone(level, entity, clone.position());
+                clone.discard();
             }
         }, level);
     }

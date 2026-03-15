@@ -58,7 +58,7 @@ public class FearAuraAbility extends Ability {
             AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20).forEach(e -> {
                 BeyonderData.addModifier(e, "fear_aura", .4);
                 if (AbilityUtil.isTargetSignificantlyWeaker(entity, e) && ticks.get() % 10 == 0) {
-                    e.hurt(e.damageSources().mobAttack(entity), (float) (DamageLookup.lookupDps(2, .95, 10, 20) * multiplier(entity)));
+                    e.hurt(e.damageSources().mobAttack(entity), (float) (DamageLookup.lookupDps(3, 0.6, 10, 20) * multiplier(entity)));
                 }
 
                 SanityComponent sanityComponent = e.getData(ModAttachments.SANITY_COMPONENT);
