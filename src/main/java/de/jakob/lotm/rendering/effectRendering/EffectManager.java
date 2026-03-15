@@ -42,7 +42,8 @@ public class EffectManager {
         NIGHT_DOMAIN(23),
         MIRACLE(24),
         SPIRITUAL_BAPTISM(25),
-        CONCEALMENT(26);
+        CONCEALMENT(26),
+        ABYSS_PILLAR(27);
 
         private final int index;
 

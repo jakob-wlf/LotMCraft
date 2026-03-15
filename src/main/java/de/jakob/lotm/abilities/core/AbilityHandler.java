@@ -112,6 +112,7 @@ public class AbilityHandler {
         abilities.add(new CorruptingVoiceAbility("corrupting_voice_ability"));
         abilities.add(new MaliceSeedAbility("malice_seed_ability"));
         abilities.add(new FearAuraAbility("fear_aura_ability"));
+        abilities.add(new FlamesOfTheAbyssAbility("flames_of_the_abyss_ability"));
 
 
         // FOOL PATHWAY
