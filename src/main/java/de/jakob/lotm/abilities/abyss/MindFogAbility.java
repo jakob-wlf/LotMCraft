@@ -19,7 +19,8 @@ import java.util.Random;
 
 public class MindFogAbility extends ToggleAbility {
     private final Random random = new Random();
-    private final DustParticleOptions fogDust = new DustParticleOptions(new Vector3f(0.4f, 0.2f, 0.6f), 1.0f);
+    private final DustParticleOptions fogDust = new DustParticleOptions(new Vector3f(0.75f, 0.82f, 0.95f), 1.2f);
+    private final DustParticleOptions fogDustFaint = new DustParticleOptions(new Vector3f(0.88f, 0.9f, 1.0f), 0.8f);
 
     public MindFogAbility(String id) {
         super(id);
@@ -33,7 +34,7 @@ public class MindFogAbility extends ToggleAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 8;
+        return 25;
     }
 
     @Override
@@ -53,7 +54,8 @@ public class MindFogAbility extends ToggleAbility {
             double distance = random.nextDouble() * fogRadius;
             double x = entity.getX() + Math.cos(angle) * distance;
             double z = entity.getZ() + Math.sin(angle) * distance;
-            ParticleUtil.spawnParticles(serverLevel, fogDust, new Vec3(x, entity.getY() + 1, z), 1, 0.2, 0.02);
+            DustParticleOptions particle = random.nextBoolean() ? fogDust : fogDustFaint;
+            ParticleUtil.spawnParticles(serverLevel, particle, new Vec3(x, entity.getY() + 1, z), 1, 0.2, 0.02);
         }
 
         AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), fogRadius)

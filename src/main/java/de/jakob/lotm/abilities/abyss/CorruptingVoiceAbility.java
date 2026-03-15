@@ -23,6 +23,8 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class CorruptingVoiceAbility extends ToggleAbility {
@@ -32,9 +34,12 @@ public class CorruptingVoiceAbility extends ToggleAbility {
     private static final DustParticleOptions WHISPER_DUST = new DustParticleOptions(new Vector3f(0.45f, 0.05f, 0.6f), 1.2f);
 
     private static final int CORRUPTING_VOICE_RANGE = 50;
-    private static final float BASE_DAMAGE_HEARTS = 4f;
-    private static final float DAMAGE_PER_CHAR_HEARTS = 2f;
-    private static final int MAX_CHAR_COUNT = 50;
+    private static final float BASE_DAMAGE_HEARTS = 2f;
+    private static final float DAMAGE_PER_CHAR_HEARTS = 0.5f;
+    private static final int MAX_CHAR_COUNT = 30;
+
+    private static final long CHAT_COOLDOWN_MS = 3000L;
+    private static final Map<UUID, Long> chatCooldowns = new ConcurrentHashMap<>();
 
     public CorruptingVoiceAbility(String id) {
         super(id);
@@ -113,18 +118,31 @@ public class CorruptingVoiceAbility extends ToggleAbility {
             return;
         }
 
+        long now = System.currentTimeMillis();
+        Long lastUsed = chatCooldowns.get(player.getUUID());
+        if (lastUsed != null && now - lastUsed < CHAT_COOLDOWN_MS) {
+            long remainingMs = CHAT_COOLDOWN_MS - (now - lastUsed);
+            long remainingSecs = (long) Math.ceil(remainingMs / 1000.0);
+            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.corrupting_voice.cooldown")
+                    .append(Component.literal(String.format(" (%ds)", remainingSecs)))
+                    .withColor(0x9932cc));
+            return;
+        }
+        chatCooldowns.put(player.getUUID(), now);
+
         String message = event.getRawText();
         int charCount = Math.min(message.length(), MAX_CHAR_COUNT);
 
         // Damage = (base hearts + chars * hearts_per_char) * 2 (convert hearts to Minecraft damage units)
-        // Maximum at MAX_CHAR_COUNT=50: (4 + 50*2) * 2 = 208 damage (104 hearts) — intentional for Seq 3
         float damage = (BASE_DAMAGE_HEARTS + charCount * DAMAGE_PER_CHAR_HEARTS) * 2f;
+
+        AbilityUtil.damageNearbyEntities(serverLevel, player, CORRUPTING_VOICE_RANGE, damage,
+                player.position(), true, false);
 
         AbilityUtil.getNearbyEntities(player, serverLevel, player.position(), CORRUPTING_VOICE_RANGE, false)
                 .stream()
                 .filter(target -> AbilityUtil.mayDamage(player, target))
                 .forEach(target -> {
-                    target.hurt(serverLevel.damageSources().magic(), damage);
                     applyRandomNegativeEffects(target);
 
                     // Particle burst on targets

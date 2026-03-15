@@ -251,6 +251,7 @@
   "ability.lotmcraft.corrupting_voice.activated": "Corrupting Voice: Active",
   "ability.lotmcraft.corrupting_voice.deactivated": "Corrupting Voice: Deactivated",
   "ability.lotmcraft.corrupting_voice.triggered": "Corrupting Voice: ",
+  "ability.lotmcraft.corrupting_voice.cooldown": "Corrupting Voice: Cooldown",
 
   "lotmcraft.flame_controlling_ability": "Flame Controlling",
   "lotmcraft.flame_controlling_ability.description": "Shoot out flames",
