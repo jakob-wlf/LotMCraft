@@ -71,13 +71,15 @@ public class DemonicSpellsAbility extends SelectableAbility {
         double swampRadius = 15;
         double damage = DamageLookup.lookupDamage(4, 0.7) * multiplier(entity);
 
+        AbilityUtil.damageNearbyEntities(level, entity, swampRadius, damage, entity.position(), true, false);
+
         AbilityUtil.getNearbyEntities(entity, level, entity.position(), swampRadius)
                 .stream()
                 .filter(target -> AbilityUtil.mayDamage(entity, target))
                 .forEach(target -> {
-                    target.hurt(level.damageSources().magic(), (float) damage);
                     target.addEffect(new MobEffectInstance(MobEffects.POISON, 20 * 6, 2, false, false));
                     target.addEffect(new MobEffectInstance(MobEffects.WITHER, 20 * 4, 1, false, false));
+                    target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 4, 2, false, false));
                 });
 
         ServerScheduler.scheduleForDuration(0, 2, 60, () -> {
@@ -129,11 +131,11 @@ public class DemonicSpellsAbility extends SelectableAbility {
         level.playSound(null, explosionPos.x, explosionPos.y, explosionPos.z, SoundEvents.GENERIC_EXPLODE, caster.getSoundSource(), 1.5f, 1.0f);
 
         double explosionDamage = DamageLookup.lookupDamage(4, 0.65) * multiplier(caster);
+        AbilityUtil.damageNearbyEntities(level, caster, 15, explosionDamage, explosionPos, true, false);
         AbilityUtil.getNearbyEntities(caster, level, explosionPos, 15)
                 .stream()
                 .filter(target -> AbilityUtil.mayDamage(caster, target))
                 .forEach(target -> {
-                    target.hurt(level.damageSources().magic(), (float) explosionDamage);
                     Vec3 knockback = target.position().subtract(explosionPos).normalize().scale(1.5);
                     target.setDeltaMovement(target.getDeltaMovement().add(knockback));
                     target.hurtMarked = true;
@@ -142,7 +144,6 @@ public class DemonicSpellsAbility extends SelectableAbility {
 
     private void castHellfireWall(ServerLevel level, LivingEntity entity) {
         double wallRadius = 13;
-        int particleCount = 60;
         double damage = DamageLookup.lookupDamage(4, 0.6) * multiplier(entity);
 
         final double centerX = entity.getX();
@@ -152,7 +153,7 @@ public class DemonicSpellsAbility extends SelectableAbility {
 
         level.playSound(null, entity.blockPosition(), SoundEvents.FIRE_AMBIENT, entity.getSoundSource(), 2.0f, 0.9f);
 
-        List<BlockPos> wallBlocks = new ArrayList<>();
+        final List<BlockPos> wallBlocks = new ArrayList<>();
         int blockCount = (int)(2 * Math.PI * wallRadius * 2);
 
         for (int i = 0; i < blockCount; i++) {
@@ -169,35 +170,21 @@ public class DemonicSpellsAbility extends SelectableAbility {
             }
         }
 
-        for (int i = 0; i < particleCount; i++) {
-            double angle = (i / (double) particleCount) * Math.PI * 2;
-            double x = entity.getX() + Math.cos(angle) * wallRadius;
-            double z = entity.getZ() + Math.sin(angle) * wallRadius;
-            ParticleUtil.spawnParticles(level, redDust, new Vec3(x, entity.getY() + 2, z), 5, 0.5, 0.1);
+        // Initial particle burst at wall block positions
+        for (BlockPos pos : wallBlocks) {
+            ParticleUtil.spawnParticles(level, redDust, pos.getCenter(), 1, 0.3, 0.05);
+            ParticleUtil.spawnParticles(level, ParticleTypes.FLAME, pos.getCenter(), 1, 0.2, 0.05);
         }
 
         ServerScheduler.scheduleForDuration(0, 5, 20 * 8, () -> {
-            for (int i = 0; i < particleCount; i++) {
-                double angle = (i / (double) particleCount) * Math.PI * 2;
-                double x = entity.getX() + Math.cos(angle) * wallRadius;
-                double z = entity.getZ() + Math.sin(angle) * wallRadius;
-                ParticleUtil.spawnParticles(level, redDust, new Vec3(x, centerY + 1, z), 2, 0.2, 0.05);
-                ParticleUtil.spawnParticles(level, ParticleTypes.FLAME, new Vec3(x, centerY + 2, z), 3, 0.3, 0.1);
+            for (BlockPos pos : wallBlocks) {
+                if (level.getBlockState(pos).is(Blocks.BARRIER)) {
+                    ParticleUtil.spawnParticles(level, redDust, pos.getCenter(), 2, 0.2, 0.05);
+                    ParticleUtil.spawnParticles(level, ParticleTypes.FLAME, pos.getCenter(), 1, 0.3, 0.1);
+                }
             }
 
-            AbilityUtil.getNearbyEntities(entity, level, center, wallRadius + 2)
-                    .stream()
-                    .filter(target -> AbilityUtil.mayDamage(entity, target))
-                    .forEach(target -> {
-                        double dx = target.getX() - centerX;
-                        double dz = target.getZ() - centerZ;
-                        double distFromCenter = Math.sqrt(dx * dx + dz * dz);
-                        if (Math.abs(distFromCenter - wallRadius) < 2) {
-                            target.hurt(level.damageSources().magic(), (float) damage);
-                            target.setRemainingFireTicks(60);
-
-                        }
-                    });
+            AbilityUtil.damageNearbyEntities(level, entity, wallRadius - 2, wallRadius + 2, damage, center, true, false, true, 0, 60);
         }, level);
 
         ServerScheduler.scheduleDelayed(20 * 8 + 1, () -> {
