@@ -41,7 +41,7 @@ public class FearAuraAbility extends Ability {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         Location loc = new Location(entity.position(), serverLevel);
-        UUID effectID = MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.HORROR_AURA, loc, 20 * 25, false, serverLevel);
+        UUID effectID = MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.FEAR_AURA, loc, 20 * 25, false, serverLevel);
 
         AtomicInteger ticks = new AtomicInteger(0);
 
