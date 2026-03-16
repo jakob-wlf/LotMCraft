@@ -21,56 +21,69 @@ public class SelectedAbilityRenderer {
 
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.HOTBAR, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "selected_ability_overlay"), (guiGraphics, deltaTracker) -> {
-            renderText(guiGraphics);
-        });
+        event.registerAbove(
+                VanillaGuiLayers.HOTBAR,
+                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "selected_ability_overlay"),
+                (guiGraphics, deltaTracker) -> renderOverlay(guiGraphics)
+        );
     }
 
-    private final static int hotbarWidth = 182;
+    private static final int HOTBAR_WIDTH  = 182;
+    private static final int PAD_X         = 8;
+    private static final int PAD_Y         = 4;  // reduced from 6
+    private static final int GAP_HOTBAR    = 12;
+    private static final int SEPARATOR_GAP = 2;  // reduced from 3
 
-    private static void renderText(GuiGraphics guiGraphics) {
+    private static final int COLOR_LABEL   = 0xFFAAAAAA;
+    private static final int COLOR_BG      = 0xCC0A0A0F;
+
+    private static void renderOverlay(GuiGraphics guiGraphics) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null || mc.options.hideGui) return;
 
-        if(!BeyonderData.pathwayInfos.containsKey(ClientBeyonderCache.getPathway(mc.player.getUUID())))
-            return;
+        var pathway = ClientBeyonderCache.getPathway(mc.player.getUUID());
+        if (!BeyonderData.pathwayInfos.containsKey(pathway)) return;
+        if (!ClientBeyonderCache.isBeyonder(mc.player.getUUID())) return;
 
-        int grayColor = 0xFF808080;
-        int color = BeyonderData.pathwayInfos.get(ClientBeyonderCache.getPathway(mc.player.getUUID())).color();
+        int pathwayColor = BeyonderData.pathwayInfos.get(pathway).color();
 
-        if(!ClientBeyonderCache.isBeyonder(mc.player.getUUID())){
-            return;
-        }
+        int selectedIndex = ClientData.getSelectedAbility();
+        var abilities = ClientData.getAbilityWheelAbilities();
+        if (selectedIndex < 0 || selectedIndex >= abilities.size()) return;
 
-        int selectedAbilityIndex = ClientData.getSelectedAbility();
-        if(selectedAbilityIndex < 0 || selectedAbilityIndex >= ClientData.getAbilityWheelAbilities().size()) {
-            return;
-        }
+        Ability selectedAbility = LOTMCraft.abilityHandler.getById(abilities.get(selectedIndex));
+        if (!(selectedAbility instanceof SelectableAbility ability)) return;
 
-        String selectedAbilityId = ClientData.getAbilityWheelAbilities().get(selectedAbilityIndex);
-        Ability selectedAbility = LOTMCraft.abilityHandler.getById(selectedAbilityId);
-        if(!(selectedAbility instanceof SelectableAbility ability)) {
-            return;
-        }
+        Component labelText   = Component.translatable("lotm.selected").append(":").withColor(COLOR_LABEL);
+        Component abilityText = Component.translatable(ability.getSelectedAbility(mc.player)).withColor(pathwayColor);
 
-        Component message1 = Component.translatable("lotm.selected").append(":").withColor(grayColor);
-        Component message2 = Component.translatable(ability.getSelectedAbility(mc.player)).withColor(color);
+        int textWidth  = Math.max(mc.font.width(labelText), mc.font.width(abilityText));
+        int lineHeight = mc.font.lineHeight;
 
-        int height = mc.font.lineHeight * 2 + 6;
-        int width = Math.max(mc.font.width(message1), mc.font.width(message2)) + 15;
+        int boxW = PAD_X + textWidth + PAD_X;
+        int boxH = PAD_Y + lineHeight + SEPARATOR_GAP + 1 + SEPARATOR_GAP + lineHeight + PAD_Y;
 
-        int screenWidth = mc.getWindow().getGuiScaledWidth();
+        int screenW    = mc.getWindow().getGuiScaledWidth();
+        int screenH    = mc.getWindow().getGuiScaledHeight();
+        int boxX       = (screenW - HOTBAR_WIDTH) / 2 + HOTBAR_WIDTH + GAP_HOTBAR;
+        int boxY       = screenH - boxH;
 
-        int hotbarStartX = (screenWidth - hotbarWidth) / 2;
-        int hotbarEndX = hotbarStartX + hotbarWidth;
+        // Background
+        guiGraphics.fill(boxX, boxY, boxX + boxW, boxY + boxH, COLOR_BG);
 
-        int x = hotbarEndX + 10;
-        int y = mc.getWindow().getGuiScaledHeight() - height;
+        // Uniform colored border all around
+        guiGraphics.renderOutline(boxX, boxY, boxW, boxH, pathwayColor);
 
-        guiGraphics.fill(x - 5, y - 5, x + width, y + height, 0x80000000);
-        guiGraphics.renderOutline(x - 5, y - 5, width + 5, height + 5, 0xFF000000);
+        // Separator line between label and ability name
+        int textX    = boxX + PAD_X;
+        int labelY   = boxY + PAD_Y;
+        int sepY     = labelY + lineHeight + SEPARATOR_GAP;
+        int abilityY = sepY + 1 + SEPARATOR_GAP;
 
-        guiGraphics.drawString(mc.font, message1, x, y, grayColor);
-        guiGraphics.drawString(mc.font, message2, x, y + mc.font.lineHeight + 2, color);
+        int sepColor = (pathwayColor & 0x00FFFFFF) | 0x55000000;
+        guiGraphics.fill(textX, sepY, boxX + boxW - PAD_X, sepY + 1, sepColor);
+
+        guiGraphics.drawString(mc.font, labelText,   textX, labelY,   COLOR_LABEL,   false);
+        guiGraphics.drawString(mc.font, abilityText, textX, abilityY, pathwayColor,  false);
     }
 }
