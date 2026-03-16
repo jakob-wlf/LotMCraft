@@ -71,7 +71,7 @@ The Demoness pathway's petrification can freeze and halt certain active abilitie
 
 | Target Ability | Effect |
 |---|---|
-| Battle Hypnosis (Visionary Pathway) | Charm and Battle Hypnosis applied to the same target can conflict, causing the stronger effect to win |
+| Battle Hypnosis (Visionary Pathway) | Charm and Battle Hypnosis applied to the same target conflict — the Beyonder with the lower (more powerful) sequence number's effect prevails |
 | Instigation (Demoness Pathway) | Charm overrides Instigation on the same target |
 | Frenzy (Visionary Pathway) | Charm can temporarily suppress a frenzied target |
 | Puppet Soldiers (Red Priest Pathway) | Charm can break puppet soldier loyalty, turning them neutral |
@@ -155,7 +155,7 @@ Sun abilities carry a purifying nature that interacts with corruption, desire-ba
 | Loosing Control (any source) | **Placate** removes Loosing Control and restores sanity |
 | Frenzy (Visionary Pathway) | Placate can calm a frenzied entity, ending the frenzy |
 | Petrification (Demoness Pathway) | **Battle Hypnosis (Freeze)** stacks with petrification — the combined hold is harder to break |
-| Charm (Demoness Pathway) | **Battle Hypnosis** conflicts with Charm — the stronger Beyonder's effect prevails |
+| Charm (Demoness Pathway) | **Battle Hypnosis** conflicts with Charm — the Beyonder with the lower (more powerful) sequence number's effect prevails |
 | Hair Entanglement (Darkness Pathway) | **Battle Hypnosis (Freeze)** stacks with Hair Entanglement for a longer disable |
 | Invisibility (Demoness Pathway) | **Spectating** can reveal invisible Demoness users by reading their entity data |
 | Shapeshifted Beyonder (Fool Pathway) | **Spectating** or **Telepathy** reveals that an entity is shapeshifted |
@@ -771,7 +771,7 @@ A summary of how elemental forces interact when abilities from different pathway
 
 | Element A | Element B | Result |
 |---|---|---|
-| Sun Fire / Holy Light | Darkness / Night Domain | The two cancel in overlapping areas; the stronger caster's element dominates |
+| Sun Fire / Holy Light | Darkness / Night Domain | The two cancel in overlapping areas; the Beyonder with the lower (more powerful) sequence number's element dominates |
 | Sun Fire / Holy Light | Abyss Corruption | Sun purifies corruption effects |
 | Normal Fire (Red Priest / Abyss) | Water (Tyrant) | Steam is created; both effects are weakened |
 | Normal Fire (Red Priest / Abyss) | Frost (Demoness) | Steam and partial cancellation |
@@ -786,7 +786,7 @@ A summary of how elemental forces interact when abilities from different pathway
 | Nature / Life (Mother) | Water (Tyrant) | Water enhances plant growth |
 | Luck (WoF) | Misfortune (WoF / Error theft) | Luck and Misfortune cancel each other |
 | Mental (Visionary) | Physical concealment (Demoness) | Mental effects bypass physical concealment |
-| Spatial (Door) | Temporal (Error) | Space and Time abilities interact unpredictably in overlap zones |
+| Spatial (Door) | Temporal (Error) | Space abilities within a time-manipulated zone have their range scaled by the local time factor; Time abilities within a space-distorted zone have their duration scaled by the distortion intensity |
 
 ---
 
@@ -797,11 +797,11 @@ When multiple crowd control abilities are applied to the same target, the follow
 | CC Type A | CC Type B | Stacking Behaviour |
 |---|---|---|
 | Petrification (Demoness) | Any other CC | Petrification takes priority — target is fully immobilized |
-| Sleep (Visionary / Darkness) | Freeze (Visionary / Demoness) | The more recent effect takes priority |
+| Sleep (Visionary / Darkness) | Freeze (Visionary / Demoness) | The more recent effect takes priority; the earlier effect is suspended and resumes with its remaining duration once the newer effect expires |
 | Requiem / Hair Entanglement (Darkness) | Thread Binding (Demoness) | Durations stack — total disable time is combined |
 | Steel Chains (Red Priest) | Thread Binding (Demoness) | Durations stack — total disable time is combined |
 | Conquering (Red Priest) | Awe (Visionary) | Debuffs stack — the target is severely weakened |
-| Charm (Demoness) | Frenzy (Visionary) | The two conflict — the stronger Beyonder's effect prevails |
+| Charm (Demoness) | Frenzy (Visionary) | The two conflict — the Beyonder with the lower (more powerful) sequence number's effect prevails |
 | Loosing Control (any source) | Placate (Visionary / WoF) | Placate removes Loosing Control |
 | Any CC | Blink (Door) | Blink can escape most physical CC (not mental debuffs) |
 | Any CC | Loophole (Error) | Loophole can find an exploit to escape any single CC effect |
