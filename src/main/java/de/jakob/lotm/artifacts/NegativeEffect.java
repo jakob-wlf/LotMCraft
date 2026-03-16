@@ -25,7 +25,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Vex;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -38,7 +40,7 @@ import java.util.stream.Stream;
  * Represents a negative effect that sealed artifacts inflict on their holders
  */
 public class NegativeEffect {
-    
+
     private final NegativeEffectType type;
     private final int sequence; // 0-9, where higher is more severe
     private final Holder<MobEffect> mobEffect; // Can be null for non-potion effects
@@ -49,10 +51,10 @@ public class NegativeEffect {
                     Codec.STRING.xmap(NegativeEffectType::valueOf, NegativeEffectType::name)
                             .fieldOf("type").forGetter(e -> e.type),
                     Codec.INT.fieldOf("strength").forGetter(e -> e.sequence),
-                    Codec.STRING.optionalFieldOf("mob_effect", "").forGetter(e -> 
+                    Codec.STRING.optionalFieldOf("mob_effect", "").forGetter(e ->
                             e.mobEffect != null ? e.mobEffect.toString() : ""),
                     Codec.INT.fieldOf("effect_amplifier").forGetter(e -> e.effectAmplifier)
-            ).apply(instance, (type, strength, effectStr, amplifier) -> 
+            ).apply(instance, (type, strength, effectStr, amplifier) ->
                     new NegativeEffect(type, strength, null, amplifier))
     );
 
@@ -181,6 +183,18 @@ public class NegativeEffect {
                     }
                 }
                 break;
+            case WEAKNESS_WHEN_ALONE:
+                if (player.tickCount % 20 == 0) {
+                    boolean entitiesNearby = !player.level().getEntitiesOfClass(
+                            LivingEntity.class,
+                            player.getBoundingBox().inflate(8.0),
+                            e -> e != player
+                    ).isEmpty();
+                    if (!entitiesNearby) {
+                        player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40, 2, false, false));
+                    }
+                }
+                break;
 
                 // visionary
             case MENTAL_PLAGUE:
@@ -188,12 +202,31 @@ public class NegativeEffect {
                     player.addEffect(new MobEffectInstance(ModEffects.MENTAL_PLAGUE, 40, 2, false, false));
                 }
                 break;
-
+            case SPIRIT_HAUNTING:
+                if (player.tickCount % getSpiritHauntIntervalForSequence(sequence) == 0) {
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        Vex vex = EntityType.VEX.create(serverPlayer.serverLevel());
+                        if (vex != null) {
+                            vex.moveTo(
+                                    player.getX() + (player.getRandom().nextDouble() - 0.5) * 4,
+                                    player.getY() + 1,
+                                    player.getZ() + (player.getRandom().nextDouble() - 0.5) * 4
+                            );
+                            serverPlayer.serverLevel().addFreshEntity(vex);
+                        }
+                    }
+                }
+                break;
 
                 // demoness
             case PETRIFICATION:
                 if (player.tickCount % 20 == 0) {
                     player.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 40, 2, false, false));
+                }
+                break;
+            case CHARM_BACKLASH:
+                if (player.tickCount % 140 == 0) {
+                    player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 120, 0, false, false));
                 }
                 break;
 
@@ -207,6 +240,12 @@ public class NegativeEffect {
             case WITHER:
                 if (player.tickCount % 20 == 0) {
                     player.addEffect(new MobEffectInstance(MobEffects.WITHER, 40, 2, false, false));
+                }
+                break;
+            case CRIMSON_CHAIN:
+                if (player.tickCount % 20 == 0) {
+                    player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 1, false, false));
+                    player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 40, 1, false, false));
                 }
                 break;
 
@@ -233,11 +272,35 @@ public class NegativeEffect {
                     player.addEffect(new MobEffectInstance(MobEffects.POISON, 40, 2, false, false));
                 }
                 break;
+            case SILK_TRAP:
+                if (player.tickCount % 300 == 0) {
+                    BlockPos feet = player.blockPosition();
+                    BlockPos head = feet.above();
+                    if (player.level().getBlockState(feet).isAir()) {
+                        player.level().setBlock(feet, Blocks.COBWEB.defaultBlockState(), 3);
+                    }
+                    if (player.level().getBlockState(head).isAir()) {
+                        player.level().setBlock(head, Blocks.COBWEB.defaultBlockState(), 3);
+                    }
+                }
+                break;
 
                 // monster
             case BAD_LUCK:
                 if (player.tickCount % 20 == 0) {
                     player.addEffect(new MobEffectInstance(MobEffects.UNLUCK, 40, 2, false, false));
+                }
+                break;
+            case FATE_SPIN:
+                if (player.tickCount % 300 == 0) {
+                    int roll = player.getRandom().nextInt(5);
+                    switch (roll) {
+                        case 0 -> player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200, 0, false, false));
+                        case 1 -> player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200, 1, false, false));
+                        case 2 -> player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 200, 1, false, false));
+                        case 3 -> player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 200, 1, false, false));
+                        case 4 -> player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0, false, false));
+                    }
                 }
                 break;
 
@@ -321,6 +384,17 @@ public class NegativeEffect {
         };
     }
 
+    private int getSpiritHauntIntervalForSequence(int sequence) {
+        return switch (sequence) {
+            case 8, 9 -> 20 * 120;
+            case 6, 7 -> 20 * 90;
+            case 4, 5 -> 20 * 60;
+            case 2, 3 -> 20 * 40;
+            case 1 -> 20 * 12;
+            default -> 20 * 120;
+        };
+    }
+
     public Component getDisplayName() {
         return Component.translatable("lotm.negative_effect." + type.name().toLowerCase());
     }
@@ -395,43 +469,62 @@ public class NegativeEffect {
                     (sequence <= 5) ? NegativeEffectType.RANDOM_TELEPORT : null,
                     (sequence <= 3) ? NegativeEffectType.ENTER_SPIRIT_WORLD : null
             ).filter(Objects::nonNull).toList();
+
             case "sun" -> Stream.of(
                     NegativeEffectType.BRUN,
                     NegativeEffectType.SLOWER_IN_COLD_PLACES,
                     (sequence <= 4) ? NegativeEffectType.CONFLICT_WITH_ARTIFACTS : null
             ).filter(Objects::nonNull).toList();
+
             case "tyrant" -> Stream.of(
                     NegativeEffectType.BREATH_DEPLETION,
+                    NegativeEffectType.WEAKNESS_WHEN_ALONE,
+                    NegativeEffectType.DRAIN_HUNGER,
                     (sequence <= 6) ? NegativeEffectType.TARGETED_BY_ENTITIES : null,
                     (sequence <= 4) ? NegativeEffectType.STRUCK_BY_LIGHTNING : null
             ).filter(Objects::nonNull).toList();
+
             case "visionary" -> Stream.of(
-                    NegativeEffectType.MENTAL_PLAGUE
+                    NegativeEffectType.MENTAL_PLAGUE,
+                    NegativeEffectType.SPIRIT_HAUNTING,
+                    NegativeEffectType.HEAR_SOUNDS,
+                    NegativeEffectType.HEARING_WHISPERS
             ).filter(Objects::nonNull).toList();
+
             case "demoness" -> Stream.of(
                     NegativeEffectType.PETRIFICATION,
-                    NegativeEffectType.CURSED
+                    NegativeEffectType.CURSED,
+                    NegativeEffectType.CHARM_BACKLASH
             ).filter(Objects::nonNull).toList();
+
             case "red_priest" -> Stream.of(
                     NegativeEffectType.TARGETED_BY_ENTITIES,
-                    NegativeEffectType.WITHER
+                    NegativeEffectType.WITHER,
+                    NegativeEffectType.CRIMSON_CHAIN
             ).filter(Objects::nonNull).toList();
+
             case "darkness" -> Stream.of(
-                     NegativeEffectType.BLINDNESS,
+                    NegativeEffectType.BLINDNESS,
                     NegativeEffectType.ASLEEP,
                     NegativeEffectType.CURSED
             ).filter(Objects::nonNull).toList();
+
             case "mother" -> Stream.of(
                     NegativeEffectType.POISON,
-                    NegativeEffectType.MUTATED
+                    NegativeEffectType.MUTATED,
+                    NegativeEffectType.SILK_TRAP
             ).filter(Objects::nonNull).toList();
+
             case "wheel_of_fortune" -> Stream.of(
                     NegativeEffectType.BAD_LUCK,
-                    NegativeEffectType.CALAMITY_ATTRACTION
+                    NegativeEffectType.CALAMITY_ATTRACTION,
+                    NegativeEffectType.FATE_SPIN
             ).filter(Objects::nonNull).toList();
+
             case "abyss" -> Stream.of(
                     NegativeEffectType.NAUSEA
             ).filter(Objects::nonNull).toList();
+
             default -> List.of(
                     NegativeEffectType.DRAIN_HEALTH,
                     NegativeEffectType.DRAIN_HUNGER,
@@ -468,18 +561,20 @@ public class NegativeEffect {
         // tyrant
         BREATH_DEPLETION,
         STRUCK_BY_LIGHTNING,
+        WEAKNESS_WHEN_ALONE,
 
         // spectator
         MENTAL_PLAGUE,
-        // ASLEEP
+        SPIRIT_HAUNTING,
 
         // demoness
         PETRIFICATION,
-        // CURSED
+        CHARM_BACKLASH,
 
         // hunter
         WITHER,
         TARGETED_BY_ENTITIES,
+        CRIMSON_CHAIN,
 
         // darkness
         BLINDNESS,
@@ -489,10 +584,12 @@ public class NegativeEffect {
         // mother
         POISON,
         MUTATED,
+        SILK_TRAP,
 
         // monster
         BAD_LUCK,
         CALAMITY_ATTRACTION,
+        FATE_SPIN,
 
         // abyss
         NAUSEA,

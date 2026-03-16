@@ -1166,13 +1166,17 @@
 
   "lotm.negative_effect.breath_depletion": "Breath Depletion",
   "lotm.negative_effect.struck_by_lightning": "Struck by Lightning",
+  "lotm.negative_effect.weakness_when_alone": "Solitary Weakness",
 
   "lotm.negative_effect.mental_plague": "Mental Plague",
+  "lotm.negative_effect.spirit_haunting": "Spirit Haunting",
 
   "lotm.negative_effect.petrification": "Petrification",
+  "lotm.negative_effect.charm_backlash": "Demonic Backlash",
 
   "lotm.negative_effect.wither": "Wither",
   "lotm.negative_effect.targeted_by_entities": "Targeted by Surrounding",
+  "lotm.negative_effect.crimson_chain": "Crimson Chains",
 
   "lotm.negative_effect.blindness": "Blindness",
   "lotm.negative_effect.asleep": "Asleep",
@@ -1180,9 +1184,11 @@
 
   "lotm.negative_effect.poison": "Poison",
   "lotm.negative_effect.mutated": "Mutation",
+  "lotm.negative_effect.silk_trap": "Spider's Embrace",
 
   "lotm.negative_effect.bad_luck": "Bad Luck",
   "lotm.negative_effect.calamity_attraction": "Calamity Attraction",
+  "lotm.negative_effect.fate_spin": "Fate's Caprice",
 
   "lotm.negative_effect.nausea": "Nausea",
 
