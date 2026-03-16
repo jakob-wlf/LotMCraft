@@ -89,9 +89,6 @@ public class PlantControllingAbility extends SelectableAbility {
                 ((Mob) targetEntity).setNoAi(true);
                 ServerScheduler.scheduleDelayed(duration, () -> ((Mob) targetEntity).setNoAi(false));
             }
-            if(BeyonderData.isBeyonder(targetEntity)) {
-                ServerScheduler.scheduleDelayed(duration, () -> BeyonderData.enableAbilityUse(targetEntity, "requiem"));
-            }
         }
 
         ServerScheduler.scheduleForDuration(0, 5, duration, () -> {

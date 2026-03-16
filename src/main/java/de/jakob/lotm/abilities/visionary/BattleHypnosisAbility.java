@@ -1,6 +1,8 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -75,8 +77,8 @@ public class BattleHypnosisAbility extends Ability {
 
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.stop_beyonder_powers").withColor(0xf5c56c));
 
-        BeyonderData.disableAbilityUse(target, "battle_hypnosis_stop_beyonder_powers");
-        ServerScheduler.scheduleDelayed(20 * 9, () -> BeyonderData.enableAbilityUse(target, "battle_hypnosis_stop_beyonder_powers"));
+        DisabledAbilitiesComponent component = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        component.disableAbilityUsageForTime("battle_hypnosis_disable_beyonder_powers", 20 * 9, target);
     }
 
     private void weakenAndMoveAroundTarget(ServerLevel level, LivingEntity entity, LivingEntity target) {
@@ -96,8 +98,8 @@ public class BattleHypnosisAbility extends Ability {
     private void freezeTarget(ServerLevel level, LivingEntity entity, LivingEntity target) {
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.stop").withColor(0xf5c56c));
 
-        BeyonderData.disableAbilityUse(target, "battle_hypnosis_freeze");
-        ServerScheduler.scheduleDelayed(20 * 3, () -> BeyonderData.enableAbilityUse(target, "battle_hypnosis_freeze"));
+        DisabledAbilitiesComponent component = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        component.disableAbilityUsageForTime("battle_hypnosis_freeze", 20 * 3, target);
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 5, () -> {
             target.setDeltaMovement(0, 0, 0);

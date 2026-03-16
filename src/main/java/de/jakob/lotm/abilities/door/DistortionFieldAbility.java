@@ -1,6 +1,8 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.DistortionFieldEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -94,12 +96,8 @@ public class DistortionFieldAbility extends Ability {
             // Randomly teleport entities around and disable ability use
             AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, 40).forEach(e -> {
                 if(random.nextInt(15) == 0) {
-                    BeyonderData.disableAbilityUse(e, "distortion_field");
-                    ServerScheduler.scheduleDelayed(20 * 2, () -> {
-                        if(e.distanceToSqr(startPos) > 30 * 30) {
-                            BeyonderData.enableAbilityUse(e, "distortion_field");
-                        }
-                    });
+                    DisabledAbilitiesComponent component = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+                    component.disableAbilityUsageForTime("distortion_field", 20 * 4, e);
                 }
 
                 e.teleportTo(e.getX() + random.nextDouble(-8, 8), e.getY() + random.nextDouble(-1, 2), e.getZ() + random.nextDouble(-8, 8));
@@ -116,11 +114,6 @@ public class DistortionFieldAbility extends Ability {
                 }
 
                 serverLevel.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState());
-            });
-
-            // Enable Ability use
-            AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, 45).forEach(e -> {
-                BeyonderData.enableAbilityUse(e, "distortion_field");
             });
         }, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }

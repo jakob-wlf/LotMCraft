@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
@@ -137,9 +138,8 @@ public abstract class Ability {
 
         if(entity instanceof Player player && player.isSpectator()) return false;
 
-        if(BeyonderData.isAbilityDisabled(entity) && !this.canAlwaysBeUsed) return false;
-
-        if(BeyonderData.isSpecificAbilityDisabled(entity, getId())) return false;
+        DisabledAbilitiesComponent disabledComponent = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        if((disabledComponent.isAbilityUsageDisabled() || disabledComponent.isSpecificAbilityDisabled(this.getId())) && !this.canAlwaysBeUsed) return false;
 
         if(LOTMCraft.abilityHandler.isDisabled(this)) return false;
 

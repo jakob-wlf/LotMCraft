@@ -1,5 +1,7 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -94,21 +96,13 @@ public class SunKingdomEntity extends Entity {
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.FLAME, e.position().add(0, e.getEyeHeight() / 2, 0), 90, .5, e.getEyeHeight() / 2, .5, .01);
             }
             else if(BeyonderData.getSequence(e) >= 4) {
-                BeyonderData.disableAbilityUse(e, "sun_kingdom");
-                ServerScheduler.scheduleDelayed(30, () -> {
-                    if(e.distanceTo(this) > getRadius()) {
-                        BeyonderData.enableAbilityUse(e, "sun_kingdom");
-                    }
-                });
+                DisabledAbilitiesComponent component = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+                component.disableAbilityUsageForTime("sun_kingdom", 20 * 5, e);
+
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, e.position().add(0, e.getEyeHeight() / 2, 0), 8, .5, e.getEyeHeight() / 2, .5, .01);
             }
             else {
                 BeyonderData.addModifier(e, "sun_kingdom", .2);
-                ServerScheduler.scheduleDelayed(30, () -> {
-                    if(e.distanceTo(this) > getRadius()) {
-                        BeyonderData.enableAbilityUse(e, "sun_kingdom");
-                    }
-                });
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, e.position().add(0, e.getEyeHeight() / 2, 0), 8, .5, e.getEyeHeight() / 2, .5, .01);
             }
         });

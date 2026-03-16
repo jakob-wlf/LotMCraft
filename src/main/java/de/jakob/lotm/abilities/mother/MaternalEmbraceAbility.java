@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.entity.custom.CoffinEntity;
@@ -59,7 +60,9 @@ public class MaternalEmbraceAbility extends Ability {
         component.setTransformedAndSync(true, targetEntity);
         component.setTransformationIndexAndSync(TransformationComponent.TransformationType.COFFIN, targetEntity);
 
-        BeyonderData.disableAbilityUseWithTimeLimit(targetEntity, "maternal_embrace", 20 * 30);
+        DisabledAbilitiesComponent disabledAbilitiesComponent = targetEntity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        disabledAbilitiesComponent.disableAbilityUsageForTime("maternal_embrace", 20 * 30, targetEntity);
+
         targetEntity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 30, 20, false, false, false));
         targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 30, 20, false, false, false));
         targetEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 30, 20, false, false, false));

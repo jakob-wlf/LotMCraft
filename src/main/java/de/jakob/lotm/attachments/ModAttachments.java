@@ -48,6 +48,16 @@ public class ModAttachments {
                     AttachmentType.serializable(AbilityBarComponent::new).copyOnDeath().build()
             );
 
+    public static final Supplier<AttachmentType<DisabledAbilitiesComponent>> DISABLED_ABILITIES_COMPONENT =
+            ATTACHMENT_TYPES.register("disabled_abilities_component", () ->
+                    AttachmentType.serializable(DisabledAbilitiesComponent::new).build()
+            );
+
+    public static final Supplier<AttachmentType<MultiplierModifierComponent>> MULTIPLIER_MODIFIER_COMPONENT =
+            ATTACHMENT_TYPES.register("multiplier_modifier_component", () ->
+                    AttachmentType.serializable(MultiplierModifierComponent::new).build()
+            );
+
     public static final Supplier<AttachmentType<AllyComponent>> ALLY_COMPONENT = ATTACHMENT_TYPES.register(
             "ally_component",
             () -> AttachmentType.builder(() -> new AllyComponent())

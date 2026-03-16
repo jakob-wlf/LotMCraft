@@ -4,6 +4,7 @@ import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.AllyComponent;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.entity.custom.OriginalBodyEntity;
@@ -433,5 +434,18 @@ public class ClientHandler {
             body.getData(ModAttachments.CONTROLLING_DATA).setOwnerUUID(packet.ownerUUID());
             body.getData(ModAttachments.CONTROLLING_DATA).setOwnerName(packet.ownerName());
         }
+    }
+
+    public static void handleDisableAbilityUsageForTimePacket(DisableAbilityUsageForTimePacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if (!(entity instanceof LivingEntity living)) {
+            return;
+        }
+
+        DisabledAbilitiesComponent disabledComponent = living.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        disabledComponent.disableAbilityUsageForTime(packet.cause(), packet.ticks(), living);
     }
 }

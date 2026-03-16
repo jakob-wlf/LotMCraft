@@ -1,5 +1,6 @@
 package de.jakob.lotm.events;
 
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.effect.ModEffects;
@@ -93,11 +94,8 @@ public class SanityEventHandler {
                 }
 
                 if (disableChance > 0 && random.nextInt(disableChance) == 0) {
-                    BeyonderData.disableAbilityUseWithTimeLimit(
-                            entity,
-                            "sanity_instability",
-                            disableDuration
-                    );
+                    DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+                    component.disableAbilityUsageForTime("sanity_instability", disableDuration, entity);
                 }
             }
         }
