@@ -43,7 +43,8 @@ public class EffectManager {
         MIRACLE(24),
         SPIRITUAL_BAPTISM(25),
         CONCEALMENT(26),
-        ABYSS_PILLAR(27);
+        ABYSS_PILLAR(27),
+        ACID_SWAMP(28);
 
         private final int index;
 

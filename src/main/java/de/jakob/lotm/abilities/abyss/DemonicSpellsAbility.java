@@ -3,9 +3,8 @@ package de.jakob.lotm.abilities.abyss;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.AvatarEntity;
-import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -89,8 +88,7 @@ public class DemonicSpellsAbility extends SelectableAbility {
                     target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 4, 2, false, false));
                 });
 
-        Location loc = new Location(swampCenter, level);
-        MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.ACID_SWAMP, loc, 20 * 8, false, level);
+        EffectManager.playEffect(EffectManager.Effect.ACID_SWAMP, swampCenter.x, swampCenter.y, swampCenter.z, level);
     }
 
     private void castFilthyIllusion(ServerLevel level, LivingEntity entity) {

@@ -2,8 +2,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import de.jakob.lotm.rendering.effectRendering.ActiveMovableEffect;
-import de.jakob.lotm.util.data.Location;
+import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -15,7 +14,7 @@ import org.joml.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AcidSwampEffect extends ActiveMovableEffect {
+public class AcidSwampEffect extends ActiveEffect {
 
     private static final float SWAMP_RADIUS = 15f;
     // Base green colour components
@@ -29,8 +28,8 @@ public class AcidSwampEffect extends ActiveMovableEffect {
     private final List<SwampMist> mists = new ArrayList<>();
     private float intensity;
 
-    public AcidSwampEffect(Location location, int maxDuration, boolean infinite) {
-        super(location, maxDuration, infinite);
+    public AcidSwampEffect(double x, double y, double z) {
+        super(x, y, z, 20 * 8);
         for (int i = 0; i < 5; i++) {
             ripples.add(new RippleRing(i));
         }
@@ -48,9 +47,7 @@ public class AcidSwampEffect extends ActiveMovableEffect {
         if (mc.level == null) return;
 
         float progress = getProgress();
-        if (infinite) {
-            intensity = 1f;
-        } else if (progress < 0.1f) {
+        if (progress < 0.1f) {
             intensity = progress / 0.1f;
         } else if (progress > 0.85f) {
             intensity = 1f - ((progress - 0.85f) / 0.15f);
