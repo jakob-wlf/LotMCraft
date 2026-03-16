@@ -26,13 +26,21 @@ public class SealedArtifactEffectHandler {
         // Check main hand
         ItemStack mainHand = player.getMainHandItem();
         if (mainHand.getItem() instanceof SealedArtifactItem) {
-            applyNegativeEffect(player, mainHand, true);
+            applyHandNegativeEffect(player, mainHand, true);
         }
 
         // Check off hand
         ItemStack offHand = player.getOffhandItem();
         if (offHand.getItem() instanceof SealedArtifactItem) {
-            applyNegativeEffect(player, offHand, false);
+            applyHandNegativeEffect(player, offHand, false);
+        }
+
+        // check hotbar
+        for (int i = 0; i < 9; i++) {
+            ItemStack stack = player.getInventory().getItem(i);
+            if (stack.getItem() instanceof SealedArtifactItem) {
+                applyHotBarNegativeEffect(player, stack);
+            }
         }
 
         // Check inventory for some passive effects (optional)
@@ -50,15 +58,32 @@ public class SealedArtifactEffectHandler {
         }
     }
 
-    private static void applyNegativeEffect(Player player, ItemStack stack, boolean inMainHand) {
+
+    private static void applyHandNegativeEffect(Player player, ItemStack stack, boolean inMainHand) {
         SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
         if (data == null || data.negativeEffect() == null) {
             return;
         }
 
-        // loop through every effect in the list and apply it
+        // loop through every effect, if it's a hand only effect, apply it
         for (NegativeEffect effect : data.negativeEffect()) {
-            effect.apply(player, inMainHand);
+            if (NegativeEffect.handOnlyTick.contains(effect.getType())) {
+                effect.apply(player, inMainHand);
+            }
+        }
+    }
+
+    private static void applyHotBarNegativeEffect(Player player, ItemStack stack) {
+        SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
+        if (data == null || data.negativeEffect() == null) {
+            return;
+        }
+
+        // apply to hotbar only effects
+        for (NegativeEffect effect : data.negativeEffect()) {
+            if (NegativeEffect.hotBarOnlyTick.contains(effect.getType())) {
+                effect.apply(player, true);
+            }
         }
     }
 
@@ -70,9 +95,8 @@ public class SealedArtifactEffectHandler {
         }
 
         for (NegativeEffect effect : data.negativeEffect()) {
-            if (effect != null && effect.getType() == NegativeEffect.NegativeEffectType.HEARING_WHISPERS) {
-                // Some effects like whispers can still occur even when in inventory
-                effect.apply(player, false);
+            if (!NegativeEffect.useOnlyTick.contains(effect.getType()) && !NegativeEffect.handOnlyTick.contains(effect.getType()) && !NegativeEffect.hotBarOnlyTick.contains(effect.getType())) {
+                effect.apply(player, true);
             }
         }
     }
