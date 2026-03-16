@@ -79,25 +79,26 @@ public class NegativeEffect {
         switch (type) {
                 // seer
             case SLOWER_IN_HOT_PLACES:
-                if (player.tickCount % 20 == 0) {
+                if (player.tickCount % 200 == 0) {
                     if ((player.level().getBiome(player.blockPosition()).value().shouldMeltFrozenOceanIcebergSlightly(player.blockPosition()))
-                            || (getBlockInRadius(player, player.blockPosition(), 4, Blocks.FIRE))) {
-                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 2, false, false));
+                            || (getBlockInRadius(player, player.blockPosition(), 5 + getEffectLevelForSequence(sequence), Blocks.FIRE))) {
+                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 220, getEffectLevelForSequence(sequence), false, false));
+                        player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 220, getEffectLevelForSequence(sequence), false, false));
+                        player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 220, getEffectLevelForSequence(sequence), false, false));
                     }
                 }
                 break;
 
                 // error
             case GOLD_ITEM_DEBUFF:
-                if (player.tickCount % 100 == 0) {
+                if (player.tickCount % 200 == 0) {
                     for (ItemStack stack : player.getInventory().items) {
                         if (stack.is(ItemTags.PIGLIN_LOVED)) {
                             return;
                         }
-                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 2, false, false));
-                        player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 40, 2, false, false));
-                        player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40, 2, false, false));
-                        player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 40, 2, false, false));
+                        player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, getEffectLevelForSequence(sequence), false, false));
+                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, getEffectLevelForSequence(sequence), false, false));
+                        player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, getEffectLevelForSequence(sequence), false, false));
 
                     }
                 }
@@ -152,27 +153,29 @@ public class NegativeEffect {
 
                 // sun
             case SLOWER_IN_COLD_PLACES:
-                if (player.tickCount % 20 == 0) {
+                if (player.tickCount % 200 == 0) {
                     if ((player.level().getBiome(player.blockPosition()).value().coldEnoughToSnow(player.blockPosition()))
-                            || (getBlockInRadius(player, player.blockPosition(), 4, Blocks.FIRE))) {
-                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 2, false, false));
+                            || (getBlockInRadius(player, player.blockPosition(), 5 + getEffectLevelForSequence(sequence), Blocks.SNOW))) {
+                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 220, getEffectLevelForSequence(sequence), false, false));
+                        player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 220, getEffectLevelForSequence(sequence), false, false));
+                        player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 220, getEffectLevelForSequence(sequence), false, false));
                     }
                 }
                 break;
             case BRUN:
-                if (player.tickCount % 200 == 0) {
-                    player.setRemainingFireTicks(80);
+                if (player.tickCount % getIntervalForSequenceAndMultiplier(sequence, 1) == 0) {
+                    player.setRemainingFireTicks(40);
                 }
                 break;
 
                 // tyrant
             case BREATH_DEPLETION:
-                if (player.tickCount % 100 == 0) {
+                if (player.tickCount % getIntervalForSequenceAndMultiplier(sequence, 1) == 0) {
                     player.setAirSupply(-200);
                 }
                 break;
             case STRUCK_BY_LIGHTNING:
-                if (player.tickCount % 200 == 0) {
+                if (player.tickCount % getIntervalForSequenceAndMultiplier(sequence, 3) == 0) {
                     if (player instanceof ServerPlayer serverPlayer) {
                         LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverPlayer.serverLevel());
 
@@ -198,8 +201,8 @@ public class NegativeEffect {
 
                 // visionary
             case MENTAL_PLAGUE:
-                if (player.tickCount % 20 == 0) {
-                    player.addEffect(new MobEffectInstance(ModEffects.MENTAL_PLAGUE, 40, 2, false, false));
+                if (player.tickCount % 80 == 0) {
+                    player.addEffect(new MobEffectInstance(ModEffects.MENTAL_PLAGUE, 40, getEffectLevelForSequence(sequence), false, false));
                 }
                 break;
             case SPIRIT_HAUNTING:
@@ -220,8 +223,8 @@ public class NegativeEffect {
 
                 // demoness
             case PETRIFICATION:
-                if (player.tickCount % 20 == 0) {
-                    player.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 40, 2, false, false));
+                if (player.tickCount % 200 == 0) {
+                    player.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 40, getEffectLevelForSequence(sequence), false, false));
                 }
                 break;
             case CHARM_BACKLASH:
@@ -232,14 +235,14 @@ public class NegativeEffect {
 
                 // hunter
             case TARGETED_BY_ENTITIES:
-                if (player.tickCount % 20 == 0) {
-                    for (Mob mob : player.level().getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(10.0))) {
+                if (player.tickCount % getIntervalForSequenceAndMultiplier(sequence, 2) == 0) {
+                    for (Mob mob : player.level().getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(10 + ((9 - sequence) * 3)))) {
                         mob.setTarget(player);
                     }}
                 break;
             case WITHER:
-                if (player.tickCount % 20 == 0) {
-                    player.addEffect(new MobEffectInstance(MobEffects.WITHER, 40, 2, false, false));
+                if (player.tickCount % 80 == 0) {
+                    player.addEffect(new MobEffectInstance(MobEffects.WITHER, 40, getEffectLevelForSequence(sequence), false, false));
                 }
                 break;
             case CRIMSON_CHAIN:
@@ -251,25 +254,25 @@ public class NegativeEffect {
 
                 // darkness
             case BLINDNESS:
-                if (player.tickCount % 20 == 0) {
-                    player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 40, 2, false, false));
+                if (player.tickCount % 80 == 0) {
+                    player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 40, getEffectLevelForSequence(sequence), false, false));
                 }
                 break;
             case ASLEEP:
-                if (player.tickCount % 20 == 0) {
-                    player.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 40, 2, false, false));
+                if (player.tickCount % 80 == 0) {
+                    player.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 40, getEffectLevelForSequence(sequence), false, false));
                 }
                 break;
 
                 // mother
             case MUTATED:
-                if (player.tickCount % 20 == 0) {
-                    player.addEffect(new MobEffectInstance(ModEffects.MUTATED, 40, 2, false, false));
+                if (player.tickCount % 80 == 0) {
+                    player.addEffect(new MobEffectInstance(ModEffects.MUTATED, 40, getEffectLevelForSequence(sequence), false, false));
                 }
                 break;
             case POISON:
-                if (player.tickCount % 20 == 0) {
-                    player.addEffect(new MobEffectInstance(MobEffects.POISON, 40, 2, false, false));
+                if (player.tickCount % 80 == 0) {
+                    player.addEffect(new MobEffectInstance(MobEffects.POISON, 40, getEffectLevelForSequence(sequence), false, false));
                 }
                 break;
             case SILK_TRAP:
@@ -287,8 +290,8 @@ public class NegativeEffect {
 
                 // monster
             case BAD_LUCK:
-                if (player.tickCount % 20 == 0) {
-                    player.addEffect(new MobEffectInstance(MobEffects.UNLUCK, 40, 2, false, false));
+                if (player.tickCount % 80 == 0) {
+                    player.addEffect(new MobEffectInstance(MobEffects.UNLUCK, 40, getEffectLevelForSequence(sequence), false, false));
                 }
                 break;
             case FATE_SPIN:
@@ -306,19 +309,19 @@ public class NegativeEffect {
 
                 // abyss
             case NAUSEA:
-                if (player.tickCount % 20 == 0) {
-                    player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 40, 2, false, false));
+                if (player.tickCount % 80 == 0) {
+                    player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 40, getEffectLevelForSequence(sequence), false, false));
                 }
                 break;
 
                 // general
             case SLOWNESS:
-                if (player.tickCount % 20 == 0) {
-                    player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 2, false, false));
+                if (player.tickCount % 80 == 0) {
+                    player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, getEffectLevelForSequence(sequence), false, false));
                 }
                 break;
             case HEAR_SOUNDS:
-                if (player.tickCount % 100 == 0) {
+                if (player.tickCount % getIntervalForSequenceAndMultiplier(sequence, 1) == 0) {
                     if (player instanceof ServerPlayer serverPlayer) {
                         Holder<SoundEvent> holder = BuiltInRegistries.SOUND_EVENT.wrapAsHolder(ModSounds.LOUD_SOUND_1.get());
 
@@ -336,8 +339,8 @@ public class NegativeEffect {
                 }
                 break;
             case MINING_FATIGUE:
-                if (player.tickCount % 20 == 0) {
-                    player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 40, 2, false, false));
+                if (player.tickCount % 100 == 0) {
+                    player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 40, getEffectLevelForSequence(sequence), false, false));
                 }
                 break;
             case DRAIN_HEALTH:
@@ -358,6 +361,49 @@ public class NegativeEffect {
                 }
                 break;
         }
+    }
+
+    private int getIntervalForSequenceAndMultiplier(int sequence, int multiplier) {
+        if (multiplier == 1){
+            return switch (sequence) {
+                case 8, 7, 6, 5 -> 20 * 10;
+                case 4, 3 -> 20 * 6;
+                case 2, 1 -> 20 * 3;
+                default -> 20 * 10;
+            };
+        } else if(multiplier == 2){
+            return switch (sequence) {
+                case 8, 7 -> 20 * 10;
+                case 6, 5 -> 20 * 8;
+                case 4, 3 -> 20 * 6;
+                case 2, 1 -> 20 * 4;
+                default -> 20 * 10;
+            };
+        } else if(multiplier == 3){
+            return switch (sequence) {
+                case 8, 7 -> 20 * 10;
+                case 6, 5 -> 20 * 8;
+                case 4, 3 -> 20 * 6;
+                case 2 -> 20 * 4;
+                case 1 -> 20 * 2;
+                default -> 20 * 10;
+            };
+        }
+        return 20;
+    }
+
+    private int getEffectLevelForSequence(int sequence) {
+        return switch (sequence) {
+            case 8 -> 1;
+            case 7 -> 2;
+            case 6 -> 3;
+            case 5 -> 4;
+            case 4 -> 6;
+            case 3 -> 8;
+            case 2 -> 11;
+            case 1 -> 15;
+            default -> 1;
+        };
     }
 
     private int getTeleportIntervalForSequence(int sequence) {
@@ -456,18 +502,15 @@ public class NegativeEffect {
                     (sequence <= 4) ? NegativeEffectType.TURN_TO_MARIONETTE : null,
                     (sequence <= 2) ? NegativeEffectType.WISH_CALAMITY : null
             ).filter(Objects::nonNull).toList();
-
             case "error" -> Stream.of(
                     NegativeEffectType.GOLD_ITEM_DEBUFF,
                     (sequence <= 6) ? NegativeEffectType.LOSE_ABILITIES : null,
                     (sequence <= 4) ? NegativeEffectType.LOSE_CONCEPTS : null,
                     (sequence <= 2) ? NegativeEffectType.STOP_YOUR_TIME : null
             ).filter(Objects::nonNull).toList();
-
             case "door" -> Stream.of(
                     NegativeEffectType.FULL_MOON_WHISPERS,
-                    (sequence <= 5) ? NegativeEffectType.RANDOM_TELEPORT : null,
-                    (sequence <= 3) ? NegativeEffectType.ENTER_SPIRIT_WORLD : null
+                    (sequence <= 5) ? NegativeEffectType.RANDOM_TELEPORT : null
             ).filter(Objects::nonNull).toList();
 
             case "sun" -> Stream.of(
@@ -602,6 +645,35 @@ public class NegativeEffect {
         MINING_FATIGUE,
         HEAR_SOUNDS;
     }
+    public static List<NegativeEffect.NegativeEffectType> handOnlyTick = List.of(
+            NegativeEffect.NegativeEffectType.RANDOM_TELEPORT,
+            NegativeEffect.NegativeEffectType.DRAIN_HEALTH
+    );
+
+    public static List<NegativeEffect.NegativeEffectType> useOnlyTick = List.of(
+            NegativeEffect.NegativeEffectType.TURN_TO_MARIONETTE,
+            NegativeEffect.NegativeEffectType.WISH_CALAMITY,
+            NegativeEffect.NegativeEffectType.STOP_YOUR_TIME,
+            NegativeEffect.NegativeEffectType.LOSE_ABILITIES,
+            NegativeEffect.NegativeEffectType.CONFLICT_WITH_ARTIFACTS,
+            NegativeEffect.NegativeEffectType.CURSED,
+            NegativeEffect.NegativeEffectType.CALAMITY_ATTRACTION
+    );
+
+    public static List<NegativeEffect.NegativeEffectType> hotBarOnlyTick = List.of(
+            NegativeEffect.NegativeEffectType.SLOWER_IN_HOT_PLACES,
+            NegativeEffect.NegativeEffectType.GOLD_ITEM_DEBUFF,
+            NegativeEffect.NegativeEffectType.LOSE_CONCEPTS,
+            NegativeEffect.NegativeEffectType.SLOWER_IN_COLD_PLACES,
+            NegativeEffect.NegativeEffectType.TARGETED_BY_ENTITIES,
+            NegativeEffect.NegativeEffectType.MENTAL_PLAGUE,
+            NegativeEffect.NegativeEffectType.PETRIFICATION,
+            NegativeEffect.NegativeEffectType.ASLEEP,
+            NegativeEffect.NegativeEffectType.MUTATED,
+            NegativeEffect.NegativeEffectType.BAD_LUCK,
+            NegativeEffect.NegativeEffectType.DRAIN_HUNGER,
+            NegativeEffect.NegativeEffectType.HEARING_WHISPERS
+    );
 
     private static boolean getBlockInRadius (Player player, BlockPos center, int radius, Block block){
         for (BlockPos pos : BlockPos.betweenClosed(center.offset(-radius, -radius, -radius),
