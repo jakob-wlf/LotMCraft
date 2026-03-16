@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.abyss;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -50,7 +51,17 @@ public class ToxicSmokeAbility extends Ability {
         Vec3 pos = entity.getEyePosition();
 
         ServerScheduler.scheduleForDuration(0, 6, 20 * 5, () -> {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 6.5, DamageLookup.lookupDps(8, .8, 6, 20) * multiplier(entity), pos, true, false, true, 0);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level,
+                    entity,
+                    6.5,
+                    DamageLookup.lookupDps(8, .8, 6, 20) * multiplier(entity),
+                    pos,
+                    true,
+                    false,
+                    true,
+                    0,
+                    ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity)
+            );
             ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.TOXIC_SMOKE.get(), pos, 25, 3, .01);
             ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, pos, 25, 3, .01);
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SMOKE, pos, 25, 3, .01);

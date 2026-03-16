@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -55,7 +56,7 @@ public class NightDomainAbility extends Ability {
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(ModEffects.UNLUCK, 20, 4, false, false, false));
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 5, false, false, false));
 
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 35, DamageLookup.lookupDps(4, .85, 2, 20) * multiplier(entity), startPos, true, false);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 35, DamageLookup.lookupDps(4, .85, 2, 20) * multiplier(entity), startPos, true, false, ModDamageTypes.source(level, ModDamageTypes.DARKNESS_GENERIC, entity));
 
             AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, 35).forEach(e -> BeyonderData.addModifierWithTimeLimit(e, "night_domain_debuff", .65, 2000));
             BeyonderData.addModifierWithTimeLimit(entity, "night_domain_buff", 1.35f, 2000);

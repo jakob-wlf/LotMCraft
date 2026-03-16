@@ -39,7 +39,6 @@
   "key.beyonders.return_to_main_body": "Return to Main Body",
 
 
-
   "_comment001": "Abilities------------------------------------------------------------------------------------",
 
   "lotmcraft.mythical_creature_tyrant_ability": "Mythical Creature Form",
@@ -783,6 +782,23 @@
 
   "_comment007": "Damage-----------------------------------------------------------------------------",
   "death.attack.loosing_control": "%1$s lost control.",
+  "death.attack.loosing_control.player": "%1$s lost control due to %2$s.",
+  "death.attack.purification": "%1$s was purified.",
+  "death.attack.purification.player": "%1$s was purified by %2$s.",
+  "death.attack.hunter_fire": "%1$s was scorched.",
+  "death.attack.hunter_fire.player": "%1$s was scorched by %2$s.",
+  "death.attack.sailor_lightning": "%1$s was smitten.",
+  "death.attack.sailor_lightning.player": "%1$s was smitten %2$s.",
+  "death.attack.unluck": "%1$s was too unlucky to live.",
+  "death.attack.unluck.player": "%1$s was too unlucky to live due to %2$s.",
+  "death.attack.mother_generic": "%1$s returned to the earth.",
+  "death.attack.mother_generic.player": "%2$s returned %1$s to the earth.",
+  "death.attack.door_space": "%1$s fell victim to a Space Time Anomaly.",
+  "death.attack.door_space.player": "%1$s fell victim to a Space Time Anomaly from %2$s.",
+  "death.attack.beyonder_generic": "%1$s fell victim to this cruel world.",
+  "death.attack.beyonder_generic.player": "%1$s was killed by %2$s.",
+  "death.attack.darkness_generic": "%1$s was taken by the darkness.",
+  "death.attack.darkness_generic.player": "%1$s was taken by the darkness from %2$s.",
 
 
   "_comment008": "Blocks-----------------------------------------------------------------------------",

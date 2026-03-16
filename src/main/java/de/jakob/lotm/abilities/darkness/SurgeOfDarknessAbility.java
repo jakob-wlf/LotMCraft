@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.darkness;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.DarknessEffectPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -49,7 +50,7 @@ public class SurgeOfDarknessAbility extends Ability {
                     sanityComponent.increaseSanityAndSync(-.0025f, e);
                 });
 
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 45, DamageLookup.lookupDps(3, .5, 4, 20) * multiplier(entity), center, true, false);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 45, DamageLookup.lookupDps(3, .5, 4, 20) * multiplier(entity), center, true, false, ModDamageTypes.source(level, ModDamageTypes.DARKNESS_GENERIC, entity));
             });
 
             List<BlockPos> affectedBlocks = AbilityUtil.getBlocksInEllipsoid((ServerLevel) level, center, 45, 18, true, false, true)

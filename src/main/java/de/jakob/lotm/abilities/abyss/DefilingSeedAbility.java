@@ -51,6 +51,7 @@ public class DefilingSeedAbility extends Ability {
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) return;
+
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 25, 2.5f);
         if(target == null || defiledEntities.contains(target.getUUID())) {
             if(entity instanceof ServerPlayer player) {
@@ -62,7 +63,7 @@ public class DefilingSeedAbility extends Ability {
 
         if(AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
             entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, 3));
-            entity.hurt(entity.damageSources().generic(), 10);
+            entity.hurt(ModDamageTypes.source(level, ModDamageTypes.LOOSING_CONTROL, entity), 10);
             return;
         }
 
@@ -73,7 +74,7 @@ public class DefilingSeedAbility extends Ability {
 
         ServerScheduler.scheduleForDuration(0, 8, 20 * 60 * 2, () -> {
             switch (random.nextInt(22)) {
-                case 0, 2, 3 -> target.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), 6 * (float) multiplier(entity));
+                case 0, 2, 3 -> target.hurt(ModDamageTypes.source(level, ModDamageTypes.LOOSING_CONTROL, entity), 6 * (float) multiplier(entity));
                 case 1 -> target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, random.nextInt(4)));
                 case 4, 5 ->  target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 9, random.nextInt(2, 7)));
             }

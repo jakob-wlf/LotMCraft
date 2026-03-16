@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.abyss;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -67,7 +68,7 @@ public class LanguageOfFoulnessAbility extends SelectableAbility {
     private void castDeath(ServerLevel serverLevel, LivingEntity entity, LivingEntity target) {
         ServerScheduler.scheduleForDuration(0, 1, 20 * 8, () -> {
             if(random.nextInt(8) == 0) {
-                target.hurt(serverLevel.damageSources().wither(), (float) (DamageLookup.lookupDps(6, .8, 8, 20) * multiplier(entity)));
+                target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDps(6, .8, 8, 20) * multiplier(entity)));
             }
             target.addEffect(new MobEffectInstance(MobEffects.WITHER, 15, 3, false, false, false));
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
