@@ -730,6 +730,14 @@ public class AbilityUtil {
                 distanceFalloff, ignoreCooldown, cooldownTicks, 0, defaultDamageSource(source));
     }
 
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double minRadius,
+                                               double maxRadius, double damage, Vec3 center,
+                                               boolean ignoreSource, boolean distanceFalloff,
+                                               boolean ignoreCooldown, int cooldownTicks, int fireticks) {
+        return damageNearbyEntities(level, source, minRadius, maxRadius, damage, center, ignoreSource,
+                distanceFalloff, ignoreCooldown, cooldownTicks, fireticks, defaultDamageSource(source));
+    }
+
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
                                                double damage, Vec3 center, boolean ignoreSource,
                                                boolean distanceFalloff, DamageSource damageSource) {
