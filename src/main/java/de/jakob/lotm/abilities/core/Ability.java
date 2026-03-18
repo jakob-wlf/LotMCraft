@@ -24,24 +24,35 @@ import java.util.Random;
 
 public abstract class Ability {
 
+    // Identity
     private final String id;
     protected final int cooldown;
 
-    protected boolean shouldBeHidden = false;
+    // Interaction behaviour
+    protected double interactionRadius = 1.4;
+    protected final String[] interactionFlags;
+    protected boolean postsUsedAbilityEventManually = false;
 
+    // Optimal distance
+    public boolean hasOptimalDistance = true;
+    public float optimalDistance = 5f;
+
+    // Permissions
     public boolean canBeUsedByNPC = true;
     public boolean canBeCopied = true;
     public boolean canAlwaysBeUsed = false;
 
+    // Misc
     public boolean doesNotIncreaseDigestion = false;
-    public boolean hasOptimalDistance = true;
-    public float optimalDistance = 5f;
+    protected boolean shouldBeHidden = false;
 
+    // Utility
     protected final Random random = new Random();
 
-    public Ability(String id, float cooldown) {
+    public Ability(String id, float cooldown, String... interactionFlags) {
         this.id = id;
         this.cooldown = Math.round(cooldown * 20);
+        this.interactionFlags = interactionFlags;
     }
 
     public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements) {
@@ -86,6 +97,8 @@ public abstract class Ability {
 
         // Track ability use for Recording/Replicating detection
         AbilityUseTracker.trackUse(newUser, this, newUser.position(), serverLevel);
+
+        if(!postsUsedAbilityEventManually) NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, newUser.position(), newUser, this, interactionFlags, interactionRadius));
     }
 
     public void useAbility(ServerLevel serverLevel, LivingEntity entity) {

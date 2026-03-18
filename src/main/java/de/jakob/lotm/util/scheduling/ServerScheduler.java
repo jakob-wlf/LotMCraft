@@ -40,20 +40,6 @@ public class ServerScheduler {
         return scheduleDelayed(delay, task, level, () -> 1.0);
     }
 
-    /**
-     * Schedule a task to run once after a delay, scaled by a time multiplier.
-     * <p>
-     * The supplier is queried every tick. A multiplier > 1 makes time pass
-     * faster (shorter real delay); < 1 makes time pass slower (longer real
-     * delay). Pass {@code () -> AbilityUtil.getTimeInArea(entity, location)}
-     * to hook into the world's time-change areas.
-     *
-     * @param delay           Nominal delay in ticks (at multiplier 1.0)
-     * @param task            Task to execute
-     * @param level           Server level context (may be null)
-     * @param timeMultiplier  Supplier returning the current time multiplier
-     * @return Task ID for cancellation
-     */
     public static UUID scheduleDelayed(int delay, Runnable task,
                                        @Nullable ServerLevel level,
                                        Supplier<Double> timeMultiplier) {
@@ -80,24 +66,6 @@ public class ServerScheduler {
         return scheduleRepeating(initialDelay, interval, maxExecutions, task, level, condition, () -> 1.0);
     }
 
-    /**
-     * Schedule a task to run repeatedly, scaled by a time multiplier.
-     * <p>
-     * Both the initial delay and the interval between executions are affected
-     * by the multiplier. A multiplier > 1 compresses real time (executions
-     * arrive sooner); < 1 stretches it (executions arrive later).
-     *
-     * @param initialDelay   Nominal initial delay in ticks (at multiplier 1.0)
-     * @param interval       Nominal interval in ticks (at multiplier 1.0)
-     * @param maxExecutions  Max executions (-1 for infinite)
-     * @param task           Task to execute
-     * @param level          Server level context (may be null)
-     * @param condition      Condition checked before each execution
-     * @param timeMultiplier Supplier returning the current time multiplier.
-     *                       Pass {@code () -> AbilityUtil.getTimeInArea(entity, location)}
-     *                       to apply world time-change effects.
-     * @return Task ID for cancellation
-     */
     public static UUID scheduleRepeating(int initialDelay, int interval, int maxExecutions,
                                          Runnable task, @Nullable ServerLevel level,
                                          Supplier<Boolean> condition,
@@ -134,20 +102,9 @@ public class ServerScheduler {
     /**
      * Schedule a task for a nominal duration, scaled by a time multiplier.
      * <p>
-     * The duration counts down in "scaled ticks": when the multiplier is 2.0
-     * the task finishes in half the real time; when it is 0.5 it takes twice
-     * as long. {@code onFinish} is fired once the scaled duration expires.
-     *
-     * @param initialDelay   Nominal initial delay in ticks (at multiplier 1.0)
-     * @param interval       Nominal interval in ticks (at multiplier 1.0)
-     * @param duration       Nominal total duration in ticks (at multiplier 1.0)
-     * @param task           Task to execute each interval
-     * @param onFinish       Optional callback fired once when the duration ends
-     * @param level          Server level context (may be null)
-     * @param timeMultiplier Supplier returning the current time multiplier.
-     *                       Pass {@code () -> AbilityUtil.getTimeInArea(entity, location)}
-     *                       to apply world time-change effects.
-     * @return Task ID for cancellation
+     * Returns the main task's UUID. Cancelling this UUID via {@link #cancel(UUID)}
+     * will also cancel the associated {@code onFinish} task, preventing it from
+     * firing after the effect has been externally interrupted (e.g. purification).
      */
     public static UUID scheduleForDuration(int initialDelay, int interval, int duration,
                                            Runnable task, @Nullable Runnable onFinish,
@@ -157,17 +114,18 @@ public class ServerScheduler {
         ScheduledTask scheduledTask = new ScheduledTask(
                 id, task, initialDelay, interval, -1, level, () -> true, timeMultiplier);
         scheduledTask.setEndTime(duration);
-        tasks.put(id, scheduledTask);
 
         if (onFinish != null) {
             UUID finishId = UUID.randomUUID();
-            // The finish task fires at the same nominal duration threshold,
-            // also obeying the same time multiplier.
             ScheduledTask finishTask = new ScheduledTask(
                     finishId, onFinish, duration + 1, 0, 1, level, () -> true, timeMultiplier);
             tasks.put(finishId, finishTask);
+
+            // Link the finish task to the main task so cancel(id) removes both
+            scheduledTask.setLinkedTaskId(finishId);
         }
 
+        tasks.put(id, scheduledTask);
         return id;
     }
 
@@ -175,36 +133,18 @@ public class ServerScheduler {
     // scheduleUntil
     // -------------------------------------------------------------------------
 
-    /**
-     * Schedule a task that runs every tick until {@code breakCondition} becomes true,
-     * then fires {@code onFinish} once.
-     */
     public static UUID scheduleUntil(ServerLevel level, Runnable task,
                                      @Nullable Runnable onFinish,
                                      AtomicBoolean breakCondition) {
         return scheduleUntil(level, task, 1, onFinish, breakCondition, () -> 1.0);
     }
 
-    /**
-     * Schedule a task that runs at a given interval until {@code breakCondition} becomes
-     * true, then fires {@code onFinish} once.
-     */
     public static UUID scheduleUntil(ServerLevel level, Runnable task, int interval,
                                      @Nullable Runnable onFinish,
                                      AtomicBoolean breakCondition) {
         return scheduleUntil(level, task, interval, onFinish, breakCondition, () -> 1.0);
     }
 
-    /**
-     * Schedule a task that runs at a given interval until {@code breakCondition} becomes
-     * true, scaled by a time multiplier.
-     * <p>
-     * A multiplier > 1 shortens the real-time gap between executions; < 1 lengthens it.
-     *
-     * @param timeMultiplier Supplier returning the current time multiplier.
-     *                       Pass {@code () -> AbilityUtil.getTimeInArea(entity, location)}
-     *                       to apply world time-change effects.
-     */
     public static UUID scheduleUntil(ServerLevel level, Runnable task, int interval,
                                      @Nullable Runnable onFinish,
                                      AtomicBoolean breakCondition,
@@ -219,6 +159,8 @@ public class ServerScheduler {
             ScheduledTask finishTask = new ScheduledTask(
                     finishId, onFinish, 0, 1, 1, level, breakCondition::get, timeMultiplier);
             tasks.put(finishId, finishTask);
+
+            scheduledTask.setLinkedTaskId(finishId);
         }
 
         return id;
@@ -228,9 +170,23 @@ public class ServerScheduler {
     // Utility
     // -------------------------------------------------------------------------
 
-    /** Cancel a scheduled task. */
+    /**
+     * Cancel a scheduled task.
+     * <p>
+     * If the task was created by {@link #scheduleForDuration} or
+     * {@link #scheduleUntil} with an {@code onFinish} callback, the linked
+     * finish task is cancelled automatically so it never fires.
+     */
     public static boolean cancel(UUID taskId) {
-        return tasks.remove(taskId) != null;
+        ScheduledTask task = tasks.remove(taskId);
+        if (task == null) return false;
+
+        // Also cancel the linked onFinish task if present
+        if (task.linkedTaskId != null) {
+            tasks.remove(task.linkedTaskId);
+        }
+
+        return true;
     }
 
     /** Check if a task is still scheduled. */
@@ -297,20 +253,21 @@ public class ServerScheduler {
         private final int maxExecutions;
         private final ServerLevel level;
         private final Supplier<Boolean> condition;
-        /** Supplies the current time multiplier (queried every real tick). */
         private final Supplier<Double> timeMultiplier;
 
-        /**
-         * Accumulated "scaled ticks". Advanced each real tick by the current
-         * time multiplier, so multiplier > 1 makes time pass faster and < 1
-         * makes it pass slower. All threshold comparisons use this value.
-         */
         private double ticksElapsed = 0;
         private int executionCount = 0;
-        /** Next scaled-tick threshold at which the task fires. */
         private double nextExecutionTick;
-        /** Nominal duration expressed as a scaled-tick target (-1 = no limit). */
         private double endTime = -1;
+
+        /**
+         * UUID of the companion task (e.g. the onFinish task spawned by
+         * scheduleForDuration). Set once at construction time via
+         * {@link #setLinkedTaskId}. When this task is cancelled, the linked
+         * task is removed from the map as well.
+         */
+        @Nullable
+        private UUID linkedTaskId = null;
 
         public ScheduledTask(UUID id, Runnable task, int initialDelay, int interval,
                              int maxExecutions, ServerLevel level,
@@ -325,12 +282,8 @@ public class ServerScheduler {
             this.nextExecutionTick = initialDelay;
         }
 
-        /**
-         * Advances scaled time by the current multiplier and returns whether
-         * the next execution threshold has been reached.
-         */
         public boolean tick() {
-            double multiplier = Math.max(0.0, timeMultiplier.get()); // guard negative values
+            double multiplier = Math.max(0.0, timeMultiplier.get());
             ticksElapsed += multiplier;
             return ticksElapsed >= nextExecutionTick;
         }
@@ -344,6 +297,10 @@ public class ServerScheduler {
 
         public void setEndTime(int endTime) {
             this.endTime = endTime;
+        }
+
+        public void setLinkedTaskId(UUID linkedTaskId) {
+            this.linkedTaskId = linkedTaskId;
         }
 
         public boolean hasEndTime() {

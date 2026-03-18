@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
@@ -36,20 +37,6 @@ public class ClientScheduler {
         return scheduleDelayed(delay, task, level, () -> 1.0);
     }
 
-    /**
-     * Schedule a task to run once after a delay, scaled by a time multiplier.
-     * <p>
-     * The supplier is queried every tick. A multiplier > 1 makes time pass
-     * faster (shorter real delay); < 1 makes time pass slower (longer real
-     * delay). Pass {@code () -> AbilityUtil.getTimeInArea(entity, location)}
-     * to hook into the world's time-change areas.
-     *
-     * @param delay           Nominal delay in ticks (at multiplier 1.0)
-     * @param task            Task to execute
-     * @param level           Client level context (may be null)
-     * @param timeMultiplier  Supplier returning the current time multiplier
-     * @return Task ID for cancellation
-     */
     public static UUID scheduleDelayed(int delay, Runnable task,
                                        @Nullable ClientLevel level,
                                        Supplier<Double> timeMultiplier) {
@@ -75,24 +62,6 @@ public class ClientScheduler {
         return scheduleRepeating(initialDelay, interval, maxExecutions, task, level, condition, () -> 1.0);
     }
 
-    /**
-     * Schedule a task to run repeatedly, scaled by a time multiplier.
-     * <p>
-     * Both the initial delay and the interval between executions are affected
-     * by the multiplier. A multiplier > 1 compresses real time (executions
-     * arrive sooner); < 1 stretches it (executions arrive later).
-     *
-     * @param initialDelay   Nominal initial delay in ticks (at multiplier 1.0)
-     * @param interval       Nominal interval in ticks (at multiplier 1.0)
-     * @param maxExecutions  Max executions (-1 for infinite)
-     * @param task           Task to execute
-     * @param level          Client level context (may be null)
-     * @param condition      Condition checked before each execution
-     * @param timeMultiplier Supplier returning the current time multiplier.
-     *                       Pass {@code () -> AbilityUtil.getTimeInArea(entity, location)}
-     *                       to apply world time-change effects.
-     * @return Task ID for cancellation
-     */
     public static UUID scheduleRepeating(int initialDelay, int interval, int maxExecutions,
                                          Runnable task, @Nullable ClientLevel level,
                                          Supplier<Boolean> condition,
@@ -129,20 +98,9 @@ public class ClientScheduler {
     /**
      * Schedule a task for a nominal duration, scaled by a time multiplier.
      * <p>
-     * The duration counts down in "scaled ticks": when the multiplier is 2.0
-     * the task finishes in half the real time; when it is 0.5 it takes twice
-     * as long. {@code onFinish} is fired once the scaled duration expires.
-     *
-     * @param initialDelay   Nominal initial delay in ticks (at multiplier 1.0)
-     * @param interval       Nominal interval in ticks (at multiplier 1.0)
-     * @param duration       Nominal total duration in ticks (at multiplier 1.0)
-     * @param task           Task to execute each interval
-     * @param onFinish       Optional callback fired once when the duration ends
-     * @param level          Client level context (may be null)
-     * @param timeMultiplier Supplier returning the current time multiplier.
-     *                       Pass {@code () -> AbilityUtil.getTimeInArea(entity, location)}
-     *                       to apply world time-change effects.
-     * @return Task ID for cancellation
+     * Returns the main task's UUID. Cancelling this UUID via {@link #cancel(UUID)}
+     * will also cancel the associated {@code onFinish} task, preventing it from
+     * firing after the effect has been externally interrupted.
      */
     public static UUID scheduleForDuration(int initialDelay, int interval, int duration,
                                            Runnable task, @Nullable Runnable onFinish,
@@ -152,17 +110,18 @@ public class ClientScheduler {
         ScheduledTask scheduledTask = new ScheduledTask(
                 id, task, initialDelay, interval, -1, level, () -> true, timeMultiplier);
         scheduledTask.setEndTime(duration);
-        tasks.put(id, scheduledTask);
 
         if (onFinish != null) {
             UUID finishId = UUID.randomUUID();
-            // The finish task fires at the same nominal duration threshold,
-            // also obeying the same time multiplier.
             ScheduledTask finishTask = new ScheduledTask(
                     finishId, onFinish, duration, 0, 1, level, () -> true, timeMultiplier);
             tasks.put(finishId, finishTask);
+
+            // Link the finish task to the main task so cancel(id) removes both
+            scheduledTask.setLinkedTaskId(finishId);
         }
 
+        tasks.put(id, scheduledTask);
         return id;
     }
 
@@ -170,9 +129,6 @@ public class ClientScheduler {
     // Particle helpers
     // -------------------------------------------------------------------------
 
-    /**
-     * Spawn particles at a location for a duration (no time scaling).
-     */
     public static UUID spawnParticlesForDuration(ParticleOptions particleType, Vec3 position,
                                                  int duration, int interval, int particlesPerSpawn,
                                                  double spread) {
@@ -180,11 +136,6 @@ public class ClientScheduler {
                 particlesPerSpawn, spread, () -> 1.0);
     }
 
-    /**
-     * Spawn particles at a location for a duration, optionally time-scaled.
-     *
-     * @param timeMultiplier Supplier returning the current time multiplier
-     */
     public static UUID spawnParticlesForDuration(ParticleOptions particleType, Vec3 position,
                                                  int duration, int interval, int particlesPerSpawn,
                                                  double spread, Supplier<Double> timeMultiplier) {
@@ -205,9 +156,6 @@ public class ClientScheduler {
         }, null, level, timeMultiplier);
     }
 
-    /**
-     * Spawn particles in a horizontal circle pattern (no time scaling).
-     */
     public static UUID spawnCircleParticles(ParticleOptions particleType, Vec3 center,
                                             double radius, int duration, int interval,
                                             int particleCount) {
@@ -215,11 +163,6 @@ public class ClientScheduler {
                 particleCount, () -> 1.0);
     }
 
-    /**
-     * Spawn particles in a horizontal circle pattern, optionally time-scaled.
-     *
-     * @param timeMultiplier Supplier returning the current time multiplier
-     */
     public static UUID spawnCircleParticles(ParticleOptions particleType, Vec3 center,
                                             double radius, int duration, int interval,
                                             int particleCount, Supplier<Double> timeMultiplier) {
@@ -236,9 +179,6 @@ public class ClientScheduler {
         }, null, level, timeMultiplier);
     }
 
-    /**
-     * Spawn particles in a 3-D oriented circle pattern (no time scaling).
-     */
     public static UUID spawnCircleParticles(ParticleOptions particleType, Vec3 center,
                                             Vec3 direction, double radius, int duration,
                                             int interval, int particleCount) {
@@ -246,11 +186,6 @@ public class ClientScheduler {
                 interval, particleCount, () -> 1.0);
     }
 
-    /**
-     * Spawn particles in a 3-D oriented circle pattern, optionally time-scaled.
-     *
-     * @param timeMultiplier Supplier returning the current time multiplier
-     */
     public static UUID spawnCircleParticles(ParticleOptions particleType, Vec3 center,
                                             Vec3 direction, double radius, int duration,
                                             int interval, int particleCount,
@@ -279,9 +214,22 @@ public class ClientScheduler {
     // Utility
     // -------------------------------------------------------------------------
 
-    /** Cancel a scheduled task. */
+    /**
+     * Cancel a scheduled task.
+     * <p>
+     * If the task was created by {@link #scheduleForDuration} with an
+     * {@code onFinish} callback, the linked finish task is cancelled
+     * automatically so it never fires.
+     */
     public static boolean cancel(UUID taskId) {
-        return tasks.remove(taskId) != null;
+        ScheduledTask task = tasks.remove(taskId);
+        if (task == null) return false;
+
+        if (task.linkedTaskId != null) {
+            tasks.remove(task.linkedTaskId);
+        }
+
+        return true;
     }
 
     /** Check if a task is still scheduled. */
@@ -348,20 +296,19 @@ public class ClientScheduler {
         private final int maxExecutions;
         private final ClientLevel level;
         private final Supplier<Boolean> condition;
-        /** Supplies the current time multiplier (queried every real tick). */
         private final Supplier<Double> timeMultiplier;
 
-        /**
-         * Accumulated "scaled ticks". Advanced each real tick by the current
-         * time multiplier, so multiplier > 1 makes time pass faster and < 1
-         * makes it pass slower. All threshold comparisons use this value.
-         */
         private double ticksElapsed = 0;
         private int executionCount = 0;
-        /** Next scaled-tick threshold at which the task fires. */
         private double nextExecutionTick;
-        /** Nominal duration expressed as a scaled-tick target (-1 = no limit). */
         private double endTime = -1;
+
+        /**
+         * UUID of the companion onFinish task spawned by scheduleForDuration.
+         * When this task is cancelled, the linked task is removed too.
+         */
+        @Nullable
+        private UUID linkedTaskId = null;
 
         public ScheduledTask(UUID id, Runnable task, int initialDelay, int interval,
                              int maxExecutions, ClientLevel level,
@@ -376,12 +323,8 @@ public class ClientScheduler {
             this.nextExecutionTick = initialDelay;
         }
 
-        /**
-         * Advances scaled time by the current multiplier and returns whether
-         * the next execution threshold has been reached.
-         */
         public boolean tick() {
-            double multiplier = Math.max(0.0, timeMultiplier.get()); // guard negative values
+            double multiplier = Math.max(0.0, timeMultiplier.get());
             ticksElapsed += multiplier;
             return ticksElapsed >= nextExecutionTick;
         }
@@ -395,6 +338,10 @@ public class ClientScheduler {
 
         public void setEndTime(int endTime) {
             this.endTime = endTime;
+        }
+
+        public void setLinkedTaskId(UUID linkedTaskId) {
+            this.linkedTaskId = linkedTaskId;
         }
 
         public boolean hasEndTime() {

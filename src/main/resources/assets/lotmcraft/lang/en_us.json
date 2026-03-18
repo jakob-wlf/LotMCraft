@@ -799,6 +799,8 @@
   "death.attack.beyonder_generic.player": "%1$s was killed by %2$s.",
   "death.attack.darkness_generic": "%1$s was taken by the darkness.",
   "death.attack.darkness_generic.player": "%1$s was taken by the darkness from %2$s.",
+  "death.attack.demoness_generic": "%1$s fell victim to a catastrophe.",
+  "death.attack.demoness_generic.player": "%1$s fell victim to a catastrophe due to %2$s.",
 
 
   "_comment008": "Blocks-----------------------------------------------------------------------------",

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -13,6 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -20,8 +22,9 @@ import java.util.Map;
 
 public class IlluminateAbility extends Ability {
     public IlluminateAbility(String id) {
-        super(id, .25f);
+        super(id, .25f, "purification");
         canBeUsedByNPC = false;
+        postsUsedAbilityEventManually = true;
     }
 
     @Override
@@ -36,7 +39,7 @@ public class IlluminateAbility extends Ability {
         return 12;
     }
 
-    final int radius = 16;
+    final int radius = 12;
     final int duration = 20 * 25;
 
     final Vec3 eastFacing = new Vec3(1, 0, 0);
@@ -49,9 +52,10 @@ public class IlluminateAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
-        BlockPos targetBlock = AbilityUtil.getTargetBlock(entity, radius);
 
         if (!level.isClientSide) {
+            BlockPos targetBlock = AbilityUtil.getTargetBlock(entity, radius, true);
+
             BlockState lightBlock = Blocks.LIGHT.defaultBlockState();
             level.setBlock(targetBlock, lightBlock, 3);
 
@@ -65,6 +69,8 @@ public class IlluminateAbility extends Ability {
                     level.setBlock(targetBlock, Blocks.AIR.defaultBlockState(), 3);
                 }
             }, (ServerLevel) level);
+            NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetBlock.getCenter(), entity, this, interactionFlags, interactionRadius));
         }
+
     }
 }

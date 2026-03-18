@@ -46,6 +46,7 @@ public class AbilityHandler {
         abilities.add(new FireOfLightAbility("fire_of_light_ability"));
         abilities.add(new CleaveOfPurificationAbility("cleave_of_purification_ability"));
         abilities.add(new HolyOathAbility("holy_oath_ability"));
+        abilities.add(new HolyLightSummoningAbility("holy_light_summoning_ability"));
         abilities.add(new GodSaysItsEffectiveAbility("notary_buff_ability"));
         abilities.add(new GodSaysItsNotEffectiveAbility("notary_debuff_ability"));
         abilities.add(new LightOfHolinessAbility("light_of_holiness_ability"));

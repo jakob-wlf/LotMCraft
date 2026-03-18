@@ -20,6 +20,7 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> MOTHER_GENERIC = key("mother_generic");
     public static final ResourceKey<DamageType> DOOR_SPACE = key("door_space");
     public static final ResourceKey<DamageType> DARKNESS_GENERIC = key("darkness_generic");
+    public static final ResourceKey<DamageType> DEMONESS_GENERIC = key("demoness_generic");
     public static final ResourceKey<DamageType> BEYONDER_GENERIC = key("beyonder_generic");
 
     // -------------------------------------------------------------------------

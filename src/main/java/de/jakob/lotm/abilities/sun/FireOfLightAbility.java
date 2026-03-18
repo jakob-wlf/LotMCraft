@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -15,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -22,7 +24,8 @@ import java.util.Map;
 
 public class FireOfLightAbility extends Ability {
     public FireOfLightAbility(String id) {
-        super(id, .75f);
+        super(id, .75f, "purification");
+        postsUsedAbilityEventManually = true;
     }
 
     @Override
@@ -56,11 +59,12 @@ public class FireOfLightAbility extends Ability {
 
         AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, DamageLookup.lookupDamage(7, .75) * multiplier(entity), targetPos, true, false, true, 0, 20 * 2);
 
-         BlockState block = level.getBlockState(BlockPos.containing(targetPos));
-         if(block.isAir()) {
-             level.setBlockAndUpdate(BlockPos.containing(targetPos), Blocks.LIGHT.defaultBlockState());
-         }
+        BlockState block = level.getBlockState(BlockPos.containing(targetPos));
+        if(block.isAir()) {
+            level.setBlockAndUpdate(BlockPos.containing(targetPos), Blocks.LIGHT.defaultBlockState());
+        }
 
         ServerScheduler.scheduleDelayed(25, () -> level.setBlockAndUpdate(BlockPos.containing(targetPos), Blocks.AIR.defaultBlockState()));
+        NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetPos, entity, this, interactionFlags, interactionRadius));
     }
 }

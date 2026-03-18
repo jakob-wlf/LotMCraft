@@ -21,10 +21,11 @@ import java.util.Map;
 
 public class CleaveOfPurificationAbility extends Ability {
     public CleaveOfPurificationAbility(String id) {
-        super(id, .8f);
+        super(id, .8f, "purification");
 
         hasOptimalDistance = true;
         optimalDistance = 1f;
+        interactionRadius = 2;
     }
 
     @Override
