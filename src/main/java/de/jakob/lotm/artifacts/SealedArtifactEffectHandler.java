@@ -8,6 +8,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
+import java.util.List;
+
 /**
  * Handles the negative effects of sealed artifacts on players
  */
@@ -68,7 +70,7 @@ public class SealedArtifactEffectHandler {
         // loop through every effect, if it's a hand only effect, apply it
         for (NegativeEffect effect : data.negativeEffect()) {
             if (NegativeEffect.handOnlyTick.contains(effect.getType())) {
-                effect.apply(player, inMainHand);
+                effect.apply(player, inMainHand, List.of(data.pathway()));
             }
         }
     }
@@ -82,7 +84,7 @@ public class SealedArtifactEffectHandler {
         // apply to hotbar only effects
         for (NegativeEffect effect : data.negativeEffect()) {
             if (NegativeEffect.hotBarOnlyTick.contains(effect.getType())) {
-                effect.apply(player, true);
+                effect.apply(player, true, List.of(data.pathway()));
             }
         }
     }
@@ -96,7 +98,7 @@ public class SealedArtifactEffectHandler {
 
         for (NegativeEffect effect : data.negativeEffect()) {
             if (!NegativeEffect.useOnlyTick.contains(effect.getType()) && !NegativeEffect.handOnlyTick.contains(effect.getType()) && !NegativeEffect.hotBarOnlyTick.contains(effect.getType())) {
-                effect.apply(player, true);
+                effect.apply(player, true, List.of(data.pathway()));
             }
         }
     }

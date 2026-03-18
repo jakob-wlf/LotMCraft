@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityHandler;
 import de.jakob.lotm.abilities.error.MundaneConceptualTheft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
@@ -16,6 +17,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -70,14 +72,12 @@ public class NegativeEffect {
         this.effectAmplifier = effectAmplifier;
     }
 
-    /**
-     * Applies the negative effect to a player
-     * @param player The player holding the sealed artifact
-     * @param inMainHand Whether the artifact is in the main hand
-     */
-    public void apply(Player player, boolean inMainHand) {
+    private void applyFoolEffects(Player player) {
         switch (type) {
-                // seer
+            case BREATH_DEPLETION:applyCommonEffects(player);
+                break;
+            case BRUN:applyCommonEffects(player);
+                break;
             case SLOWER_IN_HOT_PLACES:
                 if (player.tickCount % 200 == 0) {
                     if ((player.level().getBiome(player.blockPosition()).value().shouldMeltFrozenOceanIcebergSlightly(player.blockPosition()))
@@ -88,8 +88,15 @@ public class NegativeEffect {
                     }
                 }
                 break;
+            case TURN_TO_MARIONETTE:
+                break;
+            case WISH_CALAMITY:
+                break;
 
-                // error
+        }
+    }
+    private void applyErrorEffects(Player player) {
+        switch (type) {
             case GOLD_ITEM_DEBUFF:
                 if (player.tickCount % 200 == 0) {
                     for (ItemStack stack : player.getInventory().items) {
@@ -99,49 +106,21 @@ public class NegativeEffect {
                         player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, getEffectLevelForSequence(sequence), false, false));
                         player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, getEffectLevelForSequence(sequence), false, false));
                         player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, getEffectLevelForSequence(sequence), false, false));
-
                     }
                 }
                 break;
             case LOSE_CONCEPTS:
-                if (player.tickCount % 100 == 0) {
-                    MundaneConceptualTheft mundaneConceptualTheft = new MundaneConceptualTheft("mundane_conceptual_theft_ability");
-//                    mundaneConceptualTheft.stealWalk(player, 40);
-//                    mundaneConceptualTheft.stealSight(player, 40);
-                }
                 break;
             case LOSE_ABILITIES:
-                if (player.tickCount % 400 == 0) {
-                    if (!BeyonderData.isBeyonder(player)) {
-                        return;
-                    }
-                    HashSet<Ability> targetAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequence(
-                            BeyonderData.getPathway(player), BeyonderData.getSequence(player));
-
-                    ArrayList<Ability> stealableAbilities = new ArrayList<>(targetAbilities.stream()
-                            .filter(ability -> ability.canBeCopied
-                                    && ability.canUse(player, true, false)
-                                    && !BeyonderData.isSpecificAbilityDisabled(player, ability.getId()))
-                            .toList());
-                    if (stealableAbilities.isEmpty()) {
-                        return;
-                    }
-
-                    for (int i = 0; i < 1; i++) {
-                        Random random = new Random();
-                        int index = random.nextInt(stealableAbilities.size());
-                        Ability stolenAbility = stealableAbilities.get(index);
-                        stealableAbilities.remove(index);
-
-                        // Disable the ability on the target for the duration
-                        BeyonderData.disableSpecificAbilityWithTimeLimit(player, "ability_theft_disable",
-                                stolenAbility.getId(), 5000L);
-
-                    }
-                }
                 break;
-
-                // door
+            case STOP_TIME:
+                break;
+        }
+    }
+    private void applyDoorEffects(Player player) {
+        switch (type) {
+            case FULL_MOON_WHISPERS:
+                break;
             case RANDOM_TELEPORT:
                 if (player.tickCount % getTeleportIntervalForSequence(sequence) == 0) {
                     double range = 5 + (10 - sequence) * 2;
@@ -150,8 +129,10 @@ public class NegativeEffect {
                     player.teleportTo(x, player.getY(), z);
                 }
                 break;
-
-                // sun
+        }
+    }
+    private void applySunEffects(Player player) {
+        switch (type) {
             case SLOWER_IN_COLD_PLACES:
                 if (player.tickCount % 200 == 0) {
                     if ((player.level().getBiome(player.blockPosition()).value().coldEnoughToSnow(player.blockPosition()))
@@ -162,17 +143,16 @@ public class NegativeEffect {
                     }
                 }
                 break;
-            case BRUN:
-                if (player.tickCount % getIntervalForSequenceAndMultiplier(sequence, 1) == 0) {
-                    player.setRemainingFireTicks(40);
-                }
+            case BRUN:applyCommonEffects(player);
+                break;
+            case CONFLICT_WITH_ARTIFACTS:
                 break;
 
-                // tyrant
-            case BREATH_DEPLETION:
-                if (player.tickCount % getIntervalForSequenceAndMultiplier(sequence, 1) == 0) {
-                    player.setAirSupply(-200);
-                }
+        }
+    }
+    private void applyTyrantEffects(Player player) {
+        switch (type) {
+            case BREATH_DEPLETION:applyCommonEffects(player);
                 break;
             case STRUCK_BY_LIGHTNING:
                 if (player.tickCount % getIntervalForSequenceAndMultiplier(sequence, 3) == 0) {
@@ -186,6 +166,8 @@ public class NegativeEffect {
                     }
                 }
                 break;
+            case TARGETED_BY_ENTITIES:applyCommonEffects(player);
+                break;
             case WEAKNESS_WHEN_ALONE:
                 if (player.tickCount % 20 == 0) {
                     boolean entitiesNearby = !player.level().getEntitiesOfClass(
@@ -198,8 +180,10 @@ public class NegativeEffect {
                     }
                 }
                 break;
-
-                // visionary
+        }
+    }
+    private void applyVisionaryEffects(Player player) {
+        switch (type) {
             case MENTAL_PLAGUE:
                 if (player.tickCount % 80 == 0) {
                     player.addEffect(new MobEffectInstance(ModEffects.MENTAL_PLAGUE, 40, getEffectLevelForSequence(sequence), false, false));
@@ -220,8 +204,10 @@ public class NegativeEffect {
                     }
                 }
                 break;
-
-                // demoness
+        }
+    }
+    private void applyDemonessEffects(Player player) {
+        switch (type) {
             case PETRIFICATION:
                 if (player.tickCount % 200 == 0) {
                     player.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 40, getEffectLevelForSequence(sequence), false, false));
@@ -232,13 +218,11 @@ public class NegativeEffect {
                     player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 120, 0, false, false));
                 }
                 break;
-
-                // hunter
-            case TARGETED_BY_ENTITIES:
-                if (player.tickCount % getIntervalForSequenceAndMultiplier(sequence, 2) == 0) {
-                    for (Mob mob : player.level().getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(10 + ((9 - sequence) * 3)))) {
-                        mob.setTarget(player);
-                    }}
+        }
+    }
+    private void applyHunterEffects(Player player) {
+        switch (type) {
+            case TARGETED_BY_ENTITIES: applyCommonEffects(player);
                 break;
             case WITHER:
                 if (player.tickCount % 80 == 0) {
@@ -251,8 +235,10 @@ public class NegativeEffect {
                     player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 40, 1, false, false));
                 }
                 break;
-
-                // darkness
+        }
+    }
+    private void applyDarknessEffects(Player player) {
+        switch (type) {
             case BLINDNESS:
                 if (player.tickCount % 80 == 0) {
                     player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 40, getEffectLevelForSequence(sequence), false, false));
@@ -263,8 +249,10 @@ public class NegativeEffect {
                     player.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 40, getEffectLevelForSequence(sequence), false, false));
                 }
                 break;
-
-                // mother
+        }
+    }
+    private void applyMotherEffects(Player player) {
+        switch (type) {
             case MUTATED:
                 if (player.tickCount % 80 == 0) {
                     player.addEffect(new MobEffectInstance(ModEffects.MUTATED, 40, getEffectLevelForSequence(sequence), false, false));
@@ -287,12 +275,16 @@ public class NegativeEffect {
                     }
                 }
                 break;
-
-                // monster
+        }
+    }
+    private void applyMonsterEffects(Player player) {
+        switch (type) {
             case BAD_LUCK:
                 if (player.tickCount % 80 == 0) {
                     player.addEffect(new MobEffectInstance(MobEffects.UNLUCK, 40, getEffectLevelForSequence(sequence), false, false));
                 }
+                break;
+            case CALAMITY_ATTRACTION:
                 break;
             case FATE_SPIN:
                 if (player.tickCount % 300 == 0) {
@@ -306,15 +298,42 @@ public class NegativeEffect {
                     }
                 }
                 break;
-
-                // abyss
+        }
+    }
+    private void applyAbyssEffects(Player player) {
+        switch (type) {
             case NAUSEA:
                 if (player.tickCount % 80 == 0) {
                     player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 40, getEffectLevelForSequence(sequence), false, false));
                 }
                 break;
+        }
+    }
 
-                // general
+    private void applyCommonEffects(Player player) {
+        switch (type) {
+            case BREATH_DEPLETION:
+                if (player.tickCount % getIntervalForSequenceAndMultiplier(sequence, 1) == 0) {
+                    player.setAirSupply(-200);
+                }
+                break;
+            case BRUN:
+                if (player.tickCount % getIntervalForSequenceAndMultiplier(sequence, 1) == 0) {
+                    player.setRemainingFireTicks(40);
+                }
+                break;
+            case TARGETED_BY_ENTITIES:
+                if (player.tickCount % getIntervalForSequenceAndMultiplier(sequence, 2) == 0) {
+                    for (Mob mob : player.level().getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(10 + ((9 - sequence) * 3)))) {
+                        mob.setTarget(player);
+                    }}
+                break;
+
+        }
+    }
+
+    private void applyGeneralEffects(Player player) {
+        switch (type) {
             case SLOWNESS:
                 if (player.tickCount % 80 == 0) {
                     player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, getEffectLevelForSequence(sequence), false, false));
@@ -361,6 +380,115 @@ public class NegativeEffect {
                 }
                 break;
         }
+    }
+
+
+    private static List<NegativeEffectType> getPathwayEffects(String pathway, int sequence) {
+        return switch (pathway) {
+            case "fool" -> Stream.of(
+                    NegativeEffectType.BRUN,
+                    NegativeEffectType.BREATH_DEPLETION,
+                    NegativeEffectType.SLOWER_IN_HOT_PLACES,
+                    (sequence <= 4) ? NegativeEffectType.TURN_TO_MARIONETTE : null,
+                    (sequence <= 2) ? NegativeEffectType.WISH_CALAMITY : null
+            ).filter(Objects::nonNull).toList();
+
+            case "error" -> Stream.of(
+                    NegativeEffectType.GOLD_ITEM_DEBUFF,
+                    (sequence <= 6) ? NegativeEffectType.LOSE_ABILITIES : null,
+                    (sequence <= 4) ? NegativeEffectType.LOSE_CONCEPTS : null,
+                    (sequence <= 2) ? NegativeEffectType.STOP_TIME : null
+            ).filter(Objects::nonNull).toList();
+
+            case "door" -> Stream.of(
+                    NegativeEffectType.FULL_MOON_WHISPERS,
+                    (sequence <= 5) ? NegativeEffectType.RANDOM_TELEPORT : null
+            ).filter(Objects::nonNull).toList();
+
+            case "sun" -> Stream.of(
+                    NegativeEffectType.BRUN,
+                    NegativeEffectType.SLOWER_IN_COLD_PLACES,
+                    (sequence <= 4) ? NegativeEffectType.CONFLICT_WITH_ARTIFACTS : null
+            ).filter(Objects::nonNull).toList();
+
+            case "tyrant" -> Stream.of(
+                    NegativeEffectType.BREATH_DEPLETION,
+                    NegativeEffectType.WEAKNESS_WHEN_ALONE,
+                    (sequence <= 6) ? NegativeEffectType.TARGETED_BY_ENTITIES : null,
+                    (sequence <= 4) ? NegativeEffectType.STRUCK_BY_LIGHTNING : null
+            ).filter(Objects::nonNull).toList();
+
+            case "visionary" -> Stream.of(
+                    NegativeEffectType.MENTAL_PLAGUE,
+                    NegativeEffectType.SPIRIT_HAUNTING
+            ).filter(Objects::nonNull).toList();
+
+            case "demoness" -> Stream.of(
+                    NegativeEffectType.PETRIFICATION,
+                    NegativeEffectType.CURSED,
+                    NegativeEffectType.CHARM_BACKLASH
+            ).filter(Objects::nonNull).toList();
+
+            case "red_priest" -> Stream.of(
+                    NegativeEffectType.TARGETED_BY_ENTITIES,
+                    NegativeEffectType.WITHER,
+                    NegativeEffectType.CRIMSON_CHAIN
+            ).filter(Objects::nonNull).toList();
+
+            case "darkness" -> Stream.of(
+                    NegativeEffectType.BLINDNESS,
+                    NegativeEffectType.ASLEEP,
+                    NegativeEffectType.CURSED
+            ).filter(Objects::nonNull).toList();
+
+            case "mother" -> Stream.of(
+                    NegativeEffectType.POISON,
+                    NegativeEffectType.MUTATED,
+                    NegativeEffectType.SILK_TRAP
+            ).filter(Objects::nonNull).toList();
+
+            case "wheel_of_fortune" -> Stream.of(
+                    NegativeEffectType.BAD_LUCK,
+                    NegativeEffectType.CALAMITY_ATTRACTION,
+                    NegativeEffectType.FATE_SPIN
+            ).filter(Objects::nonNull).toList();
+
+            case "abyss" -> Stream.of(
+                    NegativeEffectType.NAUSEA
+            ).filter(Objects::nonNull).toList();
+
+            default -> List.of(
+                    NegativeEffectType.DRAIN_HEALTH,
+                    NegativeEffectType.DRAIN_HUNGER,
+                    NegativeEffectType.HEARING_WHISPERS,
+                    NegativeEffectType.SLOWNESS,
+                    NegativeEffectType.MINING_FATIGUE,
+                    NegativeEffectType.HEAR_SOUNDS
+            );
+        };
+    }
+
+    /**
+     * Applies the negative effect to a player
+     * @param player The player holding the sealed artifact
+     * @param inMainHand Whether the artifact is in the main hand
+     */
+
+    public void apply(Player player, boolean inMainHand, List<String> pathway) {
+        if (pathway.contains("fool")) applyFoolEffects(player);
+        if (pathway.contains("error")) applyErrorEffects(player);
+        if (pathway.contains("door")) applyDoorEffects(player);
+        if (pathway.contains("sun")) applySunEffects(player);
+        if (pathway.contains("tyrant")) applyTyrantEffects(player);
+        if (pathway.contains("visionary")) applyVisionaryEffects(player);
+        if (pathway.contains("demoness")) applyDemonessEffects(player);
+        if (pathway.contains("hunter")) applyHunterEffects(player);
+        if (pathway.contains("darkness")) applyDarknessEffects(player);
+        if (pathway.contains("mother")) applyMotherEffects(player);
+        if (pathway.contains("monster")) applyMonsterEffects(player);
+        if (pathway.contains("abyss")) applyAbyssEffects(player);
+        applyGeneralEffects(player);
+
     }
 
     private int getIntervalForSequenceAndMultiplier(int sequence, int multiplier) {
@@ -493,92 +621,6 @@ public class NegativeEffect {
         return finalEffects;
     }
 
-    private static List<NegativeEffectType> getPathwayEffects(String pathway, int sequence) {
-        return switch (pathway) {
-            case "fool" -> Stream.of(
-                    NegativeEffectType.BRUN,
-                    NegativeEffectType.BREATH_DEPLETION,
-                    NegativeEffectType.SLOWER_IN_HOT_PLACES,
-                    (sequence <= 4) ? NegativeEffectType.TURN_TO_MARIONETTE : null,
-                    (sequence <= 2) ? NegativeEffectType.WISH_CALAMITY : null
-            ).filter(Objects::nonNull).toList();
-            case "error" -> Stream.of(
-                    NegativeEffectType.GOLD_ITEM_DEBUFF,
-                    (sequence <= 6) ? NegativeEffectType.LOSE_ABILITIES : null,
-                    (sequence <= 4) ? NegativeEffectType.LOSE_CONCEPTS : null,
-                    (sequence <= 2) ? NegativeEffectType.STOP_YOUR_TIME : null
-            ).filter(Objects::nonNull).toList();
-            case "door" -> Stream.of(
-                    NegativeEffectType.FULL_MOON_WHISPERS,
-                    (sequence <= 5) ? NegativeEffectType.RANDOM_TELEPORT : null
-            ).filter(Objects::nonNull).toList();
-
-            case "sun" -> Stream.of(
-                    NegativeEffectType.BRUN,
-                    NegativeEffectType.SLOWER_IN_COLD_PLACES,
-                    (sequence <= 4) ? NegativeEffectType.CONFLICT_WITH_ARTIFACTS : null
-            ).filter(Objects::nonNull).toList();
-
-            case "tyrant" -> Stream.of(
-                    NegativeEffectType.BREATH_DEPLETION,
-                    NegativeEffectType.WEAKNESS_WHEN_ALONE,
-                    NegativeEffectType.DRAIN_HUNGER,
-                    (sequence <= 6) ? NegativeEffectType.TARGETED_BY_ENTITIES : null,
-                    (sequence <= 4) ? NegativeEffectType.STRUCK_BY_LIGHTNING : null
-            ).filter(Objects::nonNull).toList();
-
-            case "visionary" -> Stream.of(
-                    NegativeEffectType.MENTAL_PLAGUE,
-                    NegativeEffectType.SPIRIT_HAUNTING,
-                    NegativeEffectType.HEAR_SOUNDS,
-                    NegativeEffectType.HEARING_WHISPERS
-            ).filter(Objects::nonNull).toList();
-
-            case "demoness" -> Stream.of(
-                    NegativeEffectType.PETRIFICATION,
-                    NegativeEffectType.CURSED,
-                    NegativeEffectType.CHARM_BACKLASH
-            ).filter(Objects::nonNull).toList();
-
-            case "red_priest" -> Stream.of(
-                    NegativeEffectType.TARGETED_BY_ENTITIES,
-                    NegativeEffectType.WITHER,
-                    NegativeEffectType.CRIMSON_CHAIN
-            ).filter(Objects::nonNull).toList();
-
-            case "darkness" -> Stream.of(
-                    NegativeEffectType.BLINDNESS,
-                    NegativeEffectType.ASLEEP,
-                    NegativeEffectType.CURSED
-            ).filter(Objects::nonNull).toList();
-
-            case "mother" -> Stream.of(
-                    NegativeEffectType.POISON,
-                    NegativeEffectType.MUTATED,
-                    NegativeEffectType.SILK_TRAP
-            ).filter(Objects::nonNull).toList();
-
-            case "wheel_of_fortune" -> Stream.of(
-                    NegativeEffectType.BAD_LUCK,
-                    NegativeEffectType.CALAMITY_ATTRACTION,
-                    NegativeEffectType.FATE_SPIN
-            ).filter(Objects::nonNull).toList();
-
-            case "abyss" -> Stream.of(
-                    NegativeEffectType.NAUSEA
-            ).filter(Objects::nonNull).toList();
-
-            default -> List.of(
-                    NegativeEffectType.DRAIN_HEALTH,
-                    NegativeEffectType.DRAIN_HUNGER,
-                    NegativeEffectType.HEARING_WHISPERS,
-                    NegativeEffectType.SLOWNESS,
-                    NegativeEffectType.MINING_FATIGUE,
-                    NegativeEffectType.HEAR_SOUNDS
-            );
-        };
-    }
-
     public enum NegativeEffectType {
         // seer
         SLOWER_IN_HOT_PLACES,
@@ -589,12 +631,11 @@ public class NegativeEffect {
         GOLD_ITEM_DEBUFF,
         LOSE_CONCEPTS,
         LOSE_ABILITIES,
-        STOP_YOUR_TIME,
+        STOP_TIME,
 
         // door
         FULL_MOON_WHISPERS,
         RANDOM_TELEPORT,
-        ENTER_SPIRIT_WORLD,
 
         // sun
         SLOWER_IN_COLD_PLACES,
@@ -645,6 +686,7 @@ public class NegativeEffect {
         MINING_FATIGUE,
         HEAR_SOUNDS;
     }
+
     public static List<NegativeEffect.NegativeEffectType> handOnlyTick = List.of(
             NegativeEffect.NegativeEffectType.RANDOM_TELEPORT,
             NegativeEffect.NegativeEffectType.DRAIN_HEALTH
@@ -653,7 +695,7 @@ public class NegativeEffect {
     public static List<NegativeEffect.NegativeEffectType> useOnlyTick = List.of(
             NegativeEffect.NegativeEffectType.TURN_TO_MARIONETTE,
             NegativeEffect.NegativeEffectType.WISH_CALAMITY,
-            NegativeEffect.NegativeEffectType.STOP_YOUR_TIME,
+            NegativeEffect.NegativeEffectType.STOP_TIME,
             NegativeEffect.NegativeEffectType.LOSE_ABILITIES,
             NegativeEffect.NegativeEffectType.CONFLICT_WITH_ARTIFACTS,
             NegativeEffect.NegativeEffectType.CURSED,
