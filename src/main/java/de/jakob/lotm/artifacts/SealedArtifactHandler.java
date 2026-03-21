@@ -1,7 +1,10 @@
 package de.jakob.lotm.artifacts;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.common.*;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.demoness.MirrorWorldTraversalAbility;
+import de.jakob.lotm.abilities.red_priest.ConqueringAbility;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -65,13 +68,13 @@ public class SealedArtifactHandler {
         List<Ability> pathwayAbilities = new ArrayList<>();
 
         // always add one ability from the same sequence
-        pathwayAbilities.add(getPathwayAbilities(pathway, sequence));
+        pathwayAbilities.add(getPathwayAbilities(pathway, sequence, true, pathwayAbilities));
 
         if (sequence <= 2) {
-            pathwayAbilities.add(getPathwayAbilities(pathway, sequence));
-            pathwayAbilities.add(getPathwayAbilities(pathway, sequence));
+            pathwayAbilities.add(getPathwayAbilities(pathway, sequence, false, pathwayAbilities));
+            pathwayAbilities.add(getPathwayAbilities(pathway, sequence, false, pathwayAbilities));
         } else if (sequence <= 4) {
-            pathwayAbilities.add(getPathwayAbilities(pathway, sequence));
+            pathwayAbilities.add(getPathwayAbilities(pathway, sequence, false, pathwayAbilities));
         }
 
         return pathwayAbilities;
@@ -80,12 +83,28 @@ public class SealedArtifactHandler {
     /**
      * Gets all abilities for a pathway at or above a sequence (higher sequence number = lower rank)
      */
-    private static Ability getPathwayAbilities(String pathway, int targetSequence) {
-        Ability validAbility = LOTMCraft.abilityHandler.getRandomAbility(pathway, targetSequence, RANDOM);
+    private static Ability getPathwayAbilities(String pathway, int targetSequence, boolean exact, List<Ability> excluded) {
+        Ability validAbility;
+        if (exact){
+            validAbility = LOTMCraft.abilityHandler.getRandomAbility(pathway, targetSequence, RANDOM, exact, excluded);
+        } else {
+            validAbility = LOTMCraft.abilityHandler.getRandomAbility(pathway, targetSequence, RANDOM, exact, excluded);
+        }
+
+        // if it loops to seq10, return a default ability
+        if (targetSequence > 9) {
+            return LOTMCraft.abilityHandler.getById("ally_ability");
+        }
 
         // If no ability found at target sequence, try higher sequences
-        if (validAbility == null && targetSequence < 9) {
-            return getPathwayAbilities(pathway, targetSequence + 1);
+        if ((validAbility == null)
+                || (validAbility instanceof ConqueringAbility)
+                || (validAbility instanceof AllyAbility)
+                || (validAbility instanceof CogitationAbility)
+                || (validAbility instanceof AngelFlightAbility)
+                || (validAbility instanceof MythicalCreatureFormAbility)
+                || (validAbility instanceof MirrorWorldTraversalAbility)) {
+            return getPathwayAbilities(pathway, targetSequence + 1, exact, excluded);
         }
 
         return validAbility;

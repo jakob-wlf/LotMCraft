@@ -37,6 +37,7 @@
   "key.beyonders.use_ability_bar_ability_5": "Use Ability Bar Ability 5",
   "key.beyonders.use_ability_bar_ability_6": "Use Ability Bar Ability 6",
   "key.beyonders.return_to_main_body": "Return to Main Body",
+  "key.beyonders.openArtifactWheel": "Open Artifact Wheel",
 
 
 
@@ -1148,20 +1149,20 @@
   "lotm.sealed_artifact.negative_effect": "Negative Effect",
 
   "lotm.negative_effect.slower_in_hot_places": "Slower in Hot Places",
-  "lotm.negative_effect.turn_to_marionette": "Turn to Marionette",
+  "lotm.negative_effect.turn_to_marionette": "Turn to Puppet",
   "lotm.negative_effect.wish_calamity": "Wish Calamity",
 
-  "lotm.negative_effect.gold_item_debuff": "Gold Item Debuff",
+  "lotm.negative_effect.gold_item_debuff": "Gold Lover",
   "lotm.negative_effect.lose_concepts": "Lose Concepts",
   "lotm.negative_effect.lose_abilities": "Lose Abilities",
-  "lotm.negative_effect.stop_your_time": "Stop Your Time",
+  "lotm.negative_effect.stop_time": "Stop Your Time",
 
   "lotm.negative_effect.full_moon_whispers": "Full Moon Whispers",
   "lotm.negative_effect.random_teleport": "Random Teleport",
-  "lotm.negative_effect.enter_spirit_world": "Enter Spirit World",
+  "lotm.negative_effect.enter_spirit_world": "Spirit world Warp",
 
   "lotm.negative_effect.slower_in_cold_places": "Slower in Cold Places",
-  "lotm.negative_effect.brun": "Brun",
+  "lotm.negative_effect.burn": "burn",
   "lotm.negative_effect.conflict_with_artifacts": "Conflict with Artifacts",
 
   "lotm.negative_effect.breath_depletion": "Breath Depletion",

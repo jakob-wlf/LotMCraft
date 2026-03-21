@@ -274,14 +274,21 @@ public class AbilityHandler {
         );
     }
 
-    public Ability getRandomAbility(String pathway, int sequence, Random random) {
-        List<Ability> pool = new ArrayList<>(getByPathwayAndSequence(pathway, sequence));
-
-        if (pool.isEmpty()) {
-            return null;
+    public Ability getRandomAbility(String pathway, int sequence, Random random, boolean exact, List<Ability> excluded) {
+        List<Ability> pool;
+        if (exact) {
+            pool = new ArrayList<>(getByPathwayAndSequenceExact(pathway, sequence));
+        } else {
+            pool = new ArrayList<>(getByPathwayAndSequence(pathway, sequence));
         }
 
-        return pool.get(random.nextInt(pool.size()));
+        // filter the pool to remove excluded abilities
+        List<Ability> filteredPool = pool.stream()
+                .filter(ability -> !excluded.contains(ability))
+                .collect(Collectors.toList());
+
+        if (filteredPool.isEmpty()) return null;
+        return filteredPool.get(random.nextInt(filteredPool.size()));
     }
 
     public void disableAbility(Ability ability) {

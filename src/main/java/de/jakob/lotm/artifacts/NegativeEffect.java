@@ -22,6 +22,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -76,17 +77,17 @@ public class NegativeEffect {
         switch (type) {
             case BREATH_DEPLETION:applyCommonEffects(player);
                 break;
-            case BRUN:applyCommonEffects(player);
+            case BURN:applyCommonEffects(player);
                 break;
             case SLOWER_IN_HOT_PLACES:
-                if (player.tickCount % 200 == 0) {
-                    if ((player.level().getBiome(player.blockPosition()).value().shouldMeltFrozenOceanIcebergSlightly(player.blockPosition()))
-                            || (getBlockInRadius(player, player.blockPosition(), 5 + getEffectLevelForSequence(sequence), Blocks.FIRE))) {
-                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 220, getEffectLevelForSequence(sequence), false, false));
-                        player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 220, getEffectLevelForSequence(sequence), false, false));
-                        player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 220, getEffectLevelForSequence(sequence), false, false));
-                    }
-                }
+//                if (player.tickCount % 200 == 0) {
+//                    if ((player.level().getBiome(player.blockPosition()).value().warmEnoughToRain(player.blockPosition()))
+//                            || (getBlockInRadius(player, player.blockPosition(), 5 + getEffectLevelForSequence(sequence), Blocks.FIRE))) {
+//                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 220, getEffectLevelForSequence(sequence), false, false));
+//                        player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 220, getEffectLevelForSequence(sequence), false, false));
+//                        player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 220, getEffectLevelForSequence(sequence), false, false));
+//                    }
+//                }
                 break;
             case TURN_TO_MARIONETTE:
                 break;
@@ -143,7 +144,7 @@ public class NegativeEffect {
                     }
                 }
                 break;
-            case BRUN:applyCommonEffects(player);
+            case BURN:applyCommonEffects(player);
                 break;
             case CONFLICT_WITH_ARTIFACTS:
                 break;
@@ -161,6 +162,7 @@ public class NegativeEffect {
 
                         if (lightning != null) {
                             lightning.moveTo(player.position());
+                            player.hurt(player.damageSources().lightningBolt(), Math.max(2, getEffectLevelForSequence(sequence)));
                             serverPlayer.serverLevel().addFreshEntity(lightning);
                         }
                     }
@@ -185,7 +187,7 @@ public class NegativeEffect {
     private void applyVisionaryEffects(Player player) {
         switch (type) {
             case MENTAL_PLAGUE:
-                if (player.tickCount % 80 == 0) {
+                if (player.tickCount % 200 == 0) {
                     player.addEffect(new MobEffectInstance(ModEffects.MENTAL_PLAGUE, 40, getEffectLevelForSequence(sequence), false, false));
                 }
                 break;
@@ -199,6 +201,8 @@ public class NegativeEffect {
                                     player.getY() + 1,
                                     player.getZ() + (player.getRandom().nextDouble() - 0.5) * 4
                             );
+                            serverPlayer.serverLevel().addFreshEntity(vex);
+                            serverPlayer.serverLevel().addFreshEntity(vex);
                             serverPlayer.serverLevel().addFreshEntity(vex);
                         }
                     }
@@ -245,7 +249,7 @@ public class NegativeEffect {
                 }
                 break;
             case ASLEEP:
-                if (player.tickCount % 80 == 0) {
+                if (player.tickCount % 200 == 0) {
                     player.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 40, getEffectLevelForSequence(sequence), false, false));
                 }
                 break;
@@ -314,12 +318,14 @@ public class NegativeEffect {
         switch (type) {
             case BREATH_DEPLETION:
                 if (player.tickCount % getIntervalForSequenceAndMultiplier(sequence, 1) == 0) {
-                    player.setAirSupply(-200);
+                    player.setAirSupply(0);
+                    player.hurt(player.damageSources().drown(), Math.max(1, 1 + getEffectLevelForSequence(sequence)/2));
                 }
                 break;
-            case BRUN:
+            case BURN:
                 if (player.tickCount % getIntervalForSequenceAndMultiplier(sequence, 1) == 0) {
                     player.setRemainingFireTicks(40);
+                    player.hurt(player.damageSources().onFire(), Math.max(1, 1 + getEffectLevelForSequence(sequence)/2));
                 }
                 break;
             case TARGETED_BY_ENTITIES:
@@ -386,7 +392,7 @@ public class NegativeEffect {
     private static List<NegativeEffectType> getPathwayEffects(String pathway, int sequence) {
         return switch (pathway) {
             case "fool" -> Stream.of(
-                    NegativeEffectType.BRUN,
+                    NegativeEffectType.BURN,
                     NegativeEffectType.BREATH_DEPLETION,
                     NegativeEffectType.SLOWER_IN_HOT_PLACES,
                     (sequence <= 4) ? NegativeEffectType.TURN_TO_MARIONETTE : null,
@@ -406,7 +412,7 @@ public class NegativeEffect {
             ).filter(Objects::nonNull).toList();
 
             case "sun" -> Stream.of(
-                    NegativeEffectType.BRUN,
+                    NegativeEffectType.BURN,
                     NegativeEffectType.SLOWER_IN_COLD_PLACES,
                     (sequence <= 4) ? NegativeEffectType.CONFLICT_WITH_ARTIFACTS : null
             ).filter(Objects::nonNull).toList();
@@ -639,7 +645,7 @@ public class NegativeEffect {
 
         // sun
         SLOWER_IN_COLD_PLACES,
-        BRUN,
+        BURN,
         CONFLICT_WITH_ARTIFACTS,
 
         // tyrant
@@ -713,7 +719,11 @@ public class NegativeEffect {
             NegativeEffect.NegativeEffectType.ASLEEP,
             NegativeEffect.NegativeEffectType.MUTATED,
             NegativeEffect.NegativeEffectType.BAD_LUCK,
+            NegativeEffect.NegativeEffectType.SILK_TRAP,
+            NegativeEffect.NegativeEffectType.FATE_SPIN,
+            NegativeEffect.NegativeEffectType.SPIRIT_HAUNTING,
             NegativeEffect.NegativeEffectType.DRAIN_HUNGER,
+            NegativeEffect.NegativeEffectType.CRIMSON_CHAIN,
             NegativeEffect.NegativeEffectType.HEARING_WHISPERS
     );
 

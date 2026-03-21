@@ -52,9 +52,7 @@ public class SealedArtifactEffectHandler {
                 if (data != null) {
                     // Apply weaker version of effect if in inventory but not held
                     // You can customize this behavior
-                    if (!stack.equals(mainHand) && !stack.equals(offHand)) {
-                        applyInventoryEffect(player, data);
-                    }
+                    applyInventoryEffect(player, data);
                 }
             }
         }
@@ -92,9 +90,9 @@ public class SealedArtifactEffectHandler {
     private static void applyInventoryEffect(Player player, SealedArtifactData data) {
         // Apply a weaker version of the negative effect
         // For example, only apply every 5 seconds instead of constantly
-        if (player.tickCount % 100 != 0) {
-            return;
-        }
+//        if (player.tickCount % 100 != 0) {
+//            return;
+//        }
 
         for (NegativeEffect effect : data.negativeEffect()) {
             if (!NegativeEffect.useOnlyTick.contains(effect.getType()) && !NegativeEffect.handOnlyTick.contains(effect.getType()) && !NegativeEffect.hotBarOnlyTick.contains(effect.getType())) {

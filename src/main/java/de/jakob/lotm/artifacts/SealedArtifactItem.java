@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -68,25 +69,26 @@ public class SealedArtifactItem extends Item {
 
         tooltipComponents.add(Component.empty());
 
+        // Show selected ability
         int selectedIndex = stack.getOrDefault(ModDataComponents.SEALED_ARTIFACT_SELECTED, 0);
         Ability ability = data.abilities().get(selectedIndex);
 
-        // Show selected ability
-        tooltipComponents.add(Component.translatable("lotm.ability")
+        tooltipComponents.add(Component.literal("Selected Ability")
                 .append(": ")
                 .append(Component.translatable("lotmcraft." + ability.getId()))
                 .withStyle(ChatFormatting.AQUA));
 
-        // show sub abilities only if the ability is selectable ability
-        if(ability instanceof SelectableAbility selectableAbility) {
-            Player player = context.level() instanceof ClientLevel cl ? cl.players().stream().findFirst().orElse(null) : null;
-            tooltipComponents.add(Component.translatable("lotm.ability")
-                    .append(": ")
-                    .append(Component.translatable(selectableAbility.getSelectedAbility(player)))
-                    .withStyle(ChatFormatting.AQUA));
-        }
-
+//        // show sub abilities only if the ability is selectable ability
+//        if(ability instanceof SelectableAbility selectableAbility) {
+//            tooltipComponents.add(Component.literal("Sub ability")
+//                    .append(": ")
+//                    .append(Component.translatable(selectableAbility.getSelectedAbility(player)))
+//                    .withStyle(ChatFormatting.AQUA));
+//        }
         tooltipComponents.add(Component.empty());
+//        if (!itemInAnvilOutputSlot(player,stack)) {
+//
+//        }
 
         // Show abilities
         tooltipComponents.add(Component.translatable("lotm.sealed_artifact.abilities")
@@ -116,6 +118,15 @@ public class SealedArtifactItem extends Item {
                     .append(effect.getDisplayName())
                     .withStyle(ChatFormatting.DARK_PURPLE));
         }
+    }
+
+    private boolean itemInAnvilOutputSlot(Player player, ItemStack stack){
+        if (player != null && player.containerMenu instanceof AnvilMenu anvil) {
+            if (anvil.getSlot(2).getItem() == stack) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
