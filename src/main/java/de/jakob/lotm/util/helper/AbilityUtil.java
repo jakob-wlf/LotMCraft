@@ -5,9 +5,11 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.entity.custom.TimeChangeEntity;
 import de.jakob.lotm.events.custom.TargetEntityEvent;
 import de.jakob.lotm.events.custom.TargetLocationEvent;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.minecraft.core.BlockPos;
@@ -17,6 +19,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,10 +32,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class AbilityUtil {
 
@@ -685,18 +685,25 @@ public class AbilityUtil {
 
     // ==================== DAMAGE METHODS ====================
 
+
+    private static DamageSource defaultDamageSource(LivingEntity source) {
+        return source != null
+                ? source.damageSources().mobAttack(source)
+                : source.damageSources().generic();
+    }
+
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
                                                double damage, Vec3 center, boolean ignoreSource,
                                                boolean distanceFalloff) {
         return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
-                distanceFalloff, false, -1, 0);
+                distanceFalloff, false, -1, 0, defaultDamageSource(source));
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
                                                double damage, Vec3 center, boolean ignoreSource,
                                                boolean distanceFalloff, int fireTicks) {
         return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
-                distanceFalloff, false, -1, fireTicks);
+                distanceFalloff, false, -1, fireTicks, defaultDamageSource(source));
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
@@ -704,7 +711,7 @@ public class AbilityUtil {
                                                boolean distanceFalloff, boolean ignoreCooldown,
                                                int cooldownTicks) {
         return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
-                distanceFalloff, ignoreCooldown, cooldownTicks, 0);
+                distanceFalloff, ignoreCooldown, cooldownTicks, 0, defaultDamageSource(source));
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
@@ -712,7 +719,7 @@ public class AbilityUtil {
                                                boolean distanceFalloff, boolean ignoreCooldown,
                                                int cooldownTicks, int fireTicks) {
         return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
-                distanceFalloff, ignoreCooldown, cooldownTicks, fireTicks);
+                distanceFalloff, ignoreCooldown, cooldownTicks, fireTicks, defaultDamageSource(source));
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double minRadius,
@@ -720,16 +727,64 @@ public class AbilityUtil {
                                                boolean ignoreSource, boolean distanceFalloff,
                                                boolean ignoreCooldown, int cooldownTicks) {
         return damageNearbyEntities(level, source, minRadius, maxRadius, damage, center, ignoreSource,
-                distanceFalloff, ignoreCooldown, cooldownTicks, 0);
+                distanceFalloff, ignoreCooldown, cooldownTicks, 0, defaultDamageSource(source));
     }
 
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double minRadius,
+                                               double maxRadius, double damage, Vec3 center,
+                                               boolean ignoreSource, boolean distanceFalloff,
+                                               boolean ignoreCooldown, int cooldownTicks, int fireticks) {
+        return damageNearbyEntities(level, source, minRadius, maxRadius, damage, center, ignoreSource,
+                distanceFalloff, ignoreCooldown, cooldownTicks, fireticks, defaultDamageSource(source));
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
+                                               double damage, Vec3 center, boolean ignoreSource,
+                                               boolean distanceFalloff, DamageSource damageSource) {
+        return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
+                distanceFalloff, false, -1, 0, damageSource);
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
+                                               double damage, Vec3 center, boolean ignoreSource,
+                                               boolean distanceFalloff, int fireTicks, DamageSource damageSource) {
+        return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
+                distanceFalloff, false, -1, fireTicks, damageSource);
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
+                                               double damage, Vec3 center, boolean ignoreSource,
+                                               boolean distanceFalloff, boolean ignoreCooldown,
+                                               int cooldownTicks, DamageSource damageSource) {
+        return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
+                distanceFalloff, ignoreCooldown, cooldownTicks, 0, damageSource);
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
+                                               double damage, Vec3 center, boolean ignoreSource,
+                                               boolean distanceFalloff, boolean ignoreCooldown,
+                                               int cooldownTicks, int fireTicks, DamageSource damageSource) {
+        return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
+                distanceFalloff, ignoreCooldown, cooldownTicks, fireTicks, damageSource);
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double minRadius,
+                                               double maxRadius, double damage, Vec3 center,
+                                               boolean ignoreSource, boolean distanceFalloff,
+                                               boolean ignoreCooldown, int cooldownTicks, DamageSource damageSource) {
+        return damageNearbyEntities(level, source, minRadius, maxRadius, damage, center, ignoreSource,
+                distanceFalloff, ignoreCooldown, cooldownTicks, 0, damageSource);
+    }
+
+
     /**
-     * Core method for damaging nearby entities with all options
+     * Core method for damaging nearby entities with all options.
      */
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double minRadius,
                                                double maxRadius, double damage, Vec3 center,
                                                boolean ignoreSource, boolean distanceFalloff,
-                                               boolean ignoreCooldown, int cooldownTicks, int fireTicks) {
+                                               boolean ignoreCooldown, int cooldownTicks, int fireTicks,
+                                               DamageSource damageSource) {
         AABB detectionBox = createDetectionBox(center, maxRadius);
         List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, detectionBox)
                 .stream()
@@ -752,7 +807,7 @@ public class AbilityUtil {
             float finalDamage = calculateDamageWithFalloff(damage, distanceSquared, maxRadius, distanceFalloff);
 
             if (ignoreCooldown || entity.invulnerableTime <= 0) {
-                applyDamage(entity, source, finalDamage);
+                entity.hurt(damageSource, finalDamage);
 
                 if (cooldownTicks >= 0) {
                     entity.invulnerableTime = cooldownTicks;
@@ -778,14 +833,6 @@ public class AbilityUtil {
         double distance = Math.sqrt(distanceSquared);
         double falloffMultiplier = Math.max(0.1, 1.0 - (distance / maxRadius));
         return (float) (baseDamage * falloffMultiplier);
-    }
-
-    private static void applyDamage(LivingEntity entity, @Nullable LivingEntity source, float damage) {
-        if (source != null) {
-            entity.hurt(source.damageSources().mobAttack(source), damage);
-        } else {
-            entity.hurt(entity.damageSources().generic(), damage);
-        }
     }
 
     // ==================== POTION EFFECT METHODS ====================
@@ -1030,6 +1077,28 @@ public class AbilityUtil {
         }
 
         return true;
+    }
+
+    // ==================== TIME METHODS ====================
+
+    public static double getTimeInArea(@Nullable LivingEntity entity, Location location) {
+        Level level = location.getLevel();
+        TimeChangeEntity timeChangeEntity = level.getEntitiesOfClass(TimeChangeEntity.class,
+                new AABB(BlockPos.containing(location.getPosition())).inflate(100))
+                .stream()
+                .filter(e -> entity == null || e.getCasterEntity() == null || AbilityUtil.mayTarget(e.getCasterEntity(), entity))
+                .min(Comparator.comparingDouble(e -> e.position().distanceTo(location.getPosition())))
+                .orElse(null);
+
+        if(timeChangeEntity == null) {
+            return 1.0;
+        }
+
+        if(location.getPosition().distanceTo(timeChangeEntity.position()) <= timeChangeEntity.getRadius()) {
+            return timeChangeEntity.getTimeMultiplier();
+        }
+
+        return 1.0;
     }
 
     // ==================== UI UTILITY METHODS ====================

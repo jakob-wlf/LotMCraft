@@ -130,7 +130,7 @@ public class NatureSpellsAbility extends SelectableAbility {
 
                 targetEntity.hurt(entity.damageSources().mobAttack(entity), (float) DamageLookup.lookupDamage(5, .85) * (float) multiplier(entity));
             }
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(target.position().add(0, target.getEyeHeight() / 2, 0), serverLevel)));
     }
 
     private void childOfOak(ServerLevel serverLevel, LivingEntity entity) {
@@ -196,6 +196,6 @@ public class NatureSpellsAbility extends SelectableAbility {
                 e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 2, 20, false, false, false));
 
             });
-        }, () -> castingSwamp.remove(entity.getUUID()), serverLevel);
+        }, () -> castingSwamp.remove(entity.getUUID()), serverLevel, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position().add(0, entity.getEyeHeight() / 2, 0), serverLevel)));
     }
 }

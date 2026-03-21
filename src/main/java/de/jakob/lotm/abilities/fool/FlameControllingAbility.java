@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -74,6 +75,6 @@ public class FlameControllingAbility extends Ability {
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SMOKE, pos, 12, 0.27, 0.02);
 
             currentPos.set(pos.add(direction));
-        }, (ServerLevel) level);
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(currentPos.get(), level)));
     }
 }

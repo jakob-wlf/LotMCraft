@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.tyrant;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -110,6 +111,6 @@ public class EarthquakeAbility extends Ability {
                     level.addFreshEntity(falling);
                 }
             }
-        }, (ServerLevel) level);
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 }

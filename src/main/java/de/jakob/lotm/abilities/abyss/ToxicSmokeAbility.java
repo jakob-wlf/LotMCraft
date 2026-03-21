@@ -1,7 +1,9 @@
 package de.jakob.lotm.abilities.abyss;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -49,13 +51,23 @@ public class ToxicSmokeAbility extends Ability {
         Vec3 pos = entity.getEyePosition();
 
         ServerScheduler.scheduleForDuration(0, 6, 20 * 5, () -> {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 6.5, DamageLookup.lookupDps(8, .8, 6, 20) * multiplier(entity), pos, true, false, true, 0);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level,
+                    entity,
+                    6.5,
+                    DamageLookup.lookupDps(8, .8, 6, 20) * multiplier(entity),
+                    pos,
+                    true,
+                    false,
+                    true,
+                    0,
+                    ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity)
+            );
             ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.TOXIC_SMOKE.get(), pos, 25, 3, .01);
             ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, pos, 25, 3, .01);
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SMOKE, pos, 25, 3, .01);
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, 5, pos,
                     new MobEffectInstance(MobEffects.POISON, 30, 1),
                     new MobEffectInstance(MobEffects.BLINDNESS, 10, 0));
-            }, (ServerLevel) level);
+            }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(pos, level)));
     }
 }

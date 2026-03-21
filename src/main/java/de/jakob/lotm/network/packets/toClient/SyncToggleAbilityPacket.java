@@ -3,6 +3,7 @@ package de.jakob.lotm.network.packets.toClient;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.rendering.ActiveToggleAbilitiesRenderer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -43,11 +44,13 @@ public record SyncToggleAbilityPacket(int entityId, String abilityId, int action
 
             switch (packet.action) {
                 case 0 -> {
+                    ActiveToggleAbilitiesRenderer.activeToggleAbilities.add(packet.abilityId());
                     toggleAbility.start(living.level(), living);
                     toggleAbility.updateClientCache(living, true);
                 }
                 case 1 -> toggleAbility.prepareTick(living.level(), living);
                 case 2 -> {
+                    ActiveToggleAbilitiesRenderer.activeToggleAbilities.remove(packet.abilityId());
                     toggleAbility.stop(living.level(), living);
                     toggleAbility.updateClientCache(living, true);
                 }

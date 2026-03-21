@@ -10,6 +10,7 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.MeteorEntity;
 import de.jakob.lotm.entity.custom.TornadoEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -99,7 +100,7 @@ public class DisasterManifestationAbility extends SelectableAbility {
             }
 
             radius.addAndGet(.5);
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 
     private void spawnMeteor(ServerLevel serverLevel, LivingEntity entity) {

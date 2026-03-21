@@ -11,26 +11,40 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public record AddDirectionalEffectPacket(int index,
                                          double startX, double startY, double startZ,
                                          double endX, double endY, double endZ,
-                                         int duration) implements CustomPacketPayload {
+                                         int duration,
+                                         int entityId) implements CustomPacketPayload {
+
+    /** Sentinel value meaning "no entity" — maps to the no-scaling code path. */
+    public static final int NO_ENTITY = -1;
+
+    /** Convenience constructor for effects with no entity (original API). */
+    public AddDirectionalEffectPacket(int index,
+                                      double startX, double startY, double startZ,
+                                      double endX, double endY, double endZ,
+                                      int duration) {
+        this(index, startX, startY, startZ, endX, endY, endZ, duration, NO_ENTITY);
+    }
 
     public static final Type<AddDirectionalEffectPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "add_directional_effect"));
 
-    // Custom StreamCodec since we have more than 6 fields
     public static final StreamCodec<ByteBuf, AddDirectionalEffectPacket> STREAM_CODEC =
             new StreamCodec<>() {
                 @Override
                 public AddDirectionalEffectPacket decode(ByteBuf buf) {
-                    int index = buf.readInt();
+                    int index    = buf.readInt();
                     double startX = buf.readDouble();
                     double startY = buf.readDouble();
                     double startZ = buf.readDouble();
-                    double endX = buf.readDouble();
-                    double endY = buf.readDouble();
-                    double endZ = buf.readDouble();
-                    int duration = buf.readInt();
-                    return new AddDirectionalEffectPacket(index, startX, startY, startZ,
-                            endX, endY, endZ, duration);
+                    double endX   = buf.readDouble();
+                    double endY   = buf.readDouble();
+                    double endZ   = buf.readDouble();
+                    int duration  = buf.readInt();
+                    int entityId  = buf.readInt();
+                    return new AddDirectionalEffectPacket(index,
+                            startX, startY, startZ,
+                            endX, endY, endZ,
+                            duration, entityId);
                 }
 
                 @Override
@@ -43,6 +57,7 @@ public record AddDirectionalEffectPacket(int index,
                     buf.writeDouble(packet.endY);
                     buf.writeDouble(packet.endZ);
                     buf.writeInt(packet.duration);
+                    buf.writeInt(packet.entityId);
                 }
             };
 
@@ -58,7 +73,8 @@ public record AddDirectionalEffectPacket(int index,
                         packet.index(),
                         packet.startX(), packet.startY(), packet.startZ(),
                         packet.endX(), packet.endY(), packet.endZ(),
-                        packet.duration()
+                        packet.duration(),
+                        packet.entityId()
                 );
             }
         });

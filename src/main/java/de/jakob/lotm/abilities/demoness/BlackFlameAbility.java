@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -101,7 +102,7 @@ public class BlackFlameAbility extends SelectableAbility {
             ParticleUtil.spawnCircleParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), currentPos, radius, (int) (radius * 27));
             AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius - .3, radius, DamageLookup.lookupDamage(7, .8) * multiplier(entity), startPos.subtract(0, 1, 0), true, false, true, 0, 20 * 5);
             i.set(i.get() + .1);
-        }, (ServerLevel) level);
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 
     private void shoot(Level level, LivingEntity entity) {
@@ -140,6 +141,6 @@ public class BlackFlameAbility extends SelectableAbility {
             ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), pos, 45, 0.25, 0.02);
 
             currentPos.set(pos.add(direction));
-        }, (ServerLevel) level);
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 }

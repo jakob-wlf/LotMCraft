@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AnimationUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -58,7 +59,7 @@ public class PureWhiteLightAbility extends Ability {
         }
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 10.0f, 1.0f);
 
-        EffectManager.playEffect(EffectManager.Effect.PURE_WHITE_LIGHT, targetLoc.x, targetLoc.y, targetLoc.z, serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.PURE_WHITE_LIGHT, targetLoc.x, targetLoc.y, targetLoc.z, serverLevel, entity);
 
         AtomicDouble radius = new AtomicDouble(2);
 
@@ -74,6 +75,6 @@ public class PureWhiteLightAbility extends Ability {
             AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), DamageLookup.lookupDamage(1, .8) * multiplier(entity), finalTargetLoc, true, false, false, 15);
 
             radius.addAndGet(0.8);
-        });
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 }

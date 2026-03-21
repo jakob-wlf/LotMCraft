@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -99,15 +100,15 @@ public class FireballEntity extends AbstractArrow {
     @Override
     protected void onHitEntity(EntityHitResult result) {
         this.discard();
-        if(!(result.getEntity() instanceof LivingEntity) || result.getEntity() == owner)
+        if(!(result.getEntity() instanceof LivingEntity target) || result.getEntity() == owner)
             return;
-        LivingEntity target = (LivingEntity) result.getEntity();
+
         level.explode(owner, target.position().x, target.position().y, target.position().z, 3.5f, griefing, Level.ExplosionInteraction.NONE);
         // check if the owner exists before - to not crash
         if (this.getOwner() instanceof LivingEntity livingOwner) {
-            target.hurt(this.damageSources().mobAttack(livingOwner), (float) damage);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, livingOwner), (float) damage);
         } else {
-            target.hurt(this.damageSources().thrown(this, null), (float) damage);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC), (float) damage);
         }
         target.setRemainingFireTicks(target.getRemainingFireTicks() + 20 * 6);
     }

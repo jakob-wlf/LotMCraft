@@ -7,6 +7,7 @@ import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.events.custom.StartAdvanceSequencePathwayEvent;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.ChangePlayerPerspectivePacket;
 import de.jakob.lotm.potions.BeyonderPotion;
@@ -24,6 +25,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.joml.Vector3f;
 
@@ -81,12 +83,21 @@ public class AdvancementUtil {
             double failureChance = calculateFailureChanceForFirstTime(sequence, sanity);
             int duration = calculateAdvancementDuration(sequence);
 
+            StartAdvanceSequencePathwayEvent event = new StartAdvanceSequencePathwayEvent(entity, sequence, pathway, failureChance, duration);
+            NeoForge.EVENT_BUS.post(event);
+
+            failureChance = event.getFailureChance();
+            duration = event.getDuration();
+
+            String finalPathway = event.getPathway();
+            int finalSequence = event.getSequence();
+
             // Start particle effects
-            scheduleAdvancementParticles(entity, pathway, duration);
+            scheduleAdvancementParticles(entity, finalPathway, duration);
             scheduleFloating(entity, duration);
             scheduleThirdPerson(entity, duration);
-            scheduleFog(entity, duration, pathway);
-            scheduleRandomDamage(entity, duration, sequence);
+            scheduleFog(entity, duration, finalPathway);
+            scheduleRandomDamage(entity, duration, finalSequence);
 
             if(failureChance >= 1.0 || Math.random() < failureChance) {
                 // Advancement will fail - death at random point during advancement
@@ -107,7 +118,7 @@ public class AdvancementUtil {
                     return; // Player logged out and back in during advancement, potion was removed from inventory, cancel advancement
                 }
                 activeAdvancements.remove(entity.getUUID());
-                setBeyonder(entity, pathway, sequence);
+                setBeyonder(entity, finalPathway, finalSequence);
                 if(entity instanceof ServerPlayer serverPlayer) {
                     PacketHandler.sendToPlayer(serverPlayer, new ChangePlayerPerspectivePacket(entity.getId(), ChangePlayerPerspectivePacket.PERSPECTIVE.THIRD.getValue()));
                 }
@@ -119,23 +130,46 @@ public class AdvancementUtil {
 
         // Wrong pathway - automatic failure
         if(!prevPathway.equals(pathway)) {
+            double failureChance = 1.0f;
             int duration = calculateAdvancementDuration(sequence);
 
+            StartAdvanceSequencePathwayEvent event = new StartAdvanceSequencePathwayEvent(entity, sequence, pathway, failureChance, duration);
+            NeoForge.EVENT_BUS.post(event);
+
+            failureChance = event.getFailureChance();
+            duration = event.getDuration();
+
+            String finalPathway = event.getPathway();
+            int finalSequence = event.getSequence();
+
             // Start particle effects
-            scheduleAdvancementParticles(entity, pathway, duration);
+            scheduleAdvancementParticles(entity, finalPathway, duration);
             scheduleFloating(entity, duration);
             scheduleThirdPerson(entity, duration);
-            scheduleFog(entity, duration, pathway);
-            scheduleRandomDamage(entity, duration, sequence);
+            scheduleFog(entity, duration, finalPathway);
+            scheduleRandomDamage(entity, duration, finalSequence);
 
-            int deathTime = (int)(Math.random() * duration);
-            ServerScheduler.scheduleDelayed(deathTime, () -> {
+            if(failureChance >= 1.0 || Math.random() < failureChance) {
+                int deathTime = (int) (Math.random() * duration);
+                ServerScheduler.scheduleDelayed(deathTime, () -> {
+                    if (!activeAdvancements.containsKey(entity.getUUID())) {
+                        return; // Player logged out and back in during advancement, potion was removed from inventory, cancel advancement
+                    }
+                    activeAdvancements.remove(entity.getUUID());
+                    if (!entity.isDeadOrDying())
+                        entity.hurt(entity.damageSources().magic(), Float.MAX_VALUE);
+                });
+            }
+
+            ServerScheduler.scheduleDelayed(duration, () -> {
                 if(!activeAdvancements.containsKey(entity.getUUID())) {
                     return; // Player logged out and back in during advancement, potion was removed from inventory, cancel advancement
                 }
                 activeAdvancements.remove(entity.getUUID());
-                if(!entity.isDeadOrDying())
-                    entity.hurt(entity.damageSources().magic(), Float.MAX_VALUE);
+                setBeyonder(entity, finalPathway, finalSequence);
+                if(entity instanceof ServerPlayer serverPlayer) {
+                    PacketHandler.sendToPlayer(serverPlayer, new ChangePlayerPerspectivePacket(entity.getId(), ChangePlayerPerspectivePacket.PERSPECTIVE.THIRD.getValue()));
+                }
             });
             return;
         }
@@ -161,12 +195,21 @@ public class AdvancementUtil {
         double failureChance = calculateFailureChance(difference, digestionProgress, sanity);
         int duration = calculateAdvancementDuration(sequence);
 
+        StartAdvanceSequencePathwayEvent event = new StartAdvanceSequencePathwayEvent(entity, sequence, pathway, failureChance, duration);
+        NeoForge.EVENT_BUS.post(event);
+
+        failureChance = event.getFailureChance();
+        duration = event.getDuration();
+
+        String finalPathway = event.getPathway();
+        int finalSequence = event.getSequence();
+
         // Start particle effects
-        scheduleAdvancementParticles(entity, pathway, duration);
+        scheduleAdvancementParticles(entity, finalPathway, duration);
         scheduleFloating(entity, duration);
         scheduleThirdPerson(entity, duration);
-        scheduleFog(entity, duration, pathway);
-        scheduleRandomDamage(entity, duration, sequence);
+        scheduleFog(entity, duration, finalPathway);
+        scheduleRandomDamage(entity, duration, finalSequence);
 
         // Check if advancement will fail
         if(failureChance >= 1.0 || Math.random() < failureChance) {
@@ -190,7 +233,7 @@ public class AdvancementUtil {
                     return; // Player logged out and back in during advancement, potion was removed from inventory, cancel advancement
                 }
                 activeAdvancements.remove(entity.getUUID());
-                setBeyonder(entity, pathway, sequence);
+                setBeyonder(entity, finalPathway, finalSequence);
                 if(entity instanceof ServerPlayer serverPlayer) {
                     PacketHandler.sendToPlayer(serverPlayer, new ChangePlayerPerspectivePacket(entity.getId(), ChangePlayerPerspectivePacket.PERSPECTIVE.THIRD.getValue()));
                 }

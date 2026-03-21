@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -80,7 +81,7 @@ public class SteelMasteryAbility extends SelectableAbility {
             ParticleUtil.drawParticleLine(level, dust, entityPos, entityPos.add(3, -1.5, 0), .35, 1);
             ParticleUtil.drawParticleLine(level, dust, entityPos, entityPos.add(-3, -1.5, 0), .35, 1);
 
-        });
+        }, null, level, () -> AbilityUtil.getTimeInArea(entity, new Location(target.position(), level)));
     }
 
     private static void sendActionBar(ServerPlayer player, Component message) {

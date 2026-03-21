@@ -1,9 +1,11 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -45,7 +47,7 @@ public class NightDomainAbility extends Ability {
 
         Vec3 startPos = entity.position();
 
-        EffectManager.playEffect(EffectManager.Effect.NIGHT_DOMAIN, entity.position().x, entity.position().y, entity.position().z, serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.NIGHT_DOMAIN, entity.position().x, entity.position().y, entity.position().z, serverLevel, entity);
 
         ServerScheduler.scheduleForDuration(0, 2, 20 * 25, () -> {
             ParticleUtil.spawnParticles(serverLevel, dust, startPos, 80, 35, .25, 35, 0);
@@ -54,12 +56,12 @@ public class NightDomainAbility extends Ability {
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(ModEffects.UNLUCK, 20, 4, false, false, false));
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 5, false, false, false));
 
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 35, DamageLookup.lookupDps(4, .85, 2, 20) * multiplier(entity), startPos, true, false);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 35, DamageLookup.lookupDps(4, .85, 2, 20) * multiplier(entity), startPos, true, false, ModDamageTypes.source(level, ModDamageTypes.DARKNESS_GENERIC, entity));
 
             AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, 35).forEach(e -> BeyonderData.addModifierWithTimeLimit(e, "night_domain_debuff", .65, 2000));
             BeyonderData.addModifierWithTimeLimit(entity, "night_domain_buff", 1.35f, 2000);
 
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 2, 2, false, false, false));
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(startPos, level)));
     }
 }

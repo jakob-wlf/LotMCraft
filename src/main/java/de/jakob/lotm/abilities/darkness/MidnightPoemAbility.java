@@ -1,9 +1,11 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.sound.ModSounds;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -60,7 +62,7 @@ public class MidnightPoemAbility extends SelectableAbility {
         ParticleUtil.spawnParticles((ServerLevel) level, dustBig, entity.getEyePosition().subtract(0, .4, 0), 800, 7, 0);
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.CRIMSON_LEAF.get(), entity.position().subtract(0, .2, 0), 500, 7, .01, 7, 0.07);
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 20, DamageLookup.lookupDamage(8, 1.1) * multiplier(entity), entity.getEyePosition(), true, false);
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 20, DamageLookup.lookupDamage(8, 1.1) * multiplier(entity), entity.getEyePosition(), true, false, ModDamageTypes.source(level, ModDamageTypes.DARKNESS_GENERIC, entity));
     }
 
     private void lullaby(Level level, LivingEntity entity) {
@@ -85,6 +87,6 @@ public class MidnightPoemAbility extends SelectableAbility {
                 if(target.isAlive())
                     ParticleUtil.spawnParticles((ServerLevel) level, dust, target.getEyePosition().subtract(0, .4, 0), 1, .5, 0);
             });
-        }, ((ServerLevel) level));
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 }

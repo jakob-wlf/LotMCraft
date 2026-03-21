@@ -205,6 +205,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.NATURE_RETURN_PORTAL.get(), ReturnFromNaturelRenderer::new);
             EntityRenderers.register(ModEntities.GRAFTING_LOCATION_ENTITY.get(), GraftingLocationRenderer::new);
             EntityRenderers.register(ModEntities.DAMAGE_TRACKER.get(), DamageTrackerRenderer::new);
+            EntityRenderers.register(ModEntities.TIME_CHANGE.get(), TimeChangeRenderer::new);
 
 
             GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);

@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AnimationUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -58,7 +59,7 @@ public class HolyLightSummoningAbility extends Ability {
 
             level.playSound(null, initialPos.x, initialPos.y - 18, initialPos.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 3.0f, 1.0f);
 
-            EffectManager.playEffect(EffectManager.Effect.HOLY_LIGHT_SMALL, initialPos.x, initialPos.y - 18, initialPos.z, (ServerLevel) level);
+            EffectManager.playEffect(EffectManager.Effect.HOLY_LIGHT_SMALL, initialPos.x, initialPos.y - 18, initialPos.z, (ServerLevel) level, entity);
 
             ServerScheduler.scheduleForDuration(0, 1, 22, () -> {
                 Vec3 pos = currentPos.get();
@@ -73,11 +74,11 @@ public class HolyLightSummoningAbility extends Ability {
                 AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5f, DamageLookup.lookupDamage(7, .8) * multiplier(entity), pos, true, false, false, 10);
 
                 currentPos.set(pos.subtract(0, 1, 0));
-            }, (ServerLevel) level);
+            }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
 
             ServerScheduler.scheduleDelayed(40, () -> {
                 lights.forEach(l -> level.setBlockAndUpdate(l, Blocks.AIR.defaultBlockState()));
-            }, (ServerLevel) level);
+            }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
         } else if(entity instanceof Player player) {
             AnimationUtil.playOpenArmAnimation(player);
         }

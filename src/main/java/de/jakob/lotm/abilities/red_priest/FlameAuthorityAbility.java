@@ -5,6 +5,7 @@ import de.jakob.lotm.entity.custom.SpearOfDestructionProjectileEntity;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -56,11 +57,15 @@ public class FlameAuthorityAbility extends SelectableAbility {
     private void vortex(ServerLevel serverLevel, LivingEntity entity) {
         Vec3 startPos = entity.position();
 
-        EffectManager.playEffect(EffectManager.Effect.FLAME_VORTEX, entity.getX(), entity.getY(), entity.getZ(), serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.FLAME_VORTEX, entity.getX(), entity.getY(), entity.getZ(), serverLevel, entity);
         ParticleUtil.createParticleSpirals(serverLevel, ParticleTypes.FLAME, startPos, 1.5, 6, 5, .75, 1, 20 * 6, 120, 1);
         ParticleUtil.createParticleSpirals(serverLevel, ModParticles.PURPLE_FLAME.get(), startPos, 1.5, 6, 5, .75, 1, 20 * 6, 120, 1);
 
-        ServerScheduler.scheduleForDuration(0, 5, 20 * 6, () -> AbilityUtil.damageNearbyEntities(serverLevel, entity, 9, DamageLookup.lookupDps(1, 1, 5, 20) * multiplier(entity), startPos, true, false, 20 * 40));
+        ServerScheduler.scheduleForDuration(0, 5, 20 * 6,
+                () -> AbilityUtil.damageNearbyEntities(serverLevel, entity, 9, DamageLookup.lookupDps(1, 1, 5, 20) * multiplier(entity), startPos, true, false, 20 * 40),
+                null,
+                serverLevel,
+                () -> AbilityUtil.getTimeInArea(entity, new Location(startPos, serverLevel)));
     }
 
     private void inferno(ServerLevel serverLevel, LivingEntity entity) {
@@ -72,10 +77,15 @@ public class FlameAuthorityAbility extends SelectableAbility {
         ServerScheduler.scheduleForDuration(0, 5, 20 * 4, () -> serverLevel.playSound(null, pos.x, pos.y, pos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 10.0f, random.nextFloat()));
 
         // VFX
-        EffectManager.playEffect(EffectManager.Effect.INFERNO, pos.x, pos.y, pos.z, serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.INFERNO, pos.x, pos.y, pos.z, serverLevel, entity);
 
         // Damage
-        ServerScheduler.scheduleForDuration(0, 5, 20 * 4, () -> AbilityUtil.damageNearbyEntities(serverLevel, entity, 22.5, DamageLookup.lookupDps(1, .8, 5, 20) * multiplier(entity), pos, true, false, 20 * 40));
+        ServerScheduler.scheduleForDuration(
+                0, 5, 20 * 4,
+                () -> AbilityUtil.damageNearbyEntities(serverLevel, entity, 22.5, DamageLookup.lookupDps(1, .8, 5, 20) * multiplier(entity), pos, true, false, 20 * 40),
+                null,
+                serverLevel,
+                () -> AbilityUtil.getTimeInArea(entity, new Location(pos, serverLevel)));
     }
 
     private void destructionSpear(ServerLevel serverLevel, LivingEntity entity) {

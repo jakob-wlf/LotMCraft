@@ -38,6 +38,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                DisableAbilityUsageForTimePacket.TYPE,
+                DisableAbilityUsageForTimePacket.STREAM_CODEC,
+                DisableAbilityUsageForTimePacket::handle
+        );
+
+        registrar.playToClient(
                 FireEffectPacket.TYPE,
                 FireEffectPacket.STREAM_CODEC,
                 FireEffectPacket::handle

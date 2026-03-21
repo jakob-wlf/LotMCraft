@@ -6,6 +6,7 @@ import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.TemporaryChunkLoader;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -237,7 +238,7 @@ public class ConcealmentAbility extends SelectableAbility {
             return; // Exit early if destination world doesn't exist
         }
 
-        EffectManager.playEffect(EffectManager.Effect.CONCEALMENT, entity.getX(), entity.getY(), entity.getZ(), serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.CONCEALMENT, entity.getX(), entity.getY(), entity.getZ(), serverLevel, entity);
 
         AtomicDouble radius = new AtomicDouble(2);
         Vec3 finalTargetLoc = entity.position();
@@ -319,6 +320,6 @@ public class ConcealmentAbility extends SelectableAbility {
             });
 
             radius.addAndGet(0.5);
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(finalTargetLoc, serverLevel)));
     }
 }

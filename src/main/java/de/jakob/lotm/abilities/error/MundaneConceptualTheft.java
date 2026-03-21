@@ -105,7 +105,7 @@ public class MundaneConceptualTheft extends SelectableAbility {
             return;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.CONCEPTUAL_THEFT, target.getX(), target.getEyeY(), target.getZ(), serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.CONCEPTUAL_THEFT, target.getX(), target.getEyeY(), target.getZ(), serverLevel, entity);
 
         if(BeyonderData.isBeyonder(target) && doesTheftFail(BeyonderData.getSequence(entity), BeyonderData.getSequence(target))) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mundane_conceptual_theft.theft_failed").withColor(0x4742c9));

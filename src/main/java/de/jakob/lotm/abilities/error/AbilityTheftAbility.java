@@ -4,6 +4,8 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.CopiedAbilityComponent;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -73,7 +75,7 @@ public class AbilityTheftAbility extends SelectableAbility {
         }
 
         if (entity instanceof ServerPlayer serverPlayer) {
-            EffectManager.playEffect(EffectManager.Effect.ABILITY_THEFT, target.position().x, target.position().y + target.getEyeHeight(), target.position().z, serverPlayer);
+            EffectManager.playEffect(EffectManager.Effect.ABILITY_THEFT, target.position().x, target.position().y + target.getEyeHeight(), target.position().z, serverPlayer, entity);
         }
 
         if (!BeyonderData.isBeyonder(target)) {
@@ -85,10 +87,12 @@ public class AbilityTheftAbility extends SelectableAbility {
         HashSet<Ability> targetAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequence(
                 BeyonderData.getPathway(target), BeyonderData.getSequence(target));
 
+        DisabledAbilitiesComponent disabledComponent = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+
         ArrayList<Ability> stealableAbilities = new ArrayList<>(targetAbilities.stream()
                 .filter(ability -> ability.canBeCopied
                         && ability.canUse(target, true, false)
-                        && !BeyonderData.isSpecificAbilityDisabled(target, ability.getId()))
+                        && !disabledComponent.isSpecificAbilityDisabled(ability.getId()))
                 .toList());
 
         if (stealableAbilities.isEmpty()) {
@@ -119,8 +123,7 @@ public class AbilityTheftAbility extends SelectableAbility {
             stealableAbilities.remove(index);
 
             // Disable the ability on the target for the duration
-            BeyonderData.disableSpecificAbilityWithTimeLimit(target, "ability_theft_disable",
-                    stolenAbility.getId(), disableTime * 1000L);
+            disabledComponent.disableSpecificAbilityForTime(stolenAbility.getId(), "theft_" + entity.getUUID(), disableTime * 20);
 
             // Add to the thief's copied abilities
             if (entity instanceof ServerPlayer player) {

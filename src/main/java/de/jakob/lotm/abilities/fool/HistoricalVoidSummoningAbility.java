@@ -536,6 +536,9 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                         pathway,
                         sequence
                 );
+
+                ((BeyonderNPCEntity) entity).setQuestId("");
+                entity.getPersistentData().putBoolean("Initialized", true);
             } else {
                 entity = entityType.create(level);
             }

@@ -53,7 +53,7 @@ public class StructuralCollapseAbility extends Ability {
         AbilityUtil.damageNearbyEntities(serverLevel, entity, 35, DamageLookup.lookupDamage(2, .8) * (float) multiplier(entity), targetLoc, true, true);
 
         // Play Effect
-        EffectManager.playEffect(EffectManager.Effect.COLLAPSE, targetLoc.x, targetLoc.y - 1.5, targetLoc.z, serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.COLLAPSE, targetLoc.x, targetLoc.y - 1.5, targetLoc.z, serverLevel, entity);
     }
 
     private void collapseArea(ServerLevel serverLevel, Vec3 targetLoc) {

@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -89,10 +90,10 @@ public class TorrentialDownpourAbility extends Ability {
                     level.setBlockAndUpdate(pos, random.nextBoolean() ? Blocks.AIR.defaultBlockState() : Blocks.WATER.defaultBlockState());
                 }
             }
-        });
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(startPos, level)));
 
         ServerScheduler.scheduleForDuration(0, 10, 20 * 30, () -> {
             AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 25, DamageLookup.lookupDps(3, .75, 10, 20) * multiplier(entity), startPos, true, false, true, 0);
-        }, (ServerLevel) level);
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(startPos, level)));
     }
 }

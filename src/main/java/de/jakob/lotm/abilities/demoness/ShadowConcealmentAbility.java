@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.DisplayShadowParticlesPacket;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
@@ -60,7 +61,7 @@ public class ShadowConcealmentAbility extends Ability {
             //make visible again
             ServerScheduler.scheduleDelayed(20 * 20, () -> {
                 invisiblePlayers.remove(entity.getUUID());
-            }, (ServerLevel) level);
+            }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
         }
     }
 

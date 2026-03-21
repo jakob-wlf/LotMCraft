@@ -1,5 +1,7 @@
 package de.jakob.lotm.effect;
 
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket;
@@ -33,12 +35,8 @@ public class ConqueredEffect extends MobEffect {
         if(livingEntity.getHealth() > 1)
             livingEntity.setHealth(1.0F);
 
-        BeyonderData.disableAbilityUse(livingEntity, "conquered");
-        ServerScheduler.scheduleDelayed(20 * 2, () -> {
-            if(!livingEntity.hasEffect(ModEffects.CONQUERED)) {
-                BeyonderData.enableAbilityUse(livingEntity, "conquered");
-            }
-        });
+        DisabledAbilitiesComponent component = livingEntity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        component.disableAbilityUsageForTime("conquered", 20, livingEntity);
 
         if(livingEntity.tickCount % 10 == 0) {
             ServerLevel serverLevel = (ServerLevel) livingEntity.level();

@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -119,7 +120,7 @@ public class WaterMasteryAbility extends SelectableAbility {
                     }
                 }
             }
-        }, level);
+        }, null, level, () -> AbilityUtil.getTimeInArea(entity, new Location(targetPos, level)));
     }
 
 }
