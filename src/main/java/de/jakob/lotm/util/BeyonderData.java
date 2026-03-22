@@ -567,5 +567,7 @@ public class BeyonderData {
         beyonderMap.addStack(player, 1);
 
         player.getPersistentData().putFloat(NBT_DIGESTION_PROGRESS, 0.0f);
+        removeModifier(player, "characteristics_stack_boost");
+        addModifier(player, "characteristics_stack_boost", (1.0f + beyonderMap.get(player).get().charStack()));
     }
 }

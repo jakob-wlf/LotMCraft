@@ -59,6 +59,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 .pathway((sequence + 1 == LOTMCraft.NON_BEYONDER_SEQ) ? "none" : pathway)
                 .sequence(sequence + 1)
                 .honorificName((sequence + 1 >= 3) ? HonorificName.EMPTY : honorificName)
+                .charStack(0)
                 .build();
     }
 

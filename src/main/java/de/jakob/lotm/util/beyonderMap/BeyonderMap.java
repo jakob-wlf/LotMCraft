@@ -272,8 +272,11 @@ public class BeyonderMap extends SavedData {
         int res = 0;
 
         for(var obj : map.values()){
-            if(obj.pathway().equals(path) && obj.sequence() == seq)
+            if(obj.pathway().equals(path) && obj.sequence() == seq){
                 res++;
+
+                res += obj.charStack();
+            }
         }
 
         return res;

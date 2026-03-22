@@ -208,7 +208,7 @@ public class AdvancementUtil {
             scheduleFog(entity, duration, finalPathway);
             scheduleRandomDamage(entity, duration, finalSequence);
 
-            if(failureChance >= 1.0 || Math.random() < failureChance) {
+            if(failureChance >= 1.0) {
                 int deathTime = (int) (Math.random() * duration);
                 ServerScheduler.scheduleDelayed(deathTime, () -> {
                     if (!activeAdvancements.containsKey(entity.getUUID())) {

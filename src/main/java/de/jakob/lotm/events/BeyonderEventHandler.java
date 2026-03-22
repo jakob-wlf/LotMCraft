@@ -11,6 +11,7 @@ import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.BeyonderPotion;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.beyonderMap.BeyonderMap;
 import de.jakob.lotm.util.beyonderMap.StoredData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerPlayer;
@@ -149,6 +150,8 @@ public class BeyonderEventHandler {
             } else
                 ClientBeyonderCache.updateData(player.getUUID(), data.pathway(), data.sequence(),
                         0.0f, false, true, 0.0f);
+
+            BeyonderData.removeModifier(player, "characteristics_stack_boost");
         }
     }
 
