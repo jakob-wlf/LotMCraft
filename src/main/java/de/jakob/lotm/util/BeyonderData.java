@@ -562,4 +562,10 @@ public class BeyonderData {
             default -> 9;
         };
     }
+
+    public static void addCharStack(LivingEntity player){
+        beyonderMap.addStack(player, 1);
+
+        player.getPersistentData().putFloat(NBT_DIGESTION_PROGRESS, 0.0f);
+    }
 }

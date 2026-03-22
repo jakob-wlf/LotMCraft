@@ -417,6 +417,29 @@ public class BeyonderMap extends SavedData {
         return originalTarget;
     }
 
+    public void addLastPosition(LivingEntity entity){
+        if(!contains(entity)) put(entity);
+
+        map.put(entity.getUUID(), StoredData.builder
+                .copyFrom(map.get(entity.getUUID()))
+                .lastPosition(entity.position())
+                .build());
+
+        setDirty();
+    }
+
+    public void addStack(LivingEntity entity, int amount){
+        if(!contains(entity)) put(entity);
+
+        int buff = beyonderMap.get(entity.getUUID()).get().charStack();
+
+        map.put(entity.getUUID(), StoredData.builder
+                .copyFrom(map.get(entity.getUUID()))
+                .charStack(buff + amount)
+                .build());
+
+        setDirty();
+    }
 }
 
 class ListHelper{
