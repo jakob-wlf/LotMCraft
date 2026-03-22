@@ -285,18 +285,43 @@ public class BeyonderMap extends SavedData {
     public boolean check(String path, int seq){
         int seq_0 = count(path, 0),
                 seq_1 = count(path, 1),
-                seq_2 = count(path, 2);
+                seq_2 = count(path, 2),
+                seq_3 = count(path, 3),
+                seq_4 = count(path, 4),
+                seq_5 = count(path, 5),
+                seq_6 = count(path, 6),
+                seq_7 = count(path, 7),
+                seq_8 = count(path, 8)
+        ;
 
         switch (seq) {
-            case 2:
-                if (seq_2 + seq_1 >= server.getGameRules().getInt(ModGameRules.SEQ_2_AMOUNT)) return false;
+            case 0:
+                if (seq_0 >= server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)) return false;
                 break;
             case 1:
                 if (seq_0 >= server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)
                         || seq_1 >= server.getGameRules().getInt(ModGameRules.SEQ_1_AMOUNT)) return false;
                 break;
-            case 0:
-                if (seq_0 >= server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)) return false;
+            case 2:
+                if (seq_2 + seq_1 >= server.getGameRules().getInt(ModGameRules.SEQ_2_AMOUNT)) return false;
+                break;
+            case 3:
+                if (seq_3 + seq_2 >= server.getGameRules().getInt(ModGameRules.SEQ_3_AMOUNT)) return false;
+                break;
+            case 4:
+                if (seq_4 + seq_3 >= server.getGameRules().getInt(ModGameRules.SEQ_4_AMOUNT)) return false;
+                break;
+            case 5:
+                if (seq_5 + seq_4 >= server.getGameRules().getInt(ModGameRules.SEQ_5_AMOUNT)) return false;
+                break;
+            case 6:
+                if (seq_6 + seq_5 >= server.getGameRules().getInt(ModGameRules.SEQ_6_AMOUNT)) return false;
+                break;
+            case 7:
+                if (seq_7 + seq_6 >= server.getGameRules().getInt(ModGameRules.SEQ_7_AMOUNT)) return false;
+                break;
+            case 8:
+                if (seq_8 + seq_7 >= server.getGameRules().getInt(ModGameRules.SEQ_8_AMOUNT)) return false;
                 break;
         }
 
