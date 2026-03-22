@@ -3,6 +3,7 @@ package de.jakob.lotm.util;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.MultiplierModifierComponent;
 import de.jakob.lotm.events.BeyonderDataTickHandler;
@@ -571,6 +572,8 @@ public class BeyonderData {
 
         player.getPersistentData().putFloat(NBT_DIGESTION_PROGRESS, 0.0f);
         removeModifier(player, "characteristics_stack_boost");
+
         addModifier(player, "characteristics_stack_boost", (1.0f + beyonderMap.get(player).get().charStack()));
+
     }
 }
