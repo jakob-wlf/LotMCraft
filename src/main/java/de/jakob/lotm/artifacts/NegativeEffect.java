@@ -30,6 +30,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Vex;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -194,16 +196,23 @@ public class NegativeEffect {
             case SPIRIT_HAUNTING:
                 if (player.tickCount % getSpiritHauntIntervalForSequence(sequence) == 0) {
                     if (player instanceof ServerPlayer serverPlayer) {
-                        Vex vex = EntityType.VEX.create(serverPlayer.serverLevel());
-                        if (vex != null) {
-                            vex.moveTo(
-                                    player.getX() + (player.getRandom().nextDouble() - 0.5) * 4,
-                                    player.getY() + 1,
-                                    player.getZ() + (player.getRandom().nextDouble() - 0.5) * 4
-                            );
-                            serverPlayer.serverLevel().addFreshEntity(vex);
-                            serverPlayer.serverLevel().addFreshEntity(vex);
-                            serverPlayer.serverLevel().addFreshEntity(vex);
+                        double vexHealth = 14 + (getEffectLevelForSequence(sequence) * 2);
+                        double vexDamage = 4.0 + getEffectLevelForSequence(sequence) * 0.5;
+                        for (int i = 0; i < 5; i++) {
+                            Vex vex = EntityType.VEX.create(serverPlayer.serverLevel());
+                            if (vex != null) {
+                                vex.moveTo(
+                                        player.getX() + (player.getRandom().nextDouble() - 0.5) * 4,
+                                        player.getY() + 1,
+                                        player.getZ() + (player.getRandom().nextDouble() - 0.5) * 4
+                                );
+                                AttributeInstance maxHealth = vex.getAttribute(Attributes.MAX_HEALTH);
+                                if (maxHealth != null) maxHealth.setBaseValue(vexHealth);
+                                vex.setHealth((float) vexHealth);
+                                AttributeInstance attackDamage = vex.getAttribute(Attributes.ATTACK_DAMAGE);
+                                if (attackDamage != null) attackDamage.setBaseValue(vexDamage);
+                                serverPlayer.serverLevel().addFreshEntity(vex);
+                            }
                         }
                     }
                 }
@@ -373,6 +382,29 @@ public class NegativeEffect {
                     player.hurt(player.damageSources().magic(), (float) DamageLookup.lookupDamage(sequence >= 0 ? Math.clamp(sequence - 1, 0, 9) : -1, 1f) * (float) BeyonderData.getMultiplierForSequence(sequence));
                 }
                 break;
+            case NEAR_DEATH_PULSE:
+                if (sequence <= 2) {
+                    int ndpInterval = (sequence == 1) ? 20 * 15 : 20 * 30;
+                    if (player.tickCount % ndpInterval == 0) {
+                        float killChance = (sequence == 1) ? 0.12f : 0.06f;
+                        if (player.getRandom().nextFloat() < killChance) {
+                            player.hurt(player.damageSources().magic(), player.getMaxHealth() * 2);
+                        } else {
+                            float damage = Math.max(0, player.getHealth() - 1.0f);
+                            if (damage > 0) player.hurt(player.damageSources().magic(), damage);
+                        }
+                    }
+                }
+                break;
+            case HEART_STOP:
+                if (sequence <= 2) {
+                    int hsInterval = (sequence == 1) ? 20 * 20 : 20 * 40;
+                    if (player.tickCount % hsInterval == 0) {
+                        int amplifier = (sequence == 1) ? 2 : 1;
+                        player.addEffect(new MobEffectInstance(MobEffects.HARM, 1, amplifier, false, true));
+                    }
+                }
+                break;
             case DRAIN_HUNGER:
                 if (player.tickCount % 20 == 0) {
                     player.getFoodData().setFoodLevel(player.getFoodData().getFoodLevel() - 1);
@@ -469,7 +501,9 @@ public class NegativeEffect {
                     NegativeEffectType.HEARING_WHISPERS,
                     NegativeEffectType.SLOWNESS,
                     NegativeEffectType.MINING_FATIGUE,
-                    NegativeEffectType.HEAR_SOUNDS
+                    NegativeEffectType.HEAR_SOUNDS,
+                    NegativeEffectType.NEAR_DEATH_PULSE,
+                    NegativeEffectType.HEART_STOP
             );
         };
     }
@@ -690,7 +724,9 @@ public class NegativeEffect {
         HEARING_WHISPERS,
         SLOWNESS,
         MINING_FATIGUE,
-        HEAR_SOUNDS;
+        HEAR_SOUNDS,
+        NEAR_DEATH_PULSE,
+        HEART_STOP;
     }
 
     public static List<NegativeEffect.NegativeEffectType> handOnlyTick = List.of(
@@ -724,7 +760,9 @@ public class NegativeEffect {
             NegativeEffect.NegativeEffectType.SPIRIT_HAUNTING,
             NegativeEffect.NegativeEffectType.DRAIN_HUNGER,
             NegativeEffect.NegativeEffectType.CRIMSON_CHAIN,
-            NegativeEffect.NegativeEffectType.HEARING_WHISPERS
+            NegativeEffect.NegativeEffectType.HEARING_WHISPERS,
+            NegativeEffect.NegativeEffectType.NEAR_DEATH_PULSE,
+            NegativeEffect.NegativeEffectType.HEART_STOP
     );
 
     private static boolean getBlockInRadius (Player player, BlockPos center, int radius, Block block){
