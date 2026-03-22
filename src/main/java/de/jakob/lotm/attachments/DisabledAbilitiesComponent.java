@@ -19,8 +19,8 @@ import java.util.List;
 
 public class DisabledAbilitiesComponent implements INBTSerializable<CompoundTag> {
 
-    private HashMap<String, Integer> hasAllAbilitiesDisabled = new HashMap<>();
-    private HashMap<String, List<DisabledAbility>> disabledAbilities = new HashMap<>();
+    private final HashMap<String, Integer> hasAllAbilitiesDisabled = new HashMap<>();
+    private final HashMap<String, List<DisabledAbility>> disabledAbilities = new HashMap<>();
 
     public void disableAbilityUsage(String cause) {
         hasAllAbilitiesDisabled.put(cause, 1);
@@ -91,6 +91,11 @@ public class DisabledAbilitiesComponent implements INBTSerializable<CompoundTag>
 
     public boolean isSpecificAbilityDisabled(String ability) {
         return disabledAbilities.values().stream().anyMatch(list -> list.stream().anyMatch(da -> da.ability.equals(ability)));
+    }
+
+    public void enableAllAbilities() {
+        hasAllAbilitiesDisabled.clear();
+        disabledAbilities.clear();
     }
 
     @Override

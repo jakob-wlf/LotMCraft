@@ -3,6 +3,7 @@ package de.jakob.lotm.network.packets.handlers;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -38,6 +39,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Random;
 
 import java.util.ArrayList;
@@ -447,5 +449,28 @@ public class ClientHandler {
 
         DisabledAbilitiesComponent disabledComponent = living.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
         disabledComponent.disableAbilityUsageForTime(packet.cause(), packet.ticks(), living);
+    }
+
+    public static void handleSyncToggleAbility(SyncToggleAbilityPacket packet, IPayloadContext context) {
+        Entity entity = context.player().level().getEntity(packet.entityId());
+        Ability ability = LOTMCraft.abilityHandler.getById(packet.abilityId());
+        if(!(ability instanceof ToggleAbility toggleAbility) || !(entity instanceof LivingEntity living)) {
+            return;
+        }
+
+        switch (packet.action()) {
+            case 0 -> {
+                ActiveToggleAbilitiesRenderer.activeToggleAbilities.add(packet.abilityId());
+                toggleAbility.start(living.level(), living);
+                toggleAbility.updateClientCache(living, true);
+            }
+            case 1 -> toggleAbility.prepareTick(living.level(), living);
+            case 2 -> {
+                ActiveToggleAbilitiesRenderer.activeToggleAbilities.remove(packet.abilityId());
+                toggleAbility.stop(living.level(), living);
+                toggleAbility.updateClientCache(living, true);
+            }
+
+        }
     }
 }

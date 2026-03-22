@@ -3,6 +3,7 @@ package de.jakob.lotm.network.packets.toClient;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.rendering.ActiveToggleAbilitiesRenderer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -36,26 +37,7 @@ public record SyncToggleAbilityPacket(int entityId, String abilityId, int action
     
     public static void handle(SyncToggleAbilityPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            Entity entity = context.player().level().getEntity(packet.entityId());
-            Ability ability = LOTMCraft.abilityHandler.getById(packet.abilityId());
-            if(!(ability instanceof ToggleAbility toggleAbility) || !(entity instanceof LivingEntity living)) {
-                return;
-            }
-
-            switch (packet.action) {
-                case 0 -> {
-                    ActiveToggleAbilitiesRenderer.activeToggleAbilities.add(packet.abilityId());
-                    toggleAbility.start(living.level(), living);
-                    toggleAbility.updateClientCache(living, true);
-                }
-                case 1 -> toggleAbility.prepareTick(living.level(), living);
-                case 2 -> {
-                    ActiveToggleAbilitiesRenderer.activeToggleAbilities.remove(packet.abilityId());
-                    toggleAbility.stop(living.level(), living);
-                    toggleAbility.updateClientCache(living, true);
-                }
-
-            }
+            ClientHandler.handleSyncToggleAbility(packet, context);
         });
     }
 

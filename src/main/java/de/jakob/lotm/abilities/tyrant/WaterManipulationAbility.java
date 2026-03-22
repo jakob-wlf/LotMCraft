@@ -173,7 +173,7 @@ public class WaterManipulationAbility extends SelectableAbility {
     final Vec3 southFacing = new Vec3(0, 0, 1);
 
     private void aqueousLight(Level level, LivingEntity entity) {
-        BlockPos targetBlock = AbilityUtil.getTargetBlock(entity, 8);
+        BlockPos targetBlock = AbilityUtil.getTargetBlock(entity, 8, true);
 
         if (!level.isClientSide) {
             BlockState lightBlock = Blocks.LIGHT.defaultBlockState();

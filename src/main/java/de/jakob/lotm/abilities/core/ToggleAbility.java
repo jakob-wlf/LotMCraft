@@ -4,6 +4,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncToggleAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -35,7 +36,8 @@ public abstract class ToggleAbility extends Ability {
             activeAbilities.putIfAbsent(entity.getUUID(), new HashSet<>());
             activeAbilities.get(entity.getUUID()).add(this);
             start(level, entity);
-            PacketHandler.sendToTrackingAndSelf(entity, new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.START.getValue()));
+            if(entity instanceof ServerPlayer player)
+                PacketHandler.sendToPlayer(player, new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.START.getValue()));
             return;
         }
 
@@ -47,7 +49,8 @@ public abstract class ToggleAbility extends Ability {
             activeAbilities.get(entity.getUUID()).remove(this);
         }
         stop(level, entity);
-        PacketHandler.sendToTrackingAndSelf(entity, new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.STOP.getValue()));
+        if(entity instanceof ServerPlayer player)
+            PacketHandler.sendToPlayer(player, new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.STOP.getValue()));
     }
 
     public static void cleanUp(ServerLevel serverLevel, LivingEntity entity) {

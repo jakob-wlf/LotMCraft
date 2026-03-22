@@ -3,6 +3,7 @@ package de.jakob.lotm.util.helper;
 import de.jakob.lotm.abilities.error.DeceitAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.entity.custom.TimeChangeEntity;
@@ -686,24 +687,24 @@ public class AbilityUtil {
     // ==================== DAMAGE METHODS ====================
 
 
-    private static DamageSource defaultDamageSource(LivingEntity source) {
+    private static DamageSource defaultDamageSource(Level level, LivingEntity source) {
         return source != null
-                ? source.damageSources().mobAttack(source)
-                : source.damageSources().generic();
+                ? ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, source)
+                : ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC);
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
                                                double damage, Vec3 center, boolean ignoreSource,
                                                boolean distanceFalloff) {
         return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
-                distanceFalloff, false, -1, 0, defaultDamageSource(source));
+                distanceFalloff, false, -1, 0, defaultDamageSource(level, source));
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
                                                double damage, Vec3 center, boolean ignoreSource,
                                                boolean distanceFalloff, int fireTicks) {
         return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
-                distanceFalloff, false, -1, fireTicks, defaultDamageSource(source));
+                distanceFalloff, false, -1, fireTicks, defaultDamageSource(level, source));
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
@@ -711,7 +712,7 @@ public class AbilityUtil {
                                                boolean distanceFalloff, boolean ignoreCooldown,
                                                int cooldownTicks) {
         return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
-                distanceFalloff, ignoreCooldown, cooldownTicks, 0, defaultDamageSource(source));
+                distanceFalloff, ignoreCooldown, cooldownTicks, 0, defaultDamageSource(level, source));
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
@@ -719,7 +720,7 @@ public class AbilityUtil {
                                                boolean distanceFalloff, boolean ignoreCooldown,
                                                int cooldownTicks, int fireTicks) {
         return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
-                distanceFalloff, ignoreCooldown, cooldownTicks, fireTicks, defaultDamageSource(source));
+                distanceFalloff, ignoreCooldown, cooldownTicks, fireTicks, defaultDamageSource(level, source));
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double minRadius,
@@ -727,7 +728,7 @@ public class AbilityUtil {
                                                boolean ignoreSource, boolean distanceFalloff,
                                                boolean ignoreCooldown, int cooldownTicks) {
         return damageNearbyEntities(level, source, minRadius, maxRadius, damage, center, ignoreSource,
-                distanceFalloff, ignoreCooldown, cooldownTicks, 0, defaultDamageSource(source));
+                distanceFalloff, ignoreCooldown, cooldownTicks, 0, defaultDamageSource(level, source));
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double minRadius,
@@ -735,7 +736,7 @@ public class AbilityUtil {
                                                boolean ignoreSource, boolean distanceFalloff,
                                                boolean ignoreCooldown, int cooldownTicks, int fireticks) {
         return damageNearbyEntities(level, source, minRadius, maxRadius, damage, center, ignoreSource,
-                distanceFalloff, ignoreCooldown, cooldownTicks, fireticks, defaultDamageSource(source));
+                distanceFalloff, ignoreCooldown, cooldownTicks, fireticks, defaultDamageSource(level, source));
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
