@@ -158,8 +158,11 @@ public class BeyonderData {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
 
+
         if(entity instanceof ServerPlayer player) {
             if(!beyonderMap.check(pathway, sequence)) return;
+
+            removeModifier(player, "characteristics_stack_boost");
 
             if(!BeyonderData.getPathway(player).equals(pathway)
                     || BeyonderData.getSequence(player) < sequence)
