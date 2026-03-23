@@ -37,6 +37,7 @@
   "key.beyonders.use_ability_bar_ability_5": "Use Ability Bar Ability 5",
   "key.beyonders.use_ability_bar_ability_6": "Use Ability Bar Ability 6",
   "key.beyonders.return_to_main_body": "Return to Main Body",
+  "key.beyonders.next_artifact_ability": "Use next Artifact Ability",
   "key.beyonders.openArtifactWheel": "Open Artifact Wheel",
 
 
@@ -1135,6 +1136,7 @@
   "_comment013": "Sealed Artifacts-------------------------------------------------------------------------",
   "item.lotm.sealed_artifact": "Sealed Artifact",
   "lotm.sealed_artifact.generic": "%s of %s",
+  "lotm.sealed_artifact.selected_ability": "Selected Ability:",
 
   "lotm.sealed_artifact.type.bell": "Bell",
   "lotm.sealed_artifact.type.chain": "Chain",

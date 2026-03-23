@@ -6,17 +6,27 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.AbilityHandler;
 import de.jakob.lotm.abilities.error.MundaneConceptualTheft;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.entity.custom.GiantLightningEntity;
+import de.jakob.lotm.entity.custom.TimeChangeEntity;
+import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
+import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -31,12 +41,15 @@ import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Vex;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -50,6 +63,9 @@ public class NegativeEffect {
     private final int sequence; // 0-9, where higher is more severe
     private final Holder<MobEffect> mobEffect; // Can be null for non-potion effects
     private final int effectAmplifier;
+
+    // Utility variables ofr various effects
+    private int loseConceptsCooldown = 0;
 
     public static final Codec<NegativeEffect> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
@@ -77,23 +93,46 @@ public class NegativeEffect {
 
     private void applyFoolEffects(Player player) {
         switch (type) {
-            case BREATH_DEPLETION:applyCommonEffects(player);
-                break;
-            case BURN:applyCommonEffects(player);
+            case BREATH_DEPLETION, BURN:
+                applyCommonEffects(player);
                 break;
             case SLOWER_IN_HOT_PLACES:
-//                if (player.tickCount % 200 == 0) {
-//                    if ((player.level().getBiome(player.blockPosition()).value().warmEnoughToRain(player.blockPosition()))
-//                            || (getBlockInRadius(player, player.blockPosition(), 5 + getEffectLevelForSequence(sequence), Blocks.FIRE))) {
-//                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 220, getEffectLevelForSequence(sequence), false, false));
-//                        player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 220, getEffectLevelForSequence(sequence), false, false));
-//                        player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 220, getEffectLevelForSequence(sequence), false, false));
-//                    }
-//                }
+                if (player.tickCount % 200 == 0) {
+                    if ((player.level().getBiome(player.blockPosition()).value().getBaseTemperature()) >= .8
+                            || (getBlockInRadius(player, player.blockPosition(), 5 + getEffectLevelForSequence(sequence), Blocks.FIRE))) {
+                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 220, getEffectLevelForSequence(sequence), false, false));
+                        player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 220, getEffectLevelForSequence(sequence), false, false));
+                        player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 220, getEffectLevelForSequence(sequence), false, false));
+                    }
+                }
                 break;
             case TURN_TO_MARIONETTE:
                 break;
             case WISH_CALAMITY:
+                switch (player.getRandom().nextInt(5)) {
+                    case 0 -> {
+                        Vec3 teleportPos = player.position().offsetRandom(player.getRandom(), 30).add(0, -100, 0);
+                        player.teleportTo(teleportPos.x, teleportPos.y, teleportPos.z);
+                    }
+                    case 1 -> {
+                        SanityComponent component = player.getData(ModAttachments.SANITY_COMPONENT);
+                        component.setSanityAndSync(.1f, player);
+                    }
+                    case 2 -> {
+                        Vec3 loc = player.position();
+                        ServerScheduler.scheduleForDuration(0, 20, 20 * 4, () -> {
+                            Vec3 targetLoc = new Vec3(loc.x, loc.y, loc.z);
+                            for(int i = 0; i < 35; i++) {
+                                BlockState state = player.level().getBlockState(BlockPos.containing(targetLoc.subtract(0, 1, 0)));
+                                if(state.getCollisionShape(player.level(), BlockPos.containing(targetLoc)).isEmpty())
+                                    targetLoc = targetLoc.subtract(0, 1, 0);
+                            }
+
+                            GiantLightningEntity lightning = new GiantLightningEntity(player.level(), null, targetLoc, 50, 6, DamageLookup.lookupDamage(2, .4), false, 13, 200, 0x6522a8);
+                            player.level().addFreshEntity(lightning);
+                        });
+                    }
+                }
                 break;
 
         }
@@ -113,16 +152,74 @@ public class NegativeEffect {
                 }
                 break;
             case LOSE_CONCEPTS:
+                if(loseConceptsCooldown > 0) {
+                    loseConceptsCooldown -= 1;
+                    break;
+                }
+
+                switch (player.getRandom().nextInt()) {
+                    // Lose Health
+                    case 0 -> {
+                        float healthToSteal = (float) (DamageLookup.lookupDamage(5, 1f));
+                        player.hurt(ModDamageTypes.source(player.level(), ModDamageTypes.BEYONDER_GENERIC), healthToSteal);
+                        loseConceptsCooldown = 20 * 5;
+                    }
+                    // Lose Sight
+                    case 1 -> {
+                        player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 15, 4, false, false, false));
+                        loseConceptsCooldown = 20 * 16;
+                    }
+                    // Lose Walk
+                    case 2 -> {
+                        AttributeInstance movementSpeed = player.getAttribute(Attributes.MOVEMENT_SPEED);
+                        if(movementSpeed == null) {
+                            return;
+                        }
+                        if(movementSpeed.getModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk")) != null) {
+                            return;
+                        }
+                        movementSpeed.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk"), -100, AttributeModifier.Operation.ADD_VALUE));
+                        loseConceptsCooldown = 20 * 16;
+
+                        ServerScheduler.scheduleDelayed(20 * 15, () -> {
+                            AttributeInstance movementSpeedInner = player.getAttribute(Attributes.MOVEMENT_SPEED);
+
+                            if(movementSpeedInner != null) {
+                                movementSpeedInner.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk"));
+                            }
+                        });
+                    }
+                }
+
                 break;
             case LOSE_ABILITIES:
+                if(!BeyonderData.isBeyonder(player)) break;
+
+                String pathway = BeyonderData.getPathway(player);
+                int sequence = BeyonderData.getSequence(player);
+
+                List<Ability> possibleAbilitiesToLose = LOTMCraft.abilityHandler.getByPathwayAndSequence(pathway, sequence).stream().filter(a -> !a.canAlwaysBeUsed).toList();
+                if (possibleAbilitiesToLose.isEmpty()) break;
+
+                Ability abilityToLose = possibleAbilitiesToLose.get(player.getRandom().nextInt(possibleAbilitiesToLose.size()));
+                DisabledAbilitiesComponent component = player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+                component.disableSpecificAbilityForTime(abilityToLose.getId(), "artifact_lose_ability", 20 * 20);
                 break;
             case STOP_TIME:
+                TimeChangeEntity entity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), player.level(), 20 * 5, null, 8, .001f);
+                entity.setPos(player.position());
+                player.level().addFreshEntity(entity);
                 break;
         }
     }
     private void applyDoorEffects(Player player) {
         switch (type) {
-            case FULL_MOON_WHISPERS:
+            case FULL_MOON_WHISPERS: // Temporarily reused Whispers Code, may change later
+                if (player.tickCount % getWhisperIntervalForSequence(sequence) == 0) {
+                    player.displayClientMessage(Component.translatable("lotm.whisper." + player.getRandom().nextInt(5)), true);
+                    SanityComponent sanityComponent = player.getData(ModAttachments.SANITY_COMPONENT);
+                    sanityComponent.increaseSanityAndSync(-0.01f * (10 - sequence), player);
+                }
                 break;
             case RANDOM_TELEPORT:
                 if (player.tickCount % getTeleportIntervalForSequence(sequence) == 0) {
@@ -146,7 +243,8 @@ public class NegativeEffect {
                     }
                 }
                 break;
-            case BURN:applyCommonEffects(player);
+            case BURN:
+                applyCommonEffects(player);
                 break;
             case CONFLICT_WITH_ARTIFACTS:
                 break;
@@ -155,7 +253,8 @@ public class NegativeEffect {
     }
     private void applyTyrantEffects(Player player) {
         switch (type) {
-            case BREATH_DEPLETION:applyCommonEffects(player);
+            case BREATH_DEPLETION, TARGETED_BY_ENTITIES:
+                applyCommonEffects(player);
                 break;
             case STRUCK_BY_LIGHTNING:
                 if (player.tickCount % getIntervalForSequenceAndMultiplier(sequence, 3) == 0) {
@@ -169,8 +268,6 @@ public class NegativeEffect {
                         }
                     }
                 }
-                break;
-            case TARGETED_BY_ENTITIES:applyCommonEffects(player);
                 break;
             case WEAKNESS_WHEN_ALONE:
                 if (player.tickCount % 20 == 0) {
@@ -229,6 +326,18 @@ public class NegativeEffect {
             case CHARM_BACKLASH:
                 if (player.tickCount % 140 == 0) {
                     player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 120, 0, false, false));
+                }
+                break;
+            case CURSED:
+                switch(player.getRandom().nextInt(3)) {
+                    case 0 -> {
+                        player.hurt(player.damageSources().onFire(), (float) (DamageLookup.lookupDamage(4, .6)));
+                        ParticleUtil.spawnParticles((ServerLevel) player.level(), ModParticles.BLACK_FLAME.get(), player.position().add(0, player.getEyeHeight() / 2, 0), 200, .4, player.getEyeHeight() / 2, .4, 0.01);
+                    }
+                    case 1 -> {
+                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 2, 3));
+                        player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 2, 3));
+                    }
                 }
                 break;
         }
@@ -516,19 +625,18 @@ public class NegativeEffect {
 
     public void apply(Player player, boolean inMainHand, List<String> pathway) {
         if (pathway.contains("fool")) applyFoolEffects(player);
-        if (pathway.contains("error")) applyErrorEffects(player);
-        if (pathway.contains("door")) applyDoorEffects(player);
-        if (pathway.contains("sun")) applySunEffects(player);
-        if (pathway.contains("tyrant")) applyTyrantEffects(player);
-        if (pathway.contains("visionary")) applyVisionaryEffects(player);
-        if (pathway.contains("demoness")) applyDemonessEffects(player);
-        if (pathway.contains("hunter")) applyHunterEffects(player);
-        if (pathway.contains("darkness")) applyDarknessEffects(player);
-        if (pathway.contains("mother")) applyMotherEffects(player);
-        if (pathway.contains("monster")) applyMonsterEffects(player);
-        if (pathway.contains("abyss")) applyAbyssEffects(player);
-        applyGeneralEffects(player);
-
+        else if (pathway.contains("error")) applyErrorEffects(player);
+        else if (pathway.contains("door")) applyDoorEffects(player);
+        else if (pathway.contains("sun")) applySunEffects(player);
+        else if (pathway.contains("tyrant")) applyTyrantEffects(player);
+        else if (pathway.contains("visionary")) applyVisionaryEffects(player);
+        else if (pathway.contains("demoness")) applyDemonessEffects(player);
+        else if (pathway.contains("hunter")) applyHunterEffects(player);
+        else if (pathway.contains("darkness")) applyDarknessEffects(player);
+        else if (pathway.contains("mother")) applyMotherEffects(player);
+        else if (pathway.contains("monster")) applyMonsterEffects(player);
+        else if (pathway.contains("abyss")) applyAbyssEffects(player);
+        else applyGeneralEffects(player);
     }
 
     private int getIntervalForSequenceAndMultiplier(int sequence, int multiplier) {

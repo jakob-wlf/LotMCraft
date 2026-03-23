@@ -409,6 +409,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                NextArtifactAbilityPacket.TYPE,
+                NextArtifactAbilityPacket.STREAM_CODEC,
+                NextArtifactAbilityPacket::handle
+        );
+
+        registrar.playToServer(
                 RequestQuestDataPacket.TYPE,
                 RequestQuestDataPacket.STREAM_CODEC,
                 RequestQuestDataPacket::handle

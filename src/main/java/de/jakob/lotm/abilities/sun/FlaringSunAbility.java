@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.SunEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -17,13 +18,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class FlaringSunAbility extends Ability {
     public FlaringSunAbility(String id) {
-        super(id, 8);
+        super(id, 8, "purification");
+        postsUsedAbilityEventManually = true;
+        interactionRadius = 14;
     }
 
     @Override
@@ -80,5 +84,7 @@ public class FlaringSunAbility extends Ability {
 
             sun.discard();
         }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(targetPos, level)));
+
+        NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetPos, entity, this, interactionFlags, interactionRadius));
     }
 }

@@ -81,6 +81,7 @@ public class LOTMCraft
     public static KeyMapping useSelectedAbilityKey;
     public static KeyMapping returnToMainBody;
     public static KeyMapping openArtifactWheel;
+    public static KeyMapping nextArtifactAbilityKey;
 
     public static KeyMapping useAbilityBarAbility1;
     public static KeyMapping useAbilityBarAbility2;

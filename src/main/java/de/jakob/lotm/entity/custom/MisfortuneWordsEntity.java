@@ -17,9 +17,11 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,6 +29,11 @@ public class MisfortuneWordsEntity extends Entity {
 
     private static final EntityDataAccessor<Optional<UUID>> OWNER =
             SynchedEntityData.defineId(MisfortuneWordsEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+
+    private static final EntityDataAccessor<Integer> AFFECTED_ENTITIES_COUNT =
+            SynchedEntityData.defineId(MisfortuneWordsEntity.class, EntityDataSerializers.INT);
+
+    private final ArrayList<UUID> affectedEntities = new ArrayList<>();
 
     public MisfortuneWordsEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -37,6 +44,7 @@ public class MisfortuneWordsEntity extends Entity {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(OWNER, Optional.empty());
+        builder.define(AFFECTED_ENTITIES_COUNT, 0);
     }
 
     public MisfortuneWordsEntity(Level level, Vec3 pos) {
@@ -59,7 +67,15 @@ public class MisfortuneWordsEntity extends Entity {
                     return;
 
                 e.addEffect(new MobEffectInstance(ModEffects.UNLUCK, 20 * 60 * 5, 12, false, false, false));
+                if(!affectedEntities.contains(e.getUUID())) {
+                    affectedEntities.add(e.getUUID());
+                    setAffectedEntitiesCount(getAffectedEntitiesCount() + (e instanceof Player ? 10 : 1));
+                }
             });
+
+            if(getAffectedEntitiesCount() >= 30) {
+                this.discard();
+            }
         }
     }
 
@@ -83,6 +99,14 @@ public class MisfortuneWordsEntity extends Entity {
         return this.entityData.get(OWNER).orElse(null);
     }
 
+    public void setAffectedEntitiesCount(int count) {
+        this.entityData.set(AFFECTED_ENTITIES_COUNT, count);
+    }
+
+    public int getAffectedEntitiesCount() {
+        return this.entityData.get(AFFECTED_ENTITIES_COUNT);
+    }
+
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity entity) {
@@ -101,6 +125,8 @@ public class MisfortuneWordsEntity extends Entity {
         } else {
             setCasterUUID(null);
         }
+
+        setAffectedEntitiesCount(compoundTag.getInt("affectedEntitiesCount"));
     }
 
     @Override
@@ -108,6 +134,7 @@ public class MisfortuneWordsEntity extends Entity {
         if (getCasterUUID() != null) {
             compoundTag.putUUID("owner", getCasterUUID());
         }
+        compoundTag.putInt("affectedEntitiesCount", getAffectedEntitiesCount());
     }
 
 

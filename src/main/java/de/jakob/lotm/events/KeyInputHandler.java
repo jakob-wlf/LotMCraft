@@ -181,6 +181,9 @@ public class KeyInputHandler {
         if (LOTMCraft.openArtifactWheel != null && LOTMCraft.openArtifactWheel.consumeClick()) {
             openArtifactWheel();
         }
+        if(LOTMCraft.nextArtifactAbilityKey != null && LOTMCraft.nextArtifactAbilityKey.consumeClick()) {
+            PacketHandler.sendToServer(new NextArtifactAbilityPacket());
+        }
     }
 
     @SubscribeEvent

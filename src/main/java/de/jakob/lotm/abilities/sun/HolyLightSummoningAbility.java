@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -26,7 +28,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class HolyLightSummoningAbility extends Ability {
     public HolyLightSummoningAbility(String id) {
-        super(id, .9f);
+        super(id, .9f, "purification");
+        postsUsedAbilityEventManually = true;
+        interactionRadius = 3.5;
     }
 
     @Override
@@ -75,6 +79,10 @@ public class HolyLightSummoningAbility extends Ability {
 
                 currentPos.set(pos.subtract(0, 1, 0));
             }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
+
+            ServerScheduler.scheduleDelayed(22, () -> {
+                NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, initialPos.subtract(0, 18, 0), entity, this, interactionFlags, interactionRadius));
+            }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
 
             ServerScheduler.scheduleDelayed(40, () -> {
                 lights.forEach(l -> level.setBlockAndUpdate(l, Blocks.AIR.defaultBlockState()));
