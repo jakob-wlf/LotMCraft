@@ -3,6 +3,7 @@ package de.jakob.lotm.util;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.MultiplierModifierComponent;
 import de.jakob.lotm.events.BeyonderDataTickHandler;
@@ -158,8 +159,11 @@ public class BeyonderData {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
 
+
         if(entity instanceof ServerPlayer player) {
             if(!beyonderMap.check(pathway, sequence)) return;
+
+            removeModifier(player, "characteristics_stack_boost");
 
             if(!BeyonderData.getPathway(player).equals(pathway)
                     || BeyonderData.getSequence(player) < sequence)
@@ -561,5 +565,15 @@ public class BeyonderData {
             case 4 -> 8;
             default -> 9;
         };
+    }
+
+    public static void addCharStack(LivingEntity player){
+        beyonderMap.addStack(player, 1);
+
+        player.getPersistentData().putFloat(NBT_DIGESTION_PROGRESS, 0.0f);
+        removeModifier(player, "characteristics_stack_boost");
+
+        addModifier(player, "characteristics_stack_boost", (1.0f + beyonderMap.get(player).get().charStack()));
+
     }
 }

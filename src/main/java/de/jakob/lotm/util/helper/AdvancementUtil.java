@@ -177,8 +177,61 @@ public class AdvancementUtil {
         int prevSequence = getSequence(entity);
 
         // Can't advance to same or higher sequence number (lower power)
-        if(prevSequence <= sequence) {
+        if(prevSequence < sequence) {
             // Just return - no advancement happens
+            return;
+        }
+
+        if(prevSequence == sequence && prevSequence == 1){
+            if(!(entity instanceof Player player)) return;
+
+            if(!beyonderMap.check(pathway, sequence)){
+                return;
+            }
+
+            double failureChance = getDigestionProgress(player) == 1.0f ? 0.0f : 1.0f;
+            int duration = calculateAdvancementDuration(sequence);
+
+            StartAdvanceSequencePathwayEvent event = new StartAdvanceSequencePathwayEvent(entity, sequence, pathway, failureChance, duration);
+            NeoForge.EVENT_BUS.post(event);
+
+            failureChance = event.getFailureChance();
+            duration = event.getDuration();
+
+            String finalPathway = event.getPathway();
+            int finalSequence = event.getSequence();
+
+            // Start particle effects
+            scheduleAdvancementParticles(entity, finalPathway, duration);
+            scheduleFloating(entity, duration);
+            scheduleThirdPerson(entity, duration);
+            scheduleFog(entity, duration, finalPathway);
+            scheduleRandomDamage(entity, duration, finalSequence);
+
+            if(failureChance >= 1.0) {
+                int deathTime = (int) (Math.random() * duration);
+                ServerScheduler.scheduleDelayed(deathTime, () -> {
+                    if (!activeAdvancements.containsKey(entity.getUUID())) {
+                        return; // Player logged out and back in during advancement, potion was removed from inventory, cancel advancement
+                    }
+                    activeAdvancements.remove(entity.getUUID());
+                    if (!entity.isDeadOrDying())
+                        entity.hurt(entity.damageSources().magic(), Float.MAX_VALUE);
+                });
+            }
+
+            ServerScheduler.scheduleDelayed(duration, () -> {
+                if(!activeAdvancements.containsKey(entity.getUUID())) {
+                    return; // Player logged out and back in during advancement, potion was removed from inventory, cancel advancement
+                }
+                activeAdvancements.remove(entity.getUUID());
+
+                addCharStack(player);
+
+                if(entity instanceof ServerPlayer serverPlayer) {
+                    PacketHandler.sendToPlayer(serverPlayer, new ChangePlayerPerspectivePacket(entity.getId(), ChangePlayerPerspectivePacket.PERSPECTIVE.THIRD.getValue()));
+                }
+            });
             return;
         }
 

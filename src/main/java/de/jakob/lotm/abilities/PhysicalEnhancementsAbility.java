@@ -114,6 +114,18 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
 
         List<PhysicalEnhancement> currentEnhancements = getEnhancementsForSequence(sequenceLevel, entity);
 
+        if(sequenceLevel == 1 && (entity instanceof Player player)){
+            var data = BeyonderData.beyonderMap.get(entity).get();
+
+            if(data.charStack() > 0){
+
+                currentEnhancements = currentEnhancements.stream()
+                        .map(obj -> obj.type.equals(EnhancementType.HEALTH) ?
+                                new PhysicalEnhancement(EnhancementType.HEALTH, obj.level + (5 * data.charStack())) : obj)
+                        .toList();
+            }
+        }
+
         Map<EnhancementType, Integer> enhancementMap = new HashMap<>();
 
         for (PhysicalEnhancement enhancement : currentEnhancements) {

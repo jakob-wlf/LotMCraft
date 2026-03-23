@@ -55,6 +55,9 @@ public class PlayerEvents {
             disabledAbilitiesComponent.enableAllAbilities();
             ToggleAbility.cleanUp(player.serverLevel(), player);
             DivinationAbility.cleanupOnLogout(player);
+
+            if(BeyonderData.isBeyonder(player))
+                BeyonderData.beyonderMap.addLastPosition(player);
         }
     }
 
