@@ -37,6 +37,7 @@
   "key.beyonders.use_ability_bar_ability_5": "Use Ability Bar Ability 5",
   "key.beyonders.use_ability_bar_ability_6": "Use Ability Bar Ability 6",
   "key.beyonders.return_to_main_body": "Return to Main Body",
+  "key.beyonders.openArtifactWheel": "Open Artifact Wheel",
 
 
   "_comment001": "Abilities------------------------------------------------------------------------------------",
@@ -1169,10 +1170,57 @@
   "lotm.sealed_artifact.abilities": "Abilities",
   "lotm.sealed_artifact.negative_effect": "Negative Effect",
 
-  "lotm.negative_effect.hearing_whispers": "Hearing Whispers",
+  "lotm.negative_effect.slower_in_hot_places": "Slower in Hot Places",
+  "lotm.negative_effect.turn_to_marionette": "Turn to Puppet",
+  "lotm.negative_effect.wish_calamity": "Wish Calamity",
+
+  "lotm.negative_effect.gold_item_debuff": "Gold Lover",
+  "lotm.negative_effect.lose_concepts": "Lose Concepts",
+  "lotm.negative_effect.lose_abilities": "Lose Abilities",
+  "lotm.negative_effect.stop_time": "Stop Your Time",
+
+  "lotm.negative_effect.full_moon_whispers": "Full Moon Whispers",
+  "lotm.negative_effect.random_teleport": "Random Teleport",
+  "lotm.negative_effect.enter_spirit_world": "Spirit world Warp",
+
+  "lotm.negative_effect.slower_in_cold_places": "Slower in Cold Places",
+  "lotm.negative_effect.burn": "burn",
+  "lotm.negative_effect.conflict_with_artifacts": "Conflict with Artifacts",
+
+  "lotm.negative_effect.breath_depletion": "Breath Depletion",
+  "lotm.negative_effect.struck_by_lightning": "Struck by Lightning",
+  "lotm.negative_effect.weakness_when_alone": "Solitary Weakness",
+
+  "lotm.negative_effect.mental_plague": "Mental Plague",
+  "lotm.negative_effect.spirit_haunting": "Spirit Haunting",
+
+  "lotm.negative_effect.petrification": "Petrification",
+  "lotm.negative_effect.charm_backlash": "Demonic Backlash",
+
+  "lotm.negative_effect.wither": "Wither",
+  "lotm.negative_effect.targeted_by_entities": "Targeted by Surrounding",
+  "lotm.negative_effect.crimson_chain": "Crimson Chains",
+
+  "lotm.negative_effect.blindness": "Blindness",
+  "lotm.negative_effect.asleep": "Asleep",
+  "lotm.negative_effect.cursed": "Cursed",
+
+  "lotm.negative_effect.poison": "Poison",
+  "lotm.negative_effect.mutated": "Mutation",
+  "lotm.negative_effect.silk_trap": "Spider's Embrace",
+
+  "lotm.negative_effect.bad_luck": "Bad Luck",
+  "lotm.negative_effect.calamity_attraction": "Calamity Attraction",
+  "lotm.negative_effect.fate_spin": "Fate's Caprice",
+
+  "lotm.negative_effect.nausea": "Nausea",
+
   "lotm.negative_effect.drain_health": "Draining Health",
   "lotm.negative_effect.drain_hunger": "Draining Hunger",
-  "lotm.negative_effect.random_teleport": "Random Teleport",
+  "lotm.negative_effect.hearing_whispers": "Hearing Whispers",
+  "lotm.negative_effect.slowness": "Slowness",
+  "lotm.negative_effect.mining_fatigue": "Mining Fatigue",
+  "lotm.negative_effect.hear_sounds": "Hear Sounds",
 
   "lotm.whisper.0": "§4They're watching...",
   "lotm.whisper.1": "§4The voices never stop...",
@@ -1274,6 +1322,7 @@
   "lotm.description": "Description",
   "lotm.digested": "Digested the Potion",
   "lotm.marionette": "Marionette",
+  "lotm.ability": "Ability",
   "lotm.selected": "Selected",
   "lotm.potion_recipe": "Potion Recipe",
   "lotm.beyonder_message.full": "Become a Beyonder of the %s Pathway at Sequence %s",

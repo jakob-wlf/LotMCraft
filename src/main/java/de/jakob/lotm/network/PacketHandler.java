@@ -602,6 +602,17 @@ public class PacketHandler {
                 ReturnToMainBodyPacket.TYPE,
                 ReturnToMainBodyPacket.STREAM_CODEC,
                 ReturnToMainBodyPacket::handle);
+
+        registrar.playToServer(
+                OpenArtifactWheelPacket.TYPE,
+                OpenArtifactWheelPacket.STREAM_CODEC,
+                OpenArtifactWheelPacket::handle);
+
+        registrar.playToServer(
+                SyncArtifactAbilityWheel.TYPE,
+                SyncArtifactAbilityWheel.STREAM_CODEC,
+                SyncArtifactAbilityWheel::handle
+        );
     }
 
     public static void sendToServer(CustomPacketPayload packet) {

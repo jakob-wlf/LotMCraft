@@ -205,15 +205,16 @@ public class DivinationAbility extends SelectableAbility {
     }
 
     private void antiDivination(Level level, LivingEntity entity) {
-        if(level.isClientSide) {
-            return;
-        }
+        if(level.isClientSide) return;
 
-        if(!(entity instanceof ServerPlayer player)) {
-            return;
-        }
+        if(!(entity instanceof ServerPlayer player)) return;
 
-        level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 10.0f, 1.0f);
+        level.playSound(null,
+                player.blockPosition(),
+                SoundEvents.AMETHYST_BLOCK_CHIME,
+                SoundSource.BLOCKS,
+                10.0f,
+                1.0f);
     }
 
     public static void cleanupOnLogout(Player player) {

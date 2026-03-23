@@ -1,13 +1,16 @@
 package de.jakob.lotm.artifacts;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.data.ModDataComponents;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -15,7 +18,6 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Random;
 
 public class SealedArtifactItem extends Item {
 
@@ -37,7 +39,7 @@ public class SealedArtifactItem extends Item {
         }
 
         // Get the currently selected ability
-        int selectedIndex = (new Random()).nextInt(data.abilities().size());
+        int selectedIndex = stack.getOrDefault(ModDataComponents.SEALED_ARTIFACT_SELECTED, 0);
 
         Ability ability = data.abilities().get(selectedIndex);
 
@@ -67,14 +69,35 @@ public class SealedArtifactItem extends Item {
 
         tooltipComponents.add(Component.empty());
 
+        // Show selected ability
+        int selectedIndex = stack.getOrDefault(ModDataComponents.SEALED_ARTIFACT_SELECTED, 0);
+        Ability ability = data.abilities().get(selectedIndex);
+
+        tooltipComponents.add(Component.literal("Selected Ability")
+                .append(": ")
+                .append(Component.translatable("lotmcraft." + ability.getId()))
+                .withStyle(ChatFormatting.AQUA));
+
+//        // show sub abilities only if the ability is selectable ability
+//        if(ability instanceof SelectableAbility selectableAbility) {
+//            tooltipComponents.add(Component.literal("Sub ability")
+//                    .append(": ")
+//                    .append(Component.translatable(selectableAbility.getSelectedAbility(player)))
+//                    .withStyle(ChatFormatting.AQUA));
+//        }
+        tooltipComponents.add(Component.empty());
+//        if (!itemInAnvilOutputSlot(player,stack)) {
+//
+//        }
+
         // Show abilities
         tooltipComponents.add(Component.translatable("lotm.sealed_artifact.abilities")
                 .append(":")
                 .withStyle(ChatFormatting.AQUA)); // aqua = soft blue highlight
 
         for (int i = 0; i < data.abilities().size(); i++) {
-            Ability ability = data.abilities().get(i);
-            Component abilityName = Component.translatable("lotmcraft." + ability.getId());
+            Ability foundAbility = data.abilities().get(i);
+            Component abilityName = Component.translatable("lotmcraft." + foundAbility.getId());
 
             tooltipComponents.add(
                     Component.literal("  → ")
@@ -90,9 +113,20 @@ public class SealedArtifactItem extends Item {
                 .append(":")
                 .withStyle(ChatFormatting.DARK_PURPLE));
 
-        tooltipComponents.add(Component.literal("  ")
-                .append(data.negativeEffect().getDisplayName())
-                .withStyle(ChatFormatting.DARK_PURPLE));
+        for (NegativeEffect effect : data.negativeEffect()) {
+            tooltipComponents.add(Component.literal("  - ")
+                    .append(effect.getDisplayName())
+                    .withStyle(ChatFormatting.DARK_PURPLE));
+        }
+    }
+
+    private boolean itemInAnvilOutputSlot(Player player, ItemStack stack){
+        if (player != null && player.containerMenu instanceof AnvilMenu anvil) {
+            if (anvil.getSlot(2).getItem() == stack) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

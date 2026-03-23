@@ -4,6 +4,8 @@ package de.jakob.lotm.jei;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
+import de.jakob.lotm.gui.custom.ArtifactWheel.ArtifactWheelScreen;
+import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -37,6 +39,22 @@ public class LOTMJeiPlugin implements IModPlugin {
         registration.addGuiContainerHandler(AbilityWheelScreen.class, new IGuiContainerHandler<AbilityWheelScreen>() {
             @Override
             public List<Rect2i> getGuiExtraAreas(AbilityWheelScreen screen) {
+                // Return a rectangle covering the entire screen to hide JEI completely
+                return Collections.singletonList(new Rect2i(0, 0, screen.width, screen.height));
+            }
+        });
+
+        registration.addGuiContainerHandler(CopiedAbilityWheelScreen.class, new IGuiContainerHandler<CopiedAbilityWheelScreen>() {
+            @Override
+            public List<Rect2i> getGuiExtraAreas(CopiedAbilityWheelScreen screen) {
+                // Return a rectangle covering the entire screen to hide JEI completely
+                return Collections.singletonList(new Rect2i(0, 0, screen.width, screen.height));
+            }
+        });
+
+        registration.addGuiContainerHandler(ArtifactWheelScreen.class, new IGuiContainerHandler<ArtifactWheelScreen>() {
+            @Override
+            public List<Rect2i> getGuiExtraAreas(ArtifactWheelScreen screen) {
                 // Return a rectangle covering the entire screen to hide JEI completely
                 return Collections.singletonList(new Rect2i(0, 0, screen.width, screen.height));
             }

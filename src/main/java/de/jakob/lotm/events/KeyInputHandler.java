@@ -3,15 +3,19 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.artifacts.SealedArtifactData;
+import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.ClientData;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -56,7 +60,29 @@ public class KeyInputHandler {
 
         if(LOTMCraft.nextAbilityKey != null && LOTMCraft.nextAbilityKey.consumeClick()) {
             Player player = Minecraft.getInstance().player;
-            if(player != null && ClientBeyonderCache.isBeyonder(player.getUUID())) {
+            if (player == null) return;
+            if (player.isCrouching()){
+                ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+                if (!stack.has(ModDataComponents.SEALED_ARTIFACT_DATA)) {
+                    stack = player.getItemInHand(InteractionHand.OFF_HAND);
+                }
+                if (stack.has(ModDataComponents.SEALED_ARTIFACT_DATA)) {
+                    SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
+                    if (data != null || !data.abilities().isEmpty()) {
+                        int selectedIndex = stack.getOrDefault(ModDataComponents.SEALED_ARTIFACT_SELECTED, 0);
+                        Ability artifactAbility = data.abilities().get(selectedIndex);
+                        if(artifactAbility instanceof SelectableAbility artifactSelectableAbility) {
+                            artifactSelectableAbility.nextAbility(player);
+
+                            player.displayClientMessage(Component.translatable(artifactSelectableAbility.getSelectedAbility(player)).withStyle(ChatFormatting.AQUA), true);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // if no return was triggered, run the normal code
+            if(ClientBeyonderCache.isBeyonder(player.getUUID())) {
                 if(ClientData.getSelectedAbility() < 0 || ClientData.getSelectedAbility() >= ClientData.getAbilityWheelAbilities().size()) {
                     return;
                 }
@@ -73,7 +99,30 @@ public class KeyInputHandler {
 
         if(LOTMCraft.previousAbilityKey != null && LOTMCraft.previousAbilityKey.consumeClick()) {
             Player player = Minecraft.getInstance().player;
-            if(player != null && ClientBeyonderCache.isBeyonder(player.getUUID())) {
+            if (player == null) return;
+            if (player.isCrouching()){
+                ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+                if (!stack.has(ModDataComponents.SEALED_ARTIFACT_DATA)) {
+                    stack = player.getItemInHand(InteractionHand.OFF_HAND);
+                }
+                if (stack.has(ModDataComponents.SEALED_ARTIFACT_DATA)) {
+                    SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
+                    if (data != null || !data.abilities().isEmpty()) {
+                        int selectedIndex = stack.getOrDefault(ModDataComponents.SEALED_ARTIFACT_SELECTED, 0);
+
+                        Ability artifactAbility = data.abilities().get(selectedIndex);
+                        if(artifactAbility instanceof SelectableAbility artifactSelectableAbility) {
+                            artifactSelectableAbility.previousAbility(player);
+
+                            player.displayClientMessage(Component.translatable(artifactSelectableAbility.getSelectedAbility(player)).withStyle(ChatFormatting.AQUA), true);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // if no return was triggered, run the normal code
+            if(ClientBeyonderCache.isBeyonder(player.getUUID())) {
                 if(ClientData.getSelectedAbility() < 0 || ClientData.getSelectedAbility() >= ClientData.getAbilityWheelAbilities().size()) {
                     return;
                 }
@@ -128,6 +177,9 @@ public class KeyInputHandler {
 
         if (LOTMCraft.returnToMainBody != null && LOTMCraft.returnToMainBody.consumeClick()) {
             PacketHandler.sendToServer(new ReturnToMainBodyPacket());
+        }
+        if (LOTMCraft.openArtifactWheel != null && LOTMCraft.openArtifactWheel.consumeClick()) {
+            openArtifactWheel();
         }
     }
 
@@ -191,5 +243,21 @@ public class KeyInputHandler {
         } else {
             PacketHandler.sendToServer(new OpenAbilityWheelPacket());
         }
+    }
+
+    private static void openArtifactWheel() {
+        Minecraft mc = Minecraft.getInstance();
+        ItemStack stack = mc.player.getItemInHand(InteractionHand.MAIN_HAND);
+        if (!stack.has(ModDataComponents.SEALED_ARTIFACT_DATA)) {
+            stack = mc.player.getItemInHand(InteractionHand.OFF_HAND);
+            if (!stack.has(ModDataComponents.SEALED_ARTIFACT_DATA)) {
+                return;
+            }
+        }
+        SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
+        if (data == null || data.abilities().isEmpty()) {
+            return;
+        }
+        PacketHandler.sendToServer(new OpenArtifactWheelPacket(stack));
     }
 }
