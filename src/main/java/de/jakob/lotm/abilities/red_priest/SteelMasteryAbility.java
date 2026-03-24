@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -23,6 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SteelMasteryAbility extends SelectableAbility {
     private final HashSet<UUID> castingSteelSkin = new HashSet<>();
@@ -67,9 +69,20 @@ public class SteelMasteryAbility extends SelectableAbility {
             return;
         }
 
-        ServerScheduler.scheduleForDuration(0, 5, 20 * 8, () -> {
+        Location loc = new Location(target.position(), target.level());
+
+        AtomicReference<UUID> taskIdRef = new AtomicReference<>();
+        UUID taskId = ServerScheduler.scheduleForDuration(0, 5, 20 * 8, () -> {
             if(entity.isDeadOrDying())
                 return;
+
+            // Blink Escape - only the bound entity can free itself
+            if(InteractionHandler.isInteractionPossibleForEntity(loc, "blink_escape", BeyonderData.getSequence(entity), target)) {
+                ServerScheduler.cancel(taskIdRef.get());
+
+                target.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+                return;
+            }
 
             target.setDeltaMovement(new Vec3(0, 0, 0));
             target.hurtMarked = true;
@@ -81,7 +94,10 @@ public class SteelMasteryAbility extends SelectableAbility {
             ParticleUtil.drawParticleLine(level, dust, entityPos, entityPos.add(3, -1.5, 0), .35, 1);
             ParticleUtil.drawParticleLine(level, dust, entityPos, entityPos.add(-3, -1.5, 0), .35, 1);
 
+            loc.setLevel(target.level());
+            loc.setPosition(target.position());
         }, null, level, () -> AbilityUtil.getTimeInArea(entity, new Location(target.position(), level)));
+        taskIdRef.set(taskId);
     }
 
     private static void sendActionBar(ServerPlayer player, Component message) {

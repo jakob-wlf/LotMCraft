@@ -26,6 +26,13 @@ public abstract class ToggleAbility extends Ability {
         doesNotIncreaseDigestion = true;
     }
 
+    protected ToggleAbility(String id, String... interactionFlags) {
+        super(id, 0, interactionFlags);
+
+        canBeUsedByNPC = false;
+        doesNotIncreaseDigestion = true;
+    }
+
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) {

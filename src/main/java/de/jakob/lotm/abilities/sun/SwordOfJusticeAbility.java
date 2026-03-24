@@ -16,7 +16,8 @@ import java.util.Map;
 
 public class SwordOfJusticeAbility extends Ability {
     public SwordOfJusticeAbility(String id) {
-        super(id, 2.5f);
+        super(id, 2.5f, "purification", "light_source", "light_strong", "light_weak");
+        postsUsedAbilityEventManually = true;
     }
 
     @Override
@@ -40,7 +41,7 @@ public class SwordOfJusticeAbility extends Ability {
         if(targetEntity != null) {
             targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 4, false, false, false));
         }
-        JusticeSwordEntity swordEntity = new JusticeSwordEntity(level, targetLoc, (float) (DamageLookup.lookupDamage(3, 1) * multiplier(entity)), entity);
+        JusticeSwordEntity swordEntity = new JusticeSwordEntity(level, targetLoc, (float) (DamageLookup.lookupDamage(3, 1) * multiplier(entity)), entity, this);
         level.addFreshEntity(swordEntity);
     }
 }

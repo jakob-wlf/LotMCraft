@@ -222,6 +222,10 @@ public class DivinationUtil {
         if(component.isInMirrorWorld()) {
             addedValue += 8;
         }
+        // Space Concealment provides strong anti-divination
+        if(SpaceConcealmentAbility.isInsideConcealedSpace(serverPlayer.position())) {
+            addedValue += 12;
+        }
         return addedValue;
     }
 

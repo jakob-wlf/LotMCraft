@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class FireOfLightAbility extends Ability {
     public FireOfLightAbility(String id) {
-        super(id, .75f, "purification", "burning");
+        super(id, .75f, "purification", "burning", "light_source", "light_weak");
         postsUsedAbilityEventManually = true;
     }
 

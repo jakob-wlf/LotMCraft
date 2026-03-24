@@ -135,5 +135,9 @@ public class TorrentialDownpourAbility extends Ability {
         });
     }
 
+    public static void cancelDownpour(UUID downpourId) {
+        activeDownpours.removeIf(d -> d.downpourId.equals(downpourId));
+    }
+
     public record TorrentialDownpourData(Location loc, UUID downpourId, boolean frozen, int sequence) {}
 }

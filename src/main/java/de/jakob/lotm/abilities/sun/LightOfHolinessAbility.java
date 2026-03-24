@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class LightOfHolinessAbility extends Ability {
     public LightOfHolinessAbility(String id) {
-        super(id, .9f, "purification");
+        super(id, .9f, "purification", "light_weak");
         postsUsedAbilityEventManually = true;
 
     }

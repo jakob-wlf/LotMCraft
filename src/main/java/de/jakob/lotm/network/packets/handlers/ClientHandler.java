@@ -268,6 +268,10 @@ public class ClientHandler {
         VFXRenderer.removeMovableEffect(effectId);
     }
 
+    public static void cancelEffectsNear(double x, double y, double z, double radius) {
+        VFXRenderer.cancelEffectsNear(x, y, z, radius);
+    }
+
     public static void syncDecryptionAbility(SyncDecryptionLookedAtEntitiesAbilityPacket packet, Player player) {
         if(packet.active()) {
             DecryptionRenderLayer.activeDecryption.add(player.getUUID());

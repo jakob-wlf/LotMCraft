@@ -228,6 +228,18 @@ public abstract class Ability {
         return id;
     }
 
+    public String[] getInteractionFlags() {
+        return interactionFlags;
+    }
+
+    public double getInteractionRadius() {
+        return interactionRadius;
+    }
+
+    public int getInteractionCacheTicks() {
+        return interactionCacheTicks;
+    }
+
     public boolean getShouldBeHidden(){
         return shouldBeHidden;
     }

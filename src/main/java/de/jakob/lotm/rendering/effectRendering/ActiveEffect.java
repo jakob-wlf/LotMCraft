@@ -76,7 +76,13 @@ public abstract class ActiveEffect {
     protected abstract void render(PoseStack poseStack, float tick);
 
     public boolean isFinished() {
-        return currentTick >= maxDuration;
+        return currentTick >= maxDuration || cancelled;
+    }
+
+    private boolean cancelled = false;
+
+    public void cancel() {
+        cancelled = true;
     }
 
     // -------------------------------------------------------------------------

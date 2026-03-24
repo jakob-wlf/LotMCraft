@@ -2,6 +2,7 @@ package de.jakob.lotm.rendering.effectRendering;
 
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.AddEffectPacket;
+import de.jakob.lotm.network.packets.toClient.CancelEffectByPositionPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -52,6 +53,14 @@ public class EffectManager {
                                   ServerPlayer player, LivingEntity entity) {
         PacketHandler.sendToPlayer(player,
                 new AddEffectPacket(effect.getIndex(), x, y, z, entity.getId()));
+    }
+
+    /**
+     * Cancel all effects near a position for all players in the level.
+     */
+    public static void cancelEffectsNear(double x, double y, double z, double radius, ServerLevel level) {
+        PacketHandler.sendToAllPlayersInSameLevel(
+                new CancelEffectByPositionPacket(x, y, z, radius), level);
     }
 
     // -------------------------------------------------------------------------

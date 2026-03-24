@@ -213,6 +213,21 @@ public class ThreadManipulationAbility extends SelectableAbility {
                         SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 1.5f, 1.2f);
 
                 particleConditions.forEach(b -> b.set(true));
+                boundEntities.remove(targetEntity.getUUID());
+                return;
+            }
+
+            // Blink Escape - only the bound entity can free itself
+            if(InteractionHandler.isInteractionPossibleForEntity(loc, "blink_escape", BeyonderData.getSequence(entity), targetEntity)) {
+                ServerScheduler.cancel(taskIdRef.get());
+
+                targetEntity.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+                targetEntity.removeEffect(MobEffects.WEAKNESS);
+                targetEntity.removeEffect(MobEffects.DIG_SLOWDOWN);
+                if (targetEntity instanceof Mob mob) mob.setNoAi(false);
+
+                particleConditions.forEach(b -> b.set(true));
+                boundEntities.remove(targetEntity.getUUID());
                 return;
             }
 

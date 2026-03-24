@@ -1,7 +1,10 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -49,7 +52,12 @@ public class MentalPlagueAbility extends Ability {
             return;
         }
 
-        target.addEffect(new MobEffectInstance(ModEffects.MENTAL_PLAGUE, 20 * 60 * 10, 4, false, false, false));
+        // Mental Plague is weakened by purification
+        Location targetLoc = new Location(target.position(), level);
+        int seq = BeyonderData.getSequence(entity);
+        int duration = InteractionHandler.isInteractionPossible(targetLoc, "purification", seq) ? 20 * 60 * 2 : 20 * 60 * 10;
+
+        target.addEffect(new MobEffectInstance(ModEffects.MENTAL_PLAGUE, duration, 4, false, false, false));
         ParticleUtil.spawnParticles((ServerLevel) target.level(), dust, target.getEyePosition(), 200, .4);
     }
 }

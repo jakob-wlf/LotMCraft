@@ -1,10 +1,13 @@
 package de.jakob.lotm.abilities.abyss;
 
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -55,6 +58,14 @@ public class AvatarOfDesireAbility extends ToggleAbility {
     public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide) {
             ClientHandler.changeToThirdPerson(entity);
+            return;
+        }
+
+        // Avatar of Desire is suppressed by purification
+        Location loc = new Location(entity.position(), level);
+        int seq = BeyonderData.getSequence(entity);
+        if(InteractionHandler.isInteractionPossible(loc, "purification", seq)) {
+            cancel((ServerLevel) level, entity);
             return;
         }
 

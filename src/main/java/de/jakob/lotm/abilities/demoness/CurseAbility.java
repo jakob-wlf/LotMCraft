@@ -1,10 +1,13 @@
 package de.jakob.lotm.abilities.demoness;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -26,7 +29,7 @@ import java.util.UUID;
 
 public class CurseAbility extends Ability {
     public CurseAbility(String id) {
-        super(id, 1.5f);
+        super(id, 1.5f, "curse");
 
         canBeUsedByNPC = false;
     }
@@ -84,7 +87,22 @@ public class CurseAbility extends Ability {
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.curse.cursed_target").withColor(0x6d32a8));
         offHandItem.consume(1, player);
 
-        ServerScheduler.scheduleForDuration(0, 8, 20 * 60 * 2, () -> {
+        // Curse vs HolyOath: if target has Holy Oath active, reduce curse duration
+        ToggleAbility holyOath = (ToggleAbility) LOTMCraft.abilityHandler.getById("holy_oath_ability");
+        int curseDuration = 20 * 60 * 2;
+        if(holyOath != null && holyOath.isActiveForEntity(livingTarget)) {
+            int seqDiff = BeyonderData.getSequence(entity) - BeyonderData.getSequence(livingTarget);
+            if(seqDiff >= 0) {
+                // Target is same or stronger seq, curse is heavily reduced
+                curseDuration = 20 * 15;
+            } else {
+                // Curse caster is stronger, but HolyOath still reduces effect
+                curseDuration = 20 * 60;
+            }
+        }
+
+        int finalCurseDuration = curseDuration;
+        ServerScheduler.scheduleForDuration(0, 8, finalCurseDuration, () -> {
             if (livingTarget.isDeadOrDying()) {
                 return;
             }

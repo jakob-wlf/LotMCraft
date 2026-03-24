@@ -1,5 +1,7 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -20,6 +22,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -29,6 +32,8 @@ public class JusticeSwordEntity extends Entity {
     private static final EntityDataAccessor<Float> DAMAGE = SynchedEntityData.defineId(JusticeSwordEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(JusticeSwordEntity.class, EntityDataSerializers.OPTIONAL_UUID);
 
+    private Ability ability;
+
     public JusticeSwordEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
 
@@ -36,10 +41,11 @@ public class JusticeSwordEntity extends Entity {
         setOwnerUUID(Optional.empty());
     }
 
-    public JusticeSwordEntity(Level level, Vec3 position, float damage, LivingEntity owner) {
+    public JusticeSwordEntity(Level level, Vec3 position, float damage, LivingEntity owner, Ability ability) {
         this(ModEntities.JUSTICE_SWORD.get(), level);
         this.setPos(position);
         this.setDamage(damage);
+        this.ability = ability;
         if (owner != null) {
             this.setOwnerUUID(Optional.of(owner.getUUID()));
         }
@@ -95,6 +101,16 @@ public class JusticeSwordEntity extends Entity {
         return null;
     }
 
+    private void postAbilityUsedEvent(Vec3 impactPos) {
+        if(ability != null && level() instanceof ServerLevel serverLevel) {
+            LivingEntity ownerEntity = getOwner(serverLevel);
+            if(ownerEntity != null) {
+                NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, impactPos, ownerEntity, ability,
+                        ability.getInteractionFlags(), ability.getInteractionRadius(), ability.getInteractionCacheTicks()));
+            }
+        }
+    }
+
 
     boolean hasHitGround = false;
 
@@ -121,6 +137,7 @@ public class JusticeSwordEntity extends Entity {
 
             if(!level().isClientSide()) {
                 AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner((ServerLevel) level()), 3.75f, getDamage(), position(), true, false);
+                postAbilityUsedEvent(position());
             }
         }
     }

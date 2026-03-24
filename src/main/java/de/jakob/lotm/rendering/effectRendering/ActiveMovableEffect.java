@@ -67,8 +67,15 @@ public abstract class ActiveMovableEffect {
     protected abstract void render(PoseStack poseStack, float tick);
 
     public boolean isFinished() {
+        if (cancelled) return true;
         if (infinite) return false;
         return currentTick >= maxDuration;
+    }
+
+    private boolean cancelled = false;
+
+    public void cancel() {
+        cancelled = true;
     }
 
     // -------------------------------------------------------------------------

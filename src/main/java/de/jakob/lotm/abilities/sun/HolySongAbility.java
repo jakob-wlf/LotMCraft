@@ -1,6 +1,8 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -21,7 +23,7 @@ import java.util.Map;
 
 public class HolySongAbility extends Ability {
     public HolySongAbility(String id) {
-        super(id, 20);
+        super(id, 20, "purification", "light_weak", "morale_boost");
     }
 
     @Override
@@ -45,6 +47,17 @@ public class HolySongAbility extends Ability {
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
         if (!level.isClientSide) {
+            // Holy Song suppresses Frenzy (LOOSING_CONTROL) on the caster
+            if(entity.hasEffect(ModEffects.LOOSING_CONTROL)) {
+                entity.removeEffect(ModEffects.LOOSING_CONTROL);
+            }
+            // Also suppress on nearby allies
+            AbilityUtil.getNearbyEntities(entity, (ServerLevel) entity.level(), entity.position(), 10, false, true).forEach(e -> {
+                if(e.hasEffect(ModEffects.LOOSING_CONTROL)) {
+                    e.removeEffect(ModEffects.LOOSING_CONTROL);
+                }
+            });
+
             entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, duration, 0, false, false, false));
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, duration, 1, false, false, false));
             entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, duration, 0, false, false, false));

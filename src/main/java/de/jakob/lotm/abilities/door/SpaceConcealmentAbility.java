@@ -172,6 +172,20 @@ public class SpaceConcealmentAbility extends SelectableAbility {
         }
     }
 
+    /**
+     * Checks if a given position is inside any active concealed space.
+     */
+    public static boolean isInsideConcealedSpace(Vec3 position) {
+        for(List<ConcealedSpace> spaces : playerSpaces.values()) {
+            for(ConcealedSpace space : spaces) {
+                if(space.contains(position)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private static class ConcealedSpace {
         private final Vec3 center;
         private final ServerLevel level;
@@ -207,6 +221,12 @@ public class SpaceConcealmentAbility extends SelectableAbility {
 
         public UUID getParticleTaskId() {
             return particleTaskId;
+        }
+
+        public boolean contains(Vec3 position) {
+            return Math.abs(position.x - center.x) <= radius &&
+                   Math.abs(position.y - center.y) <= radius &&
+                   Math.abs(position.z - center.z) <= radius;
         }
 
         public void spawnDoorAtValidPosition() {

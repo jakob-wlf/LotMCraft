@@ -1,8 +1,10 @@
 package de.jakob.lotm.abilities.abyss;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -20,6 +22,7 @@ import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class ToxicSmokeAbility extends Ability {
     public ToxicSmokeAbility(String id) {
@@ -50,7 +53,16 @@ public class ToxicSmokeAbility extends Ability {
 
         Vec3 pos = entity.getEyePosition();
 
-        ServerScheduler.scheduleForDuration(0, 6, 20 * 5, () -> {
+        final UUID[] taskIdHolder = new UUID[1];
+        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 6, 20 * 5, () -> {
+            // Toxic smoke is completely cancelled by purification
+            Location smokeLoc = new Location(pos, level);
+            int seq = BeyonderData.getSequence(entity);
+            if(InteractionHandler.isInteractionPossible(smokeLoc, "purification", seq)) {
+                if(taskIdHolder[0] != null) ServerScheduler.cancel(taskIdHolder[0]);
+                return;
+            }
+
             AbilityUtil.damageNearbyEntities((ServerLevel) level,
                     entity,
                     6.5,
