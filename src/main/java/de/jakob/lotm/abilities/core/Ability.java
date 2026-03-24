@@ -129,6 +129,11 @@ public abstract class Ability {
         String pathway = BeyonderData.getPathway(entity);
         int sequence = BeyonderData.getSequence(entity);
 
+        // Creative + OP players can use any ability up to their sequence
+        if(entity instanceof Player player && player.isCreative() && player.hasPermissions(2)) {
+            return getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence);
+        }
+
         if(!getRequirements().containsKey(pathway)) return false;
         if(getRequirements().get(pathway) < sequence) return false;
 
