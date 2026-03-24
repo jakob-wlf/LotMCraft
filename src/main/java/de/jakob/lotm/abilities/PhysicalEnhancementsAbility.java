@@ -151,14 +151,10 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
     }
 
     protected int recalculateHealthLevelWithStacks(int seq, int prevLevel, CharacteristicStack stack){
-        LOTMCraft.LOGGER.info("Before boost: {}, seq: {}", prevLevel, seq);
-
         int result = prevLevel;
 
         for(int i = 9; i >= seq; i--){
             int buff = stack.get(i);
-
-            LOTMCraft.LOGGER.info("Buff: {}, I: {}", buff, i);
 
             switch (i){
                 case 8 -> result += buff;
@@ -170,11 +166,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
                 case 2 -> result += buff * 7;
                 case 1 -> result += buff * 7;
             }
-
-            LOTMCraft.LOGGER.info("mid boost: {}", result);
         }
-
-        LOTMCraft.LOGGER.info("Result: {}", result);
 
         return result;
     }

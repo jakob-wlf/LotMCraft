@@ -45,7 +45,7 @@ public record CharacteristicStack(ArrayList<Integer> stacks, Boolean isUsed) {
     }
 
     public CharacteristicStack set(int index, int value){
-        var buff = this.stacks;
+        var buff = new ArrayList<>(this.stacks);
 
         buff.set(index, value);
 
@@ -57,7 +57,7 @@ public record CharacteristicStack(ArrayList<Integer> stacks, Boolean isUsed) {
     }
 
     public CharacteristicStack clear(int index){
-        var buff = this.stacks;
+        var buff = new ArrayList<>(this.stacks);
 
         buff.set(index, 0);
         return new CharacteristicStack(buff, zeroCheck(buff));

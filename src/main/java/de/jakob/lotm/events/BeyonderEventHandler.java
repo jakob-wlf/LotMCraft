@@ -144,9 +144,9 @@ public class BeyonderEventHandler {
 
             StoredData data = beyonderMap.get(player).get();
 
-            BeyonderData.removeModifier(player, CharacteristicStack.boostId(data.sequence()));
-
             beyonderMap.put(player, data.regressSeq());
+
+            BeyonderData.recalculateCharStackModifiers(player);
 
             if (Objects.equals(data.sequence(), LOTMCraft.NON_BEYONDER_SEQ)) {
                 ClientBeyonderCache.removePlayer(player.getUUID());

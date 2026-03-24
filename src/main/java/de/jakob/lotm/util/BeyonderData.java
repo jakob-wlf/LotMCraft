@@ -567,28 +567,54 @@ public class BeyonderData {
     }
 
     public static void addCharStack(LivingEntity player){
+        if(!isBeyonder(player)) return;
+
         beyonderMap.addStack(player, 1);
 
         int seq = getSequence(player);
 
         player.getPersistentData().putFloat(NBT_DIGESTION_PROGRESS, 0.0f);
-        removeModifier(player, CharacteristicStack.boostId(seq));
 
-        addModifier(player, CharacteristicStack.boostId(seq),
-                getDamageBoostByCharStack(seq, beyonderMap.get(player).get().charStack().get(seq)));
+        recalculateCharStackModifiers(player);
+    }
+
+    public static void setCharStack(LivingEntity player, int seq, int value, boolean ignoreDigestion){
+        if(!isBeyonder(player)) return;
+
+        beyonderMap.setStack(player, seq, value);
+
+        if(!ignoreDigestion)
+            player.getPersistentData().putFloat(NBT_DIGESTION_PROGRESS, 0.0f);
+
+        recalculateCharStackModifiers(player);
+    }
+
+    public static void recalculateCharStackModifiers(LivingEntity player){
+        if(!isBeyonder(player)) return;
+
+        int seq = getSequence(player);
+        var stacks = beyonderMap.get(player.getUUID()).get().charStack();
+
+        for(int i = 0; i <= 9; i++){
+            removeModifier(player, CharacteristicStack.boostId(i));
+
+            if(stacks.get(i) != 0){
+                addModifier(player, CharacteristicStack.boostId(i), getDamageBoostByCharStack(i, stacks.get(i)));
+            }
+        }
     }
 
     public static float getDamageBoostByCharStack(int seq, int stacks){
         return switch (seq){
-            case 9 -> 1.05f;
-            case 8 -> 1.1f;
-            case 7 -> 1.2f;
-            case 6 -> 1.3f;
-            case 5 -> 1.4f;
-            case 4 -> 1.2f;
-            case 3 -> 1.1f;
-            case 2 -> 1.1f;
-            case 1 -> 0.2f + stacks;
+            case 9 -> 1.025f;
+            case 8 -> 1.05f;
+            case 7 -> 1.075f;
+            case 6 -> 1.105f;
+            case 5 -> 1.15f;
+            case 4 -> 1.3f;
+            case 3 -> 1.4f;
+            case 2 -> 1.5f;
+            case 1 -> 1.0f + stacks;
             default -> 0.0f;
         };
     }
