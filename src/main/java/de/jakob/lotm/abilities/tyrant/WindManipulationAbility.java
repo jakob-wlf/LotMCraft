@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.entity.custom.WindBladeEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -19,6 +20,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class WindManipulationAbility extends SelectableAbility {
     private final HashSet<UUID> isFlying = new HashSet<>();
@@ -119,12 +121,24 @@ public class WindManipulationAbility extends SelectableAbility {
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 25, 1.5f, true);
         ParticleUtil.createParticleSpirals((ServerLevel) level, ParticleTypes.EFFECT, targetPos, 2, 2, 2.5, .5, 8, 20 * 13, 15, 10);
 
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 13, () -> {
+        Location loc = new Location(targetPos, level);
+
+        AtomicReference<UUID> taskIdRef = new AtomicReference<>();
+        UUID taskId = ServerScheduler.scheduleForDuration(0, 1, 20 * 13, () -> {
             for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, targetPos, 2.5)) {
+                // Blink Escape - only the bound entity can free itself
+                if(InteractionHandler.isInteractionPossibleForEntity(loc, "blink_escape", BeyonderData.getSequence(entity), e)) {
+                    continue;
+                }
+
                 e.setDeltaMovement(new Vec3(0, 0, 0));
                 e.hurtMarked = true;
             }
+
+            loc.setLevel(level);
+            loc.setPosition(targetPos);
         }, (ServerLevel) level);
+        taskIdRef.set(taskId);
     }
 
     private void boost(Level level, LivingEntity entity) {

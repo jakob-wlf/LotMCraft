@@ -32,6 +32,7 @@ public class InteractionHandler {
         if (event.getInteractionFlags().contains("burn"))         handleBurnInteractions(event);
         if (event.getInteractionFlags().contains("charm"))        handleCharmInteractions(event);
         if (event.getInteractionFlags().contains("cleansing"))    handleCleansingInteractions(event);
+        if (event.getInteractionFlags().contains("drought"))      handleDroughtInteractions(event);
     }
 
     private static void handleBurnInteractions(AbilityUsedEvent event) {
@@ -112,6 +113,15 @@ public class InteractionHandler {
         });
     }
 
+    private static void handleDroughtInteractions(AbilityUsedEvent event) {
+        // Drought cancels Torrential Downpour
+        TorrentialDownpourAbility.getActiveDownpours().stream()
+                .filter(downpour -> downpour.loc().isInSameLevel(event.getLevel()))
+                .filter(downpour -> downpour.loc().getDistanceTo(event.getPosition()) < event.getInteractionRadius())
+                .filter(downpour -> isInteractionOfSameOrHigherSequence(event, downpour.sequence()))
+                .forEach(d -> TorrentialDownpourAbility.cancelDownpour(d.downpourId()));
+    }
+
     private static boolean isInteractionOfSameOrHigherSequence(AbilityUsedEvent event, int sequenceToCompare) {
         return BeyonderData.getSequence(event.getEntity()) <= sequenceToCompare;
     }
@@ -148,6 +158,20 @@ public class InteractionHandler {
                 .filter(interaction -> interaction.event.getInteractionFlags().contains(interactionFlag))
                 .filter(interaction -> interaction.event.getPosition().distanceTo(location.getPosition()) < interaction.event.getInteractionRadius())
                 .anyMatch(interaction -> BeyonderData.getSequence(interaction.event.getEntity()) + margin <= sequence);
+    }
+
+    /**
+     * Check if a specific entity has triggered an interaction with the given flag near the location.
+     * This is used for entity-specific interactions like Blink escape (only the entity that blinked
+     * should escape, not nearby entities) or morale boost (only the entity that used the ability
+     * should be freed).
+     */
+    public static boolean isInteractionPossibleForEntity(Location location, String interactionFlag, int sequence, LivingEntity caster) {
+        return recentInteractions.stream()
+                .filter(interaction -> interaction.event.getInteractionFlags().contains(interactionFlag))
+                .filter(interaction -> interaction.event.getEntity().getUUID().equals(caster.getUUID()))
+                .filter(interaction -> interaction.event.getPosition().distanceTo(location.getPosition()) < interaction.event.getInteractionRadius())
+                .anyMatch(interaction -> isInteractionOfSameOrHigherSequence(interaction.event, sequence));
     }
 
     private record Interaction(AbilityUsedEvent event, long gameTimeOnInteraction, int interactionCacheTime) {}
