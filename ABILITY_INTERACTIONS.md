@@ -175,6 +175,7 @@ Sun abilities carry a purifying nature that interacts with corruption, desire-ba
 Error abilities revolve around loopholes, theft, and subverting the rules other pathways rely on.
 
 **Theft**
+
 | Target | Stolen Resource |
 |---|---|
 | WoF Pathway | Luck (reduces target's accumulated luck, adds to caster) |
@@ -189,6 +190,7 @@ Error abilities revolve around loopholes, theft, and subverting the rules other 
 | *(more to be added)* | *(more to be added)* |
 
 **Ability Theft — specific interactions:**
+
 | Target Ability | Interaction |
 |---|---|
 | Recording (Door Pathway) | Ability Theft can steal a recorded ability from a Door Beyonder's book |
@@ -198,6 +200,7 @@ Error abilities revolve around loopholes, theft, and subverting the rules other 
 | Marionettes (Fool Pathway) | Ability Theft can steal control of a marionette |
 
 **Loophole**
+
 | Target Ability / Effect | Interaction |
 |---|---|
 | Space Distortion (Door Pathway) | Loophole can cancel the distortion outright |
@@ -217,6 +220,7 @@ Error abilities revolve around loopholes, theft, and subverting the rules other 
 | Chain of Command (Red Priest Pathway) | Loophole can sever the damage-sharing link of Chain of Command |
 
 **Decryption**
+
 | Target | Effect |
 |---|---|
 | Shapeshifted Beyonder | Decryption can reveal whether a Beyonder is currently shapeshifted |
@@ -230,6 +234,7 @@ Error abilities revolve around loopholes, theft, and subverting the rules other 
 | Anti-Divination (Common) | Decryption can partially bypass Anti-Divination wards |
 
 **Parasitation interactions:**
+
 | Target | Effect |
 |---|---|
 | Puppet Soldiers (Red Priest Pathway) | Parasitation can hijack a puppet soldier, overriding the creator's control |
@@ -238,6 +243,7 @@ Error abilities revolve around loopholes, theft, and subverting the rules other 
 | Avatar Entity (Visionary Pathway) | Parasitation can compromise an identity avatar |
 
 **Mental Disruption interactions:**
+
 | Target | Effect |
 |---|---|
 | Charm (Demoness Pathway) | Mental Disruption breaks an active charm on a target |
@@ -246,6 +252,7 @@ Error abilities revolve around loopholes, theft, and subverting the rules other 
 | Marionette link (Fool Pathway) | Mental Disruption on a marionette controller disrupts their puppeteering |
 
 **Time Manipulation interactions:**
+
 | Target | Effect |
 |---|---|
 | Projectiles (any pathway) | Time Manipulation can slow or freeze projectiles in a local area |
@@ -261,6 +268,7 @@ Error abilities revolve around loopholes, theft, and subverting the rules other 
 Door abilities involve space, dimensions, and teleportation — they interact with abilities that create physical effects, zones, or entities.
 
 **Black Hole interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Projectiles (any pathway) | Black Hole pulls in and absorbs nearby projectiles — fireballs, spears, lightning branches, etc. |
@@ -274,6 +282,7 @@ Door abilities involve space, dimensions, and teleportation — they interact wi
 | Falling blocks (Earthquake, Roar, etc.) | Black Hole absorbs falling block entities from area attacks |
 
 **Distortion Field interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Teleportation (Blink, Door, Waypoint) | Distortion Field scrambles teleportation destinations for enemies within |
@@ -283,6 +292,7 @@ Door abilities involve space, dimensions, and teleportation — they interact wi
 | Spectating / Telepathy (Visionary) | Distortion Field interferes with mental abilities targeting entities inside |
 
 **Space Tearing interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Wall of Light (Sun Pathway) | Space Tearing can cut through a Wall of Light |
@@ -292,6 +302,7 @@ Door abilities involve space, dimensions, and teleportation — they interact wi
 | Barrier blocks (any source) | Space Tearing can remove barrier blocks created by abilities |
 
 **Blink / Teleportation interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Petrification (Demoness Pathway) | Blink can escape petrification if cast before the effect fully applies |
@@ -302,6 +313,7 @@ Door abilities involve space, dimensions, and teleportation — they interact wi
 | Conquering (Red Priest Pathway) | Blink cannot escape the Conquered debuff — it is not spatial |
 
 **Sealing interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Avatar of Desire (Abyss Pathway) | Sealing can suppress the Avatar transformation |
@@ -311,6 +323,7 @@ Door abilities involve space, dimensions, and teleportation — they interact wi
 | Parasitation (Error Pathway) | Sealing can contain and remove a parasite |
 
 **Exile interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Summoned entities (any pathway) | Exile can banish puppet soldiers, golems, fire ravens, avatars, etc. to another dimension |
@@ -318,6 +331,7 @@ Door abilities involve space, dimensions, and teleportation — they interact wi
 | Toxic Smoke / Disease area (Abyss / Demoness) | Exile can banish a persistent area effect by exiling the air within |
 
 **Recording / Replicating interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Any visible ability | Recording can copy any ability cast within its range, storing it for later use |
@@ -325,6 +339,7 @@ Door abilities involve space, dimensions, and teleportation — they interact wi
 | Prophecy (WoF Pathway) | Recording a prophecy captures its random outcome for replay |
 
 **Space Concealment interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Divination (Common) | Space Concealment blocks divination attempts targeting the concealed area |
@@ -337,6 +352,7 @@ Door abilities involve space, dimensions, and teleportation — they interact wi
 Darkness abilities create domains of shadow and control that interact with light, fire, and mental effects.
 
 **Night Domain interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Sun abilities (all light-based) | Sun abilities are weakened within Night Domain — reduced damage and range |
@@ -346,6 +362,7 @@ Darkness abilities create domains of shadow and control that interact with light
 | Spirit Vision (Common) | Spirit Vision's detection range is reduced within Night Domain |
 
 **Concealment (dimension) interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Pocket Dimension (Door Pathway) | Concealment dimension and Pocket Dimension are separate — entities cannot cross between them |
@@ -354,6 +371,7 @@ Darkness abilities create domains of shadow and control that interact with light
 | Exile (Door Pathway) | Exile can pull an entity out of the Concealment dimension |
 
 **Nightmare realm interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Dream Traversal (Visionary Pathway) | Dream Traversal can enter an active Nightmare realm |
@@ -363,6 +381,7 @@ Darkness abilities create domains of shadow and control that interact with light
 | Miracle Creation (Fool Pathway) | A miracle can potentially override and collapse a Nightmare |
 
 **Horror Aura interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | War Cry / War Song (Red Priest Pathway) | War Cry / War Song buffs can partially resist Horror Aura's debuffs |
@@ -370,6 +389,7 @@ Darkness abilities create domains of shadow and control that interact with light
 | Frenzy (Visionary Pathway) | Horror Aura's fear conflicts with Frenzy's rage — one may override the other |
 
 **Midnight Poem (Lullaby) interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Sleep Inducement (Visionary Pathway) | Lullaby and Sleep Inducement stack — targets fall asleep faster and the effect is harder to break |
@@ -377,6 +397,7 @@ Darkness abilities create domains of shadow and control that interact with light
 | Siren Song - Dazing (Tyrant Pathway) | Lullaby stacking with Siren Song Daze creates near-total incapacitation |
 
 **Requiem / Hair Entanglement interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Petrification (Demoness Pathway) | Pacification stacks with petrification — target is immobilized by both effects |
@@ -391,6 +412,7 @@ Darkness abilities create domains of shadow and control that interact with light
 Tyrant abilities are elemental forces — lightning, water, wind, and weather — that interact broadly with environmental and elemental abilities.
 
 **Lightning interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Water Manipulation (Tyrant Pathway) | Lightning striking a water area deals increased damage to entities in the water |
@@ -402,6 +424,7 @@ Tyrant abilities are elemental forces — lightning, water, wind, and weather �
 | Tsunami (Tyrant Pathway) | Lightning striking a Tsunami electrifies the wave |
 
 **Weather Manipulation interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Drought (Red Priest / Tyrant) | A Drought effect counters Torrential Downpour — the two cancel each other |
@@ -411,6 +434,7 @@ Tyrant abilities are elemental forces — lightning, water, wind, and weather �
 | Disease / Plague (Demoness Pathway) | Rain from Torrential Downpour can spread disease/plague further |
 
 **Tornado interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Projectiles (any pathway) | Tornados deflect or absorb projectiles that enter their area |
@@ -420,6 +444,7 @@ Tyrant abilities are elemental forces — lightning, water, wind, and weather �
 | Poisonous Flame (Abyss Pathway) | A tornado absorbing Poisonous Flame creates a poison fire vortex |
 
 **Earthquake interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Structural Collapse (Demoness Pathway) | Earthquake combined with Structural Collapse causes catastrophic terrain destruction |
@@ -428,6 +453,7 @@ Tyrant abilities are elemental forces — lightning, water, wind, and weather �
 | Pocket Dimension (Door Pathway) | Earthquake in a pocket dimension damages its structure |
 
 **Tsunami interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Wall of Light (Sun Pathway) | Tsunami can break through a Wall of Light |
@@ -437,6 +463,7 @@ Tyrant abilities are elemental forces — lightning, water, wind, and weather �
 | Blooming Area (Mother Pathway) | Tsunami can wash away a Blooming Area |
 
 **Wind Manipulation interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Toxic Smoke (Abyss Pathway) | Wind can blow toxic smoke away from allies or toward enemies |
@@ -451,6 +478,7 @@ Tyrant abilities are elemental forces — lightning, water, wind, and weather �
 Red Priest abilities focus on war, fire, and command — they interact with other combat and support abilities.
 
 **Fog of War interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Night Domain (Darkness Pathway) | Fog of War stacks with Night Domain for total sensory deprivation |
@@ -461,6 +489,7 @@ Red Priest abilities focus on war, fire, and command — they interact with othe
 | Divination (Common) | Divination is blocked within Fog of War |
 
 **War Banner interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Horror Aura (Darkness Pathway) | War Banner buffs can partially resist Horror Aura debuffs for allies within range |
@@ -470,6 +499,7 @@ Red Priest abilities focus on war, fire, and command — they interact with othe
 | Petrification (Demoness Pathway) | Petrification can freeze the war banner, disabling its buff |
 
 **Fire abilities (Pyrokinesis, Flame Authority, Flame Mastery) interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Frost (Demoness Pathway) | Fire and Frost create steam when they clash, briefly obscuring the area |
@@ -482,6 +512,7 @@ Red Priest abilities focus on war, fire, and command — they interact with othe
 | Toxic Smoke (Abyss Pathway) | Fire igniting toxic smoke causes an explosion |
 
 **Steel Chains interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Blink (Door Pathway) | Blink can escape Steel Chains |
@@ -491,6 +522,7 @@ Red Priest abilities focus on war, fire, and command — they interact with othe
 | Lightning (Tyrant Pathway) | Lightning conducted through Steel Chains electrocutes the chained target |
 
 **Conquering interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Awe (Visionary Pathway) | Conquering and Awe stack, creating overwhelming suppression |
@@ -500,6 +532,7 @@ Red Priest abilities focus on war, fire, and command — they interact with othe
 | Spiritual Baptism (WoF Pathway) | Spiritual Baptism cleanses the Conquered debuff |
 
 **Puppet Soldier interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Charm (Demoness Pathway) | Charm can break puppet soldier loyalty |
@@ -516,6 +549,7 @@ Red Priest abilities focus on war, fire, and command — they interact with othe
 Mother abilities focus on life, nature, and creation — they interact with corruption, destruction, and elemental effects.
 
 **Healing interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Defiling Seed (Abyss Pathway) | Healing can reduce Defiling Seed's damage, but cannot remove the seed itself |
@@ -526,6 +560,7 @@ Mother abilities focus on life, nature, and creation — they interact with corr
 | Mental Plague (Visionary Pathway) | Healing does not affect Mental Plague — it is a mental affliction, not physical |
 
 **Cleansing interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Defiling Seed (Abyss Pathway) | Cleansing can remove a Defiling Seed from the target |
@@ -538,6 +573,7 @@ Mother abilities focus on life, nature, and creation — they interact with corr
 | Mental Plague (Visionary Pathway) | Cleansing can reduce Mental Plague duration |
 
 **Life Aura interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Horror Aura (Darkness Pathway) | Life Aura contests Horror Aura — their overlap creates a neutral zone |
@@ -547,6 +583,7 @@ Mother abilities focus on life, nature, and creation — they interact with corr
 | Misfortune Field (WoF Pathway) | Life Aura is not affected by Misfortune Field — healing is not luck-based |
 
 **Blooming Area interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Fire abilities (any pathway) | Fire burns a Blooming Area |
@@ -557,6 +594,7 @@ Mother abilities focus on life, nature, and creation — they interact with corr
 | Drought (Red Priest / Tyrant) | Drought withers and kills a Blooming Area |
 
 **Golem interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Petrification (Demoness Pathway) | Stone golems are partially resistant to petrification since they are already stone-like |
@@ -568,6 +606,7 @@ Mother abilities focus on life, nature, and creation — they interact with corr
 | Frenzy (Visionary Pathway) | Golems are immune to frenzy — they lack minds |
 
 **Wrath of Nature interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Fire abilities (any pathway) | Wrath of Nature can summon rain to extinguish fire effects |
@@ -576,6 +615,7 @@ Mother abilities focus on life, nature, and creation — they interact with corr
 | Nightmare realm (Darkness) | Wrath of Nature's elemental force can shake a Nightmare realm |
 
 **Crossbreeding / Mutation interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Shapeshifting (Fool Pathway) | A crossbred mutation applied to a shapeshifted entity can cause unpredictable results |
@@ -589,6 +629,7 @@ Mother abilities focus on life, nature, and creation — they interact with corr
 Wheel of Fortune abilities manipulate luck, fate, and misfortune — they interact with probabilistic and debuff systems.
 
 **Blessing / Luck interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Curse (Demoness Pathway) | Blessing can counteract a curse — the two effects weaken each other |
@@ -599,6 +640,7 @@ Wheel of Fortune abilities manipulate luck, fate, and misfortune — they intera
 | Calamity Attraction (WoF Pathway) | Blessing's luck can shift Calamity Attraction's random outcome toward less dangerous calamities |
 
 **Misfortune Field / Misfortune Gifting interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Holy Oath (Sun Pathway) | Holy Oath partially resists Misfortune — divine protection reduces unluck |
@@ -608,6 +650,7 @@ Wheel of Fortune abilities manipulate luck, fate, and misfortune — they intera
 | Fog of War (Red Priest Pathway) | Misfortune within Fog of War makes it nearly impossible for enemies to fight effectively |
 
 **Prophecy interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Divination (Common) | Prophecy and Divination used together can yield a more detailed fate reading |
@@ -617,6 +660,7 @@ Wheel of Fortune abilities manipulate luck, fate, and misfortune — they intera
 | Decryption (Error Pathway) | Decryption can decode and reveal the full outcome of an enemy's prophecy |
 
 **Spiritual Baptism interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Defiling Seed (Abyss Pathway) | Spiritual Baptism can remove a Defiling Seed |
@@ -629,6 +673,7 @@ Wheel of Fortune abilities manipulate luck, fate, and misfortune — they intera
 | Petrification (Demoness Pathway) | Spiritual Baptism cannot remove petrification — it requires physical intervention |
 
 **Cycle of Fate interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Time Manipulation (Error Pathway) | Time Manipulation can accelerate a Cycle of Fate, triggering it early |
@@ -636,6 +681,7 @@ Wheel of Fortune abilities manipulate luck, fate, and misfortune — they intera
 | Prophecy (WoF Pathway) | Prophecy can reveal what a Cycle of Fate will do before it triggers |
 
 **Calamity Attraction interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Tornado abilities (Tyrant / Red Priest) | A calamity tornado stacks with existing tornado entities |
@@ -649,6 +695,7 @@ Wheel of Fortune abilities manipulate luck, fate, and misfortune — they intera
 Fool abilities revolve around disguise, puppeteering, fire, and trickery — they interact with detection, control, and identity-based effects.
 
 **Shapeshifting interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Decryption (Error Pathway) | Decryption reveals a shapeshifted Beyonder's true identity |
@@ -659,6 +706,7 @@ Fool abilities revolve around disguise, puppeteering, fire, and trickery — the
 | Exile (Door Pathway) | Exile forces a shapeshifted entity to revert |
 
 **Marionette Controlling interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Mental Disruption (Error Pathway) | Mental Disruption on the controller severs all marionette links |
@@ -672,6 +720,7 @@ Fool abilities revolve around disguise, puppeteering, fire, and trickery — the
 | Sealing (Door Pathway) | Sealing the controller's abilities severs all marionette links |
 
 **Grafting interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Mutation / Crossbreeding (Mother) | Grafting and Mutation applied to the same entity can combine for enhanced modifications |
@@ -679,6 +728,7 @@ Fool abilities revolve around disguise, puppeteering, fire, and trickery — the
 | Cleansing (Mother Pathway) | Cleansing can reverse a harmful graft |
 
 **Paper Figurine Substitute interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Black Hole (Door Pathway) | The figurine is consumed by the black hole before teleportation triggers |
@@ -686,6 +736,7 @@ Fool abilities revolve around disguise, puppeteering, fire, and trickery — the
 | Frost (Demoness Pathway) | Frost cannot destroy paper figurines |
 
 **Miracle Creation interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Loophole (Error Pathway) | Loophole can find a flaw in a miracle, weakening or cancelling it |
@@ -697,6 +748,7 @@ Fool abilities revolve around disguise, puppeteering, fire, and trickery — the
 | Time Manipulation (Error Pathway) | Time Manipulation cannot affect an active miracle — it is beyond temporal rules |
 
 **Historical Void interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Divination (Common) | Hiding in the Historical Void blocks all divination |
@@ -711,6 +763,7 @@ Fool abilities revolve around disguise, puppeteering, fire, and trickery — the
 Abyss abilities focus on corruption, poison, and dark fire — they interact with purification and protective effects.
 
 **Defiling Seed interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Cleansing (Mother Pathway) | Cleansing removes the Defiling Seed |
@@ -723,6 +776,7 @@ Abyss abilities focus on corruption, poison, and dark fire — they interact wit
 | Blessing (WoF Pathway) | Luck from Blessing reduces the frequency of the seed's worst debuff rolls |
 
 **Avatar of Desire interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Sun abilities (Sun Pathway) | Sun purification can suppress or cancel the Avatar |
@@ -735,6 +789,7 @@ Abyss abilities focus on corruption, poison, and dark fire — they interact wit
 | Placate (Visionary Pathway) | Placate can remove the Loosing Control caused by the Avatar |
 
 **Toxic Smoke interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Wind Manipulation (Tyrant Pathway) | Wind pushes toxic smoke in a chosen direction |
@@ -745,6 +800,7 @@ Abyss abilities focus on corruption, poison, and dark fire — they interact wit
 | Life Aura (Mother Pathway) | Life Aura regeneration counteracts toxic smoke damage |
 
 **Poisonous Flame interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Sun fire abilities (Sun Pathway) | Sun purifying fire neutralises the poison component of Poisonous Flame |
@@ -754,6 +810,7 @@ Abyss abilities focus on corruption, poison, and dark fire — they interact wit
 | Wind Manipulation (Tyrant Pathway) | Wind can spread or redirect Poisonous Flame |
 
 **Language of Foulness interactions:**
+
 | Target Ability | Effect |
 |---|---|
 | Placate (Visionary Pathway) | Placate can resist the Corruption option's Loosing Control |

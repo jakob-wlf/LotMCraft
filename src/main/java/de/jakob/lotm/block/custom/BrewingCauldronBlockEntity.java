@@ -3,6 +3,7 @@ package de.jakob.lotm.block.custom;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
 import de.jakob.lotm.potions.BeyonderPotion;
+import de.jakob.lotm.potions.PotionRecipeItem;
 import de.jakob.lotm.potions.PotionRecipes;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;
@@ -31,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class BrewingCauldronBlockEntity extends BlockEntity implements MenuProvider {
-    public final ItemStackHandler itemHandler = new ItemStackHandler(4) {
+    public final ItemStackHandler itemHandler = new ItemStackHandler(5) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -44,6 +45,7 @@ public class BrewingCauldronBlockEntity extends BlockEntity implements MenuProvi
     private static final int INPUT_SLOT_SUPP_1 = 0;
     private static final int INPUT_SLOT_SUPP_2 = 1;
     private static final int INPUT_SLOT_MAIN = 2;
+    private static final int INPUT_SLOT_RECIPE = 4;
     private static final int OUTPUT_SLOT = 3;
 
     protected final ContainerData data;
@@ -194,6 +196,16 @@ public class BrewingCauldronBlockEntity extends BlockEntity implements MenuProvi
         if(potion == null)
             return false;
 
-        return itemHandler.getStackInSlot(OUTPUT_SLOT).isEmpty();
+        ItemStack recipeItem = itemHandler.getStackInSlot(INPUT_SLOT_RECIPE);
+        if(recipeItem.isEmpty() || !(recipeItem.getItem() instanceof PotionRecipeItem recipe)) {
+            return false;
+        }
+
+        if(recipe.getRecipe().potion().getSequence() != potion.getSequence() || !recipe.getRecipe().potion().getPathway().equals(potion.getPathway())) {
+            return false;
+        }
+
+        if (!itemHandler.getStackInSlot(OUTPUT_SLOT).isEmpty()) return false;
+        return true;
     }
 }
