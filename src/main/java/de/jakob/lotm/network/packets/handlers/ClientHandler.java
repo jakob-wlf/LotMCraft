@@ -473,4 +473,14 @@ public class ClientHandler {
 
         }
     }
+
+    public static void handleAddClientSideTagPacket(AddClientSideTagPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if (entity != null) {
+            entity.getTags().add(packet.tag());
+        }
+    }
 }

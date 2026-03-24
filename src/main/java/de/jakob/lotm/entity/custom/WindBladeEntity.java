@@ -26,6 +26,7 @@ public class WindBladeEntity extends AbstractArrow {
     Vec3 lastPos = null;
 
     private int ticks = 0;
+    private int petrifiedTicks = 0;
 
     public WindBladeEntity(EntityType<? extends AbstractArrow> entityType, Level level) {
         super(entityType, level);
@@ -51,6 +52,15 @@ public class WindBladeEntity extends AbstractArrow {
 
     @Override
     public void tick() {
+        // Petrification Logic -- run before super.tick() to stop movement completely
+        if(getTags().contains("petrified")) {
+            petrifiedTicks++;
+            if(petrifiedTicks >= 20 * 5) {
+                this.discard();
+            }
+            return;
+        }
+
         super.tick();
         if(level.isClientSide)
             return;

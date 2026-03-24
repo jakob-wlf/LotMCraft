@@ -26,6 +26,7 @@ public class SpearOfDestructionProjectileEntity extends AbstractArrow {
     private final boolean griefing;
 
     private int ticks = 0;
+    private int petrifiedTicks = 0;
 
     public SpearOfDestructionProjectileEntity(EntityType<? extends AbstractArrow> entityType, Level level) {
         super(entityType, level);
@@ -51,6 +52,15 @@ public class SpearOfDestructionProjectileEntity extends AbstractArrow {
 
     @Override
     public void tick() {
+        // Petrification Logic -- run before super.tick() to stop movement completely
+        if(getTags().contains("petrified")) {
+            petrifiedTicks++;
+            if(petrifiedTicks >= 20 * 5) {
+                this.discard();
+            }
+            return;
+        }
+
         super.tick();
         if(level.isClientSide)
             return;

@@ -3,6 +3,8 @@ package de.jakob.lotm.abilities.demoness;
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.AddClientSideTagPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -11,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -70,17 +73,22 @@ public class PetrificationAbility extends SelectableAbility {
                     serverLevel.setBlockAndUpdate(b, Blocks.STONE.defaultBlockState());
             });
 
-            AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, radius.get(), false).forEach(e -> {
-                if(AbilityUtil.isTargetSignificantlyWeaker(entity, e)) {
-                    e.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 60 * 10, 9));
-                    return;
-                }
-                else if(AbilityUtil.isTargetSignificantlyStronger(entity, e)) {
-                    e.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20, 9));
-                    return;
-                }
+            AbilityUtil.getAllNearbyEntities(entity, serverLevel, startPos, radius.get(), false).forEach(target -> {
+                if(target instanceof LivingEntity living) {
+                    if (AbilityUtil.isTargetSignificantlyWeaker(entity, living)) {
+                        living.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 60 * 10, 9));
+                        return;
+                    } else if (AbilityUtil.isTargetSignificantlyStronger(entity, living)) {
+                        living.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20, 9));
+                        return;
+                    }
 
-                e.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 45, 9));
+                    living.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 45, 9));
+                }
+                else {
+                    target.getTags().add("petrified");
+                    PacketHandler.sendToAllPlayersInSameLevel(new AddClientSideTagPacket("petrified", target.getId()), serverLevel);
+                }
             });
 
             radius.addAndGet(0.5);
@@ -89,16 +97,21 @@ public class PetrificationAbility extends SelectableAbility {
 
     private void petrifyTarget(ServerLevel serverLevel, LivingEntity entity) {
         ServerScheduler.scheduleForDuration(0, 2, 20 * 5, () -> {
-            LivingEntity target = AbilityUtil.getTargetEntity(entity, 15, 2);
+            Entity target = AbilityUtil.getTargetEntityNonLivingIncluded(entity, 15, 2, false, false, false);
             if(target != null) {
-                int duration = 20 * 60 * 2;
-                if(AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
-                    duration = 20 * 2;
+                if(target instanceof LivingEntity livingTarget) {
+                    int duration = 20 * 60 * 2;
+                    if(AbilityUtil.isTargetSignificantlyStronger(entity, livingTarget)) {
+                        duration = 20 * 2;
+                    }
+                    if(AbilityUtil.isTargetSignificantlyWeaker(entity, livingTarget)) {
+                        duration = 20 * 60 * 10;
+                    }
+                    livingTarget.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, duration, 9, false, false));
                 }
-                if(AbilityUtil.isTargetSignificantlyWeaker(entity, target)) {
-                    duration = 20 * 60 * 10;
+                else {
+                    target.getTags().add("petrified");
                 }
-                target.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, duration, 9, false, false));
             }
 
             if(BeyonderData.isGriefingEnabled(entity)) {

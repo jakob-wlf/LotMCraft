@@ -95,6 +95,8 @@ public class LOTMCraft
 
     public static final ResourceLocation ANIMATION_LAYER_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "lotmcraft_animations");
 
+    public static final ResourceLocation STONE_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/misc/stone.png");
 
     public LOTMCraft(IEventBus modEventBus, ModContainer modContainer)
     {

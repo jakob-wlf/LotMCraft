@@ -21,7 +21,11 @@ public class AbilityCooldownComponent implements INBTSerializable<CompoundTag> {
     public int getRemainingCooldown(String abilityId) {
         return cooldowns.getOrDefault(abilityId, 0);
     }
-    
+
+    public void removeAllCooldowns() {
+        cooldowns.clear();
+    }
+
     public void tick() {
         cooldowns.replaceAll((id, ticks) -> Math.max(0, ticks - 1));
         cooldowns.entrySet().removeIf(entry -> entry.getValue() <= 0);

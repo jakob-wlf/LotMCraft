@@ -28,24 +28,26 @@ public class TornadoRenderer extends EntityRenderer<TornadoEntity> {
 
     @Override
     public void render(TornadoEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+        boolean petrified = entity.getTags().contains("petrified");
+
         poseStack.pushPose();
 
-        // Render tornado model with animation
         float ageInTicks = entity.tickCount + partialTicks;
 
-        // Fix upside-down rendering: scale Y by -1 and adjust position
         poseStack.scale(1.85f, -2.1f, 1.85f);
         poseStack.translate(0, -1.5, 0);
 
-        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityTranslucent(TEXTURE));
+        RenderType renderType = petrified ? RenderType.entityTranslucent(LOTMCraft.STONE_TEXTURE) :
+                RenderType.entityTranslucent(this.getTextureLocation(entity));
 
-        // Setup animations and render the model
+        VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
+
+        int color = petrified ? 0xFF808080 : 0xFFFFFFFF;
         model.setupAnim(entity, 0, 0, ageInTicks, 0, 0);
-        model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+        model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, color);
 
         poseStack.popPose();
 
-        // Render circling blocks
         renderCirclingBlocks(entity, partialTicks, poseStack, buffer, packedLight);
 
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
@@ -58,17 +60,13 @@ public class TornadoRenderer extends EntityRenderer<TornadoEntity> {
             float angle = circlingBlock.angle + partialTicks * 5.0f;
             float radians = (float) Math.toRadians(angle);
 
-            // Calculate position
             float x = (float) (Math.cos(radians) * circlingBlock.radius);
             float z = (float) (Math.sin(radians) * circlingBlock.radius);
             float y = circlingBlock.height + Mth.sin((entity.tickCount + partialTicks) * 0.1f + circlingBlock.height) * 0.5f;
 
             poseStack.translate(x, y, z);
-
-            // Rotate block for visual effect
             poseStack.mulPose(Axis.YP.rotationDegrees(angle * 2));
             poseStack.mulPose(Axis.XP.rotationDegrees(angle));
-
             poseStack.scale(0.5f, 0.5f, 0.5f);
 
             blockRenderer.renderSingleBlock(circlingBlock.state, poseStack, buffer, packedLight, OverlayTexture.NO_OVERLAY);

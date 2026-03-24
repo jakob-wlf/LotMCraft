@@ -32,6 +32,7 @@ import java.util.UUID;
 
 public class ExileDoorsEntity extends Entity {
     private int lifetime = 0;
+    private int petrifiedTicks = 0;
 
     private static final HashSet<UUID> onExileCooldown = new HashSet<>();
 
@@ -63,6 +64,15 @@ public class ExileDoorsEntity extends Entity {
         lifetime++;
         if (lifetime >= getDuration()) {
             this.remove(RemovalReason.DISCARDED);
+            return;
+        }
+
+        // Petrification Logic
+        if(getTags().contains("petrified")) {
+            petrifiedTicks++;
+            if(petrifiedTicks >= 20 * 5) {
+                this.discard();
+            }
             return;
         }
 

@@ -9,6 +9,7 @@ import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.entity.custom.TimeChangeEntity;
 import de.jakob.lotm.events.custom.TargetEntityEvent;
 import de.jakob.lotm.events.custom.TargetLocationEvent;
+import de.jakob.lotm.events.custom.TargetNonLivingEntityEvent;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
@@ -432,6 +433,25 @@ public class AbilityUtil {
     }
 
     /**
+     * Core method for finding target entities with raycasting
+     * @param entity The source entity
+     * @param radius Maximum search distance
+     * @param entityDetectionRadius Detection radius for entities along the ray
+     * @param onlyAllowWithLineOfSight If true, ignores current target and only uses line of sight
+     * @param allowAllies If true, allows targeting allies (for support abilities)
+     */
+    @Nullable
+    public static Entity getTargetEntityNonLivingIncluded(LivingEntity entity, int radius, float entityDetectionRadius,
+                                               boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes) {
+        Entity targetEntity = getNonLivingTargetEntityInternal(entity, radius, entityDetectionRadius,
+                onlyAllowWithLineOfSight, allowAllies, targetMarionettes);
+
+        return fireNonLivingTargetEntityEvent(entity, radius, entityDetectionRadius,
+                onlyAllowWithLineOfSight, allowAllies, targetEntity);
+
+    }
+
+    /**
      * Internal implementation of target entity finding without event firing
      */
     @Nullable
@@ -464,6 +484,54 @@ public class AbilityUtil {
                     .filter(e -> e instanceof LivingEntity && e != entity)
                     .map(e -> (LivingEntity) e)
                     .filter(e -> mayTarget(entity, e, allowAllies, targetMarionettes))
+                    .toList();
+
+            if (!nearbyEntities.isEmpty()) {
+                return nearbyEntities.get(0);
+            }
+
+            // Check for blocks
+            BlockState block = entity.level().getBlockState(BlockPos.containing(currentPosition));
+            if (!block.getCollisionShape(entity.level(), BlockPos.containing(currentPosition)).isEmpty()) {
+                break;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Internal implementation of target entity finding without event firing
+     */
+    @Nullable
+    private static Entity getNonLivingTargetEntityInternal(LivingEntity entity, int radius, float entityDetectionRadius,
+                                                        boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes) {
+        // Check for existing targets first (unless line of sight only)
+        if (!onlyAllowWithLineOfSight) {
+            LivingEntity currentTarget = getCurrentTarget(entity);
+            if (currentTarget != null && currentTarget.distanceTo(entity) <= radius) {
+                if (allowAllies || mayTarget(entity, currentTarget)) {
+                    return currentTarget;
+                }
+            }
+        }
+
+        // Raycast for entities
+        Vec3 lookDirection = entity.getLookAngle().normalize();
+        Vec3 startPosition = entity.position().add(0, entity.getEyeHeight(), 0);
+
+        for (int i = 0; i < radius; i++) {
+            Vec3 currentPosition = startPosition.add(lookDirection.scale(i));
+
+            // Check for entities at this position
+            AABB detectionBox = new AABB(
+                    currentPosition.subtract(entityDetectionRadius, entityDetectionRadius, entityDetectionRadius),
+                    currentPosition.add(entityDetectionRadius, entityDetectionRadius, entityDetectionRadius)
+            );
+
+            List<Entity> nearbyEntities = entity.level().getEntities(entity, detectionBox).stream()
+                    .filter(e -> e != entity)
+                    .filter(e -> !(e instanceof LivingEntity living) || mayTarget(entity, living, allowAllies, targetMarionettes))
                     .toList();
 
             if (!nearbyEntities.isEmpty()) {
@@ -603,6 +671,28 @@ public class AbilityUtil {
                                                       boolean allowAllies,
                                                       @Nullable LivingEntity targetEntity) {
         TargetEntityEvent event = new TargetEntityEvent(
+                entity,
+                radius,
+                entityDetectionRadius,
+                onlyAllowWithLineOfSight,
+                allowAllies,
+                targetEntity
+        );
+        NeoForge.EVENT_BUS.post(event);
+        return event.getTargetEntity();
+    }
+
+    /**
+     * Fires a TargetEntityEvent to allow modification of the target entity
+     * @return The potentially modified target entity from the event
+     */
+    @Nullable
+    private static Entity fireNonLivingTargetEntityEvent(LivingEntity entity, int radius,
+                                                      float entityDetectionRadius,
+                                                      boolean onlyAllowWithLineOfSight,
+                                                      boolean allowAllies,
+                                                      @Nullable Entity targetEntity) {
+        TargetNonLivingEntityEvent event = new TargetNonLivingEntityEvent(
                 entity,
                 radius,
                 entityDetectionRadius,

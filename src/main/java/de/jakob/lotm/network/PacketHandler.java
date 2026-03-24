@@ -365,6 +365,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                AddClientSideTagPacket.TYPE,
+                AddClientSideTagPacket.STREAM_CODEC,
+                AddClientSideTagPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncPlayerTeleportationOnlinePlayersPacket.TYPE,
                 SyncPlayerTeleportationOnlinePlayersPacket.STREAM_CODEC,
                 SyncPlayerTeleportationOnlinePlayersPacket::handle

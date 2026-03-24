@@ -27,7 +27,8 @@ import java.util.Map;
 
 public class UnshadowedDomainAbility extends Ability {
     public UnshadowedDomainAbility(String id) {
-        super(id, 50);
+        super(id, 50, "purification");
+        interactionRadius = 40;
     }
 
     @Override

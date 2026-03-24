@@ -17,8 +17,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class ExileDoorsRenderer extends EntityRenderer<ExileDoorsEntity> {
 
-
-
     private ExileDoorsModel model;
 
     public ExileDoorsRenderer(EntityRendererProvider.Context context) {
@@ -29,34 +27,32 @@ public class ExileDoorsRenderer extends EntityRenderer<ExileDoorsEntity> {
     @Override
     public void render(ExileDoorsEntity entity, float entityYaw, float partialTicks,
                        PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+        boolean petrified = entity.getTags().contains("petrified");
+
         poseStack.pushPose();
 
         float time = entity.tickCount + partialTicks;
 
-        // Gentle motion
         poseStack.translate(0.0D, 0.05 * Mth.sin(time * 0.1F) + 1.75, 0.0D);
         poseStack.mulPose(Axis.YP.rotationDegrees(.75F * Mth.sin(time * 0.2F)));
         poseStack.mulPose(Axis.ZP.rotationDegrees(.25F * Mth.cos(time * 0.15F)));
 
-        // Scale model
         poseStack.scale(1.5F, -1.5F, 1.5F);
 
         float flicker = 0.8F + 0.2F * Mth.sin(time * 0.3F + entity.getId() % 10);
         float alpha = Math.clamp(0.5F + 0.5F * flicker, 0.0F, 1.0F);
 
-        RenderType renderType = RenderType.entityTranslucent(this.getTextureLocation(entity));
+        RenderType renderType = petrified ? RenderType.entityTranslucent(LOTMCraft.STONE_TEXTURE) : RenderType.entityTranslucent(this.getTextureLocation(entity));
         VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
 
-        int color = ((int)(alpha * 255) << 24) | 0xFFFFFF; // ARGB format
+        int color = ((int)(alpha * 255) << 24) | 0xFFFFFF;
 
-        // Render the model
         this.model.renderToBuffer(poseStack, vertexConsumer, 0xF000F0, OverlayTexture.NO_OVERLAY, color);
 
         poseStack.popPose();
 
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
-
 
     protected int getBlockLightLevel(ExileDoorsEntity entity, BlockPos blockpos) {
         return 15;
@@ -66,6 +62,4 @@ public class ExileDoorsRenderer extends EntityRenderer<ExileDoorsEntity> {
     public @NotNull ResourceLocation getTextureLocation(@NotNull ExileDoorsEntity entity) {
         return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/exile_doors/exile_doors.png");
     }
-
-
 }

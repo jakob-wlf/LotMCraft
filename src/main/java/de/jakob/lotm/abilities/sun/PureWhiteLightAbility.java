@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.sun;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -18,13 +19,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class PureWhiteLightAbility extends Ability {
     public PureWhiteLightAbility(String id) {
-        super(id, 4);
+        super(id, 4, "purification");
+        interactionRadius = 25;
+        postsUsedAbilityEventManually = true;
     }
 
     @Override
@@ -76,5 +80,9 @@ public class PureWhiteLightAbility extends Ability {
 
             radius.addAndGet(0.8);
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
+
+        ServerScheduler.scheduleDelayed(100, () -> {
+            NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, finalTargetLoc, entity, this, interactionFlags, interactionRadius));
+        }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 }

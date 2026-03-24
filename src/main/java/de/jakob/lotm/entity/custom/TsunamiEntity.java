@@ -34,6 +34,7 @@ public class TsunamiEntity extends Entity {
     private static final double SPEED = 0.8D;
     private static final int MAX_LIFETIME = 200; // 10 seconds at 20 TPS
     private int ticksExisted = 0;
+    private int petrifiedTicks = 0;
     private boolean hasAdjustedPosition = false;
     private float speed = .65f;
 
@@ -123,6 +124,15 @@ public class TsunamiEntity extends Entity {
         super.tick();
 
         if (!this.level().isClientSide) {
+            // Petrification Logic
+            if(getTags().contains("petrified")) {
+                petrifiedTicks++;
+                if(petrifiedTicks >= 20 * 5) {
+                    this.discard();
+                }
+                return;
+            }
+
             // Adjust position on first tick if not on solid ground
             if (!hasAdjustedPosition) {
                 adjustPositionToGround();

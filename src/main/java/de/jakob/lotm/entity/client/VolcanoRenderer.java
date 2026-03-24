@@ -5,6 +5,7 @@ import com.mojang.math.Axis;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.custom.VolcanoEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -24,6 +25,8 @@ public class VolcanoRenderer extends EntityRenderer<VolcanoEntity> {
 
     @Override
     public void render(VolcanoEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+        boolean petrified = entity.getTags().contains("petrified");
+
         poseStack.pushPose();
 
         Random random = new Random(entity.getId());
@@ -32,22 +35,19 @@ public class VolcanoRenderer extends EntityRenderer<VolcanoEntity> {
         poseStack.translate(0, -1, 0);
         poseStack.mulPose(Axis.YP.rotationDegrees(random.nextInt(360)));
 
-        // Render the model
-        var vertexConsumer = buffer.getBuffer(this.model.renderType(this.getTextureLocation(entity)));
-        this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+        int color = petrified ? 0xFF808080 : 0xFFFFFFFF;
+        RenderType renderType = petrified ? this.model.renderType(LOTMCraft.STONE_TEXTURE) :
+                this.model.renderType(this.getTextureLocation(entity));
+        var vertexConsumer = buffer.getBuffer(renderType);
+        this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, color);
 
         poseStack.popPose();
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
 
     @Override
-    protected int getBlockLightLevel(VolcanoEntity projectileEntity, BlockPos blockpos) {
-        return 15;
-    }
-
+    protected int getBlockLightLevel(VolcanoEntity projectileEntity, BlockPos blockpos) { return 15; }
 
     @Override
-    public ResourceLocation getTextureLocation(VolcanoEntity entity) {
-        return TEXTURE;
-    }
+    public ResourceLocation getTextureLocation(VolcanoEntity entity) { return TEXTURE; }
 }
