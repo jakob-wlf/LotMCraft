@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class PureWhiteLightAbility extends Ability {
     public PureWhiteLightAbility(String id) {
-        super(id, 4, "purification");
+        super(id, 4, "purification", "light_source");
         interactionRadius = 25;
         postsUsedAbilityEventManually = true;
     }

@@ -1,7 +1,9 @@
 package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -18,7 +20,7 @@ import java.util.Map;
 
 public class DiseaseAbility extends Ability {
     public DiseaseAbility(String id) {
-        super(id, 120);
+        super(id, 120, "disease");
     }
 
     @Override
@@ -39,6 +41,16 @@ public class DiseaseAbility extends Ability {
         ServerScheduler.scheduleForDuration(0, 20, 20 * 80, () -> {
             if(entity.level().isClientSide)
                 return;
+
+            // Disease is suppressed by purification, cleansing, life aura, or blooming interactions
+            Location currentLoc = new Location(entity.position(), entity.level());
+            int seq = BeyonderData.getSequence(entity);
+            if(InteractionHandler.isInteractionPossible(currentLoc, "purification", seq) ||
+               InteractionHandler.isInteractionPossible(currentLoc, "cleansing", seq) ||
+               InteractionHandler.isInteractionPossible(currentLoc, "life_aura") ||
+               InteractionHandler.isInteractionPossible(currentLoc, "blooming"))
+                return;
+
             ParticleUtil.spawnParticles((ServerLevel) entity.level(), ModParticles.DISEASE.get(), entity.position(), 160, 30, 0.02);
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 40, entity.position(), new MobEffectInstance(MobEffects.POISON, 20, 0, false, false, false));
             AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 40, (float) DamageLookup.lookupDps(5, .2, 20, 20) * (float) multiplier(entity), entity.position(), true, false, true, 0);

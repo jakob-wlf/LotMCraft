@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
@@ -50,11 +51,18 @@ public class NightDomainAbility extends Ability {
         EffectManager.playEffect(EffectManager.Effect.NIGHT_DOMAIN, entity.position().x, entity.position().y, entity.position().z, serverLevel, entity);
 
         ServerScheduler.scheduleForDuration(0, 2, 20 * 25, () -> {
-            ParticleUtil.spawnParticles(serverLevel, dust, startPos, 80, 35, .25, 35, 0);
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(MobEffects.BLINDNESS, 20, 20, false, false, false));
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(MobEffects.DARKNESS, 20, 20, false, false, false));
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(ModEffects.UNLUCK, 20, 4, false, false, false));
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 5, false, false, false));
+            // Night Domain is weakened by purification interactions
+            Location currentLoc = new Location(entity.position(), serverLevel);
+            int seq = BeyonderData.getSequence(entity);
+            boolean purified = InteractionHandler.isInteractionPossible(currentLoc, "purification", seq);
+
+            ParticleUtil.spawnParticles(serverLevel, dust, startPos, purified ? 30 : 80, 35, .25, 35, 0);
+            if(!purified) {
+                AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(MobEffects.BLINDNESS, 20, 20, false, false, false));
+                AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(MobEffects.DARKNESS, 20, 20, false, false, false));
+            }
+            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(ModEffects.UNLUCK, 20, purified ? 1 : 4, false, false, false));
+            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 35, startPos, new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, purified ? 1 : 5, false, false, false));
 
             AbilityUtil.damageNearbyEntities(serverLevel, entity, 35, DamageLookup.lookupDps(4, .85, 2, 20) * multiplier(entity), startPos, true, false, ModDamageTypes.source(level, ModDamageTypes.DARKNESS_GENERIC, entity));
 

@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class HolyLightSummoningAbility extends Ability {
     public HolyLightSummoningAbility(String id) {
-        super(id, .9f, "purification");
+        super(id, .9f, "purification", "light_source");
         postsUsedAbilityEventManually = true;
         interactionRadius = 3.5;
     }

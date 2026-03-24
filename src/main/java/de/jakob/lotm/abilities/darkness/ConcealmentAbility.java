@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.darkness;
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -64,6 +65,12 @@ public class ConcealmentAbility extends SelectableAbility {
 
         // Only works for server players
         if(!(entity instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+
+        // Wings of Light prevent entering the concealed area
+        ToggleAbility wingsOfLight = (ToggleAbility) LOTMCraft.abilityHandler.getById("wings_of_light_ability");
+        if(wingsOfLight != null && wingsOfLight.isActiveForEntity(entity)) {
             return;
         }
 

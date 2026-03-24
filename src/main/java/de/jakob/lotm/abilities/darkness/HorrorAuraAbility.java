@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
@@ -50,6 +51,11 @@ public class HorrorAuraAbility extends Ability {
             loc.setPosition(entity.position());
             loc.setLevel(serverLevel);
             MovableEffectManager.updateEffectPosition(effectID, loc, serverLevel);
+
+            // Horror Aura is suppressed by purification
+            int seq = BeyonderData.getSequence(entity);
+            if(InteractionHandler.isInteractionPossible(loc, "purification", seq))
+                return;
 
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 20, entity.position(), new MobEffectInstance(MobEffects.DARKNESS, 30, 5, false, false, false),
                     new MobEffectInstance(MobEffects.BLINDNESS, 20, 4, false, false, false),

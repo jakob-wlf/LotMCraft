@@ -3,8 +3,10 @@ package de.jakob.lotm.abilities.core.interaction;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.abyss.DefilingSeedAbility;
 import de.jakob.lotm.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.abilities.demoness.CharmAbility;
 import de.jakob.lotm.abilities.demoness.ThreadManipulationAbility;
 import de.jakob.lotm.abilities.tyrant.TorrentialDownpourAbility;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.server.level.ServerLevel;
@@ -14,6 +16,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.HashSet;
+import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class InteractionHandler {
@@ -26,6 +29,8 @@ public class InteractionHandler {
         if (event.getInteractionFlags().contains("freezing"))     handleFreezingInteractions(event);
         if (event.getInteractionFlags().contains("purification")) handlePurificationInteractions(event);
         if (event.getInteractionFlags().contains("burn"))         handleBurnInteractions(event);
+        if (event.getInteractionFlags().contains("charm"))        handleCharmInteractions(event);
+        if (event.getInteractionFlags().contains("cleansing"))    handleCleansingInteractions(event);
     }
 
     private static void handleBurnInteractions(AbilityUsedEvent event) {
@@ -55,6 +60,53 @@ public class InteractionHandler {
 
             if (isInteractionOfSameOrHigherSequence(event, casterSequence)) {
                 DefilingSeedAbility.purify(afflicted, event.getEntity(), level);
+            }
+        });
+
+        // Purification suppresses LOOSING_CONTROL (Frenzy) on nearby entities
+        level.getEntitiesOfClass(
+                LivingEntity.class,
+                AABB.ofSize(event.getPosition(), radius * 2, radius * 2, radius * 2),
+                e -> e.hasEffect(ModEffects.LOOSING_CONTROL)
+        ).forEach(afflicted -> {
+            if(isInteractionOfSameOrHigherSequence(event, BeyonderData.getSequence(afflicted))) {
+                afflicted.removeEffect(ModEffects.LOOSING_CONTROL);
+            }
+        });
+
+        // Purification suppresses MENTAL_PLAGUE on nearby entities
+        level.getEntitiesOfClass(
+                LivingEntity.class,
+                AABB.ofSize(event.getPosition(), radius * 2, radius * 2, radius * 2),
+                e -> e.hasEffect(ModEffects.MENTAL_PLAGUE)
+        ).forEach(afflicted -> {
+            if(isInteractionOfSameOrHigherSequence(event, BeyonderData.getSequence(afflicted))) {
+                afflicted.removeEffect(ModEffects.MENTAL_PLAGUE);
+            }
+        });
+    }
+
+    private static void handleCharmInteractions(AbilityUsedEvent event) {
+        // Charm interactions are handled within CharmAbility itself
+    }
+
+    private static void handleCleansingInteractions(AbilityUsedEvent event) {
+        ServerLevel level = event.getLevel();
+        double radius = event.getInteractionRadius();
+
+        // Cleansing removes charm from nearby entities
+        level.getEntitiesOfClass(
+                LivingEntity.class,
+                AABB.ofSize(event.getPosition(), radius * 2, radius * 2, radius * 2),
+                e -> CharmAbility.getCharmed().containsKey(e.getUUID())
+        ).forEach(charmedEntity -> {
+            UUID charmCasterUUID = CharmAbility.getCharmed().get(charmedEntity.getUUID());
+            if(charmCasterUUID != null) {
+                LivingEntity charmCaster = (LivingEntity) level.getEntity(charmCasterUUID);
+                int charmCasterSeq = charmCaster != null ? BeyonderData.getSequence(charmCaster) : LOTMCraft.NON_BEYONDER_SEQ;
+                if(isInteractionOfSameOrHigherSequence(event, charmCasterSeq)) {
+                    CharmAbility.removeCharm(charmedEntity.getUUID());
+                }
             }
         });
     }

@@ -1,7 +1,9 @@
 package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -19,7 +21,7 @@ import java.util.Map;
 
 public class PlagueAbility extends Ability {
     public PlagueAbility(String id) {
-        super(id, 120);
+        super(id, 120, "plague");
     }
 
     @Override
@@ -42,6 +44,16 @@ public class PlagueAbility extends Ability {
         ServerScheduler.scheduleForDuration(0, 20, 20 * 80, () -> {
             if (entity.level().isClientSide)
                 return;
+
+            // Plague is suppressed by purification, cleansing, life aura, or blooming interactions
+            de.jakob.lotm.util.data.Location currentLoc = new de.jakob.lotm.util.data.Location(entity.position(), entity.level());
+            int seq = BeyonderData.getSequence(entity);
+            if(InteractionHandler.isInteractionPossible(currentLoc, "purification", seq) ||
+               InteractionHandler.isInteractionPossible(currentLoc, "cleansing", seq) ||
+               InteractionHandler.isInteractionPossible(currentLoc, "life_aura") ||
+               InteractionHandler.isInteractionPossible(currentLoc, "blooming"))
+                return;
+
             ParticleUtil.spawnParticles((ServerLevel) entity.level(), ModParticles.DISEASE.get(), entity.position(), 160, 50, 0.02);
             ParticleUtil.spawnParticles((ServerLevel) entity.level(), dust, entity.position(), 160, 50, 0.02);
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 70, entity.position(), new MobEffectInstance(MobEffects.WITHER, 20, 3, false, false, false));

@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class FlaringSunAbility extends Ability {
     public FlaringSunAbility(String id) {
-        super(id, 8, "purification", "burning");
+        super(id, 8, "purification", "burning", "light_source");
         postsUsedAbilityEventManually = true;
         interactionRadius = 14;
     }

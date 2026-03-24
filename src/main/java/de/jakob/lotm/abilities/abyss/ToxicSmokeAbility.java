@@ -1,8 +1,10 @@
 package de.jakob.lotm.abilities.abyss;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -51,6 +53,13 @@ public class ToxicSmokeAbility extends Ability {
         Vec3 pos = entity.getEyePosition();
 
         ServerScheduler.scheduleForDuration(0, 6, 20 * 5, () -> {
+            // Toxic smoke is cleared by light_source or burning interactions
+            Location smokeLoc = new Location(pos, level);
+            int seq = BeyonderData.getSequence(entity);
+            if(InteractionHandler.isInteractionPossible(smokeLoc, "light_source", seq) ||
+               InteractionHandler.isInteractionPossible(smokeLoc, "burning", seq))
+                return;
+
             AbilityUtil.damageNearbyEntities((ServerLevel) level,
                     entity,
                     6.5,

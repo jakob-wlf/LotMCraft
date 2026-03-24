@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class BloomingAreaAbility extends Ability {
     public BloomingAreaAbility(String id) {
-        super(id, 5);
+        super(id, 5, "blooming");
 
         canBeUsedByNPC = false;
     }

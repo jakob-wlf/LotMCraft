@@ -1,6 +1,8 @@
 package de.jakob.lotm.abilities.visionary;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.demoness.CharmAbility;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
@@ -21,6 +23,7 @@ import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class BattleHypnosisAbility extends Ability {
     public BattleHypnosisAbility(String id) {
@@ -55,6 +58,16 @@ public class BattleHypnosisAbility extends Ability {
                 player.connection.send(packet);
             }
             return;
+        }
+
+        // BH vs Charm: if BH caster has lower or equal sequence, BH prevails and removes charm
+        if(CharmAbility.getCharmed().containsKey(target.getUUID())) {
+            UUID charmCasterUUID = CharmAbility.getCharmed().get(target.getUUID());
+            LivingEntity charmCaster = charmCasterUUID != null ? (LivingEntity) ((ServerLevel) level).getEntity(charmCasterUUID) : null;
+            int charmCasterSeq = charmCaster != null ? BeyonderData.getSequence(charmCaster) : LOTMCraft.NON_BEYONDER_SEQ;
+            if(BeyonderData.getSequence(entity) <= charmCasterSeq) {
+                CharmAbility.removeCharm(target.getUUID());
+            }
         }
 
         ParticleUtil.createParticleSpirals((ServerLevel) level, dust, target.position(), target.getBbWidth() + .25, target.getBbWidth() + .25, target.getEyeHeight(), 1, 5, 30, 15, 1);

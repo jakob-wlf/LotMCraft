@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class HolyLightAbility extends Ability {
     public HolyLightAbility(String id) {
-        super(id, .75f, "purification");
+        super(id, .75f, "purification", "light_source");
         postsUsedAbilityEventManually = true;
         interactionRadius = 2.5;
     }
