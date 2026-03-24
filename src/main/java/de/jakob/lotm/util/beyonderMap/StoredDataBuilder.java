@@ -2,6 +2,7 @@ package de.jakob.lotm.util.beyonderMap;
 
 import de.jakob.lotm.LOTMCraft;
 import net.minecraft.world.phys.Vec3;
+import org.checkerframework.checker.units.qual.C;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -15,7 +16,7 @@ public class StoredDataBuilder {
     private LinkedList<HonorificName> knownNames;
     private Boolean modified;
     private Vec3 lastPosition;
-    private Integer charStack;
+    private CharacteristicStack charStack;
 
     public StoredDataBuilder(){
         clean();
@@ -30,7 +31,7 @@ public class StoredDataBuilder {
         knownNames = new LinkedList<>();
         modified = false;
         lastPosition = new Vec3(0, 0, 0);
-        charStack = 0;
+        charStack = new CharacteristicStack();
     }
 
     public StoredDataBuilder copyFrom(@Nullable StoredData data){
@@ -91,7 +92,7 @@ public class StoredDataBuilder {
         return this;
     }
 
-    public StoredDataBuilder charStack(Integer stack){
+    public StoredDataBuilder charStack(CharacteristicStack stack){
         charStack = stack;
         return this;
     }

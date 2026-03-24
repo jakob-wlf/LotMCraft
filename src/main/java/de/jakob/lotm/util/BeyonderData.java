@@ -12,6 +12,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncLivingEntityBeyonderDataPacket;
 import de.jakob.lotm.util.beyonderMap.BeyonderMap;
+import de.jakob.lotm.util.beyonderMap.CharacteristicStack;
 import de.jakob.lotm.util.beyonderMap.HonorificName;
 import de.jakob.lotm.util.beyonderMap.StoredData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -162,8 +163,6 @@ public class BeyonderData {
 
         if(entity instanceof ServerPlayer player) {
             if(!beyonderMap.check(pathway, sequence)) return;
-
-            removeModifier(player, "characteristics_stack_boost");
 
             if(!BeyonderData.getPathway(player).equals(pathway)
                     || BeyonderData.getSequence(player) < sequence)
@@ -570,10 +569,27 @@ public class BeyonderData {
     public static void addCharStack(LivingEntity player){
         beyonderMap.addStack(player, 1);
 
+        int seq = getSequence(player);
+
         player.getPersistentData().putFloat(NBT_DIGESTION_PROGRESS, 0.0f);
-        removeModifier(player, "characteristics_stack_boost");
+        removeModifier(player, CharacteristicStack.boostId(seq));
 
-        addModifier(player, "characteristics_stack_boost", (1.0f + beyonderMap.get(player).get().charStack()));
+        addModifier(player, CharacteristicStack.boostId(seq),
+                getDamageBoostByCharStack(seq, beyonderMap.get(player).get().charStack().get(seq)));
+    }
 
+    public static float getDamageBoostByCharStack(int seq, int stacks){
+        return switch (seq){
+            case 9 -> 1.05f;
+            case 8 -> 1.1f;
+            case 7 -> 1.2f;
+            case 6 -> 1.3f;
+            case 5 -> 1.4f;
+            case 4 -> 1.2f;
+            case 3 -> 1.1f;
+            case 2 -> 1.1f;
+            case 1 -> 0.2f + stacks;
+            default -> 0.0f;
+        };
     }
 }

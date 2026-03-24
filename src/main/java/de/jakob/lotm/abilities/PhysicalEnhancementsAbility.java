@@ -4,9 +4,11 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.beyonderMap.CharacteristicStack;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -114,15 +116,23 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
 
         List<PhysicalEnhancement> currentEnhancements = getEnhancementsForSequence(sequenceLevel, entity);
 
-        if(sequenceLevel == 1 && (entity instanceof Player player)){
-            var data = BeyonderData.beyonderMap.get(entity).get();
+        if(entity instanceof ServerPlayer player){
+            var dataOp = BeyonderData.beyonderMap.get(entity);
 
-            if(data.charStack() > 0){
+            if(dataOp.isPresent()) {
+                var data = dataOp.get();
 
-                currentEnhancements = currentEnhancements.stream()
-                        .map(obj -> obj.type.equals(EnhancementType.HEALTH) ?
-                                new PhysicalEnhancement(EnhancementType.HEALTH, obj.level + (5 * data.charStack())) : obj)
-                        .toList();
+                if (data.charStack().isUsed()) {
+
+                    if (sequenceLevel < 9) {
+                        currentEnhancements = currentEnhancements.stream()
+                                .map(obj -> obj.type.equals(EnhancementType.HEALTH) ?
+                                        new PhysicalEnhancement(EnhancementType.HEALTH,
+                                                recalculateHealthLevelWithStacks(sequenceLevel, obj.level, data.charStack()))
+                                        : obj)
+                                .toList();
+                    }
+                }
             }
         }
 
@@ -138,6 +148,35 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
 
     protected int getCurrentSequenceLevel(LivingEntity entity) {
         return BeyonderData.getSequence(entity);
+    }
+
+    protected int recalculateHealthLevelWithStacks(int seq, int prevLevel, CharacteristicStack stack){
+        LOTMCraft.LOGGER.info("Before boost: {}, seq: {}", prevLevel, seq);
+
+        int result = prevLevel;
+
+        for(int i = 9; i >= seq; i--){
+            int buff = stack.get(i);
+
+            LOTMCraft.LOGGER.info("Buff: {}, I: {}", buff, i);
+
+            switch (i){
+                case 8 -> result += buff;
+                case 7 -> result += buff * 2;
+                case 6 -> result += buff * 3;
+                case 5 -> result += buff * 3;
+                case 4 -> result += buff * 5;
+                case 3 -> result += buff * 5;
+                case 2 -> result += buff * 7;
+                case 1 -> result += buff * 7;
+            }
+
+            LOTMCraft.LOGGER.info("mid boost: {}", result);
+        }
+
+        LOTMCraft.LOGGER.info("Result: {}", result);
+
+        return result;
     }
 
     // All apply* methods below now accept pre-fetched maps (FIX 3) instead of

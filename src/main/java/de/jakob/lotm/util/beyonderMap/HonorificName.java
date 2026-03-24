@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public record HonorificName(LinkedList<String> lines) {
-    static public String NBT_LINES = "honorific_name_lines";
+    static public final String NBT_LINES = "honorific_name_lines";
 
     static public final HonorificName EMPTY = new HonorificName(new LinkedList<>());
 

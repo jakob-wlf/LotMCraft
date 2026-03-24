@@ -11,7 +11,7 @@ import java.util.LinkedList;
 
 public record StoredData(String pathway, Integer sequence, HonorificName honorificName,
                          String trueName, LinkedList<MessageType> msgs, LinkedList<HonorificName> knownNames,
-                         Boolean modified, Vec3 lastPosition, Integer charStack) {
+                         Boolean modified, Vec3 lastPosition, CharacteristicStack charStack) {
 
     public static final String NBT_PATHWAY = "beyonder_map_pathway";
     public static final String NBT_SEQUENCE = "beyonder_map_sequence";
@@ -40,7 +40,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 + "\n--- Seq: " + sequence
                 + "\n--- Honorific Name: " + honorificName.getAllInfo()
                 + "\n--- Logout Position: " + (int) lastPosition.x + " " + (int) lastPosition.y + " " + (int) lastPosition.z
-                + "\n--- Characteristics stack: " + charStack
+                + "\n--- Characteristics stack: " + charStack.getInfo()
                 + "\n--- Was modified: " + modified
                 ;
     }
@@ -59,7 +59,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 .pathway((sequence + 1 == LOTMCraft.NON_BEYONDER_SEQ) ? "none" : pathway)
                 .sequence(sequence + 1)
                 .honorificName((sequence + 1 >= 3) ? HonorificName.EMPTY : honorificName)
-                .charStack(0)
+                .charStack((sequence + 1 == LOTMCraft.NON_BEYONDER_SEQ) ? charStack.clear() : charStack.clear(sequence))
                 .build();
     }
 
@@ -94,7 +94,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
         tag.putDouble(NBT_LAST_POSITION_Y, lastPosition.y());
         tag.putDouble(NBT_LAST_POSITION_Z, lastPosition.z());
 
-        tag.putInt(NBT_CHAR_STACK, charStack);
+        tag.put(NBT_CHAR_STACK, charStack.toNBT());
 
         return tag;
     }
@@ -123,7 +123,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 tag.getDouble(NBT_LAST_POSITION_Y),
                 tag.getDouble(NBT_LAST_POSITION_Z));
 
-        Integer stack = tag.getInt(NBT_CHAR_STACK);
+        CharacteristicStack stack = CharacteristicStack.fromNBT(tag.getCompound(NBT_CHAR_STACK));
 
         return new StoredData(path, seq, name, trueName, list, names, modified, vec, stack);
     }

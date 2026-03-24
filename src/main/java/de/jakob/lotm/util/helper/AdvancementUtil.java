@@ -182,14 +182,16 @@ public class AdvancementUtil {
             return;
         }
 
-        if(prevSequence == sequence && prevSequence == 1){
+        if(prevSequence == sequence){
             if(!(entity instanceof Player player)) return;
 
             if(!beyonderMap.check(pathway, sequence)){
                 return;
             }
 
-            double failureChance = getDigestionProgress(player) == 1.0f ? 0.0f : 1.0f;
+            double failureChance = (getDigestionProgress(player) == 1.0f &&
+                    (beyonderMap.get(player).get().charStack().get(sequence) == 0 || sequence == 1)) ? 0.0f : 1.0f;
+
             int duration = calculateAdvancementDuration(sequence);
 
             StartAdvanceSequencePathwayEvent event = new StartAdvanceSequencePathwayEvent(entity, sequence, pathway, failureChance, duration);
