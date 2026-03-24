@@ -312,4 +312,14 @@ public class AbilityHandler {
                         .toList()
         );
     }
+
+    public ArrayList<Ability> getAllAbilitiesUpToSequenceOrdered(int sequence) {
+        return new ArrayList<>(
+                abilities.stream()
+                        .filter(ability -> ability.getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence))
+                        .sorted(Comparator.comparing(Ability::getId))
+                        .sorted(Comparator.comparingInt(Ability::lowestSequenceUsable).reversed())
+                        .toList()
+        );
+    }
 }

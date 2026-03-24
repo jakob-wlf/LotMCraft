@@ -27,7 +27,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     // Abilities section
     private boolean showAbilities = false;
+    private boolean showAllAbilities = false;
     private Button toggleAbilitiesButton;
+    private Button toggleAllAbilitiesButton;
     private Button clearWheelButton;
     private Button messageButton;
     private Button clearBarButton;
@@ -91,7 +93,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private void initializeAbilities() {
-        availableAbilities.addAll(LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence()));
+        availableAbilities.clear();
+        abilitiesScrollOffset = 0;
+
+        if (showAllAbilities) {
+            availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesUpToSequenceOrdered(menu.getSequence()));
+        } else {
+            availableAbilities.addAll(LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence()));
+        }
 
         availableAbilities.removeIf(Ability::getShouldBeHidden);
 
@@ -235,6 +244,26 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         this.addRenderableWidget(messageButton);
 
+        // Add "All Abilities" toggle button for creative + OP players
+        if (isCreativeOp()) {
+            int allAbilitiesButtonX = baseLeftPos - 65;
+            int allAbilitiesButtonY = this.topPos + 85;
+
+            toggleAllAbilitiesButton = Button.builder(
+                            Component.literal(showAllAbilities ? "All: ON" : "All: OFF")
+                                    .withStyle(showAllAbilities ? ChatFormatting.GREEN : ChatFormatting.RED),
+                            button -> {
+                                showAllAbilities = !showAllAbilities;
+                                initializeAbilities();
+                                button.setMessage(Component.literal(showAllAbilities ? "All: ON" : "All: OFF")
+                                        .withStyle(showAllAbilities ? ChatFormatting.GREEN : ChatFormatting.RED));
+                            })
+                    .bounds(allAbilitiesButtonX, allAbilitiesButtonY, 60, 20)
+                    .build();
+
+            this.addRenderableWidget(toggleAllAbilitiesButton);
+        }
+
         // Add abilities panel buttons if shown
         if (showAbilities) {
             addAbilityButtons(baseLeftPos);
@@ -339,6 +368,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     private void openMessagesMenu() {
         PacketHandler.sendToServer(new OpenMessagesMenuPacket());
+    }
+
+    private boolean isCreativeOp() {
+        return this.minecraft != null && this.minecraft.player != null
+                && this.minecraft.player.isCreative()
+                && this.minecraft.player.hasPermissions(2);
     }
 
     public void updateMenuData(int sequence, String pathway, float digestionProgress, float sanity) {
@@ -584,9 +619,13 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (hoveredAbility != null) {
             List<Component> tooltipLines = new ArrayList<>();
 
-            // Add ability name
-            int color = BeyonderData.pathwayInfos.get(menu.getPathway()).color();
-            tooltipLines.add(hoveredAbility.getName().withStyle(ChatFormatting.BOLD).withColor(color));
+            // Add ability name with appropriate pathway color
+            if (showAllAbilities) {
+                tooltipLines.add(hoveredAbility.getNameFormatted());
+            } else {
+                int color = BeyonderData.pathwayInfos.get(menu.getPathway()).color();
+                tooltipLines.add(hoveredAbility.getName().withStyle(ChatFormatting.BOLD).withColor(color));
+            }
 
             // Add description if available, wrapping long text
             Component description = hoveredAbility.getDescription();
