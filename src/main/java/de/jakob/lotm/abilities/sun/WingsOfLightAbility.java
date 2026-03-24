@@ -14,7 +14,7 @@ import java.util.Map;
 public class WingsOfLightAbility extends ToggleAbility {
 
     public WingsOfLightAbility(String id) {
-        super(id, "light_strong", "light_weak");
+        super(id);
     }
 
     @Override

@@ -17,6 +17,7 @@ import java.util.Map;
 public class SpearOfLightAbility extends Ability {
     public SpearOfLightAbility(String id) {
         super(id, 1, "purification", "light_source", "light_strong", "light_weak");
+        postsUsedAbilityEventManually = true;
     }
 
     @Override
@@ -39,7 +40,7 @@ public class SpearOfLightAbility extends Ability {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 1.0f, 1.0f);
 
-        SpearOfLightProjectileEntity spear = new SpearOfLightProjectileEntity(level, entity, DamageLookup.lookupDamage(2, .75) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
+        SpearOfLightProjectileEntity spear = new SpearOfLightProjectileEntity(level, entity, DamageLookup.lookupDamage(2, .75) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), this);
         spear.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
         spear.shoot(direction.x, direction.y, direction.z, 3f, 0);
         level.addFreshEntity(spear);

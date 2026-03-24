@@ -1,5 +1,7 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -20,6 +22,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -29,6 +32,7 @@ public class SpearOfLightProjectileEntity extends AbstractArrow {
     private final LivingEntity owner;
     private final double damage;
     private final boolean griefing;
+    private final Ability ability;
 
     private int ticks = 0;
     private int petrifiedTicks = 0;
@@ -39,20 +43,29 @@ public class SpearOfLightProjectileEntity extends AbstractArrow {
         this.owner = null;
         this.damage = 0;
         this.griefing = false;
+        this.ability = null;
         init();
     }
 
-    public SpearOfLightProjectileEntity(Level level, LivingEntity owner, double damage, boolean griefing) {
+    public SpearOfLightProjectileEntity(Level level, LivingEntity owner, double damage, boolean griefing, Ability ability) {
         super(ModEntities.SPEAR_OF_LIGHT.get(), level);
         this.level = level;
         this.owner = owner;
         this.damage = damage;
         this.griefing = griefing;
+        this.ability = ability;
         init();
     }
 
     private void init() {
         this.setNoGravity(true);
+    }
+
+    private void postAbilityUsedEvent(Vec3 impactPos) {
+        if(owner != null && ability != null && level instanceof ServerLevel serverLevel) {
+            NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, impactPos, owner, ability,
+                    ability.getInteractionFlags(), ability.getInteractionRadius(), ability.getInteractionCacheTicks()));
+        }
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(
@@ -105,6 +118,7 @@ public class SpearOfLightProjectileEntity extends AbstractArrow {
         }
 
         Vec3 targetPos = target.position();
+        postAbilityUsedEvent(targetPos);
 
         ServerScheduler.scheduleForDuration(0, 4, 20 * 8, () -> {
             ParticleUtil.spawnSphereParticles(serverLevel, ParticleTypes.END_ROD, targetPos, 3.5f, 100);
@@ -118,6 +132,8 @@ public class SpearOfLightProjectileEntity extends AbstractArrow {
         if(!(level() instanceof ServerLevel serverLevel)) {
             return;
         }
+
+        postAbilityUsedEvent(result.getLocation());
 
         if(griefing) {
             AbilityUtil.getBlocksInSphereRadius(serverLevel, result.getLocation(), 7, true, true, false).forEach(blockPos -> {

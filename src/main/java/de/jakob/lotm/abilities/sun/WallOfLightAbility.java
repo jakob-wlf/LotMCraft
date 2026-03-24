@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class WallOfLightAbility extends Ability {
     public WallOfLightAbility(String id) {
-        super(id, 5, "purification", "light_source", "light_strong", "light_weak");
+        super(id, 5);
     }
 
     @Override
