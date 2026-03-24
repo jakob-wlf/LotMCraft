@@ -30,6 +30,7 @@ public abstract class Ability {
 
     // Interaction behaviour
     protected double interactionRadius = 1.4;
+    protected int interactionCacheTicks = 10;
     protected final String[] interactionFlags;
     protected boolean postsUsedAbilityEventManually = false;
 
@@ -98,7 +99,7 @@ public abstract class Ability {
         // Track ability use for Recording/Replicating detection
         AbilityUseTracker.trackUse(newUser, this, newUser.position(), serverLevel);
 
-        if(!postsUsedAbilityEventManually) NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, newUser.position(), newUser, this, interactionFlags, interactionRadius));
+        if(!postsUsedAbilityEventManually) NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, newUser.position(), newUser, this, interactionFlags, interactionRadius, interactionCacheTicks));
     }
 
     public void useAbility(ServerLevel serverLevel, LivingEntity entity) {

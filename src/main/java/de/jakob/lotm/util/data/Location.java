@@ -27,4 +27,25 @@ public class Location {
     public void setLevel(Level level) {
         this.level = level;
     }
+
+    public boolean isInSameLevel(Level levelToCompare) {
+        return level == levelToCompare;
+    }
+
+    /**
+     * Gets the distance to another location. If the other location is in a different level, returns Double.MAX_VALUE.
+     */
+    public double getDistanceTo(Location other) {
+        if(!isInSameLevel(other.getLevel()))
+            return Double.MAX_VALUE;
+
+        return position.distanceTo(other.getPosition());
+    }
+
+    /**
+     * Gets the distance to another location. Only considers the position, does not check if the other location is in the same level.
+     */
+    public double getDistanceTo(Vec3 position) {
+        return this.position.distanceTo(position);
+    }
 }

@@ -82,7 +82,7 @@ public class PureWhiteLightAbility extends Ability {
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
 
         ServerScheduler.scheduleDelayed(100, () -> {
-            NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, finalTargetLoc, entity, this, interactionFlags, interactionRadius));
+            NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, finalTargetLoc, entity, this, interactionFlags, interactionRadius, interactionCacheTicks));
         }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 }

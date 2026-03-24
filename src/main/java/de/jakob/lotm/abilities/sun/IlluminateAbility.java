@@ -69,7 +69,7 @@ public class IlluminateAbility extends Ability {
                     level.setBlock(targetBlock, Blocks.AIR.defaultBlockState(), 3);
                 }
             }, (ServerLevel) level);
-            NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetBlock.getCenter(), entity, this, interactionFlags, interactionRadius));
+            NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetBlock.getCenter(), entity, this, interactionFlags, interactionRadius, interactionCacheTicks));
         }
 
     }

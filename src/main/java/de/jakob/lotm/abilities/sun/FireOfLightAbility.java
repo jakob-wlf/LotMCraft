@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class FireOfLightAbility extends Ability {
     public FireOfLightAbility(String id) {
-        super(id, .75f, "purification");
+        super(id, .75f, "purification", "burning");
         postsUsedAbilityEventManually = true;
     }
 
@@ -65,6 +65,6 @@ public class FireOfLightAbility extends Ability {
         }
 
         ServerScheduler.scheduleDelayed(25, () -> level.setBlockAndUpdate(BlockPos.containing(targetPos), Blocks.AIR.defaultBlockState()));
-        NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetPos, entity, this, interactionFlags, interactionRadius));
+        NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetPos, entity, this, interactionFlags, interactionRadius, interactionCacheTicks));
     }
 }

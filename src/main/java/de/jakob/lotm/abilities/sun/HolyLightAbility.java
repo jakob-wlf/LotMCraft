@@ -81,7 +81,7 @@ public class HolyLightAbility extends Ability {
             }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
 
             ServerScheduler.scheduleDelayed(18, () -> {
-                NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, initialPos.subtract(0, 14, 0), entity, this, interactionFlags, interactionRadius));
+                NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, initialPos.subtract(0, 14, 0), entity, this, interactionFlags, interactionRadius, interactionCacheTicks));
             }, ( ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
 
             ServerScheduler.scheduleDelayed(22, () -> {

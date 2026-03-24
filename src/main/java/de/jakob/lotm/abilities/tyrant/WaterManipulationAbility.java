@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.tyrant;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -140,13 +141,23 @@ public class WaterManipulationAbility extends SelectableAbility {
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.PLAYER_SPLASH, entity.getSoundSource(), 2.0f, 1.0f);
 
         AtomicBoolean hasHit = new AtomicBoolean(false);
+        AtomicBoolean frozen = new AtomicBoolean(false);
 
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 40, () -> {
+        ServerScheduler.scheduleForDuration(0, 1, 20 * 5, () -> {
             if (hasHit.get()) {
                 return;
             }
 
+            if(InteractionHandler.isInteractionPossible(new Location(currentPos.get(), level), "freezing")) {
+                frozen.set(true);
+            }
+
             Vec3 pos = currentPos.get();
+
+            if(frozen.get()) {
+                ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SNOWFLAKE, pos, 12, 0.24, 0.02);
+                return;
+            }
 
             if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, .825) * multiplier(entity), pos, true, false, true, 0)) {
                 hasHit.set(true);

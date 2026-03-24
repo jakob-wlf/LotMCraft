@@ -8,7 +8,6 @@ import net.neoforged.bus.api.ICancellableEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 public class AbilityUsedEvent extends Event implements ICancellableEvent {
 
@@ -18,14 +17,16 @@ public class AbilityUsedEvent extends Event implements ICancellableEvent {
     private final Ability ability;
     private final ArrayList<String> interactionFlags;
     private final double interactionRadius;
+    private final int interactionCacheTime;
 
-    public AbilityUsedEvent(ServerLevel serverLevel, Vec3 position, LivingEntity entity, Ability ability, String[] interactionFlags, double interactionRadius) {
+    public AbilityUsedEvent(ServerLevel serverLevel, Vec3 position, LivingEntity entity, Ability ability, String[] interactionFlags, double interactionRadius, int interactionCacheTime) {
         this.level = serverLevel;
         this.position = position;
         this.entity = entity;
         this.ability = ability;
         this.interactionFlags = new ArrayList<>(Arrays.asList(interactionFlags));
         this.interactionRadius = interactionRadius;
+        this.interactionCacheTime = interactionCacheTime;
     }
 
     public LivingEntity getEntity() {
@@ -54,5 +55,9 @@ public class AbilityUsedEvent extends Event implements ICancellableEvent {
 
     public Vec3 getPosition() {
         return position;
+    }
+
+    public int getInteractionCacheTime() {
+        return interactionCacheTime;
     }
 }

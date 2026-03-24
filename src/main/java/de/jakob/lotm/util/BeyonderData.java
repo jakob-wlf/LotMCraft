@@ -250,6 +250,8 @@ public class BeyonderData {
     }
 
     public static int getSequence(LivingEntity entity, boolean returnTrueMarionetteLvl) {
+        if(entity == null) return LOTMCraft.NON_BEYONDER_SEQ;
+
         if(entity.level().isClientSide) {
             return ClientBeyonderCache.getSequence(entity.getUUID());
         }

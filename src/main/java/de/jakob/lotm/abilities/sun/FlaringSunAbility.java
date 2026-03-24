@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class FlaringSunAbility extends Ability {
     public FlaringSunAbility(String id) {
-        super(id, 8, "purification");
+        super(id, 8, "purification", "burning");
         postsUsedAbilityEventManually = true;
         interactionRadius = 14;
     }
@@ -85,6 +85,6 @@ public class FlaringSunAbility extends Ability {
             sun.discard();
         }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(targetPos, level)));
 
-        NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetPos, entity, this, interactionFlags, interactionRadius));
+        NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetPos, entity, this, interactionFlags, interactionRadius, interactionCacheTicks));
     }
 }

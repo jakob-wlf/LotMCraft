@@ -97,6 +97,8 @@ public class LOTMCraft
 
     public static final ResourceLocation STONE_TEXTURE =
             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/misc/stone.png");
+    public static final ResourceLocation ICE_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/misc/ice.png");
 
     public LOTMCraft(IEventBus modEventBus, ModContainer modContainer)
     {

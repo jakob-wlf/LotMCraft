@@ -28,6 +28,7 @@ public class TsunamiRenderer extends EntityRenderer<TsunamiEntity> {
     @Override
     public void render(TsunamiEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         boolean petrified = entity.getTags().contains("petrified");
+        boolean frozen = entity.getTags().contains("frozen");
 
         poseStack.pushPose();
 
@@ -40,10 +41,14 @@ public class TsunamiRenderer extends EntityRenderer<TsunamiEntity> {
             poseStack.mulPose(Axis.YP.rotation(yaw));
         }
 
+        poseStack.translate(0, -3.0f * scale, 0);
 
         int color = petrified ? 0xFF808080 : 0xFFFFFFFF;
-        RenderType renderType = petrified ? this.model.renderType(LOTMCraft.STONE_TEXTURE) :
-                this.model.renderType(this.getTextureLocation(entity));
+        RenderType renderType =
+                petrified ? this.model.renderType(LOTMCraft.STONE_TEXTURE) :
+                frozen    ? this.model.renderType(LOTMCraft.ICE_TEXTURE) :
+                            this.model.renderType(this.getTextureLocation(entity));
+
         var vertexConsumer = buffer.getBuffer(renderType);
         this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, color);
 

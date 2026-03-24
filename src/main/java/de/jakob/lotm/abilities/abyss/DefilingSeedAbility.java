@@ -27,11 +27,11 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import org.joml.Vector3f;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class DefilingSeedAbility extends Ability {
 
     /**
@@ -43,39 +43,14 @@ public class DefilingSeedAbility extends Ability {
      */
     private static final Map<UUID, DefilingSeedEntry> defiledEntities = new HashMap<>();
 
-    private record DefilingSeedEntry(int casterSequence, UUID schedulerTaskId) {}
-
-    @SubscribeEvent
-    public static void onAbilityUsed(AbilityUsedEvent event) {
-        LivingEntity user = event.getEntity();
-
-        if (!event.getInteractionFlags().contains("purification")) return;
-
-        int sequence = BeyonderData.getSequence(user);
-        ServerLevel level = event.getLevel();
-        double radius = event.getInteractionRadius();
-
-        // Check all nearby entities for an active Defiling Seed
-        level.getEntitiesOfClass(
-                LivingEntity.class,
-                AABB.ofSize(event.getPosition(), radius * 2, radius * 2, radius * 2),
-                e -> defiledEntities.containsKey(e.getUUID())
-        ).forEach(afflicted -> {
-            DefilingSeedEntry entry = defiledEntities.get(afflicted.getUUID());
-
-            if (sequence <= entry.casterSequence()) {
-                purify(afflicted, user, level);
-            }
-        });
+    public static Map<UUID, DefilingSeedEntry> getDefiledEntities() {
+        return Collections.unmodifiableMap(defiledEntities);
     }
 
-    /**
-     * Immediately stops the defiling seed effect on {@code target}.
-     * Cancels the scheduler (stopping both the damage loop and the
-     * linked onFinish cleanup task), removes the entry from the map,
-     * and plays purification feedback.
-     */
-    private static void purify(LivingEntity target, LivingEntity purifier, ServerLevel level) {
+    public record DefilingSeedEntry(int casterSequence, UUID schedulerTaskId) {}
+
+
+    public static void purify(LivingEntity target, LivingEntity purifier, ServerLevel level) {
         DefilingSeedEntry entry = defiledEntities.remove(target.getUUID());
         if (entry == null) return;
 

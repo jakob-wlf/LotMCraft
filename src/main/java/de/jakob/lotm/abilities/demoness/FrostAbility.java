@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.demoness;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.FrostSpearProjectileEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +31,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class FrostAbility extends SelectableAbility {
 
     public FrostAbility(String id) {
-        super(id, .75f);
+        super(id, .75f, "freezing");
+        postsUsedAbilityEventManually = true;
     }
 
     @Override
@@ -106,6 +109,8 @@ public class FrostAbility extends SelectableAbility {
 
             radius.addAndGet(.5);
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
+
+        NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, startPos, entity, this, interactionFlags, 20, 20 * 3));
     }
 
     private void spear(Level level, LivingEntity entity) {

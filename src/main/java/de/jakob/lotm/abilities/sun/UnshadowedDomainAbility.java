@@ -29,6 +29,7 @@ public class UnshadowedDomainAbility extends Ability {
     public UnshadowedDomainAbility(String id) {
         super(id, 50, "purification");
         interactionRadius = 40;
+        interactionCacheTicks = 20 * 30;
     }
 
     @Override

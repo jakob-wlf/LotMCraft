@@ -50,8 +50,6 @@ public class SealedArtifactEffectHandler {
             if (stack.getItem() instanceof SealedArtifactItem) {
                 SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
                 if (data != null) {
-                    // Apply weaker version of effect if in inventory but not held
-                    // You can customize this behavior
                     applyInventoryEffect(player, data);
                 }
             }

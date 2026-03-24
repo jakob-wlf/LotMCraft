@@ -702,7 +702,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     private void renderAvailableAbilities(GuiGraphics guiGraphics, int panelX, int panelY, int mouseX, int mouseY) {
         int startX = panelX + 5;
-        int startY = panelY + abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2);
+        int startY = panelY - abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2);
+
 
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
 
@@ -994,7 +995,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private Ability getAbilityAt(int mouseX, int mouseY, int panelX, int panelY, List<Ability> abilities, boolean useScroll) {
         mouseY -= 15;
         int startX = panelX + 5;
-        int startY = panelY + (useScroll ? abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2) : 0);
+        int startY = panelY - (useScroll ? abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2) : 0);
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
 
         for (int i = 0; i < abilities.size(); i++) {
@@ -1030,7 +1031,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
         int row = index / iconsPerRow;
 
-        return panelY + (useScroll ? abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2) : 0) + row * (ABILITY_ICON_SIZE + 2) + 15;
+        return panelY - (useScroll ? abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2) : 0) + row * (ABILITY_ICON_SIZE + 2) + 15;
     }
 
     private boolean isInAbilityWheelArea(int mouseX, int mouseY, int panelX, int wheelY) {
