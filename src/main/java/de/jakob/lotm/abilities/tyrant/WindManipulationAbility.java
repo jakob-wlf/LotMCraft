@@ -20,7 +20,6 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class WindManipulationAbility extends SelectableAbility {
     private final HashSet<UUID> isFlying = new HashSet<>();
@@ -123,8 +122,7 @@ public class WindManipulationAbility extends SelectableAbility {
 
         Location loc = new Location(targetPos, level);
 
-        AtomicReference<UUID> taskIdRef = new AtomicReference<>();
-        UUID taskId = ServerScheduler.scheduleForDuration(0, 1, 20 * 13, () -> {
+        ServerScheduler.scheduleForDuration(0, 1, 20 * 13, () -> {
             for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, targetPos, 2.5)) {
                 // Blink Escape - only the bound entity can free itself
                 if(InteractionHandler.isInteractionPossibleForEntity(loc, "blink_escape", BeyonderData.getSequence(entity), e)) {
@@ -138,7 +136,6 @@ public class WindManipulationAbility extends SelectableAbility {
             loc.setLevel(level);
             loc.setPosition(targetPos);
         }, (ServerLevel) level);
-        taskIdRef.set(taskId);
     }
 
     private void boost(Level level, LivingEntity entity) {
