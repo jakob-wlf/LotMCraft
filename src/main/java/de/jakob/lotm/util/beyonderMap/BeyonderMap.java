@@ -237,7 +237,7 @@ public class BeyonderMap extends SavedData {
 
         var pathway = BeyonderData.getPathway(entity);
         var sequence = BeyonderData.getSequence(entity);
-        
+
         return (!data.pathway().equals(pathway)
                 || !data.sequence().equals(sequence));
     }

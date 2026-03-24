@@ -46,9 +46,6 @@ public class DecryptionAbility extends ToggleAbility {
         PacketHandler.sendToPlayer(player, new SyncDecryptionLookedAtEntitiesAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
 
         entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 17, 1, false, false, false));
-
-        Component message = Component.translatable("lotmcraft.decryption_ability").withColor(0x5cff68);
-        player.displayClientMessage(message, true);
     }
 
     @Override
