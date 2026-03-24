@@ -52,8 +52,7 @@ public class ConcealmentAbility extends SelectableAbility {
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         // Wings of Light glow prevents the user from entering concealment
-        ToggleAbility wingsOfLight = (ToggleAbility) LOTMCraft.abilityHandler.getById("wings_of_light_ability");
-        if(wingsOfLight != null && wingsOfLight.isActiveForEntity(entity)) {
+        if(isPreventedByWingsOfLight(entity)) {
             if(entity instanceof Player player) {
                 AbilityUtil.sendActionBar(player, net.minecraft.network.chat.Component.literal("Wings of Light prevent concealment.").withColor(0xFFff124d));
             }
@@ -67,6 +66,11 @@ public class ConcealmentAbility extends SelectableAbility {
         }
     }
 
+    private static boolean isPreventedByWingsOfLight(LivingEntity entity) {
+        ToggleAbility wingsOfLight = (ToggleAbility) LOTMCraft.abilityHandler.getById("wings_of_light_ability");
+        return wingsOfLight != null && wingsOfLight.isActiveForEntity(entity);
+    }
+
     private void enterConcealedArea(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
@@ -74,12 +78,6 @@ public class ConcealmentAbility extends SelectableAbility {
 
         // Only works for server players
         if(!(entity instanceof ServerPlayer serverPlayer)) {
-            return;
-        }
-
-        // Wings of Light prevent entering the concealed area
-        ToggleAbility wingsOfLight = (ToggleAbility) LOTMCraft.abilityHandler.getById("wings_of_light_ability");
-        if(wingsOfLight != null && wingsOfLight.isActiveForEntity(entity)) {
             return;
         }
 
