@@ -14,6 +14,7 @@ import de.jakob.lotm.rendering.models.DoorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.TyrantMythicalCreatureModel;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.SpiritualityProgressTracker;
+import de.jakob.lotm.util.beyonderMap.CharacteristicStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
@@ -111,6 +112,7 @@ public class ModEvents {
         DisableAbilityCommand.register(event.getDispatcher());
         EnableAbilityCommand.register(event.getDispatcher());
         HonorificNameCommand.register(event.getDispatcher());
+        CharacteristicsStackCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

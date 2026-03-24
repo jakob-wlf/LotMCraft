@@ -238,10 +238,6 @@ public class BeyonderMap extends SavedData {
         var pathway = BeyonderData.getPathway(entity);
         var sequence = BeyonderData.getSequence(entity);
 
-        LOTMCraft.LOGGER.info("isDiffPathSeq BeyonderMap: name {}, seq {}, path {}\n\tPrevious: name {}, seq {}, path {}",
-                ((ServerPlayer) entity).getGameProfile().getName(), sequence, pathway,
-                data.trueName(),data.sequence(), data.pathway());
-
         return (!data.pathway().equals(pathway)
                 || !data.sequence().equals(sequence));
     }
@@ -275,7 +271,7 @@ public class BeyonderMap extends SavedData {
             if(obj.pathway().equals(path) && obj.sequence() == seq){
                 res++;
 
-                res += obj.charStack();
+                res += obj.charStack().get(seq);
             }
         }
 
@@ -456,14 +452,27 @@ public class BeyonderMap extends SavedData {
         setDirty();
     }
 
-    public void addStack(LivingEntity entity, int amount){
+    public void setStack(LivingEntity entity, int value){
         if(!contains(entity)) put(entity);
 
-        int buff = beyonderMap.get(entity.getUUID()).get().charStack();
+        setStack(entity, BeyonderData.getSequence(entity), value);
+    }
+
+    public void addStack(LivingEntity entity, int value){
+        if(!contains(entity)) put(entity);
+
+        var buff = beyonderMap.get(entity.getUUID()).get().charStack();
+        setStack(entity, buff.get(BeyonderData.getSequence(entity)) + value);
+    }
+
+    public void setStack(LivingEntity entity, int seq, int value){
+        if(!contains(entity)) put(entity);
+
+        var buff = beyonderMap.get(entity.getUUID()).get().charStack();
 
         map.put(entity.getUUID(), StoredData.builder
                 .copyFrom(map.get(entity.getUUID()))
-                .charStack(buff + amount)
+                .charStack(buff.set(seq, value))
                 .build());
 
         setDirty();
