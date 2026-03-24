@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ActiveShaderComponent;
 import de.jakob.lotm.attachments.FogComponent;
@@ -23,6 +24,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
 import java.util.Collections;
@@ -33,6 +35,7 @@ import java.util.Map;
 public class WeatherManipulationAbility extends SelectableAbility {
     public WeatherManipulationAbility(String id) {
         super(id, 25);
+        postsUsedAbilityEventManually = true;
     }
 
     @Override
@@ -140,6 +143,9 @@ public class WeatherManipulationAbility extends SelectableAbility {
     private void createDrought(ServerLevel serverLevel, LivingEntity entity) {
         Vec3 startPos = entity.position();
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
+
+        // Post drought interaction event
+        NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, startPos, entity, this, new String[]{"drought"}, 90, 20 * 30));
 
         List<BlockPos> sphereBlocks = griefing
                 ? AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, 65, true, false, false)

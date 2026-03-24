@@ -25,8 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,6 +38,14 @@ public class WaterMasteryAbility extends SelectableAbility {
             new Vector3f(30 / 255f, 153 / 255f, 255 / 255f),
             20f
     );
+
+    private static final HashSet<ActiveWaterWall> activeWaterWalls = new HashSet<>();
+
+    public record ActiveWaterWall(Vec3 position, Vec3 perpendicular, UUID wallId, int halfWidth, int minY, int maxY) {}
+
+    public static HashSet<ActiveWaterWall> getActiveWaterWalls() {
+        return new HashSet<>(activeWaterWalls);
+    }
 
 
     @Override
@@ -106,6 +113,10 @@ public class WaterMasteryAbility extends SelectableAbility {
 
         AtomicBoolean isFrozen = new AtomicBoolean(false);
 
+        UUID wallId = UUID.randomUUID();
+        ActiveWaterWall wallData = new ActiveWaterWall(targetPos, perpendicular, wallId, 30, -2, 17);
+        activeWaterWalls.add(wallData);
+
         ServerScheduler.scheduleForDuration(0, 7, 20 * 30, () -> {
             if(random.nextInt(10) == 0)
                 level.playSound(null, targetPos.x, targetPos.y, targetPos.z, SoundEvents.GENERIC_SPLASH, entity.getSoundSource(), 2.0f, 1.0f);
@@ -136,7 +147,7 @@ public class WaterMasteryAbility extends SelectableAbility {
                     }
                 }
             }
-        }, null, level, () -> AbilityUtil.getTimeInArea(entity, new Location(targetPos, level)));
+        }, () -> activeWaterWalls.remove(wallData), level, () -> AbilityUtil.getTimeInArea(entity, new Location(targetPos, level)));
     }
 
 }
