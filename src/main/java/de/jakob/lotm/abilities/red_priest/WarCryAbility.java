@@ -24,7 +24,9 @@ import java.util.Map;
 
 public class WarCryAbility extends Ability {
     public WarCryAbility(String id) {
-        super(id, 3);
+        super(id, 3, "morale_boost");
+        interactionRadius = 19;
+        interactionCacheTicks = 20 * 12;
     }
 
     @Override

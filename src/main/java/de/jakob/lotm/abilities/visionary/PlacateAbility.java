@@ -17,7 +17,9 @@ import java.util.Map;
 
 public class PlacateAbility extends SelectableAbility {
     public PlacateAbility(String id) {
-        super(id, 3);
+        super(id, 3, "morale_boost");
+        interactionRadius = 18;
+        interactionCacheTicks = 20 * 5;
     }
 
     @Override

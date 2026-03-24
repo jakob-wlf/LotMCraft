@@ -20,7 +20,9 @@ import java.util.Map;
 
 public class WarSongAbility extends Ability {
     public WarSongAbility(String id) {
-        super(id, 40);
+        super(id, 40, "morale_boost");
+        interactionRadius = 20;
+        interactionCacheTicks = 20 * 30;
     }
 
     @Override
