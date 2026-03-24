@@ -45,10 +45,10 @@ public class SurgeOfDarknessAbility extends Ability {
 
             // Affect entities
             ServerScheduler.scheduleForDuration(0, 4, 20 * 15, () -> {
-                // Surge of Darkness is weakened by purification
+                // Surge of Darkness is weakened by light_strong
                 Location currentLoc = new Location(center, level);
                 int seq = BeyonderData.getSequence(entity);
-                boolean purified = InteractionHandler.isInteractionPossible(currentLoc, "purification", seq);
+                boolean purified = InteractionHandler.isInteractionPossible(currentLoc, "light_strong", seq);
                 float damageMult = purified ? 0.3f : 1f;
 
                 AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, 45,

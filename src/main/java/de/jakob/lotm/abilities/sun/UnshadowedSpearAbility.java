@@ -16,8 +16,7 @@ import java.util.Map;
 
 public class UnshadowedSpearAbility extends Ability {
     public UnshadowedSpearAbility(String id) {
-        super(id, 1);
-    }
+        super(id, 1, "purification", "light_source", "light_strong", "light_weak");    }
 
     @Override
     public Map<String, Integer> getRequirements() {

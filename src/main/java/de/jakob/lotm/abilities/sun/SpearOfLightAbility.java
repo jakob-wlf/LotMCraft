@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class SpearOfLightAbility extends Ability {
     public SpearOfLightAbility(String id) {
-        super(id, 1);
+        super(id, 1, "purification", "light_source", "light_strong", "light_weak");
     }
 
     @Override

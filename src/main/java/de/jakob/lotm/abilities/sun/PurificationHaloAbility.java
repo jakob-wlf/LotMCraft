@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class PurificationHaloAbility extends Ability {
     public PurificationHaloAbility(String id) {
-        super(id, 3, "purification");
+        super(id, 3, "purification", "light_weak");
         interactionRadius = 10;
     }
 

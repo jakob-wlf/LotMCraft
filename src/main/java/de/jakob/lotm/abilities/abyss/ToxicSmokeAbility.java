@@ -53,11 +53,10 @@ public class ToxicSmokeAbility extends Ability {
         Vec3 pos = entity.getEyePosition();
 
         ServerScheduler.scheduleForDuration(0, 6, 20 * 5, () -> {
-            // Toxic smoke is cleared by light_source or burning interactions
+            // Toxic smoke is completely cancelled by purification
             Location smokeLoc = new Location(pos, level);
             int seq = BeyonderData.getSequence(entity);
-            if(InteractionHandler.isInteractionPossible(smokeLoc, "light_source", seq) ||
-               InteractionHandler.isInteractionPossible(smokeLoc, "burning", seq))
+            if(InteractionHandler.isInteractionPossible(smokeLoc, "purification", seq))
                 return;
 
             AbilityUtil.damageNearbyEntities((ServerLevel) level,

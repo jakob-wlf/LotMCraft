@@ -23,7 +23,7 @@ public class SolarEnvoyAbility extends ToggleAbility {
     private final HashMap<UUID, Vec3> locations = new HashMap<>();
 
     public SolarEnvoyAbility(String id) {
-        super(id);
+        super(id, "light_strong", "light_weak");
     }
 
     @Override

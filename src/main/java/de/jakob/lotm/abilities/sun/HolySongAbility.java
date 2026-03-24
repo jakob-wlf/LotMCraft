@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class HolySongAbility extends Ability {
     public HolySongAbility(String id) {
-        super(id, 20, "purification");
+        super(id, 20, "purification", "light_weak");
     }
 
     @Override

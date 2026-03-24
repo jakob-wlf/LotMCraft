@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class IlluminateAbility extends Ability {
     public IlluminateAbility(String id) {
-        super(id, .25f, "purification", "light_source");
+        super(id, .25f, "purification", "light_source", "light_weak");
         canBeUsedByNPC = false;
         postsUsedAbilityEventManually = true;
     }

@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class SwordOfJusticeAbility extends Ability {
     public SwordOfJusticeAbility(String id) {
-        super(id, 2.5f);
+        super(id, 2.5f, "purification", "light_source", "light_strong", "light_weak");
     }
 
     @Override

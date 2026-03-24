@@ -139,6 +139,36 @@ public class VFXRenderer {
         activeMovableEffects.remove(effectId);
     }
 
+    public static void cancelEffectsNear(double x, double y, double z, double radius) {
+        for (ActiveEffect effect : activeEffects) {
+            double dx = effect.getX() - x;
+            double dy = effect.getY() - y;
+            double dz = effect.getZ() - z;
+            if (dx * dx + dy * dy + dz * dz <= radius * radius) {
+                effect.cancel();
+            }
+        }
+        for (ActiveMovableEffect effect : activeMovableEffects.values()) {
+            double dx = effect.getX() - x;
+            double dy = effect.getY() - y;
+            double dz = effect.getZ() - z;
+            if (dx * dx + dy * dy + dz * dz <= radius * radius) {
+                effect.cancel();
+            }
+        }
+        for (ActiveDirectionalEffect effect : activeDirectionalEffects) {
+            double midX = (effect.getStartX() + effect.getEndX()) / 2.0;
+            double midY = (effect.getStartY() + effect.getEndY()) / 2.0;
+            double midZ = (effect.getStartZ() + effect.getEndZ()) / 2.0;
+            double dx = midX - x;
+            double dy = midY - y;
+            double dz = midZ - z;
+            if (dx * dx + dy * dy + dz * dz <= radius * radius) {
+                effect.cancel();
+            }
+        }
+    }
+
     // Update clearActiveEffects method to include movable effects
     public static void clearActiveEffects() {
         activeEffects.clear();

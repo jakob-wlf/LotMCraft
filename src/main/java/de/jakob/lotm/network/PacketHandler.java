@@ -310,6 +310,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                CancelEffectByPositionPacket.TYPE,
+                CancelEffectByPositionPacket.STREAM_CODEC,
+                CancelEffectByPositionPacket::handle
+        );
+
+        registrar.playToClient(
                 UpdateMovableEffectPositionPacket.TYPE,
                 UpdateMovableEffectPositionPacket.STREAM_CODEC,
                 UpdateMovableEffectPositionPacket::handle

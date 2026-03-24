@@ -138,5 +138,17 @@ public class InteractionHandler {
         return isInteractionPossible(location, interactionFlag, LOTMCraft.NON_BEYONDER_SEQ, false);
     }
 
+    /**
+     * Check if an interaction is possible with the caster being at least {@code margin} sequences
+     * higher (numerically lower) than the given sequence.
+     * For example, with margin=1 and sequence=4, only interactions from casters with seq <= 3 will match.
+     */
+    public static boolean isInteractionPossibleStrictlyHigher(Location location, String interactionFlag, int sequence, int margin) {
+        return recentInteractions.stream()
+                .filter(interaction -> interaction.event.getInteractionFlags().contains(interactionFlag))
+                .filter(interaction -> interaction.event.getPosition().distanceTo(location.getPosition()) < interaction.event.getInteractionRadius())
+                .anyMatch(interaction -> BeyonderData.getSequence(interaction.event.getEntity()) + margin <= sequence);
+    }
+
     private record Interaction(AbilityUsedEvent event, long gameTimeOnInteraction, int interactionCacheTime) {}
 }

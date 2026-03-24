@@ -22,6 +22,7 @@ import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class NightDomainAbility extends Ability {
     public NightDomainAbility(String id) {
@@ -50,10 +51,19 @@ public class NightDomainAbility extends Ability {
 
         EffectManager.playEffect(EffectManager.Effect.NIGHT_DOMAIN, entity.position().x, entity.position().y, entity.position().z, serverLevel, entity);
 
-        ServerScheduler.scheduleForDuration(0, 2, 20 * 25, () -> {
-            // Night Domain is weakened by purification interactions
+        final UUID[] taskIdHolder = new UUID[1];
+        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 2, 20 * 25, () -> {
             Location currentLoc = new Location(entity.position(), serverLevel);
             int seq = BeyonderData.getSequence(entity);
+
+            // Night Domain is completely cancelled by light_strong if the caster is at least 1 sequence higher
+            if(InteractionHandler.isInteractionPossibleStrictlyHigher(currentLoc, "light_strong", seq, 1)) {
+                EffectManager.cancelEffectsNear(startPos.x, startPos.y, startPos.z, 50, serverLevel);
+                if(taskIdHolder[0] != null) ServerScheduler.cancel(taskIdHolder[0]);
+                return;
+            }
+
+            // Night Domain is weakened by purification interactions
             boolean purified = InteractionHandler.isInteractionPossible(currentLoc, "purification", seq);
 
             ParticleUtil.spawnParticles(serverLevel, dust, startPos, purified ? 30 : 80, 35, .25, 35, 0);
