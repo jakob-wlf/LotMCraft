@@ -10,6 +10,7 @@ import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -102,8 +103,8 @@ public class InteractionHandler {
         ).forEach(charmedEntity -> {
             UUID charmCasterUUID = CharmAbility.getCharmed().get(charmedEntity.getUUID());
             if(charmCasterUUID != null) {
-                LivingEntity charmCaster = (LivingEntity) level.getEntity(charmCasterUUID);
-                int charmCasterSeq = charmCaster != null ? BeyonderData.getSequence(charmCaster) : LOTMCraft.NON_BEYONDER_SEQ;
+                Entity charmCasterEntity = level.getEntity(charmCasterUUID);
+                int charmCasterSeq = charmCasterEntity instanceof LivingEntity livingCharmCaster ? BeyonderData.getSequence(livingCharmCaster) : LOTMCraft.NON_BEYONDER_SEQ;
                 if(isInteractionOfSameOrHigherSequence(event, charmCasterSeq)) {
                     CharmAbility.removeCharm(charmedEntity.getUUID());
                 }

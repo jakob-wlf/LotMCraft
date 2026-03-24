@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -63,8 +64,8 @@ public class BattleHypnosisAbility extends Ability {
         // BH vs Charm: if BH caster has lower or equal sequence, BH prevails and removes charm
         if(CharmAbility.getCharmed().containsKey(target.getUUID())) {
             UUID charmCasterUUID = CharmAbility.getCharmed().get(target.getUUID());
-            LivingEntity charmCaster = charmCasterUUID != null ? (LivingEntity) ((ServerLevel) level).getEntity(charmCasterUUID) : null;
-            int charmCasterSeq = charmCaster != null ? BeyonderData.getSequence(charmCaster) : LOTMCraft.NON_BEYONDER_SEQ;
+            Entity charmCasterEntity = charmCasterUUID != null ? ((ServerLevel) level).getEntity(charmCasterUUID) : null;
+            int charmCasterSeq = charmCasterEntity instanceof LivingEntity livingCharmCaster ? BeyonderData.getSequence(livingCharmCaster) : LOTMCraft.NON_BEYONDER_SEQ;
             if(BeyonderData.getSequence(entity) <= charmCasterSeq) {
                 CharmAbility.removeCharm(target.getUUID());
             }

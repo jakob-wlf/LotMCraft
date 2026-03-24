@@ -133,6 +133,7 @@ public class CharmAbility extends Ability {
                 if(casterSequence < controllerSeq) {
                     marionetteComp.setMarionette(false);
                     marionetteComp.setControllerUUID("");
+                    // Freeing a marionette from charm kills it
                     target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
                 }
             }
