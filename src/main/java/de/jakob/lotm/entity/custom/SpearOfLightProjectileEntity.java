@@ -2,6 +2,7 @@ package de.jakob.lotm.entity.custom;
 
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -105,11 +106,12 @@ public class SpearOfLightProjectileEntity extends AbstractArrow {
     @Override
     protected void onHitEntity(EntityHitResult result) {
         this.discard();
-        if(!(result.getEntity() instanceof LivingEntity)) {
+        if(!(result.getEntity() instanceof LivingEntity target)) {
             return;
         }
-        LivingEntity target = (LivingEntity) result.getEntity();
-        target.hurt(this.damageSources().mobAttack(owner), (float) damage);
+
+        if(owner != null) target.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, owner), (float) damage);
+        else              target.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION), (float) damage);
 
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 8, 10, false, false, false));
 

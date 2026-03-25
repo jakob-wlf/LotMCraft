@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -131,7 +132,7 @@ public class MundaneConceptualTheft extends SelectableAbility {
 
     private void stealHealth(LivingEntity entity, LivingEntity target) {
         float healthToSteal = (float) (DamageLookup.lookupDamage(5, 1f) * multiplier(entity));
-        target.hurt(entity.damageSources().magic(), healthToSteal);
+        target.hurt(ModDamageTypes.source(target.level(), ModDamageTypes.BEYONDER_GENERIC, entity), healthToSteal);
         entity.setHealth(Math.min(entity.getMaxHealth(), entity.getHealth() + healthToSteal));
     }
 

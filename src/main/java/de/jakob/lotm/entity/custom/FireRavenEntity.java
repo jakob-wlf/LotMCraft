@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
@@ -218,7 +219,8 @@ public class FireRavenEntity extends Animal {
                 if(this.distanceToSqr(target) < 8) {
                     if(isTrackingEntity) {
                         if(targetEntity.isAlive()) {
-                            targetEntity.hurt(sourceEntity.damageSources().mobAttack(sourceEntity), (float) damage);
+                            if(sourceEntity != null) targetEntity.hurt(sourceEntity.damageSources().mobAttack(sourceEntity), (float) damage);
+                            else                     targetEntity.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC), (float) damage);
                         }
                     } else {
                         level.explode(null, target.x, target.y, target.z, 2.2f, griefing, griefing ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE);

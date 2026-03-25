@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -74,7 +75,7 @@ public class UnshadowedDomainAbility extends Ability {
             AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 40)
                     .stream()
                     .filter(e -> (!BeyonderData.isBeyonder(e) || BeyonderData.getSequence(e) > BeyonderData.getSequence(entity)) && (e instanceof Mob || e instanceof Player))
-                    .forEach(e -> e.hurt(e.damageSources().mobAttack(entity), (float) (DamageLookup.lookupDps(4, .4, 10, 20) * multiplier(entity))));
+                    .forEach(e -> e.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity), (float) (DamageLookup.lookupDps(4, .4, 10, 20) * multiplier(entity))));
         }, () -> blocks.forEach(b -> {
             BlockState state = level.getBlockState(b);
             if(state.is(Blocks.LIGHT))

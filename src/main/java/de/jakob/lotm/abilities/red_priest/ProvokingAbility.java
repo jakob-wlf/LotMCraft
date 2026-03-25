@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AbilityUtilClient;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -47,7 +48,7 @@ public class ProvokingAbility extends Ability {
 
                 e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 6, 1, false, false, false));
                 e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20 * 6, 1, false, false, false));
-                e.hurt(entity.damageSources().mobAttack(entity), (float) DamageLookup.lookupDamage(8, .65) * (float) multiplier(entity));
+                e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) DamageLookup.lookupDamage(8, .65) * (float) multiplier(entity));
             });
         }
         else {

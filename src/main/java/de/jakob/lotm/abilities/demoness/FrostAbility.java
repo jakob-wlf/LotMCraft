@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.demoness;
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.FrostSpearProjectileEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -77,7 +78,7 @@ public class FrostAbility extends SelectableAbility {
         ServerScheduler.scheduleForDuration(0, 2, 20 * 3, () -> {
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SNOWFLAKE, startPos, 70, radius.get(), 0.3, radius.get(), 0);
 
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius.get() - .4, radius.get() + .4, DamageLookup.lookupDamage(7, .8) * (float) multiplier(entity), startPos, true, false, true, 0, 0);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius.get() - .4, radius.get() + .4, DamageLookup.lookupDamage(7, .8) * (float) multiplier(entity), startPos, true, false, true, 0, 0, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, radius.get(), startPos, new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 10, false, false, false));
 
             if(BeyonderData.isGriefingEnabled(entity)) {
@@ -148,7 +149,7 @@ public class FrostAbility extends SelectableAbility {
 
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, .75) * (float) multiplier(entity), pos, true, false, true, 0)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, .75) * (float) multiplier(entity), pos, true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity))) {
                 hasHit.set(true);
                 AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, 2.5f, pos, new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 3, 5, false, false, false));
                 return;

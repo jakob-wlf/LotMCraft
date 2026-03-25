@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.sun;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -91,7 +92,7 @@ public class SolarEnvoyAbility extends ToggleAbility {
         }
 
         // Damage entities
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 37, DamageLookup.lookupDps(2, .9, 5, 20) * multiplier(entity), entity.position(), true, true, 20 * 5);
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 37, DamageLookup.lookupDps(2, .9, 5, 20) * multiplier(entity), entity.position(), true, true, 20 * 5, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
 
         // Particles
         ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, entity.position(), 2.6, 60);

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -49,7 +50,7 @@ public class MentalDisruptionAbility extends Ability {
             return;
         }
 
-        target.hurt(entity.damageSources().magic(), (float) (DamageLookup.lookupDamage(8, .4) * multiplier(entity)));
+        target.hurt(ModDamageTypes.source(level, ModDamageTypes.LOOSING_CONTROL, entity), (float) (DamageLookup.lookupDamage(8, .4) * multiplier(entity)));
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 6, 8, false, false, false));
         target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 30, 8, false, false, false));
 

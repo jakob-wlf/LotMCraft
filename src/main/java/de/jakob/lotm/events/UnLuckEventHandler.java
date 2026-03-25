@@ -3,6 +3,7 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -290,7 +291,7 @@ public class UnLuckEventHandler {
         float damage = baseDamage + (amplifier * damagePerLevel);
 
         // Apply damage
-        entity.hurt(level.damageSources().magic(), damage);
+        entity.hurt(ModDamageTypes.source(level, ModDamageTypes.UNLUCK), damage);
 
         // Apply a small knockdown effect
         Random random = new Random();

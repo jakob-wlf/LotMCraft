@@ -3,6 +3,7 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.sounds.SoundEvents;
@@ -130,7 +131,7 @@ public class SanityEventHandler {
 
             // Random damage spikes (psychosomatic)
             if(random.nextInt(30) == 0) {
-                entity.hurt(entity.damageSources().magic(), 1.0f);
+                entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 1.0f);
             }
         }
 
@@ -160,7 +161,7 @@ public class SanityEventHandler {
 
             // Regular damage
             if(random.nextInt(20) == 0) {
-                entity.hurt(entity.damageSources().magic(), 2.0f);
+                entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 2.0f);
             }
         }
 
@@ -178,7 +179,7 @@ public class SanityEventHandler {
 
             // Frequent damage
             if(random.nextInt(10) == 0) {
-                entity.hurt(entity.damageSources().magic(), 3.0f);
+                entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 3.0f);
             }
 
             // Random hostile mob sounds to induce paranoia
@@ -213,7 +214,7 @@ public class SanityEventHandler {
 
             // Constant damage
             if(random.nextInt(5) == 0) {
-                entity.hurt(entity.damageSources().magic(), 4.0f);
+                entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 4.0f);
             }
 
             // Levitation at random (losing sense of gravity/reality)
@@ -224,7 +225,7 @@ public class SanityEventHandler {
 
             // Screen shake for players (if you have that capability)
             if(entity instanceof Player player && random.nextInt(10) == 0) {
-                entity.hurt(entity.damageSources().magic(), 1.0f);
+                entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 1.0f);
             }
 
             // Very high chance of death

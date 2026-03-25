@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -59,7 +60,7 @@ public class EarthquakeAbility extends Ability {
             AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 90).forEach(e -> {
                 if(AbilityUtil.distanceToGround(level, e) < 1.5) {
                     if(random.nextBoolean())
-                        e.hurt(e.damageSources().mobAttack(entity), (float) DamageLookup.lookupDps(4, .925, 8, 20) * (float) multiplier(entity));
+                        e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) DamageLookup.lookupDps(4, .925, 8, 20) * (float) multiplier(entity));
                     if(random.nextInt(12) == 0)
                         e.setDeltaMovement(new Vec3((0.5 - random.nextDouble()) * 0.5, 0.25 + random.nextDouble() * .75, (0.5 - random.nextDouble()) * 0.25));
                 }

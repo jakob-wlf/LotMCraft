@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -94,7 +95,7 @@ public class NatureSpellsAbility extends SelectableAbility {
             ParticleUtil.spawnParticles(serverLevel, greenDustSmall, target.position().add(0, entity.getEyeHeight() / 2, 0), 10, .2, entity.getEyeHeight() / 2, .2, 0);
 
             if(random.nextInt(20) == 0) {
-                target.hurt(target.damageSources().mobAttack(entity), (float) (DamageLookup.lookupDamage(5, .775f) * multiplier(entity)));
+                target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(5, .775f) * multiplier(entity)));
             }
 
             if(random.nextInt(25) == 0) {
@@ -128,7 +129,7 @@ public class NatureSpellsAbility extends SelectableAbility {
                 if(targetEntity == null)
                     return;
 
-                targetEntity.hurt(entity.damageSources().mobAttack(entity), (float) DamageLookup.lookupDamage(5, .85) * (float) multiplier(entity));
+                targetEntity.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, entity), (float) DamageLookup.lookupDamage(5, .85) * (float) multiplier(entity));
             }
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(target.position().add(0, target.getEyeHeight() / 2, 0), serverLevel)));
     }

@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
@@ -87,7 +88,7 @@ public class AvatarOfDesireAbility extends ToggleAbility {
             }
             else if(AbilityUtil.isTargetSignificantlyStronger(entity, e)) {
                 entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, 3));
-                entity.hurt(entity.damageSources().generic(), 10);
+                entity.hurt(ModDamageTypes.source(level, ModDamageTypes.LOOSING_CONTROL, entity), 10);
                 cancel((ServerLevel) level, entity);
                 return;
             }

@@ -6,6 +6,7 @@ import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.abilities.sun.HolyOathAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -78,7 +79,7 @@ public class HorrorAuraAbility extends Ability {
 
                 BeyonderData.addModifier(e, "horror_aura", .4);
                 if(AbilityUtil.isTargetSignificantlyWeaker(entity, e) && ticks.get() % 10 == 0) {
-                    e.hurt(e.damageSources().mobAttack(entity), (float) (DamageLookup.lookupDps(3, .95, 10, 20) * multiplier(entity)));
+                    e.hurt(ModDamageTypes.source(level, ModDamageTypes.LOOSING_CONTROL, entity), (float) (DamageLookup.lookupDps(3, .95, 10, 20) * multiplier(entity)));
                 }
 
                 SanityComponent sanityComponent = e.getData(ModAttachments.SANITY_COMPONENT);

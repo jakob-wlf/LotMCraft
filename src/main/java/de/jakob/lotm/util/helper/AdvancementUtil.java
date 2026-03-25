@@ -66,7 +66,7 @@ public class AdvancementUtil {
         // if drinking potion while controlling marionette - failure
         ControllingDataComponent data = entity.getData(ModAttachments.CONTROLLING_DATA);
         if (data.getTargetUUID() != null) {
-            entity.hurt(entity.damageSources().magic(), Float.MAX_VALUE);
+            entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), Float.MAX_VALUE);
             return;
         }
 
@@ -108,7 +108,7 @@ public class AdvancementUtil {
                     }
                     activeAdvancements.remove(entity.getUUID());
                     if(!entity.isDeadOrDying())
-                        entity.hurt(entity.damageSources().magic(), Float.MAX_VALUE);
+                        entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), Float.MAX_VALUE);
                 });
                 return;
             }
@@ -157,7 +157,7 @@ public class AdvancementUtil {
                     }
                     activeAdvancements.remove(entity.getUUID());
                     if (!entity.isDeadOrDying())
-                        entity.hurt(entity.damageSources().magic(), Float.MAX_VALUE);
+                        entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), Float.MAX_VALUE);
                 });
             }
 
@@ -218,7 +218,7 @@ public class AdvancementUtil {
                     }
                     activeAdvancements.remove(entity.getUUID());
                     if (!entity.isDeadOrDying())
-                        entity.hurt(entity.damageSources().magic(), Float.MAX_VALUE);
+                        entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), Float.MAX_VALUE);
                 });
             }
 
@@ -276,7 +276,7 @@ public class AdvancementUtil {
                 }
                 activeAdvancements.remove(entity.getUUID());
                 if(!entity.isDeadOrDying())
-                    entity.hurt(entity.damageSources().magic(), Float.MAX_VALUE);
+                    entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), Float.MAX_VALUE);
             });
             return;
         }

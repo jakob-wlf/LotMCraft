@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ApprenticeDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
@@ -458,7 +459,7 @@ public class SpaceConcealmentAbility extends SelectableAbility {
 
                 // Deal damage to living entities
                 if(entity instanceof LivingEntity && AbilityUtil.mayDamage(source, (LivingEntity) entity)) {
-                    entity.hurt(level.damageSources().magic(), (float) (DamageLookup.lookupDamage(4, 1.5) * multiplier));
+                    entity.hurt(ModDamageTypes.source(level, ModDamageTypes.DOOR_SPACE), (float) (DamageLookup.lookupDamage(4, 1.5) * multiplier));
                 }
             }
         }

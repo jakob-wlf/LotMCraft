@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.demoness;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.item.ModItems;
@@ -80,7 +81,7 @@ public class CurseAbility extends Ability {
 
         if(AbilityUtil.isTargetSignificantlyStronger(entity, livingTarget)) {
             entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, 3));
-            entity.hurt(entity.damageSources().generic(), 10);
+            entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.DEMONESS_GENERIC), 10);
             return;
         }
 
@@ -108,7 +109,7 @@ public class CurseAbility extends Ability {
             }
             switch(random.nextInt(3)) {
                 case 0 -> {
-                    livingTarget.hurt(livingTarget.damageSources().onFire(), (float) (DamageLookup.lookupDamage(4, .6) * multiplier(entity)));
+                    livingTarget.hurt(ModDamageTypes.source(livingTarget.level(), ModDamageTypes.DEMONESS_GENERIC, entity), (float) (DamageLookup.lookupDamage(4, .6) * multiplier(entity)));
                     ParticleUtil.spawnParticles(serverLevel, ModParticles.BLACK_FLAME.get(), livingTarget.position().add(0, livingTarget.getEyeHeight() / 2, 0), 200, .4, livingTarget.getEyeHeight() / 2, .4, 0.01);
                 }
                 case 1 -> {

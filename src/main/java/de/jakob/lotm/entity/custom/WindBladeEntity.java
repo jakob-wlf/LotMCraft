@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -82,10 +83,10 @@ public class WindBladeEntity extends AbstractArrow {
     @Override
     protected void onHitEntity(EntityHitResult result) {
         this.discard();
-        if(!(result.getEntity() instanceof LivingEntity))
+        if(!(result.getEntity() instanceof LivingEntity target))
             return;
-        LivingEntity target = (LivingEntity) result.getEntity();
-        target.hurt(this.damageSources().mobAttack(owner), (float) damage);
+        if(owner != null) target.hurt(ModDamageTypes.source(target.level(), ModDamageTypes.BEYONDER_GENERIC, owner), (float) damage);
+        else              target.hurt(ModDamageTypes.source(target.level(), ModDamageTypes.BEYONDER_GENERIC), (float) damage);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity.custom;
 
 import de.jakob.lotm.abilities.tyrant.WaterMasteryAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -270,7 +271,7 @@ public class LightningEntity extends Entity {
             boolean inWater = isNearWater(pos);
             float waterMultiplier = inWater ? 2.0f : 1.0f;
 
-            entity.hurt(source.damageSources().mobAttack(source), (float) damage * waterMultiplier);
+            entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.SAILOR_LIGHTNING, source), (float) damage * waterMultiplier);
 
             // If in water, deal AoE damage to entities in water
             if(inWater) {
