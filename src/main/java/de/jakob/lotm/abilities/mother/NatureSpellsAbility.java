@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -162,41 +163,63 @@ public class NatureSpellsAbility extends SelectableAbility {
         }, 5, () -> castingChildOfOak.remove(entity.getUUID()), finished);
     }
 
-    private void swamp(ServerLevel serverLevel, LivingEntity entity) {
-        if(castingSwamp.contains(entity.getUUID())) {
-            return;
+    private void swamp(ServerLevel level, LivingEntity entity) {
+        UUID uuid = entity.getUUID();
+        if (castingSwamp.contains(uuid)) return;
+
+        Vec3 startLoc = entity.position().add(0, 0.25, 0);
+
+        List<BlockPos> blocks = AbilityUtil.getBlocksInSphereRadius(level, startLoc, 20, true, true, true);
+
+        blocks.removeIf(b -> level.getBlockState(b).isAir());
+
+        // Limit size
+        if (blocks.size() > 2000) {
+            Collections.shuffle(blocks);
+            blocks = blocks.subList(0, 2000);
         }
-        final Vec3 startLoc = entity.position().add(0, .25, 0);
 
-        final List<BlockPos> blocks = AbilityUtil.getBlocksInSphereRadius(serverLevel, startLoc, 25, true, true, true);
-        blocks.removeIf(b -> {
-            BlockState state = serverLevel.getBlockState(b);
-            return state.getCollisionShape(serverLevel, b).isEmpty();
-        });
+        List<Vec3> positions = blocks.stream()
+                .map(b -> Vec3.atCenterOf(b).add(0, 0.75, 0))
+                .toList();
 
-        castingSwamp.add(entity.getUUID());
+        castingSwamp.add(uuid);
 
-        ServerScheduler.scheduleForDuration(0, 2, 20 * 10, () -> {
-            blocks.forEach(b -> {
-                if(random.nextInt(6) != 0)
-                    return;
+        final int[] tick = {0};
 
-                if(random.nextBoolean()) {
-                    ParticleUtil.spawnParticles(serverLevel, brownDust, b.getCenter().add(0, .75, 0), 1, .16);
-                }else {
-                    ParticleUtil.spawnParticles(serverLevel, ModParticles.EARTHQUAKE.get(), b.getCenter().add(0, .75, 0), 1, .16);
+        ServerScheduler.scheduleForDuration(0, 2, 200, () -> {
+            tick[0]++;
+
+            // particles
+            for (Vec3 pos : positions) {
+                if (random.nextFloat() > 0.1667f) continue;
+
+                if (random.nextBoolean()) {
+                    ParticleUtil.spawnParticles(level, brownDust, pos, 1, .16);
+                } else {
+                    ParticleUtil.spawnParticles(level, ModParticles.EARTHQUAKE.get(), pos, 1, .16);
                 }
-            });
-            AbilityUtil.getNearbyEntities(entity, serverLevel, startLoc, 35).forEach(e -> {
-                Vec3 entityPos = e.position();
-                BlockPos pos = BlockPos.containing(e.position().add(0, .75, 0));
-                BlockState state = serverLevel.getBlockState(pos);
-                if(state.getCollisionShape(serverLevel, pos).isEmpty()) {
-                    e.teleportTo(entityPos.x, entityPos.y - .32, entityPos.z);
-                }
-                e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 2, 20, false, false, false));
+            }
 
-            });
-        }, () -> castingSwamp.remove(entity.getUUID()), serverLevel, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position().add(0, entity.getEyeHeight() / 2, 0), serverLevel)));
+            // entities (every 5 ticks)
+            if (tick[0] % 5 == 0) {
+                for (LivingEntity e : AbilityUtil.getNearbyEntities(entity, level, startLoc, 35)) {
+                    BlockPos pos = BlockPos.containing(e.getX(), e.getY() + 0.75, e.getZ());
+                    BlockState state = level.getBlockState(pos);
+
+                    if (state.isAir()) {
+                        e.setDeltaMovement(e.getDeltaMovement().x, -0.1, e.getDeltaMovement().z);
+                    }
+
+                    e.addEffect(new MobEffectInstance(
+                            MobEffects.MOVEMENT_SLOWDOWN, 40, 2, false, false, false
+                    ));
+                }
+            }
+
+        }, () -> castingSwamp.remove(uuid), level, () -> AbilityUtil.getTimeInArea(entity,
+                new Location(entity.position().add(0, entity.getEyeHeight() / 2, 0), level)
+        ));
+
     }
 }
