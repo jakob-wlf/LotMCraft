@@ -5,6 +5,7 @@ import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Random;
 
 public class AbilityTheftHandler {
@@ -59,7 +61,7 @@ public class AbilityTheftHandler {
             return;
         }
 
-        if (doesTheftFail(BeyonderData.getSequence(entity), BeyonderData.getSequence(target), random)) {
+        if (doesTheftFail(entity, target, random)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_abilities").withColor(0x6d32a8));
             return;
         }
@@ -120,16 +122,30 @@ public class AbilityTheftHandler {
         };
     }
 
-    public static boolean doesTheftFail(int userSeq, int targetSeq, Random random) {
+    public static boolean doesTheftFail(LivingEntity user, LivingEntity target, Random random) {
+        int userSeq = BeyonderData.getSequence(user);
+        int targetSeq = BeyonderData.getSequence(target);
+
         if (targetSeq > userSeq) {
             return false;
         }
 
-        int difference = userSeq - targetSeq;
+        int difference = targetSeq - userSeq;
+
+        int userLuck = user.hasEffect(ModEffects.LUCK) ? Objects.requireNonNull(user.getEffect(ModEffects.LUCK)).getAmplifier() : 0;
+        int targetLuck = target.hasEffect(ModEffects.LUCK) ? Objects.requireNonNull(target.getEffect(ModEffects.LUCK)).getAmplifier() : 0;
+
+        int userUnLuck = user.hasEffect(ModEffects.UNLUCK) ? Objects.requireNonNull(user.getEffect(ModEffects.UNLUCK)).getAmplifier() : 0;
+        int targetUnLuck = target.hasEffect(ModEffects.UNLUCK) ? Objects.requireNonNull(target.getEffect(ModEffects.UNLUCK)).getAmplifier() : 0;
+
+        int luckDiff = userLuck - targetLuck;
+        int unLuckDiff = userUnLuck - targetUnLuck;
+
+        double luckMultiplier = (double) (luckDiff - unLuckDiff) / 10;
 
         double baseFailPerStep = 0.15;
 
-        double failChance = difference * baseFailPerStep;
+        double failChance = difference * baseFailPerStep - luckMultiplier;
 
         failChance = Math.min(Math.max(failChance, 0.0), 0.95);
 
