@@ -162,6 +162,9 @@ public class BeyonderEventHandler {
 
         var player = event.getEntity();
 
+        if(player.isCreative())
+            return;
+
         Objects.requireNonNull(player.getServer()).execute(() -> {
             var container = event.getContainer();
 
