@@ -33,6 +33,13 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<DisabledFlightComponent>> FLIGHT_DISABLE_COMPONENT =
+            ATTACHMENT_TYPES.register("disabled_flight_component", () ->
+                    AttachmentType.builder(DisabledFlightComponent::new)
+                            .serialize(DisabledFlightComponent.SERIALIZER)
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<AbilityCooldownComponent>> COOLDOWN_COMPONENT =
             ATTACHMENT_TYPES.register("cooldown_component", () ->
                     AttachmentType.serializable(AbilityCooldownComponent::new).build()

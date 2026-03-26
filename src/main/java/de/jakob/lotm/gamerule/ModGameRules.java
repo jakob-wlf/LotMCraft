@@ -12,6 +12,7 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.BooleanValue> REDUCE_REGEN_IN_BEYONDER_FIGHT;
     public static GameRules.Key<GameRules.BooleanValue> SPAWN_WITH_STARTING_CHARACTERISTIC;
     public static GameRules.Key<GameRules.BooleanValue> REGRESS_SEQUENCE_ON_DEATH;
+    public static GameRules.Key<GameRules.BooleanValue> DISABLE_FLIGHT_IN_COMBAT;
 
     public static GameRules.Key<GameRules.IntegerValue> SEQ_0_AMOUNT;
     public static GameRules.Key<GameRules.IntegerValue> SEQ_1_AMOUNT;
@@ -28,6 +29,12 @@ public class ModGameRules {
             "allowAbilityGriefing",
             GameRules.Category.MISC,
             GameRules.BooleanValue.create(true)
+        );
+
+        DISABLE_FLIGHT_IN_COMBAT = GameRules.register(
+                "disableFlightInCombat",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
         );
 
         ALLOW_BEYONDER_SPAWNING = GameRules.register(

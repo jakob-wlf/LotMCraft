@@ -2,6 +2,8 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.artifacts.SealedArtifactData;
+import de.jakob.lotm.attachments.DisabledFlightComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.PotionIngredient;
@@ -26,10 +28,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
+import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
@@ -87,6 +86,17 @@ public class BeyonderEventHandler {
         if (event.getSource().getEntity() instanceof LivingEntity source) {
             if (!AbilityUtil.mayDamage(source, event.getEntity())) {
                 event.setCanceled(true);
+            }
+        }
+    }
+
+    // Disable Flight while in combat
+    @SubscribeEvent
+    public static void onDamage(LivingDamageEvent.Post event) {
+        if (event.getSource().getEntity() instanceof LivingEntity source) {
+            if(BeyonderData.isBeyonder(source) && event.getEntity().level().getGameRules().getBoolean(ModGameRules.DISABLE_FLIGHT_IN_COMBAT)) {
+                DisabledFlightComponent flightData = event.getEntity().getData(ModAttachments.FLIGHT_DISABLE_COMPONENT);
+                flightData.setCooldownTicks(20 * 20);
             }
         }
     }

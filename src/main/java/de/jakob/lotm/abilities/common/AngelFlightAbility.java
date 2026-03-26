@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.attachments.DisabledFlightComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.util.BeyonderData;
@@ -29,6 +30,13 @@ public class AngelFlightAbility extends ToggleAbility {
             return;
         }
 
+        // If disabled by cooldown, stop
+        DisabledFlightComponent disabledFlightComponent = entity.getData(ModAttachments.FLIGHT_DISABLE_COMPONENT);
+        if(disabledFlightComponent.getCooldownTicks() > 0) {
+            cancel((ServerLevel) level, entity);
+            return;
+        }
+
         // Allow Flying
         if(entity instanceof Player player) {
             player.getAbilities().mayfly = true;
@@ -48,6 +56,11 @@ public class AngelFlightAbility extends ToggleAbility {
 
     @Override
     public void start(Level level, LivingEntity entity) {
+        DisabledFlightComponent disabledFlightComponent = entity.getData(ModAttachments.FLIGHT_DISABLE_COMPONENT);
+        if(disabledFlightComponent.getCooldownTicks() > 0) {
+            cancel((ServerLevel) level, entity);
+            return;
+        }
     }
 
     @Override

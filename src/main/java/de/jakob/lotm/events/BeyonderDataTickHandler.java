@@ -8,6 +8,7 @@ import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
+import de.jakob.lotm.attachments.DisabledFlightComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.custom.MarionetteControllerItem;
@@ -80,6 +81,12 @@ public class BeyonderDataTickHandler {
         // Tick cooldowns
         AbilityCooldownComponent component = livingEntity.getData(ModAttachments.COOLDOWN_COMPONENT);
         component.tick();
+
+        // Tick flight cooldown
+        DisabledFlightComponent disabledFlightComponent = livingEntity.getData(ModAttachments.FLIGHT_DISABLE_COMPONENT);
+        if(disabledFlightComponent.getCooldownTicks() > 0) {
+            disabledFlightComponent.setCooldownTicks(disabledFlightComponent.getCooldownTicks() - 1);
+        }
 
         if(BeyonderData.isBeyonder(livingEntity)) {
             if(entity.tickCount % 200 == 0) {

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.attachments.DisabledFlightComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -33,6 +34,12 @@ public class WingsOfLightAbility extends ToggleAbility {
             return;
         }
 
+        DisabledFlightComponent disabledFlightComponent = entity.getData(ModAttachments.FLIGHT_DISABLE_COMPONENT);
+        if(disabledFlightComponent.getCooldownTicks() > 0) {
+            cancel((ServerLevel) level, entity);
+            return;
+        }
+
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         transformationComponent.setTransformedAndSync(true, entity);
         transformationComponent.setTransformationIndexAndSync(TransformationComponent.TransformationType.WINGS_OF_LIGHT, entity);
@@ -42,6 +49,12 @@ public class WingsOfLightAbility extends ToggleAbility {
     @Override
     public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide) {
+            return;
+        }
+
+        DisabledFlightComponent disabledFlightComponent = entity.getData(ModAttachments.FLIGHT_DISABLE_COMPONENT);
+        if(disabledFlightComponent.getCooldownTicks() > 0) {
+            cancel((ServerLevel) level, entity);
             return;
         }
 
