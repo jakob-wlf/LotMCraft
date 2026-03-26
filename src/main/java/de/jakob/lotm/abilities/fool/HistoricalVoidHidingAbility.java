@@ -27,6 +27,7 @@ public class HistoricalVoidHidingAbility extends ToggleAbility {
         super(id);
 
         canAlwaysBeUsed = true;
+        cannotBeStolen = true;
     }
 
     @Override
