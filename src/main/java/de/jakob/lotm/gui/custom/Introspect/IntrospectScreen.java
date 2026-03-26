@@ -27,7 +27,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     // Abilities section
     private boolean showAbilities = false;
+    private boolean showAllAbilities = false;
     private Button toggleAbilitiesButton;
+    private Button toggleAllAbilitiesButton;
     private Button clearWheelButton;
     private Button messageButton;
     private Button clearBarButton;
@@ -91,7 +93,16 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private void initializeAbilities() {
-        availableAbilities.addAll(LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence()));
+        availableAbilities.clear();
+        abilitiesScrollOffset = 0;
+
+        if (showAllAbilities) {
+            availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesUpToSequenceOrdered(menu.getSequence()));
+        } else {
+            availableAbilities.addAll(LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence()));
+        }
+
+        availableAbilities.removeIf(Ability::getShouldBeHidden);
 
         // Calculate max scroll
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
@@ -233,6 +244,26 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         this.addRenderableWidget(messageButton);
 
+        // Add "All Abilities" toggle button for creative + OP players
+        if (isCreativeOp()) {
+            int allAbilitiesButtonX = baseLeftPos - 65;
+            int allAbilitiesButtonY = this.topPos + 85;
+
+            toggleAllAbilitiesButton = Button.builder(
+                            Component.literal(showAllAbilities ? "All: ON" : "All: OFF")
+                                    .withStyle(showAllAbilities ? ChatFormatting.GREEN : ChatFormatting.RED),
+                            button -> {
+                                showAllAbilities = !showAllAbilities;
+                                initializeAbilities();
+                                button.setMessage(Component.literal(showAllAbilities ? "All: ON" : "All: OFF")
+                                        .withStyle(showAllAbilities ? ChatFormatting.GREEN : ChatFormatting.RED));
+                            })
+                    .bounds(allAbilitiesButtonX, allAbilitiesButtonY, 60, 20)
+                    .build();
+
+            this.addRenderableWidget(toggleAllAbilitiesButton);
+        }
+
         // Add abilities panel buttons if shown
         if (showAbilities) {
             addAbilityButtons(baseLeftPos);
@@ -337,6 +368,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     private void openMessagesMenu() {
         PacketHandler.sendToServer(new OpenMessagesMenuPacket());
+    }
+
+    private boolean isCreativeOp() {
+        return this.minecraft != null && this.minecraft.player != null
+                && this.minecraft.player.isCreative()
+                && this.minecraft.player.hasPermissions(2);
     }
 
     public void updateMenuData(int sequence, String pathway, float digestionProgress, float sanity) {
@@ -582,9 +619,13 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (hoveredAbility != null) {
             List<Component> tooltipLines = new ArrayList<>();
 
-            // Add ability name
-            int color = BeyonderData.pathwayInfos.get(menu.getPathway()).color();
-            tooltipLines.add(hoveredAbility.getName().withStyle(ChatFormatting.BOLD).withColor(color));
+            // Add ability name with appropriate pathway color
+            if (showAllAbilities) {
+                tooltipLines.add(hoveredAbility.getNameFormatted());
+            } else {
+                int color = BeyonderData.pathwayInfos.get(menu.getPathway()).color();
+                tooltipLines.add(hoveredAbility.getName().withStyle(ChatFormatting.BOLD).withColor(color));
+            }
 
             // Add description if available, wrapping long text
             Component description = hoveredAbility.getDescription();
@@ -661,7 +702,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     private void renderAvailableAbilities(GuiGraphics guiGraphics, int panelX, int panelY, int mouseX, int mouseY) {
         int startX = panelX + 5;
-        int startY = panelY + abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2);
+        int startY = panelY - abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2);
+
 
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
 
@@ -953,7 +995,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private Ability getAbilityAt(int mouseX, int mouseY, int panelX, int panelY, List<Ability> abilities, boolean useScroll) {
         mouseY -= 15;
         int startX = panelX + 5;
-        int startY = panelY + (useScroll ? abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2) : 0);
+        int startY = panelY - (useScroll ? abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2) : 0);
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
 
         for (int i = 0; i < abilities.size(); i++) {
@@ -989,7 +1031,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
         int row = index / iconsPerRow;
 
-        return panelY + (useScroll ? abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2) : 0) + row * (ABILITY_ICON_SIZE + 2) + 15;
+        return panelY - (useScroll ? abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2) : 0) + row * (ABILITY_ICON_SIZE + 2) + 15;
     }
 
     private boolean isInAbilityWheelArea(int mouseX, int mouseY, int panelX, int wheelY) {

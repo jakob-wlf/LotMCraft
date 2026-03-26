@@ -1,5 +1,7 @@
 {
   "item.lotmcraft.fool_card": "Fool Card",
+  "item.lotmcraft.crystal_ball": "Crystal Ball",
+  "item.lotmcraft.cane": "Cane",
   "item.lotmcraft.guiding_book": "Guiding Book",
   "item.lotmcraft.blood": "Blood",
   "item.lotmcraft.sun": "Sun",
@@ -35,13 +37,15 @@
   "key.beyonders.use_ability_bar_ability_5": "Use Ability Bar Ability 5",
   "key.beyonders.use_ability_bar_ability_6": "Use Ability Bar Ability 6",
   "key.beyonders.return_to_main_body": "Return to Main Body",
-
+  "key.beyonders.next_artifact_ability": "Use next Artifact Ability",
+  "key.beyonders.openArtifactWheel": "Open Artifact Wheel",
 
 
   "_comment001": "Abilities------------------------------------------------------------------------------------",
 
   "lotmcraft.mythical_creature_tyrant_ability": "Mythical Creature Form",
   "lotmcraft.mythical_creature_door_ability": "Mythical Creature Form",
+  "lotmcraft.mythical_creature_form_ability": "Mythical Creature Form",
 
   "lotmcraft.ally_ability": "Ally Designator",
   "lotmcraft.ally_ability.description": "Designate an entity as your ally",
@@ -53,10 +57,12 @@
   "ability.lotmcraft.divination.dream_divination": "Dream Divination",
   "ability.lotmcraft.divination.structure_divination": "Structure Divination",
   "ability.lotmcraft.divination.player_divination": "Player Divination",
+  "ability.lotmcraft.divination.anti_divination": "Anti Divination",
   "lotmcraft.angel_authority_ability": "Angel Authority",
   "lotmcraft.angel_authority_ability.description": "Angelic power that allows you to traverse the spirit world and shatter artifacts",
   "ability.lotmcraft.angel_authority.spirit_world_passage": "Spirit World Passage",
   "ability.lotmcraft.angel_authority.artifact_shattering": "Artifact Shattering",
+  "ability.lotmcraft.angel_authority.flight": "Flight",
 
   "lotmcraft.illuminate_ability": "Illuminate",
   "lotmcraft.illuminate_ability.description": "Create a small light",
@@ -506,6 +512,13 @@
   "ability.lotmcraft.spells.flash": "Flash",
   "lotmcraft.recording_ability": "Recording",
   "lotmcraft.recording_ability.description": "Record an ability of beyonder for one time usage",
+  "ability.lotmcraft.recording.record": "Record Ability",
+  "ability.lotmcraft.recording.use_copied": "Use Copied Ability",
+  "ability.lotmcraft.recording.cannot_copy": "This ability cannot be copied",
+  "ability.lotmcraft.recording.too_high_sequence": "The ability was too high of a sequence",
+  "ability.lotmcraft.recording.failed": "Failed to record the ability",
+  "ability.lotmcraft.recording.success": "Successfully recorded the ability!",
+  "ability.lotmcraft.recording.no_ability": "No ability was recorded",
   "lotmcraft.blink_ability": "Blink",
   "lotmcraft.blink_ability.description": "Rapidly teleport on short distance",
   "lotmcraft.travelers_door_ability": "Travelers Door",
@@ -542,6 +555,13 @@
   "lotmcraft.black_hole_ability.description": "Bend and Shatter space, time and light to create a Black Hole",
   "lotmcraft.replicating_ability": "Replicating",
   "lotmcraft.replicating_ability.description": "Replicate Beyonder abilities for multiple usage",
+  "ability.lotmcraft.replicating.replicate": "Replicate Ability",
+  "ability.lotmcraft.replicating.use_copied": "Use Copied Ability",
+  "ability.lotmcraft.replicating.cannot_copy": "This ability cannot be replicated",
+  "ability.lotmcraft.replicating.too_high_sequence": "The ability was too high of a sequence",
+  "ability.lotmcraft.replicating.failed": "Failed to replicate the ability",
+  "ability.lotmcraft.replicating.success": "Successfully replicated the ability!",
+  "ability.lotmcraft.replicating.no_ability": "No ability was replicated",
   "lotmcraft.distortion_field_ability": "Distortion Field",
   "lotmcraft.distortion_field_ability.description": "Create an area where enemies get randomly teleported around and find it hard to use their abilities",
   "lotmcraft.area_miniaturization_ability": "Area Miniaturization",
@@ -642,9 +662,12 @@
   "ability.lotmcraft.gift.no_target": "No Target found",
   "lotmcraft.ability_theft_ability": "Ability Theft",
   "lotmcraft.ability_theft_ability.description": "Steal an ability from your opponent making them unable to use it for a short time. This ability will grow stronger with your Sequence",
+  "ability.lotmcraft.ability_theft.steal": "Steal Ability",
+  "ability.lotmcraft.ability_theft.use_copied": "Use Copied Ability",
   "ability.lotmcraft.ability_theft.no_target": "No Target found",
   "ability.lotmcraft.ability_theft.not_beyonder": "The target is not a Beyonder",
   "ability.lotmcraft.ability_theft.no_abilities": "Failed to steal an ability",
+  "ability.lotmcraft.ability_theft.success": "Successfully stolen abilities!",
   "lotmcraft.mundane_conceptual_theft_ability": "Mundane Conceptual Theft",
   "lotmcraft.mundane_conceptual_theft_ability.description": "Steal mundane abilities from your target, like their sight, ability to walk, distance between you and the target or their health",
   "ability.lotmcraft.mundane_conceptual_theft.no_target": "No Target found",
@@ -681,6 +704,10 @@
   "ability.lotmcraft.conceptual_theft.day_night": "Steal Day/Night",
   "ability.lotmcraft.conceptual_theft.area": "Steal Area",
   "lotmcraft.time_manipulation_ability": "Time Manipulation",
+  "lotmcraft.time_manipulation_ability.description": "Manipulate Time in an area in certain ways",
+  "ability.lotmcraft.time_manipulation.stop_time": "Stop Time",
+  "ability.lotmcraft.time_manipulation.accelerate_time": "Accelerate Time",
+  "ability.lotmcraft.time_manipulation.slow_time": "Slow down Time",
 
 
   "lotm.ability.cogitation.tick": "Cogitating",
@@ -756,6 +783,7 @@
   "effect.lotmcraft.mental_plague": "Mental Plague",
   "effect.lotmcraft.conquered": "Conquered",
   "effect.lotmcraft.mutation": "Mutated",
+  "effect.lotmcraft.concealment": "Concealment",
 
   "_comment004": "Sounds-----------------------------------------------------------------------------",
   "sounds.lotmcraft.midnight_poem": "Midnight Poem",
@@ -784,6 +812,25 @@
 
   "_comment007": "Damage-----------------------------------------------------------------------------",
   "death.attack.loosing_control": "%1$s lost control.",
+  "death.attack.loosing_control.player": "%1$s lost control due to %2$s.",
+  "death.attack.purification": "%1$s was purified.",
+  "death.attack.purification.player": "%1$s was purified by %2$s.",
+  "death.attack.hunter_fire": "%1$s was scorched.",
+  "death.attack.hunter_fire.player": "%1$s was scorched by %2$s.",
+  "death.attack.sailor_lightning": "%1$s was smitten.",
+  "death.attack.sailor_lightning.player": "%1$s was smitten %2$s.",
+  "death.attack.unluck": "%1$s was too unlucky to live.",
+  "death.attack.unluck.player": "%1$s was too unlucky to live due to %2$s.",
+  "death.attack.mother_generic": "%1$s returned to the earth.",
+  "death.attack.mother_generic.player": "%2$s returned %1$s to the earth.",
+  "death.attack.door_space": "%1$s fell victim to a Space Time Anomaly.",
+  "death.attack.door_space.player": "%1$s fell victim to a Space Time Anomaly from %2$s.",
+  "death.attack.beyonder_generic": "%1$s fell victim to this cruel world.",
+  "death.attack.beyonder_generic.player": "%1$s was killed by %2$s.",
+  "death.attack.darkness_generic": "%1$s was taken by the darkness.",
+  "death.attack.darkness_generic.player": "%1$s was taken by the darkness from %2$s.",
+  "death.attack.demoness_generic": "%1$s fell victim to a catastrophe.",
+  "death.attack.demoness_generic.player": "%1$s fell victim to a catastrophe due to %2$s.",
 
 
   "_comment008": "Blocks-----------------------------------------------------------------------------",
@@ -1117,6 +1164,7 @@
   "_comment013": "Sealed Artifacts-------------------------------------------------------------------------",
   "item.lotm.sealed_artifact": "Sealed Artifact",
   "lotm.sealed_artifact.generic": "%s of %s",
+  "lotm.sealed_artifact.selected_ability": "Selected Ability:",
 
   "lotm.sealed_artifact.type.bell": "Bell",
   "lotm.sealed_artifact.type.chain": "Chain",
@@ -1152,10 +1200,57 @@
   "lotm.sealed_artifact.abilities": "Abilities",
   "lotm.sealed_artifact.negative_effect": "Negative Effect",
 
-  "lotm.negative_effect.hearing_whispers": "Hearing Whispers",
+  "lotm.negative_effect.slower_in_hot_places": "Slower in Hot Places",
+  "lotm.negative_effect.turn_to_marionette": "Turn to Puppet",
+  "lotm.negative_effect.wish_calamity": "Wish Calamity",
+
+  "lotm.negative_effect.gold_item_debuff": "Gold Lover",
+  "lotm.negative_effect.lose_concepts": "Lose Concepts",
+  "lotm.negative_effect.lose_abilities": "Lose Abilities",
+  "lotm.negative_effect.stop_time": "Stop Your Time",
+
+  "lotm.negative_effect.full_moon_whispers": "Full Moon Whispers",
+  "lotm.negative_effect.random_teleport": "Random Teleport",
+  "lotm.negative_effect.enter_spirit_world": "Spirit world Warp",
+
+  "lotm.negative_effect.slower_in_cold_places": "Slower in Cold Places",
+  "lotm.negative_effect.burn": "burn",
+  "lotm.negative_effect.conflict_with_artifacts": "Conflict with Artifacts",
+
+  "lotm.negative_effect.breath_depletion": "Breath Depletion",
+  "lotm.negative_effect.struck_by_lightning": "Struck by Lightning",
+  "lotm.negative_effect.weakness_when_alone": "Solitary Weakness",
+
+  "lotm.negative_effect.mental_plague": "Mental Plague",
+  "lotm.negative_effect.spirit_haunting": "Spirit Haunting",
+
+  "lotm.negative_effect.petrification": "Petrification",
+  "lotm.negative_effect.charm_backlash": "Demonic Backlash",
+
+  "lotm.negative_effect.wither": "Wither",
+  "lotm.negative_effect.targeted_by_entities": "Targeted by Surrounding",
+  "lotm.negative_effect.crimson_chain": "Crimson Chains",
+
+  "lotm.negative_effect.blindness": "Blindness",
+  "lotm.negative_effect.asleep": "Asleep",
+  "lotm.negative_effect.cursed": "Cursed",
+
+  "lotm.negative_effect.poison": "Poison",
+  "lotm.negative_effect.mutated": "Mutation",
+  "lotm.negative_effect.silk_trap": "Spider's Embrace",
+
+  "lotm.negative_effect.bad_luck": "Bad Luck",
+  "lotm.negative_effect.calamity_attraction": "Calamity Attraction",
+  "lotm.negative_effect.fate_spin": "Fate's Caprice",
+
+  "lotm.negative_effect.nausea": "Nausea",
+
   "lotm.negative_effect.drain_health": "Draining Health",
   "lotm.negative_effect.drain_hunger": "Draining Hunger",
-  "lotm.negative_effect.random_teleport": "Random Teleport",
+  "lotm.negative_effect.hearing_whispers": "Hearing Whispers",
+  "lotm.negative_effect.slowness": "Slowness",
+  "lotm.negative_effect.mining_fatigue": "Mining Fatigue",
+  "lotm.negative_effect.hear_sounds": "Hear Sounds",
 
   "lotm.whisper.0": "§4They're watching...",
   "lotm.whisper.1": "§4The voices never stop...",
@@ -1257,6 +1352,7 @@
   "lotm.description": "Description",
   "lotm.digested": "Digested the Potion",
   "lotm.marionette": "Marionette",
+  "lotm.ability": "Ability",
   "lotm.selected": "Selected",
   "lotm.potion_recipe": "Potion Recipe",
   "lotm.beyonder_message.full": "Become a Beyonder of the %s Pathway at Sequence %s",
@@ -1276,6 +1372,8 @@
   "lotm.selectable": "Selectable",
   "lotm.ability_wheel.title": "Ability Wheel",
   "lotm.ability_wheel.no_abilities": "No abilities available in wheel",
+  "lotm.copied_ability_wheel.title": "Copied Abilities",
+  "lotm.copied_ability_wheel.no_abilities": "No copied abilities available",
   "lotmcraft.griefing_enabled_required": "Enable griefing for this ability to work",
 
   "lotmcraft.own_praying": "You have heard your own praying",

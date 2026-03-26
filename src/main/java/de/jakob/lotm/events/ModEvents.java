@@ -14,7 +14,9 @@ import de.jakob.lotm.rendering.models.DoorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.TyrantMythicalCreatureModel;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.SpiritualityProgressTracker;
+import de.jakob.lotm.util.beyonderMap.CharacteristicStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.SpawnPlacementTypes;
@@ -28,6 +30,7 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
+import static de.jakob.lotm.abilities.fool.HistoricalVoidSummoningAbility.MARKED_ENTITIES_TAG;
 import static de.jakob.lotm.util.BeyonderData.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -106,7 +109,10 @@ public class ModEvents {
         DigestionCommand.register(event.getDispatcher());
         QuestCommand.register(event.getDispatcher());
         BeyonderMapCommand.register(event.getDispatcher());
+        DisableAbilityCommand.register(event.getDispatcher());
+        EnableAbilityCommand.register(event.getDispatcher());
         HonorificNameCommand.register(event.getDispatcher());
+        CharacteristicsStackCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent
@@ -119,6 +125,7 @@ public class ModEvents {
             String pathway = getPathway(original);
             int sequence = getSequence(original);
             boolean griefingEnabled = original.getPersistentData().getBoolean(NBT_GRIEFING_ENABLED);
+            Tag markedEntities = original.getPersistentData().get(MARKED_ENTITIES_TAG);
 
             // Copy the data to the new player
             CompoundTag newTag = newPlayer.getPersistentData();
@@ -126,6 +133,9 @@ public class ModEvents {
             newTag.putInt(NBT_SEQUENCE, sequence);
             newTag.putFloat(NBT_SPIRITUALITY, BeyonderData.getMaxSpirituality(sequence));
             newTag.putBoolean(NBT_GRIEFING_ENABLED, griefingEnabled);
+            if (markedEntities != null) {
+                newTag.put(MARKED_ENTITIES_TAG, markedEntities.copy());
+            }
 
             // Update spirituality progress tracker
             if (getMaxSpirituality(sequence) > 0) {

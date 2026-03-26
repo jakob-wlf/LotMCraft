@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.error;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.AbilityUseEvent;
+import de.jakob.lotm.abilities.error.handler.AbilityTheftHandler;
 import de.jakob.lotm.abilities.visionary.IdentityAvatarAbility;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
@@ -31,6 +32,8 @@ public class LoopHoleCreationAbility extends Ability {
     // Track active loopholes: loophole ID -> LoopholeData
     private static final Map<UUID, LoopholeData> activeLoopholes = new ConcurrentHashMap<>();
 
+    private static final ThreadLocal<Boolean> isRedirecting = ThreadLocal.withInitial(() -> false);
+
     // Track which entities are in which loophole (one per entity)
     private static final Map<UUID, UUID> entityToLoophole = new ConcurrentHashMap<>();
 
@@ -58,7 +61,7 @@ public class LoopHoleCreationAbility extends Ability {
         UUID loopholeId = UUID.randomUUID();
 
         if(entity instanceof ServerPlayer serverPlayer) {
-            EffectManager.playEffect(EffectManager.Effect.LOOPHOLE, targetLoc.x, targetLoc.y, targetLoc.z, serverPlayer);
+            EffectManager.playEffect(EffectManager.Effect.LOOPHOLE, targetLoc.x, targetLoc.y, targetLoc.z, serverPlayer, entity);
         }
 
         // Register the loophole
@@ -81,6 +84,9 @@ public class LoopHoleCreationAbility extends Ability {
                 double resistance = AbilityUtil.getSequenceResistanceFactor(entity, e);
                 if (ThreadLocalRandom.current().nextDouble() >= resistance) {
                     e.teleportTo(targetLoc.x, targetLoc.y, targetLoc.z);
+
+                    if(BeyonderData.isBeyonder(e))
+                        AbilityTheftHandler.performTheft(serverLevel, entity, e, random, false);
                 }
             });
         });
@@ -130,6 +136,8 @@ public class LoopHoleCreationAbility extends Ability {
 
     @SubscribeEvent
     public static void onAbilityUse(AbilityUseEvent event) {
+        if (isRedirecting.get()) return;
+
         LivingEntity user = event.getEntity();
         if (user == null) return;
 
@@ -182,7 +190,12 @@ public class LoopHoleCreationAbility extends Ability {
                 && !(ability instanceof AvatarCreationAbility)
                 && !(ability instanceof IdentityAvatarAbility)) {
             // Use the creator as the caster but potentially keep original targeting
-            ability.useAbility(serverLevel, creator, false, false, true);
+            isRedirecting.set(true);
+            try {
+                ability.useAbility(serverLevel, creator, false, false, true);
+            } finally {
+                isRedirecting.set(false); // Always clean up, even on exception
+            }
         }
     }
 

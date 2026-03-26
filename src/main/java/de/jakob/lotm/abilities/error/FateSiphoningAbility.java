@@ -62,7 +62,8 @@ public class FateSiphoningAbility extends Ability {
         DirectionalEffectManager.playEffect(DirectionalEffectManager.DirectionalEffect.FATE_SIPHONING, entity.getEyePosition().x, entity.getEyePosition().y, entity.getEyePosition().z,
                 target.getX(), target.getY() + target.getEyeHeight() * 0.5, target.getZ(),
                 40,
-                serverLevel);
+                serverLevel,
+                entity);
 
         linkedEntities.put(entity.getUUID(), target.getUUID());
         ServerScheduler.scheduleDelayed(20 * 14, () -> linkedEntities.remove(entity.getUUID()));

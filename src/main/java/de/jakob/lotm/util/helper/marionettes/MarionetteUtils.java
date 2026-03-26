@@ -3,10 +3,13 @@ package de.jakob.lotm.util.helper.marionettes;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.goals.*;
 import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.*;
@@ -29,18 +32,18 @@ public class MarionetteUtils {
         if (entity instanceof Player) {
             return false; // Players cannot be turned into marionettes
         }
-        
+
         MarionetteComponent component = entity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
         if (component.isMarionette()) {
             return false; // Already a marionette
         }
-        
+
         // Set marionette data
         component.setMarionette(true);
         component.setControllerUUID(controller.getStringUUID());
         component.setFollowMode(true);
         component.setShouldAttack(true);
-        
+
         // Clear existing goals and add marionette goals
         if (entity instanceof Mob mob) {
             // Remove hostile targeting goals
@@ -64,11 +67,9 @@ public class MarionetteUtils {
 
         ItemStack controllerItem = createMarionetteController(entity);
 
-
         if (!controller.getInventory().add(controllerItem)) {
             controller.drop(controllerItem, false);
         }
-        
         return true;
     }
     
@@ -88,7 +89,7 @@ public class MarionetteUtils {
                         new ItemLore(List.of(
                                 Component.literal("-------------------").withStyle(style -> style.withColor(0xFFa742f5).withItalic(false)),
                                 Component.translatable("lotm.pathway").append(Component.literal(": ")).append(Component.literal(BeyonderData.pathwayInfos.get(BeyonderData.getPathway(marionette)).getSequenceName(9))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
-                                Component.translatable("lotm.sequence").append(Component.literal(": ")).append(Component.literal(BeyonderData.getSequence(marionette) + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
+                                Component.translatable("lotm.sequence").append(Component.literal(": ")).append(Component.literal(BeyonderData.getSequence(marionette, true) + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
                         )));
             }
         }

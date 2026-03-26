@@ -1,13 +1,17 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -21,8 +25,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class WaterMasteryAbility extends SelectableAbility {
@@ -34,6 +38,14 @@ public class WaterMasteryAbility extends SelectableAbility {
             new Vector3f(30 / 255f, 153 / 255f, 255 / 255f),
             20f
     );
+
+    private static final HashSet<ActiveWaterWall> activeWaterWalls = new HashSet<>();
+
+    public record ActiveWaterWall(Vec3 position, Vec3 perpendicular, UUID wallId, int halfWidth, int minY, int maxY) {}
+
+    public static HashSet<ActiveWaterWall> getActiveWaterWalls() {
+        return new HashSet<>(activeWaterWalls);
+    }
 
 
     @Override
@@ -99,27 +111,43 @@ public class WaterMasteryAbility extends SelectableAbility {
 
         Vec3 perpendicular = VectorUtil.getPerpendicularVector(entity.getLookAngle()).normalize();
 
+        AtomicBoolean isFrozen = new AtomicBoolean(false);
+
+        UUID wallId = UUID.randomUUID();
+        ActiveWaterWall wallData = new ActiveWaterWall(targetPos, perpendicular, wallId, 30, -2, 17);
+        activeWaterWalls.add(wallData);
+
         ServerScheduler.scheduleForDuration(0, 7, 20 * 30, () -> {
             if(random.nextInt(10) == 0)
                 level.playSound(null, targetPos.x, targetPos.y, targetPos.z, SoundEvents.GENERIC_SPLASH, entity.getSoundSource(), 2.0f, 1.0f);
 
+            if(InteractionHandler.isInteractionPossible(new Location(targetPos, level), "freezing", BeyonderData.getSequence(entity))) {
+                isFrozen.set(true);
+            }
 
             for(int i = -2; i < 17; i++) {
                 for(int j = -30; j < 31; j++) {
                     Vec3 pos = targetPos.add(perpendicular.scale(j)).add(0, i, 0);
 
+                    if(isFrozen.get() && BeyonderData.isGriefingEnabled(entity)) {
+                        BlockPos blockPos = BlockPos.containing(pos);
+                        if(level.getBlockState(blockPos).getCollisionShape(level, blockPos).isEmpty()) {
+                            level.setBlockAndUpdate(blockPos, Blocks.ICE.defaultBlockState());
+                        }
+                    }
+
                     if(random.nextBoolean())
-                        ParticleUtil.spawnParticles(level, dust, pos, 1, 0.5, 0.02);
+                        ParticleUtil.spawnParticles(level, !isFrozen.get() ? dust : ParticleTypes.SNOWFLAKE, pos, 1, 0.5, 0.02);
 
-                    AbilityUtil.damageNearbyEntities(level, entity, 1.2f, DamageLookup.lookupDamage(4, .35) * multiplier(entity), pos, true, false, false, 15);
+                    AbilityUtil.damageNearbyEntities(level, isFrozen.get() ? null : entity, 1.2f, DamageLookup.lookupDamage(4, .35) * multiplier(entity), pos, true, false, false, 15);
 
-                    for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, level, pos, 1f)) {
+                    for(LivingEntity target : AbilityUtil.getNearbyEntities(isFrozen.get() ? null : entity, level, pos, 1f)) {
                         Vec3 knockback = target.position().subtract(pos).normalize().add(0, .2, 0).scale(1.4f);
                         target.setDeltaMovement(knockback);
                     }
                 }
             }
-        }, level);
+        }, () -> activeWaterWalls.remove(wallData), level, () -> AbilityUtil.getTimeInArea(entity, new Location(targetPos, level)));
     }
 
 }

@@ -2,6 +2,8 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.DivinationUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -48,22 +50,17 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid) implements
                 return;
             }
 
-            int playerSequence = player.getPersistentData().getInt("beyonder_sequence");
-            int targetSequence = targetPlayer.getPersistentData().getInt("beyonder_sequence");
+            int playerSequence = BeyonderData.getSequence(player);
+            int targetSequence = BeyonderData.getSequence(targetPlayer);
 
-            if (targetSequence > 4) {
-                if (playerSequence > targetSequence + 2){
-                    player.sendSystemMessage(Component.literal("§cDivination failed"));
-                    return;
+
+            int divinationDifference = 3 + DivinationUtil.getDivinationPower(player) - DivinationUtil.getConcealmentPower(targetPlayer);
+            if (divinationDifference <= 0){
+                player.sendSystemMessage(Component.literal("§cDivination failed"));
+                if(playerSequence < 4 && targetSequence > 3){
+                    player.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 200, 2));
                 }
-            }else {
-                if (playerSequence > targetSequence){
-                    player.sendSystemMessage(Component.literal("§cDivination failed"));
-                    if (playerSequence > targetSequence + 1) {
-                        player.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 200, 2));
-                    }
-                    return;
-                }
+                return;
             }
 
             BlockPos playerPos = player.blockPosition();
@@ -74,25 +71,55 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid) implements
 
             int distance = (int) Math.sqrt(dx * dx + dz * dz);
 
-            if (distance >= 1000) {
-                player.sendSystemMessage(Component.literal("§cPlayer is very far from you"));
-                return;
+            // distance still isn't balanced
+            int maxDistance = switch (playerSequence) {
+                case 9, 8, 7, 6, 5 -> 200 * (10 - playerSequence);
+                case 4             -> 2500;
+                case 3             -> 5000;
+                case 2             -> ((int) (player.level().getWorldBorder().getSize() * 0.001) > 5000) ? (int) (player.level().getWorldBorder().getSize() * 0.001) : 7500;
+                case 1             -> ((int) (player.level().getWorldBorder().getSize() * 0.01) > 7500) ? (int) (player.level().getWorldBorder().getSize() * 0.01) : 15000;
+                default            -> 0;
             };
 
-            String direction = getDirection(dx, dz);
+            if (distance >= maxDistance) {
+                player.sendSystemMessage(Component.literal("§cPlayer is very far from you"));
+                return;
+            }
 
-            player.sendSystemMessage(Component.literal(String.format(
-                    "§5You sense §d%s§5 to the §d%s§5, about §d%d blocks §5away...",
-                    targetPlayer.getGameProfile().getName(),
-                    direction,
-                    distance
-            )));
+            if (divinationDifference < 4){
+                if(playerSequence < 4 && targetSequence > 3){
+                    player.sendSystemMessage(Component.literal("§cDivination failed"));
+                    return;
+                }
+                player.sendSystemMessage(Component.literal(String.format(
+                        "§5You sense §d%s§5 to the §d%s§5",
+                        targetPlayer.getGameProfile().getName(),
+                        getDirection(dx, dz)
+                )));
+
+            } else if(divinationDifference < 8) {
+                player.sendSystemMessage(Component.literal(String.format(
+                        "§5You sense §d%s§5 to the §d%s§5, about §d%d blocks §5away...",
+                        targetPlayer.getGameProfile().getName(),
+                        getDirection(dx, dz),
+                        distance
+                )));
+            }
+            else if (divinationDifference >= 10) {
+                player.sendSystemMessage(Component.literal(String.format(
+                        "§5You sense §d%s§5 to the §d%s§5 at cords §d%d, %d, %d§5, about §d%d blocks §5away...",
+                        targetPlayer.getGameProfile().getName(),
+                        getDirection(dx, dz),
+                        targetPlayer.blockPosition().getX(),
+                        targetPlayer.blockPosition().getY(),
+                        targetPlayer.blockPosition().getZ(),
+                        distance
+                )));
+            }
         });
     }
 
     private static String getDirection(int dx, int dz) {
-        if (dx == 0 && dz == 0) return "directly below/above";
-
         double angle = Math.toDegrees(Math.atan2(dz, dx));
         if (angle < 0) angle += 360;
 

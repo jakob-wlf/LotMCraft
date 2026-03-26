@@ -1,8 +1,12 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.abilities.tyrant.WaterMasteryAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -18,6 +22,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -261,7 +266,21 @@ public class LightningEntity extends Entity {
         // Handle entity hit - damage, effects, etc.
         if (!level().isClientSide && source != null) {
             explode(pos);
-            entity.hurt(source.damageSources().mobAttack(source), (float) damage);
+
+            // Check for water interaction - lightning deals more damage in water
+            boolean inWater = isNearWater(pos);
+            float waterMultiplier = inWater ? 2.0f : 1.0f;
+
+            entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.SAILOR_LIGHTNING, source), (float) damage * waterMultiplier);
+
+            // If in water, deal AoE damage to entities in water
+            if(inWater) {
+                dealWaterConductionDamage(pos);
+            }
+
+            // Check for water wall interaction
+            dealWaterWallDamage(pos);
+
             ServerScheduler.scheduleDelayed(12, this::discardEntityAndBranches);
         }
     }
@@ -277,8 +296,18 @@ public class LightningEntity extends Entity {
         hasHit = true;
         // Handle block hit - particles, sound, etc.
         if (!level().isClientSide) {
+            Vec3 pos = hit.getLocation();
             if(source != null)
-                explode(hit.getLocation());
+                explode(pos);
+
+            // Check for water interaction
+            if(isNearWater(pos)) {
+                dealWaterConductionDamage(pos);
+            }
+
+            // Check for water wall interaction
+            dealWaterWallDamage(pos);
+
             ServerScheduler.scheduleDelayed(12, this::discardEntityAndBranches);
         }
     }
@@ -288,6 +317,59 @@ public class LightningEntity extends Entity {
             e.discardEntityAndBranches();
         }
         this.discard();
+    }
+
+    private boolean isNearWater(Vec3 pos) {
+        BlockPos center = BlockPos.containing(pos);
+        for(int x = -2; x <= 2; x++) {
+            for(int y = -2; y <= 2; y++) {
+                for(int z = -2; z <= 2; z++) {
+                    if(level().getBlockState(center.offset(x, y, z)).is(Blocks.WATER)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private void dealWaterConductionDamage(Vec3 pos) {
+        if(source == null || level().isClientSide) return;
+
+        ServerLevel serverLevel = (ServerLevel) level();
+        // Deal extra damage to entities in/near water within a large radius
+        AbilityUtil.getNearbyEntities(source, serverLevel, pos, 15).forEach(e -> {
+            if(e.isInWater() || isNearWater(e.position())) {
+                e.hurt(source.damageSources().mobAttack(source), (float) (damage * 1.5));
+                ParticleUtil.spawnParticles(serverLevel, ParticleTypes.ELECTRIC_SPARK, e.position(), 15, .5, 0);
+            }
+        });
+    }
+
+    private void dealWaterWallDamage(Vec3 pos) {
+        if(source == null || level().isClientSide) return;
+
+        ServerLevel serverLevel = (ServerLevel) level();
+        for(WaterMasteryAbility.ActiveWaterWall wall : WaterMasteryAbility.getActiveWaterWalls()) {
+            // Check if lightning hit near the water wall line
+            Vec3 wallPos = wall.position();
+            Vec3 perp = wall.perpendicular();
+
+            // Project hit pos onto the wall plane to check distance
+            Vec3 toHit = pos.subtract(wallPos);
+            double alongWall = toHit.dot(perp);
+            double distToWallLine = toHit.subtract(perp.scale(alongWall)).length();
+
+            if(distToWallLine < 5 && Math.abs(alongWall) < wall.halfWidth()) {
+                // Lightning hit the water wall - damage all entities around the wall
+                for(int j = -wall.halfWidth(); j <= wall.halfWidth(); j += 3) {
+                    Vec3 wallPoint = wallPos.add(perp.scale(j));
+                    AbilityUtil.damageNearbyEntities(serverLevel, source, 3, (float) (damage * 1.5), wallPoint, true, false, true, 0);
+                    ParticleUtil.spawnParticles(serverLevel, ParticleTypes.ELECTRIC_SPARK, wallPoint, 10, 1, 0);
+                }
+                break;
+            }
+        }
     }
 
     @Override

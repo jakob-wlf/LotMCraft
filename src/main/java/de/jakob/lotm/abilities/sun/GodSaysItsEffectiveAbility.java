@@ -2,6 +2,8 @@ package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.RingEffectManager;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -42,6 +44,6 @@ public class GodSaysItsEffectiveAbility extends Ability {
             RingEffectManager.createRingForAll(entity.getEyePosition().subtract(0, .4, 0), 6, 20 * 2, 252 / 255f, 173 /255f, 3 / 255f, .65f, .5f, 1f, .5f, true, (ServerLevel) level);
         }, () -> {
             BeyonderData.removeModifier(entity, "notary_buff");
-        }, (ServerLevel) level);
+        }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 }

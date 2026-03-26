@@ -30,6 +30,7 @@ import de.jakob.lotm.abilities.wheel_of_fortune.passives.PassiveCalamityAttracti
 import de.jakob.lotm.abilities.wheel_of_fortune.passives.PassiveLuckAbility;
 import de.jakob.lotm.abilities.wheel_of_fortune.passives.PassiveLuckAccumulationAbility;
 import de.jakob.lotm.abilities.wheel_of_fortune.passives.PhysicalEnhancementsWheelOfFortuneAbility;
+import de.jakob.lotm.events.BeyonderDataTickHandler;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;

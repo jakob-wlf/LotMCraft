@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -178,7 +179,7 @@ public class ElectricShockEntity extends Entity {
         // Handle entity hit - damage, effects, etc.
         if (!level().isClientSide) {
             DamageSource dmg = (source != null)
-                    ? level().damageSources().mobAttack(source)
+                    ? ModDamageTypes.source(entity.level(), ModDamageTypes.BEYONDER_GENERIC)
                     : level().damageSources().generic();
 
             entity.hurt(dmg, (float) damage);

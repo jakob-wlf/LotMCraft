@@ -11,19 +11,14 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-/**
- * Black hole renderer: renders a black sphere + orange accretion disk.
- * Compatible with NeoForge 1.21.1.
- */
 public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity> {
     private static final ResourceLocation BLACK_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,"textures/entity/black_hole/black.png");
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/black_hole/black.png");
     private static final ResourceLocation DISK_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,"textures/entity/black_hole/black_hole_disk.png");
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/black_hole/black_hole_disk.png");
 
     public BlackHoleRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -32,6 +27,8 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity> {
 
     @Override
     public void render(BlackHoleEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        boolean petrified = entity.getTags().contains("petrified");
+
         poseStack.pushPose();
 
         float radius = entity.getRadius();
@@ -43,53 +40,57 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity> {
             poseStack.scale(radius * 0.55f, radius * 0.55f, radius * 0.55f);
             Matrix4f matrix = poseStack.last().pose();
 
-            VertexConsumer buffer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(BLACK_TEXTURE));
+            RenderType renderType = petrified ? RenderType.entityCutoutNoCull(LOTMCraft.STONE_TEXTURE) :
+                    RenderType.entityCutoutNoCull(BLACK_TEXTURE);
 
-            renderSphere(matrix, buffer); // Your existing sphere-drawing method
+            VertexConsumer buffer = bufferSource.getBuffer(renderType);
+            renderSphere(matrix, buffer, petrified);
         }
         poseStack.popPose();
 
         // --- RENDER ACCRETION DISK ---
         poseStack.pushPose();
-        {
-            // Position slightly above center to avoid z-fighting
+        if(!petrified) {
             poseStack.translate(0.0, 0.01, 0.0);
             poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
-
-            // Keep it horizontal
             poseStack.scale(radius * 1.8f, 1.0f, radius * 1.8f);
 
             Matrix4f matrix = poseStack.last().pose();
-            VertexConsumer buffer = bufferSource.getBuffer(RenderType.entityTranslucent(
-                    DISK_TEXTURE
-            ));
 
-            int light = 0xF000F0; // full brightness
+            RenderType renderType = RenderType.entityTranslucent(DISK_TEXTURE);
+            VertexConsumer buffer = bufferSource.getBuffer(renderType);
+
+            int light = 0xF000F0;
             float halfSize = 1.0f;
 
+            // When petrified, tint disk gray
+            int r = petrified ? 128 : 255;
+            int g = petrified ? 128 : 255;
+            int b = petrified ? 128 : 255;
+
             buffer.addVertex(matrix, -halfSize, 0, -halfSize)
-                    .setColor(255, 255, 255, 220)
+                    .setColor(r, g, b, 220)
                     .setUv(0f, 0f)
                     .setLight(light)
                     .setOverlay(OverlayTexture.NO_OVERLAY)
                     .setNormal(0, 1, 0);
 
             buffer.addVertex(matrix, -halfSize, 0, halfSize)
-                    .setColor(255, 255, 255, 220)
+                    .setColor(r, g, b, 220)
                     .setUv(0f, 1f)
                     .setLight(light)
                     .setOverlay(OverlayTexture.NO_OVERLAY)
                     .setNormal(0, 1, 0);
 
             buffer.addVertex(matrix, halfSize, 0, halfSize)
-                    .setColor(255, 255, 255, 220)
+                    .setColor(r, g, b, 220)
                     .setUv(1f, 1f)
                     .setLight(light)
                     .setOverlay(OverlayTexture.NO_OVERLAY)
                     .setNormal(0, 1, 0);
 
             buffer.addVertex(matrix, halfSize, 0, -halfSize)
-                    .setColor(255, 255, 255, 220)
+                    .setColor(r, g, b, 220)
                     .setUv(1f, 0f)
                     .setLight(light)
                     .setOverlay(OverlayTexture.NO_OVERLAY)
@@ -100,8 +101,7 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity> {
         poseStack.popPose();
     }
 
-
-    private void renderSphere(Matrix4f matrix, VertexConsumer buffer) {
+    private void renderSphere(Matrix4f matrix, VertexConsumer buffer, boolean petrified) {
         int rings = 12;
         int segments = 24;
 
@@ -118,7 +118,7 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity> {
                 Vector3f v3 = spherical(theta2, phi2);
                 Vector3f v4 = spherical(theta1, phi2);
 
-                putQuad(buffer, matrix, v1, v2, v3, v4);
+                putQuad(buffer, matrix, v1, v2, v3, v4, petrified);
             }
         }
     }
@@ -130,54 +130,38 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity> {
         return new Vector3f(x, y, z);
     }
 
-    private void putQuad(VertexConsumer buffer, Matrix4f matrix, Vector3f v1, Vector3f v2, Vector3f v3, Vector3f v4) {
-        // Add 4 vertices — each must have color, UV, light, overlay, and normal
+    private void putQuad(VertexConsumer buffer, Matrix4f matrix, Vector3f v1, Vector3f v2, Vector3f v3, Vector3f v4, boolean petrified) {
+        int r = petrified ? 128 : 255;
+        int g = petrified ? 128 : 255;
+        int b = petrified ? 128 : 255;
+
         buffer.addVertex(matrix, v1.x, v1.y, v1.z)
-                .setColor(255, 255, 255, 255)
+                .setColor(r, g, b, 255)
                 .setUv(0f, 0f)
                 .setLight(240)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setNormal(0, 1, 0);
 
         buffer.addVertex(matrix, v2.x, v2.y, v2.z)
-                .setColor(255, 255, 255, 255)
+                .setColor(r, g, b, 255)
                 .setUv(0f, 1f)
                 .setLight(240)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setNormal(0, 1, 0);
 
         buffer.addVertex(matrix, v3.x, v3.y, v3.z)
-                .setColor(255, 255, 255, 255)
+                .setColor(r, g, b, 255)
                 .setUv(1f, 1f)
                 .setLight(240)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setNormal(0, 1, 0);
 
         buffer.addVertex(matrix, v4.x, v4.y, v4.z)
-                .setColor(255, 255, 255, 255)
+                .setColor(r, g, b, 255)
                 .setUv(1f, 0f)
                 .setLight(240)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setNormal(0, 1, 0);
-    }
-
-
-    private void renderDisk(Matrix4f matrix, VertexConsumer buffer) {
-        int segments = 64;
-        float innerRadius = 0.4f;
-        float outerRadius = 1.0f;
-
-        for (int i = 0; i < segments; i++) {
-            float angle1 = (float) (2 * Math.PI * i / segments);
-            float angle2 = (float) (2 * Math.PI * (i + 1) / segments);
-
-            Vector3f v1 = new Vector3f(Mth.cos(angle1) * innerRadius, 0, Mth.sin(angle1) * innerRadius);
-            Vector3f v2 = new Vector3f(Mth.cos(angle2) * innerRadius, 0, Mth.sin(angle2) * innerRadius);
-            Vector3f v3 = new Vector3f(Mth.cos(angle2) * outerRadius, 0, Mth.sin(angle2) * outerRadius);
-            Vector3f v4 = new Vector3f(Mth.cos(angle1) * outerRadius, 0, Mth.sin(angle1) * outerRadius);
-
-            putQuad(buffer, matrix, v1, v2, v3, v4);
-        }
     }
 
     @Override

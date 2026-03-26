@@ -32,19 +32,24 @@ public class QuestManager {
         if(!component.getQuestProgress().containsKey(questId))
             return;
 
-        for(ItemStack reward : quest.getRewards(player)) {
-            if(!player.addItem(reward)) {
-                player.drop(reward, false);
+        List<ItemStack> rewards = component.getLockedQuestRewards().getOrDefault(questId, quest.getRewards(player));
+        for(ItemStack reward : rewards) {
+            ItemStack rewardCopy = reward.copy();
+            if(!player.addItem(rewardCopy)) {
+                player.drop(rewardCopy, false);
             }
         }
 
-        float digestionReward = quest.getDigestionReward();
-        if(BeyonderData.getSequence(player) < quest.sequence) {
+        float digestionReward = component.getLockedQuestDigestionRewards().getOrDefault(questId, quest.getDigestionReward(player));
+        if(quest.shouldScaleDigestionBySequence() && BeyonderData.getSequence(player) < quest.sequence) {
             int sequenceDifference = quest.sequence - BeyonderData.getSequence(player);
             digestionReward *= (1 / ((float) Math.pow(sequenceDifference, 2.25) + 1));
         }
 
         component.getQuestProgress().remove(questId);
+        component.getQuestLocation().remove(questId);
+        component.getLockedQuestRewards().remove(questId);
+        component.getLockedQuestDigestionRewards().remove(questId);
         component.getCompletedQuests().add(questId);
 
         BeyonderData.digest(player, digestionReward, true);
@@ -75,9 +80,18 @@ public class QuestManager {
         }
 
         // Get quest information
-        List<ItemStack> rewards = quest.getRewards(player);
-        float digestionReward = quest.getDigestionReward();
+        List<ItemStack> rewards = component.getLockedQuestRewards()
+                .computeIfAbsent(questId, ignored -> quest.getRewards(player).stream().map(ItemStack::copy).toList())
+                .stream()
+                .map(ItemStack::copy)
+                .toList();
+        float digestionReward = component.getLockedQuestDigestionRewards()
+                .computeIfAbsent(questId, ignored -> quest.getDigestionReward(player));
         int questSequence = quest.getSequence();
+
+        component.getLockedQuestRewards().put(questId, rewards.stream().map(ItemStack::copy).toList());
+        component.getLockedQuestDigestionRewards().put(questId, digestionReward);
+
 
         // Send packet to open the GUI on client
         PacketHandler.sendToPlayer(player, new OpenQuestAcceptanceScreenPacket(
@@ -108,9 +122,11 @@ public class QuestManager {
         }
 
         component.getQuestProgress().put(questId, 0f);
-        player.sendSystemMessage(Component.translatable("lotm.quest.accepted", Component.translatable("lotm.quest.impl." + questId).getString()).withColor(0x4CAF50));
-        player.sendSystemMessage(quest.getDescription().withColor(0x4CAF50));
+        component.getLockedQuestRewards().computeIfAbsent(questId, ignored -> quest.getRewards(player).stream().map(ItemStack::copy).toList());
+        component.getLockedQuestDigestionRewards().computeIfAbsent(questId, ignored -> quest.getDigestionReward(player));player.sendSystemMessage(Component.translatable("lotm.quest.accepted", Component.translatable("lotm.quest.impl." + questId).getString()).withColor(0x4CAF50));
         quest.startQuest(player);
+        player.sendSystemMessage(quest.getDescription(player).withColor(0x4CAF50));
+
         return true;
     }
 
@@ -134,6 +150,9 @@ public class QuestManager {
             return;
 
         component.getQuestProgress().remove(questId);
+        component.getQuestLocation().remove(questId);
+        component.getLockedQuestRewards().remove(questId);
+        component.getLockedQuestDigestionRewards().remove(questId);
         player.sendSystemMessage(Component.translatable("lotm.quest.discarded", Component.translatable("lotm.quest.impl." + questId).getString()).withColor(0xFF5722));
     }
 

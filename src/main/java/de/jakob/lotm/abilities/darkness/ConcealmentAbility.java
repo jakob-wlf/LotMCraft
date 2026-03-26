@@ -3,9 +3,11 @@ package de.jakob.lotm.abilities.darkness;
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.TemporaryChunkLoader;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -49,11 +51,24 @@ public class ConcealmentAbility extends SelectableAbility {
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
+        // Wings of Light glow prevents the user from entering concealment
+        if(isPreventedByWingsOfLight(entity)) {
+            if(entity instanceof Player player) {
+                AbilityUtil.sendActionBar(player, net.minecraft.network.chat.Component.literal("Wings of Light prevent concealment.").withColor(0xFFff124d));
+            }
+            return;
+        }
+
         if(!(entity instanceof Player)) abilityIndex = 0;
         switch(abilityIndex) {
             case 0 -> concealSurroundings(level, entity);
             case 1 -> enterConcealedArea(level, entity);
         }
+    }
+
+    private static boolean isPreventedByWingsOfLight(LivingEntity entity) {
+        ToggleAbility wingsOfLight = (ToggleAbility) LOTMCraft.abilityHandler.getById("wings_of_light_ability");
+        return wingsOfLight != null && wingsOfLight.isActiveForEntity(entity);
     }
 
     private void enterConcealedArea(Level level, LivingEntity entity) {
@@ -237,7 +252,7 @@ public class ConcealmentAbility extends SelectableAbility {
             return; // Exit early if destination world doesn't exist
         }
 
-        EffectManager.playEffect(EffectManager.Effect.CONCEALMENT, entity.getX(), entity.getY(), entity.getZ(), serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.CONCEALMENT, entity.getX(), entity.getY(), entity.getZ(), serverLevel, entity);
 
         AtomicDouble radius = new AtomicDouble(2);
         Vec3 finalTargetLoc = entity.position();
@@ -319,6 +334,6 @@ public class ConcealmentAbility extends SelectableAbility {
             });
 
             radius.addAndGet(0.5);
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(finalTargetLoc, serverLevel)));
     }
 }

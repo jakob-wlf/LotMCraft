@@ -1,6 +1,8 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -89,8 +91,8 @@ public class RequiemAbility extends Ability {
                 ServerScheduler.scheduleDelayed(duration, () -> ((Mob) targetEntity).setNoAi(false));
             }
             if(BeyonderData.isBeyonder(targetEntity)) {
-                BeyonderData.disableAbilityUse(targetEntity, "requiem");
-                ServerScheduler.scheduleDelayed(duration, () -> BeyonderData.enableAbilityUse(targetEntity, "requiem"));
+                DisabledAbilitiesComponent component = targetEntity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+                component.disableAbilityUsageForTime("requiem", duration, targetEntity);
             }
         }
 
@@ -110,7 +112,7 @@ public class RequiemAbility extends Ability {
 
             loc.setLevel(targetEntity.level());
             loc.setPosition(targetEntity.position());
-        });
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
 
 
         ServerScheduler.scheduleDelayed(duration, () -> pacifiedEntities.remove(targetEntity.getUUID()));
@@ -136,6 +138,6 @@ public class RequiemAbility extends Ability {
             }
 
             tick.addAndGet(1);
-        });
+        }, null, level, () -> AbilityUtil.getTimeInArea(null, startLoc));
     }
 }

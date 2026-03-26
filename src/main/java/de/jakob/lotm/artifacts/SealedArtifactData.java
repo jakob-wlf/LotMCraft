@@ -16,7 +16,7 @@ public record SealedArtifactData(
         String pathway,
         int sequence,
         List<Ability> abilities,
-        NegativeEffect negativeEffect
+        List<NegativeEffect> negativeEffect
 ) {
 
     public static final Codec<SealedArtifactData> CODEC = RecordCodecBuilder.create(instance ->
@@ -44,7 +44,8 @@ public record SealedArtifactData(
                             .fieldOf("abilities")
                             .orElse(Collections.emptyList()) // Fallback to empty list
                             .forGetter(SealedArtifactData::abilities),
-                    NegativeEffect.CODEC.fieldOf("negative_effect")
+                    Codec.list(NegativeEffect.CODEC)
+                            .fieldOf("negative_effect")
                             .orElseGet(() -> NegativeEffect.createDefault()) // Fallback to default
                             .forGetter(SealedArtifactData::negativeEffect)
             ).apply(instance, SealedArtifactData::new)

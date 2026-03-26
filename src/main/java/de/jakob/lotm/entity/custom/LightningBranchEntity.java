@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -230,17 +231,14 @@ public class LightningBranchEntity extends Entity {
             float damageMultiplier = (float)Math.pow(0.7, branchDepth);
 
             DamageSource dmg = (source != null)
-                    ? level().damageSources().mobAttack(source)
-                    : level().damageSources().generic();
+                    ? ModDamageTypes.source(entity.level(), ModDamageTypes.SAILOR_LIGHTNING, source)
+                    : ModDamageTypes.source(entity.level(), ModDamageTypes.SAILOR_LIGHTNING);
 
             entity.hurt(dmg, (float)(damage * damageMultiplier));
         }
     }
 
     private void onHitBlock(HitResult hit) {
-        if (!level().isClientSide) {
-            // Add your block hit logic here
-        }
     }
 
     @Override

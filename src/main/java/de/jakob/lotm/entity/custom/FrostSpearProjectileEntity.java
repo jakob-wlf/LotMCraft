@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -24,6 +25,7 @@ public class FrostSpearProjectileEntity extends AbstractArrow {
     private final boolean griefing;
 
     private int ticks = 0;
+    private int petrifiedTicks = 0;
 
     public FrostSpearProjectileEntity(EntityType<? extends AbstractArrow> entityType, Level level) {
         super(entityType, level);
@@ -49,6 +51,15 @@ public class FrostSpearProjectileEntity extends AbstractArrow {
 
     @Override
     public void tick() {
+        // Petrification Logic -- run before super.tick() to stop movement completely
+        if(getTags().contains("petrified")) {
+            petrifiedTicks++;
+            if(petrifiedTicks >= 20 * 5) {
+                this.discard();
+            }
+            return;
+        }
+
         super.tick();
         if(level.isClientSide)
             return;
@@ -58,7 +69,6 @@ public class FrostSpearProjectileEntity extends AbstractArrow {
             this.onHitBlock(new BlockHitResult(this.position(), this.getDirection(), BlockPos.containing(this.position()), false));
             return;
         }
-
 
         if(level.getBlockState(BlockPos.containing(position())).is(Blocks.WATER) || level.getBlockState(BlockPos.containing(position())).is(Blocks.LAVA)) {
             onHitBlock(new BlockHitResult(this.position(), this.getDirection(), BlockPos.containing(this.position()), false));
@@ -70,11 +80,11 @@ public class FrostSpearProjectileEntity extends AbstractArrow {
     @Override
     protected void onHitEntity(EntityHitResult result) {
         this.discard();
-        if(!(result.getEntity() instanceof LivingEntity))
+        if(!(result.getEntity() instanceof LivingEntity target))
             return;
-        LivingEntity target = (LivingEntity) result.getEntity();
-        level.explode(owner, target.position().x, target.position().y, target.position().z, 3.5f, false, Level.ExplosionInteraction.NONE);
-        target.hurt(this.damageSources().mobAttack(owner), (float) damage);
+
+        if(owner != null) target.hurt(ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, owner), (float) damage);
+        else              target.hurt(ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC), (float) damage);
     }
 
     @Override

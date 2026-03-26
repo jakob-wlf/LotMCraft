@@ -2,9 +2,12 @@ package de.jakob.lotm.abilities.darkness;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -59,8 +62,14 @@ public class SwordOfDarknessAbility extends Ability {
                 double slashLength = currentSlashStart.distanceTo(currentSlashEnd);
                 for(double i = 0; i < slashLength; i += 0.25) {
                     Vec3 point = currentSlashStart.add(slashDirection.scale(i));
+
+                    // Sword of Darkness is weakened by Wall of Light (purification)
+                    Location pointLoc = new Location(point, level);
+                    boolean purified = InteractionHandler.isInteractionPossible(pointLoc, "purification", BeyonderData.getSequence(entity));
+                    float damageMult = purified ? 0.3f : 1f;
+
                     ParticleUtil.spawnParticles(serverLevel, ModParticles.BLACK.get(), point, 3, 0.2, 0);
-                    AbilityUtil.damageNearbyEntities(serverLevel, entity, 3, multiplier(entity) * DamageLookup.lookupDamage(1, .85), point, true, false, false, 10);
+                    AbilityUtil.damageNearbyEntities(serverLevel, entity, 3, multiplier(entity) * DamageLookup.lookupDamage(1, .85) * damageMult, point, true, false, false, 10, ModDamageTypes.source(level, ModDamageTypes.DARKNESS_GENERIC, entity));
                     if(BeyonderData.isGriefingEnabled(entity)) {
                         if(serverLevel.getBlockState(BlockPos.containing(point)).getDestroySpeed(level, BlockPos.containing(point)) < 0)
                             continue;
@@ -70,7 +79,7 @@ public class SwordOfDarknessAbility extends Ability {
 
                 distance.addAndGet(.5);
             }
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), serverLevel)));
     }
 
     @Override

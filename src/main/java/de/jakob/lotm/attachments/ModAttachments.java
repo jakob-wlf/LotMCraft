@@ -33,6 +33,13 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<DisabledFlightComponent>> FLIGHT_DISABLE_COMPONENT =
+            ATTACHMENT_TYPES.register("disabled_flight_component", () ->
+                    AttachmentType.builder(DisabledFlightComponent::new)
+                            .serialize(DisabledFlightComponent.SERIALIZER)
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<AbilityCooldownComponent>> COOLDOWN_COMPONENT =
             ATTACHMENT_TYPES.register("cooldown_component", () ->
                     AttachmentType.serializable(AbilityCooldownComponent::new).build()
@@ -46,6 +53,16 @@ public class ModAttachments {
     public static final Supplier<AttachmentType<AbilityBarComponent>> ABILITY_BAR_COMPONENT =
             ATTACHMENT_TYPES.register("ability_bar_component", () ->
                     AttachmentType.serializable(AbilityBarComponent::new).copyOnDeath().build()
+            );
+
+    public static final Supplier<AttachmentType<DisabledAbilitiesComponent>> DISABLED_ABILITIES_COMPONENT =
+            ATTACHMENT_TYPES.register("disabled_abilities_component", () ->
+                    AttachmentType.serializable(DisabledAbilitiesComponent::new).build()
+            );
+
+    public static final Supplier<AttachmentType<MultiplierModifierComponent>> MULTIPLIER_MODIFIER_COMPONENT =
+            ATTACHMENT_TYPES.register("multiplier_modifier_component", () ->
+                    AttachmentType.serializable(MultiplierModifierComponent::new).build()
             );
 
     public static final Supplier<AttachmentType<AllyComponent>> ALLY_COMPONENT = ATTACHMENT_TYPES.register(
@@ -164,6 +181,11 @@ public class ModAttachments {
                             .serialize(MemorisedEntities.CODEC)
                             .copyOnDeath()
                             .build()
+            );
+
+    public static final Supplier<AttachmentType<CopiedAbilityComponent>> COPIED_ABILITY_COMPONENT =
+            ATTACHMENT_TYPES.register("copied_ability_component", () ->
+                    AttachmentType.serializable(CopiedAbilityComponent::new).copyOnDeath().build()
             );
 
     public static void register(IEventBus eventBus) {

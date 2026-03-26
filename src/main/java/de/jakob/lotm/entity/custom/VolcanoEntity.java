@@ -93,6 +93,7 @@ public class VolcanoEntity extends Entity {
 
 
     int lifeTime = 0;
+    int petrifiedTicks = 0;
 
     @Override
     public void tick() {
@@ -101,6 +102,15 @@ public class VolcanoEntity extends Entity {
         lifeTime++;
         if(lifeTime > 20 * 60) {
             this.discard();
+            return;
+        }
+
+        // Petrification Logic -- run before super.tick() to stop movement completely
+        if(getTags().contains("petrified")) {
+            petrifiedTicks++;
+            if(petrifiedTicks >= 20 * 5) {
+                this.discard();
+            }
             return;
         }
 

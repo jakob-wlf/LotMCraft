@@ -2,6 +2,8 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.artifacts.SealedArtifactData;
+import de.jakob.lotm.attachments.DisabledFlightComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.PotionIngredient;
@@ -11,9 +13,12 @@ import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.BeyonderPotion;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.beyonderMap.BeyonderMap;
+import de.jakob.lotm.util.beyonderMap.CharacteristicStack;
 import de.jakob.lotm.util.beyonderMap.StoredData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -23,10 +28,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
+import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
@@ -88,6 +90,17 @@ public class BeyonderEventHandler {
         }
     }
 
+    // Disable Flight while in combat
+    @SubscribeEvent
+    public static void onDamage(LivingDamageEvent.Post event) {
+        if (event.getSource().getEntity() instanceof LivingEntity source) {
+            if(BeyonderData.isBeyonder(source) && event.getEntity().level().getGameRules().getBoolean(ModGameRules.DISABLE_FLIGHT_IN_COMBAT)) {
+                DisabledFlightComponent flightData = event.getEntity().getData(ModAttachments.FLIGHT_DISABLE_COMPONENT);
+                flightData.setCooldownTicks(20 * 20);
+            }
+        }
+    }
+
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
@@ -139,9 +152,11 @@ public class BeyonderEventHandler {
             if(beyonderMap.get(player).isEmpty()) return;
             if (!player.level().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)) return;
 
-            StoredData data = beyonderMap.get(player).get().regressSeq();
+            StoredData data = beyonderMap.get(player).get();
 
-            beyonderMap.put(player, data);
+            beyonderMap.put(player, data.regressSeq());
+
+            BeyonderData.recalculateCharStackModifiers(player);
 
             if (Objects.equals(data.sequence(), LOTMCraft.NON_BEYONDER_SEQ)) {
                 ClientBeyonderCache.removePlayer(player.getUUID());
@@ -156,6 +171,9 @@ public class BeyonderEventHandler {
         if (event.getEntity().level().isClientSide()) return;
 
         var player = event.getEntity();
+
+        if(player.isCreative())
+            return;
 
         Objects.requireNonNull(player.getServer()).execute(() -> {
             var container = event.getContainer();
@@ -200,7 +218,28 @@ public class BeyonderEventHandler {
 
             container.broadcastChanges();
         });
-
     }
+
+    @SubscribeEvent
+    public static void onLivingDeath(LivingDeathEvent event) {
+        LivingEntity victim = event.getEntity();
+        DamageSource source = event.getSource();
+
+        if(!(victim instanceof Player)) return;
+
+        if (source.getEntity() instanceof Player player) {
+            if (player.level().isClientSide) return;
+
+            if(!BeyonderData.isBeyonder(player) || !BeyonderData.isBeyonder(victim)) return;
+
+            float diff = BeyonderData.getSequence(player) - BeyonderData.getSequence(victim);
+
+            if(diff >= 0){
+                BeyonderData.digest(player, (0.01f + (diff * 0.1f)), true);
+            }
+        }
+    }
+
+
 
 }

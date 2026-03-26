@@ -1,8 +1,12 @@
 package de.jakob.lotm.abilities.common;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSpiritVisionAbilityPacket;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AbilityUtilClient;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -81,7 +85,18 @@ public class SpiritVisionAbility extends ToggleAbility {
             LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
             PacketHandler.sendToPlayer(player,  new SyncSpiritVisionAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
 
-            entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 25, 1, false, false, false));
+
+            if(lookedAt != null){
+                if(shouldLooseControl(entity, lookedAt)){
+                    if(!entity.hasEffect(ModEffects.LOOSING_CONTROL))
+                        entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 25, 4, false, false, false));
+
+                    return;
+                }
+            }
+
+            entity.addEffect(new MobEffectInstance(
+                    MobEffects.NIGHT_VISION, 20 * 25, 1, false, false, false));
 
             List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 30)
                     .stream()
@@ -94,6 +109,16 @@ public class SpiritVisionAbility extends ToggleAbility {
             glowingEntities.putIfAbsent(entity.getUUID(), new HashSet<>(Set.of()));
             glowingEntities.get(entity.getUUID()).addAll(nearbyEntities);
         }
+    }
+
+    public static boolean shouldLooseControl(LivingEntity player, LivingEntity target){
+        int playerSeq = BeyonderData.getSequence(player);
+        int targetSeq = BeyonderData.getSequence(target);
+
+        if(player.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(target.getUUID()))
+            return false;
+
+        return targetSeq <= 4 && playerSeq > targetSeq;
     }
 
     public static void setGlowingForPlayer(Entity entity, ServerPlayer player, boolean glowing) {

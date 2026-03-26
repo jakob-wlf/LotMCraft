@@ -47,7 +47,7 @@ Available commands:
 3) add <target> - will try to add target into beyonderMap
 4) delete <target> (or <target_nickname>, if target is offline) - will delete target from beyonderMap
 5) get <target> (or <target_nickname>) - will give all information about target
-6) edit <target> (or <target_nickname>) <json data> - will edit needed info
+6) edit <json data> - will edit needed info
     json format - {"name":"nickname","path":"needed_path","seq":<needed_seq_as_number>}
 7) delete all - will delete entire database
 """));

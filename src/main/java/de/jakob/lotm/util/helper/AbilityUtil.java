@@ -3,11 +3,15 @@ package de.jakob.lotm.util.helper;
 import de.jakob.lotm.abilities.error.DeceitAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.entity.custom.TimeChangeEntity;
 import de.jakob.lotm.events.custom.TargetEntityEvent;
 import de.jakob.lotm.events.custom.TargetLocationEvent;
+import de.jakob.lotm.events.custom.TargetNonLivingEntityEvent;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.minecraft.core.BlockPos;
@@ -17,6 +21,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,10 +34,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class AbilityUtil {
 
@@ -219,6 +221,8 @@ public class AbilityUtil {
      */
     public static boolean mayTarget(LivingEntity source, LivingEntity target, boolean allowAllies, boolean targetMarionettes) {
         if (source == null || target == null) return true;
+
+        if(source == target) return false;
 
         // If we're allowing allies for support abilities, skip the mayDamage check
         if (!allowAllies && !mayDamage(source, target)) {
@@ -429,6 +433,25 @@ public class AbilityUtil {
     }
 
     /**
+     * Core method for finding target entities with raycasting
+     * @param entity The source entity
+     * @param radius Maximum search distance
+     * @param entityDetectionRadius Detection radius for entities along the ray
+     * @param onlyAllowWithLineOfSight If true, ignores current target and only uses line of sight
+     * @param allowAllies If true, allows targeting allies (for support abilities)
+     */
+    @Nullable
+    public static Entity getTargetEntityNonLivingIncluded(LivingEntity entity, int radius, float entityDetectionRadius,
+                                               boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes) {
+        Entity targetEntity = getNonLivingTargetEntityInternal(entity, radius, entityDetectionRadius,
+                onlyAllowWithLineOfSight, allowAllies, targetMarionettes);
+
+        return fireNonLivingTargetEntityEvent(entity, radius, entityDetectionRadius,
+                onlyAllowWithLineOfSight, allowAllies, targetEntity);
+
+    }
+
+    /**
      * Internal implementation of target entity finding without event firing
      */
     @Nullable
@@ -461,6 +484,54 @@ public class AbilityUtil {
                     .filter(e -> e instanceof LivingEntity && e != entity)
                     .map(e -> (LivingEntity) e)
                     .filter(e -> mayTarget(entity, e, allowAllies, targetMarionettes))
+                    .toList();
+
+            if (!nearbyEntities.isEmpty()) {
+                return nearbyEntities.get(0);
+            }
+
+            // Check for blocks
+            BlockState block = entity.level().getBlockState(BlockPos.containing(currentPosition));
+            if (!block.getCollisionShape(entity.level(), BlockPos.containing(currentPosition)).isEmpty()) {
+                break;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Internal implementation of target entity finding without event firing
+     */
+    @Nullable
+    private static Entity getNonLivingTargetEntityInternal(LivingEntity entity, int radius, float entityDetectionRadius,
+                                                        boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes) {
+        // Check for existing targets first (unless line of sight only)
+        if (!onlyAllowWithLineOfSight) {
+            LivingEntity currentTarget = getCurrentTarget(entity);
+            if (currentTarget != null && currentTarget.distanceTo(entity) <= radius) {
+                if (allowAllies || mayTarget(entity, currentTarget)) {
+                    return currentTarget;
+                }
+            }
+        }
+
+        // Raycast for entities
+        Vec3 lookDirection = entity.getLookAngle().normalize();
+        Vec3 startPosition = entity.position().add(0, entity.getEyeHeight(), 0);
+
+        for (int i = 0; i < radius; i++) {
+            Vec3 currentPosition = startPosition.add(lookDirection.scale(i));
+
+            // Check for entities at this position
+            AABB detectionBox = new AABB(
+                    currentPosition.subtract(entityDetectionRadius, entityDetectionRadius, entityDetectionRadius),
+                    currentPosition.add(entityDetectionRadius, entityDetectionRadius, entityDetectionRadius)
+            );
+
+            List<Entity> nearbyEntities = entity.level().getEntities(entity, detectionBox).stream()
+                    .filter(e -> e != entity)
+                    .filter(e -> !(e instanceof LivingEntity living) || mayTarget(entity, living, allowAllies, targetMarionettes))
                     .toList();
 
             if (!nearbyEntities.isEmpty()) {
@@ -611,6 +682,28 @@ public class AbilityUtil {
         return event.getTargetEntity();
     }
 
+    /**
+     * Fires a TargetEntityEvent to allow modification of the target entity
+     * @return The potentially modified target entity from the event
+     */
+    @Nullable
+    private static Entity fireNonLivingTargetEntityEvent(LivingEntity entity, int radius,
+                                                      float entityDetectionRadius,
+                                                      boolean onlyAllowWithLineOfSight,
+                                                      boolean allowAllies,
+                                                      @Nullable Entity targetEntity) {
+        TargetNonLivingEntityEvent event = new TargetNonLivingEntityEvent(
+                entity,
+                radius,
+                entityDetectionRadius,
+                onlyAllowWithLineOfSight,
+                allowAllies,
+                targetEntity
+        );
+        NeoForge.EVENT_BUS.post(event);
+        return event.getTargetEntity();
+    }
+
     // ==================== DISTANCE UTILITY METHODS ====================
 
     public static double distanceToGround(Level level, Entity entity) {
@@ -683,18 +776,25 @@ public class AbilityUtil {
 
     // ==================== DAMAGE METHODS ====================
 
+
+    private static DamageSource defaultDamageSource(Level level, LivingEntity source) {
+        return source != null
+                ? ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, source)
+                : ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC);
+    }
+
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
                                                double damage, Vec3 center, boolean ignoreSource,
                                                boolean distanceFalloff) {
         return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
-                distanceFalloff, false, -1, 0);
+                distanceFalloff, false, -1, 0, defaultDamageSource(level, source));
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
                                                double damage, Vec3 center, boolean ignoreSource,
                                                boolean distanceFalloff, int fireTicks) {
         return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
-                distanceFalloff, false, -1, fireTicks);
+                distanceFalloff, false, -1, fireTicks, defaultDamageSource(level, source));
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
@@ -702,7 +802,7 @@ public class AbilityUtil {
                                                boolean distanceFalloff, boolean ignoreCooldown,
                                                int cooldownTicks) {
         return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
-                distanceFalloff, ignoreCooldown, cooldownTicks, 0);
+                distanceFalloff, ignoreCooldown, cooldownTicks, 0, defaultDamageSource(level, source));
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
@@ -710,7 +810,7 @@ public class AbilityUtil {
                                                boolean distanceFalloff, boolean ignoreCooldown,
                                                int cooldownTicks, int fireTicks) {
         return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
-                distanceFalloff, ignoreCooldown, cooldownTicks, fireTicks);
+                distanceFalloff, ignoreCooldown, cooldownTicks, fireTicks, defaultDamageSource(level, source));
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double minRadius,
@@ -718,16 +818,64 @@ public class AbilityUtil {
                                                boolean ignoreSource, boolean distanceFalloff,
                                                boolean ignoreCooldown, int cooldownTicks) {
         return damageNearbyEntities(level, source, minRadius, maxRadius, damage, center, ignoreSource,
-                distanceFalloff, ignoreCooldown, cooldownTicks, 0);
+                distanceFalloff, ignoreCooldown, cooldownTicks, 0, defaultDamageSource(level, source));
     }
 
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double minRadius,
+                                               double maxRadius, double damage, Vec3 center,
+                                               boolean ignoreSource, boolean distanceFalloff,
+                                               boolean ignoreCooldown, int cooldownTicks, int fireticks) {
+        return damageNearbyEntities(level, source, minRadius, maxRadius, damage, center, ignoreSource,
+                distanceFalloff, ignoreCooldown, cooldownTicks, fireticks, defaultDamageSource(level, source));
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
+                                               double damage, Vec3 center, boolean ignoreSource,
+                                               boolean distanceFalloff, DamageSource damageSource) {
+        return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
+                distanceFalloff, false, -1, 0, damageSource);
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
+                                               double damage, Vec3 center, boolean ignoreSource,
+                                               boolean distanceFalloff, int fireTicks, DamageSource damageSource) {
+        return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
+                distanceFalloff, false, -1, fireTicks, damageSource);
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
+                                               double damage, Vec3 center, boolean ignoreSource,
+                                               boolean distanceFalloff, boolean ignoreCooldown,
+                                               int cooldownTicks, DamageSource damageSource) {
+        return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
+                distanceFalloff, ignoreCooldown, cooldownTicks, 0, damageSource);
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
+                                               double damage, Vec3 center, boolean ignoreSource,
+                                               boolean distanceFalloff, boolean ignoreCooldown,
+                                               int cooldownTicks, int fireTicks, DamageSource damageSource) {
+        return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
+                distanceFalloff, ignoreCooldown, cooldownTicks, fireTicks, damageSource);
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double minRadius,
+                                               double maxRadius, double damage, Vec3 center,
+                                               boolean ignoreSource, boolean distanceFalloff,
+                                               boolean ignoreCooldown, int cooldownTicks, DamageSource damageSource) {
+        return damageNearbyEntities(level, source, minRadius, maxRadius, damage, center, ignoreSource,
+                distanceFalloff, ignoreCooldown, cooldownTicks, 0, damageSource);
+    }
+
+
     /**
-     * Core method for damaging nearby entities with all options
+     * Core method for damaging nearby entities with all options.
      */
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double minRadius,
                                                double maxRadius, double damage, Vec3 center,
                                                boolean ignoreSource, boolean distanceFalloff,
-                                               boolean ignoreCooldown, int cooldownTicks, int fireTicks) {
+                                               boolean ignoreCooldown, int cooldownTicks, int fireTicks,
+                                               DamageSource damageSource) {
         AABB detectionBox = createDetectionBox(center, maxRadius);
         List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, detectionBox)
                 .stream()
@@ -750,7 +898,7 @@ public class AbilityUtil {
             float finalDamage = calculateDamageWithFalloff(damage, distanceSquared, maxRadius, distanceFalloff);
 
             if (ignoreCooldown || entity.invulnerableTime <= 0) {
-                applyDamage(entity, source, finalDamage);
+                entity.hurt(damageSource, finalDamage);
 
                 if (cooldownTicks >= 0) {
                     entity.invulnerableTime = cooldownTicks;
@@ -776,14 +924,6 @@ public class AbilityUtil {
         double distance = Math.sqrt(distanceSquared);
         double falloffMultiplier = Math.max(0.1, 1.0 - (distance / maxRadius));
         return (float) (baseDamage * falloffMultiplier);
-    }
-
-    private static void applyDamage(LivingEntity entity, @Nullable LivingEntity source, float damage) {
-        if (source != null) {
-            entity.hurt(source.damageSources().mobAttack(source), damage);
-        } else {
-            entity.hurt(entity.damageSources().generic(), damage);
-        }
     }
 
     // ==================== POTION EFFECT METHODS ====================
@@ -1028,6 +1168,28 @@ public class AbilityUtil {
         }
 
         return true;
+    }
+
+    // ==================== TIME METHODS ====================
+
+    public static double getTimeInArea(@Nullable LivingEntity entity, Location location) {
+        Level level = location.getLevel();
+        TimeChangeEntity timeChangeEntity = level.getEntitiesOfClass(TimeChangeEntity.class,
+                new AABB(BlockPos.containing(location.getPosition())).inflate(100))
+                .stream()
+                .filter(e -> entity == null || e.getCasterEntity() == null || AbilityUtil.mayTarget(e.getCasterEntity(), entity))
+                .min(Comparator.comparingDouble(e -> e.position().distanceTo(location.getPosition())))
+                .orElse(null);
+
+        if(timeChangeEntity == null) {
+            return 1.0;
+        }
+
+        if(location.getPosition().distanceTo(timeChangeEntity.position()) <= timeChangeEntity.getRadius()) {
+            return timeChangeEntity.getTimeMultiplier();
+        }
+
+        return 1.0;
     }
 
     // ==================== UI UTILITY METHODS ====================

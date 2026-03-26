@@ -82,7 +82,8 @@ public class DoubleLootModifier extends LootModifier {
             String pathway = BeyonderData.implementedPathways.get((new Random()).nextInt(BeyonderData.implementedPathways.size()));
             int sequence = ChestLootModifier.getWeightedHighSequence();
 
-            generatedLoot.add(new ItemStack(ChestLootModifier.getRandomLoot(pathway, sequence)));
+            if(sequence >= 7)
+                generatedLoot.add(new ItemStack(ChestLootModifier.getRandomLoot(pathway, sequence)));
         }
 
         return generatedLoot;

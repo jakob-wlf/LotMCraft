@@ -1,9 +1,12 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.SunEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -16,13 +19,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class FlaringSunAbility extends Ability {
     public FlaringSunAbility(String id) {
-        super(id, 8);
+        super(id, 8, "purification", "burning", "light_source", "light_strong", "light_weak");
+        postsUsedAbilityEventManually = true;
+        interactionRadius = 14;
     }
 
     @Override
@@ -71,13 +77,15 @@ public class FlaringSunAbility extends Ability {
             ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.FLAME, startPos, 4.75f, 200);
             ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, startPos, 4.75f, 180);
 
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 17, DamageLookup.lookupDps(4, .85, 4, 20) * multiplier(entity), targetPos, true, false, 20 * 4);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 17, DamageLookup.lookupDps(4, .85, 4, 20) * multiplier(entity), targetPos, true, false, 20 * 4, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
         }, () -> {
             if(level.getBlockState(blockPos).getBlock() == Blocks.LIGHT) {
                 level.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
             }
 
             sun.discard();
-        }, (ServerLevel) level);
+        }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(targetPos, level)));
+
+        NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetPos, entity, this, interactionFlags, interactionRadius, interactionCacheTicks));
     }
 }

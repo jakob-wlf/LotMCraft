@@ -4,10 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.custom.GiantLightningEntity;
-import de.jakob.lotm.entity.custom.MeteorEntity;
-import de.jakob.lotm.entity.custom.TornadoEntity;
-import de.jakob.lotm.entity.custom.VolcanoEntity;
+import de.jakob.lotm.entity.custom.*;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.DarknessEffectPacket;
 import de.jakob.lotm.network.packets.toClient.HotGroundEffectPacket;
@@ -78,12 +75,10 @@ public class MiracleHandler {
 
         EffectManager.playEffect(EffectManager.Effect.MIRACLE, center.x, center.y, center.z, level);
 
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 20, () -> {
-            AbilityUtil.getAllNearbyEntities(caster, level, center, 70).forEach(e -> {
-                e.setDeltaMovement(0, 0, 0);
-                e.hurtMarked = true;
-            });
-        }, level);
+        float timeMultiplier = .2f;
+        TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), level, 20 * 15, caster.getUUID(), 50, timeMultiplier);
+        timeChangeEntity.setPos(caster.getX(), caster.getY(), caster.getZ());
+        level.addFreshEntity(timeChangeEntity);
     }
 
     private static void makeGroundHot(ServerLevel level, LivingEntity caster) {

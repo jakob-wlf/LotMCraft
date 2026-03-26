@@ -3,33 +3,31 @@ package de.jakob.lotm.util;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.SanityComponent;
-import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.attachments.MultiplierModifierComponent;
+import de.jakob.lotm.events.BeyonderDataTickHandler;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncLivingEntityBeyonderDataPacket;
 import de.jakob.lotm.util.beyonderMap.BeyonderMap;
+import de.jakob.lotm.util.beyonderMap.CharacteristicStack;
 import de.jakob.lotm.util.beyonderMap.HonorificName;
 import de.jakob.lotm.util.beyonderMap.StoredData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.pathways.PathwayInfos;
-import de.jakob.lotm.util.scheduling.ServerScheduler;
-import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.*;
@@ -44,12 +42,6 @@ public class BeyonderData {
     private static final int[] spiritualityLookup = {150000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180};
     private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
     private static final double[] sanityDecreaseMultiplier = {.003, .0125, .025, .05, .1, .65, .75, .88, 1.0, 1.0};
-
-    private static final HashMap<UUID, HashMap<String, Double>> multiplierModifier = new HashMap<>();
-    private static final HashMap<UUID, HashMap<String, Long>> modifierTimeouts = new HashMap<>();
-
-    private static final HashMap<UUID, HashMap<String, Long>> abilityDisablingTimeouts = new HashMap<>();
-    private static final HashMap<UUID, HashSet<String>> disabledBeyonders = new HashMap<>();
 
     public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>();
 
@@ -105,6 +97,7 @@ public class BeyonderData {
             "darkness",
             "demoness",
             "red_priest",
+            "mother",
             "mother",
             "abyss",
             "visionary",
@@ -167,6 +160,7 @@ public class BeyonderData {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
 
+
         if(entity instanceof ServerPlayer player) {
             if(!beyonderMap.check(pathway, sequence)) return;
 
@@ -192,6 +186,8 @@ public class BeyonderData {
 
         if(entity instanceof Player player)
             SpiritualityProgressTracker.setProgress(player.getUUID(), 1.0f);
+
+        BeyonderDataTickHandler.invalidateCache(entity);
 
         // Sync to client if this is server-side
         if (entity.level() instanceof ServerLevel serverLevel) {
@@ -249,22 +245,29 @@ public class BeyonderData {
     }
 
     public static int getSequence(LivingEntity entity) {
+        return getSequence(entity, false);
+    }
+
+    public static int getSequence(LivingEntity entity, boolean returnTrueMarionetteLvl) {
+        if(entity == null) return LOTMCraft.NON_BEYONDER_SEQ;
+
         if(entity.level().isClientSide) {
             return ClientBeyonderCache.getSequence(entity.getUUID());
         }
 
-        MarionetteComponent marionetteComponent = entity.getData(ModAttachments.MARIONETTE_COMPONENT);
-        if(marionetteComponent.isMarionette()) {
-            UUID controllerUUID = UUID.fromString(marionetteComponent.getControllerUUID());
-            Entity owner = ((ServerLevel) entity.level()).getEntity(controllerUUID);
-            if(owner instanceof LivingEntity ownerLiving) {
-                int ownerSequence = getSequence(ownerLiving);
-                if (!entity.getPersistentData().contains(NBT_SEQUENCE)) {
-                    return ownerSequence;
+        if (!returnTrueMarionetteLvl) {
+            MarionetteComponent marionetteComponent = entity.getData(ModAttachments.MARIONETTE_COMPONENT);
+            if(marionetteComponent.isMarionette()) {
+                UUID controllerUUID = UUID.fromString(marionetteComponent.getControllerUUID());
+                Entity owner = ((ServerLevel) entity.level()).getEntity(controllerUUID);
+                if(owner instanceof LivingEntity ownerLiving) {
+                    int ownerSequence = getSequence(ownerLiving);
+                    if (!entity.getPersistentData().contains(NBT_SEQUENCE)) {
+                        return ownerSequence;
+                    }
+                    return Math.max(entity.getPersistentData().getInt(NBT_SEQUENCE), ownerSequence);
                 }
-                return Math.max(entity.getPersistentData().getInt(NBT_SEQUENCE), ownerSequence);
             }
-
         }
 
         if (!entity.getPersistentData().contains(NBT_SEQUENCE)) {
@@ -338,35 +341,14 @@ public class BeyonderData {
         if (sequence < 0 || sequence >= multiplier.length)
             return 1.0;
 
-        UUID uuid = entity.getUUID();
-
-        // --- CLEANUP EXPIRED MODIFIERS ---
-        if(modifierTimeouts.containsKey(uuid)) {
-            HashSet<String> expired = new HashSet<>();
-
-            for(Map.Entry<String, Long> entry : modifierTimeouts.get(uuid).entrySet()) {
-                if(System.currentTimeMillis() >= entry.getValue()) {
-                    expired.add(entry.getKey());
-                }
-            }
-
-            for(String id : expired) {
-                modifierTimeouts.get(uuid).remove(id);
-                if(multiplierModifier.containsKey(uuid)) {
-                    multiplierModifier.get(uuid).remove(id);
-                }
-            }
-
-            if(modifierTimeouts.get(uuid).isEmpty())
-                modifierTimeouts.remove(uuid);
-        }
-
         double damageMultiplier = multiplier[sequence];
 
-        if(!multiplierModifier.containsKey(uuid))
+        MultiplierModifierComponent modifierComponent = entity.getData(ModAttachments.MULTIPLIER_MODIFIER_COMPONENT);
+
+        if(modifierComponent.modifiers.isEmpty())
             return damageMultiplier;
 
-        for(double d : multiplierModifier.get(uuid).values()) {
+        for(float d : modifierComponent.modifiers.values().stream().map(MultiplierModifierComponent.MultiplierModifier::multiplier).toList()) {
             damageMultiplier *= d;
         }
 
@@ -460,27 +442,14 @@ public class BeyonderData {
     }
 
     public static void addModifier(LivingEntity entity, String id, double modifier) {
-        UUID uuid = entity.getUUID();
-
-        multiplierModifier.putIfAbsent(uuid, new HashMap<>());
-        multiplierModifier.get(uuid).put(id, modifier);
+        MultiplierModifierComponent component = entity.getData(ModAttachments.MULTIPLIER_MODIFIER_COMPONENT);
+        component.addMultiplier(id, (float) modifier);
     }
 
 
     public static void removeModifier(LivingEntity entity, String id) {
-        UUID uuid = entity.getUUID();
-
-        if(multiplierModifier.containsKey(uuid)) {
-            multiplierModifier.get(uuid).remove(id);
-            if(multiplierModifier.get(uuid).isEmpty())
-                multiplierModifier.remove(uuid);
-        }
-
-        if(modifierTimeouts.containsKey(uuid)) {
-            modifierTimeouts.get(uuid).remove(id);
-            if(modifierTimeouts.get(uuid).isEmpty())
-                modifierTimeouts.remove(uuid);
-        }
+        MultiplierModifierComponent component = entity.getData(ModAttachments.MULTIPLIER_MODIFIER_COMPONENT);
+        component.removeMultiplier(id);
     }
 
 
@@ -490,70 +459,9 @@ public class BeyonderData {
             double modifier,
             long millis
     ) {
-        UUID uuid = entity.getUUID();
-
-        multiplierModifier.putIfAbsent(uuid, new HashMap<>());
-        multiplierModifier.get(uuid).put(id, modifier);
-
-        modifierTimeouts.putIfAbsent(uuid, new HashMap<>());
-        modifierTimeouts.get(uuid).put(id, System.currentTimeMillis() + millis);
-    }
-
-
-
-    public static boolean isAbilityDisabled(LivingEntity entity) {
-        final HashSet<String> idsToRemoveDueToTimeLimit = new HashSet<>();
-        if(abilityDisablingTimeouts.containsKey(entity.getUUID())) {
-            for(Map.Entry<String, Long> entry : abilityDisablingTimeouts.get(entity.getUUID()).entrySet()) {
-                if(System.currentTimeMillis() >= entry.getValue()) {
-                    idsToRemoveDueToTimeLimit.add(entry.getKey());
-                }
-            }
-
-            for (String id : idsToRemoveDueToTimeLimit) {
-                abilityDisablingTimeouts.get(entity.getUUID()).remove(id);
-                if(disabledBeyonders.containsKey(entity.getUUID())) {
-                    disabledBeyonders.get(entity.getUUID()).remove(id);
-                }
-            }
-
-            if(disabledBeyonders.containsKey(entity.getUUID()) && disabledBeyonders.get(entity.getUUID()).isEmpty()) {
-                disabledBeyonders.remove(entity.getUUID());
-            }
-        }
-
-        return disabledBeyonders.containsKey(entity.getUUID());
-    }
-
-    public static void disableAbilityUse(LivingEntity entity, String id) {
-        UUID uuid = entity.getUUID();
-
-        disabledBeyonders.putIfAbsent(uuid, new HashSet<>());
-        disabledBeyonders.get(uuid).add(id);
-    }
-
-    public static void disableAbilityUseWithTimeLimit(LivingEntity entity, String id, long millis) {
-        UUID uuid = entity.getUUID();
-
-        disabledBeyonders.putIfAbsent(uuid, new HashSet<>());
-        disabledBeyonders.get(uuid).add(id);
-
-        abilityDisablingTimeouts.putIfAbsent(uuid, new HashMap<>());
-        abilityDisablingTimeouts.get(uuid).put(id, System.currentTimeMillis() + millis);
-    }
-
-    public static void enableAbilityUse(LivingEntity entity, String id) {
-        UUID uuid = entity.getUUID();
-
-        disabledBeyonders.putIfAbsent(uuid, new HashSet<>());
-        disabledBeyonders.get(uuid).remove(id);
-        if(disabledBeyonders.get(uuid).isEmpty())
-            disabledBeyonders.remove(uuid);
-
-        abilityDisablingTimeouts.putIfAbsent(uuid, new HashMap<>());
-        abilityDisablingTimeouts.get(uuid).remove(id);
-        if(abilityDisablingTimeouts.get(uuid).isEmpty())
-            abilityDisablingTimeouts.remove(uuid);
+        MultiplierModifierComponent component = entity.getData(ModAttachments.MULTIPLIER_MODIFIER_COMPONENT);
+        int ticks = (int) (millis / 50);
+        component.addMultiplierForTime(id, (float) modifier, ticks);
     }
 
     public static boolean isGriefingEnabled(Player player) {
@@ -650,140 +558,6 @@ public class BeyonderData {
         }
     }
 
-    // Existing fields
-    private static final HashMap<UUID, HashMap<String, HashSet<String>>> disabledAbilities = new HashMap<>();
-    private static final HashMap<UUID, HashMap<String, HashMap<String, Long>>> abilitySpecificDisablingTimeouts = new HashMap<>();
-    // Structure: UUID -> abilityId -> reasonId -> timeout
-
-    // Method to check if a specific ability is disabled
-    public static boolean isSpecificAbilityDisabled(LivingEntity entity, String abilityId) {
-        UUID uuid = entity.getUUID();
-
-        // Clean up expired timeouts first
-        if(abilitySpecificDisablingTimeouts.containsKey(uuid)) {
-            HashMap<String, HashMap<String, Long>> abilitiesMap = abilitySpecificDisablingTimeouts.get(uuid);
-
-            if(abilitiesMap.containsKey(abilityId)) {
-                HashMap<String, Long> reasonTimeouts = abilitiesMap.get(abilityId);
-                final HashSet<String> reasonIdsToRemove = new HashSet<>();
-
-                for(Map.Entry<String, Long> entry : reasonTimeouts.entrySet()) {
-                    if(System.currentTimeMillis() >= entry.getValue()) {
-                        reasonIdsToRemove.add(entry.getKey());
-                    }
-                }
-
-                for(String reasonId : reasonIdsToRemove) {
-                    reasonTimeouts.remove(reasonId);
-                    if(disabledAbilities.containsKey(uuid) && disabledAbilities.get(uuid).containsKey(reasonId)) {
-                        disabledAbilities.get(uuid).get(reasonId).remove(abilityId);
-                        if(disabledAbilities.get(uuid).get(reasonId).isEmpty()) {
-                            disabledAbilities.get(uuid).remove(reasonId);
-                        }
-                    }
-                }
-
-                if(reasonTimeouts.isEmpty()) {
-                    abilitiesMap.remove(abilityId);
-                }
-            }
-
-            if(abilitiesMap.isEmpty()) {
-                abilitySpecificDisablingTimeouts.remove(uuid);
-            }
-        }
-
-        if(disabledAbilities.containsKey(uuid) && disabledAbilities.get(uuid).isEmpty()) {
-            disabledAbilities.remove(uuid);
-        }
-
-        // Check if ability is disabled
-        if(!disabledAbilities.containsKey(uuid)) {
-            return false;
-        }
-
-        for(HashSet<String> abilities : disabledAbilities.get(uuid).values()) {
-            if(abilities.contains(abilityId)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Disable a specific ability with a reason ID
-    public static void disableSpecificAbility(LivingEntity entity, String reasonId, String abilityId) {
-        UUID uuid = entity.getUUID();
-
-        disabledAbilities.putIfAbsent(uuid, new HashMap<>());
-        disabledAbilities.get(uuid).putIfAbsent(reasonId, new HashSet<>());
-        disabledAbilities.get(uuid).get(reasonId).add(abilityId);
-    }
-
-    // Disable specific abilities with a reason ID and time limit
-    public static void disableSpecificAbilityWithTimeLimit(LivingEntity entity, String reasonId, String abilityId, long millis) {
-        disableSpecificAbility(entity, reasonId, abilityId);
-
-        UUID uuid = entity.getUUID();
-        abilitySpecificDisablingTimeouts.putIfAbsent(uuid, new HashMap<>());
-        abilitySpecificDisablingTimeouts.get(uuid).putIfAbsent(abilityId, new HashMap<>());
-        abilitySpecificDisablingTimeouts.get(uuid).get(abilityId).put(reasonId, System.currentTimeMillis() + millis);
-    }
-
-    // Disable multiple abilities at once with a reason ID
-    public static void disableSpecificAbilities(LivingEntity entity, String reasonId, String... abilityIds) {
-        UUID uuid = entity.getUUID();
-
-        disabledAbilities.putIfAbsent(uuid, new HashMap<>());
-        disabledAbilities.get(uuid).putIfAbsent(reasonId, new HashSet<>());
-
-        for(String abilityId : abilityIds) {
-            disabledAbilities.get(uuid).get(reasonId).add(abilityId);
-        }
-    }
-
-    // Disable multiple abilities with a reason ID and time limit
-    public static void disableSpecificAbilitiesWithTimeLimit(LivingEntity entity, String reasonId, long millis, String... abilityIds) {
-        disableSpecificAbilities(entity, reasonId, abilityIds);
-
-        UUID uuid = entity.getUUID();
-        abilitySpecificDisablingTimeouts.putIfAbsent(uuid, new HashMap<>());
-
-        for(String abilityId : abilityIds) {
-            abilitySpecificDisablingTimeouts.get(uuid).putIfAbsent(abilityId, new HashMap<>());
-            abilitySpecificDisablingTimeouts.get(uuid).get(abilityId).put(reasonId, System.currentTimeMillis() + millis);
-        }
-    }
-
-    // Enable specific ability by removing a reason ID
-    public static void enableSpecificAbility(LivingEntity entity, String reasonId) {
-        UUID uuid = entity.getUUID();
-
-        if(disabledAbilities.containsKey(uuid) && disabledAbilities.get(uuid).containsKey(reasonId)) {
-            HashSet<String> abilitiesToRemove = new HashSet<>(disabledAbilities.get(uuid).get(reasonId));
-            disabledAbilities.get(uuid).remove(reasonId);
-
-            if(disabledAbilities.get(uuid).isEmpty()) {
-                disabledAbilities.remove(uuid);
-            }
-
-            // Remove the timeouts for this reason ID from all affected abilities
-            if(abilitySpecificDisablingTimeouts.containsKey(uuid)) {
-                for(String abilityId : abilitiesToRemove) {
-                    if(abilitySpecificDisablingTimeouts.get(uuid).containsKey(abilityId)) {
-                        abilitySpecificDisablingTimeouts.get(uuid).get(abilityId).remove(reasonId);
-                        if(abilitySpecificDisablingTimeouts.get(uuid).get(abilityId).isEmpty()) {
-                            abilitySpecificDisablingTimeouts.get(uuid).remove(abilityId);
-                        }
-                    }
-                }
-
-                if(abilitySpecificDisablingTimeouts.get(uuid).isEmpty()) {
-                    abilitySpecificDisablingTimeouts.remove(uuid);
-                }
-            }
-        }
-    }
-
     private static int getAmplifierBySequenceDifference(int difference) {
         return switch (difference) {
             case 1 -> 0;
@@ -791,6 +565,59 @@ public class BeyonderData {
             case 3 -> 7;
             case 4 -> 8;
             default -> 9;
+        };
+    }
+
+    public static void addCharStack(LivingEntity player){
+        if(!isBeyonder(player)) return;
+
+        beyonderMap.addStack(player, 1);
+
+        int seq = getSequence(player);
+
+        player.getPersistentData().putFloat(NBT_DIGESTION_PROGRESS, 0.0f);
+
+        recalculateCharStackModifiers(player);
+    }
+
+    public static void setCharStack(LivingEntity player, int seq, int value, boolean ignoreDigestion){
+        if(!isBeyonder(player)) return;
+
+        beyonderMap.setStack(player, seq, value);
+
+        if(!ignoreDigestion)
+            player.getPersistentData().putFloat(NBT_DIGESTION_PROGRESS, 0.0f);
+
+        recalculateCharStackModifiers(player);
+    }
+
+    public static void recalculateCharStackModifiers(LivingEntity player){
+        if(!isBeyonder(player)) return;
+
+        int seq = getSequence(player);
+        var stacks = beyonderMap.get(player.getUUID()).get().charStack();
+
+        for(int i = 0; i <= 9; i++){
+            removeModifier(player, CharacteristicStack.boostId(i));
+
+            if(stacks.get(i) != 0){
+                addModifier(player, CharacteristicStack.boostId(i), getDamageBoostByCharStack(i, stacks.get(i)));
+            }
+        }
+    }
+
+    public static float getDamageBoostByCharStack(int seq, int stacks){
+        return switch (seq){
+            case 9 -> 1.025f;
+            case 8 -> 1.05f;
+            case 7 -> 1.075f;
+            case 6 -> 1.105f;
+            case 5 -> 1.15f;
+            case 4 -> 1.3f;
+            case 3 -> 1.4f;
+            case 2 -> 1.5f;
+            case 1 -> 1.0f + stacks;
+            default -> 0.0f;
         };
     }
 }

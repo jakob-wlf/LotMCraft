@@ -14,8 +14,8 @@ public abstract class SelectableAbility extends Ability {
 
     protected final HashMap<UUID, Integer> selectedAbilities = new HashMap<>();
 
-    public SelectableAbility(String id, float cooldown) {
-        super(id, cooldown);
+    public SelectableAbility(String id, float cooldown, String... interactionFlags) {
+        super(id, cooldown, interactionFlags);
     }
 
     protected abstract String[] getAbilityNames();

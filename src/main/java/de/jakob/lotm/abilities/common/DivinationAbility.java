@@ -18,6 +18,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -60,7 +62,8 @@ public class DivinationAbility extends SelectableAbility {
                 "ability.lotmcraft.divination.danger_premonition",
                 "ability.lotmcraft.divination.dream_divination",
                 "ability.lotmcraft.divination.structure_divination",
-                "ability.lotmcraft.divination.player_divination"
+                "ability.lotmcraft.divination.player_divination",
+                "ability.lotmcraft.divination.anti_divination"
         };
     }
 
@@ -71,6 +74,7 @@ public class DivinationAbility extends SelectableAbility {
             case 1 -> dreamDivination(level, entity);
             case 2 -> structureDivination(level, entity);
             case 3 -> playerDivination(level, entity);
+            case 4 -> antiDivination(level, entity);
         }
     }
 
@@ -198,6 +202,19 @@ public class DivinationAbility extends SelectableAbility {
                 player,
                 new OpenStructureDivinationScreenPacket(structureIds)
         );
+    }
+
+    private void antiDivination(Level level, LivingEntity entity) {
+        if(level.isClientSide) return;
+
+        if(!(entity instanceof ServerPlayer player)) return;
+
+        level.playSound(null,
+                player.blockPosition(),
+                SoundEvents.AMETHYST_BLOCK_CHIME,
+                SoundSource.BLOCKS,
+                10.0f,
+                1.0f);
     }
 
     public static void cleanupOnLogout(Player player) {

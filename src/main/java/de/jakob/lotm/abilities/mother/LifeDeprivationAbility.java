@@ -1,7 +1,9 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -73,7 +75,7 @@ public class LifeDeprivationAbility extends SelectableAbility {
         List<LivingEntity> targets = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 55);
         ServerScheduler.scheduleForDuration(0, 2, 50, () -> {
             for(LivingEntity target : targets) {
-                target.hurt(target.damageSources().wither(), (float) (DamageLookup.lookupDps(3, .3, 2, 25) * multiplier(entity)));
+                target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.MOTHER_GENERIC, entity), (float) (DamageLookup.lookupDps(3, .3, 2, 25) * multiplier(entity)));
                 target.invulnerableTime = 0;
 
                 Vec3 targetCenter = target.position().add(0, target.getBbHeight() / 2, 0);
@@ -84,7 +86,7 @@ public class LifeDeprivationAbility extends SelectableAbility {
                     ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SOUL, tempCenter, 0, particleDirection.x, particleDirection.y, particleDirection.z, tempCenter.distanceTo(casterCenter) / 20);
                 }
             }
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position().add(0, entity.getBbHeight() / 2, 0), serverLevel)));
     }
 
     private void targetEntity(ServerLevel serverLevel, LivingEntity entity) {
@@ -96,7 +98,7 @@ public class LifeDeprivationAbility extends SelectableAbility {
         }
 
         ServerScheduler.scheduleForDuration(0, 2, 50, () -> {
-            target.hurt(target.damageSources().wither(), (float) (DamageLookup.lookupDps(3, .8, 2, 25) * multiplier(entity)));
+            target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.MOTHER_GENERIC, entity), (float) (DamageLookup.lookupDps(3, .8, 2, 25) * multiplier(entity)));
             target.invulnerableTime = 0;
 
             Vec3 targetCenter = target.position().add(0, target.getBbHeight() / 2, 0);
@@ -106,6 +108,6 @@ public class LifeDeprivationAbility extends SelectableAbility {
                 Vec3 particleDirection = casterCenter.subtract(tempCenter).normalize();
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SOUL, tempCenter, 0, particleDirection.x, particleDirection.y, particleDirection.z, tempCenter.distanceTo(casterCenter) / 20);
             }
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(target.position().add(0, target.getBbHeight() / 2, 0), serverLevel)));
     }
 }

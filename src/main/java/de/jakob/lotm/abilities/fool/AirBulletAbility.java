@@ -72,7 +72,7 @@ public class AirBulletAbility extends Ability {
             ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.EFFECT, pos, direction, getRadiusForSequence(BeyonderData.getSequence(entity)), 25);
 
             currentPos.set(pos.add(direction));
-        }, (ServerLevel) level);
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(currentPos.get(), level)));
     }
 
     private static float getExplosionPowerForSequence(int sequence) {

@@ -1,7 +1,9 @@
 package de.jakob.lotm.abilities.demoness;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.FrostSpearProjectileEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -19,6 +21,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +32,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class FrostAbility extends SelectableAbility {
 
     public FrostAbility(String id) {
-        super(id, .75f);
+        super(id, .75f, "freezing");
+        postsUsedAbilityEventManually = true;
     }
 
     @Override
@@ -74,7 +78,7 @@ public class FrostAbility extends SelectableAbility {
         ServerScheduler.scheduleForDuration(0, 2, 20 * 3, () -> {
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SNOWFLAKE, startPos, 70, radius.get(), 0.3, radius.get(), 0);
 
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius.get() - .4, radius.get() + .4, DamageLookup.lookupDamage(7, .8) * (float) multiplier(entity), startPos, true, false, true, 0, 0);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius.get() - .4, radius.get() + .4, DamageLookup.lookupDamage(7, .8) * (float) multiplier(entity), startPos, true, false, true, 0, 0, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, radius.get(), startPos, new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 10, false, false, false));
 
             if(BeyonderData.isGriefingEnabled(entity)) {
@@ -105,7 +109,9 @@ public class FrostAbility extends SelectableAbility {
             }
 
             radius.addAndGet(.5);
-        }, (ServerLevel) level);
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
+
+        NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, startPos, entity, this, interactionFlags, 20, 20 * 3));
     }
 
     private void spear(Level level, LivingEntity entity) {
@@ -143,7 +149,7 @@ public class FrostAbility extends SelectableAbility {
 
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, .75) * (float) multiplier(entity), pos, true, false, true, 0)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, .75) * (float) multiplier(entity), pos, true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity))) {
                 hasHit.set(true);
                 AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, 2.5f, pos, new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 3, 5, false, false, false));
                 return;
@@ -159,6 +165,6 @@ public class FrostAbility extends SelectableAbility {
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SNOWFLAKE, pos, 45, 0.25, 0.02);
 
             currentPos.set(pos.add(direction));
-        }, (ServerLevel) level);
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
     }
 }

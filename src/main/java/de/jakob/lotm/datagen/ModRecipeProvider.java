@@ -41,5 +41,25 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(Items.AMETHYST_SHARD)
                 .unlockedBy("has_leather", has(Items.LEATHER))
                 .save(recipeOutput);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.CRYSTAL_BALL.asItem())
+                .pattern("GGG")
+                .pattern("GAG")
+                .pattern("CNC")
+                .define('G', Items.GLASS)
+                .define('A', Items.AMETHYST_SHARD)
+                .define('C', Items.COPPER_INGOT)
+                .define('N', Items.NETHERITE_SCRAP)
+                .unlockedBy("has_netherite_scrap", has(Items.NETHERITE_SCRAP))
+                .save(recipeOutput);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.CANE.asItem())
+                .pattern("  I")
+                .pattern(" S ")
+                .pattern("S  ")
+                .define('I', Items.IRON_INGOT)
+                .define('S', Items.STICK)
+                .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
+                .save(recipeOutput);
     }
 }

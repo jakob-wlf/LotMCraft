@@ -1,5 +1,7 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -15,6 +17,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -24,8 +28,10 @@ public class UnshadowedSpearProjectileEntity extends AbstractArrow {
     private final LivingEntity owner;
     private final double damage;
     private final boolean griefing;
+    private final Ability ability;
 
     private int ticks = 0;
+    private int petrifiedTicks = 0;
 
     public UnshadowedSpearProjectileEntity(EntityType<? extends AbstractArrow> entityType, Level level) {
         super(entityType, level);
@@ -33,20 +39,29 @@ public class UnshadowedSpearProjectileEntity extends AbstractArrow {
         this.owner = null;
         this.damage = 0;
         this.griefing = false;
+        this.ability = null;
         init();
     }
 
-    public UnshadowedSpearProjectileEntity(Level level, LivingEntity owner, double damage, boolean griefing) {
+    public UnshadowedSpearProjectileEntity(Level level, LivingEntity owner, double damage, boolean griefing, Ability ability) {
         super(ModEntities.UNSHADOWED_SPEAR.get(), level);
         this.level = level;
         this.owner = owner;
         this.damage = damage;
         this.griefing = griefing;
+        this.ability = ability;
         init();
     }
 
     private void init() {
         this.setNoGravity(true);
+    }
+
+    private void postAbilityUsedEvent(Vec3 impactPos) {
+        if(owner != null && ability != null && level instanceof ServerLevel serverLevel) {
+            NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, impactPos, owner, ability,
+                    ability.getInteractionFlags(), ability.getInteractionRadius(), ability.getInteractionCacheTicks()));
+        }
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(
@@ -56,6 +71,15 @@ public class UnshadowedSpearProjectileEntity extends AbstractArrow {
 
     @Override
     public void tick() {
+        // Petrification Logic -- run before super.tick() to stop movement completely
+        if(getTags().contains("petrified")) {
+            petrifiedTicks++;
+            if(petrifiedTicks >= 20 * 5) {
+                this.discard();
+            }
+            return;
+        }
+
         super.tick();
         if(level.isClientSide)
             return;
@@ -81,20 +105,19 @@ public class UnshadowedSpearProjectileEntity extends AbstractArrow {
             return;
         LivingEntity target = (LivingEntity) result.getEntity();
         level.explode(owner, target.position().x, target.position().y, target.position().z, 3.5f, false, Level.ExplosionInteraction.NONE);
-        target.hurt(this.damageSources().mobAttack(owner), (float) damage);
-        //target.setRemainingFireTicks(target.getRemainingFireTicks() + 20 * 6);
+        // check if the owner exists before - to not crash
+        if (this.getOwner() instanceof LivingEntity livingOwner) {
+            target.hurt(this.damageSources().mobAttack(livingOwner), (float) damage);
+        } else {
+            target.hurt(this.damageSources().thrown(this, null), (float) damage);
+        }
+        postAbilityUsedEvent(target.position());
     }
 
     @Override
     protected void onHitBlock(BlockHitResult result) {
+        postAbilityUsedEvent(result.getLocation());
         this.discard();
-        /*if(griefing) {
-            level.explode(owner, result.getLocation().x, result.getLocation().y, result.getLocation().z, 4f, true, Level.ExplosionInteraction.MOB);
-        }
-        else {
-            level.explode(owner, result.getLocation().x, result.getLocation().y, result.getLocation().z, 4f, false, Level.ExplosionInteraction.NONE);
-        }
-         */
     }
 
 

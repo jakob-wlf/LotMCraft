@@ -2,6 +2,7 @@ package de.jakob.lotm.entity;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.client.GraftingLocationRenderer;
+import de.jakob.lotm.entity.client.TimeChangeRenderer;
 import de.jakob.lotm.entity.custom.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -35,6 +36,17 @@ public class ModEntities {
                             .clientTrackingRange(10)
                             .updateInterval(20)
                             .build("return_portal")
+            );
+
+    public static final DeferredHolder<EntityType<?>, EntityType<TimeChangeEntity>> TIME_CHANGE =
+            ENTITY_TYPES.register("time_change", () ->
+                    EntityType.Builder.<TimeChangeEntity>of(TimeChangeEntity::new, MobCategory.MISC)
+                            .sized(1.0F, 1.0F)
+                            .clientTrackingRange(10)
+                            .updateInterval(20)
+                            .noSummon()
+                            .noSave()
+                            .build("time_change")
             );
 
     public static final DeferredHolder<EntityType<?>, EntityType<ReturnPortalEntity>> NATURE_RETURN_PORTAL =

@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -34,6 +35,7 @@ public class FireballEntity extends AbstractArrow {
     Vec3 lastPos = null;
 
     private int ticks = 0;
+    private int petrifiedTicks = 0;
 
     public FireballEntity(EntityType<? extends AbstractArrow> entityType, Level level) {
         super(entityType, level);
@@ -74,6 +76,15 @@ public class FireballEntity extends AbstractArrow {
 
     @Override
     public void tick() {
+        // Petrification Logic -- run before super.tick() to stop movement completely
+        if(getTags().contains("petrified")) {
+            petrifiedTicks++;
+            if(petrifiedTicks >= 20 * 5) {
+                this.discard();
+            }
+            return;
+        }
+
         super.tick();
         if(level.isClientSide)
             return;
@@ -99,11 +110,16 @@ public class FireballEntity extends AbstractArrow {
     @Override
     protected void onHitEntity(EntityHitResult result) {
         this.discard();
-        if(!(result.getEntity() instanceof LivingEntity) || result.getEntity() == owner)
+        if(!(result.getEntity() instanceof LivingEntity target) || result.getEntity() == owner)
             return;
-        LivingEntity target = (LivingEntity) result.getEntity();
+
         level.explode(owner, target.position().x, target.position().y, target.position().z, 3.5f, griefing, Level.ExplosionInteraction.NONE);
-        target.hurt(this.damageSources().mobAttack(owner), (float) damage);
+        // check if the owner exists before - to not crash
+        if (this.getOwner() instanceof LivingEntity livingOwner) {
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, livingOwner), (float) damage);
+        } else {
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC), (float) damage);
+        }
         target.setRemainingFireTicks(target.getRemainingFireTicks() + 20 * 6);
     }
 

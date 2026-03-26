@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ApprenticeDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
@@ -172,6 +173,20 @@ public class SpaceConcealmentAbility extends SelectableAbility {
         }
     }
 
+    /**
+     * Checks if a given position is inside any active concealed space.
+     */
+    public static boolean isInsideConcealedSpace(Vec3 position) {
+        for(List<ConcealedSpace> spaces : playerSpaces.values()) {
+            for(ConcealedSpace space : spaces) {
+                if(space.contains(position)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private static class ConcealedSpace {
         private final Vec3 center;
         private final ServerLevel level;
@@ -207,6 +222,12 @@ public class SpaceConcealmentAbility extends SelectableAbility {
 
         public UUID getParticleTaskId() {
             return particleTaskId;
+        }
+
+        public boolean contains(Vec3 position) {
+            return Math.abs(position.x - center.x) <= radius &&
+                   Math.abs(position.y - center.y) <= radius &&
+                   Math.abs(position.z - center.z) <= radius;
         }
 
         public void spawnDoorAtValidPosition() {
@@ -438,7 +459,7 @@ public class SpaceConcealmentAbility extends SelectableAbility {
 
                 // Deal damage to living entities
                 if(entity instanceof LivingEntity && AbilityUtil.mayDamage(source, (LivingEntity) entity)) {
-                    entity.hurt(level.damageSources().magic(), (float) (DamageLookup.lookupDamage(4, 1.5) * multiplier));
+                    entity.hurt(ModDamageTypes.source(level, ModDamageTypes.DOOR_SPACE), (float) (DamageLookup.lookupDamage(4, 1.5) * multiplier));
                 }
             }
         }

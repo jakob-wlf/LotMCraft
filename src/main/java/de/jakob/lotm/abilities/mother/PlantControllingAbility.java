@@ -1,6 +1,8 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -26,6 +28,7 @@ import org.joml.Vector3f;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class PlantControllingAbility extends SelectableAbility {
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(33 / 255f, 163 / 255f, 52 / 255f), .7f);
@@ -89,19 +92,35 @@ public class PlantControllingAbility extends SelectableAbility {
                 ((Mob) targetEntity).setNoAi(true);
                 ServerScheduler.scheduleDelayed(duration, () -> ((Mob) targetEntity).setNoAi(false));
             }
-            if(BeyonderData.isBeyonder(targetEntity)) {
-                BeyonderData.disableAbilityUse(targetEntity, "plant");
-                ServerScheduler.scheduleDelayed(duration, () -> BeyonderData.enableAbilityUse(targetEntity, "requiem"));
-            }
         }
 
-        ServerScheduler.scheduleForDuration(0, 5, duration, () -> {
+        Location loc = new Location(targetEntity.position(), targetEntity.level());
+
+        AtomicReference<UUID> taskIdRef = new AtomicReference<>();
+        UUID taskId = ServerScheduler.scheduleForDuration(0, 5, duration, () -> {
+            // Blink Escape - only the bound entity can free itself
+            if(InteractionHandler.isInteractionPossibleForEntity(loc, "blink_escape", BeyonderData.getSequence(entity), targetEntity)) {
+                ServerScheduler.cancel(taskIdRef.get());
+
+                targetEntity.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+                targetEntity.removeEffect(MobEffects.WEAKNESS);
+                targetEntity.removeEffect(MobEffects.DIG_SLOWDOWN);
+                if (targetEntity instanceof Mob mob) mob.setNoAi(false);
+
+                boundEntities.remove(targetEntity.getUUID());
+                return;
+            }
+
             targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 10, false, false, false));
             targetEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20, 10, false, false, false));
             targetEntity.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 20, 10, false, false, false));
             targetEntity.setDeltaMovement(new Vec3(0, 0, 0));
             targetEntity.hurtMarked = true;
+
+            loc.setLevel(targetEntity.level());
+            loc.setPosition(targetEntity.position());
         });
+        taskIdRef.set(taskId);
 
 
         ServerScheduler.scheduleDelayed(duration, () -> boundEntities.remove(targetEntity.getUUID()));
@@ -138,7 +157,7 @@ public class PlantControllingAbility extends SelectableAbility {
         if(targetEntity == null)
             return;
 
-        targetEntity.hurt(entity.damageSources().mobAttack(entity), (float) DamageLookup.lookupDamage(7, .75) * (float) multiplier(entity));
+        targetEntity.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) DamageLookup.lookupDamage(7, .75) * (float) multiplier(entity));
     }
 
     private void animateParticleLine(Location startLoc, Vec3 end, int step, int interval, int duration) {

@@ -3,7 +3,9 @@ package de.jakob.lotm.artifacts;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
@@ -24,6 +26,11 @@ public class SealedArtifactAnvilRecipe {
             return;
         }
 
+        // check if the item is historical summoned
+        if (right.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).contains("VoidSummonTime")) {
+            return;
+        }
+
         // Check if left slot has a valid base item
         if (!SealedArtifactHandler.isValidBaseItem(left.getItem())) {
             return;
@@ -31,8 +38,8 @@ public class SealedArtifactAnvilRecipe {
 
         // Create the sealed artifact
         ItemStack result = switch (SealedArtifactHandler.getBaseTypeName(left.getItem())) {
-            case "bell" -> new ItemStack(ModItems.SEALED_ARTIFACT_BELL);
-            case "chain" -> new ItemStack(ModItems.SEALED_ARTIFACT_CHAIN);
+            //case "bell" -> new ItemStack(ModItems.SEALED_ARTIFACT_BELL);
+            //case "chain" -> new ItemStack(ModItems.SEALED_ARTIFACT_CHAIN);
             case "gem" -> new ItemStack(ModItems.SEALED_ARTIFACT_GEM);
             case "star" -> new ItemStack(ModItems.SEALED_ARTIFACT_STAR);
             default -> new ItemStack(ModItems.SEALED_ARTIFACT);
@@ -43,13 +50,13 @@ public class SealedArtifactAnvilRecipe {
             return;
         }
 
-        // Generate sealed artifact data
-        SealedArtifactData data = SealedArtifactHandler.createSealedArtifactData(characteristic);
-        result.set(ModDataComponents.SEALED_ARTIFACT_DATA, data);
-        
         // Store the base type for display
         String baseType = SealedArtifactHandler.getBaseTypeName(left.getItem());
         result.set(ModDataComponents.SEALED_ARTIFACT_BASE_TYPE, baseType);
+
+        // Generate sealed artifact data
+        SealedArtifactData data = SealedArtifactHandler.createSealedArtifactData(characteristic, baseType);
+        result.set(ModDataComponents.SEALED_ARTIFACT_DATA, data);
         
         // Initialize selected ability index
         result.set(ModDataComponents.SEALED_ARTIFACT_SELECTED, 0);
@@ -59,8 +66,12 @@ public class SealedArtifactAnvilRecipe {
         
         // Set the cost (XP levels)
         int sequence = characteristic.getSequence();
-        int cost = 10 - sequence; // Higher cost for lower sequence (stronger artifacts)
-        event.setCost(Math.max(1, cost));
+        int cost = (sequence <= 1) ? 40 :
+                   (sequence == 2) ? 30 :
+                   (sequence <= 4) ? 20 :
+                   (sequence <= 7) ? 10 : 5;
+
+        event.setCost(cost);
 
         // Material cost is handled automatically by the anvil
         event.setMaterialCost(1);

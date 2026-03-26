@@ -1,7 +1,11 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.TsunamiRenderer;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.AddClientSideTagPacket;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
@@ -34,6 +38,7 @@ public class TsunamiEntity extends Entity {
     private static final double SPEED = 0.8D;
     private static final int MAX_LIFETIME = 200; // 10 seconds at 20 TPS
     private int ticksExisted = 0;
+    private int petrifiedTicks = 0;
     private boolean hasAdjustedPosition = false;
     private float speed = .65f;
 
@@ -120,9 +125,23 @@ public class TsunamiEntity extends Entity {
 
     @Override
     public void tick() {
+        // Petrification and Freezing Logic -- before super.tick() to prevent movement and damage while petrified/frozen
+        if(getTags().contains("petrified") || getTags().contains("frozen")) {
+            petrifiedTicks++;
+            if(petrifiedTicks >= 20 * 5) {
+                this.discard();
+            }
+            return;
+        }
+
         super.tick();
 
         if (!this.level().isClientSide) {
+            if(InteractionHandler.isInteractionPossible(new Location(this.position(), level()), "freezing")) {
+                getTags().add("frozen");
+                PacketHandler.sendToAllPlayersInSameLevel(new AddClientSideTagPacket("frozen", this.getId()), (ServerLevel) level());
+            }
+
             // Adjust position on first tick if not on solid ground
             if (!hasAdjustedPosition) {
                 adjustPositionToGround();

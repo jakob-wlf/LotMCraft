@@ -42,20 +42,11 @@ public class ConqueringAbility extends Ability {
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);
 
-        EffectManager.playEffect(EffectManager.Effect.CONQUERING, entity.getX(), entity.getY(), entity.getZ(), serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.CONQUERING, entity.getX(), entity.getY(), entity.getZ(), serverLevel, entity);
 
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 3.75, false).forEach(e -> {
-            if(AbilityUtil.isTargetSignificantlyWeaker(entity, e)) {
+            if(AbilityUtil.getSequenceDifference(entity, e) > 0) {
                 e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, 20 * 60 * 60, 7));
-            }
-            else if(AbilityUtil.isTargetSignificantlyStronger(entity, e)) {
-                e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, 3, 7));
-            }
-            else if(AbilityUtil.getSequenceDifference(entity, e) <= 0) {
-                e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, 20 * 2, random.nextInt(2, 5)));
-            }
-            else {
-                e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, 20 * 15, random.nextInt(2, 5)));
             }
         });
     }

@@ -6,10 +6,12 @@ import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ActiveShaderComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.MeteorEntity;
 import de.jakob.lotm.entity.custom.TornadoEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -77,7 +79,7 @@ public class DisasterManifestationAbility extends SelectableAbility {
                 }
             });
 
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), radius.get(), (float) DamageLookup.lookupDamage(2, .6) * (float) multiplier(entity), startPos, true, false, false, 20);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), radius.get(), (float) DamageLookup.lookupDamage(2, .6) * (float) multiplier(entity), startPos, true, false, false, 20, ModDamageTypes.source(serverLevel, ModDamageTypes.DEMONESS_GENERIC, entity));
 
             // Particles and shader
             for(Player player : AbilityUtil.getNearbyEntities(null, serverLevel, startPos, radius.get(), true)
@@ -99,7 +101,7 @@ public class DisasterManifestationAbility extends SelectableAbility {
             }
 
             radius.addAndGet(.5);
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 
     private void spawnMeteor(ServerLevel serverLevel, LivingEntity entity) {

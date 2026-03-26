@@ -39,6 +39,7 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
             this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 1, 112, 37));
             this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 2, 80, 72));
             this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 3, 80, 122));
+            this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 4, 152, 122));
 
             addDataSlots(data);
         } else {
@@ -51,10 +52,12 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
             addPlayerHotbar(inv);
 
             // Add dummy slots (they won't work but prevent crashes)
-            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(4), 0, 48, 37));
-            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(4), 1, 112, 37));
-            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(4), 2, 80, 72));
-            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(4), 3, 80, 122));
+            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(5), 0, 48, 37));
+            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(5), 1, 112, 37));
+            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(5), 2, 80, 72));
+            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(5), 3, 80, 122));
+            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(5), 4, 152, 122));
+
 
             addDataSlots(data);
         }
@@ -88,7 +91,7 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
     // THIS YOU HAVE TO DEFINE!
-    private static final int TE_INVENTORY_SLOT_COUNT = 4;  // must be the number of slots you have!
+    private static final int TE_INVENTORY_SLOT_COUNT = 5;  // must be the number of slots you have!
     @Override
     public ItemStack quickMoveStack(Player playerIn, int pIndex) {
         Slot sourceSlot = slots.get(pIndex);

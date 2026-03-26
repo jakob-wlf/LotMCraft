@@ -38,6 +38,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                DisableAbilityUsageForTimePacket.TYPE,
+                DisableAbilityUsageForTimePacket.STREAM_CODEC,
+                DisableAbilityUsageForTimePacket::handle
+        );
+
+        registrar.playToClient(
                 FireEffectPacket.TYPE,
                 FireEffectPacket.STREAM_CODEC,
                 FireEffectPacket::handle
@@ -83,6 +89,18 @@ public class PacketHandler {
                 SyncAbilityWheelPacket.TYPE,
                 SyncAbilityWheelPacket.STREAM_CODEC,
                 SyncAbilityWheelPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncCopiedAbilitiesPacket.TYPE,
+                SyncCopiedAbilitiesPacket.STREAM_CODEC,
+                SyncCopiedAbilitiesPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenCopiedAbilityWheelPacket.TYPE,
+                OpenCopiedAbilityWheelPacket.STREAM_CODEC,
+                OpenCopiedAbilityWheelPacket::handle
         );
 
 
@@ -292,6 +310,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                CancelEffectByPositionPacket.TYPE,
+                CancelEffectByPositionPacket.STREAM_CODEC,
+                CancelEffectByPositionPacket::handle
+        );
+
+        registrar.playToClient(
                 UpdateMovableEffectPositionPacket.TYPE,
                 UpdateMovableEffectPositionPacket.STREAM_CODEC,
                 UpdateMovableEffectPositionPacket::handle
@@ -347,6 +371,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                AddClientSideTagPacket.TYPE,
+                AddClientSideTagPacket.STREAM_CODEC,
+                AddClientSideTagPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncPlayerTeleportationOnlinePlayersPacket.TYPE,
                 SyncPlayerTeleportationOnlinePlayersPacket.STREAM_CODEC,
                 SyncPlayerTeleportationOnlinePlayersPacket::handle
@@ -388,6 +418,12 @@ public class PacketHandler {
                 QuestAcceptanceResponsePacket.TYPE,
                 QuestAcceptanceResponsePacket.STREAM_CODEC,
                 QuestAcceptanceResponsePacket::handle
+        );
+
+        registrar.playToServer(
+                NextArtifactAbilityPacket.TYPE,
+                NextArtifactAbilityPacket.STREAM_CODEC,
+                NextArtifactAbilityPacket::handle
         );
 
         registrar.playToServer(
@@ -454,6 +490,12 @@ public class PacketHandler {
                 UseSelectedAbilityPacket.TYPE,
                 UseSelectedAbilityPacket.STREAM_CODEC,
                 UseSelectedAbilityPacket::handle
+        );
+
+        registrar.playToServer(
+                UseCopiedAbilityPacket.TYPE,
+                UseCopiedAbilityPacket.STREAM_CODEC,
+                UseCopiedAbilityPacket::handle
         );
 
         registrar.playToServer(
@@ -578,6 +620,17 @@ public class PacketHandler {
                 ReturnToMainBodyPacket.TYPE,
                 ReturnToMainBodyPacket.STREAM_CODEC,
                 ReturnToMainBodyPacket::handle);
+
+        registrar.playToServer(
+                OpenArtifactWheelPacket.TYPE,
+                OpenArtifactWheelPacket.STREAM_CODEC,
+                OpenArtifactWheelPacket::handle);
+
+        registrar.playToServer(
+                SyncArtifactAbilityWheel.TYPE,
+                SyncArtifactAbilityWheel.STREAM_CODEC,
+                SyncArtifactAbilityWheel::handle
+        );
     }
 
     public static void sendToServer(CustomPacketPayload packet) {
@@ -614,6 +667,11 @@ public class PacketHandler {
     public static void sendToTracking(Entity entity, CustomPacketPayload payload) {
         if (!(entity.level() instanceof ServerLevel)) return;
         PacketDistributor.sendToPlayersTrackingEntity(entity, payload);
+    }
+
+    public static void sendToTrackingAndSelf(Entity entity, CustomPacketPayload payload) {
+        if (!(entity.level() instanceof ServerLevel)) return;
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, payload);
     }
 
     public static void syncSkinDataToAllPlayers(String playerName, String skinTexture, String skinSignature) {

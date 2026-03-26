@@ -1,8 +1,12 @@
 package de.jakob.lotm.abilities.darkness;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.abilities.sun.HolyOathAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -42,7 +46,7 @@ public class HorrorAuraAbility extends Ability {
         }
 
         Location loc = new Location(entity.position(), serverLevel);
-        UUID effectID = MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.HORROR_AURA, loc, 20 * 25, false, serverLevel);
+        UUID effectID = MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.HORROR_AURA, loc, 20 * 25, false, serverLevel, entity);
 
         AtomicInteger ticks = new AtomicInteger(0);
 
@@ -51,20 +55,37 @@ public class HorrorAuraAbility extends Ability {
             loc.setLevel(serverLevel);
             MovableEffectManager.updateEffectPosition(effectID, loc, serverLevel);
 
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 20, entity.position(), new MobEffectInstance(MobEffects.DARKNESS, 30, 5, false, false, false),
-                    new MobEffectInstance(MobEffects.BLINDNESS, 20, 4, false, false, false),
-                    new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 4, false, false, false));
+            // Horror Aura is suppressed by purification
+            int seq = BeyonderData.getSequence(entity);
+            if(InteractionHandler.isInteractionPossible(loc, "purification", seq))
+                return;
 
             AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20).forEach(e -> {
+                // Entity is freed from Horror Aura by morale-boosting abilities
+                Location eLoc = new Location(e.position(), serverLevel);
+                int eSeq = BeyonderData.getSequence(e);
+                boolean hasMorale = InteractionHandler.isInteractionPossibleForEntity(eLoc, "morale_boost", seq, e);
+                // Also check if the entity has an active HolyOath (ToggleAbility)
+                if(!hasMorale) {
+                    hasMorale = ToggleAbility.getActiveAbilitiesForEntity(e).stream()
+                            .anyMatch(a -> a instanceof HolyOathAbility) && eSeq <= seq;
+                }
+                if(hasMorale)
+                    return;
+
+                e.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 30, 5, false, false, false));
+                e.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20, 4, false, false, false));
+                e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 4, false, false, false));
+
                 BeyonderData.addModifier(e, "horror_aura", .4);
                 if(AbilityUtil.isTargetSignificantlyWeaker(entity, e) && ticks.get() % 10 == 0) {
-                    e.hurt(e.damageSources().mobAttack(entity), (float) (DamageLookup.lookupDps(3, .95, 10, 20) * multiplier(entity)));
+                    e.hurt(ModDamageTypes.source(level, ModDamageTypes.LOOSING_CONTROL, entity), (float) (DamageLookup.lookupDps(3, .95, 10, 20) * multiplier(entity)));
                 }
 
                 SanityComponent sanityComponent = e.getData(ModAttachments.SANITY_COMPONENT);
                 sanityComponent.increaseSanityAndSync(-.0033f, e);
             });
             ticks.getAndIncrement();
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 }

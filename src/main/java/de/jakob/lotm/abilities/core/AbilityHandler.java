@@ -14,14 +14,13 @@ import de.jakob.lotm.abilities.tyrant.*;
 import de.jakob.lotm.abilities.visionary.*;
 import de.jakob.lotm.abilities.wheel_of_fortune.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AbilityHandler {
 
     private final HashSet<Ability> abilities = new HashSet<>();
+    private final HashSet<Ability> disabledAbilities = new HashSet<>();
 
     public AbilityHandler() {
         registerAbilities();
@@ -35,6 +34,8 @@ public class AbilityHandler {
         abilities.add(new SpiritVisionAbility("spirit_vision_ability"));
         abilities.add(new CurseOfMisfortuneAbility("curse_of_misfortune_ability"));
         abilities.add(new AngelAuthorityAbility("angel_authority_ability"));
+        abilities.add(new AngelFlightAbility("angel_authority_flight"));
+        //abilities.add(new MythicalCreatureFormAbility("mythical_creature_form_ability"));
 
         // SUN PATHWAY
         abilities.add(new HolySongAbility("holy_song_ability"));
@@ -43,6 +44,7 @@ public class AbilityHandler {
         abilities.add(new FireOfLightAbility("fire_of_light_ability"));
         abilities.add(new CleaveOfPurificationAbility("cleave_of_purification_ability"));
         abilities.add(new HolyOathAbility("holy_oath_ability"));
+        abilities.add(new HolyLightSummoningAbility("holy_light_summoning_ability"));
         abilities.add(new GodSaysItsEffectiveAbility("notary_buff_ability"));
         abilities.add(new GodSaysItsNotEffectiveAbility("notary_debuff_ability"));
         abilities.add(new LightOfHolinessAbility("light_of_holiness_ability"));
@@ -92,7 +94,7 @@ public class AbilityHandler {
         abilities.add(new ThunderclapAbility("thunderclap_ability"));
         abilities.add(new LightningBranchAbility("lightning_branch_ability"));
         abilities.add(new CalamityCreationAbility("calamity_creation_ability"));
-        abilities.add(new MythicalCreatureFormTyrantAbility("mythical_creature_tyrant_ability"));
+        //abilities.add(new MythicalCreatureFormTyrantAbility("mythical_creature_tyrant_ability"));
         abilities.add(new EnergyTransformationAbility("energy_transformation_ability"));
         abilities.add(new HeavenlyPunishmentAbility("heavenly_punishment_ability"));
         abilities.add(new ElectromagneticTornadoAbility("electromagnetic_tornado_ability"));
@@ -197,7 +199,7 @@ public class AbilityHandler {
         abilities.add(new AreaMiniaturizationAbility("area_miniaturization_ability"));
         abilities.add(new SpaceDistortionAbility("space_distortion_ability"));
         abilities.add(new PocketDimensionAbility("pocket_dimension_ability"));
-        abilities.add(new MythicalCreatureFormDoorAbility("mythical_creature_door_ability"));
+        //abilities.add(new MythicalCreatureFormDoorAbility("mythical_creature_door_ability"));
         abilities.add(new SpaceTimeStormAbility("space_time_storm_ability"));
         abilities.add(new BlackHoleAbility("black_hole_ability"));
         abilities.add(new PlayerTeleportationAbility("player_teleportation_ability"));
@@ -218,9 +220,9 @@ public class AbilityHandler {
         abilities.add(new MentalPlagueAbility("mental_plague_ability"));
         abilities.add(new MindInvasionAbility("mind_invasion_ability"));
         abilities.add(new IdentityAvatarAbility("identity_avatar_ability"));
-        abilities.add(new PsycheStormAbility("psyche_storm_ability"));
 
         // WHEEL OF FORTUNE PATHWAY
+        abilities.add(new PsycheStormAbility("psyche_storm_ability"));
         abilities.add(new CalamityAttractionAbility("calamity_attraction_ability"));
         abilities.add(new LuckReleaseAbility("luck_release_ability"));
         abilities.add(new MisfortuneGiftingAbility("misfortune_gifting_ability"));
@@ -259,14 +261,16 @@ public class AbilityHandler {
     public HashSet<Ability> getByPathwayAndSequenceExact(String pathway, int sequence) {
         return abilities
                 .stream()
-                .filter(ability -> ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) == sequence)
+                .filter(ability ->
+                        ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) == sequence)
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
     public HashSet<Ability> getByPathwayAndSequence(String pathway, int sequence) {
         return abilities
                 .stream()
-                .filter(ability -> ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) >= sequence)
+                .filter(ability ->
+                        ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) >= sequence)
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
@@ -279,12 +283,50 @@ public class AbilityHandler {
         );
     }
 
+    public Ability getRandomAbility(String pathway, int sequence, Random random, boolean exact, List<Ability> excluded) {
+        List<Ability> pool;
+        if (exact) {
+            pool = new ArrayList<>(getByPathwayAndSequenceExact(pathway, sequence));
+        } else {
+            pool = new ArrayList<>(getByPathwayAndSequence(pathway, sequence));
+        }
+
+        // filter the pool to remove excluded abilities
+        List<Ability> filteredPool = pool.stream()
+                .filter(ability -> !excluded.contains(ability))
+                .collect(Collectors.toList());
+
+        if (filteredPool.isEmpty()) return null;
+        return filteredPool.get(random.nextInt(filteredPool.size()));
+    }
+
+    public void disableAbility(Ability ability) {
+        disabledAbilities.add(ability);
+    }
+
+    public void enableAbility(Ability ability) {
+        disabledAbilities.remove(ability);
+    }
+    public boolean isDisabled(Ability ability) {
+        return disabledAbilities.contains(ability);
+    }
+
     public ArrayList<Ability> getByPathwayAndSequenceOrderedBySequence(String pathway, int sequence) {
         return new ArrayList<>(
                 abilities.stream()
                         .filter(ability -> ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) >= sequence)
                         .sorted(Comparator.comparing(Ability::getId))
                         .sorted(Comparator.comparing(ability -> ability.getRequirements().get(pathway)))
+                        .toList()
+        );
+    }
+
+    public ArrayList<Ability> getAllAbilitiesUpToSequenceOrdered(int sequence) {
+        return new ArrayList<>(
+                abilities.stream()
+                        .filter(ability -> ability.getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence))
+                        .sorted(Comparator.comparing(Ability::getId))
+                        .sorted(Comparator.comparingInt(Ability::lowestSequenceUsable).reversed())
                         .toList()
         );
     }

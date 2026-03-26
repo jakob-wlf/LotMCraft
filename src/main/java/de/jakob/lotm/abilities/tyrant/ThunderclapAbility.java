@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -58,7 +59,7 @@ public class ThunderclapAbility extends Ability {
             ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.LIGHTNING.get(), entity.position(), 80, 1, 0.1);
             level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 2, 1);
 
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8, DamageLookup.lookupDamage(3, .85) * multiplier(entity), entity.position(), true, false);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8, DamageLookup.lookupDamage(3, .85) * multiplier(entity), entity.position(), true, false, ModDamageTypes.source(level, ModDamageTypes.SAILOR_LIGHTNING, entity));
 
             entity.setDeltaMovement(new Vec3(dir.x, dir.y * .1, dir.z).scale(7));
             entity.hurtMarked = true;

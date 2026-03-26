@@ -1,6 +1,8 @@
 package de.jakob.lotm.sefirah;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -118,7 +120,8 @@ public class SefirahCastleEventHandler {
 
         // Disable ability use
         if(!(entity instanceof ServerPlayer player) || !SefirahHandler.getClaimedSefirot(player).equalsIgnoreCase("sefirah_castle")) {
-            BeyonderData.disableAbilityUseWithTimeLimit(entity, "sefirah_castle", 2000);
+            DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+            component.disableAbilityUsageForTime("sefirah_castle", 20 * 20, entity);
         }
     }
 

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.attachments.DisabledFlightComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.particle.ModParticles;
@@ -36,6 +37,12 @@ public class ConceptualizationAbility extends ToggleAbility {
             return;
         }
 
+        DisabledFlightComponent disabledFlightComponent = entity.getData(ModAttachments.FLIGHT_DISABLE_COMPONENT);
+        if(disabledFlightComponent.getCooldownTicks() > 0) {
+            cancel((ServerLevel) level, entity);
+            return;
+        }
+
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         transformationComponent.setTransformedAndSync(true, entity);
         transformationComponent.setTransformationIndexAndSync(TransformationComponent.TransformationType.CONCEPTUALIZATION, entity);
@@ -44,6 +51,12 @@ public class ConceptualizationAbility extends ToggleAbility {
     @Override
     public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide) {
+            return;
+        }
+
+        DisabledFlightComponent disabledFlightComponent = entity.getData(ModAttachments.FLIGHT_DISABLE_COMPONENT);
+        if(disabledFlightComponent.getCooldownTicks() > 0) {
+            cancel((ServerLevel) level, entity);
             return;
         }
 

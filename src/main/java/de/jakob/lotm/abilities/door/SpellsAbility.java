@@ -123,6 +123,6 @@ public class SpellsAbility extends SelectableAbility {
                 ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, pos, 0, dir.x, dir.y, dir.z, 1);
             }
 
-        }, () -> isCastingWind.remove(entity.getUUID()), (ServerLevel) level);
+        }, () -> isCastingWind.remove(entity.getUUID()), (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
     }
 }

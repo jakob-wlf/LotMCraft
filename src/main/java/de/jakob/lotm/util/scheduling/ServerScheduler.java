@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 public class ServerScheduler {
@@ -23,212 +24,184 @@ public class ServerScheduler {
         }
     }
 
-    /**
-     * Schedule a task to run once after a delay
-     * @param delay Delay in ticks
-     * @param task Task to execute
-     * @return Task ID for cancellation
-     */
+    // -------------------------------------------------------------------------
+    // scheduleDelayed
+    // -------------------------------------------------------------------------
+
+    /** Schedule a task to run once after a delay. */
     public static UUID scheduleDelayed(int delay, Runnable task) {
         if (delay < 0) delay = 0;
-        return scheduleDelayed(delay, task, null);
+        return scheduleDelayed(delay, task, null, () -> 1.0);
     }
 
-    /**
-     * Schedule a task to run once after a delay with level context
-     * @param delay Delay in ticks
-     * @param task Task to execute
-     * @param level Server level context
-     * @return Task ID for cancellation
-     */
+    /** Schedule a task to run once after a delay with level context. */
     public static UUID scheduleDelayed(int delay, Runnable task, ServerLevel level) {
+        if (delay < 0) delay = 0;
+        return scheduleDelayed(delay, task, level, () -> 1.0);
+    }
+
+    public static UUID scheduleDelayed(int delay, Runnable task,
+                                       @Nullable ServerLevel level,
+                                       Supplier<Double> timeMultiplier) {
+        if (delay < 0) delay = 0;
         UUID id = UUID.randomUUID();
-        ScheduledTask scheduledTask = new ScheduledTask(
-                id, task, delay, 0, 1, level, () -> true
-        );
-        tasks.put(id, scheduledTask);
+        tasks.put(id, new ScheduledTask(id, task, delay, 0, 1, level, () -> true, timeMultiplier));
         return id;
     }
 
-    /**
-     * Schedule a task to run repeatedly with intervals
-     * @param initialDelay Initial delay in ticks
-     * @param interval Interval between executions in ticks
-     * @param maxExecutions Maximum number of executions (-1 for infinite)
-     * @param task Task to execute
-     * @return Task ID for cancellation
-     */
-    public static UUID scheduleRepeating(int initialDelay, int interval, int maxExecutions, Runnable task) {
-        return scheduleRepeating(initialDelay, interval, maxExecutions, task, null, () -> true);
+    // -------------------------------------------------------------------------
+    // scheduleRepeating
+    // -------------------------------------------------------------------------
+
+    /** Schedule a task to run repeatedly with intervals. */
+    public static UUID scheduleRepeating(int initialDelay, int interval,
+                                         int maxExecutions, Runnable task) {
+        return scheduleRepeating(initialDelay, interval, maxExecutions, task, null, () -> true, () -> 1.0);
     }
 
-    /**
-     * Schedule a task to run repeatedly with intervals and conditions
-     * @param initialDelay Initial delay in ticks
-     * @param interval Interval between executions in ticks
-     * @param maxExecutions Maximum number of executions (-1 for infinite)
-     * @param task Task to execute
-     * @param level Server level context
-     * @param condition Condition to check before each execution
-     * @return Task ID for cancellation
-     */
+    /** Schedule a task to run repeatedly with intervals and conditions. */
     public static UUID scheduleRepeating(int initialDelay, int interval, int maxExecutions,
-                                         Runnable task, ServerLevel level, Supplier<Boolean> condition) {
+                                         Runnable task, ServerLevel level,
+                                         Supplier<Boolean> condition) {
+        return scheduleRepeating(initialDelay, interval, maxExecutions, task, level, condition, () -> 1.0);
+    }
+
+    public static UUID scheduleRepeating(int initialDelay, int interval, int maxExecutions,
+                                         Runnable task, @Nullable ServerLevel level,
+                                         Supplier<Boolean> condition,
+                                         Supplier<Double> timeMultiplier) {
         UUID id = UUID.randomUUID();
-        ScheduledTask scheduledTask = new ScheduledTask(
-                id, task, initialDelay, interval, maxExecutions, level, condition
-        );
-        tasks.put(id, scheduledTask);
+        tasks.put(id, new ScheduledTask(id, task, initialDelay, interval, maxExecutions,
+                level, condition, timeMultiplier));
         return id;
     }
 
-    /**
-     * Schedule a task to run repeatedly for a specific duration
-     * @param initialDelay Initial delay in ticks
-     * @param interval Interval between executions in ticks
-     * @param duration Total duration in ticks
-     * @param task Task to execute
-     * @return Task ID for cancellation
-     */
-    public static UUID scheduleForDuration(int initialDelay, int interval, int duration, Runnable task) {
-        return scheduleForDuration(initialDelay, interval, duration, task, null);
+    // -------------------------------------------------------------------------
+    // scheduleForDuration
+    // -------------------------------------------------------------------------
+
+    /** Schedule a task to run repeatedly for a specific duration. */
+    public static UUID scheduleForDuration(int initialDelay, int interval,
+                                           int duration, Runnable task) {
+        return scheduleForDuration(initialDelay, interval, duration, task, null, null, () -> 1.0);
     }
 
-    /**
-     * Schedule a task to run repeatedly for a specific duration with level context
-     * @param initialDelay Initial delay in ticks
-     * @param interval Interval between executions in ticks
-     * @param duration Total duration in ticks
-     * @param task Task to execute
-     * @param level Server level context
-     * @return Task ID for cancellation
-     */
+    /** Schedule a task to run repeatedly for a specific duration with level context. */
     public static UUID scheduleForDuration(int initialDelay, int interval, int duration,
                                            Runnable task, ServerLevel level) {
-        UUID id = UUID.randomUUID();
-        ScheduledTask scheduledTask = new ScheduledTask(
-                id, task, initialDelay, interval, -1, level, () -> true
-        );
-        scheduledTask.setEndTime(duration);
-        tasks.put(id, scheduledTask);
-        return id;
+        return scheduleForDuration(initialDelay, interval, duration, task, null, level, () -> 1.0);
+    }
+
+    /** Schedule a task for a duration with an onFinish callback. */
+    public static UUID scheduleForDuration(int initialDelay, int interval, int duration,
+                                           Runnable task, @Nullable Runnable onFinish,
+                                           ServerLevel level) {
+        return scheduleForDuration(initialDelay, interval, duration, task, onFinish, level, () -> 1.0);
     }
 
     /**
-     * Schedule a task to run repeatedly for a specific duration with level context
-     * @param initialDelay Initial delay in ticks
-     * @param interval Interval between executions in ticks
-     * @param duration Total duration in ticks
-     * @param task Task to execute
-     * @param onFinish Task to execute when the duration ends
-     * @param level Server level context
-     * @return Task ID for cancellation
+     * Schedule a task for a nominal duration, scaled by a time multiplier.
+     * <p>
+     * Returns the main task's UUID. Cancelling this UUID via {@link #cancel(UUID)}
+     * will also cancel the associated {@code onFinish} task, preventing it from
+     * firing after the effect has been externally interrupted (e.g. purification).
      */
     public static UUID scheduleForDuration(int initialDelay, int interval, int duration,
-                                           Runnable task, @Nullable Runnable onFinish, ServerLevel level) {
+                                           Runnable task, @Nullable Runnable onFinish,
+                                           @Nullable ServerLevel level,
+                                           Supplier<Double> timeMultiplier) {
         UUID id = UUID.randomUUID();
         ScheduledTask scheduledTask = new ScheduledTask(
-                id, task, initialDelay, interval, -1, level, () -> true
-        );
+                id, task, initialDelay, interval, -1, level, () -> true, timeMultiplier);
         scheduledTask.setEndTime(duration);
-        tasks.put(id, scheduledTask);
 
         if (onFinish != null) {
             UUID finishId = UUID.randomUUID();
             ScheduledTask finishTask = new ScheduledTask(
-                    finishId, onFinish, duration + 1, 0, 1, level, () -> true
-            );
+                    finishId, onFinish, duration + 1, 0, 1, level, () -> true, timeMultiplier);
             tasks.put(finishId, finishTask);
+
+            // Link the finish task to the main task so cancel(id) removes both
+            scheduledTask.setLinkedTaskId(finishId);
         }
 
+        tasks.put(id, scheduledTask);
         return id;
     }
 
-    /**
-     * Schedule a task that runs every tick until the breakCondition becomes true.
-     * Executes onFinish once when the condition is met.
-     *
-     * @param level Server level context
-     * @param task Task to execute each tick
-     * @param onFinish Task to execute when condition is met
-     * @param breakCondition Condition to stop execution
-     * @return Task ID for cancellation
-     */
+    // -------------------------------------------------------------------------
+    // scheduleUntil
+    // -------------------------------------------------------------------------
+
     public static UUID scheduleUntil(ServerLevel level, Runnable task,
                                      @Nullable Runnable onFinish,
-                                     java.util.concurrent.atomic.AtomicBoolean breakCondition) {
-        UUID id = UUID.randomUUID();
-        ScheduledTask scheduledTask = new ScheduledTask(
-                id, task, 0, 1, -1, level, () -> !breakCondition.get()
-        );
-        tasks.put(id, scheduledTask);
+                                     AtomicBoolean breakCondition) {
+        return scheduleUntil(level, task, 1, onFinish, breakCondition, () -> 1.0);
+    }
 
-        if (onFinish != null) {
-            UUID finishId = UUID.randomUUID();
-            ScheduledTask finishTask = new ScheduledTask(
-                    finishId, onFinish, 0, 1, 1, level, breakCondition::get
-            );
-            tasks.put(finishId, finishTask);
-        }
-
-        return id;
-    }    /**
-     * Schedule a task that runs repeatedly at a given interval until the breakCondition becomes true.
-     * Executes onFinish once when the condition is met.
-     *
-     * @param level Server level context
-     * @param task Task to execute each interval
-     * @param interval Interval between executions in ticks
-     * @param onFinish Task to execute when condition is met
-     * @param breakCondition Condition to stop execution
-     * @return Task ID for cancellation
-     */
     public static UUID scheduleUntil(ServerLevel level, Runnable task, int interval,
                                      @Nullable Runnable onFinish,
-                                     java.util.concurrent.atomic.AtomicBoolean breakCondition) {
+                                     AtomicBoolean breakCondition) {
+        return scheduleUntil(level, task, interval, onFinish, breakCondition, () -> 1.0);
+    }
+
+    public static UUID scheduleUntil(ServerLevel level, Runnable task, int interval,
+                                     @Nullable Runnable onFinish,
+                                     AtomicBoolean breakCondition,
+                                     Supplier<Double> timeMultiplier) {
         UUID id = UUID.randomUUID();
         ScheduledTask scheduledTask = new ScheduledTask(
-                id, task, 0, interval, -1, level, () -> !breakCondition.get()
-        );
+                id, task, 0, interval, -1, level, () -> !breakCondition.get(), timeMultiplier);
         tasks.put(id, scheduledTask);
 
         if (onFinish != null) {
             UUID finishId = UUID.randomUUID();
             ScheduledTask finishTask = new ScheduledTask(
-                    finishId, onFinish, 0, 1, 1, level, breakCondition::get
-            );
+                    finishId, onFinish, 0, 1, 1, level, breakCondition::get, timeMultiplier);
             tasks.put(finishId, finishTask);
+
+            scheduledTask.setLinkedTaskId(finishId);
         }
 
         return id;
     }
 
+    // -------------------------------------------------------------------------
+    // Utility
+    // -------------------------------------------------------------------------
 
     /**
-     * Cancel a scheduled task
-     * @param taskId Task ID to cancel
-     * @return true if task was found and cancelled
+     * Cancel a scheduled task.
+     * <p>
+     * If the task was created by {@link #scheduleForDuration} or
+     * {@link #scheduleUntil} with an {@code onFinish} callback, the linked
+     * finish task is cancelled automatically so it never fires.
      */
     public static boolean cancel(UUID taskId) {
-        return tasks.remove(taskId) != null;
+        ScheduledTask task = tasks.remove(taskId);
+        if (task == null) return false;
+
+        // Also cancel the linked onFinish task if present
+        if (task.linkedTaskId != null) {
+            tasks.remove(task.linkedTaskId);
+        }
+
+        return true;
     }
 
-    /**
-     * Check if a task is still scheduled
-     * @param taskId Task ID to check
-     * @return true if task exists and is scheduled
-     */
+    /** Check if a task is still scheduled. */
     public static boolean isScheduled(UUID taskId) {
         return tasks.containsKey(taskId);
     }
 
-    /**
-     * Get the number of currently scheduled tasks
-     * @return Number of scheduled tasks
-     */
+    /** Get the number of currently scheduled tasks. */
     public static int getScheduledTaskCount() {
         return tasks.size();
     }
+
+    // -------------------------------------------------------------------------
+    // Tick handler
+    // -------------------------------------------------------------------------
 
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Pre event) {
@@ -238,21 +211,17 @@ public class ServerScheduler {
             Map.Entry<UUID, ScheduledTask> entry = iterator.next();
             ScheduledTask task = entry.getValue();
 
-            // Check if level context is still valid
             if (task.level != null && task.level.isClientSide()) {
                 iterator.remove();
                 continue;
             }
 
-            // Check end time condition
             if (task.hasEndTime() && task.getElapsedTime() >= task.getEndTime()) {
                 iterator.remove();
                 continue;
             }
 
-            // Check if it's time to execute
             if (task.tick()) {
-                // Check condition before execution
                 if (task.condition.get()) {
                     try {
                         task.task.run();
@@ -263,46 +232,59 @@ public class ServerScheduler {
 
                     task.incrementExecutions();
 
-                    // Remove if max executions reached
                     if (task.maxExecutions > 0 && task.executionCount >= task.maxExecutions) {
                         iterator.remove();
                     }
                 } else {
-                    // Condition failed, remove task
                     iterator.remove();
                 }
             }
         }
     }
 
+    // -------------------------------------------------------------------------
+    // ScheduledTask
+    // -------------------------------------------------------------------------
+
     private static class ScheduledTask {
         private final UUID id;
         private final Runnable task;
-        private final int initialDelay;
         private final int interval;
         private final int maxExecutions;
         private final ServerLevel level;
         private final Supplier<Boolean> condition;
+        private final Supplier<Double> timeMultiplier;
 
-        private int ticksElapsed = 0;
+        private double ticksElapsed = 0;
         private int executionCount = 0;
-        private int nextExecutionTick;
-        private int endTime = -1;
+        private double nextExecutionTick;
+        private double endTime = -1;
+
+        /**
+         * UUID of the companion task (e.g. the onFinish task spawned by
+         * scheduleForDuration). Set once at construction time via
+         * {@link #setLinkedTaskId}. When this task is cancelled, the linked
+         * task is removed from the map as well.
+         */
+        @Nullable
+        private UUID linkedTaskId = null;
 
         public ScheduledTask(UUID id, Runnable task, int initialDelay, int interval,
-                             int maxExecutions, ServerLevel level, Supplier<Boolean> condition) {
+                             int maxExecutions, ServerLevel level,
+                             Supplier<Boolean> condition, Supplier<Double> timeMultiplier) {
             this.id = id;
             this.task = task;
-            this.initialDelay = initialDelay;
             this.interval = interval;
             this.maxExecutions = maxExecutions;
             this.level = level;
             this.condition = condition;
+            this.timeMultiplier = timeMultiplier;
             this.nextExecutionTick = initialDelay;
         }
 
         public boolean tick() {
-            ticksElapsed++;
+            double multiplier = Math.max(0.0, timeMultiplier.get());
+            ticksElapsed += multiplier;
             return ticksElapsed >= nextExecutionTick;
         }
 
@@ -317,15 +299,19 @@ public class ServerScheduler {
             this.endTime = endTime;
         }
 
+        public void setLinkedTaskId(UUID linkedTaskId) {
+            this.linkedTaskId = linkedTaskId;
+        }
+
         public boolean hasEndTime() {
             return endTime > 0;
         }
 
-        public int getEndTime() {
+        public double getEndTime() {
             return endTime;
         }
 
-        public int getElapsedTime() {
+        public double getElapsedTime() {
             return ticksElapsed;
         }
     }

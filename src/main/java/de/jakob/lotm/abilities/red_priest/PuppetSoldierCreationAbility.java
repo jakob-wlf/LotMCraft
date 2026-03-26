@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class PuppetSoldierCreationAbility extends Ability {
     public PuppetSoldierCreationAbility(String id) {
-        super(id, 20 * 270); // 4 min, 30 seconds
+        super(id, 20 * 60 * 2);
     }
 
     @Override

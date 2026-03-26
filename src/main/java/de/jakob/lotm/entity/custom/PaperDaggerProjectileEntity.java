@@ -21,6 +21,7 @@ public class PaperDaggerProjectileEntity extends AbstractArrow {
     private final double damage;
 
     private int ticks = 0;
+    private int petrifiedTicks = 0;
 
     public PaperDaggerProjectileEntity(EntityType<? extends AbstractArrow> entityType, Level level) {
         super(entityType, level);
@@ -44,6 +45,15 @@ public class PaperDaggerProjectileEntity extends AbstractArrow {
 
     @Override
     public void tick() {
+        // Petrification Logic -- run before super.tick() to stop movement completely
+        if(getTags().contains("petrified")) {
+            petrifiedTicks++;
+            if(petrifiedTicks >= 20 * 5) {
+                this.discard();
+            }
+            return;
+        }
+
         super.tick();
         if(level.isClientSide)
             return;
@@ -61,7 +71,12 @@ public class PaperDaggerProjectileEntity extends AbstractArrow {
         if (!(result.getEntity() instanceof LivingEntity))
             return;
         LivingEntity target = (LivingEntity) result.getEntity();
-        target.hurt(this.damageSources().mobAttack(owner), (float) damage);
+        // check if the owner exists before - to not crash
+        if (this.getOwner() instanceof LivingEntity livingOwner) {
+            target.hurt(this.damageSources().mobAttack(livingOwner), (float) damage);
+        } else {
+            target.hurt(this.damageSources().thrown(this, null), (float) damage);
+        }
         level.addFreshEntity(new ItemEntity(level, result.getLocation().x, result.getLocation().y, result.getLocation().z, new ItemStack(Items.PAPER)));
     }
 

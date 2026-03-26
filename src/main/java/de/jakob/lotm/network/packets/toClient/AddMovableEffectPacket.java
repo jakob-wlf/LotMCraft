@@ -10,54 +10,68 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
 
-public record AddMovableEffectPacket(UUID effectId, int index, 
+public record AddMovableEffectPacket(UUID effectId, int index,
                                      double x, double y, double z,
-                                     int duration, boolean infinite) implements CustomPacketPayload {
-    
-    public static final Type<AddMovableEffectPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "add_movable_effect"));
-    
-    public static final StreamCodec<ByteBuf, AddMovableEffectPacket> STREAM_CODEC = 
-        new StreamCodec<>() {
-            @Override
-            public AddMovableEffectPacket decode(ByteBuf buf) {
-                UUID effectId = new UUID(buf.readLong(), buf.readLong());
-                int index = buf.readInt();
-                double x = buf.readDouble();
-                double y = buf.readDouble();
-                double z = buf.readDouble();
-                int duration = buf.readInt();
-                boolean infinite = buf.readBoolean();
-                return new AddMovableEffectPacket(effectId, index, x, y, z, duration, infinite);
-            }
+                                     int duration, boolean infinite,
+                                     int entityId) implements CustomPacketPayload {
 
-            @Override
-            public void encode(ByteBuf buf, AddMovableEffectPacket packet) {
-                buf.writeLong(packet.effectId.getMostSignificantBits());
-                buf.writeLong(packet.effectId.getLeastSignificantBits());
-                buf.writeInt(packet.index);
-                buf.writeDouble(packet.x);
-                buf.writeDouble(packet.y);
-                buf.writeDouble(packet.z);
-                buf.writeInt(packet.duration);
-                buf.writeBoolean(packet.infinite);
-            }
-        };
-    
+    /** Sentinel value meaning "no entity" — maps to the no-scaling code path. */
+    public static final int NO_ENTITY = -1;
+
+    /** Convenience constructor for effects with no entity (original API). */
+    public AddMovableEffectPacket(UUID effectId, int index,
+                                  double x, double y, double z,
+                                  int duration, boolean infinite) {
+        this(effectId, index, x, y, z, duration, infinite, NO_ENTITY);
+    }
+
+    public static final Type<AddMovableEffectPacket> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "add_movable_effect"));
+
+    public static final StreamCodec<ByteBuf, AddMovableEffectPacket> STREAM_CODEC =
+            new StreamCodec<>() {
+                @Override
+                public AddMovableEffectPacket decode(ByteBuf buf) {
+                    UUID effectId = new UUID(buf.readLong(), buf.readLong());
+                    int index = buf.readInt();
+                    double x = buf.readDouble();
+                    double y = buf.readDouble();
+                    double z = buf.readDouble();
+                    int duration = buf.readInt();
+                    boolean infinite = buf.readBoolean();
+                    int entityId = buf.readInt();
+                    return new AddMovableEffectPacket(effectId, index, x, y, z, duration, infinite, entityId);
+                }
+
+                @Override
+                public void encode(ByteBuf buf, AddMovableEffectPacket packet) {
+                    buf.writeLong(packet.effectId.getMostSignificantBits());
+                    buf.writeLong(packet.effectId.getLeastSignificantBits());
+                    buf.writeInt(packet.index);
+                    buf.writeDouble(packet.x);
+                    buf.writeDouble(packet.y);
+                    buf.writeDouble(packet.z);
+                    buf.writeInt(packet.duration);
+                    buf.writeBoolean(packet.infinite);
+                    buf.writeInt(packet.entityId);
+                }
+            };
+
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-    
+
     public static void handle(AddMovableEffectPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.flow().isClientbound()) {
                 ClientHandler.addMovableEffect(
-                    packet.effectId(),
-                    packet.index(),
-                    packet.x(), packet.y(), packet.z(),
-                    packet.duration(),
-                    packet.infinite()
+                        packet.effectId(),
+                        packet.index(),
+                        packet.x(), packet.y(), packet.z(),
+                        packet.duration(),
+                        packet.infinite(),
+                        packet.entityId()
                 );
             }
         });

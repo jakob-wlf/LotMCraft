@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.demoness;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -40,7 +41,7 @@ public class ApocalypseAbility extends Ability {
         Vec3 loc = entity.position();
 
         // Play effect
-        EffectManager.playEffect(EffectManager.Effect.APOCALYPSE, loc.x, loc.y, loc.z, serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.APOCALYPSE, loc.x, loc.y, loc.z, serverLevel, entity);
 
         double yLevel = loc.y - 1;
 
@@ -62,9 +63,9 @@ public class ApocalypseAbility extends Ability {
                 });
             }
 
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), DamageLookup.lookupDamage(1, .8) * multiplier(entity), loc, true, false, false, 30);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), DamageLookup.lookupDamage(1, .8) * multiplier(entity), loc, true, false, false, 30, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
 
             radius.addAndGet(0.8);
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), serverLevel)));
     }
 }

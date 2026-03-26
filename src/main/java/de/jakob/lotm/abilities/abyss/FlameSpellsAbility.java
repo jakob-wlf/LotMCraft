@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.abyss;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.FireballEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -67,7 +68,7 @@ public class FlameSpellsAbility extends SelectableAbility {
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 3, 1);
 
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 5).forEach(e -> {
-            e.hurt(e.damageSources().mobAttack(entity), (float) (DamageLookup.lookupDamage(6, .875) * multiplier(entity)));
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(6, .875) * multiplier(entity)));
             e.setRemainingFireTicks(20 * 3);
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(.5);
             e.setDeltaMovement(knockBack);

@@ -1,5 +1,6 @@
 package de.jakob.lotm.abilities.wheel_of_fortune.calamities;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -39,7 +40,7 @@ public class Earthquake extends Calamity{
             AbilityUtil.getNearbyEntities(null, level, startPos, radius + 6).forEach(e -> {
                 if(AbilityUtil.distanceToGround(level, e) < 1.5) {
                     if(random.nextBoolean())
-                        e.hurt(e.damageSources().generic(), 9.5f * multiplier);
+                        e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC), 9.5f * multiplier);
                     if(random.nextInt(12) == 0)
                         e.setDeltaMovement(new Vec3((0.5 - random.nextDouble()) * 0.5, 0.25 + random.nextDouble() * .75, (0.5 - random.nextDouble()) * 0.25));
                 }

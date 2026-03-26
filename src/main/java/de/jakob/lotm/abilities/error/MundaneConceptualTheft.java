@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -105,7 +106,7 @@ public class MundaneConceptualTheft extends SelectableAbility {
             return;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.CONCEPTUAL_THEFT, target.getX(), target.getEyeY(), target.getZ(), serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.CONCEPTUAL_THEFT, target.getX(), target.getEyeY(), target.getZ(), serverLevel, entity);
 
         if(BeyonderData.isBeyonder(target) && doesTheftFail(BeyonderData.getSequence(entity), BeyonderData.getSequence(target))) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mundane_conceptual_theft.theft_failed").withColor(0x4742c9));
@@ -121,7 +122,9 @@ public class MundaneConceptualTheft extends SelectableAbility {
     }
 
     private void stealDistance(ServerLevel level, LivingEntity entity) {
-        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, 8, true).getCenter().add(0, 1, 0);
+        if(BeyonderData.getSequence(entity) > 6) return;
+
+        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, (1 << (9 - BeyonderData.getSequence(entity))), true).getCenter().add(0, 1, 0);
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
 
         entity.teleportTo(targetLoc.x, targetLoc.y, targetLoc.z);
@@ -129,7 +132,7 @@ public class MundaneConceptualTheft extends SelectableAbility {
 
     private void stealHealth(LivingEntity entity, LivingEntity target) {
         float healthToSteal = (float) (DamageLookup.lookupDamage(5, 1f) * multiplier(entity));
-        target.hurt(entity.damageSources().magic(), healthToSteal);
+        target.hurt(ModDamageTypes.source(target.level(), ModDamageTypes.BEYONDER_GENERIC, entity), healthToSteal);
         entity.setHealth(Math.min(entity.getMaxHealth(), entity.getHealth() + healthToSteal));
     }
 

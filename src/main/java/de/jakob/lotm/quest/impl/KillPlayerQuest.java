@@ -34,7 +34,7 @@ public class KillPlayerQuest extends Quest {
                 .filter(entry -> entry.getValue() != null)
                 .filter(entry -> {
                     int targetSeq = entry.getValue().sequence();
-                    return targetSeq >= 0 && targetSeq <= questTakerSeq + 1;
+                    return targetSeq >= questTakerSeq - 1 && targetSeq <= questTakerSeq + 1;
                 })
                 .map(java.util.Map.Entry::getKey)
                 .toList();
@@ -75,14 +75,21 @@ public class KillPlayerQuest extends Quest {
     @Override
     public List<ItemStack> getRewards(ServerPlayer player) {
         List<ItemStack> rewards = new ArrayList<>();
-        int currentSequence = BeyonderData.getSequence(player);
-        int rewardSequence = Math.min(9, currentSequence + 1);
+        int rewardSequence = Math.min(9, BeyonderData.getSequence(player) + 1);
+        UUID targetUuid = targetByPlayer.get(player.getUUID());
+        if (targetUuid != null) {
+            ServerPlayer targetOnline = player.server.getPlayerList().getPlayer(targetUuid);
+            if (targetOnline != null) {
+                rewardSequence = BeyonderData.getSequence(targetOnline);
+            } else {
+                Optional<StoredData> data = BeyonderData.beyonderMap.get(targetUuid);
+                if (data.isPresent()) {
+                    rewardSequence = data.get().sequence();
+                }
+            }
+        }
 
-        QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
-        int completedQuestCount = component.getCompletedQuests().size();
-
-        long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
-        Random random = new Random(randomSeed);
+        Random random = new Random();
 
         BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, rewardSequence);
         if (potion != null) {
@@ -93,11 +100,31 @@ public class KillPlayerQuest extends Quest {
 
     @Override
     public float getDigestionReward() {
-        return .5f;
+        return .4f;
     }
 
+
+
+
     @Override
-    public MutableComponent getDescription() {
-        return Component.translatable("lotm.quest.impl." + id + ".description");
+    public MutableComponent getDescription(ServerPlayer player) {
+        UUID targetUuid = targetByPlayer.get(player.getUUID());
+        if (targetUuid == null) {
+            return Component.translatable("lotm.quest.impl." + id + ".description");
+        }
+
+        ServerPlayer targetOnline = player.server.getPlayerList().getPlayer(targetUuid);
+        String targetName;
+        if (targetOnline != null) {
+            targetName = targetOnline.getName().getString();
+        } else {
+            Optional<StoredData> data = BeyonderData.beyonderMap.get(targetUuid);
+            targetName = data.map(StoredData::trueName).orElse(targetUuid.toString());
+        }
+
+        return Component.translatable("lotm.quest.impl." + id + ".description").append(" Target: " + targetName);
     }
+
+
+
 }

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -52,12 +53,12 @@ public class RoarOfTheThunderGodAbility extends Ability {
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);
 
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 50).forEach(e -> {
-            e.hurt(e.damageSources().mobAttack(entity), (float) (DamageLookup.lookupDamage(1, .85) * multiplier(entity)));
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(1, .85) * multiplier(entity)));
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(2.75);
             e.setDeltaMovement(knockBack);
         });
 
-        EffectManager.playEffect(EffectManager.Effect.THUNDER_EXPLOSION, startPos.x, startPos.y + .5, startPos.z, (ServerLevel) level);
+        EffectManager.playEffect(EffectManager.Effect.THUNDER_EXPLOSION, startPos.x, startPos.y + .5, startPos.z, (ServerLevel) level, entity);
 
         for(int y = 0; y < 3; y++) {
             for (int i = 3; i < 27; i+=2) {

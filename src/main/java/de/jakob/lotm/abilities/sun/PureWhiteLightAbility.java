@@ -2,8 +2,11 @@ package de.jakob.lotm.abilities.sun;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AnimationUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -17,13 +20,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class PureWhiteLightAbility extends Ability {
     public PureWhiteLightAbility(String id) {
-        super(id, 4);
+        super(id, 4, "purification", "light_source", "light_strong", "light_weak");
+        interactionRadius = 25;
+        postsUsedAbilityEventManually = true;
     }
 
     @Override
@@ -58,7 +64,7 @@ public class PureWhiteLightAbility extends Ability {
         }
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 10.0f, 1.0f);
 
-        EffectManager.playEffect(EffectManager.Effect.PURE_WHITE_LIGHT, targetLoc.x, targetLoc.y, targetLoc.z, serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.PURE_WHITE_LIGHT, targetLoc.x, targetLoc.y, targetLoc.z, serverLevel, entity);
 
         AtomicDouble radius = new AtomicDouble(2);
 
@@ -71,9 +77,13 @@ public class PureWhiteLightAbility extends Ability {
                 });
             }
 
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), DamageLookup.lookupDamage(1, .8) * multiplier(entity), finalTargetLoc, true, false, false, 15);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), DamageLookup.lookupDamage(1, .8) * multiplier(entity), finalTargetLoc, true, false, false, 15, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
 
             radius.addAndGet(0.8);
-        });
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
+
+        ServerScheduler.scheduleDelayed(100, () -> {
+            NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, finalTargetLoc, entity, this, interactionFlags, interactionRadius, interactionCacheTicks));
+        }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 }

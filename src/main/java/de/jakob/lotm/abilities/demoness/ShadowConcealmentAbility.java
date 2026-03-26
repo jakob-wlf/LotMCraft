@@ -2,8 +2,12 @@ package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.DisplayShadowParticlesPacket;
+import de.jakob.lotm.util.data.Location;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
@@ -60,7 +64,7 @@ public class ShadowConcealmentAbility extends Ability {
             //make visible again
             ServerScheduler.scheduleDelayed(20 * 20, () -> {
                 invisiblePlayers.remove(entity.getUUID());
-            }, (ServerLevel) level);
+            }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
         }
     }
 
@@ -68,6 +72,29 @@ public class ShadowConcealmentAbility extends Ability {
     @SubscribeEvent
     public static void onLivingTarget(LivingChangeTargetEvent event) {
         if(event.getNewAboutToBeSetTarget() != null && invisiblePlayers.contains(event.getNewAboutToBeSetTarget().getUUID())) {
+            LivingEntity invisible = event.getNewAboutToBeSetTarget();
+            LivingEntity attacker = event.getEntity();
+
+            // Light source nearby reveals concealed entity
+            Location invisLoc = new Location(invisible.position(), invisible.level());
+            if(InteractionHandler.isInteractionPossible(invisLoc, "light_source")) {
+                return;
+            }
+
+            // Spirit Vision, Spectating, or Cull can see through concealment
+            ToggleAbility spiritVision = (ToggleAbility) LOTMCraft.abilityHandler.getById("spirit_vision_ability");
+            if(spiritVision != null && spiritVision.isActiveForEntity(attacker)) {
+                return;
+            }
+            Ability spectating = LOTMCraft.abilityHandler.getById("spectating_ability");
+            if(spectating instanceof ToggleAbility spectatingToggle && spectatingToggle.isActiveForEntity(attacker)) {
+                return;
+            }
+            Ability cull = LOTMCraft.abilityHandler.getById("cull_ability");
+            if(cull instanceof ToggleAbility cullToggle && cullToggle.isActiveForEntity(attacker)) {
+                return;
+            }
+
             event.setCanceled(true);
         }
     }

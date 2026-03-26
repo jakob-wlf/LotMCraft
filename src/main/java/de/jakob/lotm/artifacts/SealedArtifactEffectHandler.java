@@ -8,6 +8,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
+import java.util.List;
+
 /**
  * Handles the negative effects of sealed artifacts on players
  */
@@ -26,13 +28,21 @@ public class SealedArtifactEffectHandler {
         // Check main hand
         ItemStack mainHand = player.getMainHandItem();
         if (mainHand.getItem() instanceof SealedArtifactItem) {
-            applyNegativeEffect(player, mainHand, true);
+            applyHandNegativeEffect(player, mainHand, true);
         }
 
         // Check off hand
         ItemStack offHand = player.getOffhandItem();
         if (offHand.getItem() instanceof SealedArtifactItem) {
-            applyNegativeEffect(player, offHand, false);
+            applyHandNegativeEffect(player, offHand, false);
+        }
+
+        // check hotbar
+        for (int i = 0; i < 9; i++) {
+            ItemStack stack = player.getInventory().getItem(i);
+            if (stack.getItem() instanceof SealedArtifactItem) {
+                applyHotBarNegativeEffect(player, stack);
+            }
         }
 
         // Check inventory for some passive effects (optional)
@@ -40,39 +50,52 @@ public class SealedArtifactEffectHandler {
             if (stack.getItem() instanceof SealedArtifactItem) {
                 SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
                 if (data != null) {
-                    // Apply weaker version of effect if in inventory but not held
-                    // You can customize this behavior
-                    if (!stack.equals(mainHand) && !stack.equals(offHand)) {
-                        applyInventoryEffect(player, data);
-                    }
+                    applyInventoryEffect(player, data);
                 }
             }
         }
     }
 
-    private static void applyNegativeEffect(Player player, ItemStack stack, boolean inMainHand) {
+
+    private static void applyHandNegativeEffect(Player player, ItemStack stack, boolean inMainHand) {
         SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
-        if (data == null) {
+        if (data == null || data.negativeEffect() == null) {
             return;
         }
 
-        NegativeEffect effect = data.negativeEffect();
-        if (effect != null) {
-            effect.apply(player, inMainHand);
+        // loop through every effect, if it's a hand only effect, apply it
+        for (NegativeEffect effect : data.negativeEffect()) {
+            if (NegativeEffect.handOnlyTick.contains(effect.getType())) {
+                effect.apply(player, inMainHand, List.of(data.pathway()));
+            }
+        }
+    }
+
+    private static void applyHotBarNegativeEffect(Player player, ItemStack stack) {
+        SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
+        if (data == null || data.negativeEffect() == null) {
+            return;
+        }
+
+        // apply to hotbar only effects
+        for (NegativeEffect effect : data.negativeEffect()) {
+            if (NegativeEffect.hotBarOnlyTick.contains(effect.getType())) {
+                effect.apply(player, true, List.of(data.pathway()));
+            }
         }
     }
 
     private static void applyInventoryEffect(Player player, SealedArtifactData data) {
         // Apply a weaker version of the negative effect
         // For example, only apply every 5 seconds instead of constantly
-        if (player.tickCount % 100 != 0) {
-            return;
-        }
+//        if (player.tickCount % 100 != 0) {
+//            return;
+//        }
 
-        NegativeEffect effect = data.negativeEffect();
-        if (effect != null && effect.getType() == NegativeEffect.NegativeEffectType.HEARING_WHISPERS) {
-            // Some effects like whispers can still occur even when in inventory
-            effect.apply(player, false);
+        for (NegativeEffect effect : data.negativeEffect()) {
+            if (!NegativeEffect.useOnlyTick.contains(effect.getType()) && !NegativeEffect.handOnlyTick.contains(effect.getType()) && !NegativeEffect.hotBarOnlyTick.contains(effect.getType())) {
+                effect.apply(player, true, List.of(data.pathway()));
+            }
         }
     }
 }

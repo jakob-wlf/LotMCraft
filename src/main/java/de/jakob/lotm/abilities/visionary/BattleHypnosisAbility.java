@@ -1,6 +1,10 @@
 package de.jakob.lotm.abilities.visionary;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.demoness.CharmAbility;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -12,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -19,6 +24,7 @@ import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class BattleHypnosisAbility extends Ability {
     public BattleHypnosisAbility(String id) {
@@ -55,6 +61,16 @@ public class BattleHypnosisAbility extends Ability {
             return;
         }
 
+        // BH vs Charm: if BH caster has lower or equal sequence, BH prevails and removes charm
+        UUID charmCasterUUID = CharmAbility.getCharmed().get(target.getUUID());
+        if(charmCasterUUID != null) {
+            Entity charmCasterEntity = ((ServerLevel) level).getEntity(charmCasterUUID);
+            int charmCasterSeq = charmCasterEntity instanceof LivingEntity livingCharmCaster ? BeyonderData.getSequence(livingCharmCaster) : LOTMCraft.NON_BEYONDER_SEQ;
+            if(BeyonderData.getSequence(entity) <= charmCasterSeq) {
+                CharmAbility.removeCharm(target.getUUID());
+            }
+        }
+
         ParticleUtil.createParticleSpirals((ServerLevel) level, dust, target.position(), target.getBbWidth() + .25, target.getBbWidth() + .25, target.getEyeHeight(), 1, 5, 30, 15, 1);
 
         switch (random.nextInt(3)) {
@@ -75,8 +91,8 @@ public class BattleHypnosisAbility extends Ability {
 
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.stop_beyonder_powers").withColor(0xf5c56c));
 
-        BeyonderData.disableAbilityUse(target, "battle_hypnosis_stop_beyonder_powers");
-        ServerScheduler.scheduleDelayed(20 * 9, () -> BeyonderData.enableAbilityUse(target, "battle_hypnosis_stop_beyonder_powers"));
+        DisabledAbilitiesComponent component = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        component.disableAbilityUsageForTime("battle_hypnosis_disable_beyonder_powers", 20 * 9, target);
     }
 
     private void weakenAndMoveAroundTarget(ServerLevel level, LivingEntity entity, LivingEntity target) {
@@ -96,8 +112,8 @@ public class BattleHypnosisAbility extends Ability {
     private void freezeTarget(ServerLevel level, LivingEntity entity, LivingEntity target) {
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.stop").withColor(0xf5c56c));
 
-        BeyonderData.disableAbilityUse(target, "battle_hypnosis_freeze");
-        ServerScheduler.scheduleDelayed(20 * 3, () -> BeyonderData.enableAbilityUse(target, "battle_hypnosis_freeze"));
+        DisabledAbilitiesComponent component = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        component.disableAbilityUsageForTime("battle_hypnosis_freeze", 20 * 3, target);
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 5, () -> {
             target.setDeltaMovement(0, 0, 0);

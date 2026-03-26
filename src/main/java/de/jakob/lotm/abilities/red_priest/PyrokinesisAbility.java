@@ -129,7 +129,7 @@ public class PyrokinesisAbility extends SelectableAbility {
                     }
                 }
             }
-        }, (ServerLevel) level);
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(targetPos, level)));
     }
 
     //TODO: PLace flame blocks on griefing
@@ -151,7 +151,7 @@ public class PyrokinesisAbility extends SelectableAbility {
             ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.FLAME, currentPos, radius, (int) (radius * 25));
             ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.SMOKE, currentPos, radius, (int) (radius * 6));
             i.set(i.get() + .1);
-        }, (ServerLevel) level);
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(startPos, level)));
     }
 
     private void fireball(Level level, LivingEntity entity) {

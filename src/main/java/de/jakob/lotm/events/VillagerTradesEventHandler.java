@@ -46,21 +46,31 @@ public class VillagerTradesEventHandler {
                 int level = getLevelForItem(entry.getKey());
                 int sequence = getSequenceForItem(entry.getKey());
 
-                trades.get(level).add((entity, randomSource) -> {
-                    Random random = new Random();
-                    int diamondAmount = Math.max(1, random.nextInt(entry.getValue() - 4, entry.getValue() + 5));
-                    ItemCost diamondCost = new ItemCost(Items.DIAMOND, diamondAmount);
-                    java.util.Optional<ItemCost> additionalCost = getAdditionalCostForSequence(sequence, random);
+                // limit the sequence of items
+                if(sequence >= 4) {
+                    trades.get(level).add((entity, randomSource) -> {
+                        Random random = new Random();
+                        int diamondAmount = Math.max(1, random.nextInt(entry.getValue() - 4, entry.getValue() + 5));
 
-                    return new MerchantOffer(
-                            diamondCost,
-                            additionalCost,
-                            new ItemStack(entry.getKey(), 1),
-                            random.nextInt(1, 2),
-                            30 * level,
-                            0.005f
-                    );
-                });
+                        ItemCost firstItemCost = new ItemCost(Items.DIAMOND, diamondAmount);
+
+                        // change main item for seq4 items
+                        if (sequence == 4) {
+                            firstItemCost = new ItemCost(Items.ANCIENT_DEBRIS, diamondAmount);
+                        }
+
+                        java.util.Optional<ItemCost> additionalCost = getAdditionalCostForSequence(sequence, random);
+
+                        return new MerchantOffer(
+                                firstItemCost,
+                                additionalCost,
+                                new ItemStack(entry.getKey(), 1),
+                                random.nextInt(1, 2),
+                                30 * level,
+                                0.005f
+                        );
+                    });
+                }
             }
         }
 
@@ -84,21 +94,23 @@ public class VillagerTradesEventHandler {
             int level = getLevelForItem(entry.getKey());
             int sequence = getSequenceForItem(entry.getKey());
 
-            trades.get(level).add((entity, randomSource) -> {
-                Random random = new Random();
-                int diamondAmount = Math.max(1, random.nextInt(entry.getValue() - 4, entry.getValue() + 5));
-                ItemCost diamondCost = new ItemCost(Items.DIAMOND, diamondAmount);
-                java.util.Optional<ItemCost> additionalCost = getAdditionalCostForSequence(sequence, random);
+            if(sequence >= 5) {
+                trades.get(level).add((entity, randomSource) -> {
+                    Random random = new Random();
+                    int diamondAmount = Math.max(1, random.nextInt(entry.getValue() - 4, entry.getValue() + 5));
+                    ItemCost diamondCost = new ItemCost(Items.DIAMOND, diamondAmount);
+                    java.util.Optional<ItemCost> additionalCost = getAdditionalCostForSequence(sequence, random);
 
-                return new MerchantOffer(
-                        diamondCost,
-                        additionalCost,
-                        new ItemStack(entry.getKey(), 1),
-                        random.nextInt(1, 2),
-                        30 * level,
-                        0.005f
-                );
-            });
+                    return new MerchantOffer(
+                            diamondCost,
+                            additionalCost,
+                            new ItemStack(entry.getKey(), 1),
+                            random.nextInt(1, 2),
+                            30 * level,
+                            0.005f
+                    );
+                });
+            }
         }
     }
 
@@ -164,16 +176,16 @@ public class VillagerTradesEventHandler {
 
                     if(item instanceof PotionIngredient obj){
                         for(var path : obj.getPathways()){
-                            return !BeyonderData.beyonderMap.check(path,obj.getSequence());
+                            return !BeyonderData.beyonderMap.check(path,obj.getSequence()) || obj.getSequence() < 4;
                         }
                     }
 
                     if(item instanceof BeyonderPotion potion){
-                        return !BeyonderData.beyonderMap.check(potion.getPathway(), potion.getSequence());
+                        return !BeyonderData.beyonderMap.check(potion.getPathway(), potion.getSequence()) || potion.getSequence() < 4;
                     }
 
                     if(item instanceof BeyonderCharacteristicItem cha){
-                        return !BeyonderData.beyonderMap.check(cha.getPathway(), cha.getSequence());
+                        return !BeyonderData.beyonderMap.check(cha.getPathway(), cha.getSequence()) || cha.getSequence() < 4;
                     }
 
                     return false;

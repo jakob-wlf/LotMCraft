@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ActiveShaderComponent;
 import de.jakob.lotm.attachments.FogComponent;
@@ -9,6 +10,7 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.TornadoEntity;
 import de.jakob.lotm.entity.custom.VolcanoEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -24,6 +26,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
 import java.util.Collections;
@@ -34,6 +37,7 @@ import java.util.Map;
 public class CalamityCreationAbility extends SelectableAbility {
     public CalamityCreationAbility(String id) {
         super(id, 25);
+        postsUsedAbilityEventManually = true;
     }
 
     @Override
@@ -142,7 +146,7 @@ public class CalamityCreationAbility extends SelectableAbility {
                     }
                 }
             }
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 
     private final DustParticleOptions droughtDust = new DustParticleOptions(new Vector3f(217 / 255f, 121 / 255f, 65 / 255f), 10.0f);
@@ -150,6 +154,9 @@ public class CalamityCreationAbility extends SelectableAbility {
     private void createDrought(ServerLevel serverLevel, LivingEntity entity) {
         Vec3 startPos = entity.position();
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
+
+        // Post drought interaction event
+        NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, startPos, entity, this, new String[]{"drought"}, 90, 20 * 30));
 
         List<BlockPos> sphereBlocks = griefing
                 ? AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, 65, true, false, false)
@@ -220,7 +227,7 @@ public class CalamityCreationAbility extends SelectableAbility {
                     }
                 }
             }
-        });
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 
     private void createTornados(ServerLevel serverLevel, LivingEntity entity) {

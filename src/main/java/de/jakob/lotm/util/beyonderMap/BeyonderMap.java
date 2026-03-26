@@ -238,10 +238,6 @@ public class BeyonderMap extends SavedData {
         var pathway = BeyonderData.getPathway(entity);
         var sequence = BeyonderData.getSequence(entity);
 
-        LOTMCraft.LOGGER.info("isDiffPathSeq BeyonderMap: name {}, seq {}, path {}\n\tPrevious: name {}, seq {}, path {}",
-                ((ServerPlayer) entity).getGameProfile().getName(), sequence, pathway,
-                data.trueName(),data.sequence(), data.pathway());
-
         return (!data.pathway().equals(pathway)
                 || !data.sequence().equals(sequence));
     }
@@ -272,8 +268,11 @@ public class BeyonderMap extends SavedData {
         int res = 0;
 
         for(var obj : map.values()){
-            if(obj.pathway().equals(path) && obj.sequence() == seq)
+            if(obj.pathway().equals(path) && obj.sequence() == seq){
                 res++;
+
+                res += obj.charStack().get(seq);
+            }
         }
 
         return res;
@@ -282,18 +281,43 @@ public class BeyonderMap extends SavedData {
     public boolean check(String path, int seq){
         int seq_0 = count(path, 0),
                 seq_1 = count(path, 1),
-                seq_2 = count(path, 2);
+                seq_2 = count(path, 2),
+                seq_3 = count(path, 3),
+                seq_4 = count(path, 4),
+                seq_5 = count(path, 5),
+                seq_6 = count(path, 6),
+                seq_7 = count(path, 7),
+                seq_8 = count(path, 8)
+        ;
 
         switch (seq) {
-            case 2:
-                if (seq_2 + seq_1 >= server.getGameRules().getInt(ModGameRules.SEQ_2_AMOUNT)) return false;
+            case 0:
+                if (seq_0 >= server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)) return false;
                 break;
             case 1:
                 if (seq_0 >= server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)
                         || seq_1 >= server.getGameRules().getInt(ModGameRules.SEQ_1_AMOUNT)) return false;
                 break;
-            case 0:
-                if (seq_0 >= server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)) return false;
+            case 2:
+                if (seq_2 + seq_1 >= server.getGameRules().getInt(ModGameRules.SEQ_2_AMOUNT)) return false;
+                break;
+            case 3:
+                if (seq_3 + seq_2 >= server.getGameRules().getInt(ModGameRules.SEQ_3_AMOUNT)) return false;
+                break;
+            case 4:
+                if (seq_4 + seq_3 >= server.getGameRules().getInt(ModGameRules.SEQ_4_AMOUNT)) return false;
+                break;
+            case 5:
+                if (seq_5 + seq_4 >= server.getGameRules().getInt(ModGameRules.SEQ_5_AMOUNT)) return false;
+                break;
+            case 6:
+                if (seq_6 + seq_5 >= server.getGameRules().getInt(ModGameRules.SEQ_6_AMOUNT)) return false;
+                break;
+            case 7:
+                if (seq_7 + seq_6 >= server.getGameRules().getInt(ModGameRules.SEQ_7_AMOUNT)) return false;
+                break;
+            case 8:
+                if (seq_8 + seq_7 >= server.getGameRules().getInt(ModGameRules.SEQ_8_AMOUNT)) return false;
                 break;
         }
 
@@ -417,6 +441,42 @@ public class BeyonderMap extends SavedData {
         return originalTarget;
     }
 
+    public void addLastPosition(LivingEntity entity){
+        if(!contains(entity)) put(entity);
+
+        map.put(entity.getUUID(), StoredData.builder
+                .copyFrom(map.get(entity.getUUID()))
+                .lastPosition(entity.position())
+                .build());
+
+        setDirty();
+    }
+
+    public void setStack(LivingEntity entity, int value){
+        if(!contains(entity)) put(entity);
+
+        setStack(entity, BeyonderData.getSequence(entity), value);
+    }
+
+    public void addStack(LivingEntity entity, int value){
+        if(!contains(entity)) put(entity);
+
+        var buff = beyonderMap.get(entity.getUUID()).get().charStack();
+        setStack(entity, buff.get(BeyonderData.getSequence(entity)) + value);
+    }
+
+    public void setStack(LivingEntity entity, int seq, int value){
+        if(!contains(entity)) put(entity);
+
+        var buff = beyonderMap.get(entity.getUUID()).get().charStack();
+
+        map.put(entity.getUUID(), StoredData.builder
+                .copyFrom(map.get(entity.getUUID()))
+                .charStack(buff.set(seq, value))
+                .build());
+
+        setDirty();
+    }
 }
 
 class ListHelper{

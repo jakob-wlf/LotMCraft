@@ -1,7 +1,6 @@
 package de.jakob.lotm.quest.impl;
 
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.QuestComponent;
+
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.potions.BeyonderPotion;
 import de.jakob.lotm.potions.PotionItemHandler;
@@ -40,11 +39,7 @@ public class CollectCharacteristicsQuest extends Quest {
     public List<ItemStack> getRewards(ServerPlayer player) {
         List<ItemStack> rewards = new ArrayList<>();
 
-        QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
-        int completedQuestCount = component.getCompletedQuests().size();
-
-        long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
-        Random random = new Random(randomSeed);
+        Random random = new Random();
 
         int rewardSequence = random.nextBoolean() ? 5 : 6;
         BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, rewardSequence);
@@ -56,7 +51,7 @@ public class CollectCharacteristicsQuest extends Quest {
 
     @Override
     public float getDigestionReward() {
-        return 0.5f;
+        return 0.2f;
     }
 
     @Override

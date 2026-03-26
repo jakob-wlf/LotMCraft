@@ -1,6 +1,8 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -58,7 +60,8 @@ public class SealingAbility extends Ability {
             }
             BeyonderData.addModifier(e, "sealed", .5);
             if(BeyonderData.isBeyonder(e) && BeyonderData.getSequence(e) > BeyonderData.getSequence(entity)) {
-                BeyonderData.disableAbilityUse(e, "sealed");
+                DisabledAbilitiesComponent component = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+                component.disableAbilityUsageForTime("sealed", 20 * 14, e);
             }
             if(!(e instanceof Player) && !BeyonderData.isBeyonder(e) && e instanceof Mob mob) {
                 mob.setNoAi(true);
@@ -84,7 +87,6 @@ public class SealingAbility extends Ability {
         ServerScheduler.scheduleDelayed(20 * 14, () -> {
             sealedEntities.forEach(e -> {
                 BeyonderData.removeModifier(e, "sealed");
-                BeyonderData.enableAbilityUse(e, "sealed");
                 if(!(e instanceof Player) && !BeyonderData.isBeyonder(e) && e instanceof Mob mob) {
                     mob.setNoAi(false);
                 }

@@ -1,9 +1,12 @@
 package de.jakob.lotm.abilities.demoness;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -18,6 +21,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -29,7 +33,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class BlackFlameAbility extends SelectableAbility {
 
     public BlackFlameAbility(String id) {
-        super(id, .75f);
+        super(id, .75f, "soul_burn", "burning");
+        postsUsedAbilityEventManually = true;
     }
 
     @Override
@@ -74,7 +79,7 @@ public class BlackFlameAbility extends SelectableAbility {
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), targetPos.subtract(0, .75, 0), 700, .3, 1.3, .3, .01);
         ParticleUtil.spawnParticles((ServerLevel) level, dust, targetPos.subtract(0, .75, 0), 190, .3, 1.3, .3, .02);
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, DamageLookup.lookupDamage(7, .7) * multiplier(entity), targetPos, true, false, true, 0, 20 * 2);
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, DamageLookup.lookupDamage(7, .7) * multiplier(entity), targetPos, true, false, true, 0, 20 * 2, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
 
         BlockState block = level.getBlockState(BlockPos.containing(targetPos));
         if(block.isAir()) {
@@ -82,6 +87,7 @@ public class BlackFlameAbility extends SelectableAbility {
         }
 
         ServerScheduler.scheduleDelayed(25, () -> level.setBlockAndUpdate(BlockPos.containing(targetPos), Blocks.AIR.defaultBlockState()));
+        NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetPos, entity, this, interactionFlags, 4, 10));
     }
 
     //TODO: Place Black Flames on griefing
@@ -99,9 +105,11 @@ public class BlackFlameAbility extends SelectableAbility {
             Vec3 currentPos = startPos.add(0, ySubtraction, 0);
             double radius = i.get() < .71 ? i.get() : i.get() * 2;
             ParticleUtil.spawnCircleParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), currentPos, radius, (int) (radius * 27));
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius - .3, radius, DamageLookup.lookupDamage(7, .8) * multiplier(entity), startPos.subtract(0, 1, 0), true, false, true, 0, 20 * 5);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius - .3, radius, DamageLookup.lookupDamage(7, .8) * multiplier(entity), startPos.subtract(0, 1, 0), true, false, true, 0, 20 * 5, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
             i.set(i.get() + .1);
-        }, (ServerLevel) level);
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
+
+        NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, startPos, entity, this, interactionFlags, 9, 50));
     }
 
     private void shoot(Level level, LivingEntity entity) {
@@ -123,12 +131,26 @@ public class BlackFlameAbility extends SelectableAbility {
 
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, 1.1) * multiplier(entity), pos, true, false, true, 0, 20 * 5)) {
+            if(AbilityUtil.damageNearbyEntities(
+                    (ServerLevel) level,
+                    entity,
+                    2.5f,
+                    DamageLookup.lookupDamage(7, 1.1) * multiplier(entity),
+                    pos,
+                    true,
+                    false,
+                    true,
+                    0,
+                    20 * 5,
+                    ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity)
+            )) {
+                NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, pos, entity, this, interactionFlags, 2.5, 10));
                 hasHit.set(true);
                 return;
             }
 
             if(!level.getBlockState(BlockPos.containing(pos.x, pos.y, pos.z)).isAir()) {
+                NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, pos, entity, this, interactionFlags, 2.5, 10));
                 if(BeyonderData.isGriefingEnabled(entity)) {
                     pos = pos.subtract(direction);
                     level.setBlockAndUpdate(BlockPos.containing(pos.x, pos.y, pos.z), Blocks.FIRE.defaultBlockState());
@@ -140,6 +162,6 @@ public class BlackFlameAbility extends SelectableAbility {
             ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), pos, 45, 0.25, 0.02);
 
             currentPos.set(pos.add(direction));
-        }, (ServerLevel) level);
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 }

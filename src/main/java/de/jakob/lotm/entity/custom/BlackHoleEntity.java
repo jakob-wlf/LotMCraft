@@ -35,6 +35,7 @@ public class BlackHoleEntity extends Entity {
     private static final double PULL_STRENGTH = 0.5;
     private static final int duration = 20 * 60;
     private int age = 0;
+    private int petrifiedTicks = 0;
 
     private List<BlockPos> blocks;
     
@@ -127,6 +128,16 @@ public class BlackHoleEntity extends Entity {
         age++;
         if (tickCount >= duration) {
             this.remove(RemovalReason.DISCARDED);
+            return;
+        }
+
+        // Petrification logic
+        if(getTags().contains("petrified")) {
+            petrifiedTicks++;
+            if(petrifiedTicks >= 20 * 10) { // After 10 seconds of being petrified, the black hole is destroyed
+                this.remove(RemovalReason.DISCARDED);
+                return;
+            }
             return;
         }
 

@@ -32,8 +32,9 @@ import java.util.UUID;
 
 public class ExileDoorsEntity extends Entity {
     private int lifetime = 0;
+    private int petrifiedTicks = 0;
 
-    private final HashSet<UUID> onExileCooldown = new HashSet<>();
+    private static final HashSet<UUID> onExileCooldown = new HashSet<>();
 
     private static final EntityDataAccessor<Optional<UUID>> OWNER =
             SynchedEntityData.defineId(ExileDoorsEntity.class, EntityDataSerializers.OPTIONAL_UUID);
@@ -63,6 +64,15 @@ public class ExileDoorsEntity extends Entity {
         lifetime++;
         if (lifetime >= getDuration()) {
             this.remove(RemovalReason.DISCARDED);
+            return;
+        }
+
+        // Petrification Logic
+        if(getTags().contains("petrified")) {
+            petrifiedTicks++;
+            if(petrifiedTicks >= 20 * 5) {
+                this.discard();
+            }
             return;
         }
 
@@ -136,7 +146,7 @@ public class ExileDoorsEntity extends Entity {
                     entity.level().playSound(null, entity.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 2.0f, 0.5f + entity.level().random.nextFloat());
 
                     ServerScheduler.scheduleDelayed(exileTicks - 5, () -> onExileCooldown.add(entity.getUUID()));
-                    ServerScheduler.scheduleDelayed(20 * 4 + exileTicks + 5, () -> onExileCooldown.remove(entity.getUUID()));
+                    ServerScheduler.scheduleDelayed(20 * 10 + exileTicks + 5, () -> onExileCooldown.remove(entity.getUUID()));
                 }
             }
         }

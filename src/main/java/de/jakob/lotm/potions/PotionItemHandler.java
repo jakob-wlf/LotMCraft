@@ -583,7 +583,7 @@ public class PotionItemHandler {
             return null;
         }
 
-        return potions.get(random.nextInt(potions.size()));
+        return potions.get(0);
     }
 
 }

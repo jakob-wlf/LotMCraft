@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
@@ -23,26 +24,43 @@ import java.util.Random;
 
 public abstract class Ability {
 
+    // Identity
     private final String id;
     protected final int cooldown;
 
+    // Interaction behaviour
+    protected double interactionRadius = 1.4;
+    protected int interactionCacheTicks = 10;
+    protected final String[] interactionFlags;
+    protected boolean postsUsedAbilityEventManually = false;
 
+    // Optimal distance
+    public boolean hasOptimalDistance = true;
+    public float optimalDistance = 5f;
+
+    // Permissions
     public boolean canBeUsedByNPC = true;
     public boolean canBeCopied = true;
     public boolean canAlwaysBeUsed = false;
 
+    // Misc
     public boolean doesNotIncreaseDigestion = false;
-    public boolean hasOptimalDistance = true;
-    public float optimalDistance = 5f;
+    protected boolean shouldBeHidden = false;
 
+    // Utility
     protected final Random random = new Random();
 
-    public Ability(String id, float cooldown) {
+    public Ability(String id, float cooldown, String... interactionFlags) {
         this.id = id;
         this.cooldown = Math.round(cooldown * 20);
+        this.interactionFlags = interactionFlags;
     }
 
     public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements) {
+        if(LOTMCraft.abilityHandler.isDisabled(this)) {
+            return;
+        }
+
         if(!canUse(entity, hasToHaveAbility, consumeSpirituality) && hasToMeetRequirements) {
             return;
         }
@@ -77,6 +95,11 @@ public abstract class Ability {
         // Use ability client and server sided
         onAbilityUse(serverLevel, newUser);
         PacketHandler.sendToAllPlayersInSameLevel(new UseAbilityPacket(getId(), newUser.getId()), serverLevel);
+
+        // Track ability use for Recording/Replicating detection
+        AbilityUseTracker.trackUse(newUser, this, newUser.position(), serverLevel);
+
+        if(!postsUsedAbilityEventManually) NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, newUser.position(), newUser, this, interactionFlags, interactionRadius, interactionCacheTicks));
     }
 
     public void useAbility(ServerLevel serverLevel, LivingEntity entity) {
@@ -107,6 +130,11 @@ public abstract class Ability {
         String pathway = BeyonderData.getPathway(entity);
         int sequence = BeyonderData.getSequence(entity);
 
+        // Creative + OP players can use any ability up to their sequence
+        if(entity instanceof Player player && player.isCreative() && player.hasPermissions(2)) {
+            return getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence);
+        }
+
         if(!getRequirements().containsKey(pathway)) return false;
         if(getRequirements().get(pathway) < sequence) return false;
 
@@ -129,9 +157,10 @@ public abstract class Ability {
 
         if(entity instanceof Player player && player.isSpectator()) return false;
 
-        if(BeyonderData.isAbilityDisabled(entity) && !this.canAlwaysBeUsed) return false;
+        DisabledAbilitiesComponent disabledComponent = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        if((disabledComponent.isAbilityUsageDisabled() || disabledComponent.isSpecificAbilityDisabled(this.getId())) && !this.canAlwaysBeUsed) return false;
 
-        if(BeyonderData.isSpecificAbilityDisabled(entity, getId())) return false;
+        if(LOTMCraft.abilityHandler.isDisabled(this)) return false;
 
         return true;
     }
@@ -197,5 +226,21 @@ public abstract class Ability {
 
     public String getId() {
         return id;
+    }
+
+    public String[] getInteractionFlags() {
+        return interactionFlags;
+    }
+
+    public double getInteractionRadius() {
+        return interactionRadius;
+    }
+
+    public int getInteractionCacheTicks() {
+        return interactionCacheTicks;
+    }
+
+    public boolean getShouldBeHidden(){
+        return shouldBeHidden;
     }
 }

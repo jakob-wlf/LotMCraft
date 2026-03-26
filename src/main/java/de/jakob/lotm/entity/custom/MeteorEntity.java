@@ -39,6 +39,7 @@ public class MeteorEntity extends Entity {
     private static final EntityDataAccessor<Boolean> ABYSS_IMPACT = SynchedEntityData.defineId(MeteorEntity.class, EntityDataSerializers.BOOLEAN);
 
     private int lifeTicks = 0;
+    private int petrifiedTicks = 0;
     private int maxLifeTicks = 20 * 12;
 
     public MeteorEntity(EntityType<?> type, Level level) {
@@ -172,6 +173,15 @@ public class MeteorEntity extends Entity {
 
     @Override
     public void tick() {
+        // Petrification Logic -- run before super.tick() to stop movement completely
+        if(getTags().contains("petrified")) {
+            petrifiedTicks++;
+            if(petrifiedTicks >= 20 * 5) {
+                this.discard();
+            }
+            return;
+        }
+
         super.tick();
 
         lifeTicks++;

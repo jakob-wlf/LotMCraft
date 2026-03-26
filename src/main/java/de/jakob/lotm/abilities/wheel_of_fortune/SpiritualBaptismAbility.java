@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class SpiritualBaptismAbility extends Ability {
     public SpiritualBaptismAbility(String id) {
-        super(id, 6);
+        super(id, 6, "cleansing");
     }
 
     @Override

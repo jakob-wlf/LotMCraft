@@ -2,8 +2,15 @@ package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -14,6 +21,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -30,7 +38,7 @@ public class CharmAbility extends Ability {
     private static final HashSet<UUID> onCharmedCooldown = new HashSet<>();
 
     public CharmAbility(String id) {
-        super(id, 2);
+        super(id, 2, "charm");
     }
 
     @Override
@@ -41,6 +49,14 @@ public class CharmAbility extends Ability {
     @Override
     public float getSpiritualityCost() {
         return 40;
+    }
+
+    public static HashMap<UUID, UUID> getCharmed() {
+        return charmed;
+    }
+
+    public static void removeCharm(UUID targetUUID) {
+        charmed.remove(targetUUID);
     }
 
     @Override
@@ -66,6 +82,62 @@ public class CharmAbility extends Ability {
         }
 
         onCharmedCooldown.add(target.getUUID());
+
+        int casterSequence = BeyonderData.getSequence(entity);
+
+        // Charm vs Battle Hypnosis: charm prevails if caster has lower (stronger) sequence
+        DisabledAbilitiesComponent disabledComp = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        if(disabledComp.isAbilityUsageDisabled()) {
+            if(!BeyonderData.isBeyonder(target) || casterSequence <= BeyonderData.getSequence(target)) {
+                disabledComp.enableAbilityUsage("battle_hypnosis_disable_beyonder_powers");
+                disabledComp.enableAbilityUsage("battle_hypnosis_freeze");
+                target.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+            } else {
+                if(entity instanceof ServerPlayer player) {
+                    ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("Battle Hypnosis is too strong to charm.").withColor(0xFFf980ff));
+                    player.connection.send(packet);
+                }
+                return;
+            }
+        }
+
+        // Charm overrides Instigation on the same target
+        if(target instanceof Mob mob && mob.getTarget() != null) {
+            mob.setTarget(null);
+        }
+
+        // Charm can temporarily suppress Frenzy (LOOSING_CONTROL effect)
+        if(target.hasEffect(ModEffects.LOOSING_CONTROL)) {
+            target.removeEffect(ModEffects.LOOSING_CONTROL);
+        }
+
+        // Charm can break puppet soldier loyalty
+        if(target instanceof BeyonderNPCEntity npc && npc.isPuppetWarrior()) {
+            SubordinateComponent subComp = target.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
+            if(subComp.isSubordinate()) {
+                subComp.setSubordinate(false);
+                subComp.setControllerUUID("");
+                if(target instanceof Mob mob) {
+                    mob.setTarget(null);
+                }
+            }
+        }
+
+        // Charm can contest marionette link - charm must be at least one seq stronger
+        MarionetteComponent marionetteComp = target.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+        if(marionetteComp.isMarionette()) {
+            String controllerUUIDStr = marionetteComp.getControllerUUID();
+            if(controllerUUIDStr != null && !controllerUUIDStr.isEmpty()) {
+                Entity controller = ((ServerLevel) level).getEntity(UUID.fromString(controllerUUIDStr));
+                int controllerSeq = controller instanceof LivingEntity living ? BeyonderData.getSequence(living) : LOTMCraft.NON_BEYONDER_SEQ;
+                if(casterSequence < controllerSeq) {
+                    marionetteComp.setMarionette(false);
+                    marionetteComp.setControllerUUID("");
+                    // Freeing a marionette from charm kills it
+                    target.kill();
+                }
+            }
+        }
 
         ServerScheduler.scheduleForDuration(0, 5, 20 * 15, () -> {
            if(!charmed.containsKey(target.getUUID()))

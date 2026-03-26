@@ -52,7 +52,6 @@ public abstract class PassiveAbilityItem extends Item {
             // Check sequence
             return sequence <= minSeq;
         } else {
-            // Server-side: use your existing logic
             String pathway = BeyonderData.getPathway(entity);
             int sequence = BeyonderData.getSequence(entity);
 

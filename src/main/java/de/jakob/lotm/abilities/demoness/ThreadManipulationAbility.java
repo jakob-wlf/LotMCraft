@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -10,6 +11,7 @@ import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -79,7 +81,24 @@ public class ThreadManipulationAbility extends SelectableAbility {
 
         Location loc = new Location(entity.position(), level);
         List<AtomicBoolean> stopConditions = ParticleUtil.createParticleCocoons(dustVeryBig, loc, .25, 1.45, entity.getEyeHeight() + 1.4, .4, 5, 20 * 20, 22, 5);
-        ServerScheduler.scheduleForDuration(0, 5, 20 * 20, () -> {
+
+        AtomicReference<UUID> taskIdRef = new AtomicReference<>();
+        UUID taskId = ServerScheduler.scheduleForDuration(0, 5, 20 * 20, () -> {
+            if(InteractionHandler.isInteractionPossible(loc, "burning")) {
+                inCocoon.remove(entity.getUUID());
+                ServerScheduler.cancel(taskIdRef.get());
+
+                entity.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+                entity.removeEffect(MobEffects.DAMAGE_RESISTANCE);
+                entity.removeEffect(MobEffects.REGENERATION);
+
+                Vec3 pos = entity.getPosition(0.5f);
+                ParticleUtil.spawnParticles(level, ParticleTypes.FLAME,       pos, 180, 1.0, 0);
+                ParticleUtil.spawnParticles(level, ParticleTypes.LARGE_SMOKE, pos, 95, 1.0, 0.15);
+                level.playSound(null, BlockPos.containing(pos),
+                        SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 1.5f, 1.2f);
+            }
+
             if(!inCocoon.contains(entity.getUUID())) {
                 stopConditions.forEach(b -> b.set(true));
                 return;
@@ -94,6 +113,7 @@ public class ThreadManipulationAbility extends SelectableAbility {
             loc.setPosition(entity.position());
             loc.setLevel(entity.level());
         }, () -> inCocoon.remove(entity.getUUID()), level);
+        taskIdRef.set(taskId);
     }
 
     private void shoot(ServerLevel level, LivingEntity entity) {
@@ -164,19 +184,53 @@ public class ThreadManipulationAbility extends SelectableAbility {
         if(!BeyonderData.isBeyonder(targetEntity) || BeyonderData.getSequence(targetEntity) - 1 > BeyonderData.getSequence(entity)) {
             if(targetEntity instanceof Mob) {
                 ((Mob) targetEntity).setNoAi(true);
-                ServerScheduler.scheduleDelayed(duration, () -> ((Mob) targetEntity).setNoAi(false));
-            }
-            if(BeyonderData.isBeyonder(targetEntity)) {
-                BeyonderData.disableAbilityUse(targetEntity, "threads");
-                ServerScheduler.scheduleDelayed(duration, () -> BeyonderData.enableAbilityUse(targetEntity, "requiem"));
+                ServerScheduler.scheduleDelayed(duration, () -> ((Mob) targetEntity).setNoAi(false), level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
             }
         }
 
         Location loc = new Location(targetEntity.position(), targetEntity.level());
 
-        ServerScheduler.scheduleDelayed(20, () -> ParticleUtil.createParticleSpirals(dustBig, loc, .8, .8, targetEntity.getEyeHeight(), .35, 5, duration, 20, 10));
+        List<AtomicBoolean> particleConditions = new ArrayList<>();
+        ServerScheduler.scheduleDelayed(20, () -> {
+            particleConditions.addAll(ParticleUtil.createParticleSpirals(dustBig, loc, .8, .8, targetEntity.getEyeHeight(), .35, 5, duration, 20, 10));
+        });
 
-        ServerScheduler.scheduleForDuration(0, 5, duration, () -> {
+        AtomicReference<UUID> taskIdRef = new AtomicReference<>();
+        UUID taskId = ServerScheduler.scheduleForDuration(0, 5, duration, () -> {
+            // Burn Binding
+            if(InteractionHandler.isInteractionPossible(loc, "burning")) {
+                ServerScheduler.cancel(taskIdRef.get());
+
+                targetEntity.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+                targetEntity.removeEffect(MobEffects.WEAKNESS);
+                targetEntity.removeEffect(MobEffects.DIG_SLOWDOWN);
+                if (targetEntity instanceof Mob mob) mob.setNoAi(false);
+
+                Vec3 pos = targetEntity.getPosition(0.5f);
+                ParticleUtil.spawnParticles(level, ParticleTypes.FLAME,       pos, 180, 1.0, 0);
+                ParticleUtil.spawnParticles(level, ParticleTypes.LARGE_SMOKE, pos, 90, 1.0, 0.15);
+                level.playSound(null, BlockPos.containing(pos),
+                        SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 1.5f, 1.2f);
+
+                particleConditions.forEach(b -> b.set(true));
+                boundEntities.remove(targetEntity.getUUID());
+                return;
+            }
+
+            // Blink Escape - only the bound entity can free itself
+            if(InteractionHandler.isInteractionPossibleForEntity(loc, "blink_escape", BeyonderData.getSequence(entity), targetEntity)) {
+                ServerScheduler.cancel(taskIdRef.get());
+
+                targetEntity.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+                targetEntity.removeEffect(MobEffects.WEAKNESS);
+                targetEntity.removeEffect(MobEffects.DIG_SLOWDOWN);
+                if (targetEntity instanceof Mob mob) mob.setNoAi(false);
+
+                particleConditions.forEach(b -> b.set(true));
+                boundEntities.remove(targetEntity.getUUID());
+                return;
+            }
+
             targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 10, false, false, false));
             targetEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20, 10, false, false, false));
             targetEntity.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 20, 10, false, false, false));
@@ -185,7 +239,8 @@ public class ThreadManipulationAbility extends SelectableAbility {
 
             loc.setLevel(targetEntity.level());
             loc.setPosition(targetEntity.position());
-        });
+        }, null, level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
+        taskIdRef.set(taskId);
 
 
         ServerScheduler.scheduleDelayed(duration, () -> boundEntities.remove(targetEntity.getUUID()));
@@ -211,7 +266,7 @@ public class ThreadManipulationAbility extends SelectableAbility {
             }
 
             tick.addAndGet(1);
-        });
+        }, null, level, () -> AbilityUtil.getTimeInArea(null, new Location(startLoc.getPosition(), level)));
     }
 
 }

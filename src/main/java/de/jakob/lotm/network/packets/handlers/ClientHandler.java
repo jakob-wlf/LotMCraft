@@ -3,7 +3,9 @@ package de.jakob.lotm.network.packets.handlers;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.AllyComponent;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.entity.custom.OriginalBodyEntity;
@@ -37,6 +39,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Random;
 
 import java.util.ArrayList;
@@ -227,21 +230,34 @@ public class ClientHandler {
         entity.getData(ModAttachments.FOG_COMPONENT.get()).setColor(new Vec3f(packet.red(), packet.green(), packet.blue()));
     }
 
-    public static void addEffect(int index, double x, double y, double z) {
-        VFXRenderer.addActiveEffect(index, x, y, z);
+    public static void addEffect(int index, double x, double y, double z, int entityId) {
+        if (entityId == AddEffectPacket.NO_ENTITY) {
+            VFXRenderer.addActiveEffect(index, x, y, z);
+        } else {
+            VFXRenderer.addActiveEffect(index, x, y, z, entityId);
+        }
     }
 
     public static void addDirectionalEffect(int index,
                                             double startX, double startY, double startZ,
                                             double endX, double endY, double endZ,
-                                            int duration) {
-        VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration);
+                                            int duration, int entityId) {
+        if (entityId == AddDirectionalEffectPacket.NO_ENTITY) {
+            VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration);
+        } else {
+            VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration, entityId);
+        }
     }
 
     public static void addMovableEffect(UUID effectId, int index,
                                         double x, double y, double z,
-                                        int duration, boolean infinite) {
-        VFXRenderer.addActiveMovableEffect(effectId, index, x, y, z, duration, infinite);
+                                        int duration, boolean infinite,
+                                        int entityId) {
+        if (entityId == AddMovableEffectPacket.NO_ENTITY) {
+            VFXRenderer.addActiveMovableEffect(effectId, index, x, y, z, duration, infinite);
+        } else {
+            VFXRenderer.addActiveMovableEffect(effectId, index, x, y, z, duration, infinite, entityId);
+        }
     }
 
     public static void updateMovableEffectPosition(UUID effectId, double x, double y, double z) {
@@ -250,6 +266,10 @@ public class ClientHandler {
 
     public static void removeMovableEffect(UUID effectId) {
         VFXRenderer.removeMovableEffect(effectId);
+    }
+
+    public static void cancelEffectsNear(double x, double y, double z, double radius) {
+        VFXRenderer.cancelEffectsNear(x, y, z, radius);
     }
 
     public static void syncDecryptionAbility(SyncDecryptionLookedAtEntitiesAbilityPacket packet, Player player) {
@@ -419,6 +439,52 @@ public class ClientHandler {
         if (mc.level != null && mc.level.getEntity(packet.entityId()) instanceof OriginalBodyEntity body) {
             body.getData(ModAttachments.CONTROLLING_DATA).setOwnerUUID(packet.ownerUUID());
             body.getData(ModAttachments.CONTROLLING_DATA).setOwnerName(packet.ownerName());
+        }
+    }
+
+    public static void handleDisableAbilityUsageForTimePacket(DisableAbilityUsageForTimePacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if (!(entity instanceof LivingEntity living)) {
+            return;
+        }
+
+        DisabledAbilitiesComponent disabledComponent = living.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        disabledComponent.disableAbilityUsageForTime(packet.cause(), packet.ticks(), living);
+    }
+
+    public static void handleSyncToggleAbility(SyncToggleAbilityPacket packet, IPayloadContext context) {
+        Entity entity = context.player().level().getEntity(packet.entityId());
+        Ability ability = LOTMCraft.abilityHandler.getById(packet.abilityId());
+        if(!(ability instanceof ToggleAbility toggleAbility) || !(entity instanceof LivingEntity living)) {
+            return;
+        }
+
+        switch (packet.action()) {
+            case 0 -> {
+                ActiveToggleAbilitiesRenderer.activeToggleAbilities.add(packet.abilityId());
+                toggleAbility.start(living.level(), living);
+                toggleAbility.updateClientCache(living, true);
+            }
+            case 1 -> toggleAbility.prepareTick(living.level(), living);
+            case 2 -> {
+                ActiveToggleAbilitiesRenderer.activeToggleAbilities.remove(packet.abilityId());
+                toggleAbility.stop(living.level(), living);
+                toggleAbility.updateClientCache(living, true);
+            }
+
+        }
+    }
+
+    public static void handleAddClientSideTagPacket(AddClientSideTagPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if (entity != null) {
+            entity.getTags().add(packet.tag());
         }
     }
 }

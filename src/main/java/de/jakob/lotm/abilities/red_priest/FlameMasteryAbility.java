@@ -134,7 +134,7 @@ public class FlameMasteryAbility extends SelectableAbility {
         Vec3 pos = entity.getEyePosition();
         Vec3 dir = entity.getLookAngle();
         for (int i = 0; i < shots; i++) {
-            ServerScheduler.scheduleDelayed(i * 7, () -> fireball(level, entity, pos, dir, targetPos));
+            ServerScheduler.scheduleDelayed(i * 7, () -> fireball(level, entity, pos, dir, targetPos), level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(pos, level)));
         }
     }
 

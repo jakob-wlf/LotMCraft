@@ -1,7 +1,11 @@
 package de.jakob.lotm.abilities.abyss;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -82,10 +86,30 @@ public class PoisonousFlameAbility extends Ability {
                 .5, 23, .4
         );
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75, DamageLookup.lookupDamage(8, .9) * multiplier(entity), startPos, true, false, true, 0, 20 * 3);
-        AbilityUtil.addPotionEffectToNearbyEntities(
-                (ServerLevel) level, entity, 3, startPos, new MobEffectInstance(MobEffects.POISON, 20 * 8, 2, false, true)
+        // Purification neutralizes the poison effect
+        Location flameLoc = new Location(startPos, level);
+        int seq = BeyonderData.getSequence(entity);
+        boolean purified = InteractionHandler.isInteractionPossible(flameLoc, "purification", seq);
+
+        AbilityUtil.damageNearbyEntities(
+                (ServerLevel) level,
+                entity,
+                2.75,
+                DamageLookup.lookupDamage(8, .9) * multiplier(entity),
+                startPos,
+                true,
+                false,
+                true,
+                0,
+                20 * 3,
+                ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity)
         );
+
+        if(!purified) {
+            AbilityUtil.addPotionEffectToNearbyEntities(
+                    (ServerLevel) level, entity, 3, startPos, new MobEffectInstance(MobEffects.POISON, 20 * 8, 2, false, true)
+            );
+        }
 
         BlockState block = level.getBlockState(BlockPos.containing(startPos));
         if(block.isAir()) {

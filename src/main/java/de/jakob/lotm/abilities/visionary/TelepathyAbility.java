@@ -47,6 +47,9 @@ public class TelepathyAbility extends ToggleAbility {
 
         LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
 
+        if(lookedAt == null)
+            return;
+
         List<String> goalNames = new ArrayList<>();
         if(lookedAt instanceof Mob mob) {
             List<WrappedGoal> goals = new ArrayList<>(mob.goalSelector.getAvailableGoals());

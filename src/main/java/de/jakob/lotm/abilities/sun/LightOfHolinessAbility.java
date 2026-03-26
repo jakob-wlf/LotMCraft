@@ -1,7 +1,10 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AnimationUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -15,6 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -25,7 +29,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class LightOfHolinessAbility extends Ability {
     public LightOfHolinessAbility(String id) {
-        super(id, .9f);
+        super(id, .9f, "purification", "light_weak");
+        postsUsedAbilityEventManually = true;
+
     }
 
     @Override
@@ -58,7 +64,7 @@ public class LightOfHolinessAbility extends Ability {
 
             level.playSound(null, initialPos.x, initialPos.y - 18, initialPos.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 3.0f, 1.0f);
 
-            EffectManager.playEffect(EffectManager.Effect.LIGHT_OF_HOLINESS, initialPos.x, initialPos.y - 18, initialPos.z, (ServerLevel) level);
+            EffectManager.playEffect(EffectManager.Effect.LIGHT_OF_HOLINESS, initialPos.x, initialPos.y - 18, initialPos.z, (ServerLevel) level, entity);
 
             ServerScheduler.scheduleForDuration(0, 1, 22, () -> {
                 Vec3 pos = currentPos.get();
@@ -70,14 +76,18 @@ public class LightOfHolinessAbility extends Ability {
                     lights.add(blockPos);
                 }
 
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8f, DamageLookup.lookupDamage(5, .8) * multiplier(entity), pos, true, false, false, 10);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8f, DamageLookup.lookupDamage(5, .8) * multiplier(entity), pos, true, false, false, 10, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
 
                 currentPos.set(pos.subtract(0, 1, 0));
-            }, (ServerLevel) level);
+            }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
+
+            ServerScheduler.scheduleDelayed(22, () -> {
+                NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, initialPos.subtract(0, 18, 0), entity, this, interactionFlags, interactionRadius, interactionCacheTicks));
+            }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
 
             ServerScheduler.scheduleDelayed(40, () -> {
                 lights.forEach(l -> level.setBlockAndUpdate(l, Blocks.AIR.defaultBlockState()));
-            }, (ServerLevel) level);
+            }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
         }
         else if(entity instanceof Player player) {
             AnimationUtil.playOpenArmAnimation(player);

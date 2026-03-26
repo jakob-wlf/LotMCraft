@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.particle.ModParticles;
@@ -26,6 +27,7 @@ public class SpearOfDestructionProjectileEntity extends AbstractArrow {
     private final boolean griefing;
 
     private int ticks = 0;
+    private int petrifiedTicks = 0;
 
     public SpearOfDestructionProjectileEntity(EntityType<? extends AbstractArrow> entityType, Level level) {
         super(entityType, level);
@@ -51,6 +53,15 @@ public class SpearOfDestructionProjectileEntity extends AbstractArrow {
 
     @Override
     public void tick() {
+        // Petrification Logic -- run before super.tick() to stop movement completely
+        if(getTags().contains("petrified")) {
+            petrifiedTicks++;
+            if(petrifiedTicks >= 20 * 5) {
+                this.discard();
+            }
+            return;
+        }
+
         super.tick();
         if(level.isClientSide)
             return;
@@ -72,11 +83,11 @@ public class SpearOfDestructionProjectileEntity extends AbstractArrow {
     @Override
     protected void onHitEntity(EntityHitResult result) {
         this.discard();
-        if(!(result.getEntity() instanceof LivingEntity)) {
+        if(!(result.getEntity() instanceof LivingEntity target)) {
             return;
         }
-        LivingEntity target = (LivingEntity) result.getEntity();
-        target.hurt(this.damageSources().mobAttack(owner), (float) damage);
+        if(owner != null) target.hurt(ModDamageTypes.source(level, ModDamageTypes.HUNTER_FIRE, owner), (float) damage);
+        else              target.hurt(ModDamageTypes.source(level, ModDamageTypes.HUNTER_FIRE), (float) damage);
 
         if(!(level() instanceof ServerLevel serverLevel)) {
             return;

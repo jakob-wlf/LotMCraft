@@ -22,7 +22,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Phantom;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -33,8 +32,6 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.*;
 import java.util.stream.StreamSupport;
-
-import static de.jakob.lotm.item.ModItems.MARIONETTE_CONTROLLER;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MarionetteControllingAbility extends SelectableAbility {
@@ -291,7 +288,6 @@ public class MarionetteControllingAbility extends SelectableAbility {
         LivingEntity target = AbilityUtil.getTargetEntity(player, 5, 1, false, false, true);
 
         if (target == null) {
-            System.out.println("1");
             ItemStack item = player.getMainHandItem();
             if (!item.is(ModItems.MARIONETTE_CONTROLLER.get())) {
                 item = player.getOffhandItem();

@@ -10,8 +10,10 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -182,7 +184,7 @@ public class LuckEventHandler {
         List<ItemEntity> drops = event.getDrops();
 
         if (!drops.isEmpty()) {
-            if(drops.stream().anyMatch(itemEntity -> itemEntity.getItem().is(Items.SHULKER_BOX))) {
+            if(drops.stream().anyMatch(itemEntity -> itemEntity.getItem().is(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "shulker_boxes"))))) {
                 return;
             }
             ItemStack randomDrop = drops.get(level.getRandom().nextInt(drops.size())).getItem().copy();

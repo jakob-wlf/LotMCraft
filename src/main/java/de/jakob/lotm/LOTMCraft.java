@@ -16,10 +16,11 @@ import de.jakob.lotm.entity.client.*;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
+import de.jakob.lotm.gui.custom.ArtifactWheel.ArtifactWheelScreen;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronScreen;
+import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesScreen;
-import de.jakob.lotm.gui.custom.Messages.MessagesScreen;
 import de.jakob.lotm.gui.custom.Recipe.RecipeScreen;
 import de.jakob.lotm.item.ModCreativeModTabs;
 import de.jakob.lotm.item.ModIngredients;
@@ -79,6 +80,8 @@ public class LOTMCraft
     public static KeyMapping openWheelToggleKey;
     public static KeyMapping useSelectedAbilityKey;
     public static KeyMapping returnToMainBody;
+    public static KeyMapping openArtifactWheel;
+    public static KeyMapping nextArtifactAbilityKey;
 
     public static KeyMapping useAbilityBarAbility1;
     public static KeyMapping useAbilityBarAbility2;
@@ -92,6 +95,10 @@ public class LOTMCraft
 
     public static final ResourceLocation ANIMATION_LAYER_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "lotmcraft_animations");
 
+    public static final ResourceLocation STONE_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/misc/stone.png");
+    public static final ResourceLocation ICE_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/misc/ice.png");
 
     public LOTMCraft(IEventBus modEventBus, ModContainer modContainer)
     {
@@ -203,6 +210,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.NATURE_RETURN_PORTAL.get(), ReturnFromNaturelRenderer::new);
             EntityRenderers.register(ModEntities.GRAFTING_LOCATION_ENTITY.get(), GraftingLocationRenderer::new);
             EntityRenderers.register(ModEntities.DAMAGE_TRACKER.get(), DamageTrackerRenderer::new);
+            EntityRenderers.register(ModEntities.TIME_CHANGE.get(), TimeChangeRenderer::new);
 
 
             GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);
@@ -247,11 +255,12 @@ public class LOTMCraft
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event) {
             event.register(ModMenuTypes.INTROSPECT_MENU.get(), IntrospectScreen::new);
-            event.register(ModMenuTypes.MESSAGES_MENU.get(), MessagesScreen::new);
             event.register(ModMenuTypes.HONORIFIC_NAMES_MENU.get(), HonorificNamesScreen::new);
             event.register(ModMenuTypes.RECIPE_MENU.get(), RecipeScreen::new);
             event.register(ModMenuTypes.BREWING_CAULDRON_MENU.get(), BrewingCauldronScreen::new);
             event.register(ModMenuTypes.ABILITY_WHEEL_MENU.get(), AbilityWheelScreen::new);
+            event.register(ModMenuTypes.COPIED_ABILITY_WHEEL_MENU.get(), CopiedAbilityWheelScreen::new);
+            event.register(ModMenuTypes.ARTIFACT_WHEEL_MENU.get(), ArtifactWheelScreen::new);
         }
     }
 

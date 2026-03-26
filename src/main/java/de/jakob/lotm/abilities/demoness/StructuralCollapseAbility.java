@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -50,10 +51,10 @@ public class StructuralCollapseAbility extends Ability {
         }
 
         // Damage entities
-        AbilityUtil.damageNearbyEntities(serverLevel, entity, 35, DamageLookup.lookupDamage(2, .8) * (float) multiplier(entity), targetLoc, true, true);
+        AbilityUtil.damageNearbyEntities(serverLevel, entity, 35, DamageLookup.lookupDamage(2, .8) * (float) multiplier(entity), targetLoc, true, true, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
 
         // Play Effect
-        EffectManager.playEffect(EffectManager.Effect.COLLAPSE, targetLoc.x, targetLoc.y - 1.5, targetLoc.z, serverLevel);
+        EffectManager.playEffect(EffectManager.Effect.COLLAPSE, targetLoc.x, targetLoc.y - 1.5, targetLoc.z, serverLevel, entity);
     }
 
     private void collapseArea(ServerLevel serverLevel, Vec3 targetLoc) {

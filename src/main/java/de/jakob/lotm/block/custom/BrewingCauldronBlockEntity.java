@@ -3,10 +3,12 @@ package de.jakob.lotm.block.custom;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
 import de.jakob.lotm.potions.BeyonderPotion;
+import de.jakob.lotm.potions.PotionRecipeItem;
 import de.jakob.lotm.potions.PotionRecipes;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -20,14 +22,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class BrewingCauldronBlockEntity extends BlockEntity implements MenuProvider {
-    public final ItemStackHandler itemHandler = new ItemStackHandler(4) {
+    public final ItemStackHandler itemHandler = new ItemStackHandler(5) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -40,6 +45,7 @@ public class BrewingCauldronBlockEntity extends BlockEntity implements MenuProvi
     private static final int INPUT_SLOT_SUPP_1 = 0;
     private static final int INPUT_SLOT_SUPP_2 = 1;
     private static final int INPUT_SLOT_MAIN = 2;
+    private static final int INPUT_SLOT_RECIPE = 4;
     private static final int OUTPUT_SLOT = 3;
 
     protected final ContainerData data;
@@ -181,9 +187,25 @@ public class BrewingCauldronBlockEntity extends BlockEntity implements MenuProvi
                 itemHandler.getStackInSlot(INPUT_SLOT_MAIN)
         );
 
+        // check if the item is historical summoned
+        if (itemHandler.getStackInSlot(INPUT_SLOT_MAIN)
+                .getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+                .contains("VoidSummonTime")) {
+            return false;
+        }
         if(potion == null)
             return false;
 
-        return itemHandler.getStackInSlot(OUTPUT_SLOT).isEmpty();
+        ItemStack recipeItem = itemHandler.getStackInSlot(INPUT_SLOT_RECIPE);
+        if(recipeItem.isEmpty() || !(recipeItem.getItem() instanceof PotionRecipeItem recipe)) {
+            return false;
+        }
+
+        if(recipe.getRecipe().potion().getSequence() != potion.getSequence() || !recipe.getRecipe().potion().getPathway().equals(potion.getPathway())) {
+            return false;
+        }
+
+        if (!itemHandler.getStackInSlot(OUTPUT_SLOT).isEmpty()) return false;
+        return true;
     }
 }

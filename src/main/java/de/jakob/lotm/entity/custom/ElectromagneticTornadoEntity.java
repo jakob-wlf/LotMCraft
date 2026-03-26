@@ -33,6 +33,7 @@ public class ElectromagneticTornadoEntity extends Entity {
     private final List<CirclingBlock> circlingBlocks = new ArrayList<>();
     private int blockPickupCooldown = 0;
     private int lifeTicks = 0;
+    private int petrifiedTicks = 0;
     private int maxLifeTicks = 600; // 30 seconds default
 
     private Vec3 randomDirection = Vec3.ZERO;
@@ -163,6 +164,14 @@ public class ElectromagneticTornadoEntity extends Entity {
         lifeTicks++;
         if (lifeTicks > maxLifeTicks) {
             this.discard();
+            return;
+        }
+
+        if(this.getTags().contains("petrified")) {
+            petrifiedTicks++;
+            if(petrifiedTicks > 20 * 5) {
+                this.discard();
+            }
             return;
         }
 

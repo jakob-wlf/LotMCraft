@@ -51,7 +51,7 @@ public class HealingAbility extends SelectableAbility {
 
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
 
-        float restoredHealth = entity.getMaxHealth() / 3f;
+        float restoredHealth = 10 * multiplier(entity) * multiplier(entity);
 
         for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 6, false, true)) {
             e.setHealth(Math.max(e.getMaxHealth(), e.getHealth() + restoredHealth));
@@ -65,7 +65,7 @@ public class HealingAbility extends SelectableAbility {
 
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
 
-        float restoredHealth = entity.getMaxHealth() / 3f;
+        float restoredHealth = 10 * multiplier(entity) * multiplier(entity);
         entity.setHealth(Math.max(entity.getMaxHealth(), entity.getHealth() + restoredHealth));
 
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.HEALING.get(), entity.getEyePosition().subtract(0, .3, 0), 35, .9);

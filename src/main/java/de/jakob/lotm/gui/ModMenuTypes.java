@@ -1,14 +1,17 @@
 package de.jakob.lotm.gui;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.gui.custom.ArtifactWheel.ArtifactWheelMenu;
 import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesMenu;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelMenu;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
+import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelMenu;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
 import de.jakob.lotm.gui.custom.Messages.MessagesMenu;
 import de.jakob.lotm.gui.custom.Recipe.RecipeMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -41,6 +44,19 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<AbilityWheelMenu>> ABILITY_WHEEL_MENU = MENU_TYPES.register(
             "ability_wheel_menu",
             () -> new MenuType<>(AbilityWheelMenu::new, net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS)
+    );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<CopiedAbilityWheelMenu>> COPIED_ABILITY_WHEEL_MENU = MENU_TYPES.register(
+            "copied_ability_wheel_menu",
+            () -> new MenuType<>(CopiedAbilityWheelMenu::new, net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS)
+    );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<ArtifactWheelMenu>> ARTIFACT_WHEEL_MENU = MENU_TYPES.register(
+            "artifact_wheel_menu",
+            () -> IMenuTypeExtension.create((windowId, inv, data) -> {
+                ItemStack stack = ItemStack.OPTIONAL_STREAM_CODEC.decode(data);
+                return new ArtifactWheelMenu(windowId, inv, stack);
+            })
     );
 
     public static void register(IEventBus eventBus) {
