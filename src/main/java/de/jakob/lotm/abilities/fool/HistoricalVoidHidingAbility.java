@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.fool;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
@@ -24,11 +25,13 @@ public class HistoricalVoidHidingAbility extends ToggleAbility {
 
     public HistoricalVoidHidingAbility(String id) {
         super(id);
+
+        canAlwaysBeUsed = true;
     }
 
     @Override
     public float getSpiritualityCost() {
-        return 5;
+        return 25;
     }
 
     @Override
@@ -78,6 +81,9 @@ public class HistoricalVoidHidingAbility extends ToggleAbility {
                 mob.setTarget(null);
             }
         });
+
+        DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        component.disableAbilityUsageForTime("hidden_in_historical_void", 30, entity);
 
         // Stop when overridden by another transformation
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
