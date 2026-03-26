@@ -108,6 +108,14 @@ public class AbilityHandler {
         abilities.add(new DevilTransformationAbility("devil_transformation_ability"));
         abilities.add(new AvatarOfDesireAbility("avatar_of_desire_ability"));
         abilities.add(new DefilingSeedAbility("defiling_seed_ability"));
+        abilities.add(new DemonicSpellsAbility("demonic_spells_ability"));
+        abilities.add(new MindFogAbility("mind_fog_ability"));
+        abilities.add(new DesireControlAbility("desire_control_ability"));
+        abilities.add(new CorruptingVoiceAbility("corrupting_voice_ability"));
+        abilities.add(new MaliceSeedAbility("malice_seed_ability"));
+        abilities.add(new FearAuraAbility("fear_aura_ability"));
+        abilities.add(new FlamesOfTheAbyssAbility("flames_of_the_abyss_ability"));
+
 
         // FOOL PATHWAY
         abilities.add(new AirBulletAbility("air_bullet_ability"));
