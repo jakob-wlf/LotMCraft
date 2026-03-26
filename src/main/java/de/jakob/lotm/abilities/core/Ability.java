@@ -42,6 +42,7 @@ public abstract class Ability {
     // Permissions
     public boolean canBeUsedByNPC = true;
     public boolean canBeCopied = true;
+    public boolean cannotBeStolen = false;
     public boolean canAlwaysBeUsed = false;
 
     // Misc

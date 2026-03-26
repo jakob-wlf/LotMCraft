@@ -42,10 +42,12 @@ public class AbilityTheftHandler {
         DisabledAbilitiesComponent disabledComponent = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
 
         ArrayList<Ability> stealableAbilities = new ArrayList<>(targetAbilities.stream()
-                .filter(ability -> ability.canBeCopied
-                        && ability.canUse(target, true, false)
+                .filter(ability -> !ability.cannotBeStolen
                         && !disabledComponent.isSpecificAbilityDisabled(ability.getId()))
                 .toList());
+
+        HashSet<Ability> entityAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequence(
+                BeyonderData.getPathway(entity), BeyonderData.getSequence(entity));
 
         if (stealableAbilities.isEmpty()) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_abilities").withColor(0x6d32a8));
@@ -79,6 +81,9 @@ public class AbilityTheftHandler {
 
             // Add to the thief's copied abilities
             if (entity instanceof ServerPlayer player) {
+                if(entityAbilities.contains(stolenAbility))
+                    continue;
+
                 CopiedAbilityHelper.addAbility(player,
                         new CopiedAbilityComponent.CopiedAbilityData(
                                 stolenAbility.getId(),
@@ -114,7 +119,6 @@ public class AbilityTheftHandler {
             case 1 -> 800;
         };
     }
-
 
     public static boolean doesTheftFail(int userSeq, int targetSeq, Random random) {
         if (targetSeq > userSeq) {
