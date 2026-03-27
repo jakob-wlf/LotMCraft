@@ -1,6 +1,7 @@
 package de.jakob.lotm.dimension;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -52,6 +53,8 @@ public class SpiritWorldEntityEffects {
                 return; // Still on cooldown
             }
         }
+
+        if(BeyonderData.getSequence(entity) <= 2) return;
         
         // Random chance to apply effect
         if (entity.getRandom().nextFloat() > EFFECT_CHECK_CHANCE) {

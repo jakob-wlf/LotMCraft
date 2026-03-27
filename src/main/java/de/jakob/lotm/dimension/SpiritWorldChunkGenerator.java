@@ -24,354 +24,489 @@ import net.minecraft.world.level.levelgen.blending.Blender;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Chunk generator for the Spirit World dimension.
+ *
+ * Each of the six biomes has its own island geometry driven by a
+ * {@link SpiritWorldBiome.GenerationMode}:
+ *
+ *  ARCHIPELAGO  – dense medium islands → rolling wool/grass sea
+ *  SPIRE        – tiny radius, huge height, extreme edgeSharpness → crystal needles
+ *  SCATTERED    – tiny islands across an enormous Y range → void garden
+ *  CONTINENTAL  – enormous radius, soft edges, thick depth → dark continents
+ *  PLATEAU      – huge radius, near-zero height variation, flat-top clamp → white tables
+ *  CANYON       – large islands whose surface is then carved by canyon noise → layered mesas
+ *
+ * Block patches use large-scale 2D noise so each material type covers broad,
+ * coherent regions rather than single-block speckle.
+ */
 public class SpiritWorldChunkGenerator extends ChunkGenerator {
+
     public static final MapCodec<SpiritWorldChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                     BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource)
             ).apply(instance, SpiritWorldChunkGenerator::new)
     );
 
-    private static final BlockState STONE = Blocks.STONE.defaultBlockState();
-    private static final BlockState GRASS = Blocks.GRASS_BLOCK.defaultBlockState();
-    private static final BlockState DIRT = Blocks.DIRT.defaultBlockState();
+    // -------------------------------------------------------------------------
+    // PatchType – shared block palette
+    // -------------------------------------------------------------------------
 
-    // Material patch types
-    private enum PatchType {
-        // Fantastical/magical blocks (high frequency)
+    public enum PatchType {
         WOOL(new BlockState[]{
-                Blocks.RED_WOOL.defaultBlockState(),
-                Blocks.ORANGE_WOOL.defaultBlockState(),
-                Blocks.YELLOW_WOOL.defaultBlockState(),
-                Blocks.LIME_WOOL.defaultBlockState(),
-                Blocks.GREEN_WOOL.defaultBlockState(),
-                Blocks.CYAN_WOOL.defaultBlockState(),
-                Blocks.LIGHT_BLUE_WOOL.defaultBlockState(),
-                Blocks.BLUE_WOOL.defaultBlockState(),
-                Blocks.PURPLE_WOOL.defaultBlockState(),
-                Blocks.MAGENTA_WOOL.defaultBlockState(),
-                Blocks.PINK_WOOL.defaultBlockState(),
-                Blocks.WHITE_WOOL.defaultBlockState()
-        }, 0.26), // 20% spawn weight
+                Blocks.RED_WOOL.defaultBlockState(),        Blocks.ORANGE_WOOL.defaultBlockState(),
+                Blocks.YELLOW_WOOL.defaultBlockState(),     Blocks.LIME_WOOL.defaultBlockState(),
+                Blocks.GREEN_WOOL.defaultBlockState(),      Blocks.CYAN_WOOL.defaultBlockState(),
+                Blocks.LIGHT_BLUE_WOOL.defaultBlockState(), Blocks.BLUE_WOOL.defaultBlockState(),
+                Blocks.PURPLE_WOOL.defaultBlockState(),     Blocks.MAGENTA_WOOL.defaultBlockState(),
+                Blocks.PINK_WOOL.defaultBlockState(),       Blocks.WHITE_WOOL.defaultBlockState()
+        }),
         AMETHYST(new BlockState[]{
-                Blocks.AMETHYST_BLOCK.defaultBlockState(),
-                Blocks.BUDDING_AMETHYST.defaultBlockState(),
-                Blocks.CALCITE.defaultBlockState(),
-                Blocks.PURPLE_GLAZED_TERRACOTTA.defaultBlockState()
-        }, 0.18),
+                Blocks.AMETHYST_BLOCK.defaultBlockState(),       Blocks.BUDDING_AMETHYST.defaultBlockState(),
+                Blocks.CALCITE.defaultBlockState(),              Blocks.PURPLE_GLAZED_TERRACOTTA.defaultBlockState()
+        }),
         PRISMARINE(new BlockState[]{
-                Blocks.PRISMARINE.defaultBlockState(),
-                Blocks.PRISMARINE_BRICKS.defaultBlockState(),
-                Blocks.DARK_PRISMARINE.defaultBlockState(),
-                Blocks.SEA_LANTERN.defaultBlockState()
-        }, 0.15),
+                Blocks.PRISMARINE.defaultBlockState(),      Blocks.PRISMARINE_BRICKS.defaultBlockState(),
+                Blocks.DARK_PRISMARINE.defaultBlockState(), Blocks.SEA_LANTERN.defaultBlockState()
+        }),
         END_STONE(new BlockState[]{
-                Blocks.END_STONE.defaultBlockState(),
-                Blocks.END_STONE_BRICKS.defaultBlockState(),
-                Blocks.PURPUR_BLOCK.defaultBlockState(),
-                Blocks.PURPUR_PILLAR.defaultBlockState()
-        }, 0.15),
+                Blocks.END_STONE.defaultBlockState(),       Blocks.END_STONE_BRICKS.defaultBlockState(),
+                Blocks.PURPUR_BLOCK.defaultBlockState(),    Blocks.PURPUR_PILLAR.defaultBlockState()
+        }),
         QUARTZ(new BlockState[]{
-                Blocks.QUARTZ_BLOCK.defaultBlockState(),
-                Blocks.QUARTZ_BRICKS.defaultBlockState(),
-                Blocks.SMOOTH_QUARTZ.defaultBlockState(),
-                Blocks.QUARTZ_PILLAR.defaultBlockState()
-        }, 0.12),
+                Blocks.QUARTZ_BLOCK.defaultBlockState(),    Blocks.QUARTZ_BRICKS.defaultBlockState(),
+                Blocks.SMOOTH_QUARTZ.defaultBlockState(),   Blocks.QUARTZ_PILLAR.defaultBlockState()
+        }),
         TERRACOTTA(new BlockState[]{
-                Blocks.RED_TERRACOTTA.defaultBlockState(),
-                Blocks.ORANGE_TERRACOTTA.defaultBlockState(),
-                Blocks.YELLOW_TERRACOTTA.defaultBlockState(),
-                Blocks.CYAN_TERRACOTTA.defaultBlockState(),
-                Blocks.LIGHT_BLUE_TERRACOTTA.defaultBlockState(),
-                Blocks.MAGENTA_TERRACOTTA.defaultBlockState(),
+                Blocks.RED_TERRACOTTA.defaultBlockState(),        Blocks.ORANGE_TERRACOTTA.defaultBlockState(),
+                Blocks.YELLOW_TERRACOTTA.defaultBlockState(),     Blocks.CYAN_TERRACOTTA.defaultBlockState(),
+                Blocks.LIGHT_BLUE_TERRACOTTA.defaultBlockState(), Blocks.MAGENTA_TERRACOTTA.defaultBlockState(),
                 Blocks.PINK_TERRACOTTA.defaultBlockState()
-        }, 0.15),
-
-        // Nether blocks (medium frequency)
+        }),
         NETHERRACK(new BlockState[]{
-                Blocks.NETHERRACK.defaultBlockState(),
-                Blocks.NETHER_BRICKS.defaultBlockState(),
-                Blocks.RED_NETHER_BRICKS.defaultBlockState(),
-                Blocks.CRIMSON_NYLIUM.defaultBlockState(),
+                Blocks.NETHERRACK.defaultBlockState(),        Blocks.NETHER_BRICKS.defaultBlockState(),
+                Blocks.RED_NETHER_BRICKS.defaultBlockState(), Blocks.CRIMSON_NYLIUM.defaultBlockState(),
                 Blocks.WARPED_NYLIUM.defaultBlockState()
-        }, 0.075),
+        }),
         BLACKSTONE(new BlockState[]{
-                Blocks.BLACKSTONE.defaultBlockState(),
-                Blocks.POLISHED_BLACKSTONE.defaultBlockState(),
-                Blocks.GILDED_BLACKSTONE.defaultBlockState(),
-                Blocks.POLISHED_BLACKSTONE_BRICKS.defaultBlockState()
-        }, 0.05),
-
-        // Grounded blocks (low frequency)
+                Blocks.BLACKSTONE.defaultBlockState(),             Blocks.POLISHED_BLACKSTONE.defaultBlockState(),
+                Blocks.GILDED_BLACKSTONE.defaultBlockState(),      Blocks.POLISHED_BLACKSTONE_BRICKS.defaultBlockState()
+        }),
         BASALT(new BlockState[]{
-                Blocks.BASALT.defaultBlockState(),
-                Blocks.SMOOTH_BASALT.defaultBlockState(),
+                Blocks.BASALT.defaultBlockState(), Blocks.SMOOTH_BASALT.defaultBlockState(),
                 Blocks.POLISHED_BASALT.defaultBlockState()
-        }, 0.01),
+        }),
         DEEPSLATE(new BlockState[]{
-                Blocks.DEEPSLATE.defaultBlockState(),
-                Blocks.DEEPSLATE_BRICKS.defaultBlockState(),
+                Blocks.DEEPSLATE.defaultBlockState(),      Blocks.DEEPSLATE_BRICKS.defaultBlockState(),
                 Blocks.DEEPSLATE_TILES.defaultBlockState()
-        }, 0.005),
+        }),
         STONE(new BlockState[]{
-                Blocks.STONE.defaultBlockState(),
-                Blocks.ANDESITE.defaultBlockState(),
+                Blocks.STONE.defaultBlockState(), Blocks.ANDESITE.defaultBlockState(),
                 Blocks.DIORITE.defaultBlockState()
-        }, 0.003),
+        }),
         GRASS(new BlockState[]{
-                Blocks.GRASS_BLOCK.defaultBlockState(),
-                Blocks.DIRT.defaultBlockState()
-        }, 0.14);
+                Blocks.GRASS_BLOCK.defaultBlockState(), Blocks.DIRT.defaultBlockState()
+        });
 
-        private final BlockState[] blocks;
-        private final double weight;
-
-        PatchType(BlockState[] blocks, double weight) {
-            this.blocks = blocks;
-            this.weight = weight;
-        }
-
-        public BlockState getBlock(RandomSource random) {
-            return blocks[random.nextInt(blocks.length)];
-        }
-
-        public BlockState[] getBlocks() {
-            return blocks;
-        }
-
-        public double getWeight() {
-            return weight;
-        }
+        public final BlockState[] blocks;
+        PatchType(BlockState[] blocks) { this.blocks = blocks; }
+        public BlockState getBlock(RandomSource rng) { return blocks[rng.nextInt(blocks.length)]; }
     }
 
-    // Configuration for patch spawn rates - ADJUST THESE VALUES TO CUSTOMIZE!
-    // Higher values = more common, lower values = more rare
-    // Total doesn't need to equal 1.0, weights are relative
-    private static final class PatchConfig {
-        // Fantastical blocks (main feature)
-        static final double WOOL_WEIGHT = 0.20;        // Colorful wool patches
-        static final double AMETHYST_WEIGHT = 0.18;    // Crystal/amethyst patches
-        static final double PRISMARINE_WEIGHT = 0.15;  // Ocean temple blocks
-        static final double END_STONE_WEIGHT = 0.15;   // End dimension blocks
-        static final double QUARTZ_WEIGHT = 0.12;      // White quartz blocks
-        static final double TERRACOTTA_WEIGHT = 0.10;  // Colorful terracotta
+    // -------------------------------------------------------------------------
+    // Constants
+    // -------------------------------------------------------------------------
 
-        // Nether blocks (medium presence)
-        static final double NETHERRACK_WEIGHT = 0.05;  // Nether blocks
-        static final double BLACKSTONE_WEIGHT = 0.03;  // Dark nether stone
+    private static final int    MAIN_ISLAND_RADIUS  = 100;
+    private static final int    ISLAND_BASE_HEIGHT  = 64;
 
-        // Grounded blocks (rare, background)
-        static final double BASALT_WEIGHT = 0.01;      // Dark stone
-        static final double DEEPSLATE_WEIGHT = 0.005;  // Underground stone
-        static final double STONE_WEIGHT = 0.003;      // Regular stone
-        static final double GRASS_WEIGHT = 0.002;      // Natural grass/dirt
-    }
+    /**
+     * Terracotta colour strata for the CANYON biome, surface → deep.
+     * The pattern repeats every CANYON_LAYERS.length blocks of depth.
+     */
+    private static final BlockState[] CANYON_LAYERS = {
+            Blocks.RED_TERRACOTTA.defaultBlockState(),
+            Blocks.ORANGE_TERRACOTTA.defaultBlockState(),
+            Blocks.YELLOW_TERRACOTTA.defaultBlockState(),
+            Blocks.WHITE_TERRACOTTA.defaultBlockState(),
+            Blocks.ORANGE_TERRACOTTA.defaultBlockState(),
+            Blocks.BROWN_TERRACOTTA.defaultBlockState(),
+            Blocks.CYAN_TERRACOTTA.defaultBlockState(),
+            Blocks.RED_TERRACOTTA.defaultBlockState(),
+            Blocks.LIGHT_BLUE_TERRACOTTA.defaultBlockState(),
+            Blocks.MAGENTA_TERRACOTTA.defaultBlockState(),
+    };
 
-    // Enhanced island generation parameters
-    private static final int MAIN_ISLAND_RADIUS = 100;
-    private static final int SMALL_ISLAND_MIN_RADIUS = 10;
-    private static final int SMALL_ISLAND_MAX_RADIUS = 45;
-    private static final int ISLAND_BASE_HEIGHT = 64;
-    private static final double ISLAND_SPAWN_CHANCE = 0.35; // Reduced for more gaps
+    /**
+     * Noise frequency used for patch region selection.
+     * Lower = larger, more coherent material patches (less "speckle").
+     * The secondary octave adds organic boundary variation.
+     */
+    private static final double PATCH_FREQ_LARGE  = 0.008;
+    private static final double PATCH_FREQ_MEDIUM = 0.020;
 
-    public SpiritWorldChunkGenerator(BiomeSource biomeSource) {
-        super(biomeSource);
-    }
+    // -------------------------------------------------------------------------
+    // Constructor / codec
+    // -------------------------------------------------------------------------
+
+    public SpiritWorldChunkGenerator(BiomeSource biomeSource) { super(biomeSource); }
 
     @Override
-    protected MapCodec<? extends ChunkGenerator> codec() {
-        return CODEC;
-    }
+    protected MapCodec<? extends ChunkGenerator> codec() { return CODEC; }
+
+    // -------------------------------------------------------------------------
+    // Primary fill
+    // -------------------------------------------------------------------------
 
     @Override
     public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState,
-                                                        StructureManager structureManager, ChunkAccess chunk) {
-        ChunkPos chunkPos = chunk.getPos();
-        RandomSource random = RandomSource.create(chunk.getPos().toLong());
+                                                        StructureManager sm, ChunkAccess chunk) {
+        ChunkPos cp     = chunk.getPos();
+        RandomSource rng = RandomSource.create(cp.toLong());
+        int chunkX = cp.getMinBlockX();
+        int chunkZ = cp.getMinBlockZ();
 
-        int chunkX = chunkPos.getMinBlockX();
-        int chunkZ = chunkPos.getMinBlockZ();
-
-        // Generate terrain
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                int worldX = chunkX + x;
-                int worldZ = chunkZ + z;
+                int wx = chunkX + x;
+                int wz = chunkZ + z;
 
-                IslandData islandData = getIslandData(worldX, worldZ, random);
+                SpiritWorldBiome biome  = SpiritWorldBiome.getBiomeAt(wx, wz);
+                IslandData       island = getIslandData(wx, wz, rng, biome);
 
-                if (islandData.density > 0) {
-                    int height = islandData.height;
-                    int depth = islandData.depth;
-
-                    // Determine biome type for this column based on noise
-                    double biomeNoise = improvedNoise(worldX * 0.03, worldZ * 0.03);
-
-                    for (int y = ISLAND_BASE_HEIGHT - depth; y <= height; y++) {
-                        BlockState state = chooseBlockState(y, height, worldX, y, worldZ,
-                                random, false, false);
+                if (island.density > 0) {
+                    int bottom = Math.max(0, island.bottom);
+                    for (int y = bottom; y <= island.top; y++) {
+                        // CANYON: skip if inside a carved groove
+                        if (biome.mode == SpiritWorldBiome.GenerationMode.CANYON
+                                && isCanyonVoid(wx, y, wz, island.top)) {
+                            continue;
+                        }
+                        BlockState state = chooseBlock(y, island.top, wx, y, wz, rng, biome);
                         chunk.setBlockState(new BlockPos(x, y, z), state, false);
                     }
                 }
             }
         }
-
         return CompletableFuture.completedFuture(chunk);
     }
 
-    private BlockState chooseBlockState(int y, int height, int worldX, int worldY, int worldZ,
-                                        RandomSource random, boolean isEndStoneArea, boolean isGrassyArea) {
-        // Determine which patch this location belongs to using 3D noise
-        PatchType patchType = getPatchTypeAt(worldX, worldY, worldZ);
+    // -------------------------------------------------------------------------
+    // Canyon groove carving
+    // -------------------------------------------------------------------------
 
-        // Surface layer - use the patch's surface block
-        if (y == height) {
-            if (patchType == PatchType.GRASS) {
-                return Blocks.GRASS_BLOCK.defaultBlockState();
-            } else {
-                // Most patches show their material on the surface
-                return patchType.getBlock(random);
-            }
-        }
+    /**
+     * Returns {@code true} if the given world position falls inside a canyon groove.
+     *
+     * Two octaves of noise create channel-like trenches. The deeper below the
+     * surface, the wider the canyon must be to keep the block as air, producing
+     * V-shaped grooves when viewed from the side.
+     */
+    private boolean isCanyonVoid(int x, int y, int z, int surfaceY) {
+        int depth = surfaceY - y;
+        if (depth <= 2) return false; // top 2 layers are always solid (colour cap)
 
-        // Sub-surface layers (top 3-5 blocks below surface)
-        if (y > height - 5) {
-            // Grass patches have dirt subsurface
-            if (patchType == PatchType.GRASS && y > height - 3) {
-                return Blocks.DIRT.defaultBlockState();
-            }
-            // Other patches show their material with some variation
-            return patchType.getBlock(random);
-        }
+        double canyonNoise = improvedNoise(x * 0.012, z * 0.012);
+        double detailNoise = improvedNoise(x * 0.035 + 500, z * 0.035 + 500) * 0.35;
+        double combined    = canyonNoise + detailNoise;
 
-        // Deep interior - use patch materials
-        return patchType.getBlock(random);
+        // Groove widens with depth — threshold shrinks toward the surface
+        double threshold = 0.18 - depth * 0.008;
+        return combined > threshold;
     }
 
-    private PatchType getPatchTypeAt(int x, int y, int z) {
-        // Use multiple noise octaves to create varied patch sizes
-        double largePatchNoise = improvedNoise3D(x * 0.02, y * 0.02, z * 0.02);
-        double mediumPatchNoise = improvedNoise3D(x * 0.05 + 1000, y * 0.05 + 1000, z * 0.05 + 1000);
+    // -------------------------------------------------------------------------
+    // Block selection
+    // -------------------------------------------------------------------------
 
-        // Combine noises for patch selection
-        double combinedNoise = largePatchNoise * 0.7 + mediumPatchNoise * 0.3;
-
-        // Normalize noise to 0-1 range
-        double normalizedNoise = (combinedNoise + 1.0) / 2.0;
-
-        // Calculate total weight
-        double totalWeight = 0;
-        for (PatchType type : PatchType.values()) {
-            totalWeight += type.getWeight();
+    private BlockState chooseBlock(int y, int surfaceY, int wx, int wy, int wz,
+                                   RandomSource rng, SpiritWorldBiome biome) {
+        // CANYON: depth-based colour strata; no patch system needed
+        if (biome.mode == SpiritWorldBiome.GenerationMode.CANYON) {
+            int depth = surfaceY - y;
+            return CANYON_LAYERS[depth % CANYON_LAYERS.length];
         }
 
-        // Select patch type based on weighted distribution
-        double selector = normalizedNoise * totalWeight;
-        double currentWeight = 0;
+        PatchType patch = getPatchAt(wx, wy, wz, biome);
 
-        for (PatchType type : PatchType.values()) {
-            currentWeight += type.getWeight();
-            if (selector <= currentWeight) {
-                return type;
-            }
+        if (y == surfaceY) {
+            return patch == PatchType.GRASS
+                    ? Blocks.GRASS_BLOCK.defaultBlockState()
+                    : patch.getBlock(rng);
         }
+        if (patch == PatchType.GRASS && y > surfaceY - 3) {
+            return Blocks.DIRT.defaultBlockState();
+        }
+        return patch.getBlock(rng);
+    }
 
-        // Fallback (should rarely happen)
+    /**
+     * Determines which {@link PatchType} applies at a given world position.
+     *
+     * Uses two octaves of large-scale 2D noise so that material regions are
+     * broad and coherent (tens of blocks across) rather than single-block
+     * speckle. The noise value is mapped to a PatchType via the biome's
+     * weighted palette.
+     */
+    private PatchType getPatchAt(int x, int y, int z, SpiritWorldBiome biome) {
+        // Large primary octave — drives the main patch regions
+        double large  = improvedNoise(x * PATCH_FREQ_LARGE,  z * PATCH_FREQ_LARGE);
+        // Medium secondary octave — adds organic boundary variation
+        double medium = improvedNoise(x * PATCH_FREQ_MEDIUM + 1000, z * PATCH_FREQ_MEDIUM + 1000);
+
+        // Blend heavily toward the large scale so patches stay wide and solid
+        double norm = ((large * 0.80 + medium * 0.20) + 1.0) / 2.0; // → [0, 1]
+
+        double[]   weights = biome.getPatchWeights();
+        double     total   = 0;
+        for (double w : weights) total += w;
+
+        double    cursor = norm * total;
+        double    acc    = 0;
+        PatchType[] types = PatchType.values();
+        for (int i = 0; i < types.length && i < weights.length; i++) {
+            acc += weights[i];
+            if (cursor <= acc) return types[i];
+        }
         return PatchType.WOOL;
     }
 
-    private IslandData getIslandData(int x, int z, RandomSource random) {
-        // Main central island with varied height
-        double distanceFromCenter = Math.sqrt(x * x + z * z);
-        double mainIslandDensity = 1.0 - (distanceFromCenter / MAIN_ISLAND_RADIUS);
-        mainIslandDensity = Mth.clamp(mainIslandDensity, 0, 1);
+    // -------------------------------------------------------------------------
+    // Island geometry dispatch
+    // -------------------------------------------------------------------------
 
-        // Multiple octaves of noise for organic variation
-        double noise1 = improvedNoise(x * 0.02, z * 0.02) * 0.4;
-        double noise2 = improvedNoise(x * 0.05, z * 0.05) * 0.2;
-        double noise3 = improvedNoise(x * 0.1, z * 0.1) * 0.1;
-        mainIslandDensity += noise1 + noise2 + noise3;
+    private IslandData getIslandData(int x, int z, RandomSource rng, SpiritWorldBiome biome) {
+        IslandData main     = centralIsland(x, z);
+        IslandData floating = switch (biome.mode) {
+            case ARCHIPELAGO -> floatingArchipelago(x, z, biome);
+            case SPIRE       -> floatingSpires(x, z, biome);
+            case SCATTERED   -> floatingScattered(x, z, biome);
+            case CONTINENTAL -> floatingContinental(x, z, biome);
+            case PLATEAU     -> floatingPlateau(x, z, biome);
+            case CANYON      -> floatingCanyon(x, z, biome);
+        };
 
-        // Height variation for main island
-        double mainHeightVariation = improvedNoise(x * 0.015, z * 0.015);
-        int mainHeight = (int) (ISLAND_BASE_HEIGHT + mainIslandDensity * 25 + mainHeightVariation * 15);
-        int mainDepth = (int) (mainIslandDensity * 35);
-
-        // Generate floating islands with varied parameters
-        IslandData floatingIsland = generateFloatingIslands(x, z);
-
-        // Combine densities - keep the strongest
-        if (floatingIsland.density > mainIslandDensity) {
-            return floatingIsland;
-        } else if (mainIslandDensity > 0) {
-            return new IslandData(mainIslandDensity, mainHeight, mainDepth);
-        }
-
-        return new IslandData(0, 0, 0);
+        if (floating.density > main.density) return floating;
+        if (main.density > 0)               return main;
+        return IslandData.EMPTY;
     }
 
-    private IslandData generateFloatingIslands(int x, int z) {
-        double maxDensity = 0;
-        int finalHeight = 0;
-        int finalDepth = 0;
+    // ── Central spawn island (all biomes) ────────────────────────────────────
 
-        // Create a grid-based system for island spawning with more variation
-        int gridSize = 120;
-        int gridX = Math.floorDiv(x, gridSize);
-        int gridZ = Math.floorDiv(z, gridSize);
+    private IslandData centralIsland(int x, int z) {
+        double dist    = Math.sqrt((double)(x * x + z * z));
+        double density = Mth.clamp(1.0 - dist / MAIN_ISLAND_RADIUS, 0, 1);
+        density += improvedNoise(x * 0.020, z * 0.020) * 0.40
+                +  improvedNoise(x * 0.050, z * 0.050) * 0.20
+                +  improvedNoise(x * 0.100, z * 0.100) * 0.10;
+        density = Mth.clamp(density, 0, 1);
+        if (density <= 0) return IslandData.EMPTY;
 
-        // Check surrounding grid cells for islands
-        for (int offsetX = -1; offsetX <= 1; offsetX++) {
-            for (int offsetZ = -1; offsetZ <= 1; offsetZ++) {
-                int cellX = gridX + offsetX;
-                int cellZ = gridZ + offsetZ;
+        int top    = (int)(ISLAND_BASE_HEIGHT + density * 25 + improvedNoise(x * 0.015, z * 0.015) * 15);
+        int bottom = top - (int)(density * 35);
+        return new IslandData(density, top, bottom);
+    }
 
-                // Use grid coordinates as seed
-                RandomSource cellRandom = RandomSource.create((long) cellX * 341873128712L + cellZ * 132897987541L);
+    // ── ARCHIPELAGO ──────────────────────────────────────────────────────────
 
-                // Reduced chance for more gaps between islands
-                if (cellRandom.nextFloat() < ISLAND_SPAWN_CHANCE) {
-                    // Random position within grid cell
-                    int islandX = cellX * gridSize + cellRandom.nextInt(gridSize);
-                    int islandZ = cellZ * gridSize + cellRandom.nextInt(gridSize);
+    private IslandData floatingArchipelago(int x, int z, SpiritWorldBiome b) {
+        SpiritWorldBiome.TerrainParams p = b.terrain;
+        double best = 0; int bestTop = 0, bestBot = 0;
 
-                    // More varied island sizes
-                    int radius = SMALL_ISLAND_MIN_RADIUS + cellRandom.nextInt(SMALL_ISLAND_MAX_RADIUS - SMALL_ISLAND_MIN_RADIUS);
+        int gx = Math.floorDiv(x, p.gridSize()), gz = Math.floorDiv(z, p.gridSize());
+        for (int ox = -1; ox <= 1; ox++) for (int oz = -1; oz <= 1; oz++) {
+            int cx = gx + ox, cz = gz + oz;
+            RandomSource cr = cellRng(cx, cz);
+            if (cr.nextFloat() >= p.islandSpawnChance()) continue;
 
-                    // Varied height offset for floating islands
-                    int heightOffset = cellRandom.nextInt(40) - 10; // -10 to +30
+            int ix = cx * p.gridSize() + cr.nextInt(p.gridSize());
+            int iz = cz * p.gridSize() + cr.nextInt(p.gridSize());
+            int radius = p.minRadius() + cr.nextInt(p.maxRadius() - p.minRadius());
+            int yo     = p.yOffsetMin() + cr.nextInt(p.yOffsetMax() - p.yOffsetMin());
 
-                    // Varied shape factor
-                    double shapeFactor = 0.7 + cellRandom.nextDouble() * 0.6; // 0.7 to 1.3
+            double sf  = 0.75 + cr.nextDouble() * 0.50;
+            double raw = Mth.clamp(1.0 - dist(x, z, ix, iz) / (radius * sf), 0, 1);
+            raw += improvedNoise(x * 0.055, z * 0.055) * 0.20
+                    +  improvedNoise(x * 0.110 + 200, z * 0.110 + 200) * 0.12;
+            raw = Mth.clamp(smoothstep(raw), 0, 1);
 
-                    // Calculate distance to this island
-                    double distanceToIsland = Math.sqrt(
-                            Math.pow(x - islandX, 2) +
-                                    Math.pow(z - islandZ, 2)
-                    );
-
-                    double density = 1.0 - (distanceToIsland / (radius * shapeFactor));
-                    density = Mth.clamp(density, 0, 1);
-
-                    // Multiple noise layers for organic, varied shapes
-                    double islandNoise1 = improvedNoise(x * 0.05, z * 0.05) * 0.25;
-                    double islandNoise2 = improvedNoise(x * 0.1 + 100, z * 0.1 + 100) * 0.15;
-                    density += islandNoise1 + islandNoise2;
-                    density = Mth.clamp(density, 0, 1);
-
-                    // Smooth the edges with varied smoothing
-                    density = smoothstep(density);
-
-                    if (density > maxDensity) {
-                        maxDensity = density;
-                        // Varied height and depth
-                        finalHeight = (int) (ISLAND_BASE_HEIGHT + heightOffset + density * (15 + cellRandom.nextInt(20)));
-                        finalDepth = (int) (density * (20 + cellRandom.nextInt(25)));
-                    }
-                }
+            if (raw > best) {
+                best    = raw;
+                bestTop = p.baseHeight() + yo + (int)(raw * p.heightVariation());
+                bestBot = bestTop - (int)(raw * p.heightVariation() * p.depthMultiplier());
             }
         }
+        return best > 0 ? new IslandData(best, bestTop, bestBot) : IslandData.EMPTY;
+    }
 
-        return new IslandData(maxDensity, finalHeight, finalDepth);
+    // ── SPIRE ────────────────────────────────────────────────────────────────
+
+    private IslandData floatingSpires(int x, int z, SpiritWorldBiome b) {
+        SpiritWorldBiome.TerrainParams p = b.terrain;
+        double best = 0; int bestTop = 0, bestBot = 0;
+
+        int gx = Math.floorDiv(x, p.gridSize()), gz = Math.floorDiv(z, p.gridSize());
+        for (int ox = -1; ox <= 1; ox++) for (int oz = -1; oz <= 1; oz++) {
+            int cx = gx + ox, cz = gz + oz;
+            RandomSource cr = cellRng(cx, cz);
+            if (cr.nextFloat() >= p.islandSpawnChance()) continue;
+
+            int ix = cx * p.gridSize() + cr.nextInt(p.gridSize());
+            int iz = cz * p.gridSize() + cr.nextInt(p.gridSize());
+            int radius = p.minRadius() + cr.nextInt(p.maxRadius() - p.minRadius());
+            int yo     = p.yOffsetMin() + cr.nextInt(p.yOffsetMax() - p.yOffsetMin());
+
+            double raw     = Mth.clamp(1.0 - dist(x, z, ix, iz) / radius, 0, 1);
+            double density = Math.pow(raw, p.edgeSharpness());
+            density = Mth.clamp(density, 0, 1);
+
+            if (density > best) {
+                best    = density;
+                bestTop = p.baseHeight() + yo + (int)(density * p.heightVariation());
+                bestBot = bestTop - (int)(density * p.heightVariation() * p.depthMultiplier());
+            }
+        }
+        return best > 0 ? new IslandData(best, bestTop, bestBot) : IslandData.EMPTY;
+    }
+
+    // ── SCATTERED ────────────────────────────────────────────────────────────
+
+    private IslandData floatingScattered(int x, int z, SpiritWorldBiome b) {
+        SpiritWorldBiome.TerrainParams p = b.terrain;
+        double best = 0; int bestTop = 0, bestBot = 0;
+
+        int gx = Math.floorDiv(x, p.gridSize()), gz = Math.floorDiv(z, p.gridSize());
+        for (int ox = -1; ox <= 1; ox++) for (int oz = -1; oz <= 1; oz++) {
+            int cx = gx + ox, cz = gz + oz;
+            RandomSource cr = cellRng(cx, cz);
+            if (cr.nextFloat() >= p.islandSpawnChance()) continue;
+
+            int ix = cx * p.gridSize() + cr.nextInt(p.gridSize());
+            int iz = cz * p.gridSize() + cr.nextInt(p.gridSize());
+            int radius = p.minRadius() + cr.nextInt(p.maxRadius() - p.minRadius());
+            int yo     = p.yOffsetMin() + cr.nextInt(p.yOffsetMax() - p.yOffsetMin());
+
+            double raw = Mth.clamp(1.0 - dist(x, z, ix, iz) / radius, 0, 1);
+            raw = Math.pow(raw, p.edgeSharpness());
+            raw = Mth.clamp(raw, 0, 1);
+
+            if (raw > best) {
+                best    = raw;
+                bestTop = p.baseHeight() + yo + (int)(raw * p.heightVariation());
+                bestBot = bestTop - (int)(raw * p.heightVariation() * p.depthMultiplier());
+            }
+        }
+        return best > 0 ? new IslandData(best, bestTop, bestBot) : IslandData.EMPTY;
+    }
+
+    // ── CONTINENTAL ──────────────────────────────────────────────────────────
+
+    private IslandData floatingContinental(int x, int z, SpiritWorldBiome b) {
+        SpiritWorldBiome.TerrainParams p = b.terrain;
+        double best = 0; int bestTop = 0, bestBot = 0;
+
+        int gx = Math.floorDiv(x, p.gridSize()), gz = Math.floorDiv(z, p.gridSize());
+        for (int ox = -1; ox <= 1; ox++) for (int oz = -1; oz <= 1; oz++) {
+            int cx = gx + ox, cz = gz + oz;
+            RandomSource cr = cellRng(cx, cz);
+            if (cr.nextFloat() >= p.islandSpawnChance()) continue;
+
+            int ix = cx * p.gridSize() + cr.nextInt(p.gridSize());
+            int iz = cz * p.gridSize() + cr.nextInt(p.gridSize());
+            int radius = p.minRadius() + cr.nextInt(p.maxRadius() - p.minRadius());
+            int yo     = p.yOffsetMin() + cr.nextInt(p.yOffsetMax() - p.yOffsetMin());
+
+            double raw = Mth.clamp(1.0 - dist(x, z, ix, iz) / (double) radius, 0, 1);
+            raw += improvedNoise(x * 0.008, z * 0.008) * 0.35
+                    +  improvedNoise(x * 0.020 + 300, z * 0.020 + 300) * 0.15;
+            raw = Mth.clamp(Math.pow(raw, p.edgeSharpness()), 0, 1);
+
+            if (raw > best) {
+                best    = raw;
+                bestTop = p.baseHeight() + yo + (int)(raw * p.heightVariation());
+                bestBot = bestTop - (int)(raw * p.heightVariation() * p.depthMultiplier());
+            }
+        }
+        return best > 0 ? new IslandData(best, bestTop, bestBot) : IslandData.EMPTY;
+    }
+
+    // ── PLATEAU ──────────────────────────────────────────────────────────────
+
+    /**
+     * Flat-top slabs: surface height is clamped to a very narrow band so the
+     * top is nearly perfectly flat. Slab thickness is 8–16 blocks.
+     */
+    private IslandData floatingPlateau(int x, int z, SpiritWorldBiome b) {
+        SpiritWorldBiome.TerrainParams p = b.terrain;
+        double best = 0; int bestTop = 0, bestBot = 0;
+
+        int gx = Math.floorDiv(x, p.gridSize()), gz = Math.floorDiv(z, p.gridSize());
+        for (int ox = -1; ox <= 1; ox++) for (int oz = -1; oz <= 1; oz++) {
+            int cx = gx + ox, cz = gz + oz;
+            RandomSource cr = cellRng(cx, cz);
+            if (cr.nextFloat() >= p.islandSpawnChance()) continue;
+
+            int ix = cx * p.gridSize() + cr.nextInt(p.gridSize());
+            int iz = cz * p.gridSize() + cr.nextInt(p.gridSize());
+            int radius = p.minRadius() + cr.nextInt(p.maxRadius() - p.minRadius());
+            int yo     = p.yOffsetMin() + cr.nextInt(p.yOffsetMax() - p.yOffsetMin());
+
+            double raw = Mth.clamp(1.0 - dist(x, z, ix, iz) / (double) radius, 0, 1);
+            raw = Math.pow(raw, p.edgeSharpness());
+            raw = Mth.clamp(raw, 0, 1);
+
+            if (raw > best) {
+                best = raw;
+                double surfaceJitter = improvedNoise(x * 0.040, z * 0.040) * p.heightVariation();
+                bestTop = p.baseHeight() + yo + (int) surfaceJitter;
+                bestBot = bestTop - 8 - (int)(raw * 8);
+            }
+        }
+        return best > 0 ? new IslandData(best, bestTop, bestBot) : IslandData.EMPTY;
+    }
+
+    // ── CANYON ───────────────────────────────────────────────────────────────
+
+    private IslandData floatingCanyon(int x, int z, SpiritWorldBiome b) {
+        SpiritWorldBiome.TerrainParams p = b.terrain;
+        double best = 0; int bestTop = 0, bestBot = 0;
+
+        int gx = Math.floorDiv(x, p.gridSize()), gz = Math.floorDiv(z, p.gridSize());
+        for (int ox = -1; ox <= 1; ox++) for (int oz = -1; oz <= 1; oz++) {
+            int cx = gx + ox, cz = gz + oz;
+            RandomSource cr = cellRng(cx, cz);
+            if (cr.nextFloat() >= p.islandSpawnChance()) continue;
+
+            int ix = cx * p.gridSize() + cr.nextInt(p.gridSize());
+            int iz = cz * p.gridSize() + cr.nextInt(p.gridSize());
+            int radius = p.minRadius() + cr.nextInt(p.maxRadius() - p.minRadius());
+            int yo     = p.yOffsetMin() + cr.nextInt(p.yOffsetMax() - p.yOffsetMin());
+
+            double sf  = 0.75 + cr.nextDouble() * 0.50;
+            double raw = Mth.clamp(1.0 - dist(x, z, ix, iz) / (radius * sf), 0, 1);
+            raw += improvedNoise(x * 0.015, z * 0.015) * 0.25
+                    +  improvedNoise(x * 0.035 + 400, z * 0.035 + 400) * 0.12;
+            raw = Mth.clamp(Math.pow(raw, p.edgeSharpness()), 0, 1);
+
+            if (raw > best) {
+                best    = raw;
+                bestTop = p.baseHeight() + yo + (int)(raw * p.heightVariation());
+                bestBot = bestTop - (int)(raw * p.heightVariation() * p.depthMultiplier());
+            }
+        }
+        return best > 0 ? new IslandData(best, bestTop, bestBot) : IslandData.EMPTY;
+    }
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    private double dist(int x, int z, int ix, int iz) {
+        return Math.sqrt(Math.pow(x - ix, 2) + Math.pow(z - iz, 2));
+    }
+
+    private RandomSource cellRng(int cx, int cz) {
+        return RandomSource.create((long) cx * 341_873_128_712L + (long) cz * 132_897_987_541L);
     }
 
     private double smoothstep(double x) {
@@ -379,181 +514,97 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         return x * x * (3 - 2 * x);
     }
 
+    // -------------------------------------------------------------------------
+    // Required overrides
+    // -------------------------------------------------------------------------
+
+    @Override
+    public void applyCarvers(WorldGenRegion r, long seed, RandomState rs, BiomeManager bm,
+                             StructureManager sm, ChunkAccess chunk, GenerationStep.Carving c) {}
+
+    @Override
+    public void buildSurface(WorldGenRegion r, StructureManager sm, RandomState rs, ChunkAccess c) {}
+
+    @Override
+    public void spawnOriginalMobs(WorldGenRegion r) {}
+
+    @Override public int getGenDepth() { return 256; }
+    @Override public int getSeaLevel() { return 0;   }
+    @Override public int getMinY()     { return 0;   }
+
+    @Override
+    public int getBaseHeight(int x, int z, Heightmap.Types type, LevelHeightAccessor level,
+                             RandomState rs) {
+        SpiritWorldBiome b = SpiritWorldBiome.getBiomeAt(x, z);
+        IslandData d = getIslandData(x, z,
+                RandomSource.create((long) x * 341_873_128_712L + z * 132_897_987_541L), b);
+        return d.density > 0 ? d.top : 0;
+    }
+
+    @Override
+    public NoiseColumn getBaseColumn(int x, int z, LevelHeightAccessor level, RandomState rs) {
+        SpiritWorldBiome b    = SpiritWorldBiome.getBiomeAt(x, z);
+        IslandData data       = getIslandData(x, z,
+                RandomSource.create((long) x * 341_873_128_712L + z * 132_897_987_541L), b);
+        BlockState[] states   = new BlockState[level.getHeight()];
+
+        if (data.density > 0) {
+            int bottom = Math.max(0, data.bottom);
+            for (int y = bottom; y <= data.top && y < states.length; y++) {
+                if (b.mode == SpiritWorldBiome.GenerationMode.CANYON) {
+                    states[y] = CANYON_LAYERS[(data.top - y) % CANYON_LAYERS.length];
+                } else {
+                    PatchType pt = getPatchAt(x, y, z, b);
+                    states[y] = (y == data.top && pt == PatchType.GRASS)
+                            ? Blocks.GRASS_BLOCK.defaultBlockState()
+                            : pt.blocks[0];
+                }
+            }
+        }
+        return new NoiseColumn(level.getMinBuildHeight(), states);
+    }
+
+    @Override
+    public void addDebugScreenInfo(List<String> info, RandomState rs, BlockPos pos) {
+        SpiritWorldBiome b = SpiritWorldBiome.getBiomeAt(pos.getX(), pos.getZ());
+        info.add("Spirit World | Biome: " + b.name() + " | Mode: " + b.mode);
+    }
+
+    // -------------------------------------------------------------------------
+    // Perlin noise
+    // -------------------------------------------------------------------------
+
     private double improvedNoise(double x, double z) {
-        // Simple 2D Perlin-like noise
-        int xi = (int) Math.floor(x);
-        int zi = (int) Math.floor(z);
-
-        double xf = x - xi;
-        double zf = z - zi;
-
-        double u = fade(xf);
-        double v = fade(zf);
-
-        int a = hash(xi) + zi;
-        int b = hash(xi + 1) + zi;
-
-        return lerp(v,
-                lerp(u, grad(hash(a), xf, zf), grad(hash(b), xf - 1, zf)),
-                lerp(u, grad(hash(a + 1), xf, zf - 1), grad(hash(b + 1), xf - 1, zf - 1))
-        );
+        int xi = (int) Math.floor(x), zi = (int) Math.floor(z);
+        double xf = x - xi, zf = z - zi, u = fade(xf), v = fade(zf);
+        int a = hash(xi) + zi, b = hash(xi + 1) + zi;
+        return lerp(v, lerp(u, grad(hash(a),     xf,     zf),
+                        grad(hash(b),     xf - 1, zf)),
+                lerp(u, grad(hash(a + 1), xf,     zf - 1),
+                        grad(hash(b + 1), xf - 1, zf - 1)));
     }
 
-    private double improvedNoise3D(double x, double y, double z) {
-        int xi = (int) Math.floor(x);
-        int yi = (int) Math.floor(y);
-        int zi = (int) Math.floor(z);
-
-        double xf = x - xi;
-        double yf = y - yi;
-        double zf = z - zi;
-
-        double u = fade(xf);
-        double v = fade(yf);
-        double w = fade(zf);
-
-        int a = hash(xi) + yi;
-        int aa = hash(a) + zi;
-        int ab = hash(a + 1) + zi;
-        int b = hash(xi + 1) + yi;
-        int ba = hash(b) + zi;
-        int bb = hash(b + 1) + zi;
-
-        return lerp(w,
-                lerp(v,
-                        lerp(u, grad3D(hash(aa), xf, yf, zf), grad3D(hash(ba), xf - 1, yf, zf)),
-                        lerp(u, grad3D(hash(ab), xf, yf - 1, zf), grad3D(hash(bb), xf - 1, yf - 1, zf))),
-                lerp(v,
-                        lerp(u, grad3D(hash(aa + 1), xf, yf, zf - 1), grad3D(hash(ba + 1), xf - 1, yf, zf - 1)),
-                        lerp(u, grad3D(hash(ab + 1), xf, yf - 1, zf - 1), grad3D(hash(bb + 1), xf - 1, yf - 1, zf - 1)))
-        );
-    }
-
-    private double fade(double t) {
-        return t * t * t * (t * (t * 6 - 15) + 10);
-    }
-
-    private double lerp(double t, double a, double b) {
-        return a + t * (b - a);
-    }
+    private double fade(double t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+    private double lerp(double t, double a, double b) { return a + t * (b - a); }
 
     private double grad(int hash, double x, double z) {
         int h = hash & 15;
         double u = h < 8 ? x : z;
-        double v = h < 4 ? z : h == 12 || h == 14 ? x : 0;
-        return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
-    }
-
-    private double grad3D(int hash, double x, double y, double z) {
-        int h = hash & 15;
-        double u = h < 8 ? x : y;
-        double v = h < 4 ? y : h == 12 || h == 14 ? x : z;
+        double v = h < 4 ? z : (h == 12 || h == 14) ? x : 0;
         return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
     }
 
     private int hash(int x) {
         x = ((x >> 16) ^ x) * 0x45d9f3b;
         x = ((x >> 16) ^ x) * 0x45d9f3b;
-        x = (x >> 16) ^ x;
-        return x;
+        return (x >> 16) ^ x;
     }
 
-    @Override
-    public void applyCarvers(WorldGenRegion region, long seed, RandomState randomState,
-                             BiomeManager biomeManager, StructureManager structureManager,
-                             ChunkAccess chunk, GenerationStep.Carving carving) {
-        // No carvers
-    }
+    // -------------------------------------------------------------------------
+    // Island data record
+    // -------------------------------------------------------------------------
 
-    @Override
-    public void buildSurface(WorldGenRegion region, StructureManager structureManager,
-                             RandomState randomState, ChunkAccess chunk) {
-        // Surface is already built in fillFromNoise
-    }
-
-    @Override
-    public void spawnOriginalMobs(WorldGenRegion region) {
-        // No mob spawning yet
-    }
-
-    @Override
-    public int getGenDepth() {
-        return 256;
-    }
-
-    @Override
-    public int getSeaLevel() {
-        return 0;
-    }
-
-    @Override
-    public int getMinY() {
-        return 0;
-    }
-
-    @Override
-    public int getBaseHeight(int x, int z, Heightmap.Types heightmapType,
-                             LevelHeightAccessor level, RandomState randomState) {
-        RandomSource random = RandomSource.create((long) x * 341873128712L + z * 132897987541L);
-        IslandData data = getIslandData(x, z, random);
-
-        if (data.density > 0) {
-            return data.height;
-        }
-        return 0;
-    }
-
-    @Override
-    public NoiseColumn getBaseColumn(int x, int z, LevelHeightAccessor level, RandomState randomState) {
-        RandomSource random = RandomSource.create((long) x * 341873128712L + z * 132897987541L);
-        IslandData data = getIslandData(x, z, random);
-
-        BlockState[] states = new BlockState[level.getHeight()];
-
-        if (data.density > 0) {
-            int height = data.height;
-            int depth = data.depth;
-
-            for (int y = ISLAND_BASE_HEIGHT - depth; y <= height && y < states.length; y++) {
-                // Use simplified patch logic for column generation
-                PatchType patchType = getPatchTypeAt(x, y, z);
-
-                if (y == height) {
-                    if (patchType == PatchType.GRASS) {
-                        states[y] = Blocks.GRASS_BLOCK.defaultBlockState();
-                    } else {
-                        states[y] = patchType.blocks[0];
-                    }
-                } else if (y > height - 4) {
-                    if (patchType == PatchType.GRASS) {
-                        states[y] = Blocks.DIRT.defaultBlockState();
-                    } else {
-                        states[y] = patchType.blocks[0];
-                    }
-                } else {
-                    states[y] = patchType.blocks[0];
-                }
-            }
-        }
-
-        return new NoiseColumn(level.getMinBuildHeight(), states);
-    }
-
-    @Override
-    public void addDebugScreenInfo(List<String> info, RandomState randomState, BlockPos pos) {
-        info.add("Spirit World Generator - Enhanced");
-    }
-
-    // Helper class to store island data
-    private static class IslandData {
-        final double density;
-        final int height;
-        final int depth;
-
-        IslandData(double density, int height, int depth) {
-            this.density = density;
-            this.height = height;
-            this.depth = depth;
-        }
+    private record IslandData(double density, int top, int bottom) {
+        static final IslandData EMPTY = new IslandData(0, 0, 0);
     }
 }

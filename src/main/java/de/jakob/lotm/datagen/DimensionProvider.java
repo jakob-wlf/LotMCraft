@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.dimension.*;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -15,14 +16,15 @@ import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.joml.Vector3f;
 
+import java.util.List;
 import java.util.OptionalLong;
 import java.util.Set;
 
 public class DimensionProvider {
 
     public static void addDimensionProvider(GatherDataEvent event) {
-        var generator = event.getGenerator();
-        var packOutput = generator.getPackOutput();
+        var generator     = event.getGenerator();
+        var packOutput    = generator.getPackOutput();
         var lookupProvider = event.getLookupProvider();
 
         generator.addProvider(event.includeServer(),
@@ -30,52 +32,57 @@ public class DimensionProvider {
                         packOutput,
                         lookupProvider,
                         new RegistrySetBuilder()
-                                // Register the custom biome
+
+                                // =============================================================
+                                // BIOME REGISTRY
+                                // =============================================================
                                 .add(Registries.BIOME, bootstrap -> {
+
+                                    // ---------------------------------------------------------
+                                    // Non-Spirit-World biomes (unchanged)
+                                    // ---------------------------------------------------------
+
                                     bootstrap.register(ModDimensions.SPACE_BIOME_KEY,
                                             new Biome.BiomeBuilder()
                                                     .hasPrecipitation(false)
-                                                    .temperature(0.0f)
-                                                    .downfall(0.0f)
+                                                    .temperature(0.0f).downfall(0.0f)
                                                     .specialEffects(new BiomeSpecialEffects.Builder()
-                                                            .skyColor(0x000000) // Very dark sky
-                                                            .fogColor(0x000000) // Dark fog
+                                                            .skyColor(0x000000)
+                                                            .fogColor(0x000000)
                                                             .waterColor(0x1b5ee3)
                                                             .waterFogColor(0x050533)
-                                                            .grassColorOverride(0x4ad145) // Jungle grass color
-                                                            .foliageColorOverride(0x30BB00) // Dense jungle foliage
+                                                            .grassColorOverride(0x4ad145)
+                                                            .foliageColorOverride(0x30BB00)
                                                             .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
                                                             .build())
                                                     .mobSpawnSettings(new MobSpawnSettings.Builder().build())
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
-                                                    .build()
-                                    );
+                                                    .build());
+
                                     bootstrap.register(ModDimensions.WORLD_CREATION_BIOME_KEY,
                                             new Biome.BiomeBuilder()
                                                     .hasPrecipitation(false)
-                                                    .temperature(0.0f)
-                                                    .downfall(0.0f)
+                                                    .temperature(0.0f).downfall(0.0f)
                                                     .specialEffects(new BiomeSpecialEffects.Builder()
-                                                            .skyColor(0xcafa96) // Very dark sky
-                                                            .fogColor(0x000000) // Dark fog
+                                                            .skyColor(0xcafa96)
+                                                            .fogColor(0x000000)
                                                             .waterColor(0x1b5ee3)
                                                             .waterFogColor(0x050533)
-                                                            .grassColorOverride(0x4ad145) // Jungle grass color
-                                                            .foliageColorOverride(0x30BB00) // Dense jungle foliage
+                                                            .grassColorOverride(0x4ad145)
+                                                            .foliageColorOverride(0x30BB00)
                                                             .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
                                                             .build())
                                                     .mobSpawnSettings(new MobSpawnSettings.Builder().build())
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
-                                                    .build()
-                                    );
+                                                    .build());
+
                                     bootstrap.register(ModDimensions.SEFIRAH_CASTLE_BIOME_KEY,
                                             new Biome.BiomeBuilder()
-                                                    .hasPrecipitation(false) // No rain/snow
-                                                    .temperature(0.5f)
-                                                    .downfall(0.0f)
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.5f).downfall(0.0f)
                                                     .specialEffects(new BiomeSpecialEffects.Builder()
-                                                            .skyColor(0x808080) // Gray sky
-                                                            .fogColor(0x808080) // Gray fog
+                                                            .skyColor(0x808080)
+                                                            .fogColor(0x808080)
                                                             .waterColor(0x3f76e4)
                                                             .waterFogColor(0x050533)
                                                             .grassColorOverride(0x79c05a)
@@ -84,196 +91,276 @@ public class DimensionProvider {
                                                             .build())
                                                     .mobSpawnSettings(new MobSpawnSettings.Builder().build())
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
-                                                    .build()
-                                    );
-                                    // Second biome - Void (example)
-                                    bootstrap.register(ModDimensions.SPIRIT_WORLD_BIOME_KEY,
-                                            new Biome.BiomeBuilder()
-                                                    .hasPrecipitation(false)
-                                                    .temperature(0.5f)
-                                                    .downfall(0.0f)
-                                                    .specialEffects(new BiomeSpecialEffects.Builder()
-                                                            .skyColor(0xFF00FF) // Starting magenta - will cycle
-                                                            .fogColor(0x00FFFF) // Starting cyan - will cycle
-                                                            .waterColor(0xFF1493) // Deep pink water
-                                                            .waterFogColor(0x9400D3) // Purple water fog
-                                                            .grassColorOverride(0x00FF00) // Bright green grass
-                                                            .foliageColorOverride(0xFFD700) // Gold foliage
-                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
-                                                            .ambientParticle(new AmbientParticleSettings(
-                                                                    new DustParticleOptions(new Vector3f(255, 255, 255), 5),
-                                                                    0.005f
-                                                            ))
-                                                            .build())
-                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
-                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
-                                                    .build()
-                                    );
+                                                    .build());
+
                                     bootstrap.register(ModDimensions.CONCEALMENT_WORLD_BIOME_KEY,
                                             new Biome.BiomeBuilder()
-                                                    .hasPrecipitation(false) // No weather
-                                                    .temperature(0.5f)
-                                                    .downfall(0.0f)
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.5f).downfall(0.0f)
                                                     .specialEffects(new BiomeSpecialEffects.Builder()
-                                                            .skyColor(0x0A0A14) // Dark blue-purple like End
-                                                            .fogColor(0x0A0A14) // Same as sky for End-like effect
+                                                            .skyColor(0x0A0A14)
+                                                            .fogColor(0x0A0A14)
                                                             .waterColor(0x3f76e4)
                                                             .waterFogColor(0x050533)
-                                                            .grassColorOverride(0x79c05a) // Normal grass color
+                                                            .grassColorOverride(0x79c05a)
                                                             .foliageColorOverride(0x59ae30)
                                                             .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
                                                             .build())
                                                     .mobSpawnSettings(new MobSpawnSettings.Builder().build())
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
-                                                    .build()
-                                    );
+                                                    .build());
 
+                                    // ---------------------------------------------------------
+                                    // Spirit World – 6 distinct biomes
+                                    // Index order MUST match ModDimensions.SPIRIT_WORLD_BIOME_KEYS
+                                    // and SpiritWorldBiomeSource.BIOME_ORDER.
+                                    // ---------------------------------------------------------
+
+                                    // 0 – WOOL_MEADOWS
+                                    // Bright, rainbow-saturated pastel sky with warm magenta fog.
+                                    // Colourful wool and grass patches in rolling island clusters.
+                                    bootstrap.register(ModDimensions.SPIRIT_BIOME_WOOL_MEADOWS,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.8f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0xFF99DD)       // warm candy pink sky
+                                                            .fogColor(0xFF55BB)       // deep magenta fog
+                                                            .waterColor(0xFF69B4)     // hot pink water
+                                                            .waterFogColor(0xAA1177)
+                                                            .grassColorOverride(0x55FF88)  // vivid lime grass
+                                                            .foliageColorOverride(0xFFDD00) // golden foliage
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .ambientParticle(new AmbientParticleSettings(
+                                                                    new DustParticleOptions(
+                                                                            new Vector3f(1.0f, 0.4f, 0.9f), 1.2f),
+                                                                    0.004f))
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
+                                    // 1 – CRYSTALLINE_PEAKS
+                                    // Cold deep-indigo sky; icy cyan fog; end-rod particles drift upward.
+                                    // Needle-thin amethyst/prismarine spires shooting into the void.
+                                    bootstrap.register(ModDimensions.SPIRIT_BIOME_CRYSTALLINE_PEAKS,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(-0.5f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x050520)       // near-black indigo sky
+                                                            .fogColor(0x0033AA)       // deep cold blue fog
+                                                            .waterColor(0x00EEFF)     // electric cyan water
+                                                            .waterFogColor(0x002266)
+                                                            .grassColorOverride(0xAAEEFF)  // icy blue-white grass
+                                                            .foliageColorOverride(0x55BBFF) // pale sky foliage
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .ambientParticle(new AmbientParticleSettings(
+                                                                    ParticleTypes.END_ROD,
+                                                                    0.003f))
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
+                                    // 2 – VOID_GARDENS
+                                    // Soft purple sky; deep violet fog; slow falling note-block particles.
+                                    // Tiny end-stone/purpur islands scattered across a huge Y range.
+                                    bootstrap.register(ModDimensions.SPIRIT_BIOME_VOID_GARDENS,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.5f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x220044)       // dark violet sky
+                                                            .fogColor(0x550077)       // deep purple fog
+                                                            .waterColor(0xCC44FF)     // purple water
+                                                            .waterFogColor(0x330055)
+                                                            .grassColorOverride(0xDD88FF)  // lavender grass
+                                                            .foliageColorOverride(0xFF99EE) // pink foliage
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .ambientParticle(new AmbientParticleSettings(
+                                                                    ParticleTypes.PORTAL,
+                                                                    0.002f))
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
+                                    // 3 – EMBER_WASTES
+                                    // Dark blood-orange sky; thick ember-red fog; flame particle wisps.
+                                    // Enormous flat netherrack/blackstone continents.
+                                    bootstrap.register(ModDimensions.SPIRIT_BIOME_EMBER_WASTES,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(2.0f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x1A0500)       // almost-black deep red sky
+                                                            .fogColor(0x882200)       // smouldering ember fog
+                                                            .waterColor(0xFF4400)     // lava-orange water
+                                                            .waterFogColor(0x660000)
+                                                            .grassColorOverride(0x993300)  // scorched earth grass
+                                                            .foliageColorOverride(0xCC4400) // ember foliage
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .ambientParticle(new AmbientParticleSettings(
+                                                                    ParticleTypes.LAVA,
+                                                                    0.001f))
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
+                                    // 4 – QUARTZ_FLATS
+                                    // Pale cream/gold sky; warm white fog; barely visible.
+                                    // Giant perfectly flat quartz table-tops.
+                                    bootstrap.register(ModDimensions.SPIRIT_BIOME_QUARTZ_FLATS,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(1.0f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0xFFF5CC)       // warm ivory sky
+                                                            .fogColor(0xFFEEAA)       // golden-white haze fog
+                                                            .waterColor(0xEEDDAA)     // pale amber water
+                                                            .waterFogColor(0xBBAA66)
+                                                            .grassColorOverride(0xEEFFCC)  // bleached grass
+                                                            .foliageColorOverride(0xDDEE99) // pale gold foliage
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .ambientParticle(new AmbientParticleSettings(
+                                                                    new DustParticleOptions(
+                                                                            new Vector3f(1.0f, 0.98f, 0.8f), 0.8f),
+                                                                    0.002f))
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
+                                    // 5 – TERRACOTTA_CANYON
+                                    // Warm sienna/terracotta sky; dusty orange fog; falling dust particles.
+                                    // Layered mesa canyons with visible depth strata.
+                                    bootstrap.register(ModDimensions.SPIRIT_BIOME_TERRACOTTA_CANYON,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(1.5f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x3A1800)       // dark burnt-sienna sky
+                                                            .fogColor(0xBB5500)       // terracotta dust fog
+                                                            .waterColor(0xCC6622)     // muddy canyon water
+                                                            .waterFogColor(0x883300)
+                                                            .grassColorOverride(0xCC6633)  // terracotta-tinted grass
+                                                            .foliageColorOverride(0xFF8844) // warm orange foliage
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .ambientParticle(new AmbientParticleSettings(
+                                                                    new DustParticleOptions(
+                                                                            new Vector3f(0.8f, 0.3f, 0.05f), 1.5f),
+                                                                    0.005f))
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
                                 })
+
+                                // =============================================================
+                                // DIMENSION TYPE REGISTRY (unchanged)
+                                // =============================================================
                                 .add(Registries.DIMENSION_TYPE, bootstrap -> {
+
                                     bootstrap.register(ModDimensions.SPACE_TYPE_KEY, new DimensionType(
-                                            OptionalLong.empty(), // fixed time (no day/night cycle)
-                                            true, // has skylight
-                                            false, // has ceiling
-                                            false, // ultrawarm
-                                            false, // natural
-                                            1.0, // coordinate scale
-                                            true, // bed works
-                                            false, // respawn anchor works
-                                            -64, // min y
-                                            384, // height
-                                            384, // logical height
+                                            OptionalLong.empty(), true, false, false, false,
+                                            1.0, true, false, -64, 384, 384,
                                             BlockTags.INFINIBURN_OVERWORLD,
-                                            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space"), // effects location
-                                            1.0f, // ambient light level
-                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 7), 0)
-                                    ));
+                                            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space"),
+                                            1.0f,
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 7), 0)));
+
                                     bootstrap.register(ModDimensions.WORLD_CREATION_TYPE_KEY, new DimensionType(
-                                            OptionalLong.empty(), // fixed time (no day/night cycle)
-                                            true, // has skylight
-                                            false, // has ceiling
-                                            false, // ultrawarm
-                                            false, // natural
-                                            1.0, // coordinate scale
-                                            true, // bed works
-                                            false, // respawn anchor works
-                                            -64, // min y
-                                            384, // height
-                                            384, // logical height
+                                            OptionalLong.empty(), true, false, false, false,
+                                            1.0, true, false, -64, 384, 384,
                                             BlockTags.INFINIBURN_OVERWORLD,
-                                            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "nature"), // effects location
-                                            1.0f, // ambient light level
-                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 7), 0)
-                                    ));
+                                            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "nature"),
+                                            1.0f,
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 7), 0)));
+
                                     bootstrap.register(ModDimensions.SEFIRAH_CASTLE_TYPE_KEY, new DimensionType(
-                                            OptionalLong.of(6000), // Fixed time (noon, no day/night cycle)
-                                            false, // NO skylight - disables sun/moon rendering
-                                            true, // Has ceiling (helps disable sky rendering)
-                                            false, // Not ultrawarm
-                                            false, // Not natural (disables weather)
-                                            1.0, // Normal coordinate scale
-                                            false, // Beds don't work
-                                            false, // Respawn anchors don't work
-                                            -64, // min y
-                                            384, // height
-                                            384, // logical height
+                                            OptionalLong.of(6000), false, true, false, false,
+                                            1.0, false, false, -64, 384, 384,
                                             BlockTags.INFINIBURN_OVERWORLD,
                                             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"),
-                                            1.0f, // Full ambient light (since no skylight)
-                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)
-                                    ));
-                                    // Second dimension type - Void
+                                            1.0f,
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
+
                                     bootstrap.register(ModDimensions.SPIRIT_WORLD_TYPE_KEY, new DimensionType(
-                                            OptionalLong.empty(), // No fixed time - no day/night cycle
-                                            true, // Has skylight - always bright
-                                            false, // No ceiling
-                                            false, // Not ultrawarm
-                                            false, // Not natural
-                                            1.0, // Normal coordinate scale
-                                            false, // Beds don't work - too disorienting
-                                            false, // Respawn anchors don't work
-                                            0, // min y - centered around 0 for disorientation
-                                            256, // height
-                                            256, // logical height
+                                            OptionalLong.empty(), true, false, false, false,
+                                            1.0, false, false, 0, 256, 256,
                                             BlockTags.INFINIBURN_OVERWORLD,
                                             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world"),
-                                            1.0f, // FULL ambient light - always bright everywhere
-                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0) // No mob spawning for now
-                                    ));
+                                            1.0f,
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
+
                                     bootstrap.register(ModDimensions.CONCEALMENT_WORLD_TYPE_KEY, new DimensionType(
-                                            OptionalLong.of(6000), // Fixed time (noon, no day/night cycle)
-                                            true, // Has skylight - but with fixed time it won't change
-                                            false, // No ceiling
-                                            false, // Not ultrawarm
-                                            false, // Not natural (disables weather)
-                                            1.0, // Normal coordinate scale
-                                            true, // Beds work
-                                            false, // Respawn anchors don't work
-                                            -64, // min y
-                                            384, // height
-                                            384, // logical height
+                                            OptionalLong.of(6000), true, false, false, false,
+                                            1.0, true, false, -64, 384, 384,
                                             BlockTags.INFINIBURN_OVERWORLD,
                                             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "concealment_world"),
-                                            1.0f, // Full ambient light everywhere
-                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0) // No mob spawning
-                                    ));
+                                            1.0f,
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
                                 })
+
+                                // =============================================================
+                                // LEVEL STEM REGISTRY
+                                // =============================================================
                                 .add(Registries.LEVEL_STEM, bootstrap -> {
-                                    var biomeRegistry = bootstrap.lookup(Registries.BIOME);
-                                    var dimensionTypes = bootstrap.lookup(Registries.DIMENSION_TYPE);
+                                    var biomeRegistry   = bootstrap.lookup(Registries.BIOME);
+                                    var dimensionTypes  = bootstrap.lookup(Registries.DIMENSION_TYPE);
 
-                                    // Use your custom biome
-                                    var biomeSource = new FixedBiomeSource(
-                                            biomeRegistry.getOrThrow(ModDimensions.SPACE_BIOME_KEY)
-                                    );
-
-                                    var chunkGenerator = new EmptyChunkGenerator(biomeSource);
-
+                                    // SPACE
                                     bootstrap.register(ModDimensions.SPACE_LEVEL_KEY,
-                                            new LevelStem(dimensionTypes.getOrThrow(ModDimensions.SPACE_TYPE_KEY), chunkGenerator)
-                                    );
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.SPACE_TYPE_KEY),
+                                                    new EmptyChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.SPACE_BIOME_KEY)))));
 
-                                    var natureBiomeSource = new FixedBiomeSource(
-                                            biomeRegistry.getOrThrow(ModDimensions.WORLD_CREATION_BIOME_KEY)
-                                    );
-
-                                    var natureChunkGenerator = new NatureDimensionWorldChunkGenerator(natureBiomeSource);
-
+                                    // NATURE / WORLD CREATION
                                     bootstrap.register(ModDimensions.WORLD_CREATION_LEVEL_KEY,
-                                            new LevelStem(dimensionTypes.getOrThrow(ModDimensions.WORLD_CREATION_TYPE_KEY), natureChunkGenerator)
-                                    );
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.WORLD_CREATION_TYPE_KEY),
+                                                    new NatureDimensionWorldChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.WORLD_CREATION_BIOME_KEY)))));
 
-                                    var spiritBiomeSource = new FixedBiomeSource(
-                                            biomeRegistry.getOrThrow(ModDimensions.SPIRIT_WORLD_BIOME_KEY)
-                                    );
-                                    var spiritChunkGenerator = new SpiritWorldChunkGenerator(spiritBiomeSource);
+                                    // SPIRIT WORLD — SpiritWorldBiomeSource replaces FixedBiomeSource
+                                    // The holder list order MUST match ModDimensions.SPIRIT_WORLD_BIOME_KEYS
+                                    // and SpiritWorldBiomeSource.BIOME_ORDER.
+                                    var spiritBiomeSource = new SpiritWorldBiomeSource(List.of(
+                                            biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_WOOL_MEADOWS),
+                                            biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_CRYSTALLINE_PEAKS),
+                                            biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_VOID_GARDENS),
+                                            biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_EMBER_WASTES),
+                                            biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_QUARTZ_FLATS),
+                                            biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_TERRACOTTA_CANYON)
+                                    ));
                                     bootstrap.register(ModDimensions.SPIRIT_WORLD_LEVEL_KEY,
-                                            new LevelStem(dimensionTypes.getOrThrow(ModDimensions.SPIRIT_WORLD_TYPE_KEY), spiritChunkGenerator)
-                                    );
-                                    var sefirahCastleBiomeSource = new FixedBiomeSource(
-                                            biomeRegistry.getOrThrow(ModDimensions.SEFIRAH_CASTLE_BIOME_KEY)
-                                    );
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.SPIRIT_WORLD_TYPE_KEY),
+                                                    new SpiritWorldChunkGenerator(spiritBiomeSource)));
 
-                                    var sefirahCastleGenerator = new PreGeneratedChunkGenerator(sefirahCastleBiomeSource);
-
+                                    // SEFIRAH CASTLE
                                     bootstrap.register(ModDimensions.SEFIRAH_CASTLE_LEVEL_KEY,
-                                            new LevelStem(dimensionTypes.getOrThrow(ModDimensions.SEFIRAH_CASTLE_TYPE_KEY),
-                                                    sefirahCastleGenerator)
-                                    );
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.SEFIRAH_CASTLE_TYPE_KEY),
+                                                    new PreGeneratedChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.SEFIRAH_CASTLE_BIOME_KEY)))));
 
-                                    var concealmentBiomeSource = new FixedBiomeSource(
-                                            biomeRegistry.getOrThrow(ModDimensions.CONCEALMENT_WORLD_BIOME_KEY)
-                                    );
-
-                                    var concealmentChunkGenerator = new ConcealmentWorldChunkGenerator(concealmentBiomeSource);
-
+                                    // CONCEALMENT WORLD
                                     bootstrap.register(ModDimensions.CONCEALMENT_WORLD_LEVEL_KEY,
-                                            new LevelStem(dimensionTypes.getOrThrow(ModDimensions.CONCEALMENT_WORLD_TYPE_KEY),
-                                                    concealmentChunkGenerator)
-                                    );
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.CONCEALMENT_WORLD_TYPE_KEY),
+                                                    new ConcealmentWorldChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.CONCEALMENT_WORLD_BIOME_KEY)))));
                                 }),
                         Set.of(LOTMCraft.MOD_ID)
                 )
         );
     }
-
 }

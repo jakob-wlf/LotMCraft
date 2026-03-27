@@ -1,4 +1,4 @@
-// 1.21.1	2026-03-06T18:18:33.6357218	Item Models: lotmcraft
+// 1.21.1	2026-03-27T13:11:59.7093578	Item Models: lotmcraft
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
 65b6c713526448dd94ab6c94da2487f1a4242daf assets/lotmcraft/models/item/ancient_logbook.json
@@ -408,6 +408,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/winner.jso
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/witch.json
 d63ff674de475a8539701ac2d673c32c41c9bca1 assets/lotmcraft/models/item/witch_characteristic.json
 d2b913f5281d1029bd89002fbabcc5d83f098dff assets/lotmcraft/models/item/witch_potion.json
+57230a2a8c7d67d91b3c5e6aa27ba0eb0c920dea assets/lotmcraft/models/item/word_immunity_abyss_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/worm_of_time.json
 75ea1730f6f6ceb24ed30acd2a47d2514601335e assets/lotmcraft/models/item/worm_of_time_characteristic.json
 bab3e14f0db1c282222d590db6a3ebd3d1988dfd assets/lotmcraft/models/item/worm_of_time_potion.json

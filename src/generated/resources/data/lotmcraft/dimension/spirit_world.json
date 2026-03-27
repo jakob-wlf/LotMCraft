@@ -3,8 +3,15 @@
   "generator": {
     "type": "lotmcraft:spirit_world",
     "biome_source": {
-      "type": "minecraft:fixed",
-      "biome": "lotmcraft:spirit_world_biome"
+      "type": "lotmcraft:spirit_world_biome_source",
+      "biomes": [
+        "lotmcraft:spirit_wool_meadows",
+        "lotmcraft:spirit_crystalline_peaks",
+        "lotmcraft:spirit_void_gardens",
+        "lotmcraft:spirit_ember_wastes",
+        "lotmcraft:spirit_quartz_flats",
+        "lotmcraft:spirit_terracotta_canyon"
+      ]
     }
   }
 }

@@ -2,9 +2,9 @@
   "carvers": {},
   "downfall": 0.0,
   "effects": {
-    "fog_color": 65535,
-    "foliage_color": 16766720,
-    "grass_color": 65280,
+    "fog_color": 16733627,
+    "foliage_color": 16768256,
+    "grass_color": 5635976,
     "mood_sound": {
       "block_search_extent": 8,
       "offset": 2.0,
@@ -15,17 +15,17 @@
       "options": {
         "type": "minecraft:dust",
         "color": [
-          255.0,
-          255.0,
-          255.0
+          1.0,
+          0.4,
+          0.9
         ],
-        "scale": 4.0
+        "scale": 1.2
       },
-      "probability": 0.005
+      "probability": 0.004
     },
-    "sky_color": 16711935,
-    "water_color": 16716947,
-    "water_fog_color": 9699539
+    "sky_color": 16751069,
+    "water_color": 16738740,
+    "water_fog_color": 11145591
   },
   "features": [],
   "has_precipitation": false,
@@ -40,5 +40,5 @@
     "water_ambient": [],
     "water_creature": []
   },
-  "temperature": 0.5
+  "temperature": 0.8
 }
