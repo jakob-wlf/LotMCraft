@@ -132,18 +132,36 @@ public class ModDimensions {
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_terracotta_canyon"));
 
+    /** index 6 */
+    public static final ResourceKey<Biome> SPIRIT_BIOME_FUNGAL_DEPTHS =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_fungal_depths"));
+
+    /** index 7 */
+    public static final ResourceKey<Biome> SPIRIT_BIOME_GLACIAL_SHELF =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_glacial_shelf"));
+
+    /** index 8 */
+    public static final ResourceKey<Biome> SPIRIT_BIOME_GILDED_RUINS =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_gilded_ruins"));
+
     /**
      * Convenience array — same order as {@link SpiritWorldBiome#values()} and
      * {@link SpiritWorldBiomeSource#BIOME_ORDER}.
      */
     @SuppressWarnings("unchecked")
     public static final ResourceKey<Biome>[] SPIRIT_WORLD_BIOME_KEYS = new ResourceKey[]{
-            SPIRIT_BIOME_WOOL_MEADOWS,
-            SPIRIT_BIOME_CRYSTALLINE_PEAKS,
-            SPIRIT_BIOME_VOID_GARDENS,
-            SPIRIT_BIOME_EMBER_WASTES,
-            SPIRIT_BIOME_QUARTZ_FLATS,
-            SPIRIT_BIOME_TERRACOTTA_CANYON,
+            SPIRIT_BIOME_WOOL_MEADOWS,       // 0
+            SPIRIT_BIOME_CRYSTALLINE_PEAKS,  // 1
+            SPIRIT_BIOME_VOID_GARDENS,       // 2
+            SPIRIT_BIOME_EMBER_WASTES,       // 3
+            SPIRIT_BIOME_QUARTZ_FLATS,       // 4
+            SPIRIT_BIOME_TERRACOTTA_CANYON,  // 5
+            SPIRIT_BIOME_FUNGAL_DEPTHS,      // 6
+            SPIRIT_BIOME_GLACIAL_SHELF,      // 7
+            SPIRIT_BIOME_GILDED_RUINS,       // 8
     };
 
     // =========================================================================

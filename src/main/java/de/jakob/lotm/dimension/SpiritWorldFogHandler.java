@@ -57,8 +57,8 @@ public class SpiritWorldFogHandler {
         if (!(camera.getEntity().level() instanceof ClientLevel level)) return;
         if (!level.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) return;
 
-        event.setNearPlaneDistance(26.0f);
-        event.setFarPlaneDistance(6432.0f);
+        event.setNearPlaneDistance(30.0f);
+        event.setFarPlaneDistance(72.0f);
         event.setCanceled(true);
     }
 

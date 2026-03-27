@@ -1,9 +1,9 @@
-// 1.21.1	2026-03-27T13:11:59.7193677	Registries
+// 1.21.1	2026-03-27T19:05:17.2323202	Registries
 ad1f9c204b84ffc483c59eddf94a32609834f0cf data/lotmcraft/dimension/concealment_world.json
 265447ceafa0ec5201a1ba64639d4acfd42ced07 data/lotmcraft/dimension/nature.json
 39fb1ccb874d73bc88489ed601724591b8d5a491 data/lotmcraft/dimension/sefirah_castle.json
 d6506f9996732ef9e64030ded2b68f435269ae84 data/lotmcraft/dimension/space.json
-4dc3b7f54a18f7a4d37bccdf29e499bbf955a70e data/lotmcraft/dimension/spirit_world.json
+0f09b196e511202378f3e6b80697f6d13b5bc8a5 data/lotmcraft/dimension/spirit_world.json
 ad706f5c8b11e97baefcbc4beec6105b63f8995d data/lotmcraft/dimension_type/concealment_world.json
 07cd96e432ce218401485377b3189e0afdfc1d8e data/lotmcraft/dimension_type/nature.json
 a0fc1fedca1cf3bbdb139457f4cd907af4be4e92 data/lotmcraft/dimension_type/sefirah_castle.json
@@ -15,6 +15,9 @@ b4de84f7dcb1749b55a0d35ea1418899424d5a55 data/lotmcraft/dimension_type/spirit_wo
 3119f86dbafc0f4c9ad0be8b76851a1e51e92a4b data/lotmcraft/worldgen/biome/space_biome.json
 96d688597f08e56f0d4bf4cb5a7fb3b339f92ba8 data/lotmcraft/worldgen/biome/spirit_crystalline_peaks.json
 33de1471f18e1d9b599a8a96d3bf0b7eb74fc4d3 data/lotmcraft/worldgen/biome/spirit_ember_wastes.json
+fc37eeabfcb18afc717969920357342cec407a0a data/lotmcraft/worldgen/biome/spirit_fungal_depths.json
+d427fa2c952bc8ad3c35339394e2143ba116331d data/lotmcraft/worldgen/biome/spirit_gilded_ruins.json
+374c07663c42615e1633400c34e483c8f2b5f223 data/lotmcraft/worldgen/biome/spirit_glacial_shelf.json
 13616997ed3bc72745ef85be821441fd786f9eaf data/lotmcraft/worldgen/biome/spirit_quartz_flats.json
 df2d1ceaad7e59be5187df6268311d80d488d80d data/lotmcraft/worldgen/biome/spirit_terracotta_canyon.json
 8361911537ecb6126b308c452ad3d16dd65f34e8 data/lotmcraft/worldgen/biome/spirit_void_gardens.json

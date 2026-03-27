@@ -111,25 +111,23 @@ public class DimensionProvider {
                                                     .build());
 
                                     // ---------------------------------------------------------
-                                    // Spirit World – 6 distinct biomes
+                                    // Spirit World – 9 distinct biomes
                                     // Index order MUST match ModDimensions.SPIRIT_WORLD_BIOME_KEYS
                                     // and SpiritWorldBiomeSource.BIOME_ORDER.
                                     // ---------------------------------------------------------
 
                                     // 0 – WOOL_MEADOWS
-                                    // Bright, rainbow-saturated pastel sky with warm magenta fog.
-                                    // Colourful wool and grass patches in rolling island clusters.
                                     bootstrap.register(ModDimensions.SPIRIT_BIOME_WOOL_MEADOWS,
                                             new Biome.BiomeBuilder()
                                                     .hasPrecipitation(false)
                                                     .temperature(0.8f).downfall(0.0f)
                                                     .specialEffects(new BiomeSpecialEffects.Builder()
-                                                            .skyColor(0xFF99DD)       // warm candy pink sky
-                                                            .fogColor(0xFF55BB)       // deep magenta fog
-                                                            .waterColor(0xFF69B4)     // hot pink water
+                                                            .skyColor(0xFF99DD)
+                                                            .fogColor(0xFF55BB)
+                                                            .waterColor(0xFF69B4)
                                                             .waterFogColor(0xAA1177)
-                                                            .grassColorOverride(0x55FF88)  // vivid lime grass
-                                                            .foliageColorOverride(0xFFDD00) // golden foliage
+                                                            .grassColorOverride(0x55FF88)
+                                                            .foliageColorOverride(0xFFDD00)
                                                             .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
                                                             .ambientParticle(new AmbientParticleSettings(
                                                                     new DustParticleOptions(
@@ -141,19 +139,17 @@ public class DimensionProvider {
                                                     .build());
 
                                     // 1 – CRYSTALLINE_PEAKS
-                                    // Cold deep-indigo sky; icy cyan fog; end-rod particles drift upward.
-                                    // Needle-thin amethyst/prismarine spires shooting into the void.
                                     bootstrap.register(ModDimensions.SPIRIT_BIOME_CRYSTALLINE_PEAKS,
                                             new Biome.BiomeBuilder()
                                                     .hasPrecipitation(false)
                                                     .temperature(-0.5f).downfall(0.0f)
                                                     .specialEffects(new BiomeSpecialEffects.Builder()
-                                                            .skyColor(0x050520)       // near-black indigo sky
-                                                            .fogColor(0x0033AA)       // deep cold blue fog
-                                                            .waterColor(0x00EEFF)     // electric cyan water
+                                                            .skyColor(0x050520)
+                                                            .fogColor(0x0033AA)
+                                                            .waterColor(0x00EEFF)
                                                             .waterFogColor(0x002266)
-                                                            .grassColorOverride(0xAAEEFF)  // icy blue-white grass
-                                                            .foliageColorOverride(0x55BBFF) // pale sky foliage
+                                                            .grassColorOverride(0xAAEEFF)
+                                                            .foliageColorOverride(0x55BBFF)
                                                             .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
                                                             .ambientParticle(new AmbientParticleSettings(
                                                                     ParticleTypes.END_ROD,
@@ -164,19 +160,17 @@ public class DimensionProvider {
                                                     .build());
 
                                     // 2 – VOID_GARDENS
-                                    // Soft purple sky; deep violet fog; slow falling note-block particles.
-                                    // Tiny end-stone/purpur islands scattered across a huge Y range.
                                     bootstrap.register(ModDimensions.SPIRIT_BIOME_VOID_GARDENS,
                                             new Biome.BiomeBuilder()
                                                     .hasPrecipitation(false)
                                                     .temperature(0.5f).downfall(0.0f)
                                                     .specialEffects(new BiomeSpecialEffects.Builder()
-                                                            .skyColor(0x220044)       // dark violet sky
-                                                            .fogColor(0x550077)       // deep purple fog
-                                                            .waterColor(0xCC44FF)     // purple water
+                                                            .skyColor(0x220044)
+                                                            .fogColor(0x550077)
+                                                            .waterColor(0xCC44FF)
                                                             .waterFogColor(0x330055)
-                                                            .grassColorOverride(0xDD88FF)  // lavender grass
-                                                            .foliageColorOverride(0xFF99EE) // pink foliage
+                                                            .grassColorOverride(0xDD88FF)
+                                                            .foliageColorOverride(0xFF99EE)
                                                             .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
                                                             .ambientParticle(new AmbientParticleSettings(
                                                                     ParticleTypes.PORTAL,
@@ -187,19 +181,17 @@ public class DimensionProvider {
                                                     .build());
 
                                     // 3 – EMBER_WASTES
-                                    // Dark blood-orange sky; thick ember-red fog; flame particle wisps.
-                                    // Enormous flat netherrack/blackstone continents.
                                     bootstrap.register(ModDimensions.SPIRIT_BIOME_EMBER_WASTES,
                                             new Biome.BiomeBuilder()
                                                     .hasPrecipitation(false)
                                                     .temperature(2.0f).downfall(0.0f)
                                                     .specialEffects(new BiomeSpecialEffects.Builder()
-                                                            .skyColor(0x1A0500)       // almost-black deep red sky
-                                                            .fogColor(0x882200)       // smouldering ember fog
-                                                            .waterColor(0xFF4400)     // lava-orange water
+                                                            .skyColor(0x1A0500)
+                                                            .fogColor(0x882200)
+                                                            .waterColor(0xFF4400)
                                                             .waterFogColor(0x660000)
-                                                            .grassColorOverride(0x993300)  // scorched earth grass
-                                                            .foliageColorOverride(0xCC4400) // ember foliage
+                                                            .grassColorOverride(0x993300)
+                                                            .foliageColorOverride(0xCC4400)
                                                             .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
                                                             .ambientParticle(new AmbientParticleSettings(
                                                                     ParticleTypes.LAVA,
@@ -210,19 +202,17 @@ public class DimensionProvider {
                                                     .build());
 
                                     // 4 – QUARTZ_FLATS
-                                    // Pale cream/gold sky; warm white fog; barely visible.
-                                    // Giant perfectly flat quartz table-tops.
                                     bootstrap.register(ModDimensions.SPIRIT_BIOME_QUARTZ_FLATS,
                                             new Biome.BiomeBuilder()
                                                     .hasPrecipitation(false)
                                                     .temperature(1.0f).downfall(0.0f)
                                                     .specialEffects(new BiomeSpecialEffects.Builder()
-                                                            .skyColor(0xFFF5CC)       // warm ivory sky
-                                                            .fogColor(0xFFEEAA)       // golden-white haze fog
-                                                            .waterColor(0xEEDDAA)     // pale amber water
+                                                            .skyColor(0xFFF5CC)
+                                                            .fogColor(0xFFEEAA)
+                                                            .waterColor(0xEEDDAA)
                                                             .waterFogColor(0xBBAA66)
-                                                            .grassColorOverride(0xEEFFCC)  // bleached grass
-                                                            .foliageColorOverride(0xDDEE99) // pale gold foliage
+                                                            .grassColorOverride(0xEEFFCC)
+                                                            .foliageColorOverride(0xDDEE99)
                                                             .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
                                                             .ambientParticle(new AmbientParticleSettings(
                                                                     new DustParticleOptions(
@@ -234,24 +224,92 @@ public class DimensionProvider {
                                                     .build());
 
                                     // 5 – TERRACOTTA_CANYON
-                                    // Warm sienna/terracotta sky; dusty orange fog; falling dust particles.
-                                    // Layered mesa canyons with visible depth strata.
                                     bootstrap.register(ModDimensions.SPIRIT_BIOME_TERRACOTTA_CANYON,
                                             new Biome.BiomeBuilder()
                                                     .hasPrecipitation(false)
                                                     .temperature(1.5f).downfall(0.0f)
                                                     .specialEffects(new BiomeSpecialEffects.Builder()
-                                                            .skyColor(0x3A1800)       // dark burnt-sienna sky
-                                                            .fogColor(0xBB5500)       // terracotta dust fog
-                                                            .waterColor(0xCC6622)     // muddy canyon water
+                                                            .skyColor(0x3A1800)
+                                                            .fogColor(0xBB5500)
+                                                            .waterColor(0xCC6622)
                                                             .waterFogColor(0x883300)
-                                                            .grassColorOverride(0xCC6633)  // terracotta-tinted grass
-                                                            .foliageColorOverride(0xFF8844) // warm orange foliage
+                                                            .grassColorOverride(0xCC6633)
+                                                            .foliageColorOverride(0xFF8844)
                                                             .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
                                                             .ambientParticle(new AmbientParticleSettings(
                                                                     new DustParticleOptions(
                                                                             new Vector3f(0.8f, 0.3f, 0.05f), 1.5f),
                                                                     0.005f))
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
+                                    // 6 – FUNGAL_DEPTHS
+                                    // Bioluminescent deep-cave feel. Dark teal-black sky; pulsing
+                                    // blue-green spore fog; spore-blossom and warped-fungus particles.
+                                    bootstrap.register(ModDimensions.SPIRIT_BIOME_FUNGAL_DEPTHS,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.7f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x020D0A)       // near-black deep teal sky
+                                                            .fogColor(0x0A4A2A)       // deep bioluminescent green fog
+                                                            .waterColor(0x00FF88)     // vivid neon-green water
+                                                            .waterFogColor(0x003311)
+                                                            .grassColorOverride(0x22EE66)  // glowing lime grass
+                                                            .foliageColorOverride(0x44FF99) // vivid mint foliage
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .ambientParticle(new AmbientParticleSettings(
+                                                                    ParticleTypes.SPORE_BLOSSOM_AIR,
+                                                                    0.006f))
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
+                                    // 7 – GLACIAL_SHELF
+                                    // Arctic continental platforms. Pale icy-blue sky; aurora-shimmer
+                                    // white-blue fog; snowflake particles drifting down.
+                                    bootstrap.register(ModDimensions.SPIRIT_BIOME_GLACIAL_SHELF,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(-1.0f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0xC8E8FF)       // pale icy sky
+                                                            .fogColor(0xDDEEFF)       // milky arctic haze
+                                                            .waterColor(0x3B6FCC)     // deep glacial blue water
+                                                            .waterFogColor(0x1A3366)
+                                                            .grassColorOverride(0xCCEEFF)  // frost-white grass
+                                                            .foliageColorOverride(0xAADDFF) // pale blue foliage
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .ambientParticle(new AmbientParticleSettings(
+                                                                    ParticleTypes.SNOWFLAKE,
+                                                                    0.003f))
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
+                                    // 8 – GILDED_RUINS
+                                    // Ancient oxidized-copper plateaus. Warm amber sky with a verdigris
+                                    // tinge; golden dust particle shimmer; crumbling mesa silhouettes.
+                                    bootstrap.register(ModDimensions.SPIRIT_BIOME_GILDED_RUINS,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(1.2f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x2A1A05)       // deep antique-gold sky
+                                                            .fogColor(0x886622)       // amber-dust fog
+                                                            .waterColor(0xCCAA33)     // golden murky water
+                                                            .waterFogColor(0x664400)
+                                                            .grassColorOverride(0x99AA44)  // copper-patina grass
+                                                            .foliageColorOverride(0xAABB22) // oxidized-green foliage
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .ambientParticle(new AmbientParticleSettings(
+                                                                    new DustParticleOptions(
+                                                                            new Vector3f(0.9f, 0.7f, 0.1f), 1.0f),
+                                                                    0.003f))
                                                             .build())
                                                     .mobSpawnSettings(new MobSpawnSettings.Builder().build())
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
@@ -327,7 +385,7 @@ public class DimensionProvider {
                                                             new FixedBiomeSource(
                                                                     biomeRegistry.getOrThrow(ModDimensions.WORLD_CREATION_BIOME_KEY)))));
 
-                                    // SPIRIT WORLD — SpiritWorldBiomeSource replaces FixedBiomeSource
+                                    // SPIRIT WORLD — 9 biomes
                                     // The holder list order MUST match ModDimensions.SPIRIT_WORLD_BIOME_KEYS
                                     // and SpiritWorldBiomeSource.BIOME_ORDER.
                                     var spiritBiomeSource = new SpiritWorldBiomeSource(List.of(
@@ -336,7 +394,10 @@ public class DimensionProvider {
                                             biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_VOID_GARDENS),
                                             biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_EMBER_WASTES),
                                             biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_QUARTZ_FLATS),
-                                            biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_TERRACOTTA_CANYON)
+                                            biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_TERRACOTTA_CANYON),
+                                            biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_FUNGAL_DEPTHS),
+                                            biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_GLACIAL_SHELF),
+                                            biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_GILDED_RUINS)
                                     ));
                                     bootstrap.register(ModDimensions.SPIRIT_WORLD_LEVEL_KEY,
                                             new LevelStem(
