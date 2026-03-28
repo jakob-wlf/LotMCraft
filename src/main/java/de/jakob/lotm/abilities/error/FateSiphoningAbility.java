@@ -4,18 +4,26 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.DirectionalEffectManager;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -52,6 +60,11 @@ public class FateSiphoningAbility extends Ability {
             return;
         }
 
+        if(BeyonderData.getPathway(target).equals("error") && BeyonderData.getSequence(target) < BeyonderData.getSequence(entity)){
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.fate_siphoning.resisted").withColor(0x6d32a8));
+            return;
+        }
+
         // High-sequence opponents may outright resist the fate link being established
         double failureChance = AbilityUtil.getSequenceFailureChance(entity, target);
         if (ThreadLocalRandom.current().nextDouble() < failureChance) {
@@ -72,10 +85,6 @@ public class FateSiphoningAbility extends Ability {
     @SubscribeEvent
     public static void onLivingDamage(LivingIncomingDamageEvent event) {
         if(!(event.getEntity().level() instanceof ServerLevel serverLevel)) {
-            return;
-        }
-
-        if(event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) {
             return;
         }
 
@@ -102,5 +111,34 @@ public class FateSiphoningAbility extends Ability {
         // sequence reduces the redirect, that portion is simply lost rather than
         // returning to the caster.
         event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void onEntityTick(EntityTickEvent.Post event) {
+        Entity entity = event.getEntity();
+        if(!(entity.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        if(!(entity instanceof ServerPlayer player))
+            return;
+
+        if(!linkedEntities.containsKey(player.getUUID())) {
+            return;
+        }
+
+        Entity target = serverLevel.getEntity(linkedEntities.get(player.getUUID()));
+        if(!(target instanceof LivingEntity targetLiving))
+            return;
+
+        ArrayList<MobEffectInstance> effects = new ArrayList<>(player.getActiveEffects());
+        for(var effect : effects){
+            if (effect.getEffect().value().isBeneficial()) continue;
+
+            player.removeEffect(effect.getEffect());
+
+            targetLiving.addEffect(new MobEffectInstance(effect));
+        }
+
     }
 }

@@ -130,6 +130,10 @@ public class AbilityTheftHandler {
             return false;
         }
 
+        if(BeyonderData.getPathway(target).equals("error") && targetSeq < userSeq){
+            return true;
+        }
+
         int difference = targetSeq - userSeq;
 
         int userLuck = user.hasEffect(ModEffects.LUCK) ? Objects.requireNonNull(user.getEffect(ModEffects.LUCK)).getAmplifier() : 0;
