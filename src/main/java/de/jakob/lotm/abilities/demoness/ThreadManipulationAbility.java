@@ -217,7 +217,6 @@ public class ThreadManipulationAbility extends SelectableAbility {
                 return;
             }
 
-            // Blink Escape - only the bound entity can free itself
             if(InteractionHandler.isInteractionPossibleForEntity(loc, "blink_escape", BeyonderData.getSequence(entity), targetEntity)) {
                 ServerScheduler.cancel(taskIdRef.get());
 

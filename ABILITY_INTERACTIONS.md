@@ -29,25 +29,25 @@ Abilities that support interruption will periodically check their surroundings f
 ### 2.1 Demoness Pathway
 The Demoness pathway's petrification can freeze and halt certain active abilities mid-flight or mid-cast, and can even neutralise persistent field abilities.
 
-| Target Ability | Effect |
-|---|---|
-| Fireball (and similar projectiles) | Projectile is petrified and stopped in place |
-| Black Hole (Door Pathway) | Petrification can halt and remove the black hole entirely |
+| Target Ability                                    | Effect |
+|---------------------------------------------------|---|
+| Fireball (and similar projectiles)                | Projectile is petrified and stopped in place |
+| Black Hole (Door Pathway)                         | Petrification can halt and remove the black hole entirely |
 | Tornado entities (Tyrant / Red Priest / Demoness) | Petrification freezes and halts active tornado entities |
-| Tsunami (Tyrant Pathway) | Petrification converts the tsunami wave into solid stone, stopping it |
-| Lightning Branch (Tyrant Pathway) | Petrification can freeze a lightning branch entity in place |
-| Frost Spear (Demoness Pathway) | Petrification converts the frost spear to stone mid-flight, stopping it |
-| Meteor (Demoness Pathway) | Petrification can halt a falling meteor and turn it to stone |
-| Spear of Light / Unshadowed Spear (Sun Pathway) | Petrification encases the spear, neutralising it |
-| Electromagnetic Tornado (Tyrant Pathway) | Petrification freezes the tornado entity |
-| Exile Doors (Door Pathway) | Petrification can seal and neutralise active exile door entities |
-| Puppet Soldiers (Red Priest Pathway) | Petrification can freeze puppet soldier NPCs in place |
-| Marionettes (Fool Pathway) | Petrification can freeze marionettes, severing the controller's link |
-| Avatar Entity (Visionary Pathway) | Petrification can petrify an identity avatar, disabling it |
-| Golem (Mother Pathway) | Petrification turns a golem into inert stone |
-| War Banner (Red Priest Pathway) | Petrification can petrify a war banner, nullifying its buff aura |
-| Fire Ravens (Red Priest Pathway) | Petrification can freeze fire ravens mid-flight |
-| Space-Time Storm (Door Pathway) | Petrification halts the storm, freezing its expansion |
+| Tsunami (Tyrant Pathway)                          | Petrification converts the tsunami wave into solid stone, stopping it |
+| Lightning Branch (Tyrant Pathway)                 | Petrification can freeze a lightning branch entity in place |
+| Frost Spear (Demoness Pathway)                    | Petrification converts the frost spear to stone mid-flight, stopping it |
+| Meteor (Demoness Pathway)                         | Petrification can halt a falling meteor and turn it to stone |
+| Spear of Light / Unshadowed Spear (Sun Pathway)   | Petrification encases the spear, neutralising it |
+| Electromagnetic Tornado (Tyrant Pathway)          | Petrification freezes the tornado entity |
+| Exile Doors (Door Pathway)                        | Petrification can seal and neutralise active exile door entities |
+| Puppet Soldiers (Red Priest Pathway)              | Petrification can freeze puppet soldier NPCs in place |
+| Marionettes (Fool Pathway)                        | Petrification can freeze marionettes, severing the controller's link |
+| Avatar Entity (Visionary Pathway)                 | Petrification can petrify an identity avatar, disabling it |
+| Golem (Mother Pathway)                            | Petrification turns a golem into inert stone |
+| War Banner (Red Priest Pathway)                   | Petrification can petrify a war banner, nullifying its buff aura |
+| Fire Ravens (Red Priest Pathway)                  | Petrification can freeze fire ravens mid-flight |
+| Space-Time Storm (Door Pathway)                   | Petrification halts the storm, freezing its expansion |
 
 **Demoness – Frost interactions:**
 

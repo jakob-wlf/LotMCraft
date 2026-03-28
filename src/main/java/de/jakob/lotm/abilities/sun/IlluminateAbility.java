@@ -25,6 +25,7 @@ public class IlluminateAbility extends Ability {
         super(id, .25f, "purification", "light_source", "light_weak");
         canBeUsedByNPC = false;
         postsUsedAbilityEventManually = true;
+        interactionCacheTicks = 20 * 20;
     }
 
     @Override

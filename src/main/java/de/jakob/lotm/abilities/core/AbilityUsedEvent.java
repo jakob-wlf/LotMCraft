@@ -13,7 +13,8 @@ public class AbilityUsedEvent extends Event implements ICancellableEvent {
 
     private final ServerLevel level;
     private final Vec3 position;
-    private LivingEntity entity;
+    private final LivingEntity entity;
+    private final LivingEntity abilityTarget;
     private final Ability ability;
     private final ArrayList<String> interactionFlags;
     private final double interactionRadius;
@@ -23,6 +24,18 @@ public class AbilityUsedEvent extends Event implements ICancellableEvent {
         this.level = serverLevel;
         this.position = position;
         this.entity = entity;
+        this.abilityTarget = null;
+        this.ability = ability;
+        this.interactionFlags = new ArrayList<>(Arrays.asList(interactionFlags));
+        this.interactionRadius = interactionRadius;
+        this.interactionCacheTime = interactionCacheTime;
+    }
+
+    public AbilityUsedEvent(ServerLevel serverLevel, Vec3 position, LivingEntity entity, LivingEntity abilityTarget, Ability ability, String[] interactionFlags, double interactionRadius, int interactionCacheTime) {
+        this.level = serverLevel;
+        this.position = position;
+        this.entity = entity;
+        this.abilityTarget = abilityTarget;
         this.ability = ability;
         this.interactionFlags = new ArrayList<>(Arrays.asList(interactionFlags));
         this.interactionRadius = interactionRadius;
@@ -37,8 +50,8 @@ public class AbilityUsedEvent extends Event implements ICancellableEvent {
         return ability;
     }
 
-    public void setEntity(LivingEntity entity) {
-        this.entity = entity;
+    public LivingEntity getAbilityTarget() {
+        return abilityTarget;
     }
 
     public ServerLevel getLevel() {

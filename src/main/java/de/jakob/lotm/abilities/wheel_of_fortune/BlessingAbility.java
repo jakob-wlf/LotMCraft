@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -13,6 +14,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -20,9 +22,11 @@ import java.util.Map;
 
 public class BlessingAbility extends Ability {
     public BlessingAbility(String id) {
-        super(id, 4);
+        super(id, 4, "cleansing");
 
         canBeUsedByNPC = false;
+        postsUsedAbilityEventManually = true;
+        interactionRadius = 2;
     }
 
     @Override
@@ -65,5 +69,6 @@ public class BlessingAbility extends Ability {
 
         int amplifier = Math.round(multiplier(entity) * 6.25f);
         target.addEffect(new MobEffectInstance(ModEffects.LUCK, 20 * 60 * 17, amplifier));
+        NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, target.position(), entity, target, this, interactionFlags, interactionRadius, interactionCacheTicks));
     }
 }

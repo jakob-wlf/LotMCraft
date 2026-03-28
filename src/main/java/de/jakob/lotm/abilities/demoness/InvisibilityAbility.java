@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class InvisibilityAbility extends Ability {
@@ -56,9 +58,15 @@ public class InvisibilityAbility extends Ability {
             entity.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 20 * 60, 20, false, false, false));
 
             //make visible again
-            ServerScheduler.scheduleDelayed(20 * 60, () -> {
-                invisiblePlayers.remove(entity.getUUID());
-            }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
+            AtomicReference<UUID> taskIdRef = new AtomicReference<>();
+            UUID taskId = ServerScheduler.scheduleForDuration(0, 10, 20 * 20, () -> {
+                if(InteractionHandler.isInteractionPossible(new Location(entity.position(), entity.level()), "light_strong", BeyonderData.getSequence(entity))) {
+                    entity.setInvisible(false);
+                    entity.removeEffect(MobEffects.INVISIBILITY);
+                    ServerScheduler.cancel(taskIdRef.get());
+                }
+            }, () -> invisiblePlayers.remove(entity.getUUID()), (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
+            taskIdRef.set(taskId);
         }
     }
 

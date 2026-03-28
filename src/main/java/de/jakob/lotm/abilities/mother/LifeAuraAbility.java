@@ -27,7 +27,7 @@ public class LifeAuraAbility extends ToggleAbility {
     private final HashMap<UUID, UUID> entityEffectMap = new HashMap<>();
 
     public LifeAuraAbility(String id) {
-        super(id);
+        super(id, "blooming");
 
         canBeUsedByNPC = false;
     }

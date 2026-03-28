@@ -51,30 +51,15 @@ public class PlagueAbility extends Ability {
             if (entity.level().isClientSide)
                 return;
 
-            // Plague is suppressed by purification or cleansing interactions
+            // Disease is suppressed by purification, cleansing, life aura, or blooming interactions
             Location currentLoc = new Location(entity.position(), entity.level());
             int seq = BeyonderData.getSequence(entity);
             if(InteractionHandler.isInteractionPossible(currentLoc, "purification", seq) ||
-               InteractionHandler.isInteractionPossible(currentLoc, "cleansing", seq))
+                    InteractionHandler.isInteractionPossible(currentLoc, "cleansing", seq))
                 return;
 
-            // Life Aura passively reduces plague tick damage
-            ToggleAbility lifeAura = (ToggleAbility) LOTMCraft.abilityHandler.getById("life_aura_ability");
-            boolean lifeAuraNearby = false;
-            if(lifeAura != null) {
-                for(LivingEntity nearby : AbilityUtil.getNearbyEntities(null, (ServerLevel) entity.level(), entity.position(), 35)) {
-                    if(lifeAura.isActiveForEntity(nearby)) {
-                        lifeAuraNearby = true;
-                        break;
-                    }
-                }
-            }
-
-            // Blooming Area's nature energy conflicts with plague, weakening it
-            boolean bloomingNearby = !entity.level().getEntitiesOfClass(BloomingAreaEntity.class,
-                    AABB.ofSize(entity.position(), 60, 60, 60)).isEmpty();
-
-            float damageMult = (lifeAuraNearby || bloomingNearby) ? 0.4f : 1f;
+            boolean bloomingNearby = InteractionHandler.isInteractionPossible(currentLoc, "blooming", seq);
+            float damageMult = (bloomingNearby) ? 0.4f : 1f;
 
             ParticleUtil.spawnParticles((ServerLevel) entity.level(), ModParticles.DISEASE.get(), entity.position(), 160, 50, 0.02);
             ParticleUtil.spawnParticles((ServerLevel) entity.level(), dust, entity.position(), 160, 50, 0.02);

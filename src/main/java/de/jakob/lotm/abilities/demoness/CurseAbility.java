@@ -3,12 +3,14 @@ package de.jakob.lotm.abilities.demoness;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -27,6 +29,7 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class CurseAbility extends Ability {
     public CurseAbility(String id) {
@@ -88,25 +91,21 @@ public class CurseAbility extends Ability {
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.curse.cursed_target").withColor(0x6d32a8));
         offHandItem.consume(1, player);
 
-        // Curse vs HolyOath: if target has Holy Oath active, reduce curse duration
-        ToggleAbility holyOath = (ToggleAbility) LOTMCraft.abilityHandler.getById("holy_oath_ability");
         int curseDuration = 20 * 60 * 2;
-        if(holyOath != null && holyOath.isActiveForEntity(livingTarget)) {
-            int seqDiff = BeyonderData.getSequence(entity) - BeyonderData.getSequence(livingTarget);
-            if(seqDiff >= 0) {
-                // Target is same or stronger seq, curse is heavily reduced
-                curseDuration = 20 * 15;
-            } else {
-                // Curse caster is stronger, but HolyOath still reduces effect
-                curseDuration = 20 * 60;
-            }
-        }
 
-        int finalCurseDuration = curseDuration;
-        ServerScheduler.scheduleForDuration(0, 8, finalCurseDuration, () -> {
+        AtomicReference<UUID> taskIdRef = new AtomicReference<>(null);
+        UUID taskId = ServerScheduler.scheduleForDuration(0, 8, curseDuration, () -> {
             if (livingTarget.isDeadOrDying()) {
+                ServerScheduler.cancel(taskIdRef.get());
                 return;
             }
+
+            // Curse gets cleansed
+            if (InteractionHandler.isInteractionPossibleForEntity(new Location(target.position(), target.level()), "cleansing", BeyonderData.getSequence(entity), entity)) {
+                ServerScheduler.cancel(taskIdRef.get());
+                return;
+            }
+
             switch(random.nextInt(3)) {
                 case 0 -> {
                     livingTarget.hurt(ModDamageTypes.source(livingTarget.level(), ModDamageTypes.DEMONESS_GENERIC, entity), (float) (DamageLookup.lookupDamage(4, .6) * multiplier(entity)));
@@ -118,5 +117,6 @@ public class CurseAbility extends Ability {
                 }
             }
         }, serverLevel);
+        taskIdRef.set(taskId);
     }
 }

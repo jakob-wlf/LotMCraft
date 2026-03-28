@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,12 +20,6 @@ public abstract class ToggleAbility extends Ability {
     private static final HashMap<UUID, HashSet<ToggleAbility>> activeAbilities = new HashMap<>();
     private static final HashMap<UUID, HashSet<ToggleAbility>> activeAbilitiesClientCache = new HashMap<>();
 
-    protected ToggleAbility(String id) {
-        super(id, 0);
-
-        canBeUsedByNPC = false;
-        doesNotIncreaseDigestion = true;
-    }
 
     protected ToggleAbility(String id, String... interactionFlags) {
         super(id, 0, interactionFlags);
@@ -81,6 +76,7 @@ public abstract class ToggleAbility extends Ability {
         }
 
         tick(level, entity);
+        if(level instanceof ServerLevel serverLevel) NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, entity.position(), entity, this, interactionFlags, interactionRadius, interactionCacheTicks));
     }
 
     public abstract void tick(Level level, LivingEntity entity);

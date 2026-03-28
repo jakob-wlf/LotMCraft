@@ -104,7 +104,7 @@ public abstract class Ability {
         if(entity instanceof ServerPlayer player)
             LOTMCraft.LOGGER.info("{} used {} on {}", player.getName().toString(), this.id, player.position());
 
-        if(!postsUsedAbilityEventManually) NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, newUser.position(), newUser, this, interactionFlags, interactionRadius, interactionCacheTicks));
+        if(!postsUsedAbilityEventManually && !(this instanceof ToggleAbility)) NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, newUser.position(), newUser, this, interactionFlags, interactionRadius, interactionCacheTicks));
     }
 
     public void useAbility(ServerLevel serverLevel, LivingEntity entity) {

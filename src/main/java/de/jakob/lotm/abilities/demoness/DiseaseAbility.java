@@ -54,23 +54,8 @@ public class DiseaseAbility extends Ability {
                InteractionHandler.isInteractionPossible(currentLoc, "cleansing", seq))
                 return;
 
-            // Life Aura passively reduces disease tick damage - check if any nearby entity has it active
-            ToggleAbility lifeAura = (ToggleAbility) LOTMCraft.abilityHandler.getById("life_aura_ability");
-            boolean lifeAuraNearby = false;
-            if(lifeAura != null) {
-                for(LivingEntity nearby : AbilityUtil.getNearbyEntities(null, (ServerLevel) entity.level(), entity.position(), 35)) {
-                    if(lifeAura.isActiveForEntity(nearby)) {
-                        lifeAuraNearby = true;
-                        break;
-                    }
-                }
-            }
-
-            // Blooming Area's nature energy conflicts with disease, weakening it
-            boolean bloomingNearby = !entity.level().getEntitiesOfClass(BloomingAreaEntity.class,
-                    AABB.ofSize(entity.position(), 60, 60, 60)).isEmpty();
-
-            float damageMult = (lifeAuraNearby || bloomingNearby) ? 0.4f : 1f;
+            boolean bloomingNearby = InteractionHandler.isInteractionPossible(currentLoc, "blooming", seq);
+            float damageMult = (bloomingNearby) ? 0.4f : 1f;
 
             ParticleUtil.spawnParticles((ServerLevel) entity.level(), ModParticles.DISEASE.get(), entity.position(), 160, 30, 0.02);
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 40, entity.position(), new MobEffectInstance(MobEffects.POISON, 20, 0, false, false, false));

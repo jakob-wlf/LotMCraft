@@ -45,13 +45,7 @@ public class SpiritualBaptismAbility extends Ability {
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2, false, true);
 
         if(target == null) {
-            if(entity instanceof ServerPlayer player) {
-                Component actionBarText = Component.translatable("ability.lotmcraft.misfortune_gifting.no_target").withColor(0xFFc0f6fc);
-                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(actionBarText);
-                player.connection.send(packet);
-            }
-
-            return;
+            target = entity;
         }
 
         EffectManager.playEffect(EffectManager.Effect.SPIRITUAL_BAPTISM, target.getX(), target.getY(), target.getZ(), serverLevel);
@@ -59,13 +53,13 @@ public class SpiritualBaptismAbility extends Ability {
 
         target.setRemainingFireTicks(0);
 
-        // Collect harmful effects first, then remove them
         List<MobEffectInstance> harmfulEffects = target.getActiveEffects()
                 .stream()
                 .filter(effectInstance -> effectInstance.getEffect().value().getCategory() == MobEffectCategory.HARMFUL)
                 .toList();
 
-        harmfulEffects.forEach(effectInstance -> target.removeEffect(effectInstance.getEffect()));
+        LivingEntity finalTarget = target;
+        harmfulEffects.forEach(effectInstance -> finalTarget.removeEffect(effectInstance.getEffect()));
 
         if(target instanceof Player player) {
             player.getFoodData().setSaturation(20);

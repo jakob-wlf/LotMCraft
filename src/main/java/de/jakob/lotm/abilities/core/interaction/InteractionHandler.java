@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.core.interaction;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.abyss.DefilingSeedAbility;
 import de.jakob.lotm.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.demoness.CharmAbility;
 import de.jakob.lotm.abilities.demoness.ThreadManipulationAbility;
 import de.jakob.lotm.abilities.tyrant.TorrentialDownpourAbility;
@@ -29,13 +30,7 @@ public class InteractionHandler {
         recentInteractions.add(new Interaction(event, event.getLevel().getGameTime(), event.getInteractionCacheTime()));
         if (event.getInteractionFlags().contains("freezing"))     handleFreezingInteractions(event);
         if (event.getInteractionFlags().contains("purification")) handlePurificationInteractions(event);
-        if (event.getInteractionFlags().contains("burn"))         handleBurnInteractions(event);
-        if (event.getInteractionFlags().contains("charm"))        handleCharmInteractions(event);
-        if (event.getInteractionFlags().contains("cleansing"))    handleCleansingInteractions(event);
         if (event.getInteractionFlags().contains("drought"))      handleDroughtInteractions(event);
-    }
-
-    private static void handleBurnInteractions(AbilityUsedEvent event) {
     }
 
     private static void handleFreezingInteractions(AbilityUsedEvent event) {
@@ -45,6 +40,12 @@ public class InteractionHandler {
                 .filter(downpour -> downpour.loc().getDistanceTo(event.getPosition()) < event.getInteractionRadius())
                 .filter(downpour -> isInteractionOfSameOrHigherSequence(event, downpour.sequence()))
                 .forEach(d -> TorrentialDownpourAbility.freezeDownpour(d.downpourId()));
+    }
+
+
+    public static boolean isAbilityActiveForEntity(String abilityId, LivingEntity entity) {
+        ToggleAbility toggleAbility = (ToggleAbility) LOTMCraft.abilityHandler.getById(abilityId);
+        return toggleAbility != null && toggleAbility.isActiveForEntity(entity);
     }
 
     private static void handlePurificationInteractions(AbilityUsedEvent event) {
@@ -64,54 +65,8 @@ public class InteractionHandler {
                 DefilingSeedAbility.purify(afflicted, event.getEntity(), level);
             }
         });
-
-        // Purification suppresses LOOSING_CONTROL (Frenzy) on nearby entities
-        level.getEntitiesOfClass(
-                LivingEntity.class,
-                AABB.ofSize(event.getPosition(), radius * 2, radius * 2, radius * 2),
-                e -> e.hasEffect(ModEffects.LOOSING_CONTROL)
-        ).forEach(afflicted -> {
-            if(isInteractionOfSameOrHigherSequence(event, BeyonderData.getSequence(afflicted))) {
-                afflicted.removeEffect(ModEffects.LOOSING_CONTROL);
-            }
-        });
-
-        // Purification suppresses MENTAL_PLAGUE on nearby entities
-        level.getEntitiesOfClass(
-                LivingEntity.class,
-                AABB.ofSize(event.getPosition(), radius * 2, radius * 2, radius * 2),
-                e -> e.hasEffect(ModEffects.MENTAL_PLAGUE)
-        ).forEach(afflicted -> {
-            if(isInteractionOfSameOrHigherSequence(event, BeyonderData.getSequence(afflicted))) {
-                afflicted.removeEffect(ModEffects.MENTAL_PLAGUE);
-            }
-        });
     }
 
-    private static void handleCharmInteractions(AbilityUsedEvent event) {
-        // Charm interactions are handled within CharmAbility itself
-    }
-
-    private static void handleCleansingInteractions(AbilityUsedEvent event) {
-        ServerLevel level = event.getLevel();
-        double radius = event.getInteractionRadius();
-
-        // Cleansing removes charm from nearby entities
-        level.getEntitiesOfClass(
-                LivingEntity.class,
-                AABB.ofSize(event.getPosition(), radius * 2, radius * 2, radius * 2),
-                e -> CharmAbility.getCharmed().containsKey(e.getUUID())
-        ).forEach(charmedEntity -> {
-            UUID charmCasterUUID = CharmAbility.getCharmed().get(charmedEntity.getUUID());
-            if(charmCasterUUID != null) {
-                Entity charmCasterEntity = level.getEntity(charmCasterUUID);
-                int charmCasterSeq = charmCasterEntity instanceof LivingEntity livingCharmCaster ? BeyonderData.getSequence(livingCharmCaster) : LOTMCraft.NON_BEYONDER_SEQ;
-                if(isInteractionOfSameOrHigherSequence(event, charmCasterSeq)) {
-                    CharmAbility.removeCharm(charmedEntity.getUUID());
-                }
-            }
-        });
-    }
 
     private static void handleDroughtInteractions(AbilityUsedEvent event) {
         // Drought cancels Torrential Downpour
@@ -136,6 +91,7 @@ public class InteractionHandler {
     public static boolean isInteractionPossible(Location location, String interactionFlag, int sequence, boolean requireSameOrHigherSequence) {
         return recentInteractions.stream()
                 .filter(interaction -> interaction.event.getInteractionFlags().contains(interactionFlag))
+                .filter(interaction -> location.isInSameLevel(interaction.event.getLevel()))
                 .filter(interaction -> interaction.event.getPosition().distanceTo(location.getPosition()) < interaction.event.getInteractionRadius())
                 .anyMatch(interaction -> isInteractionOfSameOrHigherSequence(interaction.event, sequence) || !requireSameOrHigherSequence);
     }
@@ -156,6 +112,7 @@ public class InteractionHandler {
     public static boolean isInteractionPossibleStrictlyHigher(Location location, String interactionFlag, int sequence, int margin) {
         return recentInteractions.stream()
                 .filter(interaction -> interaction.event.getInteractionFlags().contains(interactionFlag))
+                .filter(interaction -> location.isInSameLevel(interaction.event.getLevel()))
                 .filter(interaction -> interaction.event.getPosition().distanceTo(location.getPosition()) < interaction.event.getInteractionRadius())
                 .anyMatch(interaction -> BeyonderData.getSequence(interaction.event.getEntity()) + margin <= sequence);
     }
@@ -166,13 +123,27 @@ public class InteractionHandler {
      * should escape, not nearby entities) or morale boost (only the entity that used the ability
      * should be freed).
      */
-    public static boolean isInteractionPossibleForEntity(Location location, String interactionFlag, int sequence, LivingEntity caster) {
+    public static boolean isInteractionPossibleForEntity(Location location, String interactionFlag, int sequence, LivingEntity caster, boolean requireSameOrHigherSequence, boolean ignoreLocation) {
         return recentInteractions.stream()
                 .filter(interaction -> interaction.event.getInteractionFlags().contains(interactionFlag))
-                .filter(interaction -> interaction.event.getEntity().getUUID().equals(caster.getUUID()))
-                .filter(interaction -> interaction.event.getPosition().distanceTo(location.getPosition()) < interaction.event.getInteractionRadius())
-                .anyMatch(interaction -> isInteractionOfSameOrHigherSequence(interaction.event, sequence));
+                .filter(interaction -> location.isInSameLevel(interaction.event.getLevel()))
+                .filter(interaction -> {
+                    LivingEntity target = interaction.event.getAbilityTarget() != null ? interaction.event.getAbilityTarget() : interaction.event.getEntity();
+                    return target.getUUID().equals(caster.getUUID());
+                })
+                .filter(interaction -> ignoreLocation || interaction.event.getPosition().distanceTo(location.getPosition()) < interaction.event.getInteractionRadius())
+                .anyMatch(interaction -> !requireSameOrHigherSequence || isInteractionOfSameOrHigherSequence(interaction.event, sequence));
     }
+
+    public static boolean isInteractionPossibleForEntity(Location location, String interactionFlag, int sequence, LivingEntity caster) {
+        return isInteractionPossibleForEntity(location, interactionFlag, sequence, caster, true, false);
+    }
+
+    public static boolean isInteractionPossibleForEntity(Location location, String interactionFlag, int sequence, LivingEntity caster, boolean requireSameOrHigherSequence) {
+        return isInteractionPossibleForEntity(location, interactionFlag, sequence, caster, requireSameOrHigherSequence, false);
+    }
+
+
 
     private record Interaction(AbilityUsedEvent event, long gameTimeOnInteraction, int interactionCacheTime) {}
 }

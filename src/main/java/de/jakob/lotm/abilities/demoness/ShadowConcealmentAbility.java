@@ -6,6 +6,7 @@ import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.DisplayShadowParticlesPacket;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ShadowConcealmentAbility extends Ability {
@@ -62,9 +64,15 @@ public class ShadowConcealmentAbility extends Ability {
                 PacketHandler.sendToPlayer(player, new DisplayShadowParticlesPacket(20 * 20));
 
             //make visible again
-            ServerScheduler.scheduleDelayed(20 * 20, () -> {
-                invisiblePlayers.remove(entity.getUUID());
-            }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
+            AtomicReference<UUID> taskIdRef = new AtomicReference<>();
+            UUID taskId = ServerScheduler.scheduleForDuration(0, 10, 20 * 20, () -> {
+                if(InteractionHandler.isInteractionPossible(new Location(entity.position(), entity.level()), "light_source", BeyonderData.getSequence(entity))) {
+                    entity.setInvisible(false);
+                    entity.removeEffect(MobEffects.INVISIBILITY);
+                    ServerScheduler.cancel(taskIdRef.get());
+                }
+            }, () -> invisiblePlayers.remove(entity.getUUID()), (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
+            taskIdRef.set(taskId);
         }
     }
 
