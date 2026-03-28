@@ -158,19 +158,13 @@ public class DemonicSpellsAbility extends SelectableAbility {
             int bx = (int) Math.round(centerX + Math.cos(angle) * wallRadius);
             int bz = (int) Math.round(centerZ + Math.sin(angle) * wallRadius);
 
-            for (int height = 0; height < 30; height++) {
+            for (int height = 0; height < 18; height++) {
                 BlockPos pos = new BlockPos(bx,(int) Math.floor(centerY) + height, bz);
                 if (!level.getBlockState(pos).isSolid()) {
                     level.setBlock(pos, Blocks.BARRIER.defaultBlockState(), 3);
                     wallBlocks.add(pos);
                 }
             }
-        }
-
-        // Initial particle burst at wall block positions
-        for (BlockPos pos : wallBlocks) {
-            ParticleUtil.spawnParticles(level, redDust, pos.getCenter(), 1, 0.3, 0.05);
-            ParticleUtil.spawnParticles(level, ParticleTypes.FLAME, pos.getCenter(), 1, 0.2, 0.05);
         }
 
         ServerScheduler.scheduleForDuration(0, 5, 20 * 8, () -> {

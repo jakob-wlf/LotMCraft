@@ -21,6 +21,7 @@ public class MindFogAbility extends ToggleAbility {
     private final Random random = new Random();
     private final DustParticleOptions fogDust = new DustParticleOptions(new Vector3f(0.75f, 0.82f, 0.95f), 1.2f);
     private final DustParticleOptions fogDustFaint = new DustParticleOptions(new Vector3f(0.88f, 0.9f, 1.0f), 0.8f);
+    private final DustParticleOptions fogDustStrong = new DustParticleOptions(new Vector3f(0.88f, 0.9f, 1.0f), 1.5f);
 
     public MindFogAbility(String id) {
         super(id);
@@ -70,6 +71,8 @@ public class MindFogAbility extends ToggleAbility {
                     if (random.nextInt(5) == 0) {
                         applyRandomNegativeEffect(target);
                     }
+
+                    ParticleUtil.spawnParticles(serverLevel, fogDustStrong, target.getEyePosition(), 5, 0.3, 0.1);
                 });
     }
 

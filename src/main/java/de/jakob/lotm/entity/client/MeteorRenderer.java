@@ -228,40 +228,69 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
                 int r, g, b, a;
                 a = (int)(alpha * 255);
 
+                boolean customColor = entity.isCustomColor();
+                float cr = entity.getColorR(), cg = entity.getColorG(), cb = entity.getColorB();
+
                 if (petrified) {
-                    // All particles render as gray when petrified
                     r = g = b = 128;
                 } else {
                     switch (particle.type) {
-                        case FIRE:
-                            r = (int)(255 * particle.brightness);
-                            g = (int)((100 + 80 * (1.0f - particle.alpha * 0.5f)) * particle.brightness);
-                            b = (int)((30 * (1.0f - particle.alpha)) * particle.brightness);
+                        case FIRE -> {
+                            if (customColor) {
+                                r = (int) (255 * cr * particle.brightness);
+                                g = (int) (255 * cg * particle.brightness);
+                                b = (int) (255 * cb * particle.brightness);
+                            } else {
+                                r = (int) (255 * particle.brightness);
+                                g = (int) ((100 + 80 * (1.0f - particle.alpha * 0.5f)) * particle.brightness);
+                                b = (int) (30 * (1.0f - particle.alpha) * particle.brightness);
+                            }
                             a = (int)(alpha * 240);
-                            break;
-                        case SMOKE:
-                            int grayValue = (int)(10 + 25 * particle.alpha);
-                            r = grayValue; g = grayValue; b = grayValue;
-                            a = (int)(alpha * 200);
-                            break;
-                        case TRAIL:
-                            r = 255; g = 255;
-                            b = (int)(200 + 55 * particle.alpha);
-                            a = (int)(alpha * 230);
-                            break;
-                        case EMBER:
-                            r = 255;
-                            g = (int)(120 + 80 * particle.alpha);
-                            b = 40;
-                            a = (int)(alpha * 255);
-                            break;
-                        case SPARK:
-                            r = 255; g = 255;
-                            b = (int)(180 + 75 * particle.alpha);
-                            a = (int)(alpha * 255);
-                            break;
-                        default:
-                            r = g = b = 255;
+                        }
+                        case SMOKE -> {
+                            int grayValue = (int) (10 + 25 * particle.alpha);
+                            r = grayValue;
+                            g = grayValue;
+                            b = grayValue;
+                            a = (int) (alpha * 200);
+                        }
+                        case TRAIL -> {
+                            if (customColor) {
+                                r = (int)(100 * cr);
+                                g = (int)(Math.min(255, 100 * cg + 155));
+                                b = (int)(100 * cb);
+                            } else {
+                                r = 255;
+                                g = 255;
+                                b = (int)(200 + 55 * particle.alpha);
+                            }
+                            a = (int) (alpha * 230);
+                        }
+                        case EMBER -> {
+                            if (customColor) {
+                                r = (int)(255 * cr);
+                                g = (int)(255 * cg);
+                                b = (int)(255 * cb);
+                            } else {
+                                r = 255;
+                                g = (int)(120 + 80 * particle.alpha);
+                                b = 40;
+                            }
+                            a = (int) (alpha * 255);
+                        }
+                        case SPARK -> {
+                            if (customColor) {
+                                r = (int)(200 * cr + 55);
+                                g = (int)(200 * cg + 55);
+                                b = (int)(200 * cb + 55);
+                            } else {
+                                r = 255;
+                                g = 255;
+                                b = (int)(180 + 75 * particle.alpha);
+                            }
+                            a = (int) (alpha * 255);
+                        }
+                        default -> r = g = b = 255;
                     }
                 }
 
