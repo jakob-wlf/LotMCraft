@@ -7,6 +7,7 @@ import de.jakob.lotm.entity.custom.LocationGraftingEntity;
 import de.jakob.lotm.events.custom.TargetEntityEvent;
 import de.jakob.lotm.events.custom.TargetLocationEvent;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.TeleportationUtil;
 import de.jakob.lotm.util.data.EntityLocation;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -252,11 +253,13 @@ public class GraftingAbility extends SelectableAbility {
             return;
         }
 
-        Vec3 targetLocation = AbilityUtil.getTargetLocation(entity, 30, 2);
-        if(targetLocation == null) {
+        Vec3 targetLocationBuff = AbilityUtil.getTargetLocation(entity, 30, 2);
+        if(targetLocationBuff == null) {
             graftingLocations.remove(entity.getUUID());
             return;
         }
+
+        var targetLocation = TeleportationUtil.clampToBorder(serverLevel, targetLocationBuff);
 
         ParticleUtil.createParticleSpirals(serverLevel, ParticleTypes.WITCH, targetLocation, 1.2, 1.2, 1.5, 1, 4, 30, 10, 1);
 

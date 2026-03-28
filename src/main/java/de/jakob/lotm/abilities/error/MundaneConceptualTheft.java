@@ -6,6 +6,7 @@ import de.jakob.lotm.abilities.error.handler.AbilityTheftHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.TeleportationUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -112,7 +113,9 @@ public class MundaneConceptualTheft extends SelectableAbility {
         Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, (1 << (9 - BeyonderData.getSequence(entity))), true).getCenter().add(0, 1, 0);
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
 
-        entity.teleportTo(targetLoc.x, targetLoc.y, targetLoc.z);
+        var validatedPos = TeleportationUtil.clampToBorder(level, targetLoc);
+
+        entity.teleportTo(validatedPos.x, validatedPos.y, validatedPos.z);
     }
 
     private void stealHealth(LivingEntity entity, LivingEntity target) {
