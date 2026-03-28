@@ -5,6 +5,7 @@ import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Random;
 
 public class AbilityTheftHandler {
@@ -42,10 +44,12 @@ public class AbilityTheftHandler {
         DisabledAbilitiesComponent disabledComponent = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
 
         ArrayList<Ability> stealableAbilities = new ArrayList<>(targetAbilities.stream()
-                .filter(ability -> ability.canBeCopied
-                        && ability.canUse(target, true, false)
+                .filter(ability -> !ability.cannotBeStolen
                         && !disabledComponent.isSpecificAbilityDisabled(ability.getId()))
                 .toList());
+
+        HashSet<Ability> entityAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequence(
+                BeyonderData.getPathway(entity), BeyonderData.getSequence(entity));
 
         if (stealableAbilities.isEmpty()) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_abilities").withColor(0x6d32a8));
@@ -57,7 +61,7 @@ public class AbilityTheftHandler {
             return;
         }
 
-        if (doesTheftFail(BeyonderData.getSequence(entity), BeyonderData.getSequence(target), random)) {
+        if (doesTheftFail(entity, target, random)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_abilities").withColor(0x6d32a8));
             return;
         }
@@ -79,6 +83,9 @@ public class AbilityTheftHandler {
 
             // Add to the thief's copied abilities
             if (entity instanceof ServerPlayer player) {
+                if(entityAbilities.contains(stolenAbility))
+                    continue;
+
                 CopiedAbilityHelper.addAbility(player,
                         new CopiedAbilityComponent.CopiedAbilityData(
                                 stolenAbility.getId(),
@@ -115,17 +122,34 @@ public class AbilityTheftHandler {
         };
     }
 
+    public static boolean doesTheftFail(LivingEntity user, LivingEntity target, Random random) {
+        int userSeq = BeyonderData.getSequence(user);
+        int targetSeq = BeyonderData.getSequence(target);
 
-    public static boolean doesTheftFail(int userSeq, int targetSeq, Random random) {
         if (targetSeq > userSeq) {
             return false;
         }
 
-        int difference = userSeq - targetSeq;
+        if(BeyonderData.getPathway(target).equals("error") && targetSeq < userSeq){
+            return true;
+        }
+
+        int difference = targetSeq - userSeq;
+
+        int userLuck = user.hasEffect(ModEffects.LUCK) ? Objects.requireNonNull(user.getEffect(ModEffects.LUCK)).getAmplifier() : 0;
+        int targetLuck = target.hasEffect(ModEffects.LUCK) ? Objects.requireNonNull(target.getEffect(ModEffects.LUCK)).getAmplifier() : 0;
+
+        int userUnLuck = user.hasEffect(ModEffects.UNLUCK) ? Objects.requireNonNull(user.getEffect(ModEffects.UNLUCK)).getAmplifier() : 0;
+        int targetUnLuck = target.hasEffect(ModEffects.UNLUCK) ? Objects.requireNonNull(target.getEffect(ModEffects.UNLUCK)).getAmplifier() : 0;
+
+        int luckDiff = userLuck - targetLuck;
+        int unLuckDiff = userUnLuck - targetUnLuck;
+
+        double luckMultiplier = (double) (luckDiff - unLuckDiff) / 10;
 
         double baseFailPerStep = 0.15;
 
-        double failChance = difference * baseFailPerStep;
+        double failChance = difference * baseFailPerStep - luckMultiplier;
 
         failChance = Math.min(Math.max(failChance, 0.0), 0.95);
 

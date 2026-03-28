@@ -236,6 +236,10 @@ public class TheftHandler {
             return;
         }
 
+        if(BeyonderData.isBeyonder(target) && BeyonderData.getPathway(target).equals("error")
+                && BeyonderData.getSequence(target) < BeyonderData.getSequence(thief))
+            return;
+
         if(target instanceof Player player) {
             stealFromPlayer(player, thief);
         }

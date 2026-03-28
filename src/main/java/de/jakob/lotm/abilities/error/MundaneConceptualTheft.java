@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.error.handler.AbilityTheftHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -52,22 +53,6 @@ public class MundaneConceptualTheft extends SelectableAbility {
         };
     }
 
-    private boolean doesTheftFail(int userSeq, int targetSeq) {
-        if (targetSeq > userSeq) {
-            return false;
-        }
-
-        int difference = userSeq - targetSeq;
-
-        double baseFailPerStep = 0.15;
-
-        double failChance = difference * baseFailPerStep;
-
-        failChance = Math.min(Math.max(failChance, 0.0), 0.95);
-
-        return random.nextDouble() < failChance;
-    }
-
     private int getTheftDuration(int userSeq, int targetSeq) {
         int baseDurationSeconds = 30;
 
@@ -108,7 +93,7 @@ public class MundaneConceptualTheft extends SelectableAbility {
 
         EffectManager.playEffect(EffectManager.Effect.CONCEPTUAL_THEFT, target.getX(), target.getEyeY(), target.getZ(), serverLevel, entity);
 
-        if(BeyonderData.isBeyonder(target) && doesTheftFail(BeyonderData.getSequence(entity), BeyonderData.getSequence(target))) {
+        if(BeyonderData.isBeyonder(target) && AbilityTheftHandler.doesTheftFail(entity, target, random)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mundane_conceptual_theft.theft_failed").withColor(0x4742c9));
             return;
         }
