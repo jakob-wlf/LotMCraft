@@ -2,9 +2,11 @@ package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.error.handler.AbilityTheftHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.TeleportationUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -52,22 +54,6 @@ public class MundaneConceptualTheft extends SelectableAbility {
         };
     }
 
-    private boolean doesTheftFail(int userSeq, int targetSeq) {
-        if (targetSeq > userSeq) {
-            return false;
-        }
-
-        int difference = userSeq - targetSeq;
-
-        double baseFailPerStep = 0.15;
-
-        double failChance = difference * baseFailPerStep;
-
-        failChance = Math.min(Math.max(failChance, 0.0), 0.95);
-
-        return random.nextDouble() < failChance;
-    }
-
     private int getTheftDuration(int userSeq, int targetSeq) {
         int baseDurationSeconds = 30;
 
@@ -108,7 +94,7 @@ public class MundaneConceptualTheft extends SelectableAbility {
 
         EffectManager.playEffect(EffectManager.Effect.CONCEPTUAL_THEFT, target.getX(), target.getEyeY(), target.getZ(), serverLevel, entity);
 
-        if(BeyonderData.isBeyonder(target) && doesTheftFail(BeyonderData.getSequence(entity), BeyonderData.getSequence(target))) {
+        if(BeyonderData.isBeyonder(target) && AbilityTheftHandler.doesTheftFail(entity, target, random)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mundane_conceptual_theft.theft_failed").withColor(0x4742c9));
             return;
         }
@@ -127,7 +113,9 @@ public class MundaneConceptualTheft extends SelectableAbility {
         Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, (1 << (9 - BeyonderData.getSequence(entity))), true).getCenter().add(0, 1, 0);
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
 
-        entity.teleportTo(targetLoc.x, targetLoc.y, targetLoc.z);
+        var validatedPos = TeleportationUtil.clampToBorder(level, targetLoc);
+
+        entity.teleportTo(validatedPos.x, validatedPos.y, validatedPos.z);
     }
 
     private void stealHealth(LivingEntity entity, LivingEntity target) {

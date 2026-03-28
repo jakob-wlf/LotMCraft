@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.util.TeleportationUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -11,6 +12,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -48,7 +50,9 @@ public class BlinkAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, 8, true).getCenter().add(0, 1, 0);
+        Vec3 targetLocBuff = AbilityUtil.getTargetBlock(entity, 8, true).getCenter().add(0, 1, 0);
+        var targetLoc = TeleportationUtil.clampToBorder((ServerLevel) level, targetLocBuff);
+
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
 
         entity.teleportTo(targetLoc.x, targetLoc.y, targetLoc.z);

@@ -105,7 +105,8 @@ public class AbilityUtil {
      * Non-beyonder sequences (>= 10) return 0.
      */
     public static int getSequenceCategory(int sequence) {
-        if (sequence <= 0) return 4;
+        if (sequence <= 0) return 5;
+        if (sequence <= 1) return 4;
         if (sequence <= 2) return 3;
         if (sequence <= 4) return 2;
         if (sequence <= 9) return 1;

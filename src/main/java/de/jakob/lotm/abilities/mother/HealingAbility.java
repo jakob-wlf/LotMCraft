@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class HealingAbility extends SelectableAbility {
     public HealingAbility(String id) {
-        super(id, 2);
+        super(id, 10);
     }
 
     @Override

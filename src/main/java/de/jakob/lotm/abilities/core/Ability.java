@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -41,6 +42,7 @@ public abstract class Ability {
     // Permissions
     public boolean canBeUsedByNPC = true;
     public boolean canBeCopied = true;
+    public boolean cannotBeStolen = false;
     public boolean canAlwaysBeUsed = false;
 
     // Misc
@@ -98,6 +100,9 @@ public abstract class Ability {
 
         // Track ability use for Recording/Replicating detection
         AbilityUseTracker.trackUse(newUser, this, newUser.position(), serverLevel);
+
+        if(entity instanceof ServerPlayer player)
+            LOTMCraft.LOGGER.info("{} used {} on {}", player.getName().toString(), this.id, player.position());
 
         if(!postsUsedAbilityEventManually) NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, newUser.position(), newUser, this, interactionFlags, interactionRadius, interactionCacheTicks));
     }
