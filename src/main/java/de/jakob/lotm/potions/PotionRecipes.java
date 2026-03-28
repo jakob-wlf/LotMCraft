@@ -665,6 +665,30 @@ public class PotionRecipes {
                 new ItemStack(Items.RED_MUSHROOM, 1),
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 5)))
         ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DEMON_POTION.get(),
+                new ItemStack(Items.WITHER_SKELETON_SKULL, 1),
+                new ItemStack(Items.MAGMA_BLOCK, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 4)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.BLATHERER_POTION.get(),
+                new ItemStack(Items.SOUL_LANTERN, 1),
+                new ItemStack(Items.ENDER_EYE, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 3)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.BLOODY_ARCHDUKE_POTION.get(),
+                new ItemStack(ModItems.BLOOD.get(), 1),
+                new ItemStack(Items.NETHER_STAR, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 2)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.FILTHY_MONARCH_POTION.get(),
+                new ItemStack(ModItems.BLOOD.get(), 1),
+                new ItemStack(Items.WITHER_ROSE, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 1)))
+        ));
 
     }
 

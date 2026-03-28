@@ -224,6 +224,22 @@ public class PotionItemHandler {
                     new BeyonderPotion(properties, 5, "abyss"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
+    public static DeferredItem<Item> DEMON_POTION = ITEMS.registerItem("demon_potion", properties ->
+                    new BeyonderPotion(properties, 4, "abyss"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> BLATHERER_POTION = ITEMS.registerItem("blatherer_potion", properties ->
+                    new BeyonderPotion(properties, 3, "abyss"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> BLOODY_ARCHDUKE_POTION = ITEMS.registerItem("bloody_archduke_potion", properties ->
+                    new BeyonderPotion(properties, 2, "abyss"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> FILTHY_MONARCH_POTION = ITEMS.registerItem("filthy_monarch_potion", properties ->
+                    new BeyonderPotion(properties, 1, "abyss"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
 
     public static DeferredItem<Item> SLEEPLESS_POTION = ITEMS.registerItem("sleepless_potion", properties ->
                     new BeyonderPotion(properties, 9, "darkness"),
