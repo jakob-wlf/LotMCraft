@@ -13,6 +13,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.border.WorldBorder;
 
 public class CoordinateInputScreen extends Screen {
     private EditBox xBox, yBox, zBox;
@@ -74,7 +76,10 @@ public class CoordinateInputScreen extends Screen {
             int y = Integer.parseInt(this.yBox.getValue());
             int z = Integer.parseInt(this.zBox.getValue());
 
-            if(x < -3000000 || x > 3000000 || z < -3000000 || z > 3000000 || y < -64 || y > 256) {
+            Level level = entity.level();
+            WorldBorder border = level.getWorldBorder();
+
+            if (!border.isWithinBounds(x, z) || y < -64 || y > 320) {
                 this.onClose();
                 return;
             }
