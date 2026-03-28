@@ -42,7 +42,7 @@ public class SpiritWorldAwarenessAbility extends PassiveAbilityItem {
 
         if(entity.level().dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
             Vec3 posInSpiritWorld = entity.position();
-            Vec3 overworldCoords = SpiritWorldHandler.getCoordinatesInOverworld(posInSpiritWorld);
+            Vec3 overworldCoords = SpiritWorldHandler.getCoordinatesInOverworld(posInSpiritWorld, serverLevel);
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.spirit_world_awareness.overworld_coordinates").append(": ").append(
                     Component.literal(
                             "(" +

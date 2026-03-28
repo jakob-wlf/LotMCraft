@@ -122,7 +122,7 @@ public class AngelAuthorityAbility extends SelectableAbility {
         if (!player.level().dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
             ResourceKey spiritWorld = ResourceKey.create((ResourceKey) Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world"));
             targetLevel = player.getServer().getLevel(spiritWorld);
-            targetPos = SpiritWorldHandler.getCoordinatesInSpiritWorld(player.position());
+            targetPos = SpiritWorldHandler.getCoordinatesInSpiritWorld(player.position(), targetLevel);
             BlockPos pos = BlockPos.containing(targetPos);
 
             while (!targetLevel.getBlockState(pos).isAir()) {
@@ -136,7 +136,9 @@ public class AngelAuthorityAbility extends SelectableAbility {
 
         } else {
             targetLevel = player.server.getLevel(Level.OVERWORLD);
-            targetPos = SpiritWorldHandler.getCoordinatesInOverworld(player.position());
+            if(targetLevel == null) return;
+
+            targetPos = SpiritWorldHandler.getCoordinatesInOverworld(player.position(), targetLevel);
             BlockPos pos = BlockPos.containing(targetPos);
 
             while (!targetLevel.getBlockState(pos).isAir()) {

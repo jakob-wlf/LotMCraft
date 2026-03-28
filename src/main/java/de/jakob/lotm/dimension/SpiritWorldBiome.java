@@ -25,62 +25,45 @@ public enum SpiritWorldBiome {
     // Biome declarations
     // -------------------------------------------------------------------------
 
-    // Wool Meadows: increased gridSize (smaller grids = more islands), higher spawn chance,
-    // and a wider radius range so islands are larger and more frequent.
     WOOL_MEADOWS(
             GenerationMode.ARCHIPELAGO,
-            new TerrainParams(
-                    64, 24, 0.55f, 0.85f, 24, 64, 72, -8, 14, 1.0f
-            )
+            new TerrainParams(64, 24, 0.55f, 0.85f, 24, 64, 72, -8, 14, 1.0f,
+                    300)
     ),
-
     CRYSTALLINE_PEAKS(
             GenerationMode.SPIRE,
-            new TerrainParams(
-                    55, 90, 0.10f, 0.80f, 3, 12, 55, -5, 70, 3.5f
-            )
+            new TerrainParams(55, 90, 0.10f, 0.80f, 3, 12, 55, -5, 70, 3.5f,
+                    250)
     ),
-
     VOID_GARDENS(
             GenerationMode.SCATTERED,
-            new TerrainParams(
-                    96, 12, 0.45f, 0.45f, 6, 24, 65, -86, 94, 1.4f
-            )
+            new TerrainParams(96, 12, 0.45f, 0.45f, 6, 24, 65, -86, 94, 1.4f,
+                    250)
     ),
-
     EMBER_WASTES(
             GenerationMode.CONTINENTAL,
-            new TerrainParams(
-                    60, 8, 0.90f, 0.42f, 80, 200, 220, -6, 10, 0.55f
-            )
+            new TerrainParams(60, 8, 0.90f, 0.42f, 80, 200, 220, -6, 10, 0.55f,
+                    250)
     ),
-
     QUARTZ_FLATS(
             GenerationMode.PLATEAU,
-            new TerrainParams(
-                    62, 4, 0.15f, 0.30f, 90, 280, 300, -4, 16, 0.45f
-            )
+            new TerrainParams(62, 4, 0.15f, 0.30f, 90, 280, 300, -4, 16, 0.45f,
+                    250)
     ),
-
     TERRACOTTA_CANYON(
             GenerationMode.CANYON,
-            new TerrainParams(
-                    58, 38, 0.85f, 0.38f, 50, 130, 180, -10, 26, 0.7f
-            )
+            new TerrainParams(58, 38, 0.85f, 0.38f, 50, 130, 180, -10, 26, 0.7f,
+                    250)
     ),
-
     FUNGAL_DEPTHS(
             GenerationMode.SCATTERED,
-            new TerrainParams(
-                    70, 16, 0.55f, 0.55f, 8, 32, 60, -60, 80, 1.6f
-            )
+            new TerrainParams(70, 16, 0.55f, 0.55f, 8, 32, 60, -60, 80, 1.6f,
+                    250)
     ),
-
     GLACIAL_SHELF(
             GenerationMode.CONTINENTAL,
-            new TerrainParams(
-                    58, 10, 0.80f, 0.38f, 70, 180, 200, -4, 8, 0.60f
-            )
+            new TerrainParams(58, 10, 0.80f, 0.38f, 70, 180, 200, -4, 8, 0.60f,
+                    250)
     );
 
     /** A biome and its normalised blend contribution at a given world position. */
@@ -219,6 +202,17 @@ public enum SpiritWorldBiome {
     /** Width (in blocks) of the cross-fade zone between two adjacent biomes. */
     private static final double BLEND_RADIUS  = 220.0;
 
+    private static final SpiritWorldBiome[] WEIGHTED_POOL = buildWeightedPool();
+
+    private static SpiritWorldBiome[] buildWeightedPool() {
+        SpiritWorldBiome[] extra = { WOOL_MEADOWS, WOOL_MEADOWS };
+        SpiritWorldBiome[] base  = values();
+        SpiritWorldBiome[] pool  = new SpiritWorldBiome[base.length + extra.length];
+        System.arraycopy(base,  0, pool, 0,           base.length);
+        System.arraycopy(extra, 0, pool, base.length, extra.length);
+        return pool;
+    }
+
     /**
      * Returns the nearest 1–2 Voronoi biome cells with smooth blend weights.
      *
@@ -231,23 +225,29 @@ public enum SpiritWorldBiome {
         double d1sq = Double.MAX_VALUE, d2sq = Double.MAX_VALUE;
         SpiritWorldBiome b1 = WOOL_MEADOWS, b2 = WOOL_MEADOWS;
 
-        int gridX = Math.floorDiv(x, BIOME_GRID);
-        int gridZ = Math.floorDiv(z, BIOME_GRID);
+        int searchStride = 0;
+        for (SpiritWorldBiome b : values()) searchStride = Math.max(searchStride, b.terrain.cellSize());
+
+        int gridX = Math.floorDiv(x, searchStride);
+        int gridZ = Math.floorDiv(z, searchStride);
 
         for (int ox = -2; ox <= 2; ox++) {
             for (int oz = -2; oz <= 2; oz++) {
                 int  cx   = gridX + ox, cz = gridZ + oz;
                 long seed = jenkinsHash((long) cx * 1_234_567_891L + (long) cz * 987_654_321L);
 
-                int px = cx * BIOME_GRID + (int)(pseudoRand(seed)                 * (BIOME_GRID - 1));
-                int pz = cz * BIOME_GRID + (int)(pseudoRand(seed ^ 0xDEAD_BEEFL) * (BIOME_GRID - 1));
+                // Pick biome first so we know its cell size
+                int poolIdx = Math.min(
+                        Math.abs((int)(pseudoRand(seed ^ 0xCAFE_BABEL) * WEIGHTED_POOL.length)),
+                        WEIGHTED_POOL.length - 1);
+                SpiritWorldBiome b = WEIGHTED_POOL[poolIdx];
+
+                // Place the Voronoi seed using this biome's own cell size
+                int cs = b.terrain.cellSize();
+                int px = cx * cs + (int)(pseudoRand(seed)                * (cs - 1));
+                int pz = cz * cs + (int)(pseudoRand(seed ^ 0xDEAD_BEEFL) * (cs - 1));
 
                 double dsq = (double)(x - px) * (x - px) + (double)(z - pz) * (z - pz);
-                int idx = Math.min(
-                        Math.abs((int)(pseudoRand(seed ^ 0xCAFE_BABEL) * values.length)),
-                        values.length - 1);
-                SpiritWorldBiome b = values[idx];
-
                 if (dsq < d1sq) { d2sq = d1sq; b2 = b1; d1sq = dsq; b1 = b; }
                 else if (dsq < d2sq) { d2sq = dsq; b2 = b; }
             }
@@ -315,15 +315,10 @@ public enum SpiritWorldBiome {
     // -------------------------------------------------------------------------
 
     public record TerrainParams(
-            int baseHeight,
-            int heightVariation,
-            float depthMultiplier,
-            float islandSpawnChance,
-            int minRadius,
-            int maxRadius,
-            int gridSize,
-            int yOffsetMin,
-            int yOffsetMax,
-            float edgeSharpness
+            int baseHeight, int heightVariation,
+            float depthMultiplier, float islandSpawnChance,
+            int minRadius, int maxRadius, int gridSize,
+            int yOffsetMin, int yOffsetMax, float edgeSharpness,
+            int cellSize
     ) {}
 }

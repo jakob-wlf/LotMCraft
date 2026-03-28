@@ -112,7 +112,7 @@ public class TravelersDoorEntity extends Entity {
 
                 if (!serverLevel.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
 
-                    Vec3 coords = SpiritWorldHandler.getCoordinatesInSpiritWorld(entity.position());
+                    Vec3 coords = SpiritWorldHandler.getCoordinatesInSpiritWorld(entity.position(), spiritWorldLevel);
                     BlockPos pos = BlockPos.containing(coords);
 
                     // elevate until not inside a block
@@ -134,7 +134,7 @@ public class TravelersDoorEntity extends Entity {
                     ServerLevel overworldLevel = serverLevel.getServer().getLevel(OVERWORLD);
                     if (overworldLevel == null) return;
 
-                    Vec3 coords = SpiritWorldHandler.getCoordinatesInOverworld(entity.position());
+                    Vec3 coords = SpiritWorldHandler.getCoordinatesInOverworld(entity.position(), overworldLevel);
                     BlockPos pos = BlockPos.containing(coords);
 
                     while (!overworldLevel.getBlockState(pos).isAir()) {
