@@ -74,6 +74,8 @@ public class SpiritBubblesModel<T extends SpiritBubblesEntity> extends Hierarchi
 		bubbles.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
 	}
 
+
+
 	@Override
 	public ModelPart root() {
 		return this.root;

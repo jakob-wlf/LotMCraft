@@ -29,11 +29,15 @@ import de.jakob.lotm.entity.client.ability_entities.door_pathway.book.Apprentice
 import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.misfortune_words.MisfortuneWordsModel;
 import de.jakob.lotm.entity.client.beyonder_npc.QuestMarkerModel;
 import de.jakob.lotm.entity.client.fire_raven.FireRavenModel;
+import de.jakob.lotm.entity.client.spirits.blue_wizard.SpiritBlueWizardModel;
 import de.jakob.lotm.entity.client.spirits.bubbles.SpiritBubblesModel;
 import de.jakob.lotm.entity.client.spirits.dervish.SpiritDervishModel;
+import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentWizardModel;
 import de.jakob.lotm.entity.custom.*;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
+import de.jakob.lotm.entity.custom.spirits.SpiritBlueWizardEntity;
 import de.jakob.lotm.entity.custom.spirits.SpiritDervishEntity;
+import de.jakob.lotm.entity.custom.spirits.SpiritTranslucentWizardEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.rendering.models.DoorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.TyrantMythicalCreatureModel;
@@ -92,6 +96,8 @@ public class ModEvents {
         // Spirits
         event.registerLayerDefinition(SpiritDervishModel.LAYER_LOCATION, SpiritDervishModel::createBodyLayer);
         event.registerLayerDefinition(SpiritBubblesModel.LAYER_LOCATION, SpiritBubblesModel::createBodyLayer);
+        event.registerLayerDefinition(SpiritBlueWizardModel.LAYER_LOCATION, SpiritBlueWizardModel::createBodyLayer);
+        event.registerLayerDefinition(SpiritTranslucentWizardModel.LAYER_LOCATION, SpiritTranslucentWizardModel::createBodyLayer);
 
         // Mythical Creature Forms
         event.registerLayerDefinition(TyrantMythicalCreatureModel.LAYER_LOCATION, TyrantMythicalCreatureModel::createBodyLayer);
@@ -102,7 +108,9 @@ public class ModEvents {
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.FIRE_RAVEN.get(), FireRavenEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_DERVISH_ENTITY.get(), SpiritDervishEntity.createAttributes().build());
+        event.put(ModEntities.SPIRIT_BLUE_WIZARD.get(), SpiritBlueWizardEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_BUBBLES_ENTITY.get(), SpiritDervishEntity.createAttributes().build());
+        event.put(ModEntities.SPIRIT_TRANSLUCENT_WIZARD.get(), SpiritTranslucentWizardEntity.createAttributes().build());
         event.put(ModEntities.BEYONDER_NPC.get(), BeyonderNPCEntity.createAttributes().build());
         event.put(ModEntities.ERROR_AVATAR.get(), AvatarEntity.createAttributes().build());
         event.put(ModEntities.ORIGINAL_BODY.get(), OriginalBodyEntity.createAttributes().build());
@@ -138,6 +146,20 @@ public class ModEvents {
         event.register(
                 ModEntities.SPIRIT_BUBBLES_ENTITY.get(),
                 SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.SPIRIT_BLUE_WIZARD.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.SPIRIT_TRANSLUCENT_WIZARD.get(),
+                SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE

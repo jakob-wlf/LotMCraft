@@ -23,6 +23,9 @@ public class SpiritDervishRenderer extends MobRenderer<SpiritDervishEntity, Spir
         poseStack.pushPose();
 
         poseStack.translate(0.0D, -.2D, 0.0D);
+        if(entity.getUUID().getLeastSignificantBits() % 2 == 0) {
+            poseStack.scale(2, 2, 2);
+        }
 
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
         poseStack.popPose();

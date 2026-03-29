@@ -6,9 +6,12 @@ import de.jakob.lotm.entity.client.spirits.dervish.SpiritDervishModel;
 import de.jakob.lotm.entity.custom.spirits.SpiritBubblesEntity;
 import de.jakob.lotm.entity.custom.spirits.SpiritDervishEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SpiritBubblesRenderer extends MobRenderer<SpiritBubblesEntity, SpiritBubblesModel<SpiritBubblesEntity>> {
     public SpiritBubblesRenderer(EntityRendererProvider.Context context) {
@@ -16,7 +19,7 @@ public class SpiritBubblesRenderer extends MobRenderer<SpiritBubblesEntity, Spir
     }
 
     @Override
-    public ResourceLocation getTextureLocation(SpiritBubblesEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(SpiritBubblesEntity entity) {
         return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/spirits/spirit_bubbles/spirit_bubbles.png");
     }
 
@@ -25,8 +28,15 @@ public class SpiritBubblesRenderer extends MobRenderer<SpiritBubblesEntity, Spir
         poseStack.pushPose();
 
         poseStack.translate(0.0D, -.2D, 0.0D);
+        poseStack.scale(1.5f, 1.5f, 1.5f);
 
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
         poseStack.popPose();
+    }
+
+    @Nullable
+    @Override
+    protected RenderType getRenderType(SpiritBubblesEntity livingEntity, boolean bodyVisible, boolean translucent, boolean glowing) {
+        return RenderType.entityTranslucent(this.getTextureLocation(livingEntity));
     }
 }

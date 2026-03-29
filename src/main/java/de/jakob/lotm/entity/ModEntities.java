@@ -15,8 +15,10 @@ import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunKingdomEntity
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.*;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.CycleOfFateEntity;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.MisfortuneWordsEntity;
+import de.jakob.lotm.entity.custom.spirits.SpiritBlueWizardEntity;
 import de.jakob.lotm.entity.custom.spirits.SpiritBubblesEntity;
 import de.jakob.lotm.entity.custom.spirits.SpiritDervishEntity;
+import de.jakob.lotm.entity.custom.spirits.SpiritTranslucentWizardEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -307,6 +309,14 @@ public class ModEntities {
     public static final Supplier<EntityType<SpiritBubblesEntity>> SPIRIT_BUBBLES_ENTITY =
             ENTITY_TYPES.register("spirit_bubbles", () -> EntityType.Builder.<SpiritBubblesEntity>of(SpiritBubblesEntity::new, MobCategory.MONSTER)
                     .sized(.6f, .6f).build("spirit_bubbles"));
+
+    public static final Supplier<EntityType<SpiritBlueWizardEntity>> SPIRIT_BLUE_WIZARD =
+            ENTITY_TYPES.register("spirit_blue_wizard", () -> EntityType.Builder.of(SpiritBlueWizardEntity::new, MobCategory.MONSTER)
+                    .sized(2, 2).build("spirit_blue_wizard"));
+
+    public static final Supplier<EntityType<SpiritTranslucentWizardEntity>> SPIRIT_TRANSLUCENT_WIZARD =
+            ENTITY_TYPES.register("spirit_translucent_wizard", () -> EntityType.Builder.of(SpiritTranslucentWizardEntity::new, MobCategory.MONSTER)
+                    .sized(1.3f, 1.3f).build("spirit_translucent_wizard"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<BeyonderNPCEntity>> BEYONDER_NPC =
             ENTITY_TYPES.register("beyonder_npc", () -> EntityType.Builder.<BeyonderNPCEntity>of(BeyonderNPCEntity::new, MobCategory.MONSTER)
