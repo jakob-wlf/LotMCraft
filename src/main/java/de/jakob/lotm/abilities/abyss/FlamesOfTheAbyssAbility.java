@@ -1,7 +1,7 @@
 package de.jakob.lotm.abilities.abyss;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
-import de.jakob.lotm.entity.custom.MeteorEntity;
+import de.jakob.lotm.entity.custom.ability_entities.MeteorEntity;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;

@@ -1,9 +1,22 @@
 package de.jakob.lotm.entity;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.client.GraftingLocationRenderer;
-import de.jakob.lotm.entity.client.TimeChangeRenderer;
 import de.jakob.lotm.entity.custom.*;
+import de.jakob.lotm.entity.custom.ability_entities.*;
+import de.jakob.lotm.entity.custom.ability_entities.door_pathway.*;
+import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.BloomingAreaEntity;
+import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.CoffinEntity;
+import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.DesolateAreaEntity;
+import de.jakob.lotm.entity.custom.ability_entities.projectiles.*;
+import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.WarBannerEntity;
+import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.JusticeSwordEntity;
+import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunEntity;
+import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunKingdomEntity;
+import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.*;
+import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.CycleOfFateEntity;
+import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.MisfortuneWordsEntity;
+import de.jakob.lotm.entity.custom.spirits.SpiritBubblesEntity;
+import de.jakob.lotm.entity.custom.spirits.SpiritDervishEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -191,16 +204,6 @@ public class ModEntities {
             ENTITY_TYPES.register("exile_doors", () -> EntityType.Builder.<ExileDoorsEntity>of(ExileDoorsEntity::new, MobCategory.MISC)
                     .sized(7.5f, 8f).build("exile_doors"));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<SpaceCollapseEntityLegacy>> SPACE_COLLAPSE_LEGACY =
-            ENTITY_TYPES.register("space_collapse_legacy", () -> EntityType.Builder.<SpaceCollapseEntityLegacy>of(
-                            SpaceCollapseEntityLegacy::new, MobCategory.MISC)
-                    .sized(1.0f, 1.0f)
-                    .clientTrackingRange(10)
-                    .updateInterval(1)
-                    .fireImmune()
-                    .noSave()
-                    .build("space_collapse_legacy"));
-
     public static final DeferredHolder<EntityType<?>, EntityType<SpaceCollapseEntity>> SPACE_COLLAPSE =
             ENTITY_TYPES.register("space_collapse", () -> EntityType.Builder.<SpaceCollapseEntity>of(
                             SpaceCollapseEntity::new,
@@ -250,10 +253,6 @@ public class ModEntities {
                     .noSummon()
                     .build("big_moon"));
 
-    public static final Supplier<EntityType<SpaceRiftEntity>> SPACE_RIFT =
-            ENTITY_TYPES.register("space_rift", () -> EntityType.Builder.<SpaceRiftEntity>of(SpaceRiftEntity::new, MobCategory.MISC)
-                    .sized(10f, 10f).build("space_rift"));
-
     public static final Supplier<EntityType<ElectricShockEntity>> ELECTRIC_SHOCK =
             ENTITY_TYPES.register("electric_shock", () -> EntityType.Builder.<ElectricShockEntity>of(ElectricShockEntity::new, MobCategory.MISC)
                     .sized(0.1f, 0.1f) // Small hitbox
@@ -300,6 +299,14 @@ public class ModEntities {
     public static final Supplier<EntityType<FireRavenEntity>> FIRE_RAVEN =
             ENTITY_TYPES.register("fire_raven", () -> EntityType.Builder.<FireRavenEntity>of(FireRavenEntity::new, MobCategory.CREATURE)
                     .sized(.6f, .8f).build("fire_raven"));
+
+    public static final Supplier<EntityType<SpiritDervishEntity>> SPIRIT_DERVISH_ENTITY =
+            ENTITY_TYPES.register("spirit_dervish", () -> EntityType.Builder.<SpiritDervishEntity>of(SpiritDervishEntity::new, MobCategory.MONSTER)
+                    .sized(.6f, .6f).build("spirit_dervish"));
+
+    public static final Supplier<EntityType<SpiritBubblesEntity>> SPIRIT_BUBBLES_ENTITY =
+            ENTITY_TYPES.register("spirit_bubbles", () -> EntityType.Builder.<SpiritBubblesEntity>of(SpiritBubblesEntity::new, MobCategory.MONSTER)
+                    .sized(.6f, .6f).build("spirit_bubbles"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<BeyonderNPCEntity>> BEYONDER_NPC =
             ENTITY_TYPES.register("beyonder_npc", () -> EntityType.Builder.<BeyonderNPCEntity>of(BeyonderNPCEntity::new, MobCategory.MONSTER)

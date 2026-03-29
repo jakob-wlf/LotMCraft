@@ -3,9 +3,7 @@ package de.jakob.lotm.abilities.mother;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.WorldCreationData;
-import de.jakob.lotm.block.ModBlocks;
-import de.jakob.lotm.entity.custom.ReturnFromNatureEntity;
-import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.ReturnFromNatureEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -14,11 +12,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class WorldCreationAbility extends Ability {

@@ -2,7 +2,7 @@ package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.custom.ExileDoorsEntity;
+import de.jakob.lotm.entity.custom.ability_entities.door_pathway.ExileDoorsEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;

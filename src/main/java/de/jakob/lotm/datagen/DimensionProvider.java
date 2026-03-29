@@ -39,7 +39,7 @@ public class DimensionProvider {
                                 .add(Registries.BIOME, bootstrap -> {
 
                                     // ---------------------------------------------------------
-                                    // Non-Spirit-World biomes (unchanged)
+                                    // Non-Spirit-World biomes
                                     // ---------------------------------------------------------
 
                                     bootstrap.register(ModDimensions.SPACE_BIOME_KEY,

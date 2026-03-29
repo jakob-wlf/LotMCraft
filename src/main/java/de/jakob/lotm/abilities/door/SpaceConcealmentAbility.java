@@ -3,7 +3,7 @@ package de.jakob.lotm.abilities.door;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.custom.ApprenticeDoorEntity;
+import de.jakob.lotm.entity.custom.ability_entities.door_pathway.ApprenticeDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.DisplaySpaceConcealmentParticlesPacket;
 import de.jakob.lotm.particle.ModParticles;

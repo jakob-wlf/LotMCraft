@@ -5,7 +5,7 @@ import de.jakob.lotm.abilities.core.AbilityUseTracker;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
-import de.jakob.lotm.entity.custom.ApprenticeBookEntity;
+import de.jakob.lotm.entity.custom.ability_entities.door_pathway.ApprenticeBookEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CopiedAbilityHelper;

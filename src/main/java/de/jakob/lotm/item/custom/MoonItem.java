@@ -1,6 +1,6 @@
 package de.jakob.lotm.item.custom;
 
-import de.jakob.lotm.entity.custom.BigMoonEntity;
+import de.jakob.lotm.entity.custom.ability_entities.BigMoonEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.server.level.ServerLevel;

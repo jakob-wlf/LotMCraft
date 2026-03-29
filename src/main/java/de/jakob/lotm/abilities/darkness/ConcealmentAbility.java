@@ -51,13 +51,6 @@ public class ConcealmentAbility extends SelectableAbility {
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
-        // Wings of Light glow prevents the user from entering concealment
-        if(isPreventedByWingsOfLight(entity)) {
-            if(entity instanceof Player player) {
-                AbilityUtil.sendActionBar(player, net.minecraft.network.chat.Component.literal("Wings of Light prevent concealment.").withColor(0xFFff124d));
-            }
-            return;
-        }
 
         if(!(entity instanceof Player)) abilityIndex = 0;
         switch(abilityIndex) {

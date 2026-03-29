@@ -1,0 +1,413 @@
+package de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.electromagnetic_tornado;
+
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Axis;
+import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.ElectromagneticTornadoEntity;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+
+public class ElectromagneticTornadoRenderer extends EntityRenderer<ElectromagneticTornadoEntity> {
+    private static final ResourceLocation TEXTURE = ResourceLocation.withDefaultNamespace("textures/block/glass.png");
+
+    public ElectromagneticTornadoRenderer(EntityRendererProvider.Context context) {
+        super(context);
+    }
+
+    private static final RenderType TORNADO_TRANSLUCENT = RenderType.create(
+            "tornado_translucent",
+            DefaultVertexFormat.NEW_ENTITY,
+            VertexFormat.Mode.QUADS,
+            256,
+            true,
+            true,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RenderType.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
+                    .setTextureState(new RenderStateShard.TextureStateShard(TEXTURE, false, false))
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(RenderStateShard.NO_CULL)
+                    .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .createCompositeState(true)
+    );
+
+    @Override
+    public void render(ElectromagneticTornadoEntity entity, float entityYaw, float partialTick,
+                       PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        boolean petrified = entity.getTags().contains("petrified");
+
+        poseStack.pushPose();
+
+        float rotation = entity.getRotation() + partialTick * 15.0f;
+        float ageInTicks = entity.tickCount + partialTick;
+
+        renderTornadoSpiral(entity, poseStack, bufferSource, rotation, ageInTicks, petrified);
+        renderEnergyRings(entity, poseStack, bufferSource, rotation, ageInTicks, petrified);
+        renderElectricArcs(entity, poseStack, bufferSource, ageInTicks, petrified);
+        renderCoreGlow(entity, poseStack, bufferSource, ageInTicks, petrified);
+        renderOuterSwirls(entity, poseStack, bufferSource, rotation, ageInTicks, petrified);
+
+        poseStack.popPose();
+        super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+    }
+
+    /** Returns {r, g, b} — gray override when petrified, otherwise the original values. */
+    private int[] tint(boolean petrified, int r, int g, int b) {
+        if (petrified) return new int[]{128, 128, 128};
+        return new int[]{r, g, b};
+    }
+
+    private void renderTornadoSpiral(ElectromagneticTornadoEntity entity, PoseStack poseStack,
+                                     MultiBufferSource bufferSource, float rotation, float ageInTicks, boolean petrified) {
+        VertexConsumer consumer = bufferSource.getBuffer(TORNADO_TRANSLUCENT);
+
+        int segments = 32;
+        int heightSegments = 28;
+        float maxRadius = 10.0f;
+        float maxHeight = 20.0f;
+        float minHeight = 0.5f;
+
+        for (int layer = 0; layer < 5; layer++) {
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.YP.rotationDegrees(rotation * 1.5f + layer * 72 + ageInTicks * 3.0f));
+
+            for (int h = 0; h < heightSegments; h++) {
+                float heightRatio = h / (float) heightSegments;
+                float nextHeightRatio = (h + 1) / (float) heightSegments;
+
+                float y1 = minHeight + heightRatio * maxHeight;
+                float y2 = minHeight + nextHeightRatio * maxHeight;
+
+                float radius1 = maxRadius * (0.25f + heightRatio * 0.75f);
+                float radius2 = maxRadius * (0.25f + nextHeightRatio * 0.75f);
+
+                float twist1 = heightRatio * 1080.0f + (ageInTicks * 4.0f);
+                float twist2 = nextHeightRatio * 1080.0f + (ageInTicks * 4.0f);
+
+                for (int i = 0; i < segments; i++) {
+                    float angle1 = (i / (float) segments) * 360.0f + twist1;
+                    float angle2 = ((i + 1) / (float) segments) * 360.0f + twist1;
+                    float angle3 = (i / (float) segments) * 360.0f + twist2;
+                    float angle4 = ((i + 1) / (float) segments) * 360.0f + twist2;
+
+                    float x1 = Mth.cos(angle1 * Mth.DEG_TO_RAD) * radius1;
+                    float z1 = Mth.sin(angle1 * Mth.DEG_TO_RAD) * radius1;
+                    float x2 = Mth.cos(angle2 * Mth.DEG_TO_RAD) * radius1;
+                    float z2 = Mth.sin(angle2 * Mth.DEG_TO_RAD) * radius1;
+                    float x3 = Mth.cos(angle3 * Mth.DEG_TO_RAD) * radius2;
+                    float z3 = Mth.sin(angle3 * Mth.DEG_TO_RAD) * radius2;
+                    float x4 = Mth.cos(angle4 * Mth.DEG_TO_RAD) * radius2;
+                    float z4 = Mth.sin(angle4 * Mth.DEG_TO_RAD) * radius2;
+
+                    int r, g, b;
+                    if (heightRatio < 0.5f) {
+                        float t = heightRatio * 2.0f;
+                        r = (int) (180 + t * 50);
+                        g = (int) (50 + t * 150);
+                        b = 255;
+                    } else {
+                        float t = (heightRatio - 0.5f) * 2.0f;
+                        r = (int) (230 - t * 130);
+                        g = (int) (200 + t * 55);
+                        b = 255;
+                    }
+
+                    int[] c = tint(petrified, r, g, b);
+                    float alpha = 0.35f + (layer % 2) * 0.1f;
+
+                    Matrix4f pose = poseStack.last().pose();
+                    Matrix3f normal = poseStack.last().normal();
+
+                    addVertex(consumer, pose, normal, x1, y1, z1, 0, 0, c[0], c[1], c[2], alpha);
+                    addVertex(consumer, pose, normal, x2, y1, z2, 1, 0, c[0], c[1], c[2], alpha);
+                    addVertex(consumer, pose, normal, x4, y2, z4, 1, 1, c[0], c[1], c[2], alpha);
+                    addVertex(consumer, pose, normal, x3, y2, z3, 0, 1, c[0], c[1], c[2], alpha);
+                }
+            }
+
+            poseStack.popPose();
+        }
+    }
+
+    private void renderOuterSwirls(ElectromagneticTornadoEntity entity, PoseStack poseStack,
+                                   MultiBufferSource bufferSource, float rotation, float ageInTicks, boolean petrified) {
+        VertexConsumer consumer = bufferSource.getBuffer(TORNADO_TRANSLUCENT);
+
+        int numSwirls = 8;
+        float maxHeight = 20.0f;
+        float minHeight = 0.5f;
+        int heightSegments = 40;
+
+        for (int swirl = 0; swirl < numSwirls; swirl++) {
+            poseStack.pushPose();
+
+            float swirlAngle = (swirl / (float) numSwirls) * 360.0f + rotation * 2.0f;
+            poseStack.mulPose(Axis.YP.rotationDegrees(swirlAngle));
+
+            int r, g, b;
+            if (swirl % 2 == 0) { r = 50;  g = 255; b = 255; }
+            else                 { r = 200; g = 50;  b = 255; }
+            int[] c = tint(petrified, r, g, b);
+
+            Matrix4f pose = poseStack.last().pose();
+            Matrix3f normal = poseStack.last().normal();
+
+            float ribbonWidth = 0.4f;
+
+            for (int h = 0; h < heightSegments; h++) {
+                float heightRatio = h / (float) heightSegments;
+                float nextHeightRatio = (h + 1) / (float) heightSegments;
+
+                float y1 = minHeight + heightRatio * maxHeight;
+                float y2 = minHeight + nextHeightRatio * maxHeight;
+
+                float baseRadius = 10.0f * (0.25f + heightRatio * 0.75f);
+                float nextBaseRadius = 10.0f * (0.25f + nextHeightRatio * 0.75f);
+
+                float offset = 0.5f + Mth.sin(ageInTicks * 0.1f + swirl + heightRatio * Mth.PI * 2) * 0.3f;
+                float radius1 = baseRadius + offset;
+                float radius2 = nextBaseRadius + offset;
+
+                float spiralTwist1 = heightRatio * 720.0f + (ageInTicks * 6.0f);
+                float spiralTwist2 = nextHeightRatio * 720.0f + (ageInTicks * 6.0f);
+
+                float angle1 = spiralTwist1 * Mth.DEG_TO_RAD;
+                float angle2 = spiralTwist2 * Mth.DEG_TO_RAD;
+
+                float x1_inner = Mth.cos(angle1) * radius1;
+                float z1_inner = Mth.sin(angle1) * radius1;
+                float x2_inner = Mth.cos(angle2) * radius2;
+                float z2_inner = Mth.sin(angle2) * radius2;
+
+                float x1_outer = Mth.cos(angle1) * (radius1 + ribbonWidth);
+                float z1_outer = Mth.sin(angle1) * (radius1 + ribbonWidth);
+                float x2_outer = Mth.cos(angle2) * (radius2 + ribbonWidth);
+                float z2_outer = Mth.sin(angle2) * (radius2 + ribbonWidth);
+
+                float alpha = 0.6f * (1.0f - heightRatio * 0.3f);
+
+                addVertex(consumer, pose, normal, x1_inner, y1, z1_inner, 0, 0, c[0], c[1], c[2], alpha);
+                addVertex(consumer, pose, normal, x1_outer, y1, z1_outer, 1, 0, c[0], c[1], c[2], alpha);
+                addVertex(consumer, pose, normal, x2_outer, y2, z2_outer, 1, 1, c[0], c[1], c[2], alpha);
+                addVertex(consumer, pose, normal, x2_inner, y2, z2_inner, 0, 1, c[0], c[1], c[2], alpha);
+
+                addVertex(consumer, pose, normal, x1_outer, y1, z1_outer, 0, 0, c[0], c[1], c[2], alpha * 0.7f);
+                addVertex(consumer, pose, normal, x1_inner, y1, z1_inner, 1, 0, c[0], c[1], c[2], alpha * 0.7f);
+                addVertex(consumer, pose, normal, x2_inner, y2, z2_inner, 1, 1, c[0], c[1], c[2], alpha * 0.7f);
+                addVertex(consumer, pose, normal, x2_outer, y2, z2_outer, 0, 1, c[0], c[1], c[2], alpha * 0.7f);
+            }
+
+            poseStack.popPose();
+        }
+    }
+
+    private void renderEnergyRings(ElectromagneticTornadoEntity entity, PoseStack poseStack,
+                                   MultiBufferSource bufferSource, float rotation, float ageInTicks, boolean petrified) {
+        VertexConsumer consumer = bufferSource.getBuffer(TORNADO_TRANSLUCENT);
+
+        int numRings = 18;
+        float maxHeight = 20.0f;
+        float minHeight = 0.5f;
+
+        for (int ring = 0; ring < numRings; ring++) {
+            float heightRatio = ring / (float) numRings;
+            float y = minHeight + heightRatio * maxHeight;
+            float radius = 5.0f * (0.25f + heightRatio * 0.75f);
+
+            float ringRotation = rotation * 3.0f + ring * 30.0f + ageInTicks * 5.0f;
+
+            poseStack.pushPose();
+            poseStack.translate(0, y, 0);
+            poseStack.mulPose(Axis.YP.rotationDegrees(ringRotation));
+
+            int segments = 64;
+            float thickness = 0.15f;
+
+            int r, g, b;
+            if (ring % 2 == 0) {
+                r = 50 + (int)(100 * Mth.sin(ageInTicks * 0.1f + ring));
+                g = 200 + (int)(55 * Mth.cos(ageInTicks * 0.15f));
+                b = 255;
+            } else {
+                r = 200 + (int)(55 * Mth.sin(ageInTicks * 0.1f + ring));
+                g = 50 + (int)(100 * Mth.cos(ageInTicks * 0.15f));
+                b = 255;
+            }
+            int[] c = tint(petrified, r, g, b);
+
+            Matrix4f pose = poseStack.last().pose();
+            Matrix3f normal = poseStack.last().normal();
+
+            for (int i = 0; i < segments; i++) {
+                float angle1 = (i / (float) segments) * 360.0f;
+                float angle2 = ((i + 1) / (float) segments) * 360.0f;
+
+                float x1 = Mth.cos(angle1 * Mth.DEG_TO_RAD) * radius;
+                float z1 = Mth.sin(angle1 * Mth.DEG_TO_RAD) * radius;
+                float x2 = Mth.cos(angle2 * Mth.DEG_TO_RAD) * radius;
+                float z2 = Mth.sin(angle2 * Mth.DEG_TO_RAD) * radius;
+
+                addVertex(consumer, pose, normal, x1, -thickness, z1, 0, 0, c[0], c[1], c[2], 0.775f);
+                addVertex(consumer, pose, normal, x2, -thickness, z2, 1, 0, c[0], c[1], c[2], 0.775f);
+                addVertex(consumer, pose, normal, x2,  thickness, z2, 1, 1, c[0], c[1], c[2], 0.775f);
+                addVertex(consumer, pose, normal, x1,  thickness, z1, 0, 1, c[0], c[1], c[2], 0.775f);
+
+                addVertex(consumer, pose, normal, x2, -thickness, z2, 0, 0, c[0], c[1], c[2], 0.775f);
+                addVertex(consumer, pose, normal, x1, -thickness, z1, 1, 0, c[0], c[1], c[2], 0.775f);
+                addVertex(consumer, pose, normal, x1,  thickness, z1, 1, 1, c[0], c[1], c[2], 0.775f);
+                addVertex(consumer, pose, normal, x2,  thickness, z2, 0, 1, c[0], c[1], c[2], 0.775f);
+
+                addVertex(consumer, pose, normal, x1, thickness, z1, 0, 0, c[0], c[1], c[2], 0.775f);
+                addVertex(consumer, pose, normal, x2, thickness, z2, 1, 0, c[0], c[1], c[2], 0.775f);
+                addVertex(consumer, pose, normal, x2, thickness, z2, 1, 1, c[0], c[1], c[2], 0.775f);
+                addVertex(consumer, pose, normal, x1, thickness, z1, 0, 1, c[0], c[1], c[2], 0.775f);
+
+                addVertex(consumer, pose, normal, x2, -thickness, z2, 0, 0, c[0], c[1], c[2], 0.775f);
+                addVertex(consumer, pose, normal, x1, -thickness, z1, 1, 0, c[0], c[1], c[2], 0.775f);
+                addVertex(consumer, pose, normal, x1, -thickness, z1, 1, 1, c[0], c[1], c[2], 0.775f);
+                addVertex(consumer, pose, normal, x2, -thickness, z2, 0, 1, c[0], c[1], c[2], 0.775f);
+            }
+
+            poseStack.popPose();
+        }
+    }
+
+    private void renderElectricArcs(ElectromagneticTornadoEntity entity, PoseStack poseStack,
+                                    MultiBufferSource bufferSource, float ageInTicks, boolean petrified) {
+        VertexConsumer consumer = bufferSource.getBuffer(TORNADO_TRANSLUCENT);
+
+        int numArcs = 20;
+        float maxHeight = 20.0f;
+        float minHeight = 0.5f;
+
+        for (int arc = 0; arc < numArcs; arc++) {
+            float baseAngle = (arc / (float) numArcs) * 360.0f + ageInTicks * 8.0f;
+            float radius = 4.0f;
+
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.YP.rotationDegrees(baseAngle));
+
+            int segments = 18;
+            float prevX = radius * 0.25f;
+            float prevY = minHeight;
+            float prevZ = 0;
+
+            for (int i = 1; i <= segments; i++) {
+                float t = i / (float) segments;
+                float heightRadius = radius * (0.25f + t * 0.75f);
+                float x = heightRadius * Mth.cos(t * Mth.PI * 5);
+                float y = minHeight + t * maxHeight;
+                float z = heightRadius * Mth.sin(t * Mth.PI * 5) * 0.4f;
+
+                x += Mth.sin(ageInTicks * 0.5f + arc + i) * 0.4f;
+                z += Mth.cos(ageInTicks * 0.5f + arc + i) * 0.4f;
+
+                int r, g, b;
+                if      (arc % 3 == 0) { r = 50;  g = 255; b = 255; }
+                else if (arc % 3 == 1) { r = 200; g = 50;  b = 255; }
+                else                   { r = 100; g = 150; b = 255; }
+                int[] c = tint(petrified, r, g, b);
+
+                Matrix4f pose = poseStack.last().pose();
+                Matrix3f normal = poseStack.last().normal();
+
+                float thickness = 0.12f;
+
+                addVertex(consumer, pose, normal, prevX - thickness, prevY, prevZ, 0, 0, c[0], c[1], c[2], 0.775f);
+                addVertex(consumer, pose, normal, x - thickness,     y,     z,     1, 0, c[0], c[1], c[2], 0.775f);
+                addVertex(consumer, pose, normal, x + thickness,     y,     z,     1, 1, c[0], c[1], c[2], 0.775f);
+                addVertex(consumer, pose, normal, prevX + thickness, prevY, prevZ, 0, 1, c[0], c[1], c[2], 0.775f);
+
+                prevX = x;
+                prevY = y;
+                prevZ = z;
+            }
+
+            poseStack.popPose();
+        }
+    }
+
+    private void renderCoreGlow(ElectromagneticTornadoEntity entity, PoseStack poseStack,
+                                MultiBufferSource bufferSource, float ageInTicks, boolean petrified) {
+        VertexConsumer consumer = bufferSource.getBuffer(RenderType.energySwirl(TEXTURE, 0, 0));
+
+        float maxHeight = 20.0f;
+        float minHeight = 0.5f;
+        int segments = 32;
+        int heightSegments = 24;
+
+        poseStack.pushPose();
+        poseStack.mulPose(Axis.YP.rotationDegrees(ageInTicks * 6.0f));
+
+        for (int h = 0; h < heightSegments; h++) {
+            float heightRatio = h / (float) heightSegments;
+            float nextHeightRatio = (h + 1) / (float) heightSegments;
+
+            float y1 = minHeight + heightRatio * maxHeight;
+            float y2 = minHeight + nextHeightRatio * maxHeight;
+
+            float radius1 = 0.5f * (0.25f + heightRatio * 0.75f);
+            float radius2 = 0.5f * (0.25f + nextHeightRatio * 0.75f);
+
+            float pulse = 1.0f + Mth.sin(ageInTicks * 0.2f + heightRatio * Mth.PI) * 0.3f;
+            radius1 *= pulse;
+            radius2 *= pulse;
+
+            for (int i = 0; i < segments; i++) {
+                float angle1 = (i / (float) segments) * 360.0f;
+                float angle2 = ((i + 1) / (float) segments) * 360.0f;
+
+                float x1 = Mth.cos(angle1 * Mth.DEG_TO_RAD) * radius1;
+                float z1 = Mth.sin(angle1 * Mth.DEG_TO_RAD) * radius1;
+                float x2 = Mth.cos(angle2 * Mth.DEG_TO_RAD) * radius1;
+                float z2 = Mth.sin(angle2 * Mth.DEG_TO_RAD) * radius1;
+                float x3 = Mth.cos(angle1 * Mth.DEG_TO_RAD) * radius2;
+                float z3 = Mth.sin(angle1 * Mth.DEG_TO_RAD) * radius2;
+                float x4 = Mth.cos(angle2 * Mth.DEG_TO_RAD) * radius2;
+                float z4 = Mth.sin(angle2 * Mth.DEG_TO_RAD) * radius2;
+
+                int r, g, b;
+                if      (heightRatio < 0.3f) { r = 200; g = 150; b = 255; }
+                else if (heightRatio < 0.7f) { r = 150; g = 255; b = 255; }
+                else                         { r = 200; g = 255; b = 255; }
+                int[] c = tint(petrified, r, g, b);
+
+                Matrix4f pose = poseStack.last().pose();
+                Matrix3f normal = poseStack.last().normal();
+
+                addVertex(consumer, pose, normal, x1, y1, z1, 0, 0, c[0], c[1], c[2], 0.75f);
+                addVertex(consumer, pose, normal, x2, y1, z2, 1, 0, c[0], c[1], c[2], 0.75f);
+                addVertex(consumer, pose, normal, x4, y2, z4, 1, 1, c[0], c[1], c[2], 0.75f);
+                addVertex(consumer, pose, normal, x3, y2, z3, 0, 1, c[0], c[1], c[2], 0.75f);
+            }
+        }
+
+        poseStack.popPose();
+    }
+
+    private void addVertex(VertexConsumer consumer, Matrix4f pose, Matrix3f normal,
+                           float x, float y, float z, float u, float v,
+                           int r, int g, int b, float alpha) {
+        consumer.addVertex(pose, x, y, z)
+                .setColor(r, g, b, (int)(alpha * 255))
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(LightTexture.FULL_BRIGHT)
+                .setNormal(0, 1, 0);
+    }
+
+    @Override
+    public ResourceLocation getTextureLocation(ElectromagneticTornadoEntity entity) {
+        return TEXTURE;
+    }
+}

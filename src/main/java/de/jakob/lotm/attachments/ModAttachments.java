@@ -33,6 +33,7 @@ public class ModAttachments {
                             .build()
             );
 
+
     public static final Supplier<AttachmentType<DisabledFlightComponent>> FLIGHT_DISABLE_COMPONENT =
             ATTACHMENT_TYPES.register("disabled_flight_component", () ->
                     AttachmentType.builder(DisabledFlightComponent::new)
@@ -53,6 +54,11 @@ public class ModAttachments {
     public static final Supplier<AttachmentType<AbilityBarComponent>> ABILITY_BAR_COMPONENT =
             ATTACHMENT_TYPES.register("ability_bar_component", () ->
                     AttachmentType.serializable(AbilityBarComponent::new).copyOnDeath().build()
+            );
+
+    public static final Supplier<AttachmentType<LuckComponent>> LUCK_COMPONENT =
+            ATTACHMENT_TYPES.register("luck_component", () ->
+                    AttachmentType.serializable(LuckComponent::new).copyOnDeath().build()
             );
 
     public static final Supplier<AttachmentType<DisabledAbilitiesComponent>> DISABLED_ABILITIES_COMPONENT =

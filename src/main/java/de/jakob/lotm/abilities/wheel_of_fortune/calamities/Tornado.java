@@ -1,7 +1,7 @@
 package de.jakob.lotm.abilities.wheel_of_fortune.calamities;
 
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.custom.TornadoEntity;
+import de.jakob.lotm.entity.custom.ability_entities.TornadoEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;

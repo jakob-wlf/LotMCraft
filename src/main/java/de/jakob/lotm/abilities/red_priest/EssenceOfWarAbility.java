@@ -2,7 +2,7 @@ package de.jakob.lotm.abilities.red_priest;
 
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.custom.WarBannerEntity;
+import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.WarBannerEntity;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;

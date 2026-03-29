@@ -2,7 +2,7 @@ package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.entity.custom.WindBladeEntity;
+import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.WindBladeEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;

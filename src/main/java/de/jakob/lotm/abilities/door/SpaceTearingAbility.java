@@ -1,7 +1,7 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.core.Ability;
-import de.jakob.lotm.entity.custom.SpaceCollapseEntity;
+import de.jakob.lotm.entity.custom.ability_entities.door_pathway.SpaceCollapseEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;

@@ -2,7 +2,7 @@ package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.custom.SunKingdomEntity;
+import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunKingdomEntity;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;

@@ -3,18 +3,42 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.command.*;
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.custom.OriginalBodyEntity;
-import de.jakob.lotm.entity.client.*;
-import de.jakob.lotm.entity.custom.AvatarEntity;
-import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
-import de.jakob.lotm.entity.custom.DamageTrackerEntity;
-import de.jakob.lotm.entity.custom.FireRavenEntity;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.travelers_door.TravelersDoorModel;
+import de.jakob.lotm.entity.client.ability_entities.meteor.MeteorModel;
+import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area.BloomingAreaModel;
+import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinModel;
+import de.jakob.lotm.entity.client.ability_entities.projectiles.paper_dagger.PaperDaggerProjectileModel;
+import de.jakob.lotm.entity.client.ability_entities.projectiles.spear_of_destruction.SpearOfDestructionProjectileModel;
+import de.jakob.lotm.entity.client.ability_entities.projectiles.spear_of_light.SpearOfLightProjectileModel;
+import de.jakob.lotm.entity.client.ability_entities.projectiles.unshadowed_spear.UnshadowedSpearProjectileModel;
+import de.jakob.lotm.entity.client.ability_entities.projectiles.wind_blade.WindBladeModel;
+import de.jakob.lotm.entity.client.ability_entities.red_priest_pathway.war_banner.WarBannerModel;
+import de.jakob.lotm.entity.client.ability_entities.tornado.TornadoModel;
+import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.tsunami.TsunamiModel;
+import de.jakob.lotm.entity.client.ability_entities.volcano.VolcanoModel;
+import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.cycle_of_fate.CycleOfFateModel;
+import de.jakob.lotm.entity.client.ability_entities.mother_pathway.desolate_area.DesolateAreaModel;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.exile_doors.ExileDoorsModel;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.return_portal.HighSequenceDoorsModel;
+import de.jakob.lotm.entity.client.ability_entities.sun_pathway.justice_sword.JusticeSwordModel;
+import de.jakob.lotm.entity.client.ability_entities.projectiles.fireball.FireballModel;
+import de.jakob.lotm.entity.client.ability_entities.projectiles.flaming_spear.FlamingSpearProjectileModel;
+import de.jakob.lotm.entity.client.ability_entities.projectiles.frost_spear.FrostSpearProjectileModel;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.apprentice_door.ApprenticeDoorModel;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.book.ApprenticeBookModel;
+import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.misfortune_words.MisfortuneWordsModel;
+import de.jakob.lotm.entity.client.beyonder_npc.QuestMarkerModel;
+import de.jakob.lotm.entity.client.fire_raven.FireRavenModel;
+import de.jakob.lotm.entity.client.spirits.bubbles.SpiritBubblesModel;
+import de.jakob.lotm.entity.client.spirits.dervish.SpiritDervishModel;
+import de.jakob.lotm.entity.custom.*;
+import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
+import de.jakob.lotm.entity.custom.spirits.SpiritDervishEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.rendering.models.DoorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.TyrantMythicalCreatureModel;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.SpiritualityProgressTracker;
-import de.jakob.lotm.util.beyonderMap.CharacteristicStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
@@ -51,7 +75,6 @@ public class ModEvents {
         event.registerLayerDefinition(TsunamiModel.LAYER_LOCATION, TsunamiModel::createBodyLayer);
         event.registerLayerDefinition(TornadoModel.LAYER_LOCATION, TornadoModel::createBodyLayer);
         event.registerLayerDefinition(ExileDoorsModel.LAYER_LOCATION, ExileDoorsModel::createBodyLayer);
-        event.registerLayerDefinition(SpaceRiftModel.LAYER_LOCATION, SpaceRiftModel::createBodyLayer);
         event.registerLayerDefinition(WarBannerModel.LAYER_LOCATION, WarBannerModel::createBodyLayer);
         event.registerLayerDefinition(MeteorModel.LAYER_LOCATION, MeteorModel::createBodyLayer);
         event.registerLayerDefinition(JusticeSwordModel.LAYER_LOCATION, JusticeSwordModel::createBodyLayer);
@@ -66,6 +89,11 @@ public class ModEvents {
         event.registerLayerDefinition(QuestMarkerModel.LAYER_LOCATION, QuestMarkerModel::createBodyLayer);
         event.registerLayerDefinition(CycleOfFateModel.LAYER_LOCATION, CycleOfFateModel::createBodyLayer);
 
+        // Spirits
+        event.registerLayerDefinition(SpiritDervishModel.LAYER_LOCATION, SpiritDervishModel::createBodyLayer);
+        event.registerLayerDefinition(SpiritBubblesModel.LAYER_LOCATION, SpiritBubblesModel::createBodyLayer);
+
+        // Mythical Creature Forms
         event.registerLayerDefinition(TyrantMythicalCreatureModel.LAYER_LOCATION, TyrantMythicalCreatureModel::createBodyLayer);
         event.registerLayerDefinition(DoorMythicalCreatureModel.LAYER_LOCATION, DoorMythicalCreatureModel::createBodyLayer);
     }
@@ -73,6 +101,8 @@ public class ModEvents {
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.FIRE_RAVEN.get(), FireRavenEntity.createAttributes().build());
+        event.put(ModEntities.SPIRIT_DERVISH_ENTITY.get(), SpiritDervishEntity.createAttributes().build());
+        event.put(ModEntities.SPIRIT_BUBBLES_ENTITY.get(), SpiritDervishEntity.createAttributes().build());
         event.put(ModEntities.BEYONDER_NPC.get(), BeyonderNPCEntity.createAttributes().build());
         event.put(ModEntities.ERROR_AVATAR.get(), AvatarEntity.createAttributes().build());
         event.put(ModEntities.ORIGINAL_BODY.get(), OriginalBodyEntity.createAttributes().build());
@@ -96,6 +126,20 @@ public class ModEvents {
                     // Then check the normal mob spawn rules
                     return Mob.checkMobSpawnRules(entityType, level, spawnType, pos, random);
                 },
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.SPIRIT_DERVISH_ENTITY.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.SPIRIT_BUBBLES_ENTITY.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE
         );
     }

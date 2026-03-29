@@ -1,0 +1,23 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": [
+    "lotmcraft:spirit_wool_meadows",
+    "lotmcraft:spirit_crystalline_peaks",
+    "lotmcraft:spirit_void_gardens",
+    "lotmcraft:spirit_ember_wastes",
+    "lotmcraft:spirit_quartz_flats",
+    "lotmcraft:spirit_terracotta_canyon",
+    "lotmcraft:spirit_fungal_depths",
+    "lotmcraft:spirit_glacial_shelf",
+    "lotmcraft:spirit_gilded_ruins"
+  ],
+  "spawners": [
+    {
+      "type": "lotmcraft:spirit_bubbles",
+      "weight": 100,
+      "minCount": 1,
+      "maxCount": 5,
+      "category": "creature"
+    }
+  ]
+}

@@ -2,7 +2,7 @@ package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.custom.TravelersDoorEntity;
+import de.jakob.lotm.entity.custom.ability_entities.door_pathway.TravelersDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenCoordinateScreenTravelersDoorPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;

@@ -1,7 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.core.Ability;
-import de.jakob.lotm.entity.custom.LightningBranchEntity;
+import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.LightningBranchEntity;
 import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;

@@ -13,6 +13,8 @@ import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -55,9 +57,26 @@ public class ToxicSmokeAbility extends Ability {
 
         final UUID[] taskIdHolder = new UUID[1];
         taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 6, 20 * 5, () -> {
-            // Toxic smoke is completely cancelled by purification
+            // Toxic smoke is completely cancelled by purification and will explode with burning interaction
             Location smokeLoc = new Location(pos, level);
             int seq = BeyonderData.getSequence(entity);
+            if(InteractionHandler.isInteractionPossible(smokeLoc, "burning", seq)) {
+                AbilityUtil.damageNearbyEntities((ServerLevel) level,
+                        null,
+                        9,
+                        DamageLookup.lookupDamage(8, 1.2) * multiplier(entity),
+                        pos,
+                        true,
+                        false,
+                        true,
+                        0,
+                        ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity)
+                );
+                level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 1, 1);
+                if(taskIdHolder[0] != null) ServerScheduler.cancel(taskIdHolder[0]);
+                return;
+            }
+
             if(InteractionHandler.isInteractionPossible(smokeLoc, "purification", seq)) {
                 if(taskIdHolder[0] != null) ServerScheduler.cancel(taskIdHolder[0]);
                 return;
