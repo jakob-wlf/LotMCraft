@@ -9,14 +9,10 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
-import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Chicken;
-import net.minecraft.world.entity.animal.allay.Allay;
-import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -24,18 +20,19 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SpiritBlueWizardEntity extends Animal {
+public class SpiritGhostEntity extends Animal {
 
     public final AnimationState IDLE_ANIMATION = new AnimationState();
     public final AnimationState WALK_ANIMATION = new AnimationState();
 
 
 
-    public SpiritBlueWizardEntity(EntityType<? extends Animal> entityType, Level level) {
+    public SpiritGhostEntity(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
 
         // Enable flying movement
-        this.moveControl = new MoveControl(this);
+        this.moveControl = new FlyingMoveControl(this, 20, true);
+        this.navigation = new FlyingPathNavigation(this, level);
     }
 
     @Override
@@ -43,6 +40,7 @@ public class SpiritBlueWizardEntity extends Animal {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new PanicGoal(this, 2.0));
 
+        // Flying-specific goals
         this.goalSelector.addGoal(2, new WaterAvoidingRandomFlyingGoal(this, 1.0));
         this.goalSelector.addGoal(3, new FollowParentGoal(this, 1.25));
         this.goalSelector.addGoal(4, new LookAtPlayerGoal(this, Player.class, 6.0F));
@@ -83,10 +81,29 @@ public class SpiritBlueWizardEntity extends Animal {
         return !this.onGround();
     }
 
+    // Make the entity prefer to fly at a certain height
+    @Override
+    protected PathNavigation createNavigation(Level level) {
+        FlyingPathNavigation flyingNavigation = new FlyingPathNavigation(this, level);
+        flyingNavigation.setCanOpenDoors(false);
+        flyingNavigation.setCanFloat(false);
+        flyingNavigation.setCanPassDoors(false);
+        return flyingNavigation;
+    }
+
     // Custom flying movement behavior
     @Override
     public void aiStep() {
         super.aiStep();
+
+        // Add some upward movement when the entity is too low
+        if (!this.level().isClientSide && this.isAlive()) {
+            // Try to maintain altitude above ground
+            BlockPos belowPos = this.blockPosition().below(3);
+            if (!this.level().isEmptyBlock(belowPos) && this.getDeltaMovement().y < 0.1) {
+                this.setDeltaMovement(this.getDeltaMovement().add(0, 0.02, 0));
+            }
+        }
     }
 
     // Prevent the entity from being affected by certain ground-based mechanics
@@ -95,10 +112,24 @@ public class SpiritBlueWizardEntity extends Animal {
         return false;
     }
 
+    private void setupAnimationStates() {
+        if (this.isFlying()) {
+            this.IDLE_ANIMATION.stop();
+            this.WALK_ANIMATION.startIfStopped(this.tickCount);
+        } else {
+            this.WALK_ANIMATION.stop();
+            this.IDLE_ANIMATION.startIfStopped(this.tickCount);
+        }
+    }
+
     @Override
     public void tick() {
         super.tick();
 
         Level level = this.level();
+
+        if(level.isClientSide) {
+            this.setupAnimationStates();
+        }
     }
 }

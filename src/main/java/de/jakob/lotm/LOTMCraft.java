@@ -56,9 +56,12 @@ import de.jakob.lotm.entity.client.beyonder_npc.BeyonderNPCRenderer;
 import de.jakob.lotm.entity.client.damage_tracker.DamageTrackerRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.book.ApprenticeBookRenderer;
 import de.jakob.lotm.entity.client.fire_raven.FireRavenRenderer;
+import de.jakob.lotm.entity.client.spirits.bizarro_bane.SpiritBizarroBaneRenderer;
 import de.jakob.lotm.entity.client.spirits.blue_wizard.SpiritBlueWizardRenderer;
 import de.jakob.lotm.entity.client.spirits.bubbles.SpiritBubblesRenderer;
 import de.jakob.lotm.entity.client.spirits.dervish.SpiritDervishRenderer;
+import de.jakob.lotm.entity.client.spirits.ghost.SpiritGhostRenderer;
+import de.jakob.lotm.entity.client.spirits.spirit_bane.SpiritBaneRenderer;
 import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentWizardRenderer;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.gui.ModMenuTypes;
@@ -262,6 +265,9 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.SPIRIT_BUBBLES_ENTITY.get(), SpiritBubblesRenderer::new);
             EntityRenderers.register(ModEntities.SPIRIT_BLUE_WIZARD.get(), SpiritBlueWizardRenderer::new);
             EntityRenderers.register(ModEntities.SPIRIT_TRANSLUCENT_WIZARD.get(), SpiritTranslucentWizardRenderer::new);
+            EntityRenderers.register(ModEntities.SPIRIT_GHOST.get(), SpiritGhostRenderer::new);
+            EntityRenderers.register(ModEntities.SPIRIT_BIZARRO_BANE.get(), SpiritBizarroBaneRenderer::new);
+            EntityRenderers.register(ModEntities.SPIRIT_BANE.get(), SpiritBaneRenderer::new);
 
 
             GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);

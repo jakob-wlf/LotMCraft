@@ -8,15 +8,9 @@ import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
-import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Chicken;
-import net.minecraft.world.entity.animal.allay.Allay;
-import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -24,17 +18,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SpiritBlueWizardEntity extends Animal {
+public class SpiritBaneEntity extends Animal {
 
     public final AnimationState IDLE_ANIMATION = new AnimationState();
     public final AnimationState WALK_ANIMATION = new AnimationState();
 
 
 
-    public SpiritBlueWizardEntity(EntityType<? extends Animal> entityType, Level level) {
+    public SpiritBaneEntity(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
 
-        // Enable flying movement
         this.moveControl = new MoveControl(this);
     }
 

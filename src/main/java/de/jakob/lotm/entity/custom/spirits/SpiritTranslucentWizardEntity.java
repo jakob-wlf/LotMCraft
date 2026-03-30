@@ -88,15 +88,10 @@ public class SpiritTranslucentWizardEntity extends Animal {
         return false;
     }
 
-
     @Override
     public void tick() {
         super.tick();
 
         Level level = this.level();
-
-        if(level.isClientSide) {
-            //this.setupAnimationStates();
-        }
     }
 }

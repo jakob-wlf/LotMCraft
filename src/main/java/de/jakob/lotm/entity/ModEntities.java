@@ -15,10 +15,7 @@ import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunKingdomEntity
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.*;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.CycleOfFateEntity;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.MisfortuneWordsEntity;
-import de.jakob.lotm.entity.custom.spirits.SpiritBlueWizardEntity;
-import de.jakob.lotm.entity.custom.spirits.SpiritBubblesEntity;
-import de.jakob.lotm.entity.custom.spirits.SpiritDervishEntity;
-import de.jakob.lotm.entity.custom.spirits.SpiritTranslucentWizardEntity;
+import de.jakob.lotm.entity.custom.spirits.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -317,6 +314,18 @@ public class ModEntities {
     public static final Supplier<EntityType<SpiritTranslucentWizardEntity>> SPIRIT_TRANSLUCENT_WIZARD =
             ENTITY_TYPES.register("spirit_translucent_wizard", () -> EntityType.Builder.of(SpiritTranslucentWizardEntity::new, MobCategory.MONSTER)
                     .sized(1.3f, 1.3f).build("spirit_translucent_wizard"));
+
+    public static final Supplier<EntityType<SpiritGhostEntity>> SPIRIT_GHOST =
+            ENTITY_TYPES.register("spirit_ghost", () -> EntityType.Builder.of(SpiritGhostEntity::new, MobCategory.MONSTER)
+                    .sized(1.3f, 1.3f).build("spirit_ghost"));
+
+    public static final Supplier<EntityType<SpiritBizarroBaneEntity>> SPIRIT_BIZARRO_BANE =
+            ENTITY_TYPES.register("spirit_bizarro_bane", () -> EntityType.Builder.of(SpiritBizarroBaneEntity::new, MobCategory.MONSTER)
+                    .sized(1.3f, 2f).build("spirit_bizarro_bane"));
+
+    public static final Supplier<EntityType<SpiritBaneEntity>> SPIRIT_BANE =
+            ENTITY_TYPES.register("spirit_bane", () -> EntityType.Builder.of(SpiritBaneEntity::new, MobCategory.MONSTER)
+                    .sized(1.3f, 2f).build("spirit_bane"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<BeyonderNPCEntity>> BEYONDER_NPC =
             ENTITY_TYPES.register("beyonder_npc", () -> EntityType.Builder.<BeyonderNPCEntity>of(BeyonderNPCEntity::new, MobCategory.MONSTER)

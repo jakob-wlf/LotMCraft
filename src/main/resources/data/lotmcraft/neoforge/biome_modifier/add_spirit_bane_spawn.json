@@ -1,0 +1,19 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": [
+    "lotmcraft:spirit_wool_meadows",
+    "lotmcraft:spirit_crystalline_peaks",
+    "lotmcraft:spirit_void_gardens",
+    "lotmcraft:spirit_quartz_flats",
+    "lotmcraft:spirit_glacial_shelf"
+  ],
+  "spawners": [
+    {
+      "type": "lotmcraft:spirit_bane",
+      "weight": 100,
+      "minCount": 1,
+      "maxCount": 5,
+      "category": "creature"
+    }
+  ]
+}
