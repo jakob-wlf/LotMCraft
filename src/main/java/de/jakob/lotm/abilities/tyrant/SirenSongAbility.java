@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
@@ -61,6 +62,7 @@ public class SirenSongAbility extends SelectableAbility {
 
         level.playSound(null, BlockPos.containing(entity.position()), ModSounds.DAZING_SONG.get(), SoundSource.BLOCKS, 1, 1);
 
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
         ServerScheduler.scheduleForDuration(0,  2, 20 * 30, () -> {
             if(entity.level().isClientSide)
                 return;
@@ -69,6 +71,8 @@ public class SirenSongAbility extends SelectableAbility {
         }, level);
         ServerScheduler.scheduleForDuration(0,  18, 20 * 30, () -> {
             if(entity.level().isClientSide)
+                return;
+            if(InteractionHandler.isInteractionPossible(supplier, "calming", seq))
                 return;
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 25, entity.position(), new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 3, false, false, false), new MobEffectInstance(MobEffects.WEAKNESS, 20, 3, false, false, false), new MobEffectInstance(MobEffects.BLINDNESS, 20, 3, false, false, false));
         }, level);
@@ -107,6 +111,7 @@ public class SirenSongAbility extends SelectableAbility {
         level.playSound(null, BlockPos.containing(entity.position()), ModSounds.DEATH_MELODY.get(), SoundSource.BLOCKS, 1, 1);
 
         double multiplier = multiplier(entity)/3;
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
         ServerScheduler.scheduleForDuration(0,  2, 20 * 30, () -> {
             if(entity.level().isClientSide)
                 return;
@@ -115,6 +120,8 @@ public class SirenSongAbility extends SelectableAbility {
         }, level);
         ServerScheduler.scheduleForDuration(0,  18, 20 * 30, () -> {
             if(entity.level().isClientSide)
+                return;
+            if(InteractionHandler.isInteractionPossible(supplier, "calming", seq))
                 return;
             AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 25, DamageLookup.lookupDps(5,  .65, 18, 20) * multiplier, entity.position(), true, false, true, 0);
         }, level);

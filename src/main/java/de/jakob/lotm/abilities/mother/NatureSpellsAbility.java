@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
@@ -188,9 +189,19 @@ public class NatureSpellsAbility extends SelectableAbility {
         castingSwamp.add(uuid);
 
         final int[] tick = {0};
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
 
-        ServerScheduler.scheduleForDuration(0, 2, 200, () -> {
+        final UUID[] swampTaskIdHolder = new UUID[1];
+        swampTaskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 2, 200, () -> {
             tick[0]++;
+
+            Location swampLoc = new Location(startLoc, entity.level());
+            if(InteractionHandler.isInteractionPossible(swampLoc, "burning", seq) ||
+               InteractionHandler.isInteractionPossible(swampLoc, "drought", seq)) {
+                castingSwamp.remove(uuid);
+                if(swampTaskIdHolder[0] != null) ServerScheduler.cancel(swampTaskIdHolder[0]);
+                return;
+            }
 
             // particles
             for (Vec3 pos : positions) {

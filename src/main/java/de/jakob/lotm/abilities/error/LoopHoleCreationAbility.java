@@ -3,11 +3,13 @@ package de.jakob.lotm.abilities.error;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.AbilityUseEvent;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.abilities.visionary.VirtualPersonaAbility;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;
@@ -78,7 +80,16 @@ public class LoopHoleCreationAbility extends Ability {
         );
         activeLoopholes.put(loopholeId, loopholeData);
 
-        ServerScheduler.scheduleForDuration(0, 2, 20 * 14, () -> {
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
+        final UUID[] loopTaskIdHolder = new UUID[1];
+        loopTaskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 2, 20 * 14, () -> {
+            Location loopholeLoc = new Location(targetLoc, serverLevel);
+            if(InteractionHandler.isInteractionPossible(loopholeLoc, "explosion", seq)) {
+                removeLoophole(loopholeId);
+                clearArtifactScaling(entity);
+                if(loopTaskIdHolder[0] != null) ServerScheduler.cancel(loopTaskIdHolder[0]);
+                return;
+            }
             // Update entities in loophole
             updateEntitiesInLoophole(loopholeData);
 

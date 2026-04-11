@@ -1,11 +1,13 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.CoffinEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
@@ -17,6 +19,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class MaternalEmbraceAbility extends Ability {
     public MaternalEmbraceAbility(String id) {
@@ -71,8 +74,19 @@ public class MaternalEmbraceAbility extends Ability {
         targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 30, 20, false, false, false));
         targetEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 30, 20, false, false, false));
 
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 30, () -> {
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
+        final UUID[] taskIdHolder = new UUID[1];
+        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 1, 20 * 30, () -> {
             if(!targetEntity.isAlive()) {
+                return;
+            }
+            Location coffinLoc = new Location(coffinEntity.position(), coffinEntity.level());
+            if(InteractionHandler.isInteractionPossible(coffinLoc, "burning", seq) ||
+               InteractionHandler.isInteractionPossible(coffinLoc, "explosion", seq)) {
+                component.setTransformedAndSync(false, targetEntity);
+                component.setTransformationIndexAndSync(0, targetEntity);
+                coffinEntity.discard();
+                if(taskIdHolder[0] != null) ServerScheduler.cancel(taskIdHolder[0]);
                 return;
             }
             targetEntity.setPos(coffinEntity.getX(), coffinEntity.getY(), coffinEntity.getZ());

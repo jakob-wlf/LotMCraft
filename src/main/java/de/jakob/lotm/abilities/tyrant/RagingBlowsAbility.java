@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -16,6 +17,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class RagingBlowsAbility extends Ability {
     public RagingBlowsAbility(String id) {
@@ -36,7 +38,14 @@ public class RagingBlowsAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
             double multiplier = multiplier(entity)/1.5;
-            ServerScheduler.scheduleForDuration(0, 6, 6 * 9, () -> {
+            int seq = AbilityUtil.getSeqWithArt(entity, this);
+            final UUID[] taskIdHolder = new UUID[1];
+            taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 6, 6 * 9, () -> {
+                Location entityLoc = new Location(entity.position(), entity.level());
+                if(InteractionHandler.isInteractionPossible(entityLoc, "freezing", seq)) {
+                    if(taskIdHolder[0] != null) ServerScheduler.cancel(taskIdHolder[0]);
+                    return;
+                }
                 Vec3 pos = VectorUtil.getRelativePosition(entity.getEyePosition(), entity.getLookAngle().normalize(), random.nextDouble(1, 2), random.nextDouble(-1.5, 1.5), random.nextDouble(-.5, .5));
                 ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.POOF, pos, 4, 0, 0.125);
                 ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, pos, 10, 0, 0.125);

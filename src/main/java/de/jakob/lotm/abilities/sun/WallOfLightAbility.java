@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class WallOfLightAbility extends Ability {
     public WallOfLightAbility(String id) {
@@ -65,7 +67,20 @@ public class WallOfLightAbility extends Ability {
             }
         }
 
-        ServerScheduler.scheduleForDuration(0, 7, 20 * 20, () -> {
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
+        final UUID[] taskIdHolder = new UUID[1];
+        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 7, 20 * 20, () -> {
+            Location wallLoc = new Location(entity.position(), entity.level());
+            if(InteractionHandler.isInteractionPossible(wallLoc, "darkness", seq)) {
+                for(BlockPos pos : blocks) {
+                    BlockState cleanupState = level.getBlockState(pos);
+                    if(cleanupState.getBlock() == Blocks.BARRIER) {
+                        level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+                    }
+                }
+                if(taskIdHolder[0] != null) ServerScheduler.cancel(taskIdHolder[0]);
+                return;
+            }
             for(BlockPos pos : blocks) {
                 if(random.nextBoolean())
                     ParticleUtil.spawnParticles((ServerLevel) level, random.nextBoolean() ? dust : ParticleTypes.END_ROD, pos.getCenter(), 1, 0.5, 0.02);

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sun;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -17,6 +18,7 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class GodSaysItsNotEffectiveAbility extends Ability {
     public GodSaysItsNotEffectiveAbility(String id) {
@@ -44,7 +46,15 @@ public class GodSaysItsNotEffectiveAbility extends Ability {
 
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
         nearbyEntities.forEach(e -> BeyonderData.addModifier(e, "notary_debuff", .8));
-        ServerScheduler.scheduleForDuration(0, 35, 20 * 20, () -> {
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
+        final UUID[] taskIdHolder = new UUID[1];
+        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 35, 20 * 20, () -> {
+            Location entityLoc = new Location(entity.position(), entity.level());
+            if(InteractionHandler.isInteractionPossible(entityLoc, "morale_boost", seq)) {
+                nearbyEntities.forEach(e -> BeyonderData.removeModifier(e, "notary_debuff"));
+                if(taskIdHolder[0] != null) ServerScheduler.cancel(taskIdHolder[0]);
+                return;
+            }
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.END_ROD, entity.getEyePosition().subtract(0, .4, 0), 25, 5, 0);
             RingEffectManager.createRingForAll(entity.getEyePosition().subtract(0, .4, 0), 6, 20 * 2, 252 / 255f, 173 /255f, 3 / 255f, .65f, .5f, 1f, .5f, true, (ServerLevel) level);
         }, () -> {

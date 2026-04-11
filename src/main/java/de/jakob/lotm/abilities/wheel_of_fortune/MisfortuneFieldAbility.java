@@ -1,10 +1,12 @@
 package de.jakob.lotm.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;
@@ -15,6 +17,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class MisfortuneFieldAbility extends Ability {
     public MisfortuneFieldAbility(String id) {
@@ -42,7 +45,15 @@ public class MisfortuneFieldAbility extends Ability {
 
         Vec3 startPos = entity.position();
         int amplifier = Math.round(multiplier(entity) * 350f);
-        ServerScheduler.scheduleForDuration(0, 2, 20 * 20, () -> {
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
+        final UUID[] taskIdHolder = new UUID[1];
+        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 2, 20 * 20, () -> {
+            Location fieldLoc = new Location(startPos, entity.level());
+            if(InteractionHandler.isInteractionPossible(fieldLoc, "cleansing", seq) ||
+               InteractionHandler.isInteractionPossible(fieldLoc, "morale_boost", seq)) {
+                if(taskIdHolder[0] != null) ServerScheduler.cancel(taskIdHolder[0]);
+                return;
+            }
             AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, 20).forEach(e -> {
                 LuckComponent luckComponent = e.getData(ModAttachments.LUCK_COMPONENT.get());
                 luckComponent.addLuckWithMin(-amplifier, -amplifier);

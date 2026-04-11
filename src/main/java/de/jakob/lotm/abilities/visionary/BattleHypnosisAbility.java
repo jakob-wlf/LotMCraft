@@ -2,10 +2,12 @@ package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.abilities.demoness.CharmAbility;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -103,10 +105,14 @@ public class BattleHypnosisAbility extends Ability {
     private void weakenAndMoveAroundTarget(ServerLevel level, LivingEntity entity, LivingEntity target) {
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.weaken").withColor(0xf5c56c));
 
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
         BeyonderData.addModifier(target, "battle_hypnosis_weaken", .4);
         ServerScheduler.scheduleDelayed(20 * 12, () -> BeyonderData.removeModifier(target, "battle_hypnosis_weaken"));
 
         ServerScheduler.scheduleForDuration(0, 5, 20 * 8, () -> {
+            Location targetLoc = new Location(target.position(), target.level());
+            if(InteractionHandler.isInteractionPossible(targetLoc, "calming", seq))
+                return;
             target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20, 5, false, false, true));
 
             target.setDeltaMovement(new Vec3((random.nextDouble() - .5) * 2, (random.nextDouble() - .5) * .15, (random.nextDouble() - .5) * 2).scale(.75));
@@ -117,10 +123,14 @@ public class BattleHypnosisAbility extends Ability {
     private void freezeTarget(ServerLevel level, LivingEntity entity, LivingEntity target) {
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.stop").withColor(0xf5c56c));
 
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
         DisabledAbilitiesComponent component = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
         component.disableAbilityUsageForTime("battle_hypnosis_freeze", 20 * 3, target);
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 5, () -> {
+            Location targetLoc = new Location(target.position(), target.level());
+            if(InteractionHandler.isInteractionPossible(targetLoc, "calming", seq))
+                return;
             target.setDeltaMovement(0, 0, 0);
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 10, false, false, true));
             target.hurtMarked = true;

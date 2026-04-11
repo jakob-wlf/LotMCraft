@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -18,6 +19,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
+import java.util.UUID;
 
 public class LifeDeprivationAbility extends SelectableAbility {
     public LifeDeprivationAbility(String id) {
@@ -76,8 +78,16 @@ public class LifeDeprivationAbility extends SelectableAbility {
         List<LivingEntity> targets = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 55);
 
         double multiplier = multiplier(entity);
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
 
-        ServerScheduler.scheduleForDuration(0, 2, 50, () -> {
+        final UUID[] areaTaskIdHolder = new UUID[1];
+        areaTaskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 2, 50, () -> {
+            Location drainLoc = new Location(entity.position(), entity.level());
+            if(InteractionHandler.isInteractionPossible(drainLoc, "purification", seq) ||
+               InteractionHandler.isInteractionPossible(drainLoc, "blooming", seq)) {
+                if(areaTaskIdHolder[0] != null) ServerScheduler.cancel(areaTaskIdHolder[0]);
+                return;
+            }
             for(LivingEntity target : targets) {
                 target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.MOTHER_GENERIC, entity), (float) (DamageLookup.lookupDps(3, .3, 2, 25) * multiplier));
                 target.invulnerableTime = 0;
@@ -102,8 +112,16 @@ public class LifeDeprivationAbility extends SelectableAbility {
         }
 
         double multiplier = multiplier(entity);
+        int targetSeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        ServerScheduler.scheduleForDuration(0, 2, 50, () -> {
+        final UUID[] targetTaskIdHolder = new UUID[1];
+        targetTaskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 2, 50, () -> {
+            Location drainLoc = new Location(target.position(), target.level());
+            if(InteractionHandler.isInteractionPossible(drainLoc, "purification", targetSeq) ||
+               InteractionHandler.isInteractionPossible(drainLoc, "blooming", targetSeq)) {
+                if(targetTaskIdHolder[0] != null) ServerScheduler.cancel(targetTaskIdHolder[0]);
+                return;
+            }
             target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.MOTHER_GENERIC, entity), (float) (DamageLookup.lookupDps(3, .8, 2, 25) * multiplier));
             target.invulnerableTime = 0;
 
