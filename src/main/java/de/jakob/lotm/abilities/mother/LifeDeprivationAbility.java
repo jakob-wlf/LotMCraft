@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
-import java.util.UUID;
 
 public class LifeDeprivationAbility extends SelectableAbility {
     public LifeDeprivationAbility(String id) {
