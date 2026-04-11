@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ThunderclapAbility extends Ability {
     public ThunderclapAbility(String id) {
-        super(id, 1);
+        super(id, 1, "lightning", "explosion");
         canBeCopied = false;
     }
 

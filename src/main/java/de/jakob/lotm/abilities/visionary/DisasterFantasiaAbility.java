@@ -22,7 +22,7 @@ public class DisasterFantasiaAbility extends SelectableAbility {
     private static final double METEOR_RADIUS = 50.0;
 
     public DisasterFantasiaAbility(String id) {
-        super(id, 30f);
+        super(id, 30f, "destruction");
     }
 
     @Override

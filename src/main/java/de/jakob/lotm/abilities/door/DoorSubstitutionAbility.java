@@ -31,7 +31,7 @@ public class DoorSubstitutionAbility extends Ability {
     private static final HashMap<UUID, Integer> figurineNumbers = new HashMap<>();
 
     public DoorSubstitutionAbility(String id) {
-        super(id, 10f);
+        super(id, 10f, "blink_escape");
         canBeCopied = false;
         canBeReplicated = false;
         canBeUsedInArtifact = false;

@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class AreaDesolationAbility extends Ability {
     public AreaDesolationAbility(String id) {
-        super(id, 5);
+        super(id, 5, "drought");
         canBeCopied = false;
     }
 

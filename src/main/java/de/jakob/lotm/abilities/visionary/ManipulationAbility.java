@@ -32,7 +32,7 @@ import java.util.UUID;
 public class ManipulationAbility extends SelectableAbility {
 
     public ManipulationAbility(String id) {
-        super(id, 30);
+        super(id, 30, "charm");
     }
 
     @Override

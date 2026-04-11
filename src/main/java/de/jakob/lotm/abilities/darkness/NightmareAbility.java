@@ -54,7 +54,7 @@ public class NightmareAbility extends SelectableAbility {
     }
 
     public NightmareAbility(String id) {
-        super(id, .15f);
+        super(id, .15f, "darkness");
 
         canBeCopied = false;
         canBeUsedByNPC = false;

@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class AweAbility extends Ability {
     public AweAbility(String id) {
-        super(id, 10);
+        super(id, 10, "charm");
     }
 
     @Override

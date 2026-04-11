@@ -38,7 +38,7 @@ public class LoopHoleCreationAbility extends Ability {
     private static final Map<UUID, UUID> entityToLoophole = new ConcurrentHashMap<>();
 
     public LoopHoleCreationAbility(String id) {
-        super(id, 3.5f);
+        super(id, 3.5f, "sealing");
         canBeCopied = false;
         canBeReplicated = false;
         autoClear = false;

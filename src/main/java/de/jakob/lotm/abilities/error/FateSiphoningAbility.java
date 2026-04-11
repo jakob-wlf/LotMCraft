@@ -36,7 +36,7 @@ public class FateSiphoningAbility extends Ability {
     private static final HashMap<UUID, UUID> linkedEntities = new HashMap<>();
 
     public FateSiphoningAbility(String id) {
-        super(id, 20);
+        super(id, 20, "curse");
         canBeCopied = false;
     }
 

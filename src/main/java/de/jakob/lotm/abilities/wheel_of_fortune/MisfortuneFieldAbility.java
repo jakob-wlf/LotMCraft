@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class MisfortuneFieldAbility extends Ability {
     public MisfortuneFieldAbility(String id) {
-        super(id, 30);
+        super(id, 30, "unluck");
         canBeCopied = false;
     }
 

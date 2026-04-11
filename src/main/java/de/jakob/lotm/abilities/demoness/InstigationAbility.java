@@ -28,7 +28,7 @@ public class InstigationAbility extends Ability {
     private final HashMap<UUID, LivingEntity> targets = new HashMap<>();
 
     public InstigationAbility(String id) {
-        super(id, 1);
+        super(id, 1, "corruption");
 
         canBeUsedByNPC = false;
         canBeCopied = false;

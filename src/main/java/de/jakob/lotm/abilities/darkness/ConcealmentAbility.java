@@ -31,7 +31,7 @@ import java.util.Set;
 
 public class ConcealmentAbility extends SelectableAbility {
     public ConcealmentAbility(String id) {
-        super(id, 5);
+        super(id, 5, "darkness");
         this.canBeCopied = false;
         autoClear = false;
     }

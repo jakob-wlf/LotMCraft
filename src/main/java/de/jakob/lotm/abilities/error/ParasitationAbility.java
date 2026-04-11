@@ -47,7 +47,7 @@ public class ParasitationAbility extends SelectableAbility {
     private static final HashMap<UUID, UUID> originalBodyMap = new HashMap<>();
 
     public ParasitationAbility(String id) {
-        super(id, 10f);
+        super(id, 10f, "corruption");
         canBeUsedByNPC = false;
         canBeCopied = false;
         canBeReplicated = false;

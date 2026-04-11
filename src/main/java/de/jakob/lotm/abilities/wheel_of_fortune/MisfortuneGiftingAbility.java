@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class MisfortuneGiftingAbility extends Ability {
     public MisfortuneGiftingAbility(String id) {
-        super(id, 2);
+        super(id, 2, "unluck");
         canBeCopied = false;
     }
 

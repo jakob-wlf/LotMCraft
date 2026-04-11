@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class SpaceDistortionAbility extends Ability {
     public SpaceDistortionAbility(String id) {
-        super(id, 20);
+        super(id, 20, "space_warp");
         canBeCopied = false;
     }
 

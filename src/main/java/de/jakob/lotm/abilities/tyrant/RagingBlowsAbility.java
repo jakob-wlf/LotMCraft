@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class RagingBlowsAbility extends Ability {
     public RagingBlowsAbility(String id) {
-        super(id, 1.2f);
+        super(id, 1.2f, "explosion");
     }
 
     @Override

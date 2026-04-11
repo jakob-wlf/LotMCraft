@@ -22,7 +22,7 @@ public class PsychologicalInvisibilityAbility extends Ability {
     public static final HashSet<UUID> invisiblePlayers = new HashSet<>();
 
     public PsychologicalInvisibilityAbility(String id) {
-        super(id, 180);
+        super(id, 180, "fog");
         canBeCopied = false;
         canBeReplicated = false;
     }

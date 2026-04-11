@@ -30,7 +30,7 @@ public class MirrorSubstituteAbility extends Ability {
     private static final HashMap<UUID, Integer> figurineNumbers = new HashMap<>();
 
     public MirrorSubstituteAbility(String id) {
-        super(id, 10f);
+        super(id, 10f, "blink_escape");
         canBeCopied = false;
         canBeReplicated = false;
         canBeUsedInArtifact = false;

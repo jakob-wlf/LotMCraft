@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class SirenSongAbility extends SelectableAbility {
     public SirenSongAbility(String id) {
-        super(id, 45);
+        super(id, 45, "charm");
         canBeCopied = false;
         canBeReplicated = false;
     }

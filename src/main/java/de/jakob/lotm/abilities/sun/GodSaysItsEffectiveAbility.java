@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class GodSaysItsEffectiveAbility extends Ability {
     public GodSaysItsEffectiveAbility(String id) {
-        super(id, 20);
+        super(id, 20, "morale_boost");
         canBeCopied = false;
         canBeReplicated = false;
     }

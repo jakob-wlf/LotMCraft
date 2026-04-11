@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class RoarOfTheThunderGodAbility extends Ability {
     public RoarOfTheThunderGodAbility(String id) {
-        super(id, 5);
+        super(id, 5, "lightning", "explosion");
         canBeCopied = false;
     }
 

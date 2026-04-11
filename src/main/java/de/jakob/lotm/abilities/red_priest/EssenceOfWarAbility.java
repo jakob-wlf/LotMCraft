@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class EssenceOfWarAbility extends Ability {
     public EssenceOfWarAbility(String id) {
-        super(id, 180);
+        super(id, 180, "morale_boost");
         canBeCopied = false;
     }
 

@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class MaternalEmbraceAbility extends Ability {
     public MaternalEmbraceAbility(String id) {
-        super(id, 20);
+        super(id, 20, "sealing");
         canBeCopied = false;
     }
 

@@ -15,7 +15,7 @@ import java.util.Map;
 public class WingsOfLightAbility extends ToggleAbility {
 
     public WingsOfLightAbility(String id) {
-        super(id);
+        super(id, "light_weak");
         canBeCopied = false;
     }
 

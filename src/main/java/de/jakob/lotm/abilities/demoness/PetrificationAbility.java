@@ -31,7 +31,7 @@ import java.util.Map;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class PetrificationAbility extends SelectableAbility {
     public PetrificationAbility(String id) {
-        super(id, 60);
+        super(id, 60, "petrification");
         canBeCopied = false;
         autoClear = false;
     }

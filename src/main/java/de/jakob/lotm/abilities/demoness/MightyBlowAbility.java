@@ -18,7 +18,7 @@ import java.util.Map;
 public class MightyBlowAbility extends Ability {
 
     public MightyBlowAbility(String id) {
-        super(id, 2.5f);
+        super(id, 2.5f, "explosion");
 
         hasOptimalDistance = true;
         optimalDistance = 1.5f;

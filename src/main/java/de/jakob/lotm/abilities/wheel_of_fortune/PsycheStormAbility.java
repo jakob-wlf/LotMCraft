@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class PsycheStormAbility extends Ability {
     public PsycheStormAbility(String id) {
-        super(id, 7);
+        super(id, 7, "corruption");
     }
 
     @Override

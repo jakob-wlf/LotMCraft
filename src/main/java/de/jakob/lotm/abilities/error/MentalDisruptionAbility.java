@@ -25,7 +25,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class MentalDisruptionAbility extends Ability {
     public MentalDisruptionAbility(String id) {
-        super(id, 2);
+        super(id, 2, "charm");
     }
 
     @Override

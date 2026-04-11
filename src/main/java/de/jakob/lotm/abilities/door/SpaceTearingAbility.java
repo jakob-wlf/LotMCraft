@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class SpaceTearingAbility extends Ability {
     public SpaceTearingAbility(String id) {
-        super(id, 2);
+        super(id, 2, "destruction");
         canBeCopied = false;
     }
 

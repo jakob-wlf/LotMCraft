@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class GodSaysItsNotEffectiveAbility extends Ability {
     public GodSaysItsNotEffectiveAbility(String id) {
-        super(id, 20);
+        super(id, 20, "curse");
         canBeCopied = false;
         canBeReplicated = false;
     }

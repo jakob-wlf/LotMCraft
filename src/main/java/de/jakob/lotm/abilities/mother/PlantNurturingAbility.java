@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class PlantNurturingAbility extends Ability {
     public PlantNurturingAbility(String id) {
-        super(id, 2);
+        super(id, 2, "blooming");
     }
 
     @Override

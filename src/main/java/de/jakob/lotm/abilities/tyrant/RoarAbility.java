@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class RoarAbility extends Ability {
     public RoarAbility(String id) {
-        super(id, 2);
+        super(id, 2, "explosion");
         canBeCopied = false;
     }
 

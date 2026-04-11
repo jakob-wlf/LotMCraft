@@ -35,7 +35,7 @@ public class SacrificeAbility extends Ability {
     private static final int MAX_DURATION_SECONDS = 60;
 
     public SacrificeAbility(String id) {
-        super(id, 43200);
+        super(id, 43200, "burning");
         canBeCopied = false;
         canBeReplicated = false;
         canBeUsedInArtifact = false;
