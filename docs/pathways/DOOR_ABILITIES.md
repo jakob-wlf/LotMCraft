@@ -1,5 +1,24 @@
 # Door Pathway Abilities
 
+## Spirituality
+
+Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passively.
+
+| Sequence | Max Spirituality | Regen/sec |
+|----------|-----------------|-----------|
+| 9        | 540             | 6.5/s     |
+| 8        | 600             | 7.2/s     |
+| 7        | 2,340           | 28.1/s    |
+| 6        | 3,600           | 43.2/s    |
+| 5        | 5,700           | 68.4/s    |
+| 4        | 11,700          | 140.4/s   |
+| 3        | 15,000          | 180.0/s   |
+| 2        | 30,000          | 360.0/s   |
+| 1        | 60,000          | 720.0/s   |
+| 0        | 180,000         | 2,160.0/s |
+
+---
+
 ## Recording and Replicating
 
 The Door pathway has two signature mechanics for borrowing abilities from other Beyonders:
@@ -16,10 +35,70 @@ Recorded copies have 1 use. Replicated copies have unlimited uses.
 
 ---
 
+### Sealing Authority
+**Sequence Requirement:** 0
+**Spirituality Cost:** 50000
+**Cooldown:** 45 seconds
+*(Cannot be used by NPCs)*
+
+Four selectable modes.
+
+**Mode 0 — Seal Target**
+- **Range:** `30 × max(multiplier/4, 1)` blocks.
+- Seals a target entity inside a **barrier sphere** (radius = target's eye height, min 3 blocks) for **14 seconds**.
+- While sealed: target is **completely immobile** (Slowness 101 every 4 ticks, velocity zeroed), **abilities disabled**, and **AI disabled** for non-Beyonders.
+- The seal breaks early if an **explosion** or **sealing_malfunction** interaction is active at the target location.
+- Duration scales with the sequence difference: `18 × seqDifference` seconds (3 seconds if target is weaker).
+
+**Mode 1 — Make Trap**
+- Marks the item in the caster's **off-hand** as a trap.
+- Any non-Door-Sequence-0 entity that walks within 2.5 blocks of the trap item is **teleported to the Space dimension** for a duration:
+  - Sequence 0: 8 seconds | Sequence 1: 50 seconds | Sequence 2: 70 seconds | Other: 5 minutes.
+- The entity is returned to their original position after the duration.
+
+**Mode 2 — Lock Dimension**
+- Seals the **current dimension** for `8 × max(multiplier/4, 1)` minutes — no entities can travel to or from it.
+- Using the mode again on a sealed dimension unseals it.
+
+**Mode 3 — Seal Area**
+- Creates a **barrier ellipsoid** (`60 × max(multiplier/4, 1)` radius, 13 blocks tall) centered on the caster.
+- All entities inside have ability usage disabled every 20 ticks (except the caster) and experience fog effects.
+- A **slow time field** (0.00001× time) is active inside for `60 × max(multiplier/4, 1)` seconds.
+
+---
+
+### Door Authority
+**Sequence Requirement:** 0
+**Spirituality Cost:** 10000
+**Cooldown:** 10 seconds
+
+Two selectable modes. The selected effect lasts **5 minutes** and affects all doors in the dimension.
+
+**Mode 0 — Malfunction**
+- All doors **malfunction** — their open/close behavior is disrupted.
+
+**Mode 1 — Strengthen**
+- All doors are **strengthened** — right-clicking a door is cancelled (they cannot be opened normally).
+
+---
+
+### Space Fragmentation
+**Sequence Requirement:** 1
+**Spirituality Cost:** 12000
+**Cooldown:** 20 seconds
+
+- **Target Range:** `35 × max(multiplier/4, 1)` blocks.
+- Spawns **9 Planet entities** in a ring (20-block radius) around the target location.
+- Every 20 ticks for **5 seconds**, deals **~`DamageLookup(1, 0.75)` × max(multiplier/6, 1)** damage to all entities within 25 blocks of the target.
+- If griefing is enabled, progressively destroys blocks in an expanding sphere (up to radius ~13 over 5 seconds).
+- Planets are discarded when the effect ends.
+
+---
+
 ### Space-Time Storm
 **Sequence Requirement:** 1
-**Spirituality Cost:** 1700
-**Cooldown:** 12 seconds
+**Spirituality Cost:** 40000
+**Cooldown:** 50 seconds
 *(Cannot be copied)*
 
 - **Target Range:** 60 blocks; **Damage Radius:** 35 blocks
@@ -33,7 +112,7 @@ Recorded copies have 1 use. Replicated copies have unlimited uses.
 
 ### Black Hole
 **Sequence Requirement:** 1
-**Spirituality Cost:** 1500
+**Spirituality Cost:** 25000
 **Cooldown:** 2 minutes
 *(Cannot be copied)*
 
@@ -47,8 +126,8 @@ Recorded copies have 1 use. Replicated copies have unlimited uses.
 
 ### Player Teleportation
 **Sequence Requirement:** 1
-**Spirituality Cost:** 1200
-**Cooldown:** 2 seconds
+**Spirituality Cost:** 30000
+**Cooldown:** 20 seconds
 *(Cannot be copied, replicated, or used in artifacts)*
 
 - Teleports the caster directly to a selected online player.
@@ -58,10 +137,22 @@ Recorded copies have 1 use. Replicated copies have unlimited uses.
 
 ---
 
+### Symbolization
+**Sequence Requirement:** 2
+**Spirituality Cost:** 250 per tick (toggle)
+*(Cannot be copied, replicated, or used in artifacts)*
+
+- Toggles sustained flight for the caster at **speed 0.225** (slower than Conceptualization).
+- Cannot activate if the flight-disable cooldown is active. Re-checks **every tick** — cancels itself mid-flight if the cooldown triggers while active.
+- On deactivation, resets fall distance every tick for **2.5 seconds** to prevent fall damage.
+- Emits enchant and star particles continuously while active (denser than Conceptualization).
+
+---
+
 ### Distortion Field
 **Sequence Requirement:** 2
-**Spirituality Cost:** 1400
-**Cooldown:** 40 seconds
+**Spirituality Cost:** 7000
+**Cooldown:** 60 seconds
 *(Cannot be copied)*
 
 - Creates a **barrier ring** (radius 40, 18 blocks tall) lasting **40 seconds**.
@@ -75,8 +166,8 @@ Recorded copies have 1 use. Replicated copies have unlimited uses.
 
 ### Space Distortion
 **Sequence Requirement:** 2
-**Spirituality Cost:** 1000
-**Cooldown:** 20 seconds
+**Spirituality Cost:** 10000
+**Cooldown:** 45 seconds
 *(Cannot be copied)*
 
 - **Target Range:** 27 blocks; **Pull Radius:** 70 blocks
@@ -113,7 +204,7 @@ Recorded copies have 1 use. Replicated copies have unlimited uses.
 ### Replicating
 **Sequence Requirement:** 2
 **Spirituality Cost:** 0
-**Cooldown:** 8 seconds
+**Cooldown:** 3 seconds
 *(Cannot be copied or replicated)*
 
 - Watches for any ability used within **15 blocks** over the next **5 seconds**.
@@ -122,10 +213,24 @@ Recorded copies have 1 use. Replicated copies have unlimited uses.
 
 ---
 
+### Conceptualization
+**Sequence Requirement:** 3
+**Spirituality Cost:** 220 per tick (toggle)
+*(Cannot be copied, replicated, used in artifacts, or shared)*
+
+- Toggles sustained flight for the caster at **speed 0.35** (faster than Symbolization).
+- Cannot activate if the flight-disable cooldown is active. Unlike Symbolization, does **not** re-check this every tick — once active it stays active until manually cancelled or overridden by another transformation.
+- While active, reduces **all incoming damage by 80%** (damage is multiplied by 0.2×).
+- Deactivates if another transformation overrides the CONCEPTUALIZATION transformation slot.
+- On deactivation, resets fall distance every tick for **2.5 seconds** to prevent fall damage.
+- Emits enchant, star, and end rod particles continuously while active.
+
+---
+
 ### Sealing
 **Sequence Requirement:** 3
-**Spirituality Cost:** 500
-**Cooldown:** 2 seconds
+**Spirituality Cost:** 5000
+**Cooldown:** 25 seconds
 *(Cannot be copied)*
 
 - **Target Range:** 20 blocks; **Radius:** 5 blocks
@@ -140,7 +245,7 @@ Recorded copies have 1 use. Replicated copies have unlimited uses.
 
 ### Waypoint
 **Sequence Requirement:** 3
-**Spirituality Cost:** 900
+**Spirituality Cost:** 5000
 **Cooldown:** 1 second
 *(Cannot be copied, replicated, or used in artifacts)*
 
@@ -161,7 +266,7 @@ Three selectable modes:
 
 ### Wandering
 **Sequence Requirement:** 3
-**Spirituality Cost:** 200
+**Spirituality Cost:** 7000
 **Cooldown:** 1 second
 *(Cannot be copied, replicated, or used in artifacts)*
 
@@ -172,8 +277,8 @@ Three selectable modes:
 
 ### Space Tearing
 **Sequence Requirement:** 3
-**Spirituality Cost:** 800
-**Cooldown:** 2 seconds
+**Spirituality Cost:** 1500
+**Cooldown:** 6 seconds
 *(Cannot be copied)*
 
 - **Target Range:** 27 blocks
@@ -183,20 +288,10 @@ Three selectable modes:
 
 ---
 
-### Conceptualization
-**Sequence Requirement:** 3
-**Spirituality Cost:** 2 per tick (toggle)
-*(Cannot be copied, replicated, or used in artifacts)*
-
-- Toggles sustained flight for the caster (speed 0.225).
-- Resets fall distance for **2.5 seconds** after deactivating, preventing fall damage.
-
----
-
 ### Space Concealment
 **Sequence Requirement:** 4
-**Spirituality Cost:** 100
-**Cooldown:** 1 second
+**Spirituality Cost:** 3000
+**Cooldown:** 40 seconds
 *(Cannot be copied)*
 
 Three selectable modes:
@@ -217,8 +312,8 @@ Three selectable modes:
 
 ### Exile
 **Sequence Requirement:** 4
-**Spirituality Cost:** 500
-**Cooldown:** 10 seconds
+**Spirituality Cost:** 4000
+**Cooldown:** 60 seconds
 *(Cannot be copied)*
 
 - **Target Range:** 20 blocks
@@ -228,8 +323,8 @@ Three selectable modes:
 
 ### Door Substitution
 **Sequence Requirement:** 4
-**Spirituality Cost:** 90
-**Cooldown:** 10 seconds
+**Spirituality Cost:** 900
+**Cooldown:** 5 seconds
 *(Cannot be copied, replicated, or used in artifacts)*
 
 - Gives the caster an **Oak Door item** (up to **5 doors** held at a time).
@@ -240,10 +335,27 @@ Three selectable modes:
 
 ---
 
+### Invisible Hand
+**Sequence Requirement:** 5
+**Spirituality Cost:** 170
+**Cooldown:** 1.5 seconds
+
+Two selectable modes. **Target Range:** `15 × max(multiplier/4, 1)` blocks.
+
+**Mode 0 — Push**
+- Pushes the target entity away from the caster at **2.25× velocity**.
+
+**Mode 1 — Pull**
+- Pulls the target entity toward the caster at **2.25× velocity**.
+
+If no entity is found in range, spawns failure particles at the targeted location.
+
+---
+
 ### Blink
 **Sequence Requirement:** 5
-**Spirituality Cost:** 20
-**Cooldown:** ~0 seconds
+**Spirituality Cost:** 400
+**Cooldown:** 0.5 seconds
 *(Cannot be copied)*
 
 - **Range:** 8 blocks
@@ -254,9 +366,9 @@ Three selectable modes:
 
 ### Traveler's Door
 **Sequence Requirement:** 5
-**Spirituality Cost:** 70
+**Spirituality Cost:** 0
 **Cooldown:** 3 seconds
-*(Cannot be copied, replicated, or used in artifacts)*
+*(Cannot be copied)*
 
 Two selectable modes:
 
@@ -274,7 +386,7 @@ Two selectable modes:
 ### Recording
 **Sequence Requirement:** 6
 **Spirituality Cost:** 0
-**Cooldown:** 8 seconds
+**Cooldown:** 3 seconds
 *(Cannot be copied or replicated)*
 
 - Watches for any ability used within **15 blocks** over the next **5 seconds**.
@@ -330,20 +442,20 @@ Four selectable modes:
 ### Physical Enhancements (Door)
 **Sequence Requirement:** 9
 
-Provides passive buffs that scale with the caster's current sequence. Includes Fire Resistance at higher sequences. No Night Vision at any sequence.
+No Fire Resistance or Night Vision at any sequence.
 
-| Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration | Other |
-|----------|----------|------------|-------|--------------|--------------|-------|
-| 9        | —        | —          | +2    | —            | +1           | — |
-| 8        | +2       | +4         | +2    | +5           | +2           | — |
-| 7        | +2       | +4         | +2    | +5           | +2           | — |
-| 6        | +2       | +6         | +2    | +7           | +2           | — |
-| 5        | +2       | +8         | +2    | +9           | +2           | Fire Resistance +1 |
-| 4        | +3       | +13        | +4    | +16          | +3           | Fire Resistance +2 |
-| 3        | +3       | +14        | +4    | +17          | +3           | Fire Resistance +3 |
-| 2        | +4       | +17        | +5    | +25          | +4           | Fire Resistance +3 |
-| 1        | +4       | +18        | +5    | +30          | +4           | Fire Resistance +4 |
-| 0        | +5       | +18        | +5    | +20          | +5           | Fire Resistance +5 |
+| Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration |
+|----------|----------|------------|-------|--------------|--------------|
+| 9        | —        | —          | +1    | —            | —            |
+| 8        | —        | —          | +1    | +2           | —            |
+| 7        | —        | —          | +1    | +2           | +1           |
+| 6        | +1       | +1         | +2    | +3           | +1           |
+| 5        | +2       | +2         | +2    | +4           | +1           |
+| 4        | +1       | +4         | +4    | +11          | +2           |
+| 3        | +2       | +5         | +4    | +12          | +2           |
+| 2        | +3       | +8         | +5    | +20          | +3           |
+| 1        | +3       | +8         | +5    | +25          | +3           |
+| 0        | +4       | +10        | +6    | +35          | +4           |
 
 ---
 

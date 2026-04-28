@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.fool;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.item.ModItems;
@@ -89,6 +90,8 @@ public class MarionetteControllingAbility extends SelectableAbility {
     }
 
     private void activateSwap(ServerLevel level, ServerPlayer player) {
+        if (ProhibitionHandler.isInMarionetteZone(player.position(), level)) return;
+
         LivingEntity marionette = getSelectedMarionette(player);
 
         if(marionette == null) {
@@ -161,6 +164,8 @@ public class MarionetteControllingAbility extends SelectableAbility {
 
         if(!swapOnDamageIsActive.contains(player.getUUID()))
             return;
+
+        if (ProhibitionHandler.isInMarionetteZone(player.position(), level)) return;
 
         LivingEntity marionette = getSelectedMarionette(player);
         if(marionette == null)

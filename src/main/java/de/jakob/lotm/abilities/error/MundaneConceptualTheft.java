@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.TeleportationUtil;
@@ -85,7 +86,7 @@ public class MundaneConceptualTheft extends SelectableAbility {
             }
             return;
         }
-
+        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level)) return;
         if(abilityIndex == 3) {
             stealDistance(serverLevel, entity);
             return;

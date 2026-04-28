@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.door;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -81,6 +82,9 @@ public class DoorSubstitutionAbility extends Ability {
             return;
         }
 
+        LivingEntity entity = event.getEntity();
+        if (entity.level() instanceof ServerLevel sl && ProhibitionHandler.isInStandInsZone(entity.position(), sl)) return;
+
         int num = figurineNumbers.get(event.getEntity().getUUID());
 
         if(num <= 0)
@@ -89,7 +93,6 @@ public class DoorSubstitutionAbility extends Ability {
         figurineNumbers.put(event.getEntity().getUUID(), num - 1);
         event.setNewDamage(0);
 
-        LivingEntity entity = event.getEntity();
         Vec3 pos = entity.position();
 
         Level level = entity.level();

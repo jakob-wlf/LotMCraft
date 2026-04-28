@@ -80,7 +80,7 @@ public class SealingAbility extends Ability {
             }else{
                 duration = 20*14;
             };
-            LOTMCraft.LOGGER.info("Can seal");
+
             BeyonderData.addModifierWithTimeLimit(e, "sealed", .3,duration);
             int seq = AbilityUtil.getSeqWithArt(entity, this);
             if  (seq<=1)

@@ -1,5 +1,24 @@
 # Sun Pathway Abilities
 
+## Spirituality
+
+Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passively.
+
+| Sequence | Max Spirituality | Regen/sec |
+|----------|-----------------|-----------|
+| 9        | 180             | 2.2/s     |
+| 8        | 200             | 2.4/s     |
+| 7        | 780             | 9.4/s     |
+| 6        | 1,200           | 14.4/s    |
+| 5        | 1,900           | 22.8/s    |
+| 4        | 3,900           | 46.8/s    |
+| 3        | 5,000           | 60.0/s    |
+| 2        | 10,000          | 120.0/s   |
+| 1        | 20,000          | 240.0/s   |
+| 0        | 60,000          | 720.0/s   |
+
+---
+
 ## Purification Damage
 
 Sun pathway abilities at **Sequence 3 or stronger** deal a special damage type called **Purification Damage**. In addition to dealing normal damage, every hit drains the target's **digestion** — a hidden meter that represents how well a Beyonder has digested their potion. This only applies to **Beyonder players** (not mobs or non-Beyonders).
@@ -67,8 +86,8 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Spear of Light
 **Sequence Requirement:** 2
-**Spirituality Cost:** 150
-**Cooldown:** 1 second
+**Spirituality Cost:** 1250
+**Cooldown:** 2.5 seconds
 *(Cannot be copied)*
 
 - **Range:** 50 blocks (projectile, spawns offset 4.5–8 blocks to the side)
@@ -154,8 +173,8 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Unshadowed Spear
 **Sequence Requirement:** 4
-**Spirituality Cost:** 150
-**Cooldown:** 1 second
+**Spirituality Cost:** 250
+**Cooldown:** 1.5 seconds
 *(Cannot be copied)*
 
 - **Range:** 50 blocks (projectile, spawns offset 3.5–6 blocks to the side)
@@ -168,7 +187,7 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Unshadowed Domain
 **Sequence Requirement:** 4
-**Spirituality Cost:** 600
+**Spirituality Cost:** 800
 **Cooldown:** 50 seconds
 *(Cannot be copied or replicated)*
 
@@ -185,8 +204,8 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Light of Holiness
 **Sequence Requirement:** 5
-**Spirituality Cost:** 50
-**Cooldown:** 0.9 seconds
+**Spirituality Cost:** 150
+**Cooldown:** 1.85 seconds
 
 - **Target Range:** 45 blocks; beam descends from **18 blocks above** target
 - **Hit Radius:** 8 blocks (per step of the beam)
@@ -199,8 +218,8 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Purification Halo
 **Sequence Requirement:** 5
-**Spirituality Cost:** 40
-**Cooldown:** 3 seconds
+**Spirituality Cost:** 120
+**Cooldown:** 9 seconds
 
 - **Radius:** Expanding ring — starts at 0.5 blocks, grows by 0.25 blocks every 2 ticks, over 5 seconds.
 - **Hit Zone:** Ring at current radius (±0.25 blocks)
@@ -238,7 +257,7 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 ### Cleave of Purification
 **Sequence Requirement:** 7
 **Spirituality Cost:** 20
-**Cooldown:** 0.8 seconds
+**Cooldown:** 1.8 seconds
 
 - **Range:** Melee (optimal distance: 1 block); **Hit Radius:** 2.75 blocks
 - **Hits:** **1 hit** per cast
@@ -250,8 +269,8 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Fire of Light
 **Sequence Requirement:** 7
-**Spirituality Cost:** 23
-**Cooldown:** 0.75 seconds
+**Spirituality Cost:** 50
+**Cooldown:** 1.75 seconds
 
 - **Range:** 10 blocks; **Hit Radius:** 2.5 blocks
 - **Hits:** **1 hit** per cast
@@ -279,8 +298,8 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Holy Light Summoning
 **Sequence Requirement:** 7
-**Spirituality Cost:** 32
-**Cooldown:** 0.9 seconds
+**Spirituality Cost:** 64
+**Cooldown:** 1.5 seconds
 
 - **Target Range:** 40 blocks; beam descends from **18 blocks above** target
 - **Hit Radius:** 5 blocks (per step of the beam)
@@ -293,8 +312,8 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Holy Light
 **Sequence Requirement:** 8
-**Spirituality Cost:** 19
-**Cooldown:** 0.75 seconds
+**Spirituality Cost:** 35
+**Cooldown:** 1.25 seconds
 
 - **Target Range:** 16 blocks; beam descends from **14 blocks above** target
 - **Hit Radius:** 2.5 blocks (per step of the beam)
@@ -320,7 +339,7 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Holy Song
 **Sequence Requirement:** 9
-**Spirituality Cost:** 12
+**Spirituality Cost:** 24
 **Cooldown:** 20 seconds
 *(Registers as a morale_boost interaction)*
 
@@ -341,17 +360,17 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 ### Physical Enhancements (Sun)
 **Sequence Requirement:** 9
 
-Provides passive buffs that scale with the caster's current sequence. Includes Night Vision at all sequences and Fire Resistance at higher sequences.
+No Night Vision (Sun pathway has no Night Vision in physical enhancements). Includes **Fire Resistance** at Seq 6 and below.
 
 | Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration | Other |
 |----------|----------|------------|-------|--------------|--------------|-------|
-| 9        | +1       | —          | +2    | —            | +1           | Night Vision +1 |
-| 8        | +2       | +4         | +2    | +5           | +2           | Night Vision +1 |
-| 7        | +2       | +4         | +2    | +5           | +2           | Fire Resistance +1, Night Vision +1 |
-| 6        | +2       | +6         | +2    | +7           | +2           | Fire Resistance +1, Night Vision +1 |
-| 5        | +2       | +8         | +2    | +9           | +2           | Fire Resistance +2, Night Vision +1 |
-| 4        | +3       | +13        | +4    | +16          | +3           | Fire Resistance +2, Night Vision +1 |
-| 3        | +3       | +14        | +4    | +17          | +3           | Fire Resistance +3, Night Vision +1 |
-| 2        | +4       | +17        | +5    | +25          | +4           | Fire Resistance +3, Night Vision +1 |
-| 1        | +4       | +18        | +5    | +30          | +4           | Fire Resistance +4, Night Vision +1 |
-| 0        | +5       | +18        | +5    | +20          | +5           | Fire Resistance +5, Night Vision +1 |
+| 9        | +1       | —          | +1    | +4           | —            | — |
+| 8        | +1       | —          | +1    | +5           | —            | — |
+| 7        | +2       | +1         | +2    | +6           | +1           | — |
+| 6        | +3       | +2         | +2    | +7           | +1           | Fire Resistance +1 |
+| 5        | +3       | +3         | +2    | +9           | +2           | Fire Resistance +1 |
+| 4        | +4       | +8         | +5    | +18          | +3           | Fire Resistance +2 |
+| 3        | +4       | +9         | +5    | +19          | +3           | Fire Resistance +3 |
+| 2        | +5       | +12        | +6    | +27          | +4           | Fire Resistance +3 |
+| 1        | +5       | +13        | +6    | +32          | +4           | Fire Resistance +4 |
+| 0        | +6       | +16        | +6    | +47          | +6           | Fire Resistance +6 |

@@ -149,7 +149,6 @@ public class MidnightPoemAbility extends SelectableAbility {
 
         ParticleUtil.spawnParticles((ServerLevel) level, dustBig, entity.getEyePosition().subtract(0, .4, 0), 800, 7, 0);
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.CRIMSON_LEAF.get(), entity.position().subtract(0, .2, 0), 500, 7, .01, 7, 0.07);
-        LOTMCraft.LOGGER.info("multiplier {}",multiplier(entity) );
 
         // Wilt damage is reduced by nearby light_source interactions
         Location loc = new Location(entity.position(), level);

@@ -64,6 +64,8 @@ public class UnderworldGateRenderer extends EntityRenderer<UnderworldGateEntity>
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull UnderworldGateEntity entity) {
-        return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/underworld_gate/underworld_gate.png");
+        if(entity.hasTentacles() && entity.tickCount >= 35)
+            return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/underworld_gate/underworld_gate.png");
+        return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/underworld_gate/underworld_gate_no_tentacles.png");
     }
 }

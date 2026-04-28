@@ -12,6 +12,7 @@ import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
@@ -60,11 +61,13 @@ public class SleepInducementAbility extends SelectableAbility {
 
     private void aoe(Level level, LivingEntity entity){
         if(!(level instanceof ServerLevel)) {
+            ParticleUtil.createParticleSpirals((ClientLevel) level, dust, entity.position(), entity.getBbWidth() + .25, entity.getBbWidth() + .25, entity.getEyeHeight(), 1, 5, 30, 15, 1);
+            ParticleUtil.createParticleSpirals((ClientLevel) level, dust, entity.position(), 5, entity.getBbWidth() + .25, 5, 1, 5, 30, 30, 1);
             return;
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 10 * multiplier(entity)).forEach(e -> {
+        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 10 * (int) Math.max(multiplier(entity)/4,1)).forEach(e -> {
             if(BeyonderData.getPathway(e).equals("visionary") && BeyonderData.getSequence(e) < entitySeq){
                 AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.frenzy.failed").withColor(0xFFff124d));
 
@@ -73,17 +76,22 @@ public class SleepInducementAbility extends SelectableAbility {
                 }
             }
             else{
-               e.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 20 * 12, 1, false, false, false));
+               e.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 20 * 6* (int) Math.max(multiplier(entity)/4,1), 1, false, false, false));
             }
         });
     }
 
     private void single(Level level, LivingEntity entity){
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 80, 2);
+
         if(!(level instanceof ServerLevel)) {
+            if(target != null) {
+                ParticleUtil.spawnCircleParticles((ClientLevel) level, dust, target.getEyePosition(), 2, 20);
+                ParticleUtil.spawnCircleParticles((ClientLevel) level, dust, target.getEyePosition(), new Vec3(0, 0, 1), 2, 20);
+                ParticleUtil.spawnCircleParticles((ClientLevel) level, dust, target.getEyePosition(), new Vec3(1, 0, 0), 2, 20);
+            }
             return;
         }
-
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 80, 2);
 
         if(target == null) {
             if(entity instanceof ServerPlayer player) {
@@ -110,7 +118,7 @@ public class SleepInducementAbility extends SelectableAbility {
 
     private final DustParticleOptions dust = new DustParticleOptions(
             new Vector3f(250 / 255f, 201 / 255f, 102 / 255f),
-            1f
+            3f
     );
 
     private void animateParticleLine(Location startLoc, Vec3 end, int step, int duration) {

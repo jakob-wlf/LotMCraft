@@ -49,7 +49,7 @@ public class PlanetRenderer extends EntityRenderer<PlanetEntity> {
         ResourceLocation texture = getTextureLocation(entity);
 
         poseStack.pushPose();
-        poseStack.scale(2.5f, 2.5f, 2.5f);
+        poseStack.scale(3, 3, 3);
         Matrix4f matrix = poseStack.last().pose();
 
         VertexConsumer solidVc = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));

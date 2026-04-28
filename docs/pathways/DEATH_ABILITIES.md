@@ -1,5 +1,24 @@
 # Death Pathway Abilities
 
+## Spirituality
+
+Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passively.
+
+| Sequence | Max Spirituality | Regen/sec |
+|----------|-----------------|-----------|
+| 9        | 540             | 6.5/s     |
+| 8        | 600             | 7.2/s     |
+| 7        | 2,340           | 28.1/s    |
+| 6        | 3,600           | 43.2/s    |
+| 5        | 5,700           | 68.4/s    |
+| 4        | 11,700          | 140.4/s   |
+| 3        | 15,000          | 180.0/s   |
+| 2        | 30,000          | 360.0/s   |
+| 1        | 60,000          | 720.0/s   |
+| 0        | 180,000         | 2,160.0/s |
+
+---
+
 ## Active Abilities
 
 ---
@@ -101,7 +120,7 @@
 
 ### Hand of Death
 **Sequence Requirement:** 3  
-**Spirituality Cost:** 400  
+**Spirituality Cost:** 2000  
 **Cooldown:** 60 seconds  
 *(Cannot be copied)*
 
@@ -356,19 +375,20 @@ Four selectable modes:
 ### Physical Enhancements (Death)
 **Sequence Requirement:** 9
 
-Passive buffs scaling with the caster's sequence. Also grants permanent **Night Vision** and **50% resistance** to poison and freeze damage at all levels.
+**Passively reduces poison and freeze damage by 50%** at all sequences. No Night Vision or Fire Resistance in the table.
 
 | Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration |
 |----------|----------|------------|-------|--------------|--------------|
-| 9        | +1       | —          | +2    | —            | +1           |
-| 8, 7     | +2       | +4         | +2    | +5           | +2           |
-| 6        | +2       | +6         | +2    | +7           | +2           |
-| 5        | +2       | +8         | +2    | +9           | +2           |
-| 4        | +3       | +13        | +4    | +16          | +3           |
-| 3        | +3       | +14        | +4    | +17          | +3           |
-| 2        | +4       | +17        | +5    | +25          | +4           |
-| 1        | +4       | +18        | +5    | +30          | +4           |
-| 0        | +5       | +18        | +5    | +20          | +5           |
+| 9        | +1       | —          | —     | —            | —            |
+| 8        | +1       | —          | +1    | +5           | —            |
+| 7        | +2       | —          | +1    | +6           | +1           |
+| 6        | +2       | +1         | +2    | +7           | +2           |
+| 5        | +2       | +2         | +2    | +9           | +2           |
+| 4        | +3       | +7         | +4    | +18          | +3           |
+| 3        | +3       | +9         | +4    | +19          | +3           |
+| 2        | +4       | +12        | +5    | +27          | +4           |
+| 1        | +4       | +13        | +5    | +32          | +4           |
+| 0        | +6       | +16        | +6    | +4           | +6           |
 
 ---
 

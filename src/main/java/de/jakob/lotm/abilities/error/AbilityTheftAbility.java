@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.error.handler.TheftHandler;
+import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import net.minecraft.network.chat.Component;
@@ -62,7 +63,7 @@ public class AbilityTheftAbility extends SelectableAbility {
             }
             return;
         }
-
+        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level)) return;
         LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2);
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_target").withColor(0x6d32a8));

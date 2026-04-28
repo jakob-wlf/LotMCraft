@@ -39,6 +39,7 @@ public class RingExpansionRenderer {
         private final float expansionSpeed; // multiplier for expansion speed (1.0 = normal)
         private final boolean smoothExpansion; // whether to use smooth or linear expansion
         private final boolean enableOcclusion; // whether to test for block occlusion
+        private final boolean fadeOut; // whether alpha fades over time; false = constant alpha
         private int currentTick;
 
         public RingEffect(Vec3 center, float maxRadius, int duration,
@@ -46,13 +47,21 @@ public class RingExpansionRenderer {
                           float ringThickness, float ringHeight, float expansionSpeed,
                           boolean smoothExpansion) {
             this(center, maxRadius, duration, red, green, blue, alpha,
-                    ringThickness, ringHeight, expansionSpeed, smoothExpansion, true);
+                    ringThickness, ringHeight, expansionSpeed, smoothExpansion, true, true);
         }
 
         public RingEffect(Vec3 center, float maxRadius, int duration,
                           float red, float green, float blue, float alpha,
                           float ringThickness, float ringHeight, float expansionSpeed,
                           boolean smoothExpansion, boolean enableOcclusion) {
+            this(center, maxRadius, duration, red, green, blue, alpha,
+                    ringThickness, ringHeight, expansionSpeed, smoothExpansion, enableOcclusion, true);
+        }
+
+        public RingEffect(Vec3 center, float maxRadius, int duration,
+                          float red, float green, float blue, float alpha,
+                          float ringThickness, float ringHeight, float expansionSpeed,
+                          boolean smoothExpansion, boolean enableOcclusion, boolean fadeOut) {
             this.center = center;
             this.maxRadius = maxRadius;
             this.duration = duration;
@@ -65,6 +74,7 @@ public class RingExpansionRenderer {
             this.expansionSpeed = Math.max(0.1f, expansionSpeed); // Minimum speed
             this.smoothExpansion = smoothExpansion;
             this.enableOcclusion = enableOcclusion;
+            this.fadeOut = fadeOut;
             this.currentTick = 0;
         }
 
@@ -85,6 +95,7 @@ public class RingExpansionRenderer {
         }
 
         public float getCurrentAlpha() {
+            if (!fadeOut) return alpha;
             // Fade out over time
             float progress = currentTick / (float) duration;
             return alpha * (1.0f - progress);
@@ -162,7 +173,7 @@ public class RingExpansionRenderer {
                 center, packet.maxRadius(), packet.duration(),
                 packet.red(), packet.green(), packet.blue(), packet.alpha(),
                 packet.ringThickness(), packet.ringHeight(),
-                packet.expansionSpeed(), packet.smoothExpansion()
+                packet.expansionSpeed(), packet.smoothExpansion(), true, packet.fadeOut()
         );
         activeEffects.add(effect);
     }

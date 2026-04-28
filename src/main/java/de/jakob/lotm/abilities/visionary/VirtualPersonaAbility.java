@@ -30,6 +30,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
         canBeReplicated = false;
         canBeUsedInArtifact = false;
         cannotBeStolen = true;
+        canBeShared = false;
     }
 
     @Override

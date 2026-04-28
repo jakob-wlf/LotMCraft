@@ -386,10 +386,7 @@ public class LuckHandler {
         float scalable_damage = (float) (Math.abs(magnitude) *0.0077+ 3.3088);
         // scalable_damage = 20+(Math.abs(magnitude)*0.018);
         float damage = (float) lerpClamped(magnitude, 0, 3000, 5, scalable_damage);
-        LOTMCraft.LOGGER.info("text1: {}, actual luck {}, damage final {}", magnitude,(float) lerpClamped(magnitude, 0, 3000, 5, scalable_damage),damage);
         entity.hurt(ModDamageTypes.source(level, ModDamageTypes.UNLUCK), damage);
-
-
 
         Random random = new Random();
         entity.setDeltaMovement(random.nextDouble(-0.2, 0.2), 0.1, random.nextDouble(-0.2, 0.2));

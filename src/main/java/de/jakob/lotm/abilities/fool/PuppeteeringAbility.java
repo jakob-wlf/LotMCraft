@@ -64,48 +64,66 @@ public class PuppeteeringAbility extends Ability {
         };
     }
 
-    private int getManipulationTime(int sequence) {
-        return switch (sequence) {
-            default -> 20 * 11;
-            case 4 -> 20 * 6;
-            case 3 -> 20 * 5;
-            case 0, 1, 2 -> 20;
-        };
-    }
 
     private int getManipulationTimeBySequenceAndSequenceDifference(int sequence, int targetSequence) {
-        int difference = targetSequence - sequence;
+        int playerPower = 0;
+        int targetPower = 0;
 
-        int baseTime = 20 * 120; // ~120 seconds (20 ticks = 1 second)
+        switch (sequence){
+            case 9,8,7,6,5 -> playerPower = (10 - sequence); // should be 1, 2, 3, 4, 5
+            case 4 -> playerPower = 7;
+            case 3 -> playerPower = 9;
+            case 2 -> playerPower = 12;
+            case 1 -> playerPower = 15;
+            case 0 -> playerPower = 20;
+        }
+
+        switch (targetSequence){
+            case 9,8,7,6,5 -> targetPower = (10 - targetSequence); // should be 1, 2, 3, 4, 5
+            case 4 -> targetPower = 7;
+            case 3 -> targetPower = 9;
+            case 2 -> targetPower = 12;
+            case 1 -> targetPower = 15;
+            case 0 -> targetPower = 20;
+        }
+
+        // 20 - 15
+        int difference = playerPower - targetPower;
 
         int manipulationTime ;
 
-        if (difference == 0 || difference == 1) {
-            // Same sequence - faster depending on how low the controller's sequence is
-            if (sequence <= 2) {
-                manipulationTime = 20 * 60; // ~60s for seq 0-2
-            } else if (sequence == 3) {
-                manipulationTime = 20 * 80; // ~80s for seq 3
-            } else if (sequence == 4) {
-                manipulationTime = 20 * 100; // ~100s for seq 4
-            } else {
-                manipulationTime = baseTime; // ~120s for seq 5+
+        // same sequence, time depends on what sequence
+        if (difference == 0) {
+            if (targetSequence == 0) {
+                manipulationTime = 20 * 100; // ~100s for seq 0
             }
-        } else {
-            // Stronger advantage when higher sequence controls lower sequence
-            if (sequence <= 2) {
-                if(targetSequence >= 3 && targetSequence <= 4)
-                    manipulationTime = 20 * 10; // ~10s for seq 1-2 vs 3-4
-                else
-                    manipulationTime = 20; // 5s for seq 1-2 vs 5+
+            else if (targetSequence <= 2) {
+                manipulationTime = 20 * 80; // ~80s for seq 1, 2
             }
-            else if ((sequence == 3 || sequence == 4) && targetSequence >= 5) {
-                manipulationTime = 20 * 25; // ~25s for seq 3-4 vs 5+
+            else if (targetSequence <= 4) {
+                manipulationTime = 20 * 60; // ~60s for seq 3, 4
             }
             else {
-                // Default scaling: faster with bigger difference
-                int reduction = (difference) * (10 * 20); // if fool's seq is higher difference will be negative
-                manipulationTime = Math.max(baseTime + reduction, 20 * 5); // minimum 5s
+                manipulationTime = 20 * 30; // ~30s for seq 5+
+            }
+        }
+        // if the target sequence is higher than the player
+        else if (difference < 0) {
+            if (difference >= -2) {
+                // this works when (seq6 vs target seq5, seq5 (5 power) vs target seq4 (7 power) or seq4 (7 power) vs seq3 (9 power), but doesnt work for others)
+                manipulationTime = 20 * 180 * (difference * -1); // around 3 mins
+            } else {
+                manipulationTime = -1; // pass -1 for the impossible puppeteering
+            }
+        }
+        // last case, when player sequence is higher than the target
+        else {
+            if (targetSequence >= 10) {
+                manipulationTime = 20 * 2;
+            } else if (targetSequence >= 5) {
+                manipulationTime = 20 * (120 / (2 * difference));
+            } else {
+                manipulationTime = 20 * (120 / difference);
             }
         }
 
@@ -144,16 +162,10 @@ public class PuppeteeringAbility extends Ability {
         int time = getManipulationTimeBySequenceAndSequenceDifference(sequence, targetSequence);
 
         if(BeyonderData.isBeyonder(target)) {
-
-            if(targetSequence <= sequence) {
-                if(AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
-                    entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 8, 5, false, false, false));
-                    return;
-                }
-
-                time *= 8;
-            } else {
-                time = getManipulationTimeBySequenceAndSequenceDifference(sequence, targetSequence);
+            // if time < 0 means the control is impossible
+            if (time < 0) {
+                entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 8, 5, false, false, false));
+                return;
             }
         }
 

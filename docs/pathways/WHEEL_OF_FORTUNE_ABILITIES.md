@@ -1,5 +1,24 @@
 # Wheel of Fortune Pathway Abilities
 
+## Spirituality
+
+Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passively.
+
+| Sequence | Max Spirituality | Regen/sec |
+|----------|-----------------|-----------|
+| 9        | 630             | 7.6/s     |
+| 8        | 700             | 8.4/s     |
+| 7        | 2,730           | 32.8/s    |
+| 6        | 4,200           | 50.4/s    |
+| 5        | 6,650           | 79.8/s    |
+| 4        | 13,650          | 163.8/s   |
+| 3        | 17,500          | 210.0/s   |
+| 2        | 35,000          | 420.0/s   |
+| 1        | 70,000          | 840.0/s   |
+| 0        | 210,000         | 2,520.0/s |
+
+---
+
 ## Luck and Unluck
 
 The Wheel of Fortune pathway revolves around the **Luck** and **Unluck** custom effects. Both are persistent status effects with a level (amplifier) that scales their per-tick chance-based behaviors.
@@ -109,7 +128,7 @@ Three selectable modes. All outcomes are **randomly chosen** each cast.
 ### Spiritual Baptism
 **Sequence Requirement:** 3
 **Spirituality Cost:** 900
-**Cooldown:** 10 seconds
+**Cooldown:** 5 seconds
 *(Cannot be copied or replicated; registers as a cleansing interaction)*
 
 Two selectable modes:
@@ -155,6 +174,18 @@ Two selectable modes:
 
 ---
 
+### Luck Perception
+**Sequence Requirement:** 5
+**Spirituality Cost:** 0
+**Cooldown:** 0 seconds (toggle)
+*(Cannot be copied; cannot be used by NPCs; cannot be shared)*
+
+- While active, displays the **Luck value** of the looked-at entity (within **20 blocks**) in the action bar every 10 ticks.
+- If no entity is looked at, shows the caster's own Luck value instead.
+- Blocked if the target is a Wheel of Fortune Beyonder of lower sequence than the caster, or significantly stronger.
+
+---
+
 ### Luck Release
 **Sequence Requirement:** 5
 **Spirituality Cost:** 100
@@ -171,7 +202,7 @@ Two selectable modes:
 ### Misfortune Gifting
 **Sequence Requirement:** 5
 **Spirituality Cost:** 120
-**Cooldown:** 2 seconds
+**Cooldown:** 5 seconds
 *(Cannot be copied)*
 
 - **Range:** 20 blocks
@@ -217,20 +248,20 @@ Two selectable modes:
 ### Physical Enhancements (Wheel of Fortune)
 **Sequence Requirement:** 9
 
-Provides passive buffs scaling with sequence. Includes **Luck** at Sequence 7 and higher (in addition to the passive Luck ability). No Night Vision or Fire Resistance.
+Includes **Fire Resistance** at Seq 6 and below. No Night Vision at any sequence. Luck is provided separately by the **Passive Luck** ability (Seq 7).
 
-| Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration | Luck  |
+| Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration | Other |
 |----------|----------|------------|-------|--------------|--------------|-------|
-| 9        | +1       | —          | +2    | —            | +1           | —     |
-| 8        | +2       | +4         | +2    | +5           | +2           | —     |
-| 7        | +2       | +4         | +2    | +5           | +2           | +4    |
-| 6        | +2       | +6         | +2    | +7           | +2           | +6    |
-| 5        | +2       | +8         | +2    | +9           | +2           | +7    |
-| 4        | +3       | +13        | +4    | +16          | +3           | +11   |
-| 3        | +3       | +14        | +4    | +17          | +3           | +14   |
-| 2        | +4       | +17        | +5    | +25          | +4           | +18   |
-| 1        | +4       | +18        | +5    | +30          | +4           | +20   |
-| 0        | +5       | +18        | +5    | +20          | +5           | +26   |
+| 9        | —        | —          | +1    | —            | —            | — |
+| 8        | +1       | —          | +2    | +5           | —            | — |
+| 7        | +2       | —          | +2    | +6           | +1           | — |
+| 6        | +2       | +1         | +2    | +7           | +2           | Fire Resistance +1 |
+| 5        | +2       | +2         | +2    | +9           | +2           | Fire Resistance +2 |
+| 4        | +3       | +7         | +4    | +16          | +3           | Fire Resistance +2 |
+| 3        | +3       | +8         | +4    | +17          | +3           | Fire Resistance +3 |
+| 2        | +4       | +11        | +5    | +25          | +4           | Fire Resistance +3 |
+| 1        | +4       | +12        | +5    | +30          | +4           | Fire Resistance +4 |
+| 0        | +6       | +15        | +6    | +45          | +6           | Fire Resistance +6 |
 
 ---
 

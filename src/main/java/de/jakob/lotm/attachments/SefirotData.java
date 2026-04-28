@@ -52,6 +52,10 @@ public class SefirotData extends SavedData {
         return true;
     }
 
+    public void unclaimSefirot(UUID id){
+        claimedSefirah.remove(id);
+    }
+
     public String getClaimedSefirot(UUID uuid) {
         return claimedSefirah.getOrDefault(uuid, "");
     }

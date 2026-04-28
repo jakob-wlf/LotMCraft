@@ -1,13 +1,63 @@
 # Visionary Pathway Abilities
 
+## Spirituality
+
+Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passively.
+
+| Sequence | Max Spirituality | Regen/sec |
+|----------|-----------------|-----------|
+| 9        | 180             | 2.2/s     |
+| 8        | 200             | 2.4/s     |
+| 7        | 780             | 9.4/s     |
+| 6        | 1,200           | 14.4/s    |
+| 5        | 1,900           | 22.8/s    |
+| 4        | 3,900           | 46.8/s    |
+| 3        | 5,000           | 60.0/s    |
+| 2        | 10,000          | 120.0/s   |
+| 1        | 20,000          | 240.0/s   |
+| 0        | 60,000          | 720.0/s   |
+
+---
+
 ## Active Abilities
+
+---
+
+### Envisioning Position
+**Sequence Requirement:** 0
+**Spirituality Cost:** 1000
+**Cooldown:** 0.5 seconds
+*(Cannot be copied, replicated, used by NPCs, or used in artifacts)*
+
+Two selectable modes. Teleport range scales with sequence: `2^(9−seq)` blocks (e.g. Seq 9 = 1 block, Seq 0 = 512 blocks).
+
+**Mode 0 — On Sight**
+- Teleports the caster to the targeted block within range (line-of-sight targeting).
+
+**Mode 1 — Coordinates**
+- Opens a coordinate entry UI; teleports the caster to the specified location.
+
+---
+
+### Mind World Authority
+**Sequence Requirement:** 0
+**Spirituality Cost:** 1000
+**Cooldown:** 1 second
+*(Cannot be copied, replicated, stolen, used by NPCs, or used in artifacts)*
+
+Two selectable modes.
+
+**Mode 0 — Envisioning**
+- Toggles the **Mind World Authority Envisioning** state (10 spirituality per tick while active).
+
+**Mode 1 — Seal Mind World**
+- *(Not yet fully implemented)*
 
 ---
 
 ### Story Writing
 **Sequence Requirement:** 1
-**Spirituality Cost:** 1500
-**Cooldown:** 60 seconds
+**Spirituality Cost:** 200
 *(Cannot be used by NPCs)*
 
 Five selectable modes. Requires an active story book target to use most modes.
@@ -38,7 +88,7 @@ Five selectable modes. Requires an active story book target to use most modes.
 ### Disaster Fantasia
 **Sequence Requirement:** 1
 **Spirituality Cost:** 2500
-**Cooldown:** 30 seconds
+**Cooldown:** 11 seconds
 
 Two selectable modes. **Target range:** 150 blocks.
 
@@ -50,10 +100,33 @@ Two selectable modes. **Target range:** 150 blocks.
 
 ---
 
+### Discernment
+**Sequence Requirement:** 2
+**Spirituality Cost:** 200
+**Cooldown:** 3 seconds
+*(Cannot be copied, replicated, stolen, used by NPCs, or used in artifacts)*
+
+Three selectable modes.
+
+**Mode 0 — Believe Self**
+- Randomly applies one of four powerful self-buffs for **60 seconds**:
+  - **Strength IV**, **Regeneration V**, **Resistance III**, or **Speed IV**.
+
+**Mode 1 — Spectate Ability Usage**
+- Watches for any ability used within **40 blocks** over the next **10 seconds**.
+- On detection, has a **1 in 8 chance** (harder than Recording/Replicating) to begin envisioning it:
+  - After **2 minutes** of meditation, stores an **unlimited-use envisioned copy** of the ability.
+- Fails if the ability cannot be replicated or if the caster is more than 2 sequences weaker than the user.
+
+**Mode 2 — Envision Skill**
+- Opens the **Copied Ability Wheel** to use a previously envisioned ability.
+
+---
+
 ### Dream Maze
 **Sequence Requirement:** 2
 **Spirituality Cost:** 1000
-**Cooldown:** 60 seconds
+**Cooldown:** 7 seconds
 *(Cannot be copied, replicated, or used by NPCs)*
 
 Two selectable modes.
@@ -109,12 +182,16 @@ Two selectable modes. **Target range:** 20 blocks.
 - Applies **Mental Plague** effect (level 4):
   - **Duration:** 10 minutes normally; reduced to **2 minutes** if a purification interaction is active at the target.
 
+**Mental Plague Status** (every tick while active):
+- Drains **0.1% sanity** per tick (scales with amplifier: `0.1% × (amplifier + 1)`).
+- **Spreads** — infects nearby entities within **15 blocks** that don't already have it, for **8 minutes** at the same amplifier. Visionaries of Sequence 4 or stronger are immune to the spread.
+
 ---
 
 ### Manipulation
 **Sequence Requirement:** 4
 **Spirituality Cost:** 750
-**Cooldown:** 30 seconds
+**Cooldown:** 5 seconds
 
 Two selectable modes. **Target range:** 20 blocks.
 
@@ -175,7 +252,7 @@ Three selectable modes. **Target range:** 20–200 blocks depending on mode.
 ### Nightmare Spectator
 **Sequence Requirement:** 5
 **Spirituality Cost:** 110
-**Cooldown:** 1.5 seconds
+**Cooldown:** 5 seconds
 *(Cannot be copied)*
 
 - **Target range:** 200 blocks. Target must be **asleep**.
@@ -193,8 +270,14 @@ Three selectable modes. **Target range:** 20–200 blocks depending on mode.
 
 - **Target range:** 80 blocks.
 - Only works if the caster's sequence is **weaker** than the target's (higher number).
-- Applies **Asleep** effect (level 1, 12 seconds).
+- Applies **Asleep** status (level 1, 12 seconds).
 - Animates particle lines from caster to target.
+
+**Asleep Status:**
+- Zeroes the target's velocity every tick — complete inability to move.
+- Applies a **blurred screen** effect for the sleeping player (client-side).
+- Jumping is cancelled while asleep.
+- **Breaks immediately** if the sleeping entity takes any damage.
 
 ---
 
@@ -232,12 +315,11 @@ Three selectable modes. **Target range:** 20–200 blocks depending on mode.
 
 ### Psychological Invisibility
 **Sequence Requirement:** 6
-**Spirituality Cost:** 13
-**Cooldown:** 180 seconds
+**Spirituality Cost:** 13 per tick (toggle)
 *(Cannot be copied or replicated)*
 
-- Makes the caster **invisible** and prevents mobs from targeting them for **60 seconds**.
-- Applies **Invisibility** effect (level 20, 60 seconds).
+- Makes the caster **invisible** and prevents mobs from targeting them while active.
+- Applies **Invisibility** effect (level 20) continuously while active.
 
 ---
 
@@ -257,7 +339,7 @@ Three selectable modes. **Target range:** 20–200 blocks depending on mode.
 ### Frenzy
 **Sequence Requirement:** 7
 **Spirituality Cost:** 35
-**Cooldown:** 1.5 seconds
+**Cooldown:** 5 seconds
 
 - **Target range:** 20 blocks.
 - **Damage:** **~`DamageLookup(7, 0.85)`** × multiplier per hit (~12–13 damage at sequence 7).
@@ -272,7 +354,7 @@ Three selectable modes. **Target range:** 20–200 blocks depending on mode.
 ### Placate
 **Sequence Requirement:** 7
 **Spirituality Cost:** 50
-**Cooldown:** 7 seconds
+**Cooldown:** 5 seconds
 *(Cannot be copied or replicated)*
 
 Two selectable modes.
@@ -282,8 +364,71 @@ Two selectable modes.
 - Removes the **Losing Control** effect from the caster.
 
 **Mode 1 — Others**
-- **Radius:** 18 blocks.
+- **Radius:** 40 blocks.
 - Restores **15% sanity** and removes **Losing Control** from all nearby allies.
+
+---
+
+### Psychological Cue
+**Sequence Requirement:** 7
+**Spirituality Cost:** 5 per tick (toggle)
+*(Cannot be copied, replicated, stolen)*
+
+- While active, the next chat message the caster sends is **intercepted** (not broadcast) and parsed as a **prophecy trigger statement**.
+- If the message matches a valid trigger pattern and the target is within range, it plants a **Prophecy** on the target player.
+- Range scales with sequence: Seq 7 = 10 blocks, Seq 6 = 20, Seq 5 = 30, Seq 4 = 50, Seq 3 = 75, Seq 2 = 125, Seq 1 = 200, Seq 0 = 300 blocks.
+- If the target is significantly stronger, the cast fails and applies **Losing Control (Level 4, 25 seconds)** to the caster.
+- Cannot be activated if a Story Writing target is already selected.
+- Cannot target a Visionary of lower sequence than the caster.
+
+**Prophecy System:**
+
+A Prophecy is a persistent conditional effect planted on a target player. It consists of a **trigger** (a condition checked every tick) paired with an **action** (executed when the trigger fires). The prophecy is written as a natural-language chat message in the format:
+
+`[PlayerName] [trigger keyword] [trigger args] then/and [action keyword] [action args]`
+
+The number of simultaneous prophecies the caster can maintain scales with sequence:
+
+| Caster Sequence | Max Active Prophecies |
+|---|---|
+| 7 | 5 |
+| 6–5 | 10 |
+| 4–3 | 15 |
+| 2 | 25 |
+| 1 | 40 |
+| 0 | 80 |
+
+**Triggers** (the condition that causes the action to fire):
+
+| Keyword | Required Seq | Condition |
+|---------|-------------|-----------|
+| `instant` | 4 | Fires immediately when planted |
+| `health [op] [value]` | 4 | Target's health crosses a threshold (operators: `<`, `<=`, `=`, `>=`, `>`) |
+| `sanity [op] [value]` | 4 | Target's sanity crosses a threshold |
+| `player [names...]` | 6 | Target enters a certain proximity to a named player |
+| `on [x y z] [range]` | 7 | Target enters a position within `range` blocks |
+| `has [item]` | 7 | Target picks up a specific item |
+| `sealed` | 1 | Target is currently sealed (by Sealing Authority) |
+
+**Actions** (what happens when the trigger fires):
+
+| Keyword | Required Seq | Effect |
+|---------|-------------|--------|
+| `teleport [x y z]` | 0 | Teleports the target to the given coordinates |
+| `health [±value]` | 0 | Heals or damages the target by the given amount |
+| `sanity [±value]` | 0 | Increases or decreases the target's sanity |
+| `weather [clear/rain/thunder]` | 0 | Changes the weather |
+| `time [day/night/value]` | 0 | Changes the world time |
+| `spawn [entity]` | 0 | Spawns an entity at the target's position |
+| `calamity [type]` | 1 | Spawns a calamity (meteor/tornado/earthquake) at the target |
+| `digest [±value]` | 1 | Drains or restores the target's digestion |
+| `seal` | 1 | Seals the target (disables abilities) |
+| `unseal` | 1 | Removes a seal from the target |
+| `say [message]` | 4 | Forces the target to broadcast a chat message |
+| `stun` | 4 | Stuns the target briefly |
+| `confusion` | 4 | Applies confusion to the target |
+| `skill [ability_id]` | 4 | Forces the target to use a specific ability |
+| `drop [item]` | 7 | Forces the target to drop a specific item |
 
 ---
 
@@ -311,19 +456,40 @@ Two selectable modes.
 
 ---
 
+### Meta Awareness
+**Sequence Requirement:** 1
+
+- **Passive:** When any player says the caster's **username or honorific name** in chat, the caster receives an automatic prayer notification showing the speaker's name, pathway, sequence, and coordinates (with a 5-second cooldown).
+- Also triggers when another player successfully **divines** the caster.
+- The caster can respond via the Honorific Names menu.
+
+---
+
+### Pure Idealism
+**Sequence Requirement:** 2
+
+- **Passive:** Provides a **sanity-scaling damage multiplier** bonus. The bonus scales linearly with current sanity (0% sanity = ×1.0 multiplier, 100% sanity = full bonus).
+- Multiplier per sequence:
+  - Sequence 2: up to **+5%** (×1.05 at full sanity)
+  - Sequence 1: up to **+15%** (×1.15 at full sanity)
+  - Sequence 0: up to **+25%** (×1.25 at full sanity)
+
+---
+
 ### Physical Enhancements (Visionary)
 **Sequence Requirement:** 9
 
-Passive buffs scaling with sequence.
+Includes **Night Vision** at Seq 7 and below. Includes **Concealment** (reduces detection/concealment power) at Seq 3 and below. **Fire Resistance** at Seq 1 only.
 
-| Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration |
-|----------|----------|------------|-------|--------------|--------------|
-| 9        | +1       | —          | +2    | —            | +1           |
-| 8, 7     | +2       | +4         | +2    | +5           | +2           |
-| 6        | +2       | +6         | +2    | +7           | +2           |
-| 5        | +2       | +8         | +2    | +9           | +2           |
-| 4        | +3       | +13        | +4    | +16          | +3           |
-| 3        | +3       | +14        | +4    | +17          | +3           |
-| 2        | +4       | +17        | +5    | +25          | +4           |
-| 1        | +4       | +18        | +5    | +30          | +4           |
-| 0        | +5       | +18        | +5    | +20          | +5           |
+| Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration | Other |
+|----------|----------|------------|-------|--------------|--------------|-------|
+| 9        | —        | —          | +1    | —            | —            | — |
+| 8        | +1       | —          | +1    | +1           | —            | — |
+| 7        | +1       | —          | +2    | +2           | +1           | Night Vision +1 |
+| 6        | +1       | +1         | +2    | +4           | +1           | Night Vision +1 |
+| 5        | +1       | +2         | +2    | +6           | +1           | Night Vision +1 |
+| 4        | +3       | +5         | +4    | +12          | +2           | Night Vision +1 |
+| 3        | +3       | +6         | +4    | +15          | +2           | Night Vision +1, Concealment |
+| 2        | +4       | +9         | +5    | +23          | +3           | Night Vision +1, Concealment |
+| 1        | +4       | +12        | +5    | +30          | +4           | Fire Resistance +4, Concealment |
+| 0        | +6       | +12        | +6    | +40          | +4           | Night Vision +1, Concealment |

@@ -3,6 +3,7 @@ package de.jakob.lotm.sefirah;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.ServerLocation;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -15,7 +16,7 @@ import java.util.Arrays;
 
 public class SefirahHandler {
 
-    private static final String[] implementedSefirah = new String[]{"sefirah_castle"};
+    public static final String[] implementedSefirah = new String[]{"sefirah_castle", "empty"};
 
     public static boolean claimSefirot(ServerPlayer player, String sefirot) {
         return claimSefirot(player, sefirot, false);
@@ -26,11 +27,26 @@ public class SefirahHandler {
             return false;
         }
 
-        return SefirotData.get(player.server).claimSefirot(player.getUUID(), sefirot);
+        if(sefirot.equals("empty")){
+            unclaimSefirot(player);
+            return false;
+        }
+
+        boolean buff =  SefirotData.get(player.server).claimSefirot(player.getUUID(), sefirot);
+
+        if (buff)
+            BeyonderData.playerMap.setSefirot(player.getUUID(), sefirot);
+
+        return buff;
     }
 
     public static boolean hasSefirot(ServerPlayer player) {
         return !SefirotData.get(player.server).getClaimedSefirot(player.getUUID()).isEmpty();
+    }
+
+    public static void unclaimSefirot(ServerPlayer player){
+        BeyonderData.playerMap.setSefirot(player.getUUID(), "");
+        SefirotData.get(player.server).unclaimSefirot(player.getUUID());
     }
 
     public static void teleportToSefirot(ServerPlayer player) {

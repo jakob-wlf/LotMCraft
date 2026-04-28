@@ -64,9 +64,9 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
 
                     if (!entity.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(e.getUUID())) {
 
-                        if (!e.hasEffect(ModEffects.LOOSING_CONTROL)) {
-                            e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, amplifier));
-                        }
+                        e.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityWithSequenceDifference(
+                                0.04168f, e,
+                                BeyonderData.getSequence(e), BeyonderData.getSequence(entity));
 
                         doPathRelatedEffect(BeyonderData.getPathway(entity), level, entity, e);
                     }
@@ -143,6 +143,11 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
                     LightningEntity lightning = new LightningEntity(level, entity, e.position(), 50, 6, DamageLookup.lookupDamage(4, .7) * (int) Math.max(multiplier(entity)/4,1), false, 4, 200, 0x11A8DD);
                     level.addFreshEntity(lightning);
                 }
+                break;
+
+            case "visionary":
+                e.getData(ModAttachments.SANITY_COMPONENT.get())
+                        .decreaseSanityWithSequenceDifference(0.09168f, e, BeyonderData.getSequence(entity), BeyonderData.getSequence(e));
                 break;
 
             default:

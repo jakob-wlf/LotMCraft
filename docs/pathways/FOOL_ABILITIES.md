@@ -1,12 +1,48 @@
 # Fool Pathway Abilities
 
+## Spirituality
+
+Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passively.
+
+| Sequence | Max Spirituality | Regen/sec |
+|----------|-----------------|-----------|
+| 9        | 630             | 7.6/s     |
+| 8        | 700             | 8.4/s     |
+| 7        | 2,730           | 32.8/s    |
+| 6        | 4,200           | 50.4/s    |
+| 5        | 6,650           | 79.8/s    |
+| 4        | 13,650          | 163.8/s   |
+| 3        | 17,500          | 210.0/s   |
+| 2        | 35,000          | 420.0/s   |
+| 1        | 70,000          | 840.0/s   |
+| 0        | 210,000         | 2,520.0/s |
+
+---
+
 ## Active Abilities
+
+---
+
+### Fooling
+**Sequence Requirement:** 0
+**Spirituality Cost:** 80000
+**Cooldown:** 45 seconds
+*(Cannot be shared)*
+
+- **Radius:** `50 × max(multiplier/4, 1)` blocks.
+- **Duration:** `60 × max(multiplier/4, 1)` seconds.
+- Applies the **Fooling** status to all entities in range for the duration.
+
+**Fooling Status:**
+- **Inverted movement** — all directional input is reversed (forward↔back, left↔right, jump↔sneak). Stored as an attachment so it cannot be removed by milk or effect-clearing mechanics.
+- **Scrambled abilities** — on every ability use, **25% chance** the ability fails entirely; otherwise a random ability from the target's own pathway is cast instead of the intended one.
+- **Stun** — every 10 seconds, the target is stunned for **3 seconds** (complete inability to act).
 
 ---
 
 ### Grafting
 **Sequence Requirement:** 1
-**Spirituality Cost:** 1400
+**Spirituality Cost:** 10000
 **Cooldown:** 1 second
 *(Cannot be copied, replicated; cannot be used by NPCs)*
 
@@ -39,7 +75,7 @@ Four selectable modes. All graft effects last **30 seconds** and are used in a t
 
 ### Miracle Creation
 **Sequence Requirement:** 2
-**Spirituality Cost:** 1200
+**Spirituality Cost:** 7000
 **Cooldown:** 5 seconds
 *(Cannot be copied)*
 
@@ -70,7 +106,7 @@ Opens a coordinate entry UI; teleports the caster to the specified location.
 
 ### Historical Void Hiding
 **Sequence Requirement:** 3
-**Spirituality Cost:** 25 per tick (toggle)
+**Spirituality Cost:** 500 per tick (toggle)
 *(Cannot be copied, replicated, stolen, or used in artifacts)*
 
 - Enters a **hidden state** in the Historical Void — the caster is lifted 5 blocks upward, frozen in place, and becomes invisible.
@@ -85,7 +121,7 @@ Opens a coordinate entry UI; teleports the caster to the specified location.
 
 ### Historical Void Summoning
 **Sequence Requirement:** 3
-**Spirituality Cost:** 920
+**Spirituality Cost:** 5000
 **Cooldown:** 1 second
 *(Cannot be copied, replicated, stolen, used by NPCs, or used in artifacts)*
 
@@ -165,7 +201,7 @@ Four selectable modes. Requires the caster to have one or more active marionette
 
 ### Shape Shifting
 **Sequence Requirement:** 6
-**Spirituality Cost:** 100
+**Spirituality Cost:** 1000
 **Cooldown:** 5 seconds
 *(Cannot be copied, replicated; cannot be used by NPCs)*
 
@@ -182,8 +218,8 @@ Two selectable modes:
 
 ### Air Bullet
 **Sequence Requirement:** 7
-**Spirituality Cost:** 20
-**Cooldown:** 0.75 seconds
+**Spirituality Cost:** 100
+**Cooldown:** 1.5 seconds
 
 - **Range:** 10 blocks; **Hit Radius:** 2.5 blocks
 - Fires a compressed air projectile that travels 1 block/tick.
@@ -196,8 +232,8 @@ Two selectable modes:
 
 ### Flame Controlling
 **Sequence Requirement:** 7
-**Spirituality Cost:** 20
-**Cooldown:** 0.75 seconds
+**Spirituality Cost:** 100
+**Cooldown:** 1.5 seconds
 
 - **Range:** 10 blocks; **Hit Radius:** 2.5 blocks
 - Fires a flame projectile that travels 1 block/tick.
@@ -210,8 +246,8 @@ Two selectable modes:
 
 ### Flaming Jump
 **Sequence Requirement:** 7
-**Spirituality Cost:** 12
-**Cooldown:** 0.05 seconds
+**Spirituality Cost:** 60
+**Cooldown:** 1 second
 *(Cannot be used by NPCs)*
 
 - Teleports the caster to a **targeted fire block** within 50 blocks.
@@ -253,20 +289,34 @@ Two selectable modes:
 ### Physical Enhancements (Fool)
 **Sequence Requirement:** 9
 
-Provides passive buffs that scale with the caster's current sequence. No Night Vision or Fire Resistance at any sequence. Lower Strength at Seq 9 (no Strength at Seq 9, Strength +1 at Seq 8–7).
+Includes **Fire Resistance** at Seq 7 and below.
 
 | Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration | Other |
 |----------|----------|------------|-------|--------------|--------------|-------|
-| 9        | —        | —          | +2    | —            | +1           | — |
-| 8        | +1       | +4         | +2    | +5           | +2           | — |
-| 7        | +1       | +4         | +2    | +5           | +2           | — |
-| 6        | +2       | +6         | +2    | +7           | +2           | — |
-| 5        | +2       | +8         | +2    | +9           | +2           | — |
-| 4        | +3       | +13        | +4    | +16          | +3           | — |
-| 3        | +3       | +14        | +4    | +17          | +3           | — |
-| 2        | +4       | +17        | +5    | +25          | +4           | — |
-| 1        | +4       | +18        | +5    | +30          | +4           | — |
-| 0        | +5       | +18        | +5    | +20          | +5           | — |
+| 9        | —        | —          | +1    | —            | —            | — |
+| 8        | +1       | —          | +2    | +3           | —            | — |
+| 7        | +1       | —          | +3    | +3           | +1           | Fire Resistance +1 |
+| 6        | +1       | +1         | +3    | +4           | +1           | Fire Resistance +1 |
+| 5        | +2       | +2         | +3    | +5           | +1           | Fire Resistance +2 |
+| 4        | +1       | +4         | +5    | +12          | +2           | Fire Resistance +2 |
+| 3        | +2       | +5         | +5    | +13          | +2           | Fire Resistance +3 |
+| 2        | +3       | +8         | +6    | +21          | +3           | Fire Resistance +4 |
+| 1        | +3       | +8         | +6    | +26          | +3           | Fire Resistance +4 |
+| 0        | +4       | +10        | +7    | +36          | +4           | Fire Resistance +5 |
+
+---
+
+### Miracle of Resurrection
+**Sequence Requirement:** 2
+
+- **Passive:** When the caster would die, if they have resurrection attempts remaining:
+  - Death is **cancelled**.
+  - Inventory is **dropped** at the death location.
+  - Caster is **teleported** to a random position up to 50 blocks away in the Overworld (surface level).
+  - Caster is immediately placed into **Historical Void Hiding**.
+  - Caster is **fully healed** and all effects are removed.
+  - All abilities are **disabled for 10 minutes**.
+  - One resurrection attempt is consumed.
 
 ---
 

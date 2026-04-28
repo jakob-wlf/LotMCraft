@@ -19,12 +19,27 @@ import net.neoforged.neoforge.event.ServerChatEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MetaAwarenessAbility extends PassiveAbilityItem {
     private static final Map<UUID, Long> COOLDOWNS = new HashMap<>();
     private static final long COOLDOWN_MS = 5000; // 5s cooldown
+
+    public static final Set<String> COMMON_WORDS = Set.of(
+            "a","about","above","after","again","against","all","am","an","and","any","are",
+            "as","at","be","because","been","before","being","below","between","both","but",
+            "by","can","could","did","do","does","doing","down","during","each","few","for",
+            "from","further","had","has","have","having","he","her","here","hers","herself",
+            "him","himself","his","how","i","if","in","into","is","it","its","itself",
+            "just","me","more","most","my","myself","no","nor","not","now","of","off","on",
+            "once","only","or","other","our","ours","ourselves","out","over","own","same",
+            "she","should","so","some","such","than","that","the","their","theirs","them",
+            "themselves","then","there","these","they","this","those","through","to","too",
+            "under","until","up","very","was","we","were","what","when","where","which",
+            "while","who","whom","why","will","with","you","your","yours","yourself","yourselves"
+    );
 
     public MetaAwarenessAbility(Item.Properties properties) {
         super(properties);
@@ -41,7 +56,7 @@ public class MetaAwarenessAbility extends PassiveAbilityItem {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public static void onChat(ServerChatEvent event) {
-        String message = event.getRawText();
+        String msg = event.getRawText();
         ServerPlayer sender = event.getPlayer();
 
         if (!(sender.level() instanceof ServerLevel serverLevel)) return;
@@ -56,11 +71,28 @@ public class MetaAwarenessAbility extends PassiveAbilityItem {
 
             String username = candidate.getName().getString();
 
-            // Full username or one line of hn must appear in the message (case-insensitive)
-            if (!message.toLowerCase().contains(username.toLowerCase())
-                    && !BeyonderData.playerMap.containsHonorificNameWithLine(message)) continue;
+            boolean match = false;
 
-            triggerAutoPrayer(sender, candidate);
+            for (int i = 0; i < username.length(); i++) {
+                for (int j = i + 3; j <= username.length(); j++) {
+                    String part = username.substring(i, j);
+
+                    if (COMMON_WORDS.contains(part)) continue;
+
+                    if (msg.contains(part)) {
+                        match = true;
+                        break;
+                    }
+                }
+                if (match) break;
+            }
+
+            if (!match) {
+                if (!msg.toLowerCase().contains(username.toLowerCase())
+                        && !BeyonderData.playerMap.containsHonorificNameWithLine(msg)) continue;
+            }
+
+            triggerAutoPrayer(sender, candidate, msg);
         }
     }
 
@@ -68,11 +100,11 @@ public class MetaAwarenessAbility extends PassiveAbilityItem {
     // Called from PlayerDivinationSelectedPacket.handle when a divination succeeds. If the divined target has MetaAwareness, auto-pray  to the diviner.
     public static void onDivined(ServerPlayer diviner, ServerPlayer target) {
         if (!hasMetaAwareness(target)) return;
-        triggerAutoPrayer(diviner, target);
+        triggerAutoPrayer(diviner, target, "");
     }
 
 
-    public static void triggerAutoPrayer(ServerPlayer sender, ServerPlayer target) {
+    public static void triggerAutoPrayer(ServerPlayer sender, ServerPlayer target, String msg) {
         // Cooldown check on the target (prevent spam if their name is said repeatedly)
         long now = System.currentTimeMillis();
         Long lastTrigger = COOLDOWNS.get(target.getUUID());
@@ -99,6 +131,7 @@ public class MetaAwarenessAbility extends PassiveAbilityItem {
                 Component.empty()
                         .append(Component.literal("[Meta Awareness] ")
                                 .withStyle(ChatFormatting.LIGHT_PURPLE))
+                        .append(msg.isEmpty()? "" : "Message: " + msg + "\n")
                         .append(HonorificNamesEventHandler.formNotification(sender))
         );
     }

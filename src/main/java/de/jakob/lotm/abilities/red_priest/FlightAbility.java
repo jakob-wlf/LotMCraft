@@ -21,7 +21,7 @@ public class FlightAbility extends ToggleAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 12;
+        return 60;
     }
 
     @Override

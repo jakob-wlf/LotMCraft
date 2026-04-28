@@ -33,6 +33,7 @@ public class SpaceFragmentationAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
+        if(level.isClientSide) return;
 
         Vec3 targetLoc =  AbilityUtil.getTargetLocation(entity, 35*(int) Math.max(multiplier(entity)/4,1), 2);
 

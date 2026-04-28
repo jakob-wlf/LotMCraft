@@ -1,5 +1,24 @@
 # Demoness Pathway Abilities
 
+## Spirituality
+
+Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passively.
+
+| Sequence | Max Spirituality | Regen/sec |
+|----------|-----------------|-----------|
+| 9        | 180             | 2.2/s     |
+| 8        | 200             | 2.4/s     |
+| 7        | 780             | 9.4/s     |
+| 6        | 1,200           | 14.4/s    |
+| 5        | 1,900           | 22.8/s    |
+| 4        | 3,900           | 46.8/s    |
+| 3        | 5,000           | 60.0/s    |
+| 2        | 10,000          | 120.0/s   |
+| 1        | 20,000          | 240.0/s   |
+| 0        | 60,000          | 720.0/s   |
+
+---
+
 ## Active Abilities
 
 ---
@@ -85,19 +104,20 @@ Two selectable modes:
 - Applies the **PETRIFICATION** effect to all entities in the expanding radius.
 - Converts all blocks in the expanding sphere to Stone.
 
-**PETRIFICATION Effect** (while active, every tick):
+**Petrification Status** (every tick while active):
 - Zeroes the target's velocity — complete inability to move.
 - Disables Beyonder abilities for 1 second, refreshed every tick (effectively permanent for the duration).
 - Disables AI of non-Beyonder mobs.
-- **Blocks all incoming damage** entirely.
+- **Blocks all incoming damage** entirely (movement speed attribute also set to −10 for client sync purposes).
 - Cancels player item use (right-click).
+- The effect is stored server-side and re-synced to nearby clients every 10 ticks to prevent client desync.
 
 ---
 
 ### Plague
 **Sequence Requirement:** 4
-**Spirituality Cost:** 400
-**Cooldown:** 120 seconds
+**Spirituality Cost:** 1200
+**Cooldown:** 180 seconds
 
 - **Radius:** 70 blocks
 - **Duration:** 80 seconds
@@ -116,7 +136,7 @@ Two selectable modes:
 ### Curse
 **Sequence Requirement:** 4
 **Spirituality Cost:** 300
-**Cooldown:** 1.5 seconds
+**Cooldown:** 80 seconds
 *(Cannot be copied, replicated, or used by NPCs)*
 
 - **Requires a Blood item in the off-hand** belonging to the target.
@@ -145,7 +165,7 @@ Two selectable modes:
 
 ### Disease
 **Sequence Requirement:** 5
-**Spirituality Cost:** 250
+**Spirituality Cost:** 600
 **Cooldown:** 120 seconds
 
 - **Radius:** 40 blocks
@@ -211,10 +231,22 @@ Three selectable modes:
 
 ---
 
+### Invisibility
+**Sequence Requirement:** 7
+**Spirituality Cost:** 13
+**Cooldown:** 180 seconds
+*(Cannot be copied)*
+
+- Makes the caster **invisible** (Invisibility Level 20) and prevents mobs from targeting them for `60 × max(multiplier/4, 1)` seconds.
+- A **light_strong** interaction (from a stronger Beyonder) can reveal the caster and cancel the effect early.
+- Spirit Vision, Spectating, or Cull abilities can see through this invisibility.
+
+---
+
 ### Black Flame
 **Sequence Requirement:** 7
 **Spirituality Cost:** 30
-**Cooldown:** 0.75 seconds
+**Cooldown:** 1 second
 *(Registers as soul_burn and burning interactions)*
 
 Three selectable modes:
@@ -247,7 +279,7 @@ Three selectable modes:
 ### Frost
 **Sequence Requirement:** 7
 **Spirituality Cost:** 30
-**Cooldown:** 0.75 seconds
+**Cooldown:** 1 second
 *(Registers as freezing interaction)*
 
 Three selectable modes:
@@ -306,10 +338,22 @@ Three selectable modes:
 
 ---
 
+### Shadow Concealment
+**Sequence Requirement:** 9
+**Spirituality Cost:** 13
+**Cooldown:** 45 seconds
+
+- Makes the caster **invisible** (Invisibility Level 20) and prevents mobs from targeting them for **20 seconds**.
+- A **light_source** interaction (any light source nearby) can reveal the caster and cancel the effect early.
+- Spirit Vision, Spectating, or Cull abilities can see through this concealment.
+- Displays shadow particle effects on the client.
+
+---
+
 ### Mighty Blow
 **Sequence Requirement:** 9
 **Spirituality Cost:** 15
-**Cooldown:** 2.5 seconds
+**Cooldown:** 2 seconds
 
 - **Range:** Melee (optimal distance: 1.5 blocks)
 - **Hit Radius:** 3.5 blocks
@@ -325,20 +369,20 @@ Three selectable modes:
 ### Physical Enhancements (Demoness)
 **Sequence Requirement:** 9
 
-Provides passive buffs that scale with the caster's current sequence. Includes permanent Night Vision at all sequences.
+Includes **Night Vision** at all sequences. No Fire Resistance at any sequence.
 
-| Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration | Other |
-|----------|----------|------------|-------|--------------|--------------|-------|
-| 9        | +1       | —          | +2    | —            | +1           | Night Vision +1 |
-| 8        | +2       | +4         | +2    | +5           | +2           | Night Vision +1 |
-| 7        | +2       | +4         | +2    | +5           | +2           | Night Vision +1 |
-| 6        | +2       | +6         | +2    | +7           | +2           | Night Vision +1 |
-| 5        | +2       | +8         | +2    | +9           | +2           | Night Vision +1 |
-| 4        | +3       | +13        | +4    | +16          | +3           | Night Vision +1 |
-| 3        | +3       | +14        | +4    | +17          | +3           | Night Vision +1 |
-| 2        | +4       | +17        | +5    | +25          | +4           | Night Vision +1 |
-| 1        | +4       | +18        | +5    | +30          | +4           | Night Vision +1 |
-| 0        | +5       | +18        | +5    | +20          | +5           | Night Vision +1 |
+| Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration |
+|----------|----------|------------|-------|--------------|--------------|
+| 9        | +1       | —          | +1    | —            | —            |
+| 8        | +1       | —          | +2    | +5           | —            |
+| 7        | +1       | —          | +2    | +5           | +1           |
+| 6        | +2       | +1         | +3    | +7           | +1           |
+| 5        | +2       | +2         | +3    | +9           | +1           |
+| 4        | +3       | +7         | +5    | +16          | +2           |
+| 3        | +3       | +8         | +5    | +17          | +2           |
+| 2        | +4       | +11        | +6    | +25          | +4           |
+| 1        | +4       | +12        | +6    | +30          | +4           |
+| 0        | +6       | +15        | +7    | +45          | +6           |
 
 ---
 

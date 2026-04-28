@@ -6,26 +6,20 @@ import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncApotheosisPacket;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toClient.SyncPsychologicalInvisibilityPacket;
 import de.jakob.lotm.rendering.DecryptionRenderLayer;
 import de.jakob.lotm.rendering.SpiritVisionOverlayRenderer;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.scheduling.ServerScheduler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -241,7 +235,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         Player player = event.getEntity();
 
         if (invisiblePlayersClient.containsKey(player.getUUID())) {
-            var clientPlayer = Minecraft.getInstance().player;
+            var clientPlayer = ClientHandler.getPlayer();
 
             if (clientPlayer == player) return;
 
@@ -269,7 +263,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         Player player = event.getEntity();
 
         if (invisiblePlayersClient.containsKey(player.getUUID())) {
-            var clientPlayer = Minecraft.getInstance().player;
+            var clientPlayer = ClientHandler.getPlayer();
 
             if (clientPlayer == player) return;
 
@@ -291,7 +285,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
                 );
 
                 if (dist < 5.0) {
-                    var clientPlayer = Minecraft.getInstance().player;
+                    var clientPlayer = ClientHandler.getPlayer();
 
                     if (clientPlayer == player) return;
 

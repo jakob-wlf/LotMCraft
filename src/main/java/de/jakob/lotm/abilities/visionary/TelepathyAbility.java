@@ -41,7 +41,7 @@ public class TelepathyAbility extends ToggleAbility {
         // Only update every 10 ticks
         if (entity.tickCount % 10 != 0) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 1.5f, true);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20* (int) Math.max(multiplier(entity)/4,1), 1.5f, true);
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.literal(""));
@@ -72,7 +72,7 @@ public class TelepathyAbility extends ToggleAbility {
 
         AbilityUtil.sendActionBar(entity, Component.literal(
                 "§d" + name + " §7| Sanity: " + color + sanityPercent + "%" +
-                        ((diff <= 0 && entitySeq <= 4) ? " Pathway: " + BeyonderData.getPathway(target) +
+                        ((diff <= 0 && entitySeq <= 4) ? "§7 Pathway: " + BeyonderData.getPathway(target) +
                                 " Sequence: " + targetSeq : "")
         ));
     }

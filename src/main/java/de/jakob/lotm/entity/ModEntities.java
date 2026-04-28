@@ -12,6 +12,8 @@ import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.CoffinEntity;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.DesolateAreaEntity;
 import de.jakob.lotm.entity.custom.projectiles.*;
 import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.WarBannerEntity;
+import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.AncientCourtEntity;
+import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.JudgmentSwordEntity;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.JusticeSwordEntity;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunEntity;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunKingdomEntity;
@@ -125,6 +127,17 @@ public class ModEntities {
                     .noSummon()
                     .build("big_sun"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<JudgmentSwordEntity>> JUDGMENT_SWORD =
+            ENTITY_TYPES.register("judgment_sword", () -> EntityType.Builder.of(
+                            (EntityType<JudgmentSwordEntity> type, Level level) ->
+                                    new JudgmentSwordEntity(type, level),
+                            MobCategory.MISC)
+                    .sized(2f, 2f)
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .build("judgment_sword"));
+
     public static final DeferredHolder<EntityType<?>, EntityType<JusticeSwordEntity>> JUSTICE_SWORD =
             ENTITY_TYPES.register("justice_sword", () -> EntityType.Builder.of(
                             (EntityType<JusticeSwordEntity> type, Level level) ->
@@ -139,6 +152,12 @@ public class ModEntities {
     public static final Supplier<EntityType<SunKingdomEntity>> SUN_KINGDOM =
             ENTITY_TYPES.register("sun_kingdom", () -> EntityType.Builder.<SunKingdomEntity>of(SunKingdomEntity::new, MobCategory.MISC)
                     .sized(1.5f, 4f).build("sun_kingdom"));
+
+    // Ability Entities - Justiciar Pathway
+
+    public static final Supplier<EntityType<AncientCourtEntity>> ANCIENT_COURT =
+            ENTITY_TYPES.register("ancient_court", () -> EntityType.Builder.<AncientCourtEntity>of(AncientCourtEntity::new, MobCategory.MISC)
+                    .sized(1.5f, 4f).clientTrackingRange(256).updateInterval(1).noSummon().noSave().build("ancient_court"));
 
     // Ability Entities - Mother Pathway
 
@@ -360,7 +379,7 @@ public class ModEntities {
     // Utility
 
     public static final Supplier<EntityType<UnderworldGateEntity>> UNDERWORLD_GATE =
-            ENTITY_TYPES.register("underworld_gate", () -> EntityType.Builder.of(UnderworldGateEntity::new, MobCategory.MISC)
+            ENTITY_TYPES.register("underworld_gate", () -> EntityType.Builder.<UnderworldGateEntity>of(UnderworldGateEntity::new, MobCategory.MISC)
                     .sized(1.5f, 2.5f).build("underworld_gate"));
 
     public static final Supplier<EntityType<PlanetEntity>> PLANET =

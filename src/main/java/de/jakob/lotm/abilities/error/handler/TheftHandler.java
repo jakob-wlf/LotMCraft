@@ -7,6 +7,7 @@ import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -428,7 +429,6 @@ public class TheftHandler {
     public static boolean doesTheftFail(LivingEntity user, LivingEntity target, Random random, Ability ability) {
         int userSeq = AbilityUtil.getSeqWithArt(user, ability);
         int targetSeq = BeyonderData.getSequence(target);
-
         if (targetSeq > userSeq) {
             return false;
         }
@@ -459,7 +459,6 @@ public class TheftHandler {
         } else {
             theftcap = 0.6f;
         }
-
         failChance = Math.max(Math.max(failChance, 0.0), theftcap);
         double randomnum =  random.nextDouble();
         return randomnum < failChance;

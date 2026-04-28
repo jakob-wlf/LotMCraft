@@ -6,6 +6,7 @@ import de.jakob.lotm.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.abilities.visionary.VirtualPersonaAbility;
 import de.jakob.lotm.data.ModDataComponents;
+import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -59,7 +60,7 @@ public class LoopHoleCreationAbility extends Ability {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }
-
+        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level)) return;
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 40, 2);
         UUID loopholeId = UUID.randomUUID();
 

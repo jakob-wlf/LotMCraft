@@ -6,6 +6,7 @@ import net.minecraft.world.level.levelgen.structure.structures.OceanMonumentPiec
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.UnknownNullability;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class BeyonderComponent implements INBTSerializable<CompoundTag> {
@@ -54,7 +55,7 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
     }
 
     public void clearCharacteristicStack() {
-        this.characteristicStack = new int[10];
+        this.characteristicStack = new int[11];
     }
 
     public float getSpirituality() {
@@ -98,8 +99,11 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
         tag.put("pathwayHistory", pathwayHistoryTag);
 
         ListTag characteristicStackTag = new ListTag();
-        for (int stackCount : characteristicStack) {
-            characteristicStackTag.add(IntTag.valueOf(stackCount));
+        for (int i = 0; i < characteristicStack.length; i++) {
+            CompoundTag entry = new CompoundTag();
+            entry.putInt("index", i);
+            entry.putInt("value", characteristicStack[i]);
+            characteristicStackTag.add(entry);
         }
         tag.put("characteristicStack", characteristicStackTag);
 
@@ -125,10 +129,13 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
             }
         }
 
-        ListTag characteristicStackTag = compoundTag.getList("characteristicStack", 3); // 3 is the ID for IntTag
-        this.characteristicStack = new int[10];
-        for (int i = 0; i < Math.min(characteristicStackTag.size(), characteristicStack.length); i++) {
-            this.characteristicStack[i] = characteristicStackTag.getInt(i);
+        this.characteristicStack = new int[11];
+        ListTag characteristicStackTag = compoundTag.getList("characteristicStack", 10); // 10 = CompoundTag
+        for (int i = 0; i < characteristicStackTag.size(); i++) {
+            CompoundTag entry = characteristicStackTag.getCompound(i);
+            int index = entry.getInt("index");
+            int value = entry.getInt("value");
+            this.characteristicStack[index] = value;
         }
 
         this.spirituality = compoundTag.getFloat("spirituality");

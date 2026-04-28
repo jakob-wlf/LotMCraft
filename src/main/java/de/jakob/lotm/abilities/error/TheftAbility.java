@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.error.handler.TheftHandler;
+import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SendPassiveTheftEffectPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -36,7 +37,7 @@ public class TheftAbility extends Ability {
         if(!(level instanceof ServerLevel) || !(entity instanceof ServerPlayer player)) {
             return;
         }
-
+        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level)) return;
         LivingEntity target = AbilityUtil.getTargetEntity(player, 8 * (int) (multiplier(entity) * multiplier(entity)), 1.5f);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.theft.no_target").withColor(0x4742c9));

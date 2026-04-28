@@ -1,12 +1,32 @@
 # Darkness Pathway Abilities
 
+## Spirituality
+
+Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passively.
+
+| Sequence | Max Spirituality | Regen/sec |
+|----------|-----------------|-----------|
+| 9        | 630             | 7.6/s     |
+| 8        | 700             | 8.4/s     |
+| 7        | 2,730           | 32.8/s    |
+| 6        | 4,200           | 50.4/s    |
+| 5        | 6,650           | 79.8/s    |
+| 4        | 13,650          | 163.8/s   |
+| 3        | 17,500          | 210.0/s   |
+| 2        | 35,000          | 420.0/s   |
+| 1        | 70,000          | 840.0/s   |
+| 0        | 210,000         | 2,520.0/s |
+
+---
+
 ## Active Abilities
 
 ---
 
 ### Sword of Darkness
 **Sequence Requirement:** 1
-**Spirituality Cost:** 2000
+**Spirituality Cost:** 3000
+**Cooldown:** 8 seconds
 
 - **Range:** 60 blocks
 - **Mechanics:** Launches an offset slash attack from the caster's eyes toward the target location. The slash travels along a path offset 8 blocks perpendicularly, moving 0.5 blocks per iteration at 3 iterations per tick.
@@ -17,9 +37,24 @@
 
 ---
 
+### Identity Concealment
+**Sequence Requirement:** 2
+**Spirituality Cost:** 3000
+**Cooldown:** 5 seconds
+*(Cannot be copied, replicated, stolen, or used in artifacts)*
+
+One selectable mode.
+
+**Mode 0 — Conceal Identity**
+- **Range:** 16 blocks (targets a nearby player; falls back to self if none found).
+- Toggles the target's **nametag visibility** — hides them from the tab list and removes their nametag from all other players' clients.
+- Using the ability again on a hidden player **reveals** them again.
+
+---
+
 ### Concealment
 **Sequence Requirement:** 2  
-**Spirituality Cost:** 1500  
+**Spirituality Cost:** 6000  
 **Cooldown:** 5 seconds  
 *(Cannot be copied)*
 
@@ -41,7 +76,8 @@ Two selectable modes:
 
 ### Surge of Darkness
 **Sequence Requirement:** 3  
-**Spirituality Cost:** 1000  
+**Spirituality Cost:** 3000
+**Cooldown:** 11 seconds
 **Duration:** 15 seconds (300 ticks)  
 **Effect Interval:** Every 4 ticks
 
@@ -58,7 +94,8 @@ Two selectable modes:
 
 ### Horror Aura
 **Sequence Requirement:** 3  
-**Spirituality Cost:** 1000  
+**Spirituality Cost:** 2500
+**Cooldown:** 30 seconds
 **Duration:** 30 seconds (600 ticks)  
 **Effect Interval:** Every tick
 
@@ -77,7 +114,8 @@ Two selectable modes:
 
 ### Night Domain
 **Sequence Requirement:** 4  
-**Spirituality Cost:** 900  
+**Spirituality Cost:** 1800
+**Cooldown:** 30 seconds
 **Duration:** 25 seconds (500 ticks)  
 **Effect Interval:** Every 2 ticks
 
@@ -99,7 +137,8 @@ Two selectable modes:
 
 ### Hair Entanglement
 **Sequence Requirement:** 4  
-**Spirituality Cost:** 600
+**Spirituality Cost:** 1200
+**Cooldown:** 3 seconds
 
 - **Targeting Range:** 16 blocks; particle animation spans up to **35 blocks**.
 - **Effect Interval:** Every 5 ticks for the duration.
@@ -128,6 +167,7 @@ Two selectable modes:
 ### Requiem
 **Sequence Requirement:** 6  
 **Spirituality Cost:** 45
+**Cooldown:** 3 seconds
 
 - **Range:** 16 blocks
 - **Effect Interval:** Every 5 ticks for the duration.
@@ -185,7 +225,7 @@ Five selectable modes:
 
 ### Midnight Poem
 **Sequence Requirement:** 8  
-**Spirituality Cost:** 19  
+**Spirituality Cost:** 40  
 **Cooldown:** 4 seconds
 
 Two selectable modes:
@@ -214,25 +254,22 @@ Two selectable modes:
 ### Physical Enhancements (Darkness)
 **Sequence Requirement:** 9
 
-Provides passive buffs that scale with the caster's current sequence. Higher sequences (lower numbers) receive stronger enhancements.
+Includes **Night Vision** at all sequences. No Fire Resistance at any sequence.
+
+**Night/Domain Bonus** (active during in-game night OR while inside a Concealed Domain): **+2 Strength, +2 Resistance, +2 Speed** on top of all values below.
 
 | Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration |
 |----------|----------|------------|-------|--------------|--------------|
-| 9        | +1       | —          | +2    | —            | +1           |
-| 8        | +2       | +4         | +2    | +5           | +2           |
-| 7        | +2       | +4         | +2    | +5           | +2           |
-| 6        | +2       | +6         | +2    | +7           | +2           |
-| 5        | +2       | +8         | +2    | +9           | +2           |
-| 4        | +3       | +13        | +4    | +16          | +3           |
-| 3        | +3       | +14        | +4    | +17          | +3           |
-| 2        | +4       | +17        | +5    | +25          | +4           |
-| 1        | +4       | +18        | +5    | +30          | +4           |
-| 0        | +5       | +18        | +5    | +20          | +5           |
-
-**Night Bonus** (active during in-game night):
-- Strength +1
-- Resistance +1
-- Speed +2
+| 9        | —        | —          | —     | —            | —            |
+| 8        | +1       | —          | +1    | +5           | +2           |
+| 7        | +2       | —          | +2    | +6           | +2           |
+| 6        | +2       | +1         | +2    | +7           | +2           |
+| 5        | +2       | +2         | +2    | +9           | +2           |
+| 4        | +3       | +7         | +4    | +16          | +3           |
+| 3        | +3       | +8         | +4    | +17          | +3           |
+| 2        | +4       | +11        | +5    | +25          | +4           |
+| 1        | +5       | +13        | +5    | +32          | +4           |
+| 0        | +6       | +15        | +6    | +45          | +6           |
 
 ---
 

@@ -1,5 +1,24 @@
 # Tyrant Pathway Abilities
 
+## Spirituality
+
+Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passively.
+
+| Sequence | Max Spirituality | Regen/sec |
+|----------|-----------------|-----------|
+| 9        | 180             | 2.2/s     |
+| 8        | 200             | 2.4/s     |
+| 7        | 780             | 9.4/s     |
+| 6        | 1,200           | 14.4/s    |
+| 5        | 1,900           | 22.8/s    |
+| 4        | 3,900           | 46.8/s    |
+| 3        | 5,000           | 60.0/s    |
+| 2        | 10,000          | 120.0/s   |
+| 1        | 20,000          | 240.0/s   |
+| 0        | 60,000          | 720.0/s   |
+
+---
+
 ## Active Abilities
 
 ---
@@ -16,8 +35,8 @@
 
 ### Heavenly Punishment
 **Sequence Requirement:** 1
-**Spirituality Cost:** 1950
-**Cooldown:** 2 seconds
+**Spirituality Cost:** 3000
+**Cooldown:** 8 seconds
 *(Cannot be copied)*
 
 - **Range:** 70 blocks
@@ -28,8 +47,8 @@
 
 ### Electromagnetic Tornado
 **Sequence Requirement:** 1
-**Spirituality Cost:** 400
-**Cooldown:** 2.5 seconds
+**Spirituality Cost:** 3000
+**Cooldown:** 20 seconds
 *(Cannot be copied)*
 
 - **Range:** 12 blocks
@@ -40,8 +59,8 @@
 
 ### Roar of the Thunder God
 **Sequence Requirement:** 1
-**Spirituality Cost:** 1800
-**Cooldown:** 2 seconds
+**Spirituality Cost:** 2600
+**Cooldown:** 20 seconds
 *(Cannot be copied)*
 
 - **Radius:** 50 blocks
@@ -147,8 +166,8 @@ Four selectable modes:
 
 ### Tsunami
 **Sequence Requirement:** 4
-**Spirituality Cost:** 500
-**Cooldown:** 6 seconds
+**Spirituality Cost:** 1200
+**Cooldown:** 12 seconds
 *(Cannot be copied)*
 
 - **Range:** 40 blocks
@@ -161,7 +180,7 @@ Four selectable modes:
 ### Earthquake
 **Sequence Requirement:** 4
 **Spirituality Cost:** 400
-**Cooldown:** 32 seconds
+**Cooldown:** 16 seconds
 *(Cannot be copied)*
 
 - **Radius:** 90 blocks (block search), 70 blocks (entity damage)
@@ -174,8 +193,8 @@ Four selectable modes:
 
 ### Hurricane
 **Sequence Requirement:** 4
-**Spirituality Cost:** 400
-**Cooldown:** 2.5 seconds
+**Spirituality Cost:** 600
+**Cooldown:** 10 seconds
 *(Cannot be copied)*
 
 - **Range:** 12 blocks
@@ -186,8 +205,8 @@ Four selectable modes:
 
 ### Roar
 **Sequence Requirement:** 4
-**Spirituality Cost:** 250
-**Cooldown:** 2 seconds
+**Spirituality Cost:** 500
+**Cooldown:** 12 seconds
 *(Cannot be copied)*
 
 - **Radius:** 19 blocks
@@ -340,20 +359,20 @@ Four selectable modes:
 ### Physical Enhancements (Tyrant)
 **Sequence Requirement:** 9
 
-Provides passive buffs that scale with the caster's current sequence. Includes water-based bonuses at higher sequences.
+Includes **Water Breathing** (infinite oxygen) at Seq 5 and below. **Dolphin's Grace** (underwater speed) and **Night Vision** at Seq 6 and below. No Fire Resistance except at Seq 1.
 
 | Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration | Other |
 |----------|----------|------------|-------|--------------|--------------|-------|
-| 9        | +1       | —          | +2    | —            | +1           | — |
-| 8        | +2       | +4         | +2    | +5           | +2           | — |
-| 7        | +2       | +4         | +2    | +5           | +2           | Water Breathing +1 |
-| 6        | +2       | +6         | +2    | +7           | +2           | Water Breathing +1 |
-| 5        | +2       | +8         | +2    | +9           | +2           | Water Breathing +1, Dolphin's Grace +1 |
-| 4        | +3       | +13        | +4    | +16          | +3           | Water Breathing +1, Dolphin's Grace +5, Conduit +4 |
-| 3        | +3       | +14        | +4    | +17          | +3           | Water Breathing +1, Dolphin's Grace +7, Conduit +5 |
-| 2        | +4       | +17        | +5    | +25          | +4           | Water Breathing +1, Dolphin's Grace +8, Conduit +6 |
-| 1        | +4       | +18        | +5    | +30          | +4           | Fire Resistance +4, Water Breathing +1, Dolphin's Grace +9, Conduit +7 |
-| 0        | +5       | +18        | +5    | +20          | +5           | — |
+| 9        | +1       | +1         | +1    | —            | —            | — |
+| 8        | +2       | +2         | +2    | +5           | —            | — |
+| 7        | +2       | +2         | +2    | +6           | +1           | Dolphin's Grace +1 |
+| 6        | +2       | +3         | +2    | +7           | +1           | Night Vision +1, Dolphin's Grace +2 |
+| 5        | +2       | +4         | +2    | +9           | +2           | Night Vision +1, Water Breathing (infinite), Dolphin's Grace +3 |
+| 4        | +3       | +9         | +4    | +16          | +3           | Night Vision +1, Water Breathing (infinite), Dolphin's Grace +4 |
+| 3        | +4       | +10        | +4    | +17          | +3           | Night Vision +1, Water Breathing (infinite), Dolphin's Grace +4 |
+| 2        | +5       | +13        | +5    | +25          | +4           | Night Vision +1, Water Breathing (infinite), Dolphin's Grace +5 |
+| 1        | +5       | +15        | +6    | +30          | +4           | Night Vision +1, Fire Resistance +4, Water Breathing (infinite), Dolphin's Grace +6 |
+| 0        | +7       | +17        | +7    | +45          | +6           | — |
 
 ---
 

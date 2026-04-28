@@ -278,6 +278,51 @@ public class PotionItemHandler {
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
 
+
+
+
+    public static DeferredItem<Item> ARBITER = ITEMS.registerItem("arbiter_potion", properties ->
+                    new BeyonderPotion(properties, 9, "justiciar"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> SHERIFF = ITEMS.registerItem("sheriff_potion", properties ->
+                    new BeyonderPotion(properties, 8, "justiciar"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> INTERROGATOR = ITEMS.registerItem("interrogator_potion", properties ->
+                    new BeyonderPotion(properties, 7, "justiciar"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> JUDGE = ITEMS.registerItem("judge_potion", properties ->
+                    new BeyonderPotion(properties, 6, "justiciar"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> DISCIPLINARY_PALADIN = ITEMS.registerItem("disciplinary_paladin_potion", properties ->
+                    new BeyonderPotion(properties, 5, "justiciar"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> IMPERATIVE_MAGE = ITEMS.registerItem("imperative_mage_potion", properties ->
+                    new BeyonderPotion(properties, 4, "justiciar"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> CHAOS_HUNTER = ITEMS.registerItem("chaos_hunter_potion", properties ->
+                    new BeyonderPotion(properties, 3, "justiciar"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> BALANCER = ITEMS.registerItem("balancer_potion", properties ->
+                    new BeyonderPotion(properties, 2, "justiciar"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> HAND_OF_ORDER = ITEMS.registerItem("hand_of_order_potion", properties ->
+                    new BeyonderPotion(properties, 1, "justiciar"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+
+
+
+
+
+
     public static DeferredItem<Item> PLANTER_POTION = ITEMS.registerItem("planter_potion", properties ->
                     new BeyonderPotion(properties, 9, "mother"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));

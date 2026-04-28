@@ -47,7 +47,7 @@ public class DreamMazeAbility extends SelectableAbility {
         super(id, 7);
         this.canBeCopied = false;
         this.canBeUsedByNPC = false;
-
+        canBeShared = false;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class DreamMazeAbility extends SelectableAbility {
 
     @Override
     public float getSpiritualityCost() {
-        return 1000;
+        return 4000;
     }
 
     @Override

@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DivinationAbility extends SelectableAbility {
     public static final Set<UUID> dangerPremonitionActive = new HashSet<>();
+    public static final Set<UUID> DIVINATION_IMMUNE = Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
 
     public DivinationAbility(String id) {
         super(id, 1);
@@ -186,6 +187,7 @@ public class DivinationAbility extends SelectableAbility {
                 .getPlayers()
                 .stream()
                 .filter(p -> p != player)
+                .filter(p -> !DIVINATION_IMMUNE.contains(p.getUUID()))
                 .map(p -> new PlayerInfo(p.getUUID(), p.getGameProfile().getName()))
                 .toList();
 

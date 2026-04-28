@@ -1,5 +1,24 @@
 # Mother Pathway Abilities
 
+## Spirituality
+
+Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passively.
+
+| Sequence | Max Spirituality | Regen/sec |
+|----------|-----------------|-----------|
+| 9        | 180             | 2.2/s     |
+| 8        | 200             | 2.4/s     |
+| 7        | 780             | 9.4/s     |
+| 6        | 1,200           | 14.4/s    |
+| 5        | 1,900           | 22.8/s    |
+| 4        | 3,900           | 46.8/s    |
+| 3        | 5,000           | 60.0/s    |
+| 2        | 10,000          | 120.0/s   |
+| 1        | 20,000          | 240.0/s   |
+| 0        | 60,000          | 720.0/s   |
+
+---
+
 ## Active Abilities
 
 ---
@@ -66,7 +85,7 @@ Three selectable modes:
 ### Life Deprivation
 **Sequence Requirement:** 3
 **Spirituality Cost:** 1200
-**Cooldown:** 3 seconds
+**Cooldown:** 15 seconds
 *(Cannot be copied)*
 
 Two selectable modes:
@@ -217,7 +236,7 @@ Two selectable modes. Non-player casters always use Mode 0.
 ### Cleansing
 **Sequence Requirement:** 8
 **Spirituality Cost:** 25
-**Cooldown:** 20 seconds
+**Cooldown:** 14 seconds
 *(Cannot be copied; registers as a cleansing interaction)*
 
 Two selectable modes. Non-player casters always use Mode 0.
@@ -278,19 +297,20 @@ Two selectable modes. Non-player casters always use Mode 0.
 ### Physical Enhancements (Mother)
 **Sequence Requirement:** 9
 
-No Night Vision or Fire Resistance at any sequence.
+No Fire Resistance or Night Vision at any sequence. Emphasizes high Health and Regeneration over combat stats.
 
 | Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration |
 |----------|----------|------------|-------|--------------|--------------|
-| 9        | +1       | —          | +2    | —            | +1           |
-| 8–7      | +2       | +4         | +2    | +5           | +2           |
-| 6        | +2       | +6         | +2    | +7           | +2           |
-| 5        | +2       | +8         | +2    | +9           | +2           |
-| 4        | +3       | +13        | +4    | +16          | +3           |
-| 3        | +3       | +14        | +4    | +17          | +3           |
-| 2        | +4       | +17        | +5    | +25          | +4           |
-| 1        | +4       | +18        | +5    | +30          | +4           |
-| 0        | +5       | +18        | +5    | +20          | +5           |
+| 9        | +1       | —          | —     | +2           | —            |
+| 8        | +1       | —          | —     | +6           | —            |
+| 7        | +1       | —          | +1    | +8           | +1           |
+| 6        | +2       | +1         | +1    | +10          | +2           |
+| 5        | +2       | +2         | +1    | +12          | +2           |
+| 4        | +3       | +7         | +2    | +24          | +4           |
+| 3        | +3       | +8         | +2    | +28          | +4           |
+| 2        | +4       | +11        | +3    | +36          | +5           |
+| 1        | +4       | +12        | +3    | +42          | +6           |
+| 0        | +6       | +15        | +6    | +64          | +7           |
 
 ---
 

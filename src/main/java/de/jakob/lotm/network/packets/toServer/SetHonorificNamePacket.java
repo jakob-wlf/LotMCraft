@@ -1,6 +1,7 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.visionary.prophecy.TokenStream;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.HonorificName;
 import net.minecraft.ChatFormatting;
@@ -96,6 +97,14 @@ public record SetHonorificNamePacket(LinkedList<String> lines) implements Custom
                     if (line.length() >= HonorificName.MAX_LENGTH) {
                         player.sendSystemMessage(Component.literal(
                                 "Maximum length of a line is " + HonorificName.MAX_LENGTH + "!")
+                                .withStyle(ChatFormatting.RED));
+                        return;
+                    }
+
+                    var stream = new TokenStream(line);
+                    if(stream.getTotalSize() < 3){
+                        player.sendSystemMessage(Component.literal(
+                                        "Honorific name line must contain more than 3 worlds")
                                 .withStyle(ChatFormatting.RED));
                         return;
                     }

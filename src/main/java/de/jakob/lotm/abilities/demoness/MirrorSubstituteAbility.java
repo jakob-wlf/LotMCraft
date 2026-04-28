@@ -2,7 +2,9 @@ package de.jakob.lotm.abilities.demoness;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.justiciar.ImprisonAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
@@ -68,12 +70,16 @@ public class MirrorSubstituteAbility extends Ability {
 
     @SubscribeEvent
     public static void takeDamage(LivingDamageEvent.Pre event) {
+        if (ImprisonAbility.IMPRISONED.contains(event.getEntity().getUUID())) return;
         if(!figurineNumbers.containsKey(event.getEntity().getUUID()))
             return;
 
         if(event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) {
             return;
         }
+
+        LivingEntity entity = event.getEntity();
+        if (entity.level() instanceof ServerLevel sl && ProhibitionHandler.isInStandInsZone(entity.position(), sl)) return;
 
         int num = figurineNumbers.get(event.getEntity().getUUID());
 
@@ -83,7 +89,6 @@ public class MirrorSubstituteAbility extends Ability {
         figurineNumbers.put(event.getEntity().getUUID(), num - 1);
         event.setNewDamage(0);
 
-        LivingEntity entity = event.getEntity();
         Vec3 pos = entity.position();
 
         Level level = entity.level();

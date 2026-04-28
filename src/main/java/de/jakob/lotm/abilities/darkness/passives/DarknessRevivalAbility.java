@@ -5,6 +5,7 @@ import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.abilities.justiciar.LawAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -51,7 +52,7 @@ public class DarknessRevivalAbility extends PassiveAbilityItem {
 
         if (!((DarknessRevivalAbility) PassiveAbilityHandler.DARKNESS_REVIVAL.get()).shouldApplyTo(entity)) return;
 
-        if (event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) return;
+        if (LawAbility.SOLACE_KILLED.contains(entity.getUUID())) return;
 
         // Must be at or below light level 7
         int lightLevel = serverLevel.getMaxLocalRawBrightness(entity.blockPosition());

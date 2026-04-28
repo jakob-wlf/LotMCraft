@@ -9,9 +9,13 @@ import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.custom.MarionetteControllerItem;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -23,6 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +48,7 @@ public class ManipulationAbility extends SelectableAbility {
 
     @Override
     public float getSpiritualityCost() {
-        return 750;
+        return 1150;
     }
 
     @Override
@@ -56,56 +61,32 @@ public class ManipulationAbility extends SelectableAbility {
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
+        if(abilityIndex == 1) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("lotm.not_implemented_yet"));
+            return;
+        }
         switch (abilityIndex) {
             case 0 -> groupIncite(level, entity);
-            case 1 -> control(level, entity);
+            //case 1 -> control(level, entity);
         }
     }
 
-
-    public void triggerGroupIncite(ServerLevel level, ServerPlayer entity, LivingEntity target) {
-        int casterSeq = BeyonderData.getSequence(entity);
-        List<LivingEntity> nearby = AbilityUtil.getNearbyEntities(
-                entity, level, target.position(), 20, false, true);
-
-        for (LivingEntity nearby_entity : nearby) {
-            if (nearby_entity.getUUID().equals(entity.getUUID())) continue;
-            if (nearby_entity.getUUID().equals(target.getUUID())) continue;
-
-            if (nearby_entity instanceof ServerPlayer nearbyPlayer) {
-                if (!BeyonderData.isBeyonder(nearbyPlayer)) continue;
-
-                int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-                int targetSeq = BeyonderData.getSequence(target);
-                if(BeyonderData.getPathway(target).equals("visionary") && targetSeq < entitySeq){
-                    AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed").withColor(0xFFff124d));
-
-                    if(targetSeq <= 1 && target instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer entityPlayer){
-                        MetaAwarenessAbility.onDivined(entityPlayer, targetPlayer);
-                    }
-
-                    return;
-                }
-
-                if (BeyonderData.getSequence(nearbyPlayer) <= casterSeq) continue;
-                forcePlayerAbilities(nearbyPlayer, target, level);
-            } else if (nearby_entity instanceof Mob mob) {
-                if (BeyonderData.isBeyonder(mob) && BeyonderData.getSequence(mob) <= casterSeq) continue;
-                LivingEntity originalTarget = mob.getTarget();
-                mob.setTarget(target);
-                ServerScheduler.scheduleDelayed(20 * 10, () -> {
-                    if (!mob.isRemoved())
-                        mob.setTarget(originalTarget != null && originalTarget.isAlive() ? originalTarget : null);
-                });
-            }
-        }
-    }
+    private final DustParticleOptions dust = new DustParticleOptions(
+            new Vector3f(250 / 255f, 201 / 255f, 102 / 255f),
+            1.5f
+    );
 
     public void groupIncite(Level level, LivingEntity entity) {
-        if (level.isClientSide) return;
+        if (level.isClientSide) {
+            LivingEntity target = AbilityUtil.getTargetEntity(entity, 20*(int) Math.max(multiplier(entity)/4,1), 2);
+            if(target == null) return;
+            ParticleUtil.spawnSphereParticles((ClientLevel) level, ParticleTypes.SMOKE, target.getEyePosition(), 1, 30);
+            ParticleUtil.spawnParticles((ClientLevel) level, dust,  target.getEyePosition(), 40, .5);
+            return;
+        }
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20 *(int) Math.max(multiplier(entity)/4,1), 2);
         if (target == null) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));

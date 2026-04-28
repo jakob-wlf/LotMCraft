@@ -6,6 +6,7 @@ import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.abilities.visionary.prophecy.triggers.TriggerHelper;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
@@ -36,16 +37,26 @@ public class PsychologicalCueAbility extends ToggleAbility {
         canBeReplicated = false;
         cannotBeStolen = true;
         autoClear = false;
+        canBeShared = false;
     }
 
     @Override
     public void tick(Level level, LivingEntity entity) {
-
+        map.put(entity.getUUID(), AbilityUtil.getSeqWithArt(entity, this));
     }
 
     @Override
     public void start(Level level, LivingEntity entity) {
-        if(level.isClientSide) return;
+        if(level.isClientSide) {
+            if(entity.isShiftKeyDown())
+                ClientHandler.openPsychologicalCueExplanation();
+            return;
+        }
+
+        if(entity.isShiftKeyDown()) {
+            cancel((ServerLevel) level, entity);
+            return;
+        }
 
         if(StoryWritingAbility.writingMap.containsKey(entity.getUUID())){
             cancel((ServerLevel) level, entity);

@@ -13,10 +13,6 @@ import net.minecraft.network.chat.Component;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Standalone screen that lets the player set their honorific name without using JSON.
- * Shows one EditBox per required line, with hint text listing the pathway's required words.
- */
 public class SetHonorificNameScreen extends Screen {
 
     private static final int COL_TITLE   = 0xFFFFFFFF;
@@ -27,7 +23,6 @@ public class SetHonorificNameScreen extends Screen {
     private final String pathway;
     private final int sequence;
 
-    /** Number of edit boxes to show (3, 4, or 5 depending on sequence). */
     private final int lineCount;
 
     private final List<EditBox> lineBoxes = new LinkedList<>();
@@ -90,7 +85,6 @@ public class SetHonorificNameScreen extends Screen {
             lines.add(value);
         }
 
-        // Client-side validation
         if (sequence >= 4) {
             errorMessage = "You must be sequence 3 or higher to utilize honorific name.";
             return;
@@ -118,21 +112,16 @@ public class SetHonorificNameScreen extends Screen {
         int centerX = this.width / 2;
         int startY = this.height / 2 - (lineCount * 30) / 2;
 
-        // Title
         String title = "Set Honorific Name";
         gfx.drawCenteredString(font, title, centerX, startY - 40, COL_TITLE);
 
-        // Pathway / sequence info
         String pathInfo = BeyonderData.pathwayInfos.get(pathway).getSequenceName(sequence);
         gfx.drawCenteredString(font, pathInfo, centerX, startY - 28, COL_LABEL);
 
-        // Required words hint
         List<String> requiredWords = HonorificName.getMustHaveWords(pathway);
         if (!requiredWords.isEmpty()) {
-            // Wrap text if too long
             int maxWidth = Math.min(this.width - 40, 400);
             gfx.drawCenteredString(font, "Required words (at least one per line):", centerX, startY - 16, COL_HINT);
-            // Simple display - truncate if too wide
             String wordsStr = String.join(", ", requiredWords);
             if (font.width(wordsStr) > maxWidth) {
                 int truncIndex = Math.max(0, Math.min(
@@ -143,7 +132,6 @@ public class SetHonorificNameScreen extends Screen {
             gfx.drawCenteredString(font, wordsStr, centerX, startY - 3, 0xFF8888CC);
         }
 
-        // Error message
         if (!errorMessage.isEmpty()) {
             gfx.drawCenteredString(font, errorMessage, centerX,
                     startY + lineCount * 30 + 64, COL_ERROR);

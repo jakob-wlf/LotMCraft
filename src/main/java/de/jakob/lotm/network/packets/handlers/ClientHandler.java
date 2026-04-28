@@ -5,6 +5,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.prophecy.VisionaryAbilityMenus;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -453,8 +454,20 @@ public class ClientHandler {
         ));
     }
 
+    public static Player getPlayer() {
+        return Minecraft.getInstance().player;
+    }
+
     public static void handlePlayerDivinationScreenPacket(OpenPlayerDivinationScreenPacket packet) {
         Minecraft.getInstance().setScreen(new PlayerSelectionGui(packet.players(), packet.types()));
+    }
+
+    public static void openPsychologicalCueExplanation() {
+        Minecraft.getInstance().setScreen(VisionaryAbilityMenus.createPsychologicalCueAbilityMenu(Minecraft.getInstance().screen));
+    }
+
+    public static void openStoryWritingExplanation() {
+        Minecraft.getInstance().setScreen(VisionaryAbilityMenus.createStoryWritingAbilityMenu(Minecraft.getInstance().screen));
     }
 
     public static void handleStructureDivinationScreenPacket(OpenStructureDivinationScreenPacket packet) {

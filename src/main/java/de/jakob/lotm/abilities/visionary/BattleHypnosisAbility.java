@@ -15,6 +15,7 @@ import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
@@ -24,6 +25,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
@@ -44,7 +46,7 @@ public class BattleHypnosisAbility extends SelectableAbility {
 
     @Override
     public float getSpiritualityCost() {
-        return 150;
+        return 250;
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(
@@ -62,16 +64,14 @@ public class BattleHypnosisAbility extends SelectableAbility {
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
-        if(level.isClientSide) return;
-
         switch (selectedAbility){
-            case 0 -> single((ServerLevel) level, entity);
-            case 1 -> aoe((ServerLevel) level, entity);
+            case 0 -> single(level, entity);
+            case 1 -> aoe(level, entity);
         }
     }
 
-    private void single(ServerLevel level, LivingEntity entity){
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2);
+    private void single(Level level, LivingEntity entity){
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20* (int) Math.max(multiplier(entity)/4,1), 2);
 
         if(target == null) {
             if(entity instanceof ServerPlayer player) {
@@ -80,6 +80,12 @@ public class BattleHypnosisAbility extends SelectableAbility {
             }
             return;
         }
+
+        if(level.isClientSide) {
+            ParticleUtil.createParticleSpirals((ClientLevel) level, dust, target.position(), target.getBbWidth() + .25, target.getBbWidth() + .25, target.getEyeHeight(), 1, 5, 30, 15, 1);
+            return;
+        }
+
 
         // BH vs Charm: if BH caster has lower or equal sequence, BH prevails and removes charm
         UUID charmCasterUUID = CharmAbility.getCharmed().get(target.getUUID());
@@ -111,8 +117,13 @@ public class BattleHypnosisAbility extends SelectableAbility {
         }
     }
 
-    private void aoe(ServerLevel level, LivingEntity entity){
-        var nearby = AbilityUtil.getNearbyEntities(entity, level, entity.position(), 20 * multiplier(entity));
+    private void aoe(Level level, LivingEntity entity){
+        if(level.isClientSide) {
+            ParticleUtil.spawnParticles((ClientLevel) level, dust, entity.position(), 1300, 17, 3, 17, 0);
+            return;
+        }
+
+        var nearby = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 20 * multiplier(entity));
 
         for(var target : nearby) {
             // BH vs Charm: if BH caster has lower or equal sequence, BH prevails and removes charm

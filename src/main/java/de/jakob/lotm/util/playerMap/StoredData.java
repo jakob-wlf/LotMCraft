@@ -17,7 +17,8 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                          int[] charStack,
                          String[] pathwayHistory,
                          String uniqueness, //none if no uniqueness :)
-                         LinkedList<Prophecy> prophecies
+                         LinkedList<Prophecy> prophecies,
+                         String claimedSefirot
 ) {
 
     public static final String NBT_PATHWAY         = "beyonder_map_pathway";
@@ -29,6 +30,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
     public static final String NBT_PATHWAY_HISTORY = "beyonder_map_pathway_history";
     public static final String NBT_PROPHECIES      = "beyonder_map_prophecies";
     public static final String NBT_UNIQUENESS = "beyonder_map_uniqueness";
+    public static final String NBT_SEFIROT = "beyonder_map_claimed_sefirot";
 
     public static final String NBT_LAST_POSITION_X = "beyonder_map_last_position_x";
     public static final String NBT_LAST_POSITION_Y = "beyonder_map_last_position_y";
@@ -51,7 +53,9 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 + "\n--- Char stack: " + java.util.Arrays.toString(charStack)
                 + "\n--- Pathway history: " + getPathwayHistoryInfo()
                 + "\n--- Amount of prophecies: " + prophecies.size()
-                + "\n--- Was modified: " + modified;
+                + "\n--- Sefirot: " + (claimedSefirot.isEmpty() ? "none" : claimedSefirot)
+                + "\n--- Was modified: " + modified
+                ;
     }
 
     private String getPathwayHistoryInfo() {
@@ -79,11 +83,13 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
 
         int newSequence = sequence + 1;
         boolean becomesNonBeyonder = (newSequence == LOTMCraft.NON_BEYONDER_SEQ);
+        String sefirot = claimedSefirot;
 
         // Revert pathway from history if a domain-switch was recorded here
         String regressedPathway;
         if (becomesNonBeyonder) {
             regressedPathway = "none";
+            sefirot = "";
         } else {
             String historyEntry = pathwayHistory[newSequence];
             regressedPathway = (historyEntry != null && !historyEntry.isEmpty()) ? historyEntry : pathway;
@@ -108,6 +114,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 .charStack(0, sequence)   // reset stack on regression
                 .pathwayHistory(becomesNonBeyonder ? new String[10] : clearedHistory)
                 .uniqueness("none")
+                .sefirot(sefirot)
                 .build();
     }
 
@@ -147,6 +154,8 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
             histList.add(StringTag.valueOf(entry == null ? "" : entry));
         }
         tag.put(NBT_PATHWAY_HISTORY, histList);
+
+        tag.putString(NBT_SEFIROT, claimedSefirot);
 
         return tag;
     }
@@ -191,6 +200,9 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
             }
         }
 
-        return new StoredData(path, seq, name, trueName, modified, lastPos, charStack, history, uniqueness ,prophecies);
+        String sefirot = tag.getString(NBT_SEFIROT);
+
+        return new StoredData(path, seq, name, trueName, modified, lastPos,
+                charStack, history, uniqueness, prophecies, sefirot);
     }
 }

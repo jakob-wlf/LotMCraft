@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.abilities.visionary.prophecy.triggers.TriggerHelper;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
@@ -34,16 +35,26 @@ public class StoryWritingAbility extends ToggleAbility {
         canBeReplicated = false;
         cannotBeStolen = true;
         autoClear = false;
+        canBeShared = false;
     }
 
     @Override
     public void tick(Level level, LivingEntity entity) {
-
+        writingMap.put(entity.getUUID(), AbilityUtil.getSeqWithArt(entity, this));
     }
 
     @Override
     public void start(Level level, LivingEntity entity) {
-        if(level.isClientSide) return;
+        if(level.isClientSide) {
+            if(entity.isShiftKeyDown())
+                ClientHandler.openStoryWritingExplanation();
+            return;
+        }
+
+        if(entity.isShiftKeyDown()) {
+            cancel((ServerLevel) level, entity);
+            return;
+        }
 
         if(PsychologicalCueAbility.map.containsKey(entity.getUUID())){
             cancel((ServerLevel) level, entity);
@@ -67,7 +78,7 @@ public class StoryWritingAbility extends ToggleAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 200;
+        return 50;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)

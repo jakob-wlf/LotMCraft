@@ -467,6 +467,67 @@ public class PotionRecipes {
         ));
 
 
+
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.ARBITER.get(),
+                new ItemStack(Items.SPYGLASS, 1),
+                new ItemStack(Items.SPIDER_EYE, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 9)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.SHERIFF.get(),
+                new ItemStack(Items.COMPASS, 1),
+                new ItemStack(Items.TORCH, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 8)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.INTERROGATOR.get(),
+                new ItemStack(Items.CHAIN, 1),
+                new ItemStack(Items.LAVA_BUCKET, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 7)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.JUDGE.get(),
+                new ItemStack(Items.BELL, 1),
+                new ItemStack(Items.LANTERN, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 6)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DISCIPLINARY_PALADIN.get(),
+                new ItemStack(Items.CAMPFIRE, 1),
+                new ItemStack(Items.LEVER, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 5)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.IMPERATIVE_MAGE.get(),
+                new ItemStack(Items.REDSTONE_BLOCK, 1),
+                new ItemStack(Items.FIRE_CHARGE, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 4)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.CHAOS_HUNTER.get(),
+                new ItemStack(Items.WITHER_SKELETON_SKULL, 1),
+                new ItemStack(Items.WITHER_ROSE, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 3)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.BALANCER.get(),
+                new ItemStack(Items.GOLD_BLOCK, 1),
+                new ItemStack(Items.CRYING_OBSIDIAN, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 2)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.HAND_OF_ORDER.get(),
+                new ItemStack(Items.DIAMOND_BLOCK, 1),
+                new ItemStack(Items.COARSE_DIRT, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 1)))
+        ));
+
+
+
+
+
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.PLANTER_POTION.get(),
                 new ItemStack(Items.SHORT_GRASS, 1),

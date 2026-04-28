@@ -7,7 +7,9 @@ import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -73,6 +75,25 @@ public class ParticleUtil {
             double z = center.z + radius * Math.cos(phi);
 
             level.sendParticles(particleType, x, y, z, 1, 0, 0, 0, 0);
+        }
+    }
+
+    public static void spawnSphereParticles(ClientLevel level, ParticleOptions particleType, Vec3 center,
+                                            double radius, int particleCount) {
+        if (level == null) return;
+
+        RandomSource random = level.random;
+
+        for (int i = 0; i < particleCount; i++) {
+            // Generate random points on a sphere using spherical coordinates
+            double theta = 2 * Math.PI * random.nextDouble(); // Azimuthal angle
+            double phi = Math.acos(2 * random.nextDouble() - 1); // Polar angle
+
+            double x = center.x + radius * Math.sin(phi) * Math.cos(theta);
+            double y = center.y + radius * Math.sin(phi) * Math.sin(theta);
+            double z = center.z + radius * Math.cos(phi);
+
+            level.addParticle(particleType, x, y, z, 0, 0, 0);
         }
     }
 
@@ -512,6 +533,72 @@ public class ParticleUtil {
         return shouldStop;
     }
 
+    public static List<AtomicBoolean> createParticleSpirals(ClientLevel level, ParticleOptions particleType, Vec3 centerPosition, double starRadius, double endRadius, double height, double speed, double density, int duration, int spiralCount, int delayBetweenSpirals) {
+        ArrayList<AtomicBoolean> stopConditions = new ArrayList<>();
+
+        int degreeIncrease = 360 / spiralCount;
+
+        for (int i = 0; i < spiralCount; i++) {
+            stopConditions.add(createParticleSpiral(level, particleType, centerPosition, starRadius, endRadius, duration, i * degreeIncrease, height, speed, density, delayBetweenSpirals * i));
+        }
+
+        return stopConditions;
+    }
+
+    public static AtomicBoolean createParticleSpiral(ClientLevel level, ParticleOptions particleType, Vec3 centerPosition, double starRadius, double endRadius, int duration, int startingAngle, double height, double speed, double density, int delay) {
+        if (level == null)
+            return new AtomicBoolean(true);
+
+        int particleCount = (int) (((int) Math.round(Math.max(starRadius, endRadius))) * 5 * density);
+
+        double startRadians = Math.toRadians(startingAngle);
+        double stepSize = (2 * Math.PI) / particleCount;
+        int startingI = (int) Math.round(startRadians / stepSize);
+
+        AtomicBoolean shouldStop = new AtomicBoolean(false);
+
+        AtomicDouble radius = new AtomicDouble(starRadius);
+        AtomicDouble yPos = new AtomicDouble(centerPosition.y);
+
+        double yIncreaseStep = .15 * speed;
+        double radiusIncreaseStep = (Math.abs(endRadius - starRadius)) / (height / yIncreaseStep);
+
+        AtomicInteger i = new AtomicInteger(startingI);
+        AtomicInteger delayCountdown = new AtomicInteger(delay);
+
+        ClientScheduler.scheduleForDuration(0, 1, duration, () -> {
+            if (shouldStop.get())
+                return;
+
+            double angle = (2 * Math.PI * i.get()) / particleCount;
+            double x = centerPosition.x + radius.get() * Math.cos(angle);
+            double z = centerPosition.z + radius.get() * Math.sin(angle);
+
+            level.addParticle(particleType, x, yPos.get(), z, 0, 0, 0);
+
+            if (delayCountdown.get() <= 0) {
+                yPos.addAndGet(yIncreaseStep);
+            }
+
+            radius.addAndGet(radiusIncreaseStep);
+            i.addAndGet(1);
+
+            if ((yPos.get() - centerPosition.y) > height) {
+                yPos.set(centerPosition.y);
+                radius.set(starRadius);
+            }
+
+            if (delayCountdown.get() > 0)
+                delayCountdown.decrementAndGet();
+
+            if (i.get() > particleCount)
+                i.set(0);
+
+        }, level);
+
+        return shouldStop;
+    }
+
     /**
      * Helper method to spawn particles at a location for a duration
      *
@@ -737,9 +824,9 @@ public class ParticleUtil {
         RandomSource random = level.random;
 
         for (int i = 0; i < particlesPerSpawn; i++) {
-            double offsetX = (random.nextDouble() - 0.5) * spread;
-            double offsetY = (random.nextDouble() - 0.5) * spread;
-            double offsetZ = (random.nextDouble() - 0.5) * spread;
+            double offsetX = (random.nextDouble() - 0.5) * spread * 2;
+            double offsetY = (random.nextDouble() - 0.5) * spread * 2;
+            double offsetZ = (random.nextDouble() - 0.5) * spread * 2;
 
             level.addParticle(particleType,
                     position.x + offsetX,
@@ -756,9 +843,9 @@ public class ParticleUtil {
         RandomSource random = level.random;
 
         for (int i = 0; i < particlesPerSpawn; i++) {
-            double offsetX = (random.nextDouble() - 0.5) * spreadX;
-            double offsetY = (random.nextDouble() - 0.5) * spreadY;
-            double offsetZ = (random.nextDouble() - 0.5) * spreadZ;
+            double offsetX = (random.nextDouble() - 0.5) * spreadX * 2;
+            double offsetY = (random.nextDouble() - 0.5) * spreadY * 2;
+            double offsetZ = (random.nextDouble() - 0.5) * spreadZ * 2;
 
             level.addParticle(particleType,
                     position.x + offsetX,

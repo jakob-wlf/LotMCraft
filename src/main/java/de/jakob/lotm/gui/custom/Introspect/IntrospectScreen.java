@@ -77,10 +77,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     // UI dimensions for abilities panel
     private static final int ABILITIES_PANEL_WIDTH = 120;
     private static final int ABILITIES_PANEL_HEIGHT = 115;
-    private static final int ABILITY_WHEEL_HEIGHT = 80;
+    private static final int ABILITY_WHEEL_HEIGHT = 100;
     private static final int ABILITY_BAR_HEIGHT = 60;
     private static final int ABILITY_ICON_SIZE = 16;
-    private static final int ABILITY_WHEEL_MAX = 18;
+    private static final int ABILITY_WHEEL_MAX = 24;
     private static final int ABILITY_BAR_MAX = 6;
     private static final int SHARED_POOL_HEIGHT = 50;   // top: all shared abilities + add/remove
     private static final int SHARED_WHEEL_HEIGHT = 60;  // bottom: personal shared wheel slots
@@ -145,6 +145,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             }
             availableAbilities.addAll(abilitySet);
         }
+
+        // Deduplicate: abilities like Cogitation/Ally match all pathways and can be added
+        // twice when a pathway history entry exists (once for current pathway, once for historical).
+        List<Ability> unique = availableAbilities.stream().distinct().toList();
+        availableAbilities.clear();
+        availableAbilities.addAll(unique);
 
         availableAbilities.removeIf(Ability::getShouldBeHidden);
 
@@ -1408,12 +1414,17 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int startY = panelY - (useScroll ? abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2) : 0);
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
 
+        int clipTop = panelY;
+        int clipBottom = panelY + ABILITIES_PANEL_HEIGHT - 15;
+
         for (int i = 0; i < abilities.size(); i++) {
             int row = i / iconsPerRow;
             int col = i % iconsPerRow;
 
             int x = startX + col * (ABILITY_ICON_SIZE + 2);
             int y = startY + row * (ABILITY_ICON_SIZE + 2);
+
+            if (y < clipTop || y + ABILITY_ICON_SIZE > clipBottom) continue;
 
             if (mouseX >= x && mouseX <= x + ABILITY_ICON_SIZE &&
                     mouseY >= y && mouseY <= y + ABILITY_ICON_SIZE) {

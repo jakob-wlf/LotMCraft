@@ -64,18 +64,14 @@ public class AdvancementUtil {
     public static void advance(LivingEntity entity, String pathway, int sequence) {
         if(playerMap == null) return;
 
-        if (entity instanceof Player player && player.isCreative()) {
-            setBeyonder(entity, pathway, sequence);
-            if (pathway.equals("fool") && sequence <= 2){
-                MiracleOfResurrectionComponent data = entity.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
-                data.setResurrectionAttempts(4);
-            }
-            return;
-        }
-
         ControllingDataComponent data = entity.getData(ModAttachments.CONTROLLING_DATA);
         if (data.isControlling()) {
             entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), Float.MAX_VALUE);
+            return;
+        }
+
+        if (entity instanceof Player player && player.isCreative()) {
+            setBeyonder(entity, pathway, sequence);
             return;
         }
 
@@ -105,6 +101,11 @@ public class AdvancementUtil {
         double failureChance = calculateFailureChance(difference, digestionProgress, sanity);
         if (BeyonderData.hasSwitchedPathway(entity)) failureChance = Math.min(1.0, failureChance + 0.1);
 
+        if(prevSequence == sequence) {
+            advanceSameSequence(entity, pathway, sequence, failureChance);
+            return;
+        }
+
         executeAdvancement(entity, pathway, sequence, failureChance, null);
     }
 
@@ -123,6 +124,30 @@ public class AdvancementUtil {
                 : null;
 
         executeAdvancement(entity, pathway, sequence, failureChance, onSuccess);
+    }
+
+    private static void advanceSameSequence(LivingEntity entity, String pathway, int sequence, double failureChance) {
+        int duration = calculateAdvancementDuration(sequence);
+        StartAdvanceSequencePathwayEvent event = postAdvancementEvent(entity, sequence, pathway, failureChance, duration);
+
+        String finalPathway = event.getPathway();
+        int finalSequence = event.getSequence();
+        double finalFailureChance = event.getFailureChance();
+        int finalDuration = event.getDuration();
+
+        scheduleAdvancementEffects(entity, finalPathway, finalDuration, finalSequence);
+
+        if (finalFailureChance >= 1.0 || Math.random() < finalFailureChance) {
+            scheduleFailure(entity, finalDuration);
+            return;
+        }
+
+        ServerScheduler.scheduleDelayed(finalDuration, () -> {
+            if (!activeAdvancements.containsKey(entity.getUUID())) return;
+            activeAdvancements.remove(entity.getUUID());
+            BeyonderData.addCharStack(entity, 1);
+            sendThirdPersonPacket(entity);
+        });
     }
 
     // Fires the event, schedules effects, then schedules failure-death or success-setBeyonder.
@@ -150,10 +175,6 @@ public class AdvancementUtil {
             if (onSuccessPreSet != null) onSuccessPreSet.run();
             setBeyonder(entity, finalPathway, finalSequence);
             sendThirdPersonPacket(entity);
-            if (finalPathway.equals("fool") && finalSequence <= 2){
-                MiracleOfResurrectionComponent data = entity.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
-                data.setResurrectionAttempts(4);
-            }
         });
     }
 
@@ -375,7 +396,7 @@ public class AdvancementUtil {
         if (sanity < 0.2f || sequenceDifference > 2) return 1.0;
 
         double baseChance;
-        if (sequenceDifference == 1) {
+        if (sequenceDifference <= 1) {
             boolean goodDigestion = digestion >= 0.95f;
             boolean goodSanity    = sanity    >= 0.8f;
             if      (goodDigestion && goodSanity) baseChance = 0.0;

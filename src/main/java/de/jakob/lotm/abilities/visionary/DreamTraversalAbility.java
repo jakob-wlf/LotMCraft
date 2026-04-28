@@ -14,6 +14,9 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.PlayerSelectionWorkType;
 import de.jakob.lotm.util.data.PlayerInfo;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.ParticleUtil;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,6 +35,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +63,7 @@ public class DreamTraversalAbility extends SelectableAbility {
 
     @Override
     public float getSpiritualityCost() {
-        return 60;
+        return 400;
     }
 
     @Override
@@ -79,6 +83,11 @@ public class DreamTraversalAbility extends SelectableAbility {
             case 2 -> hide(level, entity);
         }
     }
+
+    private static final DustParticleOptions dust = new DustParticleOptions(
+            new Vector3f(250 / 255f, 201 / 255f, 102 / 255f),
+            1f
+    );
 
     private void jumpInRange(Level level, LivingEntity entity){
         if (!(level instanceof ServerLevel serverLevel)) return;
@@ -102,14 +111,20 @@ public class DreamTraversalAbility extends SelectableAbility {
     }
 
     private void jump(Level level, LivingEntity entity) {
-        if (!(level instanceof ServerLevel serverLevel)) return;
-
         LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.5f);
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.no_target").withColor(0xFFff124d));
             return;
         }
+
+        if(level.isClientSide) {
+            ParticleUtil.spawnParticles((ClientLevel) level, dust, target.position().add(0, entity.getEyeHeight() / 2, 0), 100, .35, entity.getEyeHeight() / 2, .35, 0);
+            return;
+        }
+
+        if (!(level instanceof ServerLevel serverLevel)) return;
+
 
         int targetSeq = BeyonderData.getSequence(target);
         if(BeyonderData.getPathway(target).equals("visionary") && BeyonderData.getSequence(target) <
@@ -156,7 +171,7 @@ public class DreamTraversalAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20 * (int) multiplier(entity), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 40 * (int) Math.max(multiplier(entity)/4,1), 1.5f);
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.no_target").withColor(0xFFff124d));
@@ -240,6 +255,7 @@ public class DreamTraversalAbility extends SelectableAbility {
 
     public static void performTeleport(LivingEntity entity, LivingEntity target){
         entity.teleportTo(target.getX(), target.getY(), target.getZ());
+        ParticleUtil.spawnParticles((ServerLevel) entity.level(), dust, target.position().add(0, entity.getEyeHeight() / 2, 0), 100, .35, entity.getEyeHeight() / 2, .35, 0);
     }
 
     @SubscribeEvent

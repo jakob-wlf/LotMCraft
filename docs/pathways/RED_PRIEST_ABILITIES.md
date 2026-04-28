@@ -1,5 +1,24 @@
 # Red Priest Pathway Abilities
 
+## Spirituality
+
+Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passively.
+
+| Sequence | Max Spirituality | Regen/sec |
+|----------|-----------------|-----------|
+| 9        | 144             | 1.7/s     |
+| 8        | 160             | 1.9/s     |
+| 7        | 624             | 7.5/s     |
+| 6        | 960             | 11.5/s    |
+| 5        | 1,520           | 18.2/s    |
+| 4        | 3,120           | 37.4/s    |
+| 3        | 4,000           | 48.0/s    |
+| 2        | 8,000           | 96.0/s    |
+| 1        | 16,000          | 192.0/s   |
+| 0        | 48,000          | 576.0/s   |
+
+---
+
 ## Active Abilities
 
 ---
@@ -7,7 +26,7 @@
 ### Sacrifice
 **Sequence Requirement:** 1–3
 **Spirituality Cost:** 3000
-**Cooldown:** 12 hours
+**Cooldown:** 100 minutes
 *(Cannot be copied, replicated, used in artifacts, stolen, shared with teammates, or used by NPCs)*
 
 - Requires at least **500 kills** to activate.
@@ -21,8 +40,8 @@
 
 ### Conquering
 **Sequence Requirement:** 1
-**Spirituality Cost:** 1900
-**Cooldown:** 1.5 seconds
+**Spirituality Cost:** 8000
+**Cooldown:** 40 seconds
 *(Cannot be copied or replicated)*
 
 - **Radius:** 3.75 blocks
@@ -39,8 +58,8 @@
 
 ### Flame Authority
 **Sequence Requirement:** 1
-**Spirituality Cost:** 1000
-**Cooldown:** 2.5 seconds
+**Spirituality Cost:** 1800
+**Cooldown:** 8 seconds
 *(Cannot be copied)*
 
 Three selectable modes:
@@ -144,7 +163,7 @@ Three selectable modes:
 
 ### Fog of War
 **Sequence Requirement:** 3
-**Spirituality Cost:** 10 per tick (toggle)
+**Spirituality Cost:** 800 per tick (toggle)
 *(Cannot be copied)*
 
 - **Radius:** 20 blocks
@@ -159,7 +178,7 @@ Three selectable modes:
 ### War Cry
 **Sequence Requirement:** 3
 **Spirituality Cost:** 350
-**Cooldown:** 3 seconds
+**Cooldown:** 18 seconds
 *(Registers as a morale_boost interaction)*
 
 - **Radius:** 19 blocks
@@ -178,7 +197,7 @@ Three selectable modes:
 ### War Song
 **Sequence Requirement:** 3
 **Spirituality Cost:** 400
-**Cooldown:** 40 seconds
+**Cooldown:** 70 seconds
 *(Registers as a morale_boost interaction)*
 
 - **Duration:** 30 seconds (600 ticks)
@@ -205,7 +224,7 @@ Three selectable modes:
 ### Flame Mastery
 **Sequence Requirement:** 4
 **Spirituality Cost:** 100
-**Cooldown:** 2.5 seconds
+**Cooldown:** 5 seconds
 
 Three selectable modes:
 
@@ -335,20 +354,20 @@ Five selectable modes:
 ### Physical Enhancements (Red Priest)
 **Sequence Requirement:** 9
 
-Provides passive buffs that scale with the caster's current sequence. Includes fire resistance at higher sequences.
+Includes **Fire Resistance** at Seq 7 and below. Includes **Regeneration** at all sequences.
 
 | Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration | Other |
 |----------|----------|------------|-------|--------------|--------------|-------|
 | 9        | +1       | —          | +2    | —            | +1           | — |
-| 8        | +2       | +4         | +2    | +5           | +2           | — |
-| 7        | +2       | +4         | +2    | +5           | +2           | Fire Resistance +1 |
-| 6        | +2       | +6         | +2    | +7           | +2           | Fire Resistance +1 |
-| 5        | +2       | +8         | +2    | +9           | +2           | Fire Resistance +2 |
-| 4        | +3       | +13        | +4    | +16          | +3           | Fire Resistance +2 |
-| 3        | +3       | +14        | +4    | +17          | +3           | Fire Resistance +3 |
-| 2        | +4       | +17        | +5    | +25          | +4           | Fire Resistance +3 |
-| 1        | +4       | +18        | +5    | +30          | +4           | Fire Resistance +4 |
-| 0        | +5       | +18        | +5    | +35          | +5           | Fire Resistance +5 |
+| 8        | +2       | —          | +3    | +5           | +1           | — |
+| 7        | +2       | —          | +3    | +6           | +1           | Fire Resistance +1 |
+| 6        | +2       | +1         | +3    | +8           | +2           | Fire Resistance +1 |
+| 5        | +3       | +2         | +4    | +10          | +2           | Fire Resistance +2 |
+| 4        | +4       | +7         | +4    | +18          | +3           | Fire Resistance +2 |
+| 3        | +4       | +8         | +4    | +19          | +3           | Fire Resistance +3 |
+| 2        | +6       | +11        | +6    | +26          | +4           | Fire Resistance +3 |
+| 1        | +6       | +12        | +6    | +31          | +4           | Fire Resistance +4 |
+| 0        | +7       | +15        | +6    | +46          | +6           | Fire Resistance +6 |
 
 ---
 

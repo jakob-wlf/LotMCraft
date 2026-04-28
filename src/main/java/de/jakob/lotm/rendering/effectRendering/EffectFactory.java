@@ -77,6 +77,10 @@ public class EffectFactory {
             case 31 -> new FoolingEffect(x, y, z);
             case 32 -> new RotatingRingsEffect(x, y, z);
             case 33 -> new SpaceTearingEffect(x, y, z);
+            case 34 -> new DiscernEffect(x, y, z);
+            case 35 -> new ProhibitionEffect(x, y, z);
+            case 36 -> new ImprisonEffect(x, y, z);
+            case 37 -> new AncientCourtEffect(x, y, z);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
 

@@ -119,6 +119,9 @@ public class ModItems {
     public static final DeferredItem<Item> DEMONESS_UNIQUENESS = ITEMS.register("demoness_uniqueness",
             () -> new UniquenessItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "demoness")
     );
+    public static final DeferredItem<Item> JUSTICIAR_UNIQUENESS = ITEMS.register("justiciar_uniqueness",
+            () -> new UniquenessItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "justiciar")
+    );
 
     public static PotionIngredient selectRandomIngredient(List<PotionIngredient> ingredients, Random random) {
         if (ingredients == null || ingredients.isEmpty()) {

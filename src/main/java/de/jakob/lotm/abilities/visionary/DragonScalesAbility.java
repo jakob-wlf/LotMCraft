@@ -39,7 +39,7 @@ public class DragonScalesAbility extends ToggleAbility {
 
     @Override
     public float getSpiritualityCost() {
-        return 2;
+        return 15;
     }
 
     @Override
@@ -108,8 +108,7 @@ public class DragonScalesAbility extends ToggleAbility {
 
             event.setAmount(damage);
 
-            if(!PsychologicalInvisibilityAbility.invisiblePlayers.containsKey(entity.getUUID()))
-                ParticleUtil.spawnParticles((ServerLevel) entity.level(), dust, entity.getEyePosition(), 5, .45f, .8, .45f, 0);
+            ParticleUtil.spawnParticles((ServerLevel) entity.level(), dust, entity.getEyePosition(), 5, .45f, .8, .45f, 0);
         }
     }
 }

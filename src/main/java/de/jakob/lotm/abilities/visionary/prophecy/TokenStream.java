@@ -26,4 +26,6 @@ public class TokenStream {
         return index >= tokens.length;
     }
 
+    public int getTotalSize() { return tokens.length; }
+
 }

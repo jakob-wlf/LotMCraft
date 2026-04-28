@@ -57,14 +57,14 @@ public class PhysicalEnhancementsDarknessAbility extends PhysicalEnhancementsAbi
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1),
                     new PhysicalEnhancement(EnhancementType.SPEED, 1 + speedModifier),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 5),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1)
             );
             case 7 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 2 + strengthModifier),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2 + speedModifier),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 6),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1)
             );
 
             case 6 -> List.of(

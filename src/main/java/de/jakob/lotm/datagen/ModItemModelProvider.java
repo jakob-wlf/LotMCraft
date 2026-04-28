@@ -54,6 +54,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         uniqueness(ModItems.ABYSS_UNIQUENESS.get());
         uniqueness(ModItems.MOTHER_UNIQUENESS.get());
         uniqueness(ModItems.DEMONESS_UNIQUENESS.get());
+        uniqueness(ModItems.JUSTICIAR_UNIQUENESS.get());
 
 
         PotionItemHandler.ITEMS.getEntries().forEach(i -> {

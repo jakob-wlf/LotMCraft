@@ -20,6 +20,7 @@ public class StoredDataBuilder {
     private String[] pathwayHistory;
     private LinkedList<Prophecy> prophecyList;
     private String uniqueness;
+    private String sefirot;
 
     public StoredDataBuilder(){
         clean();
@@ -36,6 +37,7 @@ public class StoredDataBuilder {
         pathwayHistory = new String[10];
         prophecyList = new LinkedList<>();
         uniqueness = "none";
+        sefirot = "";
     }
 
     public StoredDataBuilder copyFrom(@Nullable StoredData data){
@@ -51,6 +53,7 @@ public class StoredDataBuilder {
             charStack = Arrays.copyOf(data.charStack(), 10);
             pathwayHistory = Arrays.copyOf(data.pathwayHistory(), 10);
             prophecyList = data.prophecies();
+            sefirot = data.claimedSefirot();
         }
 
         return this;
@@ -88,7 +91,8 @@ public class StoredDataBuilder {
     }
 
     public StoredDataBuilder charStack(int stack, int sequence) {
-        charStack[sequence] = stack;
+        if(sequence >= 0 && sequence < 10)
+            charStack[sequence] = stack;
         return this;
     }
 
@@ -117,10 +121,16 @@ public class StoredDataBuilder {
         return this;
     }
 
+    public StoredDataBuilder sefirot(String value){
+        sefirot = value;
+        return this;
+    }
+
     public StoredData build(){
         StoredData buff = new StoredData(pathway, sequence,
                 honorificName, trueName, modified,
-                lastPosition, charStack, pathwayHistory, uniqueness, prophecyList);
+                lastPosition, charStack, pathwayHistory, uniqueness,
+                prophecyList, sefirot);
 
         clean();
 

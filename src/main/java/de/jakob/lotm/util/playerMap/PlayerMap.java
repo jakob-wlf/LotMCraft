@@ -52,6 +52,21 @@ public class PlayerMap extends SavedData {
         }
     }
 
+    public void setSefirot(UUID id, String value){
+        map.compute(id, (k, data) -> StoredData.builder.copyFrom(data).sefirot(value).build());
+
+        setDirty();
+    }
+
+    public @Nullable UUID findBySefirot(String sefirot){
+        for(var obj : map.entrySet()){
+            if(obj.getValue().claimedSefirot().equals(sefirot))
+                return obj.getKey();
+        }
+
+        return null;
+    }
+
     public boolean anyPlayerHoldsUniqueness(String pathway) {
         for (var data : map.values()) {
             if (data.uniqueness().equalsIgnoreCase(pathway)) {

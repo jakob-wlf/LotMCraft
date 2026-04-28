@@ -126,7 +126,7 @@ public class PhysicalEnhancementsDeathAbility extends PhysicalEnhancementsAbilit
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 4 ),
                     new PhysicalEnhancement(EnhancementType.RESISTANCE, 13 ),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5 ),
-                    new PhysicalEnhancement(EnhancementType.HEALTH, 32),
+                    new PhysicalEnhancement(EnhancementType.HEALTH, 34),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 4)
             );
 
@@ -134,7 +134,7 @@ public class PhysicalEnhancementsDeathAbility extends PhysicalEnhancementsAbilit
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 6 ),
                     new PhysicalEnhancement(EnhancementType.RESISTANCE, 16 ),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6 ),
-                    new PhysicalEnhancement(EnhancementType.HEALTH, 4),
+                    new PhysicalEnhancement(EnhancementType.HEALTH, 47),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 6)
             );
 

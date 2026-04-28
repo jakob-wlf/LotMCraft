@@ -259,8 +259,6 @@ public class GiftAbility extends SelectableAbility {
 
         int storedDistance = MundaneConceptualTheft.stolenDistanceMap.get(entity.getUUID());
 
-        LOTMCraft.LOGGER.info("stored: {}, dist: {}", storedDistance, distance);
-
         if(storedDistance - distance < 0){
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.failed").withColor(0x6d32a8));
             return;

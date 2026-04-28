@@ -9,6 +9,7 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
@@ -46,10 +47,13 @@ public class FrenzyAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
-        if(level.isClientSide)
-            return;
-
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2);
+
+        if (level.isClientSide) {
+            if(target != null)
+                ParticleUtil.spawnParticles((ClientLevel) level, dust, target.getEyePosition(), 35, .5);
+            return;
+        }
 
         if(target == null) {
             if(entity instanceof ServerPlayer player) {
@@ -58,6 +62,7 @@ public class FrenzyAbility extends Ability {
             }
             return;
         }
+
 
         int amplifier = getAmplifier(entity, target);
 
@@ -78,9 +83,9 @@ public class FrenzyAbility extends Ability {
                 target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 8, amplifier));
         }
 
-        target.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), (float) (DamageLookup.lookupDamage(7, .85) * multiplier(entity)));
+        target.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), (float) (DamageLookup.lookupDamage(7, .85) * (int) Math.max(multiplier(entity)/4,1)));
 
-        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((float) (0.065f * multiplier(entity)), target, entitySeq, BeyonderData.getSequence(target));
+        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.065f * (int) Math.max(multiplier(entity)/4,1)), target, entitySeq, BeyonderData.getSequence(target));
     }
 
     private int getAmplifier(LivingEntity entity, LivingEntity target) {

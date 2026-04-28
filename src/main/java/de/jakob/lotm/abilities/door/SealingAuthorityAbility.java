@@ -202,7 +202,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
 
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 30*(int) Math.max(multiplier(entity)/4,1), 2);
         if(target == null || sealedEntities.contains(target.getUUID())) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.curse.no_target").withColor(BeyonderData.pathwayInfos.get("door").color()));
+            AbilityUtil.sendActionBar(entity, Component.translatable("lotmcraft.no_target").withColor(BeyonderData.pathwayInfos.get("door").color()));
             return;
         }
         int radius = Math.max(3, (int) target.getEyeHeight());

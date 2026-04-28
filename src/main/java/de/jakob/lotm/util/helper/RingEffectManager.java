@@ -19,13 +19,14 @@ public class RingEffectManager {
                                         float red, float green, float blue, float alpha,
                                         float ringThickness, float ringHeight,
                                         float expansionSpeed, boolean smoothExpansion,
+                                        boolean fadeOut,
                                         ServerLevel level) {
         // Send packet to all players in range
         RingEffectPacket packet = new RingEffectPacket(
                 center.x, center.y, center.z,
                 maxRadius, duration,
                 red, green, blue, alpha,
-                ringThickness, ringHeight, expansionSpeed, smoothExpansion
+                ringThickness, ringHeight, expansionSpeed, smoothExpansion, fadeOut
         );
 
         // Send to all players within 64 blocks using AABB
@@ -37,6 +38,43 @@ public class RingEffectManager {
         }
     }
 
+    public static void createRingForPlayer(Vec3 center, float maxRadius, int duration,
+                                        float red, float green, float blue, float alpha,
+                                        float ringThickness, float ringHeight,
+                                        float expansionSpeed, boolean smoothExpansion,
+                                        ServerLevel level, ServerPlayer player) {
+        // Send packet to all players in range
+        RingEffectPacket packet = new RingEffectPacket(
+                center.x, center.y, center.z,
+                maxRadius, duration,
+                red, green, blue, alpha,
+                ringThickness, ringHeight, expansionSpeed, smoothExpansion,true
+        );
+
+        // Send to all players within 64 blocks using AABB
+        PacketDistributor.sendToPlayer(player, packet);
+    }
+
+    public static void createRingForPlayer(Vec3 center, float maxRadius, int duration,
+                                        float red, float green, float blue, float alpha,
+                                        float ringThickness, float ringHeight,
+                                        ServerLevel level, ServerPlayer player) {
+        createRingForPlayer(center, maxRadius, duration, red, green, blue, alpha,
+                ringThickness, ringHeight, 1.0f, true, level, player);
+    }
+
+    /**
+     * Creates a ring effect for all players with expansionSpeed and smoothExpansion (fadeOut defaults to true)
+     */
+    public static void createRingForAll(Vec3 center, float maxRadius, int duration,
+                                        float red, float green, float blue, float alpha,
+                                        float ringThickness, float ringHeight,
+                                        float expansionSpeed, boolean smoothExpansion,
+                                        ServerLevel level) {
+        createRingForAll(center, maxRadius, duration, red, green, blue, alpha,
+                ringThickness, ringHeight, expansionSpeed, smoothExpansion, true, level);
+    }
+
     /**
      * Creates a ring effect for all players with simple parameters
      */
@@ -45,7 +83,7 @@ public class RingEffectManager {
                                         float ringThickness, float ringHeight,
                                         ServerLevel level) {
         createRingForAll(center, maxRadius, duration, red, green, blue, alpha,
-                ringThickness, ringHeight, 1.0f, true, level);
+                ringThickness, ringHeight, 1.0f, true, true, level);
     }
 
     /**

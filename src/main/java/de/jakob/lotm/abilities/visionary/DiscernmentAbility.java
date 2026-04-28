@@ -8,6 +8,7 @@ import de.jakob.lotm.abilities.door.ReplicatingAbility;
 import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.ApprenticeBookEntity;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CopiedAbilityHelper;
@@ -41,6 +42,7 @@ public class DiscernmentAbility extends SelectableAbility {
         cannotBeStolen = true;
         canBeReplicated = false;
         canBeUsedInArtifact = false;
+        canBeShared = false;
     }
 
     @Override
@@ -148,6 +150,8 @@ public class DiscernmentAbility extends SelectableAbility {
 
     private void buff(Level level, LivingEntity entity){
         if(level.isClientSide) return;
+
+        EffectManager.playEffect(EffectManager.Effect.DISCERNMENT, entity.getX(), entity.getEyePosition().y, entity.getZ(), (ServerLevel) level);
 
         switch (random.nextInt(4)){
             case 0 -> entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 60, 3, false, false, false));

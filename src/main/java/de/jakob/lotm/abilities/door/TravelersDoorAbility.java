@@ -148,7 +148,7 @@ public class TravelersDoorAbility extends SelectableAbility {
 
     private int getCostForDistance(Vec3 position, Vec3 validatedPos) {
         double distance = position.distanceTo(validatedPos);
-        return Math.max(2000, 70 * (int) (distance / 500));
+        return Math.max(2000, 70 * (int) (distance / 200));
     }
 
     private void spawnFailureParticles(ServerLevel level, Vec3 pos) {

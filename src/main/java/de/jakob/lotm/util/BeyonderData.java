@@ -55,6 +55,7 @@ public class BeyonderData {
         implementedRecipes.put("error", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("black_emperor", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("death", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
+        implementedRecipes.put("justiciar", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
 
     }
 
@@ -96,13 +97,15 @@ public class BeyonderData {
             "abyss",
             "visionary",
             "wheel_of_fortune",
-            "black_emperor",
-            "death"
+            "death",
+            "justiciar",
+            "black_emperor"
     );
 
     public static int getHighestImplementedSequence(String pathway) {
         return switch (pathway) {
-            case "mother", "darkness", "fool", "wheel_of_fortune", "error", "visionary", "demoness", "red_priest", "sun", "tyrant", "door", "abyss", "black_emperor", "death" -> 1;
+            case "mother", "darkness", "fool", "wheel_of_fortune", "error", "visionary", "demoness", "red_priest", "sun", "tyrant", "door", "abyss", "death","justiciar" -> 1;
+            case "black_emperor" -> 7;
             default -> 9;
         };
     }
@@ -172,13 +175,19 @@ public class BeyonderData {
                 playerMap.removeHonorificName(player);
 
             if(clearCharStack) playerMap.clearStack(player);
-            else if(sequence != LOTMCraft.NON_BEYONDER_SEQ) playerMap.setStack(player, sequence, sequence);
+            else playerMap.setStack(player, sequence, sequence);
         }
 
         if(Objects.equals(sequence, LOTMCraft.NON_BEYONDER_SEQ)
                 || pathway.equals("none")) {
             clearBeyonderData(entity);
             return;
+        }
+
+        // resetting the miracle of resurrection attempts
+        if (pathway.equals("fool") && sequence <= 2){
+            MiracleOfResurrectionComponent miracleOfResurrectionComponent = entity.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
+            miracleOfResurrectionComponent.setResurrectionAttempts(4);
         }
 
         boolean griefing = !BeyonderData.isBeyonder(entity) || BeyonderData.isGriefingEnabled(entity);

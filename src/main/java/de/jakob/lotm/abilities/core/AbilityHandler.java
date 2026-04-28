@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.core;
 
 import de.jakob.lotm.abilities.abyss.*;
 import de.jakob.lotm.abilities.common.*;
+import de.jakob.lotm.abilities.justiciar.*;
 import de.jakob.lotm.abilities.darkness.*;
 import de.jakob.lotm.abilities.death.*;
 import de.jakob.lotm.abilities.demoness.*;
@@ -16,6 +17,7 @@ import de.jakob.lotm.abilities.visionary.*;
 import de.jakob.lotm.abilities.wheel_of_fortune.*;
 import de.jakob.lotm.abilities.black_emperor.*;
 
+import java.awt.image.DataBufferByte;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -250,6 +252,31 @@ public class AbilityHandler {
         abilities.add(new WordsOfMisfortuneAbility("words_of_misfortune_ability"));
         abilities.add(new ProphecyAbility("prophecy_ability"));
         abilities.add(new CycleOfFateAbility("cycle_of_fate_ability"));
+
+        // JUSTICIAR PATHWAY
+        abilities.add(new AuthorityAbility("authority_ability"));
+        abilities.add(new EyeOfOrderAbility("eye_of_order_ability"));
+        abilities.add(new ProhibitionAbility("prohibition_ability"));
+        abilities.add(new IllusionaryTortureDevicesAbility("illusionary_torture_devices_ability"));
+        abilities.add(new ImprisonAbility("imprison_ability"));
+        abilities.add(new ConfinementAbility("confinement_ability"));
+        abilities.add(new JusticeLanguageAbility("justice_language_ability"));
+        abilities.add(new VerdictExileAbility("verdict_exile_ability"));
+        abilities.add(new PunishmentAbility("punishment_ability"));
+        abilities.add(new LawAbility("law_ability"));
+        abilities.add(new ExecutionAbility("execution_ability"));
+        abilities.add(new BalancingAbility("balancing_ability"));
+        abilities.add(new SwordOfJudgmentAbility("sword_of_judgment_ability"));
+        abilities.add(new DeliveringJudgmentAbility("delivering_judgment_ability"));
+        abilities.add(new ExileOfBalanceAbility("exile_of_balance_ability"));
+        abilities.add(new IndividualBalanceAbility("individual_balance_ability"));
+        abilities.add(new OrderProxyAbility("order_proxy_ability"));
+        abilities.add(new AncientCourtOfJudgmentAbility("ancient_court_of_judgment_ability"));
+        abilities.add(new WorldJudgmentAbility("world_judgment_ability"));
+        abilities.add(new RecognitionAbility("recognition_ability"));
+        abilities.add(new JurisdictionAbility("jurisdiction_ability"));
+
+
 
         // ERROR PATHWAY
         abilities.add(new TheftAbility("theft_ability"));

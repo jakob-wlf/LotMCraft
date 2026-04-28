@@ -1,5 +1,24 @@
 # Error Pathway Abilities
 
+## Spirituality
+
+Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passively.
+
+| Sequence | Max Spirituality | Regen/sec |
+|----------|-----------------|-----------|
+| 9        | 360             | 4.3/s     |
+| 8        | 400             | 4.8/s     |
+| 7        | 1,560           | 18.7/s    |
+| 6        | 2,400           | 28.8/s    |
+| 5        | 3,800           | 45.6/s    |
+| 4        | 7,800           | 93.6/s    |
+| 3        | 10,000          | 120.0/s   |
+| 2        | 20,000          | 240.0/s   |
+| 1        | 40,000          | 480.0/s   |
+| 0        | 120,000         | 1,440.0/s |
+
+---
+
 ## Ability Theft Mechanic
 
 **Ability Theft** is the Error pathway's signature: stealing copies of another Beyonder's abilities and temporarily disabling them on the original owner. The TheftHandler governs success, count, uses, and disable time.
@@ -27,7 +46,7 @@ Stolen copies cannot be used if the ability is already owned by the thief at the
 
 ### Time Manipulation
 **Sequence Requirement:** 1
-**Spirituality Cost:** 1200
+**Spirituality Cost:** 10000
 **Cooldown:** 17 seconds
 *(Cannot be copied or replicated)*
 
@@ -52,8 +71,8 @@ Three selectable modes:
 
 ### Conceptual Theft
 **Sequence Requirement:** 2
-**Spirituality Cost:** 2000
-**Cooldown:** 25 seconds
+**Spirituality Cost:** 10000
+**Cooldown:** 10 seconds
 *(Cannot be copied, replicated; cannot be used by NPCs)*
 
 Four selectable modes:
@@ -83,8 +102,8 @@ Four selectable modes:
 
 ### Fate Siphoning
 **Sequence Requirement:** 2
-**Spirituality Cost:** 1000
-**Cooldown:** 25 seconds
+**Spirituality Cost:** 4000
+**Cooldown:** 20 seconds
 *(Cannot be copied)*
 
 - **Target Range:** 30 blocks
@@ -99,8 +118,8 @@ Four selectable modes:
 
 ### Loop Hole Creation
 **Sequence Requirement:** 3
-**Spirituality Cost:** 1200
-**Cooldown:** 3.5 seconds
+**Spirituality Cost:** 6000
+**Cooldown:** 16 seconds
 *(Cannot be copied or replicated)*
 
 - **Target Range:** 40 blocks; **Loophole Radius:** 3 blocks
@@ -116,8 +135,8 @@ Four selectable modes:
 
 ### Deceit
 **Sequence Requirement:** 3
-**Spirituality Cost:** 500
-**Cooldown:** 1 second
+**Spirituality Cost:** 4000
+**Cooldown:** 15 seconds
 *(Cannot be copied or replicated)*
 
 Two selectable modes:
@@ -136,8 +155,8 @@ Two selectable modes:
 
 ### Avatar Creation
 **Sequence Requirement:** 4
-**Spirituality Cost:** 500
-**Cooldown:** 2 seconds
+**Spirituality Cost:** 1500
+**Cooldown:** 5 seconds
 *(Cannot be copied, replicated, used by NPCs, or used in artifacts)*
 
 - Spawns an **Error Avatar** entity at the caster's position.
@@ -147,7 +166,8 @@ Two selectable modes:
 
 ### Parasitation
 **Sequence Requirement:** 4
-**Spirituality Cost:** 1 per tick (toggle)
+**Spirituality Cost:** 4000
+**Cooldown:** 5 seconds
 *(Cannot be copied, replicated, used by NPCs, or used in artifacts)*
 
 - **Range:** 8 blocks
@@ -212,8 +232,8 @@ Four selectable modes (Mode 0–2 require a target within `15 × multiplier²` b
 
 ### Ability Theft
 **Sequence Requirement:** 6
-**Spirituality Cost:** 95
-**Cooldown:** 1.5 seconds
+**Spirituality Cost:** 200
+**Cooldown:** 3 seconds
 *(Cannot be copied or replicated)*
 
 Two selectable modes:
@@ -229,7 +249,7 @@ Two selectable modes:
 
 ### Gift
 **Sequence Requirement:** 6
-**Spirituality Cost:** 30
+**Spirituality Cost:** 60
 **Cooldown:** 1 second
 *(Cannot be copied or replicated)*
 
@@ -272,7 +292,7 @@ Two selectable modes:
 
 ### Theft
 **Sequence Requirement:** 8
-**Spirituality Cost:** 10.5
+**Spirituality Cost:** 400
 **Cooldown:** 1.75 seconds
 *(Cannot be copied, replicated; cannot be used by NPCs)*
 
@@ -289,20 +309,20 @@ Two selectable modes:
 ### Physical Enhancements (Error)
 **Sequence Requirement:** 9
 
-Provides passive buffs that scale with the caster's current sequence. No Night Vision or Fire Resistance at any sequence.
+Includes **Mining Efficiency** at all sequences and **Fire Resistance** at Seq 7.
 
 | Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration | Other |
 |----------|----------|------------|-------|--------------|--------------|-------|
-| 9        | +1       | —          | +2    | —            | +1           | — |
-| 8        | +2       | +4         | +2    | +5           | +2           | — |
-| 7        | +2       | +4         | +2    | +5           | +2           | — |
-| 6        | +2       | +6         | +2    | +7           | +2           | — |
-| 5        | +2       | +8         | +2    | +9           | +2           | — |
-| 4        | +3       | +13        | +4    | +16          | +3           | — |
-| 3        | +3       | +14        | +4    | +17          | +3           | — |
-| 2        | +4       | +17        | +5    | +25          | +4           | — |
-| 1        | +4       | +18        | +5    | +30          | +4           | — |
-| 0        | +5       | +18        | +5    | +20          | +5           | — |
+| 9        | —        | —          | +1    | —            | —            | Mining Efficiency +1 |
+| 8        | +1       | —          | +2    | +3           | —            | Mining Efficiency +1 |
+| 7        | +1       | —          | +3    | +3           | +1           | Fire Resistance +1, Mining Efficiency +2 |
+| 6        | +1       | +1         | +3    | +4           | +1           | Mining Efficiency +2 |
+| 5        | +2       | +2         | +3    | +5           | +1           | Mining Efficiency +2 |
+| 4        | +1       | +4         | +5    | +12          | +2           | Mining Efficiency +4 |
+| 3        | +2       | +5         | +5    | +13          | +2           | Mining Efficiency +4 |
+| 2        | +3       | +8         | +6    | +21          | +3           | Mining Efficiency +5 |
+| 1        | +3       | +8         | +6    | +26          | +3           | Mining Efficiency +5 |
+| 0        | +4       | +10        | +7    | +36          | +4           | Mining Efficiency +6 |
 
 ---
 

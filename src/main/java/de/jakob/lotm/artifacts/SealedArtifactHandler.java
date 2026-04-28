@@ -101,7 +101,7 @@ public class SealedArtifactHandler {
         }
 
         // If no ability found at target sequence, try higher sequences
-        if (!validAbility.canBeUsedInArtifact) {
+        if ((validAbility == null) || !validAbility.canBeUsedInArtifact) {
             return getPathwayAbilities(pathway, targetSequence + 1, exact, excluded);
         }
 

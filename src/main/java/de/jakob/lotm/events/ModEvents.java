@@ -23,6 +23,7 @@ import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.cyc
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.desolate_area.DesolateAreaModel;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.exile_doors.ExileDoorsModel;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.return_portal.HighSequenceDoorsModel;
+import de.jakob.lotm.entity.client.ability_entities.justiciar_pathway.judgment_sword.JudgmentSwordModel;
 import de.jakob.lotm.entity.client.ability_entities.sun_pathway.justice_sword.JusticeSwordModel;
 import de.jakob.lotm.entity.client.projectiles.fireball.FireballModel;
 import de.jakob.lotm.entity.client.projectiles.flaming_spear.FlamingSpearProjectileModel;
@@ -50,6 +51,7 @@ import de.jakob.lotm.rendering.models.fool.FoolMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.red_priest.RedPriestMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.sun.SunMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.wheel_of_fortune.WheelOfFortuneMythicalCreatureModel;
+import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.util.helper.TeamUtils;
 import de.jakob.lotm.rendering.models.door.DoorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.tyrant.TyrantMythicalCreatureModel;
@@ -103,6 +105,7 @@ public class ModEvents {
         event.registerLayerDefinition(ExileDoorsModel.LAYER_LOCATION, ExileDoorsModel::createBodyLayer);
         event.registerLayerDefinition(WarBannerModel.LAYER_LOCATION, WarBannerModel::createBodyLayer);
         event.registerLayerDefinition(MeteorModel.LAYER_LOCATION, MeteorModel::createBodyLayer);
+        event.registerLayerDefinition(JudgmentSwordModel.LAYER_LOCATION, JudgmentSwordModel::createBodyLayer);
         event.registerLayerDefinition(JusticeSwordModel.LAYER_LOCATION, JusticeSwordModel::createBodyLayer);
         event.registerLayerDefinition(SpearOfLightProjectileModel.LAYER_LOCATION, SpearOfLightProjectileModel::createBodyLayer);
         event.registerLayerDefinition(VolcanoModel.LAYER_LOCATION, VolcanoModel::createBodyLayer);
@@ -233,13 +236,13 @@ public class ModEvents {
         BeyonderMapCommand.register(event.getDispatcher());
         DisableAbilityCommand.register(event.getDispatcher());
         EnableAbilityCommand.register(event.getDispatcher());
-        HonorificNameCommand.register(event.getDispatcher());
         CharacteristicsStackCommand.register(event.getDispatcher());
         TeamCommand.register(event.getDispatcher());
         TeamInviteResponseCommand.register(event.getDispatcher());
         SetBeyonderLogCommand.register(event.getDispatcher());
         KillCountCommand.register(event.getDispatcher());
         UniquenessCommand.register(event.getDispatcher());
+        SefirotCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

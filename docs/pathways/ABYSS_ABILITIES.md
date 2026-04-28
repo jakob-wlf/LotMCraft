@@ -1,5 +1,24 @@
 # Abyss Pathway Abilities
 
+## Spirituality
+
+Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passively.
+
+| Sequence | Max Spirituality | Regen/sec |
+|----------|-----------------|-----------|
+| 9        | 180             | 2.2/s     |
+| 8        | 200             | 2.4/s     |
+| 7        | 780             | 9.4/s     |
+| 6        | 1,200           | 14.4/s    |
+| 5        | 1,900           | 22.8/s    |
+| 4        | 3,900           | 46.8/s    |
+| 3        | 5,000           | 60.0/s    |
+| 2        | 10,000          | 120.0/s   |
+| 1        | 20,000          | 240.0/s   |
+| 0        | 60,000          | 720.0/s   |
+
+---
+
 ## Active Abilities
 
 ---
@@ -33,7 +52,7 @@ Two selectable modes:
 ### Malice Seed
 **Sequence Requirement:** 2
 **Spirituality Cost:** 150
-**Cooldown:** 240 seconds
+**Cooldown:** 400 seconds
 *(Cannot be copied, replicated, or used in artifacts)*
 
 - **Range:** 25 blocks
@@ -119,7 +138,7 @@ Three selectable modes:
 ### Desire Control
 **Sequence Requirement:** 4
 **Spirituality Cost:** 150
-**Cooldown:** 5 seconds
+**Cooldown:** 10 seconds
 *(Cannot be copied or replicated)*
 
 Two selectable modes:
@@ -176,7 +195,7 @@ Two selectable modes:
 ### Defiling Seed
 **Sequence Requirement:** 5
 **Spirituality Cost:** 60
-**Cooldown:** 5 seconds
+**Cooldown:** 7 seconds
 *(Cannot be copied)*
 
 - **Range:** 25 blocks
@@ -246,19 +265,19 @@ Three selectable modes:
 
 ---
 
-### Pyrokinesis (Abyss)
+### Poisonous Flame
 **Sequence Requirement:** 8
 **Spirituality Cost:** 12
 **Cooldown:** 0.8 seconds
+*(Registers as burning and poison interactions)*
 
-- **Range:** 35 blocks (shoots along look direction)
-- **Damage Radius:** 2.75 blocks
+- **Range:** ~35 blocks (shoots green flame along look direction at 0.5 blocks/iteration)
+- **Damage Radius:** `2.75 × multiplier` blocks
 - **Hits:** **1 hit** per cast
-- **Damage:** **~8.5 damage per hit**.
-- Applies **Poison (Level 2, 8 seconds)** if not purified.
+- **Damage:** **~`DamageLookup(8, 0.9)` × multiplier per hit**.
+- Applies **Poison (Level 2, 8 × max(multiplier/2, 1) seconds)** if not purified.
 - **Water Interaction:** Extinguished — no damage or poison.
 - **Purification Interaction:** Poison effect is neutralized.
-- **Burning Interaction:** Triggers an explosion (**~9.8 damage**, radius 9 blocks).
 
 ---
 
@@ -287,20 +306,20 @@ Three selectable modes:
 ### Physical Enhancements (Abyss)
 **Sequence Requirement:** 9
 
-Provides passive buffs that scale with the caster's current sequence. Includes fire resistance at higher sequences.
+Includes **Fire Resistance** at Seq 6 and below. No Night Vision at any sequence.
 
 | Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration | Other |
 |----------|----------|------------|-------|--------------|--------------|-------|
-| 9        | +1       | —          | +2    | —            | +1           | — |
-| 8        | +2       | +4         | +2    | +5           | +2           | — |
-| 7        | +2       | +4         | +2    | +5           | +2           | — |
-| 6        | +2       | +6         | +2    | +7           | +2           | Fire Resistance +1 |
-| 5        | +2       | +8         | +2    | +9           | +2           | Fire Resistance +2 |
-| 4        | +3       | +13        | +4    | +16          | +3           | Fire Resistance +2 |
-| 3        | +3       | +14        | +4    | +17          | +3           | Fire Resistance +3 |
-| 2        | +4       | +17        | +5    | +25          | +4           | Fire Resistance +3 |
-| 1        | +4       | +18        | +5    | +30          | +4           | Fire Resistance +4 |
-| 0        | +5       | +18        | +5    | +20          | +5           | Fire Resistance +5 |
+| 9        | +1       | —          | +1    | —            | —            | — |
+| 8        | +2       | —          | +2    | +5           | —            | — |
+| 7        | +2       | —          | +2    | +6           | +1           | — |
+| 6        | +3       | +3         | +3    | +7           | +2           | Fire Resistance +1 |
+| 5        | +3       | +4         | +3    | +9           | +2           | Fire Resistance +2 |
+| 4        | +4       | +8         | +4    | +18          | +3           | Fire Resistance +2 |
+| 3        | +4       | +9         | +4    | +19          | +3           | Fire Resistance +3 |
+| 2        | +5       | +12        | +5    | +27          | +4           | Fire Resistance +3 |
+| 1        | +5       | +13        | +5    | +32          | +4           | Fire Resistance +4 |
+| 0        | +6       | +14        | +6    | +47          | +6           | Fire Resistance +6 |
 
 ---
 

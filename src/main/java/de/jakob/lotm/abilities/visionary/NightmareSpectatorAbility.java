@@ -9,6 +9,7 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -26,7 +27,7 @@ import java.util.Map;
 public class NightmareSpectatorAbility extends Ability {
 
     public NightmareSpectatorAbility(String id) {
-        super(id, 5f);
+        super(id, 20f);
         canBeCopied = false;
     }
 
@@ -47,14 +48,20 @@ public class NightmareSpectatorAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
-        if(!(level instanceof ServerLevel serverLevel)) {
-            return;
-        }
 
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 200, 2);
 
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));
+            return;
+        }
+
+        if(level.isClientSide) {
+            ParticleUtil.spawnSphereParticles((ClientLevel) level, dust, target.getEyePosition(), 2, 50);
+            return;
+        }
+
+        if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }
 
@@ -80,12 +87,12 @@ public class NightmareSpectatorAbility extends Ability {
                 serverLevel.registryAccess()
                         .registryOrThrow(Registries.DAMAGE_TYPE)
                         .getHolderOrThrow(ModDamageTypes.LOOSING_CONTROL)
-        ), (float) DamageLookup.lookupDamage(5, 1.1) * (float) multiplier(entity));
+        ), (float) DamageLookup.lookupDamage(5, 1.1) * (int) Math.max(multiplier(entity)/4,1));
 
         // Add effect
         target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, 1));
 
         // Decrease Sanity
-        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((float) (0.165f * (multiplier(entity)/2)), target, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(target));
+        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.165f* (int) Math.max(multiplier(entity)/4,1)), target, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(target));
     }
 }
