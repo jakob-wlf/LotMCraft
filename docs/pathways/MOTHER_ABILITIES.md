@@ -26,7 +26,7 @@ Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passivel
 ### World Creation
 **Sequence Requirement:** 1
 **Spirituality Cost:** 1000
-**Cooldown:** None
+**Cooldown:** 2 seconds
 *(Cannot be copied, replicated, or used by NPCs)*
 
 - Teleports the caster to their personal **Nature pocket dimension**.
@@ -39,7 +39,7 @@ Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passivel
 ### Wrath of Nature
 **Sequence Requirement:** 1
 **Spirituality Cost:** 1000
-**Cooldown:** None
+**Cooldown:** 3 seconds
 *(Cannot be copied)*
 
 Three selectable modes:
@@ -105,7 +105,7 @@ Two selectable modes:
 ### Mutation Creation
 **Sequence Requirement:** 4
 **Spirituality Cost:** 800
-**Cooldown:** None
+**Cooldown:** 4 seconds
 *(Cannot be copied)*
 
 - **Target Range:** 20 blocks

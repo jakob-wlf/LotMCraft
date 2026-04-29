@@ -110,8 +110,8 @@ Four selectable modes:
 
 ### Torrential Downpour
 **Sequence Requirement:** 3
-**Spirituality Cost:** 900
-**Cooldown:** 40 seconds
+**Spirituality Cost:** 1200
+**Cooldown:** 25 seconds
 *(Cannot be copied)*
 
 - **Radius:** 25 blocks
@@ -154,8 +154,8 @@ Four selectable modes:
 
 ### Lightning Branch
 **Sequence Requirement:** 3
-**Spirituality Cost:** 450
-**Cooldown:** 1.5 seconds
+**Spirituality Cost:** 900
+**Cooldown:** 5 seconds
 *(Cannot be copied)*
 
 - **Range:** 30 blocks
@@ -244,8 +244,8 @@ Two selectable modes:
 
 ### Lightning
 **Sequence Requirement:** 5
-**Spirituality Cost:** 50
-**Cooldown:** 0.8 seconds
+**Spirituality Cost:** 120
+**Cooldown:** 2 seconds
 
 - **Targeting Range:** 25 blocks; lightning effect spans **50-block radius**
 - **Hits:** **1 hit** per cast (6 branching lightning bolts)
@@ -256,7 +256,7 @@ Two selectable modes:
 
 ### Siren Song
 **Sequence Requirement:** 5
-**Spirituality Cost:** 60
+**Spirituality Cost:** 180
 **Cooldown:** 45 seconds
 *(Cannot be copied or replicated)*
 
@@ -286,7 +286,7 @@ Three selectable modes:
 ### Wind Manipulation
 **Sequence Requirement:** 6
 **Spirituality Cost:** 30
-**Cooldown:** 0.8 seconds
+**Cooldown:** 1.5 seconds
 
 Four selectable modes:
 
@@ -313,7 +313,7 @@ Four selectable modes:
 ### Water Manipulation
 **Sequence Requirement:** 7
 **Spirituality Cost:** 28
-**Cooldown:** 0.75 seconds
+**Cooldown:** 1.25 seconds
 
 Four selectable modes:
 

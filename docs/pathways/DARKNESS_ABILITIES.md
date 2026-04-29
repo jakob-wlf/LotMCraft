@@ -30,9 +30,14 @@ Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passivel
 
 - **Range:** 60 blocks
 - **Mechanics:** Launches an offset slash attack from the caster's eyes toward the target location. The slash travels along a path offset 8 blocks perpendicularly, moving 0.5 blocks per iteration at 3 iterations per tick.
-- **Damage:** Hits entities within a **3-block radius** of each point along the slash path. Deals **~64 damage** per hit, applied every tick for 6 seconds (up to **120 hits** on a stationary target in the slash path).
-- **Blindness:** Applies **Blindness (Level 0, 1 second)** to all entities within **25 blocks** of the impact area.
-- **Purification Interaction:** Damage reduced to **0.3×** if target is purified.
+- **Damage:** Hits entities within a **3-block radius** of each point along the slash path. Deals **~`DamageLookup(seq, 1.2)` × max(multiplier/2,1)** damage per hit, applied every tick for **6 seconds** (up to **120 hits** on a stationary target in the slash path).
+- **Purification Interaction:** Damage reduced to **0.5×** if target is purified.
+- **On-hit effects** applied to entities within `20 × max(multiplier/2,1)` blocks of the caster each tick:
+  - **Asleep** (Level 1)
+  - **Darkness** (Level 5)
+  - **Blindness** (Level 4)
+  - Velocity zeroed.
+  - **Sanity Drain:** −0.000163 × max(multiplier/4,1) per tick.
 - **Block Destruction:** Can destroy blocks if server griefing is enabled.
 
 ---
@@ -81,14 +86,11 @@ Two selectable modes:
 **Duration:** 15 seconds (300 ticks)  
 **Effect Interval:** Every 4 ticks
 
-- **Radius:** 45 × 18 blocks (ellipsoid)
-- **Blindness:** Applies **Blindness** to all entities in range:
-  - Normal: **Level 5, 10 seconds**
-  - Weakened (light interaction): **Level 1, 10 seconds**
-- **Sanity Drain:** −0.0025 per tick to affected entities.
-- **Damage:** **~4 damage every 4 ticks** — **75 hits** over the full duration (~20 base DPS).
+- **Radius:** 45 blocks flat
+- **Sanity Drain:** −0.0525 × max(multiplier/2,1) per interval to affected entities.
+- **Damage:** `DamageLookup(3, 0.5)` DPS × multiplier — applied every 4 ticks.
+- **Purification Interaction:** Damage reduced to **0.3×**.
 - **Block Darkening:** Darkens blocks in expanding waves; each block reverts after **10 seconds**.
-- **Purification Interaction:** Damage and blindness are reduced when weakened by light_strong.
 
 ---
 
@@ -96,19 +98,17 @@ Two selectable modes:
 **Sequence Requirement:** 3  
 **Spirituality Cost:** 2500
 **Cooldown:** 30 seconds
-**Duration:** 30 seconds (600 ticks)  
+**Duration:** `15 × max(multiplier/3,1)` seconds  
 **Effect Interval:** Every tick
 
-- **Radius:** 20 blocks
+- **Radius:** `20 × max(multiplier/2,1)` blocks
 - **Effects applied each tick:**
-  - **Darkness:** Level 5, 1.5 seconds
-  - **Blindness:** Level 4, 1 second
-  - **Slowness:** Level 4, 1 second
-- **Beyonder Modifier:** −40% to affected Beyonders.
-- **Sanity Drain:** −0.0033 per tick.
-- **Damage (vs. weaker targets only):** **~13 damage every 10 ticks** — **60 hits** over the full duration (~26 base DPS).
+  - **Darkness:** Level 5, 3 seconds
+  - **Blindness:** Level 4, 3 seconds
+  - **Slowness:** Level 4, 3 seconds
+- **Sanity Drain:** −0.02168 × max(multiplier/4,1) per tick.
+- **Damage (vs. significantly weaker targets only):** `DamageLookup(3, 0.95)` DPS × max(multiplier/4,1) — every **10 ticks**.
 - **Purification Interaction:** Fully suppressed against purified targets.
-- **Morale Override:** Overridden by morale-boosting abilities on targets.
 
 ---
 
@@ -147,9 +147,9 @@ Two selectable modes:
   - Equal target: **60 seconds**
   - Significantly weaker target: **90 seconds**
 - **Effects on target:**
-  - **Slowness:** Level 10, 1 second
-  - **Weakness:** Level 10, 1 second
-  - **Mining Fatigue:** Level 10, 1 second
+  - **Asleep** (Level 10, 2 seconds, refreshed every interval)
+  - **Weakness** (Level 10, 2 seconds)
+  - **Mining Fatigue** (Level 10, 2 seconds)
   - Zeroes the target's velocity every interval.
   - Disables mob AI.
   - Disables Beyonder abilities for the duration.
@@ -176,9 +176,11 @@ Two selectable modes:
   - Equal target: **15 seconds**
   - Significantly weaker target: **65 seconds**
 - **Effects on target:**
-  - **Slowness:** Level 10, 1 second
-  - **Weakness:** Level 10, 1 second
-  - **Mining Fatigue:** Level 10, 1 second
+  - **Asleep** (Level 10, 2 seconds, refreshed every interval)
+  - **Weakness** (Level 10, 2 seconds)
+  - **Mining Fatigue** (Level 10, 2 seconds)
+  - **Blindness** (Level 4, 3 seconds)
+  - **Darkness** (Level 5, 3 seconds)
   - Zeroes the target's velocity every interval.
   - Disables mob AI and Beyonder abilities.
 - **Visuals:** 8 animated particle lines + spiral particles around the target.
@@ -188,7 +190,7 @@ Two selectable modes:
 ### Nightmare
 **Sequence Requirement:** 7  
 **Spirituality Cost:** 0  
-**Cooldown:** 0.15 seconds  
+**Cooldown:** 1 second  
 *(Cannot be copied, used by NPCs, or replicated)*
 
 Five selectable modes:
@@ -205,10 +207,10 @@ Five selectable modes:
 - Captures replaced blocks for restoration when the nightmare ends.
 
 **Mode 2 — Restrict**
-- **Range:** 20 blocks (must be within nightmare)
-- **Duration:** 20 seconds (400 ticks)
+- **Range:** `20 × max(multiplier/2,1)` blocks (must be within nightmare)
+- **Duration:** `20 × max(multiplier/2,1)` seconds
 - **Effect Interval:** Every 2 ticks
-- Applies **Slowness Level 10** for 0.5 seconds per interval.
+- Applies **Asleep (Level 10)** for 2 seconds per interval — complete immobility.
 - Spawns particle spirals and line effects on the target.
 
 **Mode 3 — Attack**
@@ -228,22 +230,37 @@ Five selectable modes:
 **Spirituality Cost:** 40  
 **Cooldown:** 4 seconds
 
-Two selectable modes:
+Five selectable modes:
 
 **Mode 0 — Lullaby**
-- **Range:** 35 blocks
+- **Radius:** `35 × max(multiplier/20,1)` blocks (≈35 at Seq 8).
+- Applies **Asleep (Level 1)** and zeroes velocity every 2 ticks for the duration.
+- Also applies **Darkness (Level 5)** and **Blindness (Level 4)** for the duration.
 - **Duration:**
-  - Significantly stronger target: **1.75 seconds**
-  - Equal target: **5 × multiplier seconds**
+  - Significantly stronger target: `35 × max(multiplier/2,1)` ticks
+  - Equal target: `20 × 5 × max(multiplier/2,1)` ticks
   - Significantly weaker target: **25 seconds**
-- Applies the **ASLEEP** effect (Level 1) and zeroes velocity every **3 ticks**.
-- **Visuals:** 800 particles at the caster's eyes + 500 crimson leaf particles.
 
 **Mode 1 — Wilt**
-- **Range:** 20 blocks
-- **Damage:** **~9.4 damage per hit** — **1 hit** per cast.
-- **Light Interaction:** Damage reduced to **0.4×** if weakened by a light_source.
-- **Visuals:** 800 particles at eyes + 500 crimson leaf particles.
+- **Radius:** `20 × multiplier` blocks.
+- **Damage:** `DamageLookup(8, 1.1) × multiplier` per hit — **1 hit** per cast.
+- **Light_source Interaction:** Damage reduced to **0.4×**.
+
+**Mode 2 — Agitate**
+- **Radius:** `10 × max(multiplier/10,1)` blocks.
+- Applies a **0.6× damage multiplier** debuff and **Asleep + Darkness + Blindness** to all enemies in range.
+- Duration scales inversely with the target's multiplier relative to the caster's.
+
+**Mode 3 — Console**
+- **Radius:** `10 × max(multiplier/2,1)` blocks (allies only).
+- Restores **15% sanity** to the caster and nearby allies.
+- Applies a healing song effect (Regeneration scaled with multiplier, up to amplifier 3000) to allies.
+
+**Mode 4 — Pacify**
+- **Radius:** `10 × max(multiplier/10,1)` blocks.
+- Disables AI of non-Beyonder mobs and disables Beyonder abilities for the duration.
+- Applies **Blindness (Level 4), Darkness (Level 4), Asleep (Level 4)** for the duration.
+- Duration scales inversely with the target's multiplier relative to the caster's. Halved if a purification interaction is active.
 
 ---
 

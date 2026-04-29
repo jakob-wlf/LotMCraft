@@ -926,7 +926,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                     if (nfd.contains("pathway")) {
 
                         if (entityData.contains("OriginalPlayerUUID")) {
-                            if (entityData.getUUID("OriginalPlayerUUID").equals(player.getUUID()) && nfd.getInt("sequence") < 0) {
+                            if (entityData.getUUID("OriginalPlayerUUID").equals(player.getUUID()) && nfd.getInt("sequence") > 0) {
                                 boolean isMarionette = Optional.of(entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:marionette_component")).map(c -> c.getBoolean("isMarionette")).orElse(false);
                                 displayItem.set(
                                         DataComponents.LORE,
@@ -980,7 +980,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                             }
                         }
                     },
-                    Component.literal("select the past version that you marked to borrow its sequence")
+                    Component.literal("select your strongest marked version")
             ));
         }
     }

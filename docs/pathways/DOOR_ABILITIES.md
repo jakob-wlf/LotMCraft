@@ -354,7 +354,7 @@ If no entity is found in range, spawns failure particles at the targeted locatio
 
 ### Blink
 **Sequence Requirement:** 5
-**Spirituality Cost:** 400
+**Spirituality Cost:** 300
 **Cooldown:** 0.5 seconds
 *(Cannot be copied)*
 

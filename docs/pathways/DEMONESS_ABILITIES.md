@@ -119,11 +119,10 @@ Two selectable modes:
 **Spirituality Cost:** 1200
 **Cooldown:** 180 seconds
 
-- **Radius:** 70 blocks
-- **Duration:** 80 seconds
+- **Radius:** `45 × max(multiplier/4,1)` blocks
+- **Duration:** `40 × max(multiplier/4,1)` seconds
 - **Hit Interval:** Every second
-- **Hits:** **80 hits** over the full duration
-- **Damage:** **~17.6 damage per hit**.
+- **Damage:** `DamageLookup(4, 0.3)` DPS × max(multiplier/6,1) per hit.
 - Applies every hit to all nearby entities:
   - **Wither:** Level 4, 1 second
   - **Blindness:** Level 5, 1 second
@@ -140,11 +139,11 @@ Two selectable modes:
 *(Cannot be copied, replicated, or used by NPCs)*
 
 - **Requires a Blood item in the off-hand** belonging to the target.
-- **Backfire:** If the target is significantly stronger, the caster takes **10 damage** and **Losing Control (Level 4, 5 seconds)**.
+- **Backfire:** If the target is significantly stronger, the caster takes **10 damage** and **Losing Control (Level 3, 5 seconds)**.
 - **Duration:** 2 minutes (ticks every 8 ticks).
 - Each interval has a 1-in-3 chance of one of the following:
-  - **Damage:** **~18.8 damage**.
-  - **Slowness (Level 4, 2 seconds)** + **Blindness (Level 4, 2 seconds)**.
+  - **Damage:** `DamageLookup(4, 0.6) × max(multiplier/5,1)`.
+  - **Slowness (Level 3, 2 seconds)** + **Blindness (Level 3, 2 seconds)**.
   - *(Nothing on the third outcome.)*
 - **Cleansing Interaction:** Cancels the curse.
 
@@ -168,11 +167,10 @@ Two selectable modes:
 **Spirituality Cost:** 600
 **Cooldown:** 120 seconds
 
-- **Radius:** 40 blocks
-- **Duration:** 80 seconds
+- **Radius:** `20 × max(multiplier/4,1)` blocks
+- **Duration:** `40 × max(multiplier/4,1)` seconds
 - **Hit Interval:** Every second
-- **Hits:** **80 hits** over the full duration
-- **Damage:** **~11.8 damage per hit**.
+- **Damage:** `DamageLookup(5, 0.2)` DPS × max(multiplier/6,1) per hit.
 - Applies **Poison (Level 1, 1 second)** every hit to all nearby entities.
 - **Purification / Cleansing Interaction:** Cancels damage and effects.
 - **Blooming Interaction:** Damage reduced to 0.4×.
@@ -188,11 +186,11 @@ Three selectable modes:
 
 **Mode 0 — Binding**
 - **Range:** 16 blocks
-- **Duration:** 20 seconds
+- **Duration:** `20 × max(multiplier/4,1)` seconds
 - Pins the target completely — zeroes velocity every 5 ticks and applies:
-  - **Slowness:** Level 11, 1 second
-  - **Weakness:** Level 11, 1 second
-  - **Mining Fatigue:** Level 11, 1 second
+  - **Asleep:** Level 10, 1 second (refreshed every 5 ticks)
+  - **Weakness:** Level 10, 1 second
+  - **Mining Fatigue:** Level 10, 1 second
 - Disables AI of non-Beyonder mobs for the duration.
 - **Burning Interaction:** Burns and removes the threads immediately.
 - **Blink_escape Interaction:** Breaks the binding.
@@ -201,9 +199,9 @@ Three selectable modes:
 **Mode 1 — Cocoon**
 - Toggles a cocoon on/off for the **caster**.
 - While in the cocoon (up to 20 seconds):
-  - **Slowness:** Level 11, 1 second (continuous)
-  - **Resistance:** Level 3, 1 second (continuous)
-  - **Regeneration:** Level 3, 6 seconds (continuous)
+  - **Slowness:** Level 10, 1 second (refreshed every tick)
+  - **Resistance:** Level 2, 1 second (continuous)
+  - **Regeneration:** Level 2, 6 seconds (continuous)
   - Velocity zeroed every tick.
 - **Burning Interaction:** Destroys the cocoon immediately.
 
@@ -222,7 +220,7 @@ Three selectable modes:
 *(Cannot be copied or replicated)*
 
 - **Range:** 18 blocks
-- **Duration:** 15 seconds (refreshed every 5 ticks with heart particles + Slowness IV).
+- **Duration:** 15 seconds (refreshed every 5 ticks with heart particles + **Slowness Level 3**).
 - Charms the target — while charmed, if the target attempts to attack the caster, the hit is cancelled and the charm breaks.
 - Only one charm can be active per target at a time (30-second cooldown after charm ends).
 - **Battle Hypnosis Interaction:** Charm overrides Battle Hypnosis if the caster is equal or stronger sequence.
@@ -255,7 +253,7 @@ Three selectable modes:
 - **Range:** 10 blocks (at target position)
 - **Hit Radius:** 2.5 blocks
 - **Hits:** **1 hit** per cast
-- **Damage:** **~10.2 damage per hit**.
+- **Damage:** **`DamageLookup(7, 0.7)` × max(multiplier/4,1)**.
 - Places a temporary light block at the target position (removed after ~1.25 seconds).
 - **Soul Burn / Burning Interaction:** Triggered on cast.
 
@@ -263,7 +261,7 @@ Three selectable modes:
 - **Range:** Travels until contact (up to long range)
 - **Hit Radius:** 2.5 blocks
 - **Hits:** **1 hit** on contact
-- **Damage:** **~11.1 damage per hit**.
+- **Damage:** **`DamageLookup(7, 1.1)` × max(multiplier/4,1)**.
 - On block contact: places fire if griefing is enabled.
 - **Soul Burn / Burning Interaction:** Triggered on contact.
 
@@ -271,7 +269,7 @@ Three selectable modes:
 - Launches an expanding ring of black flame upward from the caster.
 - **Radius:** Expanding outward over 4 seconds (40 hits at 2-tick intervals).
 - **Hits:** **40 hits** over the full duration
-- **Damage:** **~10.5 damage per hit** (in ring zone).
+- **Damage:** **`DamageLookup(7, 0.8)` × max(multiplier/4,1)** (in ring zone).
 - **Soul Burn / Burning Interaction:** Triggered on cast.
 
 ---
@@ -304,8 +302,8 @@ Three selectable modes:
 - **Radius:** Expanding outward over 3 seconds (30 hits every 2 ticks)
 - **Hit Zone:** Ring at current radius (±0.4 blocks)
 - **Hits:** **30 hits** over the full duration
-- **Damage:** **~10.5 damage per hit** (in expanding ring).
-- Applies **Slowness (Level 11, 5 seconds)** to all nearby entities within the full radius.
+- **Damage:** **`DamageLookup(7, 0.8)` × max(multiplier/4,1)** (in expanding ring).
+- Applies **Slowness (Level 10, 5 seconds)** to all nearby entities within the full radius.
 - Creates Packed Ice rings at the current radius (3 Y-levels) if griefing is enabled.
 - **Freezing Interaction:** Triggered on cast.
 

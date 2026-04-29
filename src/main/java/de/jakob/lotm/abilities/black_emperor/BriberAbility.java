@@ -315,7 +315,7 @@ public class BriberAbility extends SelectableAbility {
         // This now applies to ability damage too, not just melee.
         UUID arroganceCaster = ARROGANCE.get(attacker.getUUID());
         if (arroganceCaster != null && arroganceCaster.equals(victim.getUUID())) {
-            if (victim.level().random.nextFloat() < 0.80f) {
+            if (victim.level().random.nextFloat() < 0.30f) {
                 event.setNewDamage(0);
 
 

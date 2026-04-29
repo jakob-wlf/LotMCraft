@@ -45,7 +45,7 @@ public class Eloquence extends Ability {
                 target.addEffect(new MobEffectInstance(
                         MobEffects.WEAKNESS,
                         200,
-                        2
+                        0
                 ));
             }
         }

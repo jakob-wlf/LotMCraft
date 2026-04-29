@@ -126,8 +126,8 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Sword of Justice
 **Sequence Requirement:** 3
-**Spirituality Cost:** 500
-**Cooldown:** 2.5 seconds
+**Spirituality Cost:** 1200
+**Cooldown:** 6 seconds
 *(Cannot be copied)*
 
 - **Target Range:** 20 blocks

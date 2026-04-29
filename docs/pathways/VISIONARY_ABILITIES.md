@@ -57,8 +57,8 @@ Two selectable modes.
 
 ### Story Writing
 **Sequence Requirement:** 1
-**Spirituality Cost:** 200
-*(Cannot be used by NPCs)*
+**Spirituality Cost:** 50
+*(Cannot be copied, replicated, stolen, or used by NPCs)*
 
 Five selectable modes. Requires an active story book target to use most modes.
 
@@ -127,7 +127,7 @@ Three selectable modes.
 **Sequence Requirement:** 2
 **Spirituality Cost:** 1000
 **Cooldown:** 7 seconds
-*(Cannot be copied, replicated, or used by NPCs)*
+*(Cannot be copied or used by NPCs)*
 
 Two selectable modes.
 
@@ -227,9 +227,11 @@ Two selectable modes. **Target range (others):** 20 blocks.
 **Sequence Requirement:** 5
 **Spirituality Cost:** 60
 **Cooldown:** 1 second
+*(Cannot be used in artifacts)*
 
-Three selectable modes. **Target range:** 20–200 blocks depending on mode.
-- At sequence 4 or higher, target must be **asleep** for Jump and Hide.
+Three selectable modes. **Target range:** `20 × multiplier` blocks (e.g. ~22 at Seq 7, ~28 at Seq 5, ~85 at Seq 1, ~180 at Seq 0).
+- At Sequence 4 or higher (sequences 4–9), target must be **asleep** for Jump and Hide.
+- Cannot be used on a lower-sequence Visionary.
 
 **Mode 0 — Jump**
 - **Range:** 200 blocks.
@@ -287,20 +289,30 @@ Three selectable modes. **Target range:** 20–200 blocks depending on mode.
 **Cooldown:** 2 seconds
 *(Cannot be copied or replicated)*
 
-- **Target range:** 20 blocks.
-- If the target is charmed and the caster's sequence is equal or lower, removes the charm.
-- Randomly applies one of three effects:
+Two selectable modes. The AoE mode locks to Mode 0 (single) if the caster is Sequence 5 or higher.
+
+Cannot affect lower-sequence Visionaries. If the target is charmed, removes the charm if the BH caster's sequence is ≤ the charm caster's sequence (equal or stronger). Each cast randomly applies one of three effects:
 
 **Effect 0 — Freeze**
-- Stops the target completely for **5 seconds** (movement set to zero, max Slowness).
+- Stops the target completely for **5 seconds** (velocity zeroed every tick, **Slowness Level 10** refreshed every tick).
 - Disables ability usage for **3 seconds**.
+- Cancelled early by a **purification** interaction.
 
 **Effect 1 — Weaken**
 - Applies a **0.4× damage multiplier** debuff for **12 seconds**.
-- Moves the target around randomly for **8 seconds** with Weakness level 5.
+- Moves the target randomly and applies **Weakness (Level 5)** every 5 ticks for **8 seconds**.
+- Cancelled early by a **purification** interaction.
 
 **Effect 2 — Stop Beyonder Powers**
-- Disables ability usage for **9 seconds** (Beyonder targets only; falls back to other effects otherwise).
+- Disables ability usage for **9 seconds** (Beyonder targets only; falls back to Freeze or Weaken otherwise).
+
+**Mode 0 — Single Target**
+- **Range:** 20 blocks.
+- Applies one random effect to the target.
+
+**Mode 1 — AoE**
+- **Radius:** `20 × multiplier` blocks.
+- Applies a random effect independently to each entity in range.
 
 ---
 
@@ -328,11 +340,13 @@ Three selectable modes. **Target range:** 20–200 blocks depending on mode.
 **Spirituality Cost:** 40
 **Cooldown:** 10 seconds
 
-- **Radius:** 25 blocks.
-- **Damage:** **~`DamageLookup(7, 0.675)`** × multiplier per hit (~11–12 damage at sequence 7).
-- Applies **Slowness (Level 11)** and **Weakness (Level 6)** for 10 seconds to all nearby enemies.
+- **Radius:** `10 × multiplier` blocks (~11 at Seq 7, ~14 at Seq 6, ~18 at Seq 4, ~42.5 at Seq 0).
+- Cannot affect lower-sequence Visionaries.
+- **Damage:** **~`DamageLookup(7, 0.675)`** × multiplier per hit.
+- Applies **Slowness (Level 11)** and **Weakness (Level 6)** for **10 seconds** to all nearby enemies.
 - Applies a **0.625× damage multiplier** debuff to Beyonder targets for **10 seconds**.
 - Continuously moves affected entities in random directions every 8 ticks for 10 seconds.
+- Cancelled early by a **morale_boost** interaction on the target.
 
 ---
 
@@ -342,12 +356,13 @@ Three selectable modes. **Target range:** 20–200 blocks depending on mode.
 **Cooldown:** 5 seconds
 
 - **Target range:** 20 blocks.
-- **Damage:** **~`DamageLookup(7, 0.85)`** × multiplier per hit (~12–13 damage at sequence 7).
-- Applies **Losing Control** effect with amplifier scaling by relative sequence:
+- Cannot affect lower-sequence Visionaries. Does not apply Losing Control to targets stronger than the caster.
+- **Damage:** **~`DamageLookup(7, 0.85)`** × multiplier per hit.
+- Applies **Losing Control (8 seconds)** with amplifier scaling by relative sequence:
   - Significantly weaker target: level 6
-  - Equal/same strength: level 2–4
-  - Significantly stronger target: level 1
-- Decreases target sanity by **6.5% × multiplier**.
+  - Equal or weaker target (same tier): level 2
+  - Target stronger than caster (weaker sequence): level 3–4 (random)
+- Decreases target sanity by **6.5% × multiplier** (further scaled by sequence difference).
 
 ---
 
@@ -355,17 +370,46 @@ Three selectable modes. **Target range:** 20–200 blocks depending on mode.
 **Sequence Requirement:** 7
 **Spirituality Cost:** 50
 **Cooldown:** 5 seconds
-*(Cannot be copied or replicated)*
+*(Cannot be copied or replicated; registers as a morale_boost interaction)*
 
-Two selectable modes.
+Four selectable modes. Sanity restored scales with the caster's sequence:
+
+| Caster Seq | Sanity Restored |
+|---|---|
+| 7 | 15% |
+| 6–5 | 17% |
+| 4 | 20% |
+| 3 | 22% |
+| 2 | 25% |
+| 1 | 27% |
+| 0 | 35% |
 
 **Mode 0 — Self**
-- Restores **15% sanity** to the caster.
-- Removes the **Losing Control** effect from the caster.
+- Restores sanity (see table) to the caster.
+- Removes **Losing Control** and **Mental Plague** from the caster.
 
 **Mode 1 — Others**
-- **Radius:** 40 blocks.
-- Restores **15% sanity** and removes **Losing Control** from all nearby allies.
+- **Radius:** 18 blocks (allies only).
+- Restores sanity and removes **Losing Control** and **Mental Plague** from all nearby allies.
+
+**Mode 2 — Check Cue**
+- **Range:** 40 blocks (targets a looked-at player; falls back to self).
+- Detects **Prophecies** planted on the target that the caster has sufficient sequence to perceive.
+- Displays the trigger type, action type, and caster of each detected prophecy.
+
+**Mode 3 — Remove Cue**
+- **Range:** 40 blocks (targets a looked-at player; falls back to self).
+- Removes detectable Prophecies from the target. Number removed scales with sequence:
+
+| Caster Seq | Prophecies Removed |
+|---|---|
+| 7 | 1 |
+| 6 | 2 |
+| 5 | 3 |
+| 4–3 | 10 |
+| 2 | 20 |
+| 1 | 30 |
+| 0 | 60 |
 
 ---
 
@@ -412,23 +456,23 @@ The number of simultaneous prophecies the caster can maintain scales with sequen
 
 **Actions** (what happens when the trigger fires):
 
-| Keyword | Required Seq | Effect |
-|---------|-------------|--------|
-| `teleport [x y z]` | 0 | Teleports the target to the given coordinates |
-| `health [±value]` | 0 | Heals or damages the target by the given amount |
-| `sanity [±value]` | 0 | Increases or decreases the target's sanity |
-| `weather [clear/rain/thunder]` | 0 | Changes the weather |
-| `time [day/night/value]` | 0 | Changes the world time |
-| `spawn [entity]` | 0 | Spawns an entity at the target's position |
-| `calamity [type]` | 1 | Spawns a calamity (meteor/tornado/earthquake) at the target |
-| `digest [±value]` | 1 | Drains or restores the target's digestion |
-| `seal` | 1 | Seals the target (disables abilities) |
-| `unseal` | 1 | Removes a seal from the target |
-| `say [message]` | 4 | Forces the target to broadcast a chat message |
-| `stun` | 4 | Stuns the target briefly |
-| `confusion` | 4 | Applies confusion to the target |
-| `skill [ability_id]` | 4 | Forces the target to use a specific ability |
-| `drop [item]` | 7 | Forces the target to drop a specific item |
+| Keyword | Required Seq | Effect | Notes |
+|---------|-------------|--------|-------|
+| `teleport [x] [y] [z]` | 0 | Teleports the target to the given coordinates. Optionally prefix with a dimension id (e.g. `minecraft:the_nether [x] [y] [z]`). Position is clamped to the world border. | Players only. |
+| `health [value]` | 0 | Sets the target's health to the given value. Cannot go below **30% of max health** (`min = maxHealth × 0.3`). Cannot exceed max health. | Accepts integers or decimals. |
+| `sanity [value]` | 0 | Sets the target's sanity to the given value (0.0–1.0). Cannot be set below **0.4** (40%). If an integer ≤0 is given, sets to 0.4; if >0, sets to 1.0. | Decimal values are clamped to [0.4, 1.0]. |
+| `weather [clear/rain/thunder]` | 0 | Sets the weather for **10 minutes**. | Affects the entire world. |
+| `time [day/noon/sunset/night/midnight/sunrise/stop]` | 0 | Sets the world time to a preset (`day`=1000, `noon`=6000, `sunset`=12000, `night`=13000, `midnight`=18000, `sunrise`=23000). `stop` creates a **near-frozen time field** (0.001× speed) in a `50 × multiplier` block radius for **15 seconds**. | `stop` is local; all others affect the entire world. |
+| `spawn [entity_id]` | 0 | Spawns any entity by its registry ID (e.g. `minecraft:zombie`) at the target's position. | Uses the standard entity registry — any valid entity ID works. |
+| `calamity [meteor/tornado/earthquake/plague]` | 1 | Spawns a calamity centered on the target. **Meteor**: 25 meteors scattered within 50 blocks over ~5 seconds. **Tornado**: 1 large + 30 additional tornados within ±60 blocks. **Earthquake**: Seq 4-scale earthquake for 15 seconds, radius 65. **Plague**: 80-second plague aura (45 × multiplier block radius), applying Wither IV, Blindness V, Slowness III every second and dealing damage — reduced 60% if a blooming interaction is nearby, cancelled by purification/cleansing. | Plague also damages the caster. |
+| `digest [value]` | 1 | Adjusts the target's digestion progress. Integer ≤0 drains fully; integer >0 fills fully. Decimal sets to that exact value (0.0–1.0). | Players only. |
+| `seal` | 1 | Disables all of the target's Beyonder abilities for **30 seconds**. | |
+| `unseal` | 1 | Re-enables all of the target's Beyonder abilities immediately. | |
+| `say [message]` | 4 | Forces the target to broadcast a chat message as if they typed it. The message passes through normal chat event handling (can be intercepted by other effects). | Players only. |
+| `stun` | 4 | Freezes the target in place for **10 seconds** (velocity zeroed and position locked every tick). | |
+| `confusion` | 4 | Causes the target to **ignore allies** for **30 seconds** — their abilities treat allies as enemies. | |
+| `skill [ability_id]` | 4 | Forces the target to use the specified ability by ID. | The ability must allow NPC use. |
+| `drop [item_id / all]` | 7 | Forces the target to drop a specific item from their inventory (matched by item ID and components). Use `drop all` to drop the entire inventory. | Players only. |
 
 ---
 

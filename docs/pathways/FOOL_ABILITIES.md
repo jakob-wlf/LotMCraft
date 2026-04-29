@@ -106,7 +106,7 @@ Opens a coordinate entry UI; teleports the caster to the specified location.
 
 ### Historical Void Hiding
 **Sequence Requirement:** 3
-**Spirituality Cost:** 500 per tick (toggle)
+**Spirituality Cost:** 250 per tick (toggle)
 *(Cannot be copied, replicated, stolen, or used in artifacts)*
 
 - Enters a **hidden state** in the Historical Void — the caster is lifted 5 blocks upward, frozen in place, and becomes invisible.
