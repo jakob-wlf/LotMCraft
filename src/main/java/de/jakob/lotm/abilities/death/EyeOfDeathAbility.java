@@ -48,8 +48,6 @@ public class EyeOfDeathAbility extends ToggleAbility {
     /** Players with Eye of Death currently active (server-side). */
     public static final HashSet<UUID> activePlayers = new HashSet<>();
 
-    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(0.2f, 0.8f, 0.2f), 2f);
-    private final HashMap<UUID, Set<Entity>> glowingEntities = new HashMap<>();
 
     public EyeOfDeathAbility(String id) {
         super(id);
@@ -80,28 +78,14 @@ public class EyeOfDeathAbility extends ToggleAbility {
         }
 
         if (level.isClientSide()) {
-            List<LivingEntity> nearbyEntities = AbilityUtilClient.getNearbyEntities(entity, (ClientLevel) level, entity.getEyePosition(), 30)
-                    .stream().toList();
-            for (LivingEntity nearby : nearbyEntities) {
-                ParticleUtil.spawnParticles((ClientLevel) level, dust, nearby.getEyePosition().subtract(0, nearby.getEyeHeight() / 2, 0), 3, .6, .95, .6, 0);
-            }
-        } else {
-            if (!(entity instanceof ServerPlayer player)) return;
-
-            LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
-            PacketHandler.sendToPlayer(player, new SyncEyeOfDeathAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
-
-            entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 25, 1, false, false, false));
-
-            List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 30)
-                    .stream().toList();
-            for (LivingEntity nearby : nearbyEntities) {
-                SpiritVisionAbility.setGlowingForPlayer(nearby, player, true);
-            }
-
-            glowingEntities.putIfAbsent(entity.getUUID(), new HashSet<>());
-            glowingEntities.get(entity.getUUID()).addAll(nearbyEntities);
+            return;
         }
+        if (!(entity instanceof ServerPlayer player)) return;
+
+        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
+        PacketHandler.sendToPlayer(player, new SyncEyeOfDeathAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
+
+        entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 25, 1, false, false, false));
     }
 
     @Override
@@ -113,10 +97,6 @@ public class EyeOfDeathAbility extends ToggleAbility {
             if (!(entity instanceof ServerPlayer player)) return;
 
             player.removeEffect(MobEffects.NIGHT_VISION);
-
-            if (glowingEntities.containsKey(entity.getUUID()))
-                glowingEntities.get(entity.getUUID()).forEach(e -> SpiritVisionAbility.setGlowingForPlayer(e, player, false));
-            glowingEntities.remove(entity.getUUID());
 
             PacketHandler.sendToPlayer(player, new SyncEyeOfDeathAbilityPacket(false, -1));
         }

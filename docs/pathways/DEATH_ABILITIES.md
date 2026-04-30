@@ -63,7 +63,7 @@ Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passivel
 **Cooldown:** 3 minutes  
 *(Cannot be copied, replicated, or stolen)*
 
-- **Radius:** 15 blocks
+- **Radius:** `15 × max(multiplier/4, 1)` blocks (scales with multiplier)
 - **Duration:** 1 minute 40 seconds (2,000 ticks)
 - **Effect Interval:** Every tick; damage every 20 ticks (once per second)
 
@@ -106,11 +106,11 @@ Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passivel
 
 **Damage:**
 - Target is **2+ sequences weaker**: instant kill.
-- Target is **1 sequence weaker**: deals **70%** of target's max HP.
-- Target is **same sequence**: deals **50%** of target's max HP.
-- Target is **stronger** (lower sequence number): deals **50% − (20% × sequence difference)** of target's max HP.
-  - 1 sequence stronger → 30%
-  - 2+ sequences stronger → 0% (no damage; "too strong" message)
+- Target is **1 sequence weaker**: deals **0%** of target's max HP (no damage).
+- Target is **same sequence**: deals **40%** of target's max HP.
+- Target is **stronger** (lower sequence number): deals **40% + (40% × sequence difference)** of target's max HP.
+  - 1 sequence stronger → 80%
+  - 2+ sequences stronger → capped / instant kill threshold
 
 **Visual:**
 - A layered beam of black/void dust particles and soul particles fired from the caster's eye to the target, persisting for 10 ticks.
@@ -184,11 +184,33 @@ Three selectable sub-abilities:
 ### Undying Seal
 **Sequence Requirement:** 4  
 **Spirituality Cost:** 350  
-**Cooldown:** 2 minutes
+**Cooldown:** 80 seconds
 
 - **Duration:** 60 seconds
 
 While active, suppresses all negative artifact effects on the caster for the duration.
+
+---
+
+### Death Spells
+**Sequence Requirement:** 4  
+**Spirituality Cost:** 750  
+**Cooldown:** 3 seconds
+
+Two selectable modes:
+
+**Withering Wind**
+- Fires a slow-moving wind projectile forward from the caster's eye level, traveling 0.5 blocks/tick for **4 seconds (80 ticks)**.
+- Every tick, deals `DamageLookup(4, 0.8) × multiplier` damage to all entities within a **9-block radius** of the projectile's current position.
+- If griefing is enabled, converts blocks in an **8-block sphere** around the projectile's path into Soul Soil or Basalt (~80% chance per block, skipping indestructible/Soul Soil/Basalt blocks).
+- Ends early if the caster leaves their current area.
+
+**Soul Siphon**
+- Targets an entity within **20 blocks** (line-of-sight).
+- Drains the target over **3 seconds (60 ticks)**:
+  - Every 4 ticks: deals `DamageLookup(4, 0.6) × multiplier` damage to the target; on hit, heals the caster for **1.5 HP**.
+- Breaks if the target moves more than **25 blocks** away or either party dies.
+- Ends early if the caster leaves their current area.
 
 ---
 
@@ -214,10 +236,10 @@ Two selectable modes:
 ### Death Envoy
 **Sequence Requirement:** 5  
 **Spirituality Cost:** 800  
-**Cooldown:** 90 seconds  
+**Cooldown:** 10 seconds  
 *(Cannot be copied or stolen)*
 
-- **Radius:** 10 blocks
+- **Radius:** 5 blocks
 - **Effect Duration:** 20 seconds on all affected entities
 
 Applies the following to all nearby non-allied entities on use. Entities **2+ sequences stronger** than the caster are unaffected:
@@ -249,14 +271,14 @@ Applies the **Spirit Called** custom effect (Level 0) to the target for 10 secon
 
 ### Restruction
 **Sequence Requirement:** 6  
-**Spirituality Cost:** 500  
-**Cooldown:** 10 seconds (Release bypasses cooldown)  
+**Spirituality Cost:** 1,500  
+**Cooldown:** 20 seconds (Release bypasses cooldown)  
 *(Cannot be copied or stolen)*
 
 Two selectable modes:
 
 **Summon**
-- Summons **10 Skeletons** and **10 Zombies** near the caster (within a 4-block radius), each wearing a full set of iron armour (no drop chance).
+- Summons up to **`8 × max(multiplier/4, 1)`** Skeletons and the same number of Zombies near the caster (within a 4-block radius), each wearing a full set of iron armour (no drop chance).
 - All summoned mobs are registered as subordinates of the caster.
 
 **Release**

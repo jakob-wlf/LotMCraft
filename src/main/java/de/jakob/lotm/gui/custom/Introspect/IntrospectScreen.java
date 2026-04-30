@@ -744,11 +744,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             }
         }
 
-        // Render tooltip if we found a hovered ability
         if (hoveredAbility != null) {
             List<Component> tooltipLines = new ArrayList<>();
 
-            // Add ability name with appropriate pathway color
             if (showAllAbilities) {
                 tooltipLines.add(hoveredAbility.getNameFormatted());
             } else {
@@ -756,17 +754,25 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 tooltipLines.add(hoveredAbility.getName().withStyle(ChatFormatting.BOLD).withColor(color));
             }
 
-            // Add description if available, wrapping long text
             Component description = hoveredAbility.getDescription();
             if (description != null) {
                 String descText = description.getString();
-                int maxWidth = 100; // Maximum width in pixels for tooltip
+                int maxWidth = 100;
 
-                // Split description into multiple lines if needed
                 List<String> wrappedLines = wrapText(descText, maxWidth);
                 for (String line : wrappedLines) {
                     tooltipLines.add(Component.literal(line).withStyle(ChatFormatting.DARK_GRAY));
                 }
+            }
+
+            int cooldown = hoveredAbility.getCooldown();
+            if (cooldown > 0) {
+                tooltipLines.add(Component.literal("Cooldown: ").withStyle(ChatFormatting.GRAY).append(Component.literal(cooldown / 20 + "s").withStyle(ChatFormatting.BLUE)));
+            }
+
+            float spiritualityCost = hoveredAbility.spiritualityCost();
+            if (spiritualityCost > 0) {
+                tooltipLines.add(Component.literal("Spirituality Cost: ").withStyle(ChatFormatting.GRAY).append(Component.literal(spiritualityCost + "").withStyle(ChatFormatting.DARK_PURPLE)));
             }
 
             guiGraphics.renderTooltip(this.font, tooltipLines, java.util.Optional.empty(), mouseX, mouseY);
@@ -783,11 +789,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             int lineWidth = this.font.width(testLine);
 
             if (lineWidth > maxWidth && currentLine.length() > 0) {
-                // Current line is full, add it and start a new line
                 lines.add(currentLine.toString());
                 currentLine = new StringBuilder(word);
             } else {
-                // Add word to current line
                 if (currentLine.length() > 0) {
                     currentLine.append(" ");
                 }
@@ -795,7 +799,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             }
         }
 
-        // Add the last line
         if (currentLine.length() > 0) {
             lines.add(currentLine.toString());
         }
@@ -808,18 +811,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int panelX = baseLeftPos + this.imageWidth + 5;
         int panelY = this.topPos + 15;
 
-        // Render abilities list background
         guiGraphics.fill(panelX, panelY, panelX + ABILITIES_PANEL_WIDTH, panelY + ABILITIES_PANEL_HEIGHT, 0xCC000000);
         guiGraphics.renderOutline(panelX, panelY, ABILITIES_PANEL_WIDTH, ABILITIES_PANEL_HEIGHT, 0xFFAAAAAA);
 
-        // Render "Abilities" label
         Component abilitiesLabel = Component.literal("Abilities").withStyle(ChatFormatting.BOLD);
         guiGraphics.drawString(this.font, abilitiesLabel, panelX + 5, panelY + 5, 0xFFFFFFFF, true);
 
-        // Render available abilities (scrollable)
         renderAvailableAbilities(guiGraphics, panelX, panelY + 15, mouseX, mouseY);
 
-        // Render current tab's slots
         int slotY = panelY + ABILITIES_PANEL_HEIGHT + 5;
 
         if (currentTab == Tab.ABILITY_WHEEL) {
@@ -848,7 +847,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             int x = startX + col * (ABILITY_ICON_SIZE + 2);
             int y = startY + row * (ABILITY_ICON_SIZE + 2);
 
-            // Only render if within visible area
             if (y >= panelY && y + ABILITY_ICON_SIZE <= panelY + ABILITIES_PANEL_HEIGHT - 15) {
                 Ability ability = displayedAbilities.get(i);
                 renderAbilityIcon(guiGraphics, ability, x, y);
@@ -857,28 +855,22 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private void renderAbilityWheelSection(GuiGraphics guiGraphics, int panelX, int wheelY, int mouseX, int mouseY) {
-        // Render ability wheel background
         guiGraphics.fill(panelX, wheelY, panelX + ABILITIES_PANEL_WIDTH, wheelY + ABILITY_WHEEL_HEIGHT, 0xCC000000);
         guiGraphics.renderOutline(panelX, wheelY, ABILITIES_PANEL_WIDTH, ABILITY_WHEEL_HEIGHT, 0xFFAAAAAA);
 
-        // Render "Ability Wheel" label
         Component wheelLabel = Component.literal("Ability Wheel").withStyle(ChatFormatting.BOLD);
         guiGraphics.drawString(this.font, wheelLabel, panelX + 5, wheelY + 5, 0xFFFFFFFF, true);
 
-        // Render ability wheel slots
         renderAbilityWheel(guiGraphics, panelX, wheelY + 15, mouseX, mouseY);
     }
 
     private void renderAbilityBarSection(GuiGraphics guiGraphics, int panelX, int barY, int mouseX, int mouseY) {
-        // Render ability bar background
         guiGraphics.fill(panelX, barY, panelX + ABILITIES_PANEL_WIDTH, barY + ABILITY_BAR_HEIGHT, 0xCC000000);
         guiGraphics.renderOutline(panelX, barY, ABILITIES_PANEL_WIDTH, ABILITY_BAR_HEIGHT, 0xFFAAAAAA);
 
-        // Render "Ability Bar" label
         Component barLabel = Component.literal("Ability Bar").withStyle(ChatFormatting.BOLD);
         guiGraphics.drawString(this.font, barLabel, panelX + 5, barY + 5, 0xFFFFFFFF, true);
 
-        // Render ability bar slots
         renderAbilityBar(guiGraphics, panelX, barY + 15, mouseX, mouseY);
     }
 
@@ -888,7 +880,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
 
-        // Render slots
         for (int i = 0; i < ABILITY_WHEEL_MAX; i++) {
             int row = i / iconsPerRow;
             int col = i % iconsPerRow;
@@ -896,11 +887,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             int x = startX + col * (ABILITY_ICON_SIZE + 2);
             int y = startY + row * (ABILITY_ICON_SIZE + 2);
 
-            // Draw slot background
             guiGraphics.fill(x, y, x + ABILITY_ICON_SIZE, y + ABILITY_ICON_SIZE, 0xFF333333);
             guiGraphics.renderOutline(x, y, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, 0xFF666666);
 
-            // Render ability if present (skip if this is the one being dragged)
             if (i < abilityWheelSlots.size()) {
                 Ability ability = abilityWheelSlots.get(i);
                 if (draggedFromWheelIndex != i) {
@@ -917,16 +906,13 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int slotWidth = (ABILITIES_PANEL_WIDTH - 10) / ABILITY_BAR_MAX;
         int iconX = (slotWidth - ABILITY_ICON_SIZE) / 2;
 
-        // Render slots
         for (int i = 0; i < ABILITY_BAR_MAX; i++) {
             int x = startX + i * slotWidth + iconX;
             int y = startY;
 
-            // Draw slot background
             guiGraphics.fill(x, y, x + ABILITY_ICON_SIZE, y + ABILITY_ICON_SIZE, 0xFF333333);
             guiGraphics.renderOutline(x, y, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, 0xFF666666);
 
-            // Render ability if present (skip if this is the one being dragged)
             if (i < abilityBarSlots.size()) {
                 Ability ability = abilityBarSlots.get(i);
                 if (draggedFromBarIndex != i) {
@@ -934,7 +920,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 }
             }
 
-            // Render keybind label below slot
             String keybind = abbreviateKeybind(KEYBIND_LABELS[i]);
             Component keybindText = Component.literal(keybind).withStyle(ChatFormatting.GRAY);
             int textWidth = this.font.width(keybindText);
@@ -944,24 +929,16 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
     }
 
-    /**
-     * Renders the full Shared Abilities tab.
-     * Top section (Sharing): drag from available panel to add; drag out to unshare your own.
-     * Bottom section (Shared Wheel): drag from pool above to fill slots; drag out to remove.
-     */
     private void renderSharedAbilitiesTab(GuiGraphics guiGraphics, int panelX, int sectionY, int mouseX, int mouseY) {
         String myUUID = this.minecraft.player.getStringUUID();
         List<String> myContributions = new ArrayList<>(ClientTeamData.getContributionsFor(myUUID));
         int maxSlots = ClientTeamData.getSlotsPerMember();
         List<String> allPooled = getAllPooledAbilities();
 
-        // === TOP SECTION: sharing pool ===
         guiGraphics.fill(panelX, sectionY, panelX + ABILITIES_PANEL_WIDTH, sectionY + SHARED_POOL_HEIGHT, 0xCC000000);
         guiGraphics.renderOutline(panelX, sectionY, ABILITIES_PANEL_WIDTH, SHARED_POOL_HEIGHT, 0xFFAAAAAA);
         guiGraphics.drawString(this.font, Component.literal("Sharing").withStyle(ChatFormatting.BOLD), panelX + 5, sectionY + 3, 0xFFFFFFFF, true);
 
-        // Draw all pooled abilities as a flat list; own contributions are editable, others are read-only
-        // Also render empty own contribution slots so the player knows how many they can add
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
 
         int slotsToShow = allPooled.size();
@@ -992,7 +969,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             }
         }
 
-        // Draw empty own slots after the filled ones
         for (int e = 0; e < emptyOwnSlots; e++) {
             int i = slotsToShow + e;
             int row = i / iconsPerRow - sharedPoolScrollOffset;
@@ -1004,7 +980,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             guiGraphics.renderOutline(ix, iy, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, 0xFF444444);
         }
 
-        // === BOTTOM SECTION: personal shared wheel ===
         int wheelY = sectionY + SHARED_POOL_HEIGHT + 5;
         guiGraphics.fill(panelX, wheelY, panelX + ABILITIES_PANEL_WIDTH, wheelY + SHARED_WHEEL_HEIGHT, 0xCC000000);
         guiGraphics.renderOutline(panelX, wheelY, ABILITIES_PANEL_WIDTH, SHARED_WHEEL_HEIGHT, 0xFFAAAAAA);
@@ -1037,20 +1012,17 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     private List<String> getAllPooledAbilities() {
         List<String> result = new ArrayList<>();
-        // Include leader's contributions
         String leaderUUID = ClientTeamData.getLeaderUUID();
         if (!leaderUUID.isEmpty()) {
             for (String id : ClientTeamData.getContributionsFor(leaderUUID)) {
                 if (!result.contains(id)) result.add(id);
             }
         }
-        // Include all members' contributions
         for (String memberUUID : ClientTeamData.getMemberUUIDs()) {
             for (String id : ClientTeamData.getContributionsFor(memberUUID)) {
                 if (!result.contains(id)) result.add(id);
             }
         }
-        // Also include own contributions in case the current player is the leader
         String myUUID = this.minecraft.player.getStringUUID();
         for (String id : ClientTeamData.getContributionsFor(myUUID)) {
             if (!result.contains(id)) result.add(id);
@@ -1075,7 +1047,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int maxSlots = ClientTeamData.getSlotsPerMember();
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
 
-        // --- Top section: drag start from any pooled icon ---
         List<String> allPooled = getAllPooledAbilities();
         for (int i = 0; i < allPooled.size(); i++) {
             int row = i / iconsPerRow - sharedPoolScrollOffset;
@@ -1097,7 +1068,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             }
         }
 
-        // --- Bottom section: drag start from shared wheel slots ---
         int wheelY = sectionY + SHARED_POOL_HEIGHT + 5;
         int startX = panelX + 5;
         int startY = wheelY + 14;
@@ -1126,24 +1096,22 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         return false;
     }
 
-    // ===== MOUSE INPUT HANDLING =====
+    // ----- MOUSE INPUT HANDLING -----
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && showAbilities) { // Left click on abilities
+        if (button == 0 && showAbilities) {
             int baseLeftPos = this.leftPos;
             int panelX = baseLeftPos + this.imageWidth + 5;
             int panelY = this.topPos + 15;
             int slotY = panelY + ABILITIES_PANEL_HEIGHT + 5;
 
-            // Handle shared abilities clicks
             if (currentTab == Tab.SHARED_ABILITIES) {
                 if (handleSharedTabClick((int) mouseX, (int) mouseY, panelX, slotY)) {
                     return true;
                 }
             }
 
-            // Check if clicking on current tab's slots first
             if (currentTab == Tab.ABILITY_WHEEL) {
                 int wheelSlot = getAbilityWheelSlot((int) mouseX, (int) mouseY, panelX, slotY);
                 if (wheelSlot >= 0 && wheelSlot < abilityWheelSlots.size()) {
@@ -1168,7 +1136,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 }
             }
 
-            // Check if clicking on available abilities
             List<Ability> clickableAbilities = currentTab == Tab.SHARED_ABILITIES
                     ? availableAbilities.stream().filter(a -> a.canBeShared).toList()
                     : availableAbilities;
@@ -1195,7 +1162,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             int panelY = this.topPos + 15;
             int slotY = panelY + ABILITIES_PANEL_HEIGHT + 5;
 
-            // Handle drops based on current tab
             if (currentTab == Tab.ABILITY_WHEEL) {
                 if (isInAbilityWheelArea((int) mouseX, (int) mouseY, panelX, slotY)) {
                     int targetSlot = getAbilityWheelSlot((int) mouseX, (int) mouseY, panelX, slotY);
@@ -1266,11 +1232,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 String draggedId = draggedAbility.getId();
                 int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
 
-                // Determine if mouse is inside the sharing pool area
                 boolean inPoolArea = (int) mouseX >= panelX && (int) mouseX <= panelX + ABILITIES_PANEL_WIDTH
                         && (int) mouseY >= sectionY && (int) mouseY <= sectionY + SHARED_POOL_HEIGHT;
 
-                // Determine if mouse is inside the shared wheel area
                 int wheelY = sectionY + SHARED_POOL_HEIGHT + 5;
                 int startX = panelX + 5;
                 int startY = wheelY + 14;
@@ -1289,13 +1253,11 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 }
 
                 if (draggedFromAvailable) {
-                    // Drop from available abilities panel → add to sharing pool
                     if (inPoolArea && !myContributions.contains(draggedId)) {
                         myContributions.add(draggedId);
                         PacketHandler.sendToServer(new SyncSharedAbilitiesPacket(new ArrayList<>(myContributions)));
                     }
                 } else if (draggedFromSharedWheelIndex >= 0) {
-                    // Dragging from shared wheel — reorder or remove
                     if (targetWheelSlot >= 0 && targetWheelSlot != draggedFromSharedWheelIndex) {
                         sharedWheelSlots.remove(draggedFromSharedWheelIndex);
                         sharedWheelSlots.add(Math.min(targetWheelSlot, sharedWheelSlots.size()), draggedId);
@@ -1303,11 +1265,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         sharedWheelSlots.remove(draggedFromSharedWheelIndex);
                     }
                 } else if (draggedFromSharedPoolIndex >= 0) {
-                    // Dragged own pool ability
                     if (inPoolArea) {
-                        // Dropped back in pool — no action (stays shared)
                     } else if (targetWheelSlot >= 0) {
-                        // Dropped on wheel — own ability, no sequence gate needed (it's theirs)
                         List<String> allPooled = getAllPooledAbilities();
                         if (allPooled.contains(draggedId) && !sharedWheelSlots.contains(draggedId)) {
                             if (targetWheelSlot < sharedWheelSlots.size()) {
@@ -1317,14 +1276,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             }
                         }
                     } else {
-                        // Dropped outside pool and wheel — unshare
                         myContributions.remove(draggedId);
                         sharedWheelSlots.remove(draggedId);
                         ClientData.setSharedWheelAbilities(sharedWheelSlots);
                         PacketHandler.sendToServer(new SyncSharedAbilitiesPacket(new ArrayList<>(myContributions)));
                     }
                 } else {
-                    // Dragged a teammate's pooled ability → can only go to wheel if sequence allows
                     if (targetWheelSlot >= 0) {
                         List<String> allPooled = getAllPooledAbilities();
                         if (allPooled.contains(draggedId) && !sharedWheelSlots.contains(draggedId)) {
@@ -1345,10 +1302,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 }
             }
 
-            // Sync shared wheel to ClientData after any change
             ClientData.setSharedWheelAbilities(sharedWheelSlots);
 
-            // Reset drag state
             draggedAbility = null;
             draggedFromWheelIndex = -1;
             draggedFromBarIndex = -1;
@@ -1389,7 +1344,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         if (showQuests) {
             int baseLeftPos = this.leftPos;
-            // Quest panel now on the right side
             int panelX = baseLeftPos + this.imageWidth + 5;
             int panelY = this.topPos;
 
@@ -1406,7 +1360,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
-    // ===== HELPER METHODS FOR ABILITIES =====
+    // ----- HELPER METHODS FOR ABILITIES -----
 
     private Ability getAbilityAt(int mouseX, int mouseY, int panelX, int panelY, List<Ability> abilities, boolean useScroll) {
         mouseY -= 15;
@@ -1527,7 +1481,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         return barY + 15;
     }
 
-    // ===== BACKGROUND RENDERING =====
+    // ----- BACKGROUND RENDERING -----
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
@@ -1565,7 +1519,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         String pathway = ClientUniquenessCache.getPathway();
         if (pathway.isEmpty()) return;
 
-        // Render uniqueness item icon in top-left area below sequence info
         ResourceLocation textureLocation = ResourceLocation.fromNamespaceAndPath(
                 LOTMCraft.MOD_ID, "textures/item/" + pathway + "_uniqueness.png"
         );
@@ -1577,7 +1530,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         guiGraphics.blit(textureLocation, iconX, iconY, 0, 0, iconSize, iconSize, iconSize, iconSize);
 
-        // Show kill count for apotheosis progress next to the icon
         int kills = ClientUniquenessCache.getKillCount();
         Component killText = Component.literal(kills + "/" + RequestUniquenessApotheosisPacket.KILLS_REQUIRED_FOR_APOTHEOSIS + " kills").withStyle(ChatFormatting.GOLD);
         guiGraphics.drawString(this.font, killText, iconX + iconSize + 3, iconY + 4, 0xFFAA00, true);

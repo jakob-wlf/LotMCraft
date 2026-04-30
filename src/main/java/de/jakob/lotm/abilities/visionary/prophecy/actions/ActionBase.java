@@ -48,6 +48,7 @@ public abstract class ActionBase {
             case SAY -> SayAction.load(tag, provider);
             case WEATHER -> WeatherAction.load(tag, provider);
             case TIME -> TimeAction.load(tag, provider);
+            case WHISPERS -> WhispersAction.load(tag, provider);
         };
     }
 
@@ -68,6 +69,7 @@ public abstract class ActionBase {
             case SAY -> new SayAction(context);
             case WEATHER -> new WeatherAction(context);
             case TIME -> new TimeAction(context);
+            case WHISPERS -> new WhispersAction(context);
         };
     }
 }

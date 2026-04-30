@@ -17,10 +17,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class SefirotData extends SavedData {
 
@@ -54,6 +51,23 @@ public class SefirotData extends SavedData {
 
     public void unclaimSefirot(UUID id){
         claimedSefirah.remove(id);
+
+        setDirty();
+    }
+
+    public void unclaimAllByString(String sefirot){
+        var buff = new LinkedList<UUID>();
+
+        for (var obj : claimedSefirah.entrySet()){
+            if(obj.getValue().equals(sefirot))
+                buff.add(obj.getKey());
+        }
+
+        for (var obj : buff){
+            claimedSefirah.remove(obj);
+        }
+
+        setDirty();
     }
 
     public String getClaimedSefirot(UUID uuid) {

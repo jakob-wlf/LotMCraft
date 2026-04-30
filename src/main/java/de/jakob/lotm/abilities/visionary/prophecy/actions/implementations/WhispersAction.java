@@ -5,54 +5,45 @@ import de.jakob.lotm.abilities.visionary.prophecy.actions.ActionsEnum;
 import de.jakob.lotm.abilities.visionary.prophecy.actions.context.ActionContextBase;
 import de.jakob.lotm.abilities.visionary.prophecy.actions.context.ActionContextEnum;
 import de.jakob.lotm.abilities.visionary.prophecy.actions.context.implementations.ActionStringContext;
-import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ServerChatEvent;
-import org.checkerframework.checker.units.qual.C;
 
-public class SayAction extends ActionBase {
-    public SayAction(ActionContextBase context) {
+public class WhispersAction extends ActionBase {
+    public WhispersAction(ActionContextBase context) {
         super(context);
     }
 
     @Override
     public ActionsEnum getType() {
-        return ActionsEnum.SAY;
+        return ActionsEnum.WHISPERS;
     }
 
     @Override
     public int getRequiredSeq() {
-        return 6;
+        return 7;
     }
 
     @Override
     public void action(Level level, LivingEntity entity) {
         if(!(context instanceof ActionStringContext string)) return;
+        if(!(level instanceof ServerLevel serverLevel)) return;
         if(!(entity instanceof ServerPlayer player)) return;
 
-        Component component = Component.literal(string.string);
+        String msg = string.string;
+        if(msg.isEmpty()) return;
 
-        ServerChatEvent event = new ServerChatEvent(player, string.string, component);
-
-        NeoForge.EVENT_BUS.post(event);
-
-        if (!event.isCanceled()) {
-            PlayerChatMessage msg = PlayerChatMessage.system(string.string);
-
-            player.getServer().getPlayerList().broadcastChatMessage(msg, player, ChatType.bind(ChatType.CHAT, player));
-        }
+        player.sendSystemMessage(Component.literal(msg).withStyle(ChatFormatting.GREEN));
     }
 
-    public static SayAction load(CompoundTag tag, HolderLookup.Provider provider) {
-        return new SayAction(ActionContextBase.load(ActionContextEnum.STRING, tag, provider));
+    public static WhispersAction load(CompoundTag tag, HolderLookup.Provider provider) {
+        return new WhispersAction(ActionContextBase.load(ActionContextEnum.STRING, tag, provider));
     }
 }

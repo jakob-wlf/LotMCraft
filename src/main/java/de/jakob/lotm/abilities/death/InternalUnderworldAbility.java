@@ -2,23 +2,29 @@ package de.jakob.lotm.abilities.death;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.entity.custom.spirits.*;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.subordinates.SubordinateUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.*;
+import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -30,19 +36,43 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber
 public class InternalUnderworldAbility extends SelectableAbility {
 
     private static final String STORED_SOULS_TAG = "InternalUnderworldSouls";
+    private static final String CAPTURE_MODE_TAG = "InternalUnderworldCaptureMode";
 
     private record ActiveSoul(LivingEntity entity, CompoundTag soulData) {}
-    private static final java.util.Map<UUID, List<ActiveSoul>> activeSouls = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final Map<UUID, List<ActiveSoul>> activeSouls = new ConcurrentHashMap<>();
 
-    /** Maximum souls that can be stored, by sequence level. */
+    private static boolean isCapturableEntity(LivingEntity entity) {
+        if (    entity instanceof Zombie
+                || entity instanceof ZombieVillager
+                || entity instanceof Husk
+                || entity instanceof Drowned
+                || entity instanceof ZombifiedPiglin
+                || entity instanceof Skeleton
+                || entity instanceof WitherSkeleton
+                || entity instanceof Stray
+                || entity instanceof Phantom
+                || entity instanceof Vex
+                || entity instanceof Hoglin
+                || entity instanceof SpiritDervishEntity
+                || entity instanceof SpiritBlueWizardEntity
+                || entity instanceof SpiritMalmouthEntity
+                || entity instanceof SpiritTranslucentWizardEntity
+                || entity instanceof SpiritGhostEntity
+        ) {
+            return true;
+        }
+        return false;
+    }
+
     private static int getMaxSouls(int sequence) {
         return switch (sequence) {
             case 5 -> 5;
@@ -51,7 +81,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
             case 2 -> 35;
             case 1 -> 45;
             case 0 -> 53;
-            default -> 5; // seq 6+ cannot use this ability, but safe fallback
+            default -> 5;
         };
     }
 
@@ -67,20 +97,21 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("death", 4));
+        return new HashMap<>(Map.of("death", 5));
     }
 
     @Override
     protected float getSpiritualityCost() {
-        return 3000;
+        return 400;
     }
 
     @Override
     protected String[] getAbilityNames() {
         return new String[]{
-                "ability.lotmcraft.internal_underworld.summon",
-                "ability.lotmcraft.internal_underworld.summon_all",
-                "ability.lotmcraft.internal_underworld.retrieve"
+                "ability.lotmcraft.internal_underworld.capture",
+                "ability.lotmcraft.internal_underworld.release",
+                "ability.lotmcraft.internal_underworld.release_all",
+                "ability.lotmcraft.internal_underworld.recall"
         };
     }
 
@@ -92,95 +123,89 @@ public class InternalUnderworldAbility extends SelectableAbility {
         if (InteractionHandler.isInteractionPossibleStrictlyHigher(new Location(entity.position(), serverLevel), "purification", BeyonderData.getSequence(entity), -1)) return;
 
         switch (selectedAbility) {
-            case 0 -> summonSoul(serverLevel, player);
-            case 1 -> summonAllSouls(serverLevel, player);
-            case 2 -> retrieveSouls(player);
+            case 0 -> activateCaptureMode(player);
+            case 1 -> openReleaseGui(serverLevel, player);
+            case 2 -> releaseAllSouls(serverLevel, player);
+            case 3 -> recallAllSouls(player);
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Kill event — capture beyonder souls on kill
-    // -------------------------------------------------------------------------
-
     @SubscribeEvent
-    public static void onEntityDeath(LivingDeathEvent event) {
-        LivingEntity dying = event.getEntity();
-        if (dying instanceof Player) return; // don't capture players
+    public static void onPlayerInteractEntity(PlayerInteractEvent.EntityInteractSpecific event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!(event.getTarget() instanceof LivingEntity target)) return;
+        if (!(player.level() instanceof ServerLevel serverLevel)) return;
+        if (!isInCaptureMode(player)) return;
 
-        // Find the killer
-        var source = event.getSource();
-        var causeEntity = source.getEntity();
-        if (causeEntity == null) causeEntity = source.getDirectEntity();
-        if (!(causeEntity instanceof ServerPlayer player)) return;
+        event.setCanceled(true);
+        clearCaptureMode(player);
 
-        // Killer must be a Death pathway Beyonder with this ability
-        if (!BeyonderData.isBeyonder(player)) return;
-        if (!BeyonderData.getPathway(player).equals("death")) return;
-        if (BeyonderData.getSequence(player) > 5) return; // Seq 5 or higher rank required
+        if (!isCapturableEntity(target)) {
+            player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.not_capturable")
+                    .withStyle(ChatFormatting.RED));
+            return;
+        }
 
-        // Dying entity must be a Beyonder weaker than the player (higher sequence = weaker)
-        if (!BeyonderData.isBeyonder(dying)) return;
+        if (!BeyonderData.isBeyonder(player) || !BeyonderData.getPathway(player).equals("death") || BeyonderData.getSequence(player) > 5) return;
+
         int playerSeq = BeyonderData.getSequence(player);
-        int targetSeq = BeyonderData.getSequence(dying);
-        if (targetSeq <= playerSeq) {
-            // Target is same or stronger — cannot absorb
-            player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.too_strong")
-                    .withStyle(ChatFormatting.DARK_RED));
-            return;
-        }
-        float CAPTURE_CHANCE = 0.6f - (playerSeq * 0.05f);
-        if (player.getRandom().nextFloat() >= CAPTURE_CHANCE) {
-            player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.escaped")
-                    .withStyle(ChatFormatting.GRAY));
-            return;
-        }
 
-        // Check capacity against sequence-based limit
-        List<CompoundTag> stored = getStoredSouls(player);
-        int maxSouls = getMaxSouls(playerSeq);
-        if (stored.size() >= maxSouls) {
+        if (getStoredSouls(player).size() >= getMaxSouls(playerSeq)) {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.full")
                     .withStyle(ChatFormatting.RED));
             return;
         }
 
-        // Save soul data
-        CompoundTag soulData = new CompoundTag();
-        soulData.putString("EntityType", EntityType.getKey(dying.getType()).toString());
-        soulData.putString("DisplayName", dying.hasCustomName() ? dying.getCustomName().getString() : dying.getName().getString());
-        soulData.putString("BeyonderPathway", BeyonderData.getPathway(dying));
-        soulData.putInt("BeyonderSequence", targetSeq);
+        spawnCaptureAttemptParticles(serverLevel, target);
 
-        // Save full NBT for reconstruction
-        CompoundTag entityNBT = new CompoundTag();
-        dying.save(entityNBT);
-        entityNBT.remove("UUID");
-        entityNBT.remove("Health"); // remove death health so it spawns at full health
-        if (entityNBT.contains("neoforge:attachments")) {
-            entityNBT.getCompound("neoforge:attachments").remove("lotmcraft:copied_inventory");
-        }
-        soulData.put("EntityNBT", entityNBT);
-
-        if (dying instanceof BeyonderNPCEntity beyonderNPC) {
-            soulData.putBoolean("IsBeyonderNPC", true);
-            soulData.putString("NPCPathway", beyonderNPC.getPathway());
-            soulData.putInt("NPCSequence", beyonderNPC.getSequence());
-            soulData.putString("NPCSkin", beyonderNPC.getSkinName());
-            soulData.putBoolean("NPCHostile", beyonderNPC.isHostile());
-        } else {
-            soulData.putBoolean("IsBeyonderNPC", false);
+        float captureChance = 0.55f + (playerSeq * 0.05f);
+        if (player.getRandom().nextFloat() >= captureChance) {
+            spawnFailureParticles(serverLevel, target);
+            serverLevel.playSound(null, target.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.8f, 1.8f);
+            player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.escaped")
+                    .withStyle(ChatFormatting.GRAY));
+            return;
         }
 
+        CompoundTag soulData = buildSoulData(target);
         addStoredSoul(player, soulData);
+        spawnCaptureSuccessParticles(serverLevel, target);
+        serverLevel.playSound(null, target.blockPosition(), SoundEvents.SOUL_ESCAPE.value(), SoundSource.PLAYERS, 1.0f, 0.7f);
+        target.discard();
+
         player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.captured",
-                dying.getName().getString()).withStyle(ChatFormatting.DARK_AQUA));
+                target.getName().getString()).withStyle(ChatFormatting.DARK_AQUA));
     }
 
-    // -------------------------------------------------------------------------
-    // Summon — open GUI to pick a stored soul and summon it as a subordinate
-    // -------------------------------------------------------------------------
+    private static void activateCaptureMode(ServerPlayer player) {
+        player.getPersistentData().putBoolean(CAPTURE_MODE_TAG, true);
+        player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.capture_mode_on")
+                .withStyle(ChatFormatting.DARK_AQUA));
+    }
 
-    private void summonSoul(ServerLevel level, ServerPlayer player) {
+    private static void clearCaptureMode(ServerPlayer player) {
+        player.getPersistentData().remove(CAPTURE_MODE_TAG);
+    }
+
+    private static boolean isInCaptureMode(ServerPlayer player) {
+        return player.getPersistentData().getBoolean(CAPTURE_MODE_TAG);
+    }
+
+    private static CompoundTag buildSoulData(LivingEntity entity) {
+        CompoundTag soulData = new CompoundTag();
+        soulData.putString("EntityType", EntityType.getKey(entity.getType()).toString());
+        soulData.putString("DisplayName", entity.hasCustomName() ? entity.getCustomName().getString() : entity.getName().getString());
+
+        CompoundTag entityNBT = new CompoundTag();
+        entity.save(entityNBT);
+        entityNBT.remove("UUID");
+        entityNBT.remove("Health");
+        soulData.put("EntityNBT", entityNBT);
+
+        return soulData;
+    }
+
+    private void openReleaseGui(ServerLevel level, ServerPlayer player) {
         List<CompoundTag> storedSouls = getStoredSouls(player);
 
         if (storedSouls.isEmpty()) {
@@ -189,7 +214,6 @@ public class InternalUnderworldAbility extends SelectableAbility {
             return;
         }
 
-        // Build container for soul selection (max 27 souls + 1 clear-mode button)
         SimpleContainer container = new SimpleContainer(54) {
             @Override
             public boolean canTakeItem(Container target, int index, ItemStack stack) {
@@ -197,31 +221,38 @@ public class InternalUnderworldAbility extends SelectableAbility {
             }
         };
 
-        // Slot 0: clear-mode toggle (barrier)
-        ItemStack clearItem = new ItemStack(Items.BARRIER);
-        clearItem.set(DataComponents.CUSTOM_NAME, Component.literal("Remove Soul").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
-        clearItem.set(DataComponents.LORE, new ItemLore(List.of(
-                Component.literal("Click a soul after this to release it").withStyle(ChatFormatting.GRAY)
+        ItemStack releaseAllItem = new ItemStack(Items.NETHER_STAR);
+        releaseAllItem.set(DataComponents.CUSTOM_NAME, Component.literal("Release All").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
+        releaseAllItem.set(DataComponents.LORE, new ItemLore(List.of(
+                Component.literal("Summons all stored spirits").withStyle(ChatFormatting.GRAY)
         )));
-        CompoundTag clearTag = new CompoundTag();
-        clearTag.putBoolean("IsDeleteMode", true);
-        clearItem.set(DataComponents.CUSTOM_DATA, CustomData.of(clearTag));
-        container.setItem(0, clearItem);
+        CompoundTag releaseAllTag = new CompoundTag();
+        releaseAllTag.putBoolean("IsReleaseAll", true);
+        releaseAllItem.set(DataComponents.CUSTOM_DATA, CustomData.of(releaseAllTag));
+        container.setItem(0, releaseAllItem);
 
-        for (int i = 0; i < Math.min(storedSouls.size(), 53); i++) {
-            CompoundTag soul = storedSouls.get(i);
-            container.setItem(i + 1, createSoulDisplayItem(soul));
+        ItemStack discardItem = new ItemStack(Items.BARRIER);
+        discardItem.set(DataComponents.CUSTOM_NAME, Component.literal("Discard Mode").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
+        discardItem.set(DataComponents.LORE, new ItemLore(List.of(
+                Component.literal("Click a soul to permanently discard it").withStyle(ChatFormatting.GRAY)
+        )));
+        CompoundTag discardTag = new CompoundTag();
+        discardTag.putBoolean("IsDiscardMode", true);
+        discardItem.set(DataComponents.CUSTOM_DATA, CustomData.of(discardTag));
+        container.setItem(1, discardItem);
+
+        for (int i = 0; i < Math.min(storedSouls.size(), 52); i++) {
+            container.setItem(i + 2, createSoulDisplayItem(storedSouls.get(i)));
         }
 
         final int containerSize = container.getContainerSize();
 
         player.openMenu(new SimpleMenuProvider(
                 (id, inv, p) -> new ChestMenu(MenuType.GENERIC_9x6, id, inv, container, 6) {
-                    private boolean isDeleting = false;
+                    private boolean discardMode = false;
 
                     @Override
-                    public void clicked(int slotId, int button, net.minecraft.world.inventory.ClickType clickType,
-                                       net.minecraft.world.entity.player.Player clickPlayer) {
+                    public void clicked(int slotId, int button, net.minecraft.world.inventory.ClickType clickType, Player clickPlayer) {
                         if (slotId < 0 || slotId >= containerSize) return;
                         ItemStack clicked = container.getItem(slotId);
                         if (clicked.isEmpty()) return;
@@ -230,22 +261,28 @@ public class InternalUnderworldAbility extends SelectableAbility {
                         if (customData == null) return;
                         CompoundTag tag = customData.copyTag();
 
-                        if (tag.contains("IsDeleteMode")) {
-                            this.isDeleting = !this.isDeleting;
+                        if (tag.contains("IsDiscardMode")) {
+                            discardMode = !discardMode;
+                            return;
+                        }
+
+                        if (tag.contains("IsReleaseAll")) {
+                            player.closeContainer();
+                            level.getServer().execute(() -> releaseAllSouls(level, player));
                             return;
                         }
 
                         if (!tag.contains("SoulData")) return;
                         CompoundTag soulData = tag.getCompound("SoulData");
 
-                        if (isDeleting) {
+                        if (discardMode) {
                             removeStoredSoul(player, soulData);
                             player.closeContainer();
-                            player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.released")
+                            player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.discarded")
                                     .withStyle(ChatFormatting.GRAY));
                         } else {
                             player.closeContainer();
-                            level.getServer().execute(() -> spawnSoulAsSubordinate(level, player, soulData));
+                            level.getServer().execute(() -> releaseSoul(level, player, soulData));
                         }
                     }
                 },
@@ -253,11 +290,109 @@ public class InternalUnderworldAbility extends SelectableAbility {
         ));
     }
 
-    // -------------------------------------------------------------------------
-    // Summon All — spawns every stored soul at once up to the sequence cap
-    // -------------------------------------------------------------------------
+    private void releaseAllSouls(ServerLevel level, ServerPlayer player) {
+        List<CompoundTag> storedSouls = getStoredSouls(player);
 
-    public static void retrieveSoulsOnLogout(ServerPlayer player) {
+        if (storedSouls.isEmpty()) {
+            player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.no_souls")
+                    .withStyle(ChatFormatting.RED));
+            return;
+        }
+
+        int summoned = 0;
+        for (CompoundTag soulData : new ArrayList<>(storedSouls)) {
+            try {
+                releaseSoul(level, player, soulData);
+                summoned++;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.summoned_all", summoned)
+                .withStyle(ChatFormatting.DARK_AQUA));
+    }
+
+    private void releaseSoul(ServerLevel level, ServerPlayer player, CompoundTag soulData) {
+        try {
+            Optional<EntityType<?>> optionalType = EntityType.byString(soulData.getString("EntityType"));
+            if (optionalType.isEmpty()) {
+                player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.failed").withStyle(ChatFormatting.RED));
+                return;
+            }
+
+            net.minecraft.world.entity.Entity entity = optionalType.get().create(level);
+            if (entity == null) {
+                player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.failed").withStyle(ChatFormatting.RED));
+                return;
+            }
+
+            if (soulData.contains("EntityNBT")) {
+                CompoundTag nbt = soulData.getCompound("EntityNBT").copy();
+                nbt.remove("UUID");
+                entity.load(nbt);
+            }
+
+            Vec3 look = player.getLookAngle();
+            Vec3 pos = player.position().add(look.x * 2, 0, look.z * 2);
+            entity.moveTo(pos.x, pos.y, pos.z, player.getYRot(), 0);
+            entity.setUUID(UUID.randomUUID());
+            entity.getPersistentData().putBoolean("VoidSummoned", true);
+
+            boolean spawned = level.addFreshEntity(entity);
+
+            if (spawned && entity instanceof LivingEntity livingEntity) {
+                SubordinateUtils.turnEntityIntoSubordinate(livingEntity, player, false);
+
+                List<ActiveSoul> existing = activeSouls.computeIfAbsent(player.getUUID(), k -> new ArrayList<>());
+                existing.removeIf(e -> !e.entity().isAlive());
+                for (ActiveSoul other : existing) {
+                    AllyUtil.makeAllies(livingEntity, other.entity(), false);
+                }
+                existing.add(new ActiveSoul(livingEntity, soulData));
+                removeStoredSoul(player, soulData);
+
+                spawnReleaseParticles(level, livingEntity);
+                level.playSound(null, livingEntity.blockPosition(), SoundEvents.WITHER_SPAWN, SoundSource.PLAYERS, 0.4f, 1.6f);
+
+                player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.summoned",
+                        entity.getName().getString()).withStyle(ChatFormatting.DARK_AQUA));
+            } else {
+                player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.failed").withStyle(ChatFormatting.RED));
+            }
+
+        } catch (Exception e) {
+            player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.failed").withStyle(ChatFormatting.RED));
+            e.printStackTrace();
+        }
+    }
+
+    private void recallAllSouls(ServerPlayer player) {
+        List<ActiveSoul> souls = activeSouls.remove(player.getUUID());
+        if (souls == null || souls.isEmpty()) {
+            player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.no_active_souls")
+                    .withStyle(ChatFormatting.RED));
+            return;
+        }
+
+        int count = 0;
+        for (ActiveSoul soul : souls) {
+            if (soul.entity().isAlive()) {
+                if (soul.entity().level() instanceof ServerLevel serverLevel) {
+                    spawnRecallParticles(serverLevel, soul.entity());
+                    serverLevel.playSound(null, soul.entity().blockPosition(), SoundEvents.SOUL_ESCAPE.value(), SoundSource.PLAYERS, 0.8f, 1.4f);
+                }
+                addStoredSoul(player, soul.soulData());
+                soul.entity().discard();
+                count++;
+            }
+        }
+
+        player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.retrieved", count)
+                .withStyle(ChatFormatting.DARK_AQUA));
+    }
+
+    public static void recallSoulsOnLogout(ServerPlayer player) {
         List<ActiveSoul> souls = activeSouls.remove(player.getUUID());
         if (souls == null) return;
         for (ActiveSoul soul : souls) {
@@ -276,62 +411,50 @@ public class InternalUnderworldAbility extends SelectableAbility {
         }
     }
 
-    private void retrieveSouls(ServerPlayer player) {
-        List<ActiveSoul> souls = activeSouls.remove(player.getUUID());
-        if (souls == null || souls.isEmpty()) {
-            player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.no_active_souls")
-                    .withStyle(ChatFormatting.RED));
-            return;
+    private static void spawnCaptureAttemptParticles(ServerLevel level, LivingEntity target) {
+        Vec3 pos = target.position().add(0, target.getBbHeight() / 2.0, 0);
+        for (int i = 0; i < 20; i++) {
+            double angle = (2 * Math.PI / 20) * i;
+            level.sendParticles(ParticleTypes.SOUL, pos.x + Math.cos(angle) * 0.8, pos.y, pos.z + Math.sin(angle) * 0.8, 1, 0, 0.05, 0, 0.01);
         }
-        int count = 0;
-        for (ActiveSoul soul : souls) {
-            if (soul.entity().isAlive()) {
-                addStoredSoul(player, soul.soulData());
-                soul.entity().discard();
-                count++;
-            }
-        }
-        player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.retrieved", count)
-                .withStyle(ChatFormatting.DARK_AQUA));
+        level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, pos.x, pos.y, pos.z, 10, 0.3, 0.3, 0.3, 0.02);
     }
 
-    private void summonAllSouls(ServerLevel level, ServerPlayer player) {
-        List<CompoundTag> storedSouls = getStoredSouls(player);
+    private static void spawnFailureParticles(ServerLevel level, LivingEntity target) {
+        Vec3 pos = target.position().add(0, target.getBbHeight() / 2.0, 0);
+        level.sendParticles(ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 25, 0.4, 0.4, 0.4, 0.05);
+        level.sendParticles(ParticleTypes.LARGE_SMOKE, pos.x, pos.y, pos.z, 8, 0.2, 0.2, 0.2, 0.01);
+    }
 
-        if (storedSouls.isEmpty()) {
-            player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.no_souls")
-                    .withStyle(ChatFormatting.RED));
-            return;
+    private static void spawnCaptureSuccessParticles(ServerLevel level, LivingEntity target) {
+        Vec3 pos = target.position().add(0, target.getBbHeight() / 2.0, 0);
+        for (int i = 0; i < 30; i++) {
+            double angle = (2 * Math.PI / 30) * i;
+            double r = 0.5 + (i % 3) * 0.2;
+            level.sendParticles(ParticleTypes.SOUL, pos.x + Math.cos(angle) * r, pos.y + i * 0.05, pos.z + Math.sin(angle) * r, 1, 0, 0.02, 0, 0.0);
         }
+        level.sendParticles(ParticleTypes.REVERSE_PORTAL, pos.x, pos.y, pos.z, 20, 0.3, 0.5, 0.3, 0.1);
+    }
 
-        int maxSouls = getMaxSouls(BeyonderData.getSequence(player));
-        List<CompoundTag> toSummon = new ArrayList<>(storedSouls.subList(0, Math.min(storedSouls.size(), maxSouls)));
+    private static void spawnReleaseParticles(ServerLevel level, LivingEntity entity) {
+        Vec3 pos = entity.position().add(0, entity.getBbHeight() / 2.0, 0);
+        level.sendParticles(ParticleTypes.SOUL, pos.x, pos.y, pos.z, 25, 0.5, 0.5, 0.5, 0.05);
+        level.sendParticles(ParticleTypes.PORTAL, pos.x, pos.y, pos.z, 30, 0.4, 0.6, 0.4, 0.1);
+        level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, pos.x, pos.y + 1, pos.z, 10, 0.2, 0.3, 0.2, 0.02);
+    }
 
-        int summoned = 0;
-        for (CompoundTag soulData : toSummon) {
-            try {
-                spawnSoulAsSubordinate(level, player, soulData);
-                summoned++;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.summoned_all", summoned)
-                .withStyle(ChatFormatting.DARK_AQUA));
+    private static void spawnRecallParticles(ServerLevel level, LivingEntity entity) {
+        Vec3 pos = entity.position().add(0, entity.getBbHeight() / 2.0, 0);
+        level.sendParticles(ParticleTypes.REVERSE_PORTAL, pos.x, pos.y, pos.z, 20, 0.4, 0.4, 0.4, 0.08);
+        level.sendParticles(ParticleTypes.SOUL, pos.x, pos.y, pos.z, 15, 0.3, 0.3, 0.3, 0.03);
     }
 
     private ItemStack createSoulDisplayItem(CompoundTag soulData) {
-        String displayName = soulData.getString("DisplayName");
-        String pathway = soulData.getString("BeyonderPathway");
-        int sequence = soulData.getInt("BeyonderSequence");
-
         ItemStack item = new ItemStack(Items.PLAYER_HEAD);
-        item.set(DataComponents.CUSTOM_NAME, Component.literal(displayName).withStyle(ChatFormatting.LIGHT_PURPLE));
+        item.set(DataComponents.CUSTOM_NAME, Component.literal(soulData.getString("DisplayName")).withStyle(ChatFormatting.LIGHT_PURPLE));
         item.set(DataComponents.LORE, new ItemLore(List.of(
                 Component.literal("-------------------").withStyle(style -> style.withColor(0xFF7ECFCF).withItalic(false)),
-                Component.translatable("lotm.pathway").append(Component.literal(": " + pathway)).withColor(0x7ECFCF).withStyle(style -> style.withItalic(false)),
-                Component.translatable("lotm.sequence").append(Component.literal(": " + sequence)).withColor(0x7ECFCF).withStyle(style -> style.withItalic(false))
+                Component.literal(soulData.getString("EntityType")).withStyle(style -> style.withColor(0x7ECFCF).withItalic(false))
         )));
 
         CompoundTag tag = new CompoundTag();
@@ -341,103 +464,12 @@ public class InternalUnderworldAbility extends SelectableAbility {
         return item;
     }
 
-    private void spawnSoulAsSubordinate(ServerLevel level, ServerPlayer player, CompoundTag soulData) {
-        try {
-            String entityTypeId = soulData.getString("EntityType");
-            Optional<EntityType<?>> optionalType = EntityType.byString(entityTypeId);
-
-            if (optionalType.isEmpty()) {
-                player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.failed")
-                        .withStyle(ChatFormatting.RED));
-                return;
-            }
-
-            EntityType<?> entityType = optionalType.get();
-            net.minecraft.world.entity.Entity entity;
-
-            if (soulData.getBoolean("IsBeyonderNPC")) {
-                String pathway = soulData.getString("NPCPathway");
-                int sequence = soulData.getInt("NPCSequence");
-                String skin = soulData.getString("NPCSkin");
-                boolean hostile = soulData.getBoolean("NPCHostile");
-
-                entity = new BeyonderNPCEntity(
-                        (EntityType<? extends BeyonderNPCEntity>) entityType,
-                        level, hostile, skin, pathway, sequence
-                );
-                ((BeyonderNPCEntity) entity).setQuestId("");
-                entity.getPersistentData().putBoolean("Initialized", true);
-
-                if (soulData.contains("EntityNBT")) {
-                    CompoundTag nbt = soulData.getCompound("EntityNBT").copy();
-                    nbt.remove("UUID");
-                    nbt.remove("pathway");
-                    nbt.remove("sequence");
-                    nbt.remove("skin");
-                    nbt.remove("hostile");
-                    entity.load(nbt);
-                }
-            } else {
-                entity = entityType.create(level);
-                if (entity == null) {
-                    player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.failed")
-                            .withStyle(ChatFormatting.RED));
-                    return;
-                }
-                if (soulData.contains("EntityNBT")) {
-                    CompoundTag nbt = soulData.getCompound("EntityNBT").copy();
-                    nbt.remove("UUID");
-                    entity.load(nbt);
-                }
-            }
-
-            // Spawn in front of player
-            Vec3 look = player.getLookAngle();
-            Vec3 pos = player.position().add(look.x * 2, 0, look.z * 2);
-            entity.moveTo(pos.x, pos.y, pos.z, player.getYRot(), 0);
-            entity.setUUID(UUID.randomUUID());
-            entity.getPersistentData().putBoolean("VoidSummoned", true);
-
-            boolean spawned = level.addFreshEntity(entity);
-
-            if (spawned && entity instanceof LivingEntity livingEntity) {
-                SubordinateUtils.turnEntityIntoSubordinate(livingEntity, player, false);
-
-                // Ally with all existing active souls of this player
-                List<ActiveSoul> existing = activeSouls.computeIfAbsent(player.getUUID(), k -> new ArrayList<>());
-                existing.removeIf(e -> !e.entity().isAlive());
-                for (ActiveSoul other : existing) {
-                    de.jakob.lotm.util.helper.AllyUtil.makeAllies(livingEntity, other.entity(), false);
-                }
-                existing.add(new ActiveSoul(livingEntity, soulData));
-
-                removeStoredSoul(player, soulData);
-                player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.summoned",
-                        entity.getName().getString()).withStyle(ChatFormatting.DARK_AQUA));
-            } else {
-                player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.failed")
-                        .withStyle(ChatFormatting.RED));
-            }
-
-        } catch (Exception e) {
-            player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.failed")
-                    .withStyle(ChatFormatting.RED));
-            e.printStackTrace();
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // NBT persistence helpers — stored in player's persistent data
-    // -------------------------------------------------------------------------
-
     private static List<CompoundTag> getStoredSouls(ServerPlayer player) {
         CompoundTag data = player.getPersistentData();
         List<CompoundTag> souls = new ArrayList<>();
         if (data.contains(STORED_SOULS_TAG)) {
             ListTag list = data.getList(STORED_SOULS_TAG, Tag.TAG_COMPOUND);
-            for (int i = 0; i < list.size(); i++) {
-                souls.add(list.getCompound(i));
-            }
+            for (int i = 0; i < list.size(); i++) souls.add(list.getCompound(i));
         }
         return souls;
     }
@@ -451,9 +483,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
         list.add(soulData);
 
         int maxSouls = getMaxSouls(BeyonderData.getSequence(player));
-        while (list.size() > maxSouls) {
-            list.remove(0);
-        }
+        while (list.size() > maxSouls) list.remove(0);
 
         data.put(STORED_SOULS_TAG, list);
     }
@@ -461,7 +491,6 @@ public class InternalUnderworldAbility extends SelectableAbility {
     private static void removeStoredSoul(ServerPlayer player, CompoundTag soulData) {
         CompoundTag data = player.getPersistentData();
         if (!data.contains(STORED_SOULS_TAG)) return;
-
         ListTag list = data.getList(STORED_SOULS_TAG, Tag.TAG_COMPOUND);
         list.remove(soulData);
         data.put(STORED_SOULS_TAG, list);

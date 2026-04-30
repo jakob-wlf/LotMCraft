@@ -96,7 +96,7 @@ public class ModEntities {
 
     public static final Supplier<EntityType<TravelersDoorEntity>> TRAVELERS_DOOR =
             ENTITY_TYPES.register("travelers_door", () -> EntityType.Builder.<TravelersDoorEntity>of(TravelersDoorEntity::new, MobCategory.MISC)
-                    .sized(1.5f, 2.5f).build("travelers_door"));
+                    .sized(1.5f, 2.5f).noSave().build("travelers_door"));
 
     public static final Supplier<EntityType<ExileDoorsEntity>> EXILE_DOORS =
             ENTITY_TYPES.register("exile_doors", () -> EntityType.Builder.<ExileDoorsEntity>of(ExileDoorsEntity::new, MobCategory.MISC)

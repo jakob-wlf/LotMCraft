@@ -20,6 +20,7 @@ import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
@@ -31,6 +32,7 @@ public class TravelersDoorEntity extends Entity {
     private double destX;
     private double destY;
     private double destZ;
+    private int casterSeq;
 
     /**
      * 0 = coordinates
@@ -56,21 +58,21 @@ public class TravelersDoorEntity extends Entity {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
     }
 
-    public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing, Vec3 center, int use) {
+    public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing, Vec3 center, int use, int casterSeq) {
         this(type, level);
 
         Vec3 dir = new Vec3(facing.x, 0.0, facing.z);
         float yaw = yawFromVector(dir);
         float pitch = 0.0F;
+        this.casterSeq = casterSeq;
 
         this.moveTo(center.x, center.y, center.z, yaw, pitch);
 
         this.use = use;
     }
 
-    // Constructor with destination coordinates
     public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing, Vec3 center, double destX, double destY, double destZ) {
-        this(type, level, facing, center, 0);
+        this(type, level, facing, center, 0, 5);
         this.destX = destX;
         this.destY = destY;
         this.destZ = destZ;
@@ -187,6 +189,11 @@ public class TravelersDoorEntity extends Entity {
         Vec3 dir = spiritWorldTargetPos.subtract(spiritWorldPos).normalize();
 
         for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(TELEPORT_RANGE), e -> e != this && e.isAlive())) {
+            if(!(entity instanceof LivingEntity) || casterSeq <= 2) {
+                entity.teleportTo(level, destX, destY, destZ, Set.of(), entity.getYRot(), entity.getXRot());
+                continue;
+            }
+
             entity.teleportTo(spiritWorldLevel, spiritWorldPos.x(), spiritWorldPos.y(), spiritWorldPos.z(), Set.of(), entity.getYRot(), entity.getXRot());
             Vec3[] currentEntityPos = new Vec3[]{new Vec3(spiritWorldPos.toVector3f())};
 

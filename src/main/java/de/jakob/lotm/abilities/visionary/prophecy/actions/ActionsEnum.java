@@ -18,7 +18,8 @@ public enum ActionsEnum {
     SPAWN,
     SAY,
     WEATHER,
-    TIME
+    TIME,
+    WHISPERS
     //DOUBLE
     ;
 

@@ -277,7 +277,6 @@ public class AbilityHandler {
         abilities.add(new JurisdictionAbility("jurisdiction_ability"));
 
 
-
         // ERROR PATHWAY
         abilities.add(new TheftAbility("theft_ability"));
         abilities.add(new MentalDisruptionAbility("mental_disruption_ability"));
@@ -323,6 +322,7 @@ public class AbilityHandler {
         abilities.add(new DeathEnvoyAbility("death_envoy_ability"));
         abilities.add(new InternalUnderworldAbility("internal_underworld_ability"));
         abilities.add(new UndyingSealAbility("undying_seal_ability"));
+        abilities.add(new DeathSpellsAbility("death_spells_ability"));
     }
 
     public HashSet<Ability> getAbilities() {

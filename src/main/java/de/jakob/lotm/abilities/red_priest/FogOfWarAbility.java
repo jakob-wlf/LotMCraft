@@ -31,7 +31,7 @@ public class FogOfWarAbility extends ToggleAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 800;
+        return 80;
     }
 
     @Override

@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
@@ -29,15 +30,19 @@ public class SpiritCalledEffect extends MobEffect {
     public boolean applyEffectTick(@NotNull LivingEntity entity, int amplifier) {
         if (entity.level().isClientSide()) return true;
 
-        // Stun: lock movement and prevent jumping
         entity.setDeltaMovement(Vec3.ZERO);
         entity.hurtMarked = true;
         entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30, 100, false, false, false));
         entity.addEffect(new MobEffectInstance(MobEffects.JUMP, 30, 128, false, false, false));
 
-        // Block all ability usage
-        DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        component.disableAbilityUsageForTime("spirit_called", 20, entity);
+        if(amplifier >= 1) {
+            entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.SPIRIT_CALLED, entity), amplifier * 2);
+        }
+
+        if(amplifier >= 2 && BeyonderData.getSequence(entity) >= (10 - amplifier - 1)) {
+            DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+            component.disableAbilityUsageForTime("spirit_called", 20, entity);
+        }
 
         return true;
     }

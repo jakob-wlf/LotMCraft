@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.common.DivinationAbility;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.util.PlayerSelectionWorkType;
+import de.jakob.lotm.util.data.EntityLocation;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenPlayerDivinationScreenPacket;
@@ -12,8 +13,10 @@ import de.jakob.lotm.network.packets.toClient.SyncDangerPremonitionAbilityPacket
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PlayerInfo;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,7 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SpiritCommunicationAbility extends SelectableAbility {
 
     public SpiritCommunicationAbility(String id) {
-        super(id, 10f);
+        super(id, 7f);
     }
 
     @Override
@@ -129,7 +132,6 @@ public class SpiritCommunicationAbility extends SelectableAbility {
         PacketDistributor.sendToPlayer(player, new OpenStructureDivinationScreenPacket(structureIds));
     }
 
-    // --- Death-exclusive sub-mode ---
 
     private void spectralBind(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
@@ -141,11 +143,10 @@ public class SpiritCommunicationAbility extends SelectableAbility {
         int targetSeq = BeyonderData.getSequence(target);
         if (targetSeq <= casterSeq - 1) return;
 
-        // Stun: MOVEMENT_SLOWDOWN 100 for 3 seconds (60 ticks)
+        ParticleUtil.createParticleSpirals(ParticleTypes.LARGE_SMOKE, new EntityLocation(target), target.getBbWidth(), target.getBbWidth(), target.getEyeHeight(), .35, 6, 20 * 5, 8, 1);
+
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60* (int) Math.max(multiplier(entity)/4,1), 100, false, true, true));
-        // Freezing visual (powder snow freeze ticks)
         target.setTicksFrozen(target.getTicksRequiredToFreeze() + 60);
-        // Weakness
         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60* (int) Math.max(multiplier(entity)/4,1), 1, false, true, true));
     }
 }

@@ -110,15 +110,16 @@ public class StoryWritingAbility extends ToggleAbility {
         if(op.isPresent()){
             var prophecies = op.get().prophecies();
 
-            LinkedList<Prophecy> buff = new LinkedList<>();
+            LinkedList<Prophecy> buff1 = new LinkedList<>();
+            LinkedList<Prophecy> buff2 = new LinkedList<>(prophecies);
 
-            for(var obj : prophecies){
+            for(var obj : buff2){
                 if (obj.checkAndPerform(player.level(), player)){
-                    buff.add(obj);
+                    buff1.add(obj);
                 }
             }
 
-            prophecies.removeAll(buff);
+            prophecies.removeAll(buff1);
 
             BeyonderData.playerMap.setProphecies(player.getUUID(), prophecies);
         }

@@ -66,8 +66,7 @@ public class PlayerEvents {
             if(BeyonderData.isBeyonder(player))
                 BeyonderData.playerMap.addLastPosition(player);
 
-            // Retrieve Internal Underworld souls on logout
-            de.jakob.lotm.abilities.death.InternalUnderworldAbility.retrieveSoulsOnLogout(player);
+            de.jakob.lotm.abilities.death.InternalUnderworldAbility.recallSoulsOnLogout(player);
 
             // Revert sacrifice upgrade if active when logging out
             SacrificeRevertComponent revert = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);

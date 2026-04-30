@@ -69,7 +69,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.abilities.tyrant.LightningStormAbility;
 import net.neoforged.neoforge.event.ServerChatEvent;
 
@@ -239,7 +239,6 @@ public class ModEvents {
         CharacteristicsStackCommand.register(event.getDispatcher());
         TeamCommand.register(event.getDispatcher());
         TeamInviteResponseCommand.register(event.getDispatcher());
-        SetBeyonderLogCommand.register(event.getDispatcher());
         KillCountCommand.register(event.getDispatcher());
         UniquenessCommand.register(event.getDispatcher());
         SefirotCommand.register(event.getDispatcher());
@@ -327,8 +326,11 @@ public class ModEvents {
             dummy.setYRot(player.getYRot());
             dummy.setXRot(player.getXRot());
             serverLevel.addFreshEntity(dummy);
-            LIGHTNING_STORM.onAbilityUse(serverLevel, dummy);
-            dummy.discard();
+            ServerScheduler.scheduleDelayed(0, () -> {
+                LIGHTNING_STORM.onAbilityUse(serverLevel, dummy);
+                dummy.discard();
+            }, serverLevel);
+
         }
     }
 }

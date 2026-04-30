@@ -76,11 +76,26 @@ public class SefirotCommand {
                         })));
     }
 
+    private static LiteralArgumentBuilder<CommandSourceStack> clear() {
+        return Commands.literal("clear")
+                        .then(Commands.argument("sefirot", StringArgumentType.word())
+                                .suggests(SUGGESTIONS)
+                                .executes(context -> {
+                                    CommandSourceStack source = context.getSource();
+                                    var sefirot = StringArgumentType.getString(context, "sefirot");
+
+                                    SefirahHandler.clearAll(sefirot, source.getServer());
+
+                                    return 1;
+                                }));
+    }
+
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("sefirot")
                 .requires(source -> source.hasPermission(2))
                 .then(check())
                 .then(set())
+                .then(clear())
         );
     }
 }

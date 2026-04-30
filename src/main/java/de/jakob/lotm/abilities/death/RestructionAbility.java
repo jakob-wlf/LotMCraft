@@ -5,12 +5,18 @@ import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.subordinates.SubordinateUtils;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.ItemStack;
@@ -32,7 +38,6 @@ public class RestructionAbility extends SelectableAbility {
             "ability.lotmcraft.restruction.release"
     };
 
-    /** Tracks all mobs summoned per player so they can be despawned. */
     private static final HashMap<UUID, List<Mob>> summonedMobs = new HashMap<>();
 
     public RestructionAbility(String id) {
@@ -78,6 +83,13 @@ public class RestructionAbility extends SelectableAbility {
         }
     }
     private void summon(ServerLevel serverLevel, LivingEntity entity) {
+        despawnMobsForPlayer(entity.getUUID(), serverLevel);
+
+        ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SOUL, entity.position(), 750, 6, .5, 6, 0);
+        ParticleUtil.spawnParticles(serverLevel, ParticleTypes.LARGE_SMOKE, entity.position(), 450, 6, .5, 6, 0);
+
+        serverLevel.playSound(null, entity.blockPosition(), SoundEvents.WITHER_SPAWN, SoundSource.BLOCKS, 1, 1);
+
         List<Mob> mobs = summonedMobs.computeIfAbsent(entity.getUUID(), k -> new ArrayList<>());
         int SKELETON_COUNT = Math.round(8* Math.max(multiplier(entity)/4,1));
         int ZOMBIE_COUNT = Math.round(8* Math.max(multiplier(entity)/4,1));
@@ -94,6 +106,14 @@ public class RestructionAbility extends SelectableAbility {
             skeleton.setDropChance(EquipmentSlot.CHEST, 0f);
             skeleton.setDropChance(EquipmentSlot.LEGS, 0f);
             skeleton.setDropChance(EquipmentSlot.FEET, 0f);
+
+            if(skeleton.getAttribute(Attributes.ATTACK_DAMAGE) != null && skeleton.getAttribute(Attributes.MAX_HEALTH) != null) {
+                skeleton.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(skeleton.getAttributeBaseValue(Attributes.ATTACK_DAMAGE) * 3);
+                skeleton.getAttribute(Attributes.MAX_HEALTH).setBaseValue(skeleton.getAttributeBaseValue(Attributes.MAX_HEALTH) * 3);
+            }
+
+            skeleton.setHealth(skeleton.getMaxHealth());
+
             serverLevel.addFreshEntity(skeleton);
             SubordinateUtils.turnEntityIntoSubordinate(skeleton, entity, false);
             mobs.add(skeleton);
@@ -112,24 +132,40 @@ public class RestructionAbility extends SelectableAbility {
             zombie.setDropChance(EquipmentSlot.CHEST, 0f);
             zombie.setDropChance(EquipmentSlot.LEGS, 0f);
             zombie.setDropChance(EquipmentSlot.FEET, 0f);
+
+            if(zombie.getAttribute(Attributes.ATTACK_DAMAGE) != null && zombie.getAttribute(Attributes.MAX_HEALTH) != null) {
+                zombie.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(zombie.getAttributeBaseValue(Attributes.ATTACK_DAMAGE) * 3);
+                zombie.getAttribute(Attributes.MAX_HEALTH).setBaseValue(zombie.getAttributeBaseValue(Attributes.MAX_HEALTH) * 3);
+            }
+            zombie.setHealth(zombie.getMaxHealth());
+
             serverLevel.addFreshEntity(zombie);
             SubordinateUtils.turnEntityIntoSubordinate(zombie, entity, false);
             mobs.add(zombie);
         }
+
+        ServerScheduler.scheduleDelayed(20 * 45, () -> {
+            despawnMobsForPlayer(entity.getUUID(), serverLevel);
+        }, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 
     private void release(LivingEntity entity) {
-        List<Mob> mobs = summonedMobs.remove(entity.getUUID());
-        if (mobs == null || mobs.isEmpty()) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.restruction.none_summoned").withColor(0xFF334f23));
-            return;
+        despawnMobsForPlayer(entity.getUUID(), (ServerLevel) entity.level());
+    }
+
+    private void despawnMobsForPlayer(UUID playerUUID, ServerLevel level) {
+        List<Mob> mobs = summonedMobs.remove(playerUUID);
+        if (mobs != null) {
+            for (Mob mob : mobs) {
+                if (mob.isAlive()) {
+                    ParticleUtil.spawnParticles(level, ParticleTypes.LARGE_SMOKE, mob.position().add(0, mob.getBbHeight() / 2, 0), 40, .4, .9, .4, 0);
+                    ParticleUtil.spawnParticles(level, ParticleTypes.SOUL_FIRE_FLAME, mob.position().add(0, mob.getBbHeight() / 2, 0), 40, .4, .9, .4, 0);
+                    mob.discard();
+                }
+            }
         }
 
-        for (Mob mob : mobs) {
-            if (mob.isAlive()) mob.discard();
-        }
-
-        AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.restruction.released").withColor(0xFF334f23));
+        summonedMobs.remove(playerUUID);
     }
 
     private Vec3 findSpawnPos(LivingEntity entity, ServerLevel level) {

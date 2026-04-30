@@ -8,6 +8,7 @@ import de.jakob.lotm.util.data.ServerLocation;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -42,6 +43,14 @@ public class SefirahHandler {
 
     public static boolean hasSefirot(ServerPlayer player) {
         return !SefirotData.get(player.server).getClaimedSefirot(player.getUUID()).isEmpty();
+    }
+
+    public static String getSefirot(ServerPlayer player){
+        return SefirotData.get(player.server).getClaimedSefirot(player.getUUID());
+    }
+
+    public static void clearAll(String sefirot, MinecraftServer server){
+        SefirotData.get(server).unclaimAllByString(sefirot);
     }
 
     public static void unclaimSefirot(ServerPlayer player){

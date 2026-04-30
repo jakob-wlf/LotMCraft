@@ -23,7 +23,7 @@ public class InstantTrigger extends TriggerBase {
 
     @Override
     public int getRequiredSeq() {
-        return 4;
+        return 5;
     }
 
     @Override

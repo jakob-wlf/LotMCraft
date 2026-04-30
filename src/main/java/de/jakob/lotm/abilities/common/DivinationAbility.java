@@ -56,7 +56,7 @@ public class DivinationAbility extends SelectableAbility {
         ));
 
         for(String pathway : BeyonderData.pathways) {
-            if (!reqs.containsKey(pathway))
+            if (!reqs.containsKey(pathway) && !pathway.equalsIgnoreCase("death"))
                 reqs.put(pathway, 4);
         }
         return reqs;

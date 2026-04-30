@@ -1253,10 +1253,6 @@ public class AbilityUtil {
         return entity.getData(ModAttachments.SKILL_SCALING_COMPONENT.get()).getScaleToSkill();
     }
 
-    public static String getArtifactScalingPath(LivingEntity entity){
-        return entity.getData(ModAttachments.SKILL_SCALING_COMPONENT.get()).getPath();
-    }
-
     public static int getArtifactScalingSeq(LivingEntity entity){
         return entity.getData(ModAttachments.SKILL_SCALING_COMPONENT.get()).getSeq();
     }

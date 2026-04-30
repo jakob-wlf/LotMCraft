@@ -79,6 +79,22 @@ Two selectable modes:
 
 ---
 
+### Concealed Domain
+**Sequence Requirement:** 2  
+**Spirituality Cost:** 5,500  
+**Cooldown:** 2 seconds  
+*(Cannot be copied or used by NPCs)*
+
+Summon a spherical concealed domain with a **30-block radius** centered on the caster's position. The domain hollows out a sphere of blocks, replacing them with concrete walls (1 block thick shell). Only the owner and their allies are allowed inside — non-allowed entities are physically blocked by the shell.
+
+- **Night Vision:** Granted to all allowed entities inside every 3 ticks.
+- **Top exit point:** Any entity near the top of the sphere (~27 blocks above center) is ejected outward.
+- **Owner limit:** Discards if the owner moves more than **50 blocks** from the domain center, leaves the dimension, or dies.
+- **Toggle:** Re-casting while within 60 blocks of an active domain removes it and restores all displaced blocks.
+- **Interaction:** Destroyed by a `destruction` interaction from a stronger Beyonder.
+
+---
+
 ### Surge of Darkness
 **Sequence Requirement:** 3  
 **Spirituality Cost:** 3000

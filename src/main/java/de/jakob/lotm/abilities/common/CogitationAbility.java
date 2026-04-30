@@ -49,7 +49,7 @@ public class CogitationAbility extends ToggleAbility {
 
         // Only perform server-side operations on the server
         if (!level.isClientSide) {
-            BeyonderData.incrementSpirituality(player, BeyonderData.getMaxSpirituality(BeyonderData.getPathway(player), BeyonderData.getSequence(player)) / 335);
+            BeyonderData.incrementSpirituality(player, BeyonderData.getMaxSpirituality(BeyonderData.getPathway(player), BeyonderData.getSequence(player)) / 310);
 
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 2, 3, false, false, false));
             entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 5, 1, false, false, false));

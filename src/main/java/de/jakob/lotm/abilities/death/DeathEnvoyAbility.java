@@ -24,9 +24,9 @@ import java.util.Map;
 
 public class DeathEnvoyAbility extends Ability {
 
-    private static final int RADIUS = 10;
-    private static final int DURATION = 20 * 20; // 20 seconds
-    private static final int SPIRIT_CALLED_DURATION = 20 * 10; // 10 seconds
+    private static final int RADIUS = 5;
+    private static final int DURATION = 20 * 20;
+    private static final int SPIRIT_CALLED_DURATION = 20 * 10;
 
     private static final DustParticleOptions SOUL_DUST =
             new DustParticleOptions(new Vector3f(0.15f, 0.85f, 0.75f), 1.8f);
@@ -34,7 +34,7 @@ public class DeathEnvoyAbility extends Ability {
             new DustParticleOptions(new Vector3f(0.05f, 0.0f, 0.2f), 1.4f);
 
     public DeathEnvoyAbility(String id) {
-        super(id, 90f);
+        super(id, 10);
         canBeCopied = false;
         cannotBeStolen = true;
         canBeUsedInArtifact = false;
@@ -60,22 +60,19 @@ public class DeathEnvoyAbility extends Ability {
 
         Vec3 center = entity.position().add(0, 0.5, 0);
 
-        // --- Audible cry: ghostly wither + soul sounds ---
         level.playSound(null, entity.blockPosition(),
                 SoundEvents.WITHER_AMBIENT, SoundSource.PLAYERS, 3.0f, 0.5f);
         level.playSound(null, entity.blockPosition(),
                 SoundEvents.SOUL_ESCAPE.value(), SoundSource.PLAYERS, 2.5f, 0.7f);
 
-        // --- Visual: expanding ring burst then floating particles ---
         ParticleUtil.spawnCircleParticles(serverLevel, SOUL_DUST,
-                center, RADIUS, 80);
-        ParticleUtil.spawnCircleParticles(serverLevel, DARK_DUST,
-                center, RADIUS * 0.6, 50);
-        ParticleUtil.spawnSphereParticles(serverLevel, ParticleTypes.SOUL,
                 center, RADIUS, 120);
+        ParticleUtil.spawnCircleParticles(serverLevel, DARK_DUST,
+                center, RADIUS * 0.6, 100);
+        ParticleUtil.spawnSphereParticles(serverLevel, ParticleTypes.SOUL,
+                center, RADIUS, 1000);
 
-        // Inner soul fire burst at the caster
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 60; i++) {
             double ox = (random.nextDouble() - 0.5) * 2;
             double oy = random.nextDouble() * 2;
             double oz = (random.nextDouble() - 0.5) * 2;
@@ -86,23 +83,17 @@ public class DeathEnvoyAbility extends Ability {
 
         int casterSeq = BeyonderData.getSequence(entity);
 
-        // --- Apply effects to all nearby entities ---
         for (LivingEntity target : AbilityUtil.getNearbyEntities(entity, serverLevel, center, RADIUS)) {
             int targetSeq = BeyonderData.getSequence(target);
-            // Skip targets that are 2+ sequences stronger (lower sequence number)
             if (targetSeq - casterSeq <= -2) continue;
 
-            // Weakness II
             target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS,
-                    DURATION, 1, false, true, true));
-            // Slowness III
+                    DURATION, 1, false, false, false));
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,
-                    DURATION, 2, false, true, true));
-            // Freeze ticks (visual freezing)
+                    DURATION, 2, false, false, false));
             target.setTicksFrozen(target.getTicksRequiredToFreeze() + DURATION);
-            // Spirit Called
             target.addEffect(new MobEffectInstance(ModEffects.SPIRIT_CALLED,
-                    SPIRIT_CALLED_DURATION, 0, false, true, true));
+                    SPIRIT_CALLED_DURATION, 2, false, false, false));
         }
     }
 }

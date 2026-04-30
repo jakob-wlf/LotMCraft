@@ -36,7 +36,7 @@ public class EyeOfDeathOverlayRenderer {
 
         if (!entitiesLookedAt.containsKey(mc.player.getUUID())) return;
 
-        ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/spirit_vision_overlay.png");
+        ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/eye_of_death_overlay.png");
         guiGraphics.pose().pushPose();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -57,7 +57,7 @@ public class EyeOfDeathOverlayRenderer {
 
         // Entity name
         String name = entity.getName().getString();
-        guiGraphics.drawCenteredString(mc.font, name, x + width / 2, y + 5, 0xFF99FF99);
+        guiGraphics.drawCenteredString(mc.font, name, x + width / 2, y + 5, 0xFF6897cc);
 
         // Health bar
         int barWidth = (int) (width / 1.3);
@@ -71,7 +71,7 @@ public class EyeOfDeathOverlayRenderer {
         int filledBarWidth = (int) (barWidth * fillPercentage);
 
         if (filledBarWidth > 0)
-            drawHorizontalGradient(guiGraphics, barX, barY, filledBarWidth, barHeight, 0xFF22AA22, 0xFF66FF44);
+            drawHorizontalGradient(guiGraphics, barX, barY, filledBarWidth, barHeight, 0xFF6897cc, 0xFF95bfed);
 
         // Health text
         guiGraphics.drawString(mc.font, (int) entity.getHealth() + " / " + (int) entity.getMaxHealth() + " ❤", barX + 3, barY + 1 + (barHeight - mc.font.lineHeight) / 2, 0xFFFFFFFF);
