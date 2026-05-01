@@ -6,6 +6,7 @@ import de.jakob.lotm.abilities.justiciar.ImprisonAbility;
 import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -79,7 +80,7 @@ public class PaperFigurineSubstituteAbility extends Ability {
         }
 
         LivingEntity entity = event.getEntity();
-        if (entity.level() instanceof ServerLevel sl && ProhibitionHandler.isInStandInsZone(entity.position(), sl)) return;
+        if (entity.level() instanceof ServerLevel sl && ProhibitionHandler.isInStandInsZone(entity.position(), sl, BeyonderData.getSequence(entity))) return;
 
         int num = figurineNumbers.get(event.getEntity().getUUID());
 

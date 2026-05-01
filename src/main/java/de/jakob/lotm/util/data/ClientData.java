@@ -64,4 +64,15 @@ public class ClientData {
         copiedAbilityCopyTypes = copyTypes;
         copiedAbilityRemainingUses = remainingUses;
     }
+
+    public static void clearCache() {
+        abilityWheelAbilities.clear();
+        selectedAbility = 0;
+        sharedAbilityMode = false;
+        sharedWheelAbilities.clear();
+        selectedSharedAbility = 0;
+        copiedAbilityIds.clear();
+        copiedAbilityCopyTypes.clear();
+        copiedAbilityRemainingUses.clear();
+    }
 }

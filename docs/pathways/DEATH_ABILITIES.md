@@ -63,7 +63,7 @@ Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passivel
 **Cooldown:** 3 minutes  
 *(Cannot be copied, replicated, or stolen)*
 
-- **Radius:** `15 × max(multiplier/4, 1)` blocks (scales with multiplier)
+- **Radius:** `35 × max(multiplier/4, 1)` blocks (scales with multiplier)
 - **Duration:** 1 minute 40 seconds (2,000 ticks)
 - **Effect Interval:** Every tick; damage every 20 ticks (once per second)
 
@@ -72,7 +72,9 @@ Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passivel
 
 **Persistent Debuffs** (applied to all non-allied entities in range, refreshed each tick):
 - **Wither II** (2-tick duration, refreshed)
-- **Slowness I** (2-tick duration, refreshed)
+- **Slowness III** (2-tick duration, refreshed)
+- **Weakness II** (2-tick duration, refreshed)
+- **Darkness** (3-tick duration, refreshed — players only)
 - **Regeneration suppressed** — targets cannot regenerate health while inside the domain.
 
 **Per-Second Damage** (sequence-scaled, does not affect allies):
@@ -90,31 +92,52 @@ Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passivel
 | Target 1 seq stronger | 2.5% max HP |
 | Target 2+ seq stronger | No damage  |
 
+**Death Skeleton** (triggered on kill within the domain):
+- When any non-allied, non-subordinate entity dies inside the domain, an iron-armoured skeleton subordinate spawns at the death location.
+- The skeleton has **6× base attack damage** and **6× base max HP**.
+- Particle and sound burst plays at the death position.
+
+---
+
+### Death Flame
+**Sequence Requirement:** 2  
+**Spirituality Cost:** 10,000  
+
+- **Duration:** 7 seconds (140 ticks)
+- **Cone Length:** 16 blocks
+- **Cone Max Radius:** 5 blocks (widens linearly from origin)
+
+Each tick for the duration:
+- Fires a cone of white flame particles from the caster's eye in their look direction.
+- Deals damage every tick to all entities within the cone: `DamageLookup.lookupDps(2, 0.8, 1, 30) × multiplier`.
+- Sets targets on fire (adds 30 fire ticks per hit).
+- Invulnerability frames are reset each tick so damage lands every tick.
+- If griefing is enabled, randomly places fire on blocks within the cone.
+
+**Visual:**
+- White flame particles ring-spread along the cone, with central fill particles and dense particles near the origin.
+
 ---
 
 ### Pale Eye
 **Sequence Requirement:** 3  
-**Spirituality Cost:** 2,500 (50% of Sequence 3 max)  
-**Cooldown:** 2 minutes  
-*(Cannot be copied)*
+**Spirituality Cost:** 400/activation  
+*(Toggle — cannot be copied, not usable in artifacts)*
 
-- **Targeting Range:** 30 blocks (line-of-sight)
+- **Targeting Range:** 25 blocks (line-of-sight)
 
-**Effects (applied regardless of outcome):**
-- **Wither II** for 1 minute on the target.
-- **Regeneration suppressed** for 10 seconds.
+While active, each tick:
+- Particles spawn around the caster's eye.
+- Looks for a target within 25 blocks.
+- If a target is found:
 
-**Damage:**
-- Target is **2+ sequences weaker**: instant kill.
-- Target is **1 sequence weaker**: deals **0%** of target's max HP (no damage).
-- Target is **same sequence**: deals **40%** of target's max HP.
-- Target is **stronger** (lower sequence number): deals **40% + (40% × sequence difference)** of target's max HP.
-  - 1 sequence stronger → 80%
-  - 2+ sequences stronger → capped / instant kill threshold
+**Instant Kill:**
+- Target is **2+ sequences weaker** (casterSeq + 1 < targetSeq): instant kill with a large particle burst.
 
-**Visual:**
-- A layered beam of black/void dust particles and soul particles fired from the caster's eye to the target, persisting for 10 ticks.
-- Soul fire burst at the target's center on each beam tick.
+**Otherwise (target is same or stronger sequence):**
+- **Blindness II** for 3 seconds.
+- **Slowness III** for 3 seconds.
+- Deals damage per tick using `DamageLookup.lookupDps(3, 0.9, 5, 35) × multiplier`.
 
 ---
 
@@ -217,18 +240,26 @@ Two selectable modes:
 ### Door to the Underworld
 **Sequence Requirement:** 5  
 **Spirituality Cost:** 600  
-**Cooldown:** 10 second
+**Cooldown:** 10 seconds
 
-Two selectable modes:
+Three selectable modes:
 
-**Open Portal**
-- Spawns a visual portal 4 blocks in front of the caster at eye-level.
-- Every 4 seconds for 1 minute, summons a random undead mob (Zombie, Skeleton, Stray, Husk, Drowned, or Wither Skeleton) from the portal as a subordinate.
-- All summoned mobs are tracked and can be despawned with the Release mode.
-- **Portal radius:** 3.5 blocks
+**Spirits**
+- Spawns a visual portal near the caster's look target.
+- Every 4 ticks for 20 seconds (400 ticks), spawns one undead mob and one spirit mob from the portal as subordinates.
+  - **Undead:** Zombie, Skeleton, Husk, Drowned, Stray, or Wither Skeleton (random).
+  - **Spirits:** Spirit Ghost, Spirit Dervish, Spirit Bubbles, Blue Wizard, or Translucent Wizard (random).
+- Summoned mobs despawn after 60 seconds.
+- Re-using the mode while a portal is open closes it instead.
+
+**Tentacles**
+- Spawns a portal near the caster's look target that deals AoE damage every 10 ticks for 20 seconds.
+- **Damage radius:** 6.5 blocks from the portal's front face.
+- **Damage per hit:** `DamageLookup.lookupDamage(5, 0.85) × multiplier`
+- Re-using the mode while a portal is open closes it instead.
 
 **Release**
-- Despawns all currently summoned mobs linked to the caster.
+- Despawns the active portal and all summoned mobs linked to the caster.
 - Bypasses cooldown and spirituality cost.
 
 ---
@@ -257,7 +288,7 @@ Applies the following to all nearby non-allied entities on use. Entities **2+ se
 
 - **Targeting Range:** 25 blocks
 
-Applies the **Spirit Called** custom effect (Level 0) to the target for 10 seconds. Has no effect on targets **2+ sequences stronger** than the caster.
+Applies the **Spirit Called** custom effect (Level 0) to the target for 10 seconds. Has no effect on targets **1+ sequences stronger** than the caster.
 
 > **Spirit Called** is a harmful custom effect. While active, every tick:
 > - The target's movement is zeroed (full stun).

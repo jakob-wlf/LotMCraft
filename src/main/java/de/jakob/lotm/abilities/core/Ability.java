@@ -196,31 +196,12 @@ public abstract class Ability {
             return getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence);
         }
 
-        // Check current pathway
-        if(getRequirements().containsKey(pathway) && getRequirements().get(pathway) >= sequence) {
-            int reqSeq = getRequirements().get(pathway);
-            // Switched pathway players only access seq 9-5 abilities once they have a char stack at seq 4 or stronger
-            if (BeyonderData.hasSwitchedPathway(entity) && reqSeq > 4) {
-                int[] stacks = BeyonderData.getCharStacks(entity);
-                boolean hasStack = false;
-                for (int i = 1; i <= 4; i++) { if (stacks[i] > 0) { hasStack = true; break; } }
-                if (!hasStack) return false;
-            }
-            return true;
-        }
-
-        // Check historical pathways from domain switches — abilities from the previous pathway are
-        // accessible only down to the switch point (e.g. switched at seq 4, so only fool seq 5–9 carry over)
-        if(!entity.level().isClientSide()) {
-            String[] pathwayHistory = BeyonderData.getPathwayHistory(entity);
-            if(pathwayHistory.length < 10) return false;
-            for (int seq = sequence + 1; seq <= 9; seq++) {
-                String historicalPathway = pathwayHistory[seq];
-                if (historicalPathway != null
-                        && getRequirements().containsKey(historicalPathway)
-                        && getRequirements().get(historicalPathway) >= seq) {
-                    return true;
-                }
+        // Check pathway
+        for(int i = sequence; i < BeyonderData.getPathwayHistory(entity).length; i++) {
+            if(BeyonderData.getPathwayHistory(entity)[i] == null) continue;
+            String userPath = BeyonderData.getPathwayHistory(entity)[i];
+            if(getRequirements().containsKey(userPath) && getRequirements().get(userPath) == i) {
+                return true;
             }
         }
 
@@ -282,10 +263,10 @@ public abstract class Ability {
             return 0f;
         }
 
-        float cooldownMultiplier = Math.clamp(((float) cooldown) / (20 * 7), .1f, 2.25f);
+        float cooldownMultiplier = Math.clamp(((float) cooldown) / (20 * 7), .2f, 2.25f);
 
-        float rawDigestion = (1f / (100f * Math.max(.5f, ((10 - requiredSequence) * .5f)))) * cooldownMultiplier;
-        float digestion = rawDigestion * (entity.level().getGameRules().getInt(ModGameRules.DIGESTION_RATE) / 100f);
+        float rawDigestion = (1f / (80f * Math.max(.5f, ((10 - requiredSequence) * .5f)))) * cooldownMultiplier;
+        float digestion = rawDigestion * (entity.level().getGameRules().getInt(ModGameRules.DIGESTION_RATE) / 10f);
 
         return digestion;
     }

@@ -13,6 +13,7 @@ import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDo
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.ResetClientEffectsPacket;
 import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
@@ -81,6 +82,8 @@ public class PlayerEvents {
                 }
                 revert.clear();
             }
+
+            PacketHandler.sendToPlayer(player, new ResetClientEffectsPacket());
         }
     }
 

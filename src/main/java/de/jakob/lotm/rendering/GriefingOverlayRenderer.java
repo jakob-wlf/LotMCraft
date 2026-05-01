@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -35,7 +36,7 @@ public class GriefingOverlayRenderer {
         int x = screenWidth - 16 - 4;
         int y = 4;
 
-        if (BeyonderData.isGriefingEnabled(mc.player) && !mc.options.hideGui) {
+        if (BeyonderData.isGriefingEnabled(mc.player) && !mc.options.hideGui && ClientBeyonderCache.isBeyonder(mc.player.getUUID())) {
             PoseStack poseStack = guiGraphics.pose();
             poseStack.pushPose();
             poseStack.scale(ratio, ratio, 1.0f);

@@ -123,6 +123,8 @@
   "ability.lotmcraft.word_of_spirit.applied": "Spirit Called!",
   "ability.lotmcraft.word_of_spirit.too_strong": "Target is too powerful to be Spirit Called",
   "effect.lotmcraft.spirit_called": "Spirit Called",
+  "lotmcraft.death_flame_ability": "Death Flame",
+  "lotmcraft.spirit_world_traversal_ability": "Spirit World Traversal",
   "lotmcraft.spirit_communication_ability": "Spirit Communication",
   "ability.lotmcraft.spirit_communication.spectral_bind": "Spectral Bind",
   "ability.lotmcraft.spirit_channeling.get_spirit": "Get Spirit",
