@@ -188,7 +188,7 @@ public class LawAbility extends SelectableAbility {
 
     @SubscribeEvent
     public static void onAbilityUsed(AbilityUsedEvent event) {
-        if (event.getAbility() == null) return;
+        if (event.getAbility() == null || event.getEntity() == null) return;
         LAST_USED_ABILITY.put(event.getEntity().getUUID(), event.getAbility().getId());
     }
 }

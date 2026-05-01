@@ -32,14 +32,12 @@ import java.util.*;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class DisorderAbility extends SelectableAbility {
 
-    // NBT keys — public so DistortionAbility.breakBonds can clear them
     public static final String DISORDERED_ACTION_KEY      = "lotm_disordered_action";
     public static final String DISORDERED_PERCEPTION_KEY  = "lotm_disordered_perception";
     public static final String DISORDERED_PERCEPTION_CHARGES_KEY = "lotm_disordered_perception_charges";
     public static final String DISTANCE_WARP_KEY          = "lotm_distance_warp";
 
 
-    // Casters currently protected by the Defensive Veil
     private static final Set<UUID> DEFENSIVE_VEIL = new HashSet<>();
 
     private static final ResourceLocation DISTANCE_WARP_SPEED_ID =
@@ -50,8 +48,6 @@ public class DisorderAbility extends SelectableAbility {
 
     public DisorderAbility(String id) {
         super(id, 7.0f);
-        canBeCopied      = false;
-        canBeReplicated  = false;
     }
 
     @Override
@@ -302,13 +298,12 @@ public class DisorderAbility extends SelectableAbility {
         return false;
     }
 
-    // -------------------------------------------------------------------------
-    // Event hooks
-    // -------------------------------------------------------------------------
-
+    
     @SubscribeEvent
     public static void onAbilityUsed(AbilityUsedEvent event) {
         LivingEntity entity = event.getEntity();
+        if (entity == null) return;
+
         if (!entity.getPersistentData().getBoolean(DISORDERED_PERCEPTION_KEY)) return;
         if (!(entity.level() instanceof ServerLevel serverLevel)) return;
 
