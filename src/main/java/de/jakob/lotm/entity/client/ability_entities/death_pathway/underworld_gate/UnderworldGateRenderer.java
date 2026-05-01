@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 public class UnderworldGateRenderer extends EntityRenderer<UnderworldGateEntity> {
 
     private final UnderworldGateModel<UnderworldGateEntity> model;
-    private static final float SCALE_FACTOR = 2.5f;
+    private static final float SCALE_FACTOR = 3.5f;
 
     public UnderworldGateRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -64,7 +64,7 @@ public class UnderworldGateRenderer extends EntityRenderer<UnderworldGateEntity>
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull UnderworldGateEntity entity) {
-        if(entity.hasTentacles() && entity.tickCount >= 35)
+        if(entity.hasTentacles() && entity.tickCount >= 21)
             return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/underworld_gate/underworld_gate.png");
         return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/underworld_gate/underworld_gate_no_tentacles.png");
     }

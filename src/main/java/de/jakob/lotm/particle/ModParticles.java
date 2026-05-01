@@ -17,6 +17,7 @@ public class ModParticles {
     public static final Supplier<SimpleParticleType> DARKER_FLAME = PARTICLE_TYPES.register("darker_flame_particles", () -> new SimpleParticleType(true));
     public static final Supplier<SimpleParticleType> GREEN_FLAME = PARTICLE_TYPES.register("green_flame_particles", () -> new SimpleParticleType(true));
     public static final Supplier<SimpleParticleType> BLACK_FLAME = PARTICLE_TYPES.register("black_flame_particles", () -> new SimpleParticleType(true));
+    public static final Supplier<SimpleParticleType> WHITE_FLAME = PARTICLE_TYPES.register("white_flame_particles", () -> new SimpleParticleType(true));
     public static final Supplier<SimpleParticleType> TOXIC_SMOKE = PARTICLE_TYPES.register("toxic_smoke_particles", () -> new SimpleParticleType(true));
     public static final Supplier<SimpleParticleType> HEALING = PARTICLE_TYPES.register("healing_particles", () -> new SimpleParticleType(true));
     public static final Supplier<SimpleParticleType> CRIMSON_LEAF = PARTICLE_TYPES.register("crimson_leaf_particles", () -> new SimpleParticleType(true));

@@ -11,7 +11,7 @@ import net.minecraft.client.animation.KeyframeAnimations;
  * @author Author
  */
 public class UnderworldGateAnimations {
-	public static final AnimationDefinition open = AnimationDefinition.Builder.withLength(1.75F)
+	public static final AnimationDefinition open = AnimationDefinition.Builder.withLength(1.15F)
 		.addAnimation("door_left", new AnimationChannel(AnimationChannel.Targets.ROTATION,
 			new Keyframe(0.0F, KeyframeAnimations.degreeVec(0.0F, -135.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
 			new Keyframe(1.75F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM)

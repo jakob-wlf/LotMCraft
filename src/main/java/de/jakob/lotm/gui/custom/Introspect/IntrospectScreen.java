@@ -763,16 +763,17 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 for (String line : wrappedLines) {
                     tooltipLines.add(Component.literal(line).withStyle(ChatFormatting.DARK_GRAY));
                 }
+                tooltipLines.add(Component.literal(""));
             }
 
             int cooldown = hoveredAbility.getCooldown();
             if (cooldown > 0) {
-                tooltipLines.add(Component.literal("Cooldown: ").withStyle(ChatFormatting.GRAY).append(Component.literal(cooldown / 20 + "s").withStyle(ChatFormatting.BLUE)));
+                tooltipLines.add(Component.literal("Cooldown: ").withStyle(ChatFormatting.DARK_GRAY).append(Component.literal(cooldown / 20 + "s").withStyle(ChatFormatting.BLUE)));
             }
 
             float spiritualityCost = hoveredAbility.spiritualityCost();
             if (spiritualityCost > 0) {
-                tooltipLines.add(Component.literal("Spirituality Cost: ").withStyle(ChatFormatting.GRAY).append(Component.literal(spiritualityCost + "").withStyle(ChatFormatting.DARK_PURPLE)));
+                tooltipLines.add(Component.literal("Spirituality Cost: ").withStyle(ChatFormatting.DARK_GRAY).append(Component.literal(spiritualityCost + "").withStyle(ChatFormatting.DARK_PURPLE)));
             }
 
             guiGraphics.renderTooltip(this.font, tooltipLines, java.util.Optional.empty(), mouseX, mouseY);

@@ -37,7 +37,7 @@ public class UnderworldGateEntity extends Entity {
                 openAnimationState.start(0);
             }
 
-            if(this.tickCount >= 2 * 20) {
+            if(this.tickCount >= 22) {
                 tentacleAnimationState.startIfStopped(0);
             }
             return;

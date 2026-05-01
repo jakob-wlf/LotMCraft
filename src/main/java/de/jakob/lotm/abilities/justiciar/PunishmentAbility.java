@@ -187,6 +187,7 @@ public class PunishmentAbility extends Ability {
         ServerLevel serverLevel = event.getLevel();
 
         LivingEntity user = event.getEntity();
+        if (user == null) return;
         UUID userUUID = user.getUUID();
         UUID casterUUID = TARGET_TO_CASTER.get(userUUID);
         if (casterUUID == null) return;

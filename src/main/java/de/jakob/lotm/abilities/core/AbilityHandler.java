@@ -17,7 +17,6 @@ import de.jakob.lotm.abilities.visionary.*;
 import de.jakob.lotm.abilities.wheel_of_fortune.*;
 import de.jakob.lotm.abilities.black_emperor.*;
 
-import java.awt.image.DataBufferByte;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -308,21 +307,24 @@ public class AbilityHandler {
         abilities.add(new CommandingOrdersAbility("commanding_orders_ability"));
 
         // DEATH PATHWAY
-        abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
-        abilities.add(new NationOfTheDeadAbility("nation_of_the_dead_ability"));
-        abilities.add(new PaleEyeAbility("pale_eye_ability"));
-        abilities.add(new HandOfDeathAbility("hand_of_death_ability"));
         abilities.add(new EyeOfDeathAbility("eye_of_death_ability"));
-        abilities.add(new SpiritChannelingAbility("spirit_channeling_ability"));
         abilities.add(new SpiritCommunicationAbility("spirit_communication_ability"));
         abilities.add(new ZombieDisguiseAbility("zombie_disguise_ability"));
+        abilities.add(new SpiritChannelingAbility("spirit_channeling_ability"));
         abilities.add(new RestructionAbility("restruction_ability"));
-        abilities.add(new WordOfSpiritAbility("word_of_spirit_ability"));
         abilities.add(new DoorToTheUnderworldAbility("door_to_the_underworld_ability"));
-        abilities.add(new DeathEnvoyAbility("death_envoy_ability"));
         abilities.add(new InternalUnderworldAbility("internal_underworld_ability"));
+        abilities.add(new DeathEnvoyAbility("death_envoy_ability"));
         abilities.add(new UndyingSealAbility("undying_seal_ability"));
+        abilities.add(new SpiritWorldTraversalAbility("spirit_world_traversal_ability"));
         abilities.add(new DeathSpellsAbility("death_spells_ability"));
+        abilities.add(new PaleEyeAbility("pale_eye_ability"));
+        abilities.add(new HandOfDeathAbility("hand_of_death_ability"));
+
+        abilities.add(new DeathFlameAbility("death_flame_ability"));
+        abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
+        abilities.add(new NationOfTheDeadAbility("nation_of_the_dead_ability"));
+        abilities.add(new WordOfSpiritAbility("word_of_spirit_ability"));
     }
 
     public HashSet<Ability> getAbilities() {

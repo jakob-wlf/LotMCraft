@@ -105,7 +105,8 @@ public class EffectManager {
         DISCERNMENT(34),
         PROHIBITION(35),
         IMPRISON(36),
-        ANCIENT_COURT(37);
+        ANCIENT_COURT(37),
+        NATION_OF_THE_DEAD(38);
 
         private final int index;
 

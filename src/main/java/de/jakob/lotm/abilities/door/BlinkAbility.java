@@ -25,7 +25,6 @@ public class BlinkAbility extends Ability {
         super(id, .1f, "blink_escape", "escape");
         interactionRadius = 3;
         interactionCacheTicks = 40;
-        this.doesNotIncreaseDigestion=true;
     }
 
     @Override
@@ -35,7 +34,7 @@ public class BlinkAbility extends Ability {
 
     @Override
     public float getSpiritualityCost() {
-        return 400;
+        return 250;
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(

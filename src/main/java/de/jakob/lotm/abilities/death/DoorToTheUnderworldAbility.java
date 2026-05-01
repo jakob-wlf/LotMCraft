@@ -116,7 +116,7 @@ public class DoorToTheUnderworldAbility extends SelectableAbility {
         Vec3 portalCenter = AbilityUtil.getTargetLocation(caster, 6, 1);
         LivingEntity portalLookAtEntity = AbilityUtil.getTargetEntity(caster, 8, 2);
         if(portalLookAtEntity != null) {
-            portalCenter = VectorUtil.getRelativePosition(portalCenter,VectorUtil.getPerpendicularVector(caster.getLookAngle()), -2, 0, 0);
+            portalCenter = VectorUtil.getRelativePosition(portalCenter,VectorUtil.getPerpendicularVector(caster.getLookAngle()), -4, 0, 0);
         } else {
             portalLookAtEntity = caster;
         }
@@ -131,10 +131,10 @@ public class DoorToTheUnderworldAbility extends SelectableAbility {
         openPortal.put(caster.getUUID(), entity);
 
         Vec3 finalPortalCenter = portalCenter;
-        ServerScheduler.scheduleForDuration(20, 10, DURATION_TICKS, () -> {
+        ServerScheduler.scheduleForDuration(10, 10, DURATION_TICKS, () -> {
             AbilityUtil.damageNearbyEntities(serverLevel,
                     caster,
-                    4.5,
+                    6.5,
                     DamageLookup.lookupDamage(5, .85) * multiplier(caster),
                     finalPortalCenter.add(entity.getLookAngle().normalize().scale(2)),
                     true,

@@ -336,6 +336,7 @@ public class LOTMCraft
             event.registerSpriteSet(ModParticles.FOG_OF_WAR.get(), FogOfWarParticle.Provider::new);
             event.registerSpriteSet(ModParticles.PURPLE_FLAME.get(), PurpleFlameParticle.Provider::new);
             event.registerSpriteSet(ModParticles.BLACK.get(), BlackParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.WHITE_FLAME.get(), WhiteFlameParticle.Provider::new);
         }
 
         @SubscribeEvent

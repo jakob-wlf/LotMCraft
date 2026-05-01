@@ -23,6 +23,16 @@ Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passivel
 
 ---
 
+### Plant Nurturing
+**Sequence Requirement:** 9
+**Spirituality Cost:** 10
+**Cooldown:** 2 seconds
+
+- Applies bonemeal twice to all growable blocks (crops, saplings, sugar cane) within a **4.5-block radius circle** at three vertical levels (below, at, and above the caster's feet) — effectively a thick disk of ~4.5 blocks radius.
+- NPCs only use this when they have no combat target.
+
+---
+
 ### World Creation
 **Sequence Requirement:** 1
 **Spirituality Cost:** 1000
@@ -64,6 +74,44 @@ Three selectable modes:
 
 ---
 
+### Area Desolation
+**Sequence Requirement:** 2 (for entity placement)
+**Spirituality Cost:** 1400
+**Cooldown:** 5 seconds
+*(Cannot be copied; requires griefing enabled)*
+
+- Spawns a persistent **Desolate Area entity** at the caster's position.
+- Casting again within 30 blocks removes the existing entity.
+- The entity continuously corrupts a **200×200 area** (80 blocks per tick), converting:
+  - Grass/Dirt/Podzol/Mud → Soul Sand / Soul Soil / Basalt (noise-based patches)
+  - Flowers → Wither Roses
+  - Logs → Polished Basalt
+  - Leaves → Mangrove Roots
+  - Crops/Saplings/Farmland → Soul Sand (crops destroyed without drops)
+  - Vines → Removed
+  - Bush blocks → Dead Bush (70%) or removed (30%)
+  - Stone/Cobblestone/Sand/etc. → Basalt or Blackstone
+- Every **1 second**: applies **Slowness, Weakness, Mining Fatigue, Hunger, and Wither** (0–3 amplifier based on distance from center) to all entities in a **100-block radius** (except Mother Beyonders Seq 2 or stronger).
+- Every **2 seconds**: deals **~41 flat damage** (no multiplier, `lookupDamage(2, .5)`) to all entities in range.
+
+---
+
+### Blooming Area
+**Sequence Requirement:** 2 (for entity placement)
+**Spirituality Cost:** 1400
+**Cooldown:** 5 seconds
+*(Cannot be copied; cannot be used by NPCs; requires griefing enabled)*
+
+- Spawns a persistent **Blooming Area entity** at the caster's position.
+- Casting again within 30 blocks removes the existing entity.
+- The entity continuously nurtures a **200×200 area**:
+  - Applies bonemeal to 15–30 random growable blocks per second (crops, saplings, grass, sugar cane).
+  - Spawns 3–7 flowers or mushrooms every 0.5 seconds in designated patches (15–25 random patches, 5–10 block radius each).
+  - Instantly grows all crops and saplings in the area every second.
+- Every 10 seconds: applies **Saturation XXI, Regeneration XXI, and Hero of the Village VI** to all entities within the 200-block radius.
+
+---
+
 ### Maternal Embrace
 **Sequence Requirement:** 3
 **Spirituality Cost:** 1600
@@ -99,6 +147,18 @@ Two selectable modes:
 - Drains life from all enemies within **55 blocks** every **2 ticks** for **2.5 seconds** (~12 hits).
 - Deals **~1.57 × multiplier damage per hit** per target.
 - Also corrupts blocks in the area (55×10 ellipsoid) to Soul Soil over 3 seconds (requires griefing).
+
+---
+
+### Life Aura
+**Sequence Requirement:** 4 (requires `blooming` state)
+**Spirituality Cost:** 3/tick (toggle)
+*(Cannot be copied or used by NPCs)*
+
+- Toggle ability. While active:
+  - Every tick: applies bonemeal to all growable blocks in a **30×7 ellipsoid** around the caster (excluding short grass; skips fully-grown cocoa).
+  - Every tick: puts all animals within **35 blocks** into "love mode" (breeds them).
+  - Every tick: applies **Regeneration IV** for 2 seconds to all entities within 35 blocks.
 
 ---
 
@@ -252,44 +312,6 @@ Two selectable modes. Non-player casters always use Mode 0.
 
 ---
 
-### Area Desolation
-**Sequence Requirement:** 2 (for entity placement)
-**Spirituality Cost:** 1400
-**Cooldown:** 5 seconds
-*(Cannot be copied; requires griefing enabled)*
-
-- Spawns a persistent **Desolate Area entity** at the caster's position.
-- Casting again within 30 blocks removes the existing entity.
-- The entity continuously corrupts a **200×200 area** (80 blocks per tick), converting:
-  - Grass/Dirt/Podzol/Mud → Soul Sand / Soul Soil / Basalt (noise-based patches)
-  - Flowers → Wither Roses
-  - Logs → Polished Basalt
-  - Leaves → Mangrove Roots
-  - Crops/Saplings/Farmland → Soul Sand (crops destroyed without drops)
-  - Vines → Removed
-  - Bush blocks → Dead Bush (70%) or removed (30%)
-  - Stone/Cobblestone/Sand/etc. → Basalt or Blackstone
-- Every **1 second**: applies **Slowness, Weakness, Mining Fatigue, Hunger, and Wither** (0–3 amplifier based on distance from center) to all entities in a **100-block radius** (except Mother Beyonders Seq 2 or stronger).
-- Every **2 seconds**: deals **~41 flat damage** (no multiplier, `lookupDamage(2, .5)`) to all entities in range.
-
----
-
-### Blooming Area
-**Sequence Requirement:** 2 (for entity placement)
-**Spirituality Cost:** 1400
-**Cooldown:** 5 seconds
-*(Cannot be copied; cannot be used by NPCs; requires griefing enabled)*
-
-- Spawns a persistent **Blooming Area entity** at the caster's position.
-- Casting again within 30 blocks removes the existing entity.
-- The entity continuously nurtures a **200×200 area**:
-  - Applies bonemeal to 15–30 random growable blocks per second (crops, saplings, grass, sugar cane).
-  - Spawns 3–7 flowers or mushrooms every 0.5 seconds in designated patches (15–25 random patches, 5–10 block radius each).
-  - Instantly grows all crops and saplings in the area every second.
-- Every 10 seconds: applies **Saturation XXI, Regeneration XXI, and Hero of the Village VI** to all entities within the 200-block radius.
-
----
-
 ## Passive Abilities
 
 ---
@@ -312,23 +334,3 @@ No Fire Resistance or Night Vision at any sequence. Emphasizes high Health and R
 | 1        | +4       | +12        | +3    | +42          | +6           |
 | 0        | +6       | +15        | +6    | +64          | +7           |
 
----
-
-### Plant Nurturing
-**Sequence Requirement:** 9
-
-- **Active use:** Costs **10 spirituality**, 2-second cooldown.
-- Applies bonemeal twice to all growable blocks (crops, saplings, sugar cane) within a **4.5-block radius circle** at three vertical levels (below, at, and above the caster's feet) — effectively a thick disk of ~4.5 blocks radius.
-- NPCs only use this when they have no combat target.
-
----
-
-### Life Aura
-**Sequence Requirement:** 4 (requires `blooming` state)
-**Spirituality Cost:** 3/tick (toggle)
-*(Cannot be copied or used by NPCs)*
-
-- Toggle ability. While active:
-  - Every tick: applies bonemeal to all growable blocks in a **30×7 ellipsoid** around the caster (excluding short grass; skips fully-grown cocoa).
-  - Every tick: puts all animals within **35 blocks** into "love mode" (breeds them).
-  - Every tick: applies **Regeneration IV** for 2 seconds to all entities within 35 blocks.
