@@ -29,7 +29,7 @@ public class TheftAbility extends Ability {
 
     @Override
     public float getSpiritualityCost() {
-        return 400f;
+        return 40f;
     }
 
     @Override
