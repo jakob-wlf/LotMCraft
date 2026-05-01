@@ -30,7 +30,7 @@ public class ProhibitionHandler {
         LivingEntity entity = event.getEntity();
         if (!(entity.level() instanceof ServerLevel serverLevel)) return;
 
-        if (isInZone(entity.position(), serverLevel, ProhibitionAbility.ProhibitionType.BEYONDER_ABILITIES)) {
+        if (isInZone(entity.position(), serverLevel, ProhibitionAbility.ProhibitionType.BEYONDER_ABILITIES, BeyonderData.getSequence(entity))) {
             event.setCanceled(true);
             WorldJudgmentHandler.escalate(entity);
             if (entity instanceof ServerPlayer sp) {
@@ -64,7 +64,7 @@ public class ProhibitionHandler {
         if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
         if (!(attacker.level() instanceof ServerLevel serverLevel)) return;
 
-        if (isInZone(attacker.position(), serverLevel, ProhibitionAbility.ProhibitionType.COMBAT)) {
+        if (isInZone(attacker.position(), serverLevel, ProhibitionAbility.ProhibitionType.COMBAT, BeyonderData.getSequence(attacker))) {
             event.setNewDamage(0);
             WorldJudgmentHandler.escalate(attacker);
             if (attacker instanceof ServerPlayer sp) {
@@ -86,7 +86,7 @@ public class ProhibitionHandler {
         Vec3 pos = player.position();
 
         // Flying prohibition
-        if (isInZone(pos, serverLevel, ProhibitionAbility.ProhibitionType.FLYING)) {
+        if (isInZone(pos, serverLevel, ProhibitionAbility.ProhibitionType.FLYING, BeyonderData.getSequence(player))) {
             if (player.getAbilities().flying) {
                 player.getAbilities().flying = false;
                 player.getAbilities().mayfly = false;
@@ -139,7 +139,7 @@ public class ProhibitionHandler {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
-        if (isInZone(player.position(), serverLevel, ProhibitionAbility.ProhibitionType.ITEM_USE)) {
+        if (isInZone(player.position(), serverLevel, ProhibitionAbility.ProhibitionType.ITEM_USE, BeyonderData.getSequence(player))) {
             event.setCanceled(true);
             WorldJudgmentHandler.escalate(player);
             player.sendSystemMessage(Component.translatable("lotmcraft.prohibition.item_use")
@@ -157,16 +157,16 @@ public class ProhibitionHandler {
         if (inZone) event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
     }
 
-    public static boolean isInStandInsZone(Vec3 pos, ServerLevel level) {
-        return isInZone(pos, level, ProhibitionAbility.ProhibitionType.STAND_INS);
+    public static boolean isInStandInsZone(Vec3 pos, ServerLevel level, int targetSequence) {
+        return isInZone(pos, level, ProhibitionAbility.ProhibitionType.STAND_INS, targetSequence);
     }
 
-    public static boolean isInMarionetteZone(Vec3 pos, ServerLevel level) {
-        return isInZone(pos, level, ProhibitionAbility.ProhibitionType.MARIONETTE_INTERCHANGE);
+    public static boolean isInMarionetteZone(Vec3 pos, ServerLevel level, int targetSequence) {
+        return isInZone(pos, level, ProhibitionAbility.ProhibitionType.MARIONETTE_INTERCHANGE, targetSequence);
     }
 
-    public static boolean IsInTheftZone(Vec3 pos, ServerLevel level) {
-        return isInZone(pos, level, ProhibitionAbility.ProhibitionType.THEFT);
+    public static boolean IsInTheftZone(Vec3 pos, ServerLevel level, int targetSequence) {
+        return isInZone(pos, level, ProhibitionAbility.ProhibitionType.THEFT, targetSequence);
     }
 
     @SubscribeEvent
@@ -213,14 +213,23 @@ public class ProhibitionHandler {
         }
     }
 
-    private static boolean isInZone(Vec3 pos, ServerLevel level, ProhibitionAbility.ProhibitionType type) {
+    private static boolean isInZone(Vec3 pos, ServerLevel level, ProhibitionAbility.ProhibitionType type, int targetSequence) {
         long now = level.getGameTime();
         for (ProhibitionAbility.ProhibitionZone zone : ProhibitionAbility.ACTIVE_ZONES) {
             if (zone.type != type) continue;
             if (!zone.level.equals(level)) continue;
             if (zone.expiryTick < now) continue;
+            if (isTargetTooStrong(zone.casterSequence, targetSequence)) continue;
             if (pos.distanceTo(zone.center) <= 40.0) return true;
         }
         return false;
+    }
+
+    private static boolean isTargetTooStrong(int casterSequence, int targetSequence) {
+        if(targetSequence <= 4 && casterSequence >= 5) return true;
+        if(targetSequence <= 2 && casterSequence >= 3) return true;
+        if(targetSequence == 0 && casterSequence >= 1) return true;
+
+        return casterSequence - 1 > targetSequence;
     }
 }

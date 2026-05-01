@@ -8,6 +8,7 @@ import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSelectedMarionettePacket;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ControllingUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CycleOfFateHelper;
@@ -90,7 +91,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
     }
 
     private void activateSwap(ServerLevel level, ServerPlayer player) {
-        if (ProhibitionHandler.isInMarionetteZone(player.position(), level)) return;
+        if (ProhibitionHandler.isInMarionetteZone(player.position(), level, AbilityUtil.getSeqWithArt(player, this))) return;
 
         LivingEntity marionette = getSelectedMarionette(player);
 
@@ -165,7 +166,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
         if(!swapOnDamageIsActive.contains(player.getUUID()))
             return;
 
-        if (ProhibitionHandler.isInMarionetteZone(player.position(), level)) return;
+        if (ProhibitionHandler.isInMarionetteZone(player.position(), level, BeyonderData.getSequence(event.getEntity()))) return;
 
         LivingEntity marionette = getSelectedMarionette(player);
         if(marionette == null)

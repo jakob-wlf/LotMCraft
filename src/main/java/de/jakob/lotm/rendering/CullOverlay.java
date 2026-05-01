@@ -80,4 +80,8 @@ public class CullOverlay {
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         }
     }
+
+    public static void clearCache() {
+        playersWithCullActivated.clear();
+    }
 }

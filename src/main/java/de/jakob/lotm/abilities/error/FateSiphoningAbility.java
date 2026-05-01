@@ -58,7 +58,7 @@ public class FateSiphoningAbility extends Ability {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }
-        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level)) return;
+        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level, AbilityUtil.getSeqWithArt(entity, this))) return;
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 30*(int) Math.max(multiplier(entity)/4,1), 2);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.fate_siphoning.no_target").withColor(0x6d32a8));

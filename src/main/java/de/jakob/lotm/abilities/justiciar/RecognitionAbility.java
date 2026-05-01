@@ -1,12 +1,11 @@
 package de.jakob.lotm.abilities.justiciar;
 
 import de.jakob.lotm.abilities.core.ToggleAbility;
-import de.jakob.lotm.attachments.LuckComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -37,20 +36,20 @@ public class RecognitionAbility extends ToggleAbility {
 
     @Override
     public void start(Level level, LivingEntity entity) {
-        if (!level.isClientSide) {
-            entity.sendSystemMessage(Component.literal("Recognition activated."));
-        }
+        if (level.isClientSide) return;
+        level.playSound(null, entity.blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 0.5f, 1.6f);
+        AbilityUtil.sendActionBar(entity, Component.literal("§6⚖ §eRecognition §6⚖"));
     }
 
     @Override
     public void tick(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
-
         if (entity.tickCount % 10 != 0) return;
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 40*(int) Math.max(multiplier(entity)/4,1), 1.5f, true);
+
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 40 * (int) Math.max(multiplier(entity) / 4, 1), 1.5f, true);
 
         if (target == null) {
-            AbilityUtil.sendActionBar(entity, Component.literal(""));
+            AbilityUtil.sendActionBar(entity, Component.literal("§6⚖ §7No target in sight §6⚖"));
             return;
         }
 
@@ -58,13 +57,8 @@ public class RecognitionAbility extends ToggleAbility {
         int targetSeq = BeyonderData.getSequence(target);
         String path = BeyonderData.getPathway(target);
 
-        if (path.equals("justiciar") && targetSeq < seq) {
-            AbilityUtil.sendActionBar(entity, Component.literal(""));
-            return;
-        }
-
-        if (seq > targetSeq) {
-            AbilityUtil.sendActionBar(entity, Component.literal(""));
+        if ((path.equalsIgnoreCase("justiciar") && targetSeq < seq) || seq > targetSeq) {
+            AbilityUtil.sendActionBar(entity, Component.literal("§6⚖ §7No target in sight §6⚖"));
             return;
         }
 
@@ -72,14 +66,22 @@ public class RecognitionAbility extends ToggleAbility {
                 ? target.getCustomName().getString()
                 : target.getType().getDescription().getString();
 
+        String pathFormatted = path.substring(0, 1).toUpperCase() + path.substring(1);
+
         AbilityUtil.sendActionBar(entity, Component.literal(
-                "§d" + name + " §7| Pathway: " + path +" §7| Sequence: " + targetSeq
+                "§6⚖ §e" + name + " §6| §fPathway: §e" + pathFormatted + " §6| §fSequence: §e" + targetSeq + " §6⚖"
         ));
+
+        if (entity.tickCount % 20 == 0) {
+            level.playSound(null, entity.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.3f, 1.8f);
+        }
     }
+
     @Override
     public void stop(Level level, LivingEntity entity) {
+        if (level.isClientSide) return;
         clearArtifactScaling(entity);
+        level.playSound(null, entity.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.5f, 1.6f);
         AbilityUtil.sendActionBar(entity, Component.literal(""));
-        entity.sendSystemMessage(Component.literal("Recognition deactivated."));
     }
 }

@@ -95,4 +95,8 @@ public class EyeOfDeathOverlayRenderer {
         int b = (int) (b1 + (b2 - b1) * ratio);
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
+
+    public static void clearCache() {
+        entitiesLookedAt.clear();
+    }
 }

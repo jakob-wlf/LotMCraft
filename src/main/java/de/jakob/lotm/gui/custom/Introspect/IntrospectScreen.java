@@ -25,6 +25,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -119,31 +120,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (showAllAbilities) {
             availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesUpToSequenceOrdered(menu.getSequence()));
         } else {
-            String[] pathwayHistoryCheck = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
-            boolean hasSwitched = java.util.Arrays.stream(pathwayHistoryCheck)
-                    .anyMatch(e -> e != null && !e.isEmpty() && !e.equals(menu.getPathway()));
-            int[] stacks = BeyonderData.getCharStacks(minecraft.player);
-            boolean hasCharStack = false;
-            for (int i = 1; i <= 4; i++) {
-                if (stacks[i] > 0) { hasCharStack = true; break; }
-            }
-            java.util.LinkedHashSet<Ability> abilitySet = new java.util.LinkedHashSet<>();
-            if (hasSwitched && !hasCharStack) {
-                LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence())
-                        .stream().filter(a -> a.getRequirements().getOrDefault(menu.getPathway(), -1) <= 4).forEach(abilitySet::add);
-            } else {
-                abilitySet.addAll(LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence()));
-            }
-
             String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
-            for (int seq = menu.getSequence() + 1; seq <= 9; seq++) {
-                String historicalPathway = pathwayHistory[seq];
-                if (historicalPathway != null && !historicalPathway.isEmpty() && !historicalPathway.equals(menu.getPathway())) {
-                    abilitySet.addAll(LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(historicalPathway, seq));
-                    break;
+            for(int i = menu.getSequence(); i < pathwayHistory.length; i++) {
+                String pathway = pathwayHistory[i];
+                if(pathway != null) {
+                    ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
+                    availableAbilities.addAll(pathwayAbilities);
                 }
             }
-            availableAbilities.addAll(abilitySet);
         }
 
         // Deduplicate: abilities like Cogitation/Ally match all pathways and can be added

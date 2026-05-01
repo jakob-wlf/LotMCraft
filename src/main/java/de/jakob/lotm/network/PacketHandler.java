@@ -476,6 +476,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                ResetClientEffectsPacket.TYPE,
+                ResetClientEffectsPacket.STREAM_CODEC,
+                ResetClientEffectsPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncOriginalBodyOwnerPacket.TYPE,
                 SyncOriginalBodyOwnerPacket.STREAM_CODEC,
                 SyncOriginalBodyOwnerPacket::handle
