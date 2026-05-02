@@ -1,7 +1,7 @@
 package de.jakob.lotm.abilities.black_emperor;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
@@ -157,7 +157,6 @@ public class DisorderAbility extends SelectableAbility {
      * ability from their own pathway, excluding DisorderAbility itself.
      */
     private void disorderPerception(ServerLevel level, LivingEntity caster, LivingEntity target) {
-        target.getPersistentData().putBoolean(DISORDERED_PERCEPTION_KEY, true);
         target.getPersistentData().putInt(DISORDERED_PERCEPTION_CHARGES_KEY, 3);
         target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 20 * 7, 0, false, false, true));
 
@@ -170,7 +169,6 @@ public class DisorderAbility extends SelectableAbility {
                 Component.literal("Perception disordered.").withColor(0x9933CC));
 
         ServerScheduler.scheduleDelayed(20 * 7, () -> {
-            target.getPersistentData().remove(DISORDERED_PERCEPTION_KEY);
             target.getPersistentData().remove(DISORDERED_PERCEPTION_CHARGES_KEY);
         }, level);
     }
@@ -250,7 +248,8 @@ public class DisorderAbility extends SelectableAbility {
         double maxDistance = Math.min(34.0D, 8.0D + Math.max(0, 8 - sequence) * 3.0D);
 
         Vec3 start = caster.position();
-        Vec3 look = caster.getLookAngle().normalize();
+        Vec3 look = caster.getLookAngle();
+        look = new Vec3(look.x, 0, look.z).normalize();
 
         // Find a safe end point using a block-only clip, not entity collision.
         Vec3 destination = findWarpDestination(level, caster, start, look, maxDistance);
@@ -300,11 +299,10 @@ public class DisorderAbility extends SelectableAbility {
 
     
     @SubscribeEvent
-    public static void onAbilityUsed(AbilityUsedEvent event) {
+    public static void onAbilityUse(AbilityUseEvent event) {
         LivingEntity entity = event.getEntity();
         if (entity == null) return;
 
-        if (!entity.getPersistentData().getBoolean(DISORDERED_PERCEPTION_KEY)) return;
         if (!(entity.level() instanceof ServerLevel serverLevel)) return;
 
         // Don't intercept DisorderAbility itself to avoid recursion
@@ -312,7 +310,6 @@ public class DisorderAbility extends SelectableAbility {
 
         int charges = entity.getPersistentData().getInt(DISORDERED_PERCEPTION_CHARGES_KEY);
         if (charges <= 0) {
-            entity.getPersistentData().remove(DISORDERED_PERCEPTION_KEY);
             entity.getPersistentData().remove(DISORDERED_PERCEPTION_CHARGES_KEY);
             return;
         }
@@ -332,13 +329,15 @@ public class DisorderAbility extends SelectableAbility {
         var randomAbility = LOTMCraft.abilityHandler.getRandomAbility(
                 pathway, sequence, new java.util.Random(), false, ability_pool);
 
+        // Temporarily remove the flag so infinite recursion does not occur
+        entity.getPersistentData().remove(DISORDERED_PERCEPTION_CHARGES_KEY);
+
         if (randomAbility != null) {
             randomAbility.useAbility(serverLevel, entity, true, true, true);
         }
 
         int remaining = charges - 1;
         if (remaining <= 0) {
-            entity.getPersistentData().remove(DISORDERED_PERCEPTION_KEY);
             entity.getPersistentData().remove(DISORDERED_PERCEPTION_CHARGES_KEY);
         } else {
             entity.getPersistentData().putInt(DISORDERED_PERCEPTION_CHARGES_KEY, remaining);
