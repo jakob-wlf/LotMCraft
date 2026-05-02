@@ -1101,6 +1101,17 @@
 
   "lotm.ability.cogitation.tick": "Cogitating",
 
+  "lotmcraft.combat_mastery_ability": "Combat Mastery",
+  "lotmcraft.combat_mastery_ability.description": "When activating this ability the next attack you do deals a critical hit",
+  "lotmcraft.supernatural_resistance_ability": "Supernatural Resistance",
+  "lotmcraft.supernatural_resistance_ability.description": "A self buff skill that grants Resistance and clears negative effects",
+
+
+
+
+
+
+
   "item.lotmcraft.ability_not_implemented": "Abilities for this Sequence are not yet implemented",
 
   "_comment002": "Passive Abilities-----------------------------------------------------------------------------",
@@ -1344,6 +1355,7 @@
   "lotm.pathway.justiciar": "Justiciar",
   "lotm.pathway.black_emperor": "Black Emperor",
   "lotm.pathway.wheel_of_fortune": "Wheel of Fortune",
+  "lotm.pathway.Twilight_Giant": "Twilight Giant",
 
   "_comment011": "Sequences-----------------------------------------------------------------------------",
   "lotm.sequence.fool": "Fool",
@@ -1587,6 +1599,18 @@
   "lotm.sequence.interrogator": "Interrogator",
   "lotm.sequence.sheriff": "Sheriff",
   "lotm.sequence.arbiter": "Arbiter",
+
+  "lotm.sequence.Twilight_Giant": "Twilight Giant",
+  "lotm.sequence.Hand_Of_God": "Hand Of God",
+  "lotm.sequence.Glory": "Glory",
+  "lotm.sequence.Silver_Knight": "Silver Knight",
+  "lotm.sequence.Demon_Hunter": "Demon Hunter",
+  "lotm.sequence.Guardian": "Guardian",
+  "lotm.sequence.Dawn_Paladin": "Dawn Paladin",
+  "lotm.sequence.Weapon_Master": "Weapon Master",
+  "lotm.sequence.Pugilist": "Pugilist",
+  "lotm.sequence.Warrior": "Warrior",
+
 
   "_comment012": "Advancements-----------------------------------------------------------------------------",
   "advancements.lotmcraft.root.title": "Path of the Divine",
