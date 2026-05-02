@@ -155,7 +155,7 @@ Two selectable modes. The selected effect lasts **5 minutes** and affects all do
 **Cooldown:** 60 seconds
 *(Cannot be copied)*
 
-- Creates a **barrier ring** (radius 40, 18 blocks tall) lasting **40 seconds**.
+- Creates a **barrier ring** (radius 40, 18 blocks tall) lasting **20 seconds**.
 - **Effect Interval:** Every 6 ticks
 - Each interval, all entities within range:
   - Are **randomly teleported ±8 blocks**.
@@ -171,8 +171,8 @@ Two selectable modes. The selected effect lasts **5 minutes** and affects all do
 *(Cannot be copied)*
 
 - **Target Range:** 27 blocks; **Pull Radius:** 70 blocks
-- **Duration:** 60 seconds
-- **Effect Interval:** Every 2 ticks (600 intervals total)
+- **Duration:** 15 seconds
+- **Effect Interval:** Every 2 ticks
 - Each interval, pulls all entities within 70 blocks toward the target point at **4% velocity per interval**.
 
 ---
@@ -214,7 +214,7 @@ Two selectable modes. The selected effect lasts **5 minutes** and affects all do
 ---
 
 ### Conceptualization
-**Sequence Requirement:** 3
+**Sequence Requirement:** 0
 **Spirituality Cost:** 220 per tick (toggle)
 *(Cannot be copied, replicated, used in artifacts, or shared)*
 
@@ -354,8 +354,8 @@ If no entity is found in range, spawns failure particles at the targeted locatio
 
 ### Blink
 **Sequence Requirement:** 5
-**Spirituality Cost:** 300
-**Cooldown:** 0.5 seconds
+**Spirituality Cost:** 250
+**Cooldown:** 0.1 seconds
 *(Cannot be copied)*
 
 - **Range:** 8 blocks
@@ -421,6 +421,20 @@ Four selectable modes:
 - **Range:** 12 blocks; **Radius:** 5 blocks
 - Applies **Blindness** and **Slowness** for **5 seconds** to all entities in range.
 
+**Mode 4 — Fog**
+- **Duration:** 8 seconds
+- Spawns fog particles at the caster's eye position and applies to all enemies within 7.5 blocks every 2 ticks:
+  - **Blindness:** Level 5, 1 second
+  - **Slowness:** Level 2, 1 second
+
+**Mode 5 — Tumble**
+- **Range:** 12 blocks; **Radius:** 6 blocks
+- **Duration:** ~5.5 seconds (110 ticks, every 5 ticks)
+- Each interval: entities that are moving and not sneaking have a 1-in-3 chance to be knocked in a random direction with **Slowness XIII** (2s) and a **0.7× damage modifier** for 2 seconds.
+
+**Mode 6 — Burning**
+- Toggles a burning state on the caster. While active, the caster's melee hits set targets on fire.
+
 ---
 
 ### Door Opening
@@ -429,7 +443,7 @@ Four selectable modes:
 **Cooldown:** 1 second
 *(Cannot be used by NPCs)*
 
-- **Range:** 25 blocks
+- **Range:** 15 blocks
 - Opens an **Apprentice Door** in or on the targeted solid block (must have air exposure on the facing side).
 - The door lasts **10 seconds**.
 

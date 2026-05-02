@@ -294,8 +294,8 @@ Includes **Night Vision** at all sequences. No Fire Resistance at any sequence.
 | Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration |
 |----------|----------|------------|-------|--------------|--------------|
 | 9        | —        | —          | —     | —            | —            |
-| 8        | +1       | —          | +1    | +5           | +2           |
-| 7        | +2       | —          | +2    | +6           | +2           |
+| 8        | +1       | —          | +1    | +5           | +1           |
+| 7        | +2       | —          | +2    | +6           | +1           |
 | 6        | +2       | +1         | +2    | +7           | +2           |
 | 5        | +2       | +2         | +2    | +9           | +2           |
 | 4        | +3       | +7         | +4    | +16          | +3           |

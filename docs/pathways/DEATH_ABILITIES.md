@@ -64,7 +64,7 @@ Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passivel
 *(Cannot be copied, replicated, or stolen)*
 
 - **Radius:** `35 × max(multiplier/4, 1)` blocks (scales with multiplier)
-- **Duration:** 1 minute 40 seconds (2,000 ticks)
+- **Duration:** 1 minute 25 seconds (1,700 ticks)
 - **Effect Interval:** Every tick; damage every 20 ticks (once per second)
 
 **Instant Kill:**
@@ -172,7 +172,7 @@ Three selectable sub-abilities:
 
 ### Internal Underworld
 **Sequence Requirement:** 4  
-**Spirituality Cost:** 3000
+**Spirituality Cost:** 400
 **Cooldown:** 1 tick (effectively instant)  
 *(Cannot be copied, replicated, or stolen)*
 
@@ -246,7 +246,7 @@ Three selectable modes:
 
 **Spirits**
 - Spawns a visual portal near the caster's look target.
-- Every 4 ticks for 20 seconds (400 ticks), spawns one undead mob and one spirit mob from the portal as subordinates.
+- Every 4 seconds for 20 seconds (400 ticks total), spawns one undead mob and one spirit mob from the portal as subordinates.
   - **Undead:** Zombie, Skeleton, Husk, Drowned, Stray, or Wither Skeleton (random).
   - **Spirits:** Spirit Ghost, Spirit Dervish, Spirit Bubbles, Blue Wizard, or Translucent Wizard (random).
 - Summoned mobs despawn after 60 seconds.
@@ -322,7 +322,7 @@ Two selectable modes:
 ### Spirit Channeling
 **Sequence Requirement:** 7  
 **Spirituality Cost:** 300  
-**Cooldown:** 20 seconds
+**Cooldown:** 4 seconds
 
 Captures a spirit from the environment (75% success chance at Seq ≤ 6, 50% otherwise). The spirit type is randomized between **Frost Ghost** and **Earth Spirit**, unlocking different sub-abilities.
 
@@ -396,7 +396,7 @@ While active:
 ### Spirit Communication
 **Sequence Requirement:** 8  
 **Spirituality Cost:** 10  
-**Cooldown:** 10 seconds  
+**Cooldown:** 7 seconds  
 *(Players only; not usable in artifacts)*
 
 Four selectable modes:
@@ -441,7 +441,7 @@ Four selectable modes:
 | 3        | +3       | +9         | +4    | +19          | +3           |
 | 2        | +4       | +12        | +5    | +27          | +4           |
 | 1        | +4       | +13        | +5    | +32          | +4           |
-| 0        | +6       | +16        | +6    | +4           | +6           |
+| 0        | +6       | +16        | +6    | +47          | +6           |
 
 ---
 

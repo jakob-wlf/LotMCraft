@@ -25,7 +25,7 @@ Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passivel
 
 ### Energy Transformation
 **Sequence Requirement:** 1
-**Spirituality Cost:** 16 per tick (toggle)
+**Spirituality Cost:** 220 per tick (toggle)
 *(Cannot be copied, replicated, or used in artifacts)*
 
 - Toggles a transformation state that grants **sustained flight** at speed 0.75.
@@ -125,8 +125,8 @@ Four selectable modes:
 
 ### Lightning Storm
 **Sequence Requirement:** 3
-**Spirituality Cost:** 900
-**Cooldown:** 35 seconds
+**Spirituality Cost:** 1,500
+**Cooldown:** 20 seconds
 *(Cannot be copied)*
 
 - **Range:** 25 blocks (targeting); lightning spreads ±35 blocks horizontally
@@ -139,8 +139,8 @@ Four selectable modes:
 
 ### Thunderclap
 **Sequence Requirement:** 3
-**Spirituality Cost:** 100
-**Cooldown:** 1 second
+**Spirituality Cost:** 700
+**Cooldown:** 4 seconds
 *(Cannot be copied)*
 
 - **Range:** 50 blocks
@@ -264,17 +264,17 @@ Three selectable modes:
 
 **Mode 0 — Death Melody**
 - **Radius:** 25 blocks
-- **Duration:** 30 seconds
-- **Hits:** **33 hits** — one every 18 ticks (~14 base DPS)
+- **Duration:** 20 seconds
+- **Hits:** **22 hits** — one every 18 ticks (~12 base DPS)
 - **Damage:** **~14 damage per hit**.
 
 **Mode 1 — Strengthening Melody**
-- **Duration:** 30 seconds
+- **Duration:** 20 seconds
 - Grants allies within range **Strength** and **Speed**; applies a **1.5× damage multiplier** buff for the duration.
 
 **Mode 2 — Dazing Song**
 - **Radius:** 25 blocks
-- **Duration:** 30 seconds
+- **Duration:** 20 seconds
 - **Effect Interval:** Every 18 ticks
 - Applies to enemies:
   - **Slowness:** Level 3, 1 second
@@ -359,14 +359,14 @@ Four selectable modes:
 ### Physical Enhancements (Tyrant)
 **Sequence Requirement:** 9
 
-Includes **Water Breathing** (infinite oxygen) at Seq 5 and below. **Dolphin's Grace** (underwater speed) and **Night Vision** at Seq 6 and below. No Fire Resistance except at Seq 1.
+Includes **Dolphin's Grace** at Seq 7 and below. **Night Vision** at Seq 6 and below. **Water Breathing** (infinite oxygen via Oxygen Bonus) at Seq 5 and below. No Fire Resistance except at Seq 1.
 
 | Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration | Other |
 |----------|----------|------------|-------|--------------|--------------|-------|
 | 9        | +1       | +1         | +1    | —            | —            | — |
 | 8        | +2       | +2         | +2    | +5           | —            | — |
-| 7        | +2       | +2         | +2    | +6           | +1           | Dolphin's Grace +1 |
-| 6        | +2       | +3         | +2    | +7           | +1           | Night Vision +1, Dolphin's Grace +2 |
+| 7        | +2       | +2         | +2    | +6           | +1           | Oxygen Bonus +1, Dolphin's Grace +1 |
+| 6        | +2       | +3         | +2    | +7           | +1           | Night Vision +1, Oxygen Bonus +3, Dolphin's Grace +2 |
 | 5        | +2       | +4         | +2    | +9           | +2           | Night Vision +1, Water Breathing (infinite), Dolphin's Grace +3 |
 | 4        | +3       | +9         | +4    | +16          | +3           | Night Vision +1, Water Breathing (infinite), Dolphin's Grace +4 |
 | 3        | +4       | +10        | +4    | +17          | +3           | Night Vision +1, Water Breathing (infinite), Dolphin's Grace +4 |

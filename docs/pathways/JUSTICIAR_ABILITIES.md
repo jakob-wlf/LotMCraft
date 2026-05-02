@@ -6,6 +6,25 @@ The Justiciar pathway focuses on law enforcement, restriction, and judgment. Jus
 
 ---
 
+## Spirituality
+
+Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passively.
+
+| Sequence | Max Spirituality | Regen/sec |
+|----------|-----------------|-----------|
+| 9        | 180             | 2.2/s     |
+| 8        | 200             | 2.4/s     |
+| 7        | 780             | 9.4/s     |
+| 6        | 1,200           | 14.4/s    |
+| 5        | 1,900           | 22.8/s    |
+| 4        | 3,900           | 46.8/s    |
+| 3        | 5,000           | 60.0/s    |
+| 2        | 10,000          | 120.0/s   |
+| 1        | 20,000          | 240.0/s   |
+| 0        | 60,000          | 720.0/s   |
+
+---
+
 ## Active Abilities
 
 ### Ancient Court of Judgment
@@ -83,11 +102,11 @@ Act as a proxy of Order, invoking permanent prohibitions and laws or sacrificing
 | Variant | Effect |
 |---|---|
 | Order Sacrifice | Grants a 3.0× ability multiplier boost and full damage immunity for 15 sec; caster is killed after the 15 sec expire |
-| Prohibition: Resurrecting | Places a **permanent** zone (radius 50) prohibiting resurrection; max 3 zones |
-| Prohibition: Dying | Places a **permanent** zone (radius 50) prohibiting death; max 3 zones |
-| Prohibition: Demigods | Places a **permanent** zone (radius 50) prohibiting demigod-tier entities; max 3 zones |
-| Law: Combat | Places a **permanent** law zone (radius 15) disabling combat; max 2 zones |
-| Law: Losing Control | Places a **permanent** law zone (radius 15) preventing Losing Control; max 2 zones |
+| Prohibition: Resurrecting | Places a **permanent** zone (radius 100) prohibiting resurrection; max 3 zones |
+| Prohibition: Dying | Places a **permanent** zone (radius 100) prohibiting death; max 3 zones |
+| Prohibition: Demigods | Places a **permanent** zone (radius 100) prohibiting demigod-tier entities; max 3 zones |
+| Law: Combat | Places a **permanent** law zone (radius 60) disabling combat; max 2 zones |
+| Law: Losing Control | Places a **permanent** law zone (radius 60) preventing Losing Control; max 2 zones |
 
 Re-casting while standing inside an existing zone of the same type removes it. Prohibition zones broadcast to players within 50 blocks. Order Sacrifice also removes all Losing Control effects during the active window.
 
@@ -122,7 +141,7 @@ Exiled entities are removed from active participation for a random duration betw
 - **Cooldown:** 5 seconds
 - **Interaction Radius:** 20 blocks (optimal: 10 blocks)
 
-Issue a direct Judgment that cannot be avoided. Spawns a JudgmentSwordEntity 15 blocks above the target, which falls and deals **50% of the target's max health** on impact.
+Issue a direct Judgment that cannot be avoided. Spawns a JudgmentSwordEntity 15 blocks above the target, which falls and deals **55% of the target's max health** on impact.
 
 **Success Chance:** 40% base + 10% per time the target previously resisted a Prohibition.  
 On a successful hit, the target's Prohibition resistance count is cleared. Creates a gold-white ring effect and camera shake on impact.
@@ -150,7 +169,7 @@ Declare Balance over the lands. Within the zone, all Beyonders' ability multipli
 
 ### Law
 - **Sequence Required:** 4
-- **Spirituality Cost:** 400
+- **Spirituality Cost:** 800
 - **Cooldown:** 5 seconds
 - **Interaction Radius:** 40 blocks
 - **Type:** Selectable (choose one variant per cast)
@@ -169,7 +188,7 @@ Declare a Law that reshapes the rules of engagement. Choose one effect:
 ### Execution
 - **Sequence Required:** 4
 - **Spirituality Cost:** 1,200
-- **Cooldown:** 40 seconds
+- **Cooldown:** 30 seconds
 - **Interaction Radius:** 20 blocks
 - **Fail Chance:** Varies by sequence difference
 
@@ -210,7 +229,7 @@ Mark a target for Punishment (caster gains Glowing while active). Re-cast to can
 - **Spirituality Cost:** 800
 - **Cooldown:** 15 seconds
 - **Interaction Radius:** 40 blocks
-- **Zone Radius:** 40 blocks | **Zone Duration:** 3 minutes | **Max Zones:** 3 per type
+- **Zone Radius:** 80 blocks | **Zone Duration:** 3 minutes | **Max Zones:** 3 per type
 
 Declare a type of activity Prohibited within a zone. Beyonders of the same or higher rank can resist:
 - Sequence ≤ 4 caster: 15% resist chance per resister
@@ -235,7 +254,7 @@ The available variants are gated by sequence rank. Higher-rank Justiciars (lower
 
 ### Imprison
 - **Sequence Required:** 6
-- **Spirituality Cost:** 50 (initial) + 300 per 4 sec (ongoing drain)
+- **Spirituality Cost:** 100 (initial) + 300 per 4 sec (ongoing drain)
 - **Cooldown:** 3 seconds
 - **Interaction Radius:** 15 blocks
 
@@ -256,7 +275,7 @@ Erect invisible barrier walls forming a hollow cage around a targeted location. 
 
 ### Justice Language
 - **Sequence Required:** 6
-- **Spirituality Cost:** 100
+- **Spirituality Cost:** 200
 - **Cooldown:** 4 seconds
 - **Interaction Radius:** 20 blocks
 - **Type:** Selectable (choose one variant per cast)
@@ -370,17 +389,18 @@ Exert the authority of an Arbiter over nearby entities. Choose one effect:
 
 Grants scaling physical bonuses based on current sequence rank:
 
-| Sequence | Strength | Resistance | Speed | Health | Regeneration |
-|---|---|---|---|---|---|
-| 9 | +1 | — | +2 | — | +1 |
-| 8–7 | +2 | +4 | +2 | +5 | +2 |
-| 6 | +2 | +6 | +2 | +7 | +2 |
-| 5 | +2 | +8 | +2 | +9 | +2 |
-| 4 | +3 | +13 | +4 | +16 | +3 |
-| 3 | +3 | +14 | +4 | +17 | +3 |
-| 2 | +4 | +17 | +5 | +25 | +4 |
-| 1 | +4 | +18 | +5 | +30 | +4 |
-| 0 | +5 | +18 | +5 | +20 | +5 |
+| Sequence | Strength | Resistance | Speed | Health | Regeneration | Other |
+|---|---|---|---|---|---|---|
+| 9 | +1 | — | +2 | — | +1 | — |
+| 8 | +1 | — | +1 | +7 | +1 | — |
+| 7 | +3 | — | +3 | +8 | +1 | — |
+| 6 | +3 | +2 | +3 | +9 | +2 | — |
+| 5 | +3 | +4 | +3 | +11 | +2 | — |
+| 4 | +4 | +9 | +4 | +18 | +3 | — |
+| 3 | +4 | +10 | +4 | +19 | +3 | — |
+| 2 | +5 | +12 | +5 | +27 | +4 | — |
+| 1 | +6 | +14 | +5 | +34 | +4 | — |
+| 0 | +7 | +16 | +6 | +47 | +6 | Night Vision |
 
 ---
 

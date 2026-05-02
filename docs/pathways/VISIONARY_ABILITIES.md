@@ -87,8 +87,8 @@ Five selectable modes. Requires an active story book target to use most modes.
 
 ### Disaster Fantasia
 **Sequence Requirement:** 1
-**Spirituality Cost:** 2500
-**Cooldown:** 11 seconds
+**Spirituality Cost:** 7,500
+**Cooldown:** 35 seconds
 
 Two selectable modes. **Target range:** 150 blocks.
 
@@ -125,7 +125,7 @@ Three selectable modes.
 
 ### Dream Maze
 **Sequence Requirement:** 2
-**Spirituality Cost:** 1000
+**Spirituality Cost:** 4,000
 **Cooldown:** 7 seconds
 *(Cannot be copied or used by NPCs)*
 
@@ -144,7 +144,7 @@ Two selectable modes.
 
 ### Dream Weave
 **Sequence Requirement:** 3
-**Spirituality Cost:** 750
+**Spirituality Cost:** 1,550
 **Cooldown:** 20 seconds
 
 Two selectable modes. **Target range:** 20 blocks.
@@ -173,7 +173,7 @@ Two selectable modes. **Target range:** 20 blocks.
 
 ### Mental Plague
 **Sequence Requirement:** 4
-**Spirituality Cost:** 1200
+**Spirituality Cost:** 2,400
 **Cooldown:** 20 seconds
 *(Cannot be copied or replicated)*
 
@@ -190,7 +190,7 @@ Two selectable modes. **Target range:** 20 blocks.
 
 ### Manipulation
 **Sequence Requirement:** 4
-**Spirituality Cost:** 750
+**Spirituality Cost:** 1,150
 **Cooldown:** 5 seconds
 
 Two selectable modes. **Target range:** 20 blocks.
@@ -225,7 +225,7 @@ Two selectable modes. **Target range (others):** 20 blocks.
 
 ### Dream Traversal
 **Sequence Requirement:** 5
-**Spirituality Cost:** 60
+**Spirituality Cost:** 400
 **Cooldown:** 1 second
 *(Cannot be used in artifacts)*
 
@@ -285,7 +285,7 @@ Three selectable modes. **Target range:** `20 × multiplier` blocks (e.g. ~22 at
 
 ### Battle Hypnosis
 **Sequence Requirement:** 6
-**Spirituality Cost:** 150
+**Spirituality Cost:** 250
 **Cooldown:** 2 seconds
 *(Cannot be copied or replicated)*
 
@@ -318,7 +318,7 @@ Cannot affect lower-sequence Visionaries. If the target is charmed, removes the 
 
 ### Dragon Scales
 **Sequence Requirement:** 6
-**Spirituality Cost:** 2 per tick (toggle)
+**Spirituality Cost:** 15 per tick (toggle)
 *(Cannot be copied, replicated, used in artifacts, or stolen)*
 
 - Passively applies **Resistance (Level 1)** every tick while active.

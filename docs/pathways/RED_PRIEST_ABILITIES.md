@@ -25,8 +25,8 @@ Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passivel
 
 ### Sacrifice
 **Sequence Requirement:** 1–3
-**Spirituality Cost:** 3000
-**Cooldown:** 100 minutes
+**Spirituality Cost:** 3,000
+**Cooldown:** 6,000 seconds (~100 minutes)
 *(Cannot be copied, replicated, used in artifacts, stolen, shared with teammates, or used by NPCs)*
 
 - Requires at least **500 kills** to activate.
@@ -40,11 +40,11 @@ Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passivel
 
 ### Conquering
 **Sequence Requirement:** 1
-**Spirituality Cost:** 8000
+**Spirituality Cost:** 8,000
 **Cooldown:** 40 seconds
 *(Cannot be copied or replicated)*
 
-- **Radius:** 3.75 blocks
+- **Radius:** 4 blocks
 - Applies the **CONQUERED** effect (Level 7, 3 hours) to all nearby entities with a lower sequence than the caster.
 - Only affects entities weaker than the caster.
 
@@ -116,8 +116,8 @@ Three selectable modes:
 
 **Mode 0 — Snow Storm**
 - **Radius:** 60 blocks
-- **Duration:** 30 seconds
-- **Hits:** **150 hits** — one every 4 ticks (~41 base DPS)
+- **Duration:** 15 seconds
+- **Hits:** **75 hits** — one every 4 ticks (~41 base DPS)
 - **Damage:** **~5.9 damage per hit**.
 - Applies **Weakness (Level 1)** and **Slowness (Level 7)** for 5 seconds per hit.
 - Creates snow layers and snow blocks if griefing is enabled.
@@ -145,7 +145,7 @@ Three selectable modes:
 **Cooldown:** 180 seconds
 *(Cannot be copied)*
 
-- Summons a **War Banner** at the caster's position lasting **120 seconds (2400 ticks)**.
+- Summons a **War Banner** at the caster's position lasting **90 seconds (1800 ticks)**.
 - **Radius:** 25 blocks
 - **Effect Interval:** Every tick
 
@@ -163,7 +163,7 @@ Three selectable modes:
 
 ### Fog of War
 **Sequence Requirement:** 3
-**Spirituality Cost:** 800 per tick (toggle)
+**Spirituality Cost:** 80 per tick (toggle)
 *(Cannot be copied)*
 
 - **Radius:** 20 blocks
@@ -273,7 +273,7 @@ Two selectable modes:
 *(Cannot be copied or replicated)*
 
 - **Radius:** 30 blocks
-- While active, applies a **+1.7× damage modifier** to the caster.
+- While active, applies a **+1.3× damage modifier** to the caster.
 - Makes all nearby entities glow (visible outline) to the caster.
 
 ---
@@ -281,7 +281,7 @@ Two selectable modes:
 ### Pyrokinesis
 **Sequence Requirement:** 7
 **Spirituality Cost:** 30
-**Cooldown:** 0.75 seconds
+**Cooldown:** 1.25 seconds
 
 Five selectable modes:
 
@@ -336,7 +336,7 @@ Five selectable modes:
 ### Trap
 **Sequence Requirement:** 9
 **Spirituality Cost:** 10
-**Cooldown:** 1 second
+**Cooldown:** 8 seconds
 
 - Places a trap at the caster's position, marked by a **red particle circle** (radius 1.6 blocks, 22 particles per tick).
 - **Trigger Radius:** 1.35 blocks

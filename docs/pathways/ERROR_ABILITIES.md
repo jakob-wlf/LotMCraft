@@ -204,7 +204,7 @@ Two selectable modes:
 
 ### Mundane Conceptual Theft
 **Sequence Requirement:** 5
-**Spirituality Cost:** 50
+**Spirituality Cost:** 500
 **Cooldown:** 1 second
 
 Four selectable modes (Mode 0–2 require a target within `15 × multiplier²` blocks; subject to theft failure against Beyonders):
@@ -292,7 +292,7 @@ Two selectable modes:
 
 ### Theft
 **Sequence Requirement:** 8
-**Spirituality Cost:** 400
+**Spirituality Cost:** 40
 **Cooldown:** 1.75 seconds
 *(Cannot be copied, replicated; cannot be used by NPCs)*
 

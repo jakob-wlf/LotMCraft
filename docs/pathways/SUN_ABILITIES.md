@@ -56,8 +56,8 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Pure White Light
 **Sequence Requirement:** 1
-**Spirituality Cost:** 2200
-**Cooldown:** 4 seconds
+**Spirituality Cost:** 4,000
+**Cooldown:** 6 seconds
 *(Cannot be copied)*
 
 - **Target Range:** 50 blocks; **Damage Radius:** expanding sphere
@@ -71,8 +71,8 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Divine Kingdom Manifestation
 **Sequence Requirement:** 1
-**Spirituality Cost:** 2900
-**Cooldown:** 3 minutes
+**Spirituality Cost:** 8,000
+**Cooldown:** 40 minutes
 *(Cannot be copied, replicated, or used by NPCs)*
 
 - Summons a **Sun Kingdom entity** lasting **2 minutes** with a **120-block radius**.
@@ -100,7 +100,7 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Solar Envoy
 **Sequence Requirement:** 2
-**Spirituality Cost:** 20 per tick (toggle)
+**Spirituality Cost:** 500 per tick (toggle)
 *(Cannot be copied, replicated, or used in artifacts)*
 
 - Transforms the caster into a levitating Solar Envoy form, hovering 5 blocks above their activation position.
@@ -115,7 +115,7 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Wings of Light
 **Sequence Requirement:** 2
-**Spirituality Cost:** 5 per tick (toggle)
+**Spirituality Cost:** 80 per tick (toggle)
 *(Cannot be copied)*
 
 - Toggles sustained flight for the caster (flying speed 0.45).
@@ -142,11 +142,11 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 ### Wall of Light
 **Sequence Requirement:** 3
 **Spirituality Cost:** 800
-**Cooldown:** 5 seconds
+**Cooldown:** 15 seconds
 *(Cannot be copied)*
 
 - **Target Range:** 12 blocks; wall is **60 blocks wide** and **19 blocks tall**
-- **Duration:** 20 seconds
+- **Duration:** 15 seconds
 - **Hit Interval:** Every 7 ticks per block position
 - **Damage:** **~16 × sequence multiplier** per hit (scales with caster's sequence).
 - **Knockback:** 1.4× away from each wall block on hit.
@@ -156,8 +156,8 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Flaring Sun
 **Sequence Requirement:** 4
-**Spirituality Cost:** 500
-**Cooldown:** 8 seconds
+**Spirituality Cost:** 800
+**Cooldown:** 12 seconds
 *(Cannot be copied)*
 
 - **Target Range:** 25 blocks; **Damage Radius:** 17 blocks
@@ -282,7 +282,7 @@ This mechanic also applies to **team members sharing Sun abilities** — if a no
 
 ### Holy Oath
 **Sequence Requirement:** 7
-**Spirituality Cost:** 1.5 per tick (toggle)
+**Spirituality Cost:** 8–96 per tick depending on sequence (toggle; Seq 7+: 8/tick, Seq 6: 64/tick, Seq 5: 96/tick, etc.)
 *(Cannot be copied or replicated)*
 *(Registers as a morale_boost interaction)*
 

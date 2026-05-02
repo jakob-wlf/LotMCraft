@@ -181,7 +181,7 @@ Two selectable modes:
 
 ### Golem Creation
 **Sequence Requirement:** 4
-**Spirituality Cost:** 600
+**Spirituality Cost:** 1,200
 **Cooldown:** 10 seconds
 *(Cannot be copied)*
 
