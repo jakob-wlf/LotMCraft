@@ -322,10 +322,15 @@ public class DisorderAbility extends SelectableAbility {
 
         String pathway = BeyonderData.getPathway(entity);
         int sequence = BeyonderData.getSequence(entity);
+
+        var currentAbility = event.getAbility();
+
+        var ability_pool = currentAbility != null 
+            ? List.of(currentAbility, LOTMCraft.abilityHandler.getById("disorder_ability"))
+            : List.of(LOTMCraft.abilityHandler.getById("disorder_ability"));
+
         var randomAbility = LOTMCraft.abilityHandler.getRandomAbility(
-                pathway, sequence, new java.util.Random(), false,
-                List.of(event.getAbility(), LOTMCraft.abilityHandler.getById("disorder_ability"))
-        );
+                pathway, sequence, new java.util.Random(), false, ability_pool);
 
         if (randomAbility != null) {
             randomAbility.useAbility(serverLevel, entity, true, true, true);
