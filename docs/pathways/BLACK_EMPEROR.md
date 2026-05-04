@@ -95,12 +95,6 @@
 - **Reverence messages** sent to players every 5 seconds
 - Head-down pressure on targets 2+ sequences weaker
 
-**Legacy Version (Seq 5):**
-- **Slowness:** Level 0, 2.5 seconds — applied every 2 seconds to players
-- **Weakness:** Level 0, 2.5 seconds — applied every 2 seconds to Beyonders of equal or lower sequence
-
-**Combat Spirituality Drain (Seq 5 and below):** Targets in combat with the caster lose `1.0 + (seq_gap × 0.25)` spirituality per second.
-
 **Damage Reflection:** Same as Commanding Orders — attacker's outgoing damage reduced by 50% for 3 seconds and knockback applied. Stronger Beyonders immune.
 
 ---

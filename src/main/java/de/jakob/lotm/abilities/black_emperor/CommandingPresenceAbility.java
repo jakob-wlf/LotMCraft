@@ -52,10 +52,6 @@ public class CommandingPresenceAbility extends ToggleAbility {
     private static final Map<UUID, Long> REFLECTED_UNTIL = new HashMap<>();
     private static final long REFLECT_DURATION_TICKS = 60L;
 
-    // S3: drain window
-    private static final Map<UUID, UUID> PRESENCE_SPIRITUALITY_DRAIN = new HashMap<>();
-    private static final Map<UUID, Long> PRESENCE_SPIRITUALITY_DRAIN_UNTIL = new HashMap<>();
-
     // S4: restore caster movement
     private static final String SHARED_SCALE_BACKUP_KEY = "lotm_shared_scale_backup";
     private static final String COMMANDING_STEP_BACKUP_KEY = "lotm_commanding_presence_step_backup";
@@ -156,7 +152,6 @@ public class CommandingPresenceAbility extends ToggleAbility {
         int selfSeq = BeyonderData.getSequence(entity);
         boolean presenceAuraTier = selfSeq <= 3;
         boolean dukeTier = selfSeq <= 2;
-        boolean seq5LegacyTier = selfSeq == 5;
 
         double presenceScale = getPresenceScale(entity);
         double auraRange = dukeTier ? 36.0D : 18.0D;
@@ -223,22 +218,9 @@ public class CommandingPresenceAbility extends ToggleAbility {
                     lockHeadDown(target, entity, selfSeq);
                 }
 
-                if (seq5LegacyTier && gameTick % 40 == 0) {
-                    mob.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false, false));
-                }
             }
 
             if (target instanceof Player player) {
-                if (seq5LegacyTier && gameTick % 40 == 0) {
-                    player.addEffect(new MobEffectInstance(
-                            MobEffects.MOVEMENT_SLOWDOWN, 50, 0, false, false, false));
-
-                    if (targetSeq >= selfSeq) {
-                        player.addEffect(new MobEffectInstance(
-                                MobEffects.WEAKNESS, 50, 0, false, false, false));
-                    }
-                }
-
                 if (presenceAuraTier && headDownTarget) {
                     lockHeadDown(target, entity, selfSeq);
 
@@ -275,21 +257,6 @@ public class CommandingPresenceAbility extends ToggleAbility {
                 drainSpirituality(target, drainAmount);
             }
 
-            UUID drainCaster = PRESENCE_SPIRITUALITY_DRAIN.get(target.getUUID());
-            Long drainUntil = PRESENCE_SPIRITUALITY_DRAIN_UNTIL.get(target.getUUID());
-
-            if (seq5LegacyTier
-                    && isBeyonder
-                    && drainCaster != null
-                    && drainCaster.equals(casterId)
-                    && drainUntil != null
-                    && drainUntil >= gameTick
-                    && targetSeq <= selfSeq
-                    && gameTick % 20 == 0) {
-
-                float drainAmount = 1.0f + Math.max(0, selfSeq - targetSeq) * 0.25f;
-                drainSpirituality(target, drainAmount);
-            }
         }
 
         if (presenceAuraTier && gameTick % 6 == 0) {
@@ -337,29 +304,10 @@ public class CommandingPresenceAbility extends ToggleAbility {
             );
         }
 
-        if (seq5LegacyTier && gameTick % 18 == 0) {
-            double offsetX = (serverLevel.random.nextDouble() - 0.5D) * 2.5D;
-            double offsetZ = (serverLevel.random.nextDouble() - 0.5D) * 2.5D;
-
-            RingEffectManager.createRingForAll(
-                    entity.position().add(offsetX, 0.0D, offsetZ),
-                    16f, 18,
-                    0.55f, 0.12f, 0.72f, 0.75f, 0.16f, 0.85f, serverLevel
-            );
-
-            RingEffectManager.createRingForAll(
-                    entity.position().add(-offsetX, 0.0D, -offsetZ),
-                    12f, 16,
-                    0.40f, 0.08f, 0.60f, 0.55f, 0.14f, 0.65f, serverLevel
-            );
-        }
-
         UNDER_PRESENCE.entrySet().removeIf(e -> e.getValue().equals(casterId) && !seenSubjects.contains(e.getKey()));
         LAST_MSG_TICK.keySet().removeIf(id -> !seenSubjects.contains(id));
         RETALIATING_MOBS.keySet().removeIf(id -> !seenSubjects.contains(id));
         RETALIATING_MOBS_UNTIL.keySet().removeIf(id -> !RETALIATING_MOBS.containsKey(id));
-        PRESENCE_SPIRITUALITY_DRAIN.keySet().removeIf(id -> !seenSubjects.contains(id));
-        PRESENCE_SPIRITUALITY_DRAIN_UNTIL.keySet().removeIf(id -> !PRESENCE_SPIRITUALITY_DRAIN.containsKey(id));
     }
 
     @Override
@@ -404,8 +352,6 @@ public class CommandingPresenceAbility extends ToggleAbility {
             LAST_MSG_TICK.remove(id);
             RETALIATING_MOBS.remove(id);
             RETALIATING_MOBS_UNTIL.remove(id);
-            PRESENCE_SPIRITUALITY_DRAIN.remove(id);
-            PRESENCE_SPIRITUALITY_DRAIN_UNTIL.remove(id);
         });
 
         entity.sendSystemMessage(Component.literal("§cCommanding Presence: OFF"));
@@ -426,18 +372,6 @@ public class CommandingPresenceAbility extends ToggleAbility {
 
         UUID presenceCaster = UNDER_PRESENCE.get(attacker.getUUID());
         if (presenceCaster == null || !presenceCaster.equals(victim.getUUID())) return;
-
-        if (BeyonderData.isBeyonder(attacker)) {
-            int attackerSeq = BeyonderData.getSequence(attacker);
-            int casterSeq = BeyonderData.getSequence(victim);
-
-            if (casterSeq == 5 && attackerSeq <= casterSeq) {
-                PRESENCE_SPIRITUALITY_DRAIN.put(attacker.getUUID(), victim.getUUID());
-                PRESENCE_SPIRITUALITY_DRAIN_UNTIL.put(attacker.getUUID(), victim.level().getGameTime() + 20 * 8);
-
-                drainSpirituality(attacker, 1.0f + Math.max(0, casterSeq - attackerSeq) * 0.25f);
-            }
-        }
 
         // Debuff attacker's outgoing damage by 50% for 3 seconds
         REFLECTED_UNTIL.put(attacker.getUUID(), attacker.level().getGameTime() + REFLECT_DURATION_TICKS);
