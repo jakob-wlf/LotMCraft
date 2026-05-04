@@ -251,7 +251,7 @@ public class BeyonderEventHandler {
         BeyonderCharacteristicItem charItem = BeyonderCharacteristicItemHandler
                 .selectCharacteristicOfPathwayAndSequence(BeyonderData.getPathway(player), dropSequence);
 
-        BeyonderData.setBeyonder(player, data.pathway(), data.sequence(), true, false, true, false);
+        BeyonderData.setBeyonder(player, data.pathway(), data.sequence(), true, false, false, false);
 
         if (charItem == null) return;
 
