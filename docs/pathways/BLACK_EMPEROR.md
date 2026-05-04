@@ -262,8 +262,8 @@ Seven selectable modes:
 - Players receive full saturation + hunger restoration.
 
 **Mode 4 — Distance Warp** *(self-cast)*
-- Teleports the caster forward up to **8–34 blocks** (scales with sequence: `min(34, 8 + (8 − seq) × 3)`).
-- Checks for a safe landing position block-by-block.
+- Teleports the caster to a targeted location. Range scales with sequence:
+  - Seq 6: **8 blocks** | Seq 5: **16 blocks** | Seq 4: **32 blocks** | Seq 3: **64 blocks** | Seq 2: **128 blocks** | Seq 1: **256 blocks**
 
 **Mode 5 — Frenzy** *(Seq 3+ only)*
 - See **Frenzy** sub-ability above.
@@ -323,10 +323,10 @@ Seven selectable modes:
 **Cooldown:** 6.0 seconds
 *(Cannot be copied or replicated)*
 
-**Target Range:** 12 blocks (14 blocks for Distort Intent at Seq 5+)
+**Target Range:** 12 blocks
 **Resistance:** ~35% at 1-sequence gap, 0% at 2+ gap
 
-Five selectable modes:
+Four selectable modes:
 
 **Mode 0 — Distort Action**
 - Negates the target's next outgoing hit (0 damage).
@@ -334,21 +334,14 @@ Five selectable modes:
 - **Seq 5+:** Also applies Weakness (3s) + Slowness (2s).
 
 **Mode 1 — Distort Intent**
-- Mobs lose target and navigation; retarget a random nearby entity.
-- Players are randomly nudged every 0.2–0.25 seconds at 0.18–0.24 force.
-- **Duration:** 5 seconds (Seq 5+) / 4 seconds (Seq 6+)
-- **Seq 5+:** Also applies Confusion (3s) + Weakness (3s); radius extends to 14 blocks.
+- When the tagged target next hits the caster, all harmful effects on the caster are transferred to the attacker instead.
+- **Duration:** 6 seconds (Seq 5+) / 5 seconds (Seq 6+)
 
-**Mode 2 — Distort Trajectory**
-- Each projectile the target fires is rotated by 60–120° randomly.
-- **Duration:** 8 seconds (Seq 5+) / 6 seconds (Seq 6+)
-- **Charges:** 2 (Seq 5+) / 1 (Seq 6+)
-
-**Mode 3 — Distort Concept** *(Seq 5+ only)*
+**Mode 2 — Distort Concept** *(Seq 5+ only)*
 - Links caster and target for 8 seconds.
 - All damage dealt by either party is split 50/50 between both.
 
-**Mode 4 — Distort Wound** *(Seq 4+ only)*
+**Mode 3 — Distort Wound** *(Seq 4+ only)*
 - Self-cast. Heals the caster for **35% of missing HP**.
 
 ---

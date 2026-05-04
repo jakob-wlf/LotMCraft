@@ -5,12 +5,12 @@ import de.jakob.lotm.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.TeleportationUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.RingEffectManager;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -25,8 +25,9 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 
 
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.AABB;
 import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -39,12 +40,6 @@ public class DisorderAbility extends SelectableAbility {
 
 
     private static final Set<UUID> DEFENSIVE_VEIL = new HashSet<>();
-
-    private static final ResourceLocation DISTANCE_WARP_SPEED_ID =
-            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "distance_warp_speed");
-
-    private static final ResourceLocation DISTANCE_WARP_STEP_ID =
-            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "distance_warp_step");
 
     public DisorderAbility(String id) {
         super(id, 7.0f);
@@ -234,54 +229,22 @@ public class DisorderAbility extends SelectableAbility {
                 Component.literal("Control bonds shattered.").withColor(0x9933CC));
     }
 
-    // -------------------------------------------------------------------------
-// Distance Warp
-// -------------------------------------------------------------------------
-// This is now a forward teleport dash instead of a movement-speed buff.
-// It scales with sequence, tries to stop at a safe position, and uses your
-// existing particle/ring framework so it looks like space is warping around
-// the caster.
     private void distanceWarp(ServerLevel level, LivingEntity caster) {
         int sequence = BeyonderData.getSequence(caster);
+        int range = switch (sequence) {
+            case 6 -> 8;
+            case 5 -> 16;
+            case 4 -> 32;
+            case 3 -> 64;
+            case 2 -> 128;
+            default -> 256;
+        };
 
-        // Stronger casters warp farther.
-        double maxDistance = Math.min(34.0D, 8.0D + Math.max(0, 8 - sequence) * 3.0D);
+        Vec3 targetLoc = AbilityUtil.getTargetBlock(caster, range, true).getCenter().add(0, 1, 0);
+        level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
 
-        Vec3 start = caster.position();
-        Vec3 look = caster.getLookAngle();
-        look = new Vec3(look.x, 0, look.z).normalize();
-
-        // Find a safe end point using a block-only clip, not entity collision.
-        Vec3 destination = findWarpDestination(level, caster, start, look, maxDistance);
-
-        if (destination == null || destination.distanceToSqr(start) < 1.0D) {
-            AbilityUtil.sendActionBar(caster,
-                    Component.literal("No space to warp into.").withColor(0xFF5555));
-            return;
-        }
-
-        // Start effect
-        RingEffectManager.createRingForAll(start, 2.8f, 22,
-                0.12f, 0.0f, 0.22f, 1.0f, 0.18f, 1.4f, level);
-        ParticleUtil.spawnSphereParticles(level, ModParticles.BLACK.get(),
-                start.add(0, 1, 0), 1.2, 24);
-
-        spawnWarpTrail(level, start, destination);
-
-        // Teleport the caster.
-        caster.stopRiding();
-        caster.fallDistance = 0;
-        caster.teleportTo(destination.x, destination.y, destination.z);
-        caster.setDeltaMovement(Vec3.ZERO);
-
-        // End effect
-        RingEffectManager.createRingForAll(destination, 2.8f, 22,
-                0.12f, 0.0f, 0.22f, 1.0f, 0.18f, 1.4f, level);
-        ParticleUtil.spawnSphereParticles(level, ModParticles.BLACK.get(),
-                destination.add(0, 1, 0), 1.2, 24);
-
-        AbilityUtil.sendActionBar(caster,
-                Component.literal("Distance warped.").withColor(0x9933CC));
+        var validatedPos = TeleportationUtil.clampToBorder(level, targetLoc);
+        caster.teleportTo(validatedPos.x, validatedPos.y, validatedPos.z);
     }
     // -------------------------------------------------------------------------
     // Sequence resistance check
@@ -387,49 +350,6 @@ public class DisorderAbility extends SelectableAbility {
             }
 
             return; // action was redirected — skip perception check below
-        }
-    }
-
-
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
-    private Vec3 findWarpDestination(ServerLevel level, LivingEntity caster, Vec3 start, Vec3 direction, double maxDistance) {
-        Vec3 lastSafe = start;
-
-        // Step forward through space and stop at the last safe block position.
-        for (double traveled = 1.0D; traveled <= maxDistance; traveled += 1.0D) {
-            Vec3 candidate = start.add(direction.scale(traveled));
-
-            if (isSafeWarpPosition(level, caster, candidate)) {
-                lastSafe = candidate;
-            } else {
-                break;
-            }
-        }
-
-        return lastSafe;
-    }
-
-    private boolean isSafeWarpPosition(ServerLevel level, LivingEntity caster, Vec3 position) {
-        Vec3 delta = position.subtract(caster.position());
-        AABB movedBox = caster.getBoundingBox().move(delta);
-
-        // Only check whether the destination space itself is free.
-        // This does not care about the path between start and end.
-        return level.noCollision(caster, movedBox) && !level.containsAnyLiquid(movedBox);
-    }
-
-    private void spawnWarpTrail(ServerLevel level, Vec3 start, Vec3 end) {
-        Vec3 delta = end.subtract(start);
-
-        for (int i = 1; i < 6; i++) {
-            double t = i / 6.0D;
-            Vec3 point = start.add(delta.scale(t));
-
-            ParticleUtil.spawnSphereParticles(level, ModParticles.BLACK.get(),
-                    point.add(0, 1, 0), 0.75, 14);
         }
     }
 

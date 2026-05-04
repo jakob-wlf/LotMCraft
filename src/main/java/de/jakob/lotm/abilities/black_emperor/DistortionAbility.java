@@ -13,12 +13,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 import java.util.HashMap;
@@ -32,12 +29,8 @@ import java.util.UUID;
 public class DistortionAbility extends SelectableAbility {
 
     // NBT keys
-    public static final String DISTORT_ACTION_KEY = "lotm_distort_action";   // next hit negated
-    public static final String DISTORT_ACTION_STRONG_KEY = "lotm_distort_action_strong"; // seq5+ backlash
-    public static final String DISTORT_TRAJ_KEY = "lotm_distort_traj";       // next projectile bent
-    public static final String DISTORT_TRAJ_CHARGES_KEY = "lotm_distort_traj_charges";
-
-    // Seq 5+ concept distortion: both entities share damage 50/50 for a short time.
+    public static final String DISTORT_ACTION_KEY = "lotm_distort_action";
+    public static final String DISTORT_ACTION_STRONG_KEY = "lotm_distort_action_strong";
     public static final String DISTORT_CONCEPT_KEY = "lotm_distort_concept";
 
     // Seq 4+ wound distortion: active cast that heals missing HP.
@@ -75,7 +68,6 @@ public class DistortionAbility extends SelectableAbility {
         return new String[]{
                 "ability.lotmcraft.distortion.distort_action",
                 "ability.lotmcraft.distortion.distort_intent",
-                "ability.lotmcraft.distortion.distort_trajectory",
                 "ability.lotmcraft.distortion.distort_concept",
                 "ability.lotmcraft.distortion.distort_wound"
         };
@@ -85,7 +77,7 @@ public class DistortionAbility extends SelectableAbility {
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        if (abilityIndex == 4) {
+        if (abilityIndex == 3) {
             if (!isSeq4Plus(entity)) {
                 AbilityUtil.sendActionBar(entity,
                         Component.literal("Wound Distortion awakens at Seq 4.").withColor(0xFF5555));
@@ -111,8 +103,7 @@ public class DistortionAbility extends SelectableAbility {
         switch (abilityIndex) {
             case 0 -> distortAction(serverLevel, entity, target);
             case 1 -> distortIntent(serverLevel, entity, target);
-            case 2 -> distortTrajectory(serverLevel, entity, target);
-            case 3 -> {
+            case 2 -> {
                 if (!isSeq5Plus(entity)) {
                     AbilityUtil.sendActionBar(entity,
                             Component.literal("Concept Distortion awakens at Seq 5.").withColor(0xFF5555));
@@ -167,26 +158,6 @@ public class DistortionAbility extends SelectableAbility {
         ServerScheduler.scheduleDelayed(strong ? 20 * 6 : 20 * 5, () -> {
             INTENT_DISTORTED.remove(target.getUUID());
             INTENT_DISTORTED_UNTIL.remove(target.getUUID());
-        }, level);
-    }
-
-    private void distortTrajectory(ServerLevel level, LivingEntity caster, LivingEntity target) {
-        boolean strong = isSeq5Plus(caster);
-
-        ParticleUtil.spawnSphereParticles(level, ModParticles.BLACK.get(),
-                caster.position().add(0, 1, 0), strong ? 1.0 : 0.8, strong ? 12 : 10);
-
-        target.getPersistentData().putBoolean(DISTORT_TRAJ_KEY, true);
-        target.getPersistentData().putInt(DISTORT_TRAJ_CHARGES_KEY, strong ? 2 : 1);
-
-        AbilityUtil.sendActionBar(caster,
-                Component.literal("Trajectory distorted.").withColor(0xAA77FF));
-
-        playDistortionCastFX(level, caster, target, strong);
-
-        ServerScheduler.scheduleDelayed(strong ? 20 * 10 : 20 * 8, () -> {
-            target.getPersistentData().remove(DISTORT_TRAJ_KEY);
-            target.getPersistentData().remove(DISTORT_TRAJ_CHARGES_KEY);
         }, level);
     }
 
@@ -303,7 +274,7 @@ public class DistortionAbility extends SelectableAbility {
 
         LivingEntity victim = event.getEntity();
 
-        // Intent distortion: bounce the hit, then move harmful effects too.
+        // Intent distortion: move harmful effects too.
         if (attacker != null) {
             UUID distortedCasterId = INTENT_DISTORTED.get(attacker.getUUID());
             Long distortedUntil = INTENT_DISTORTED_UNTIL.get(attacker.getUUID());
@@ -314,29 +285,13 @@ public class DistortionAbility extends SelectableAbility {
                     && victim.getUUID().equals(distortedCasterId)
                     && victim.level() instanceof ServerLevel serverLevel) {
 
-                float dmg = event.getNewDamage();
-                if (dmg > 0.0f) {
-                    LivingEntity redirectTarget = findNearestLivingToCaster(serverLevel, victim, attacker, 16.0D);
+                // Consume the mark on first successful redirect.
+                INTENT_DISTORTED.remove(attacker.getUUID());
+                INTENT_DISTORTED_UNTIL.remove(attacker.getUUID());
 
-                    event.setNewDamage(0.0f);
+                transferHarmfulEffects(victim, attacker);
+                return;
 
-                    // Consume the mark on first successful redirect.
-                    INTENT_DISTORTED.remove(attacker.getUUID());
-                    INTENT_DISTORTED_UNTIL.remove(attacker.getUUID());
-
-                    // Move harmful active effects off the victim and onto the redirection target.
-                    if (redirectTarget != null) {
-                        transferHarmfulEffects(victim, redirectTarget);
-                        redirectTarget.hurt(source, dmg);
-
-                        ParticleUtil.spawnSphereParticles(serverLevel, ModParticles.BLACK.get(),
-                                redirectTarget.position().add(0, 1, 0), 1.0, 14);
-                    } else {
-                        clearHarmfulEffects(victim);
-                    }
-
-                    return;
-                }
             }
         }
 
@@ -361,32 +316,6 @@ public class DistortionAbility extends SelectableAbility {
         applyConceptSplitIfLinked(victim, event);
     }
 
-    @SubscribeEvent
-    public static void onProjectileFired(ProjectileImpactEvent event) {
-        Projectile projectile = event.getProjectile();
-        if (!(projectile.getOwner() instanceof LivingEntity owner)) return;
-
-        if (!owner.getPersistentData().getBoolean(DISTORT_TRAJ_KEY)) return;
-
-        int charges = owner.getPersistentData().getInt(DISTORT_TRAJ_CHARGES_KEY);
-        if (charges <= 0) charges = 1;
-
-        charges--;
-        if (charges <= 0) {
-            owner.getPersistentData().remove(DISTORT_TRAJ_KEY);
-            owner.getPersistentData().remove(DISTORT_TRAJ_CHARGES_KEY);
-        } else {
-            owner.getPersistentData().putInt(DISTORT_TRAJ_CHARGES_KEY, charges);
-        }
-
-        var vel = projectile.getDeltaMovement();
-        double angle = Math.toRadians(60 + owner.level().random.nextInt(60));
-        double newX = vel.x * Math.cos(angle) - vel.z * Math.sin(angle);
-        double newZ = vel.x * Math.sin(angle) + vel.z * Math.cos(angle);
-        projectile.setDeltaMovement(newX, vel.y, newZ);
-        projectile.hasImpulse = true;
-    }
-
     private static void transferHarmfulEffects(LivingEntity source, LivingEntity destination) {
         if (destination == null || source == destination) return;
 
@@ -400,14 +329,6 @@ public class DistortionAbility extends SelectableAbility {
             source.removeEffect(effect.getEffect());
             destination.addEffect(effect);
         }
-    }
-
-    private static void clearHarmfulEffects(LivingEntity source) {
-        source.getActiveEffects().stream()
-                .map(MobEffectInstance::getEffect)
-                .filter(effect -> effect.value().getCategory() == net.minecraft.world.effect.MobEffectCategory.HARMFUL)
-                .toList()
-                .forEach(source::removeEffect);
     }
 
     private static void applyConceptSplitIfLinked(LivingEntity victim, LivingDamageEvent.Pre event) {
@@ -436,27 +357,6 @@ public class DistortionAbility extends SelectableAbility {
             CONCEPT_LOCK.remove(victim.getUUID());
             CONCEPT_LOCK.remove(partner.getUUID());
         }
-    }
-
-    private static LivingEntity findNearestLivingToCaster(ServerLevel level, LivingEntity caster, LivingEntity attacker, double radius) {
-        List<LivingEntity> nearby = level.getEntitiesOfClass(
-                LivingEntity.class,
-                caster.getBoundingBox().inflate(radius),
-                e -> e.isAlive() && e != caster && e != attacker && !e.isAlliedTo(caster)
-        );
-
-        LivingEntity closest = null;
-        double bestDist = Double.MAX_VALUE;
-
-        for (LivingEntity candidate : nearby) {
-            double dist = candidate.distanceToSqr(caster);
-            if (dist < bestDist) {
-                bestDist = dist;
-                closest = candidate;
-            }
-        }
-
-        return closest;
     }
 
     private static LivingEntity findLivingByUuid(ServerLevel level, LivingEntity source, UUID uuid) {
