@@ -53,7 +53,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
 
     @Override
     public float getSpiritualityCost() {
-        return 13;
+        return 6;
     }
 
     @Override
