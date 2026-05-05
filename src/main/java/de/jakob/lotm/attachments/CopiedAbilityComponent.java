@@ -40,6 +40,17 @@ public class CopiedAbilityComponent implements INBTSerializable<CompoundTag> {
     private final ArrayList<CopiedAbilityData> abilities = new ArrayList<>();
 
     public void addAbility(CopiedAbilityData data) {
+        for (int i = 0; i < abilities.size(); i++) {
+            CopiedAbilityData existing = abilities.get(i);
+            if (existing.abilityId().equals(data.abilityId()) && existing.copyType().equals(data.copyType())) {
+                int newUses = (existing.remainingUses() == -1 || data.remainingUses() == -1)
+                        ? -1
+                        : existing.remainingUses() + data.remainingUses();
+                abilities.set(i, existing.withRemainingUses(newUses));
+                return;
+            }
+        }
+
         if (abilities.size() >= MAX_ABILITIES) {
             abilities.remove(0);
         }

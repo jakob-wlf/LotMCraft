@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SelectedCopiedAbilityComponent;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -85,10 +86,16 @@ public class AbilityWheelHelper {
 
     public static void removeUnusableAbilities(ServerPlayer player) {
         AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
+        SelectedCopiedAbilityComponent selectedCopied = player.getData(ModAttachments.SELECTED_COPIED_ABILITY_COMPONENT);
+
         for(String abilityId : new ArrayList<>(component.getAbilities())) {
             Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
             if(ability == null || !ability.hasAbility(player)) {
                 component.getAbilities().remove(abilityId);
+                // If this was the active copied ability selection, clear it
+                if (selectedCopied.hasSelection()) {
+                    selectedCopied.clear();
+                }
             }
         }
         int selected = component.getSelectedAbility();

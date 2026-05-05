@@ -40,6 +40,12 @@ public class CopiedAbilityHelper {
      * Opens the copied ability wheel on the client side by opening the menu from the server.
      */
     public static void openCopiedAbilityWheel(ServerPlayer player) {
+        CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
+        if (component.getAbilities().isEmpty()) {
+            de.jakob.lotm.util.helper.AbilityUtil.sendActionBar(player,
+                    net.minecraft.network.chat.Component.literal("No copied abilities.").withColor(0x8ff4ff));
+            return;
+        }
         syncToClient(player);
         player.openMenu(new SimpleMenuProvider(
                 (id, inventory, p) -> new CopiedAbilityWheelMenu(id, inventory),

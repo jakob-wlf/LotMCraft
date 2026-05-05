@@ -3,10 +3,14 @@ package de.jakob.lotm.network.packets.toServer;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
+import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.attachments.FoolingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SelectedCopiedAbilityComponent;
 import de.jakob.lotm.attachments.TeamComponent;
 import de.jakob.lotm.attachments.SharedAbilitiesComponent;
+import de.jakob.lotm.util.helper.AbilityWheelHelper;
+import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import de.jakob.lotm.util.BeyonderData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -59,7 +63,32 @@ public record UseSelectedAbilityPacket() implements CustomPacketPayload {
 
                     if (ability != null && serverPlayer.level() instanceof ServerLevel serverLevel) {
                         boolean isSharedAbility = isSharedAbility(serverPlayer, abilityId);
-                        ability.useAbility(serverLevel, serverPlayer, true, !isSharedAbility, true);
+                        SelectedCopiedAbilityComponent selectedCheck = serverPlayer.getData(ModAttachments.SELECTED_COPIED_ABILITY_COMPONENT);
+                        boolean isCopied = selectedCheck.hasSelection();
+                        ability.useAbility(serverLevel, serverPlayer, true, !isSharedAbility && !isCopied, !isCopied);
+
+                        // If this was a copied ability, decrement its uses and clean up
+                        SelectedCopiedAbilityComponent selected = serverPlayer.getData(ModAttachments.SELECTED_COPIED_ABILITY_COMPONENT);
+                        if (selected.hasSelection()) {
+                            int copiedIndex = selected.getSelectedIndex();
+                            int uses = selected.getRemainingUses();
+
+                            CopiedAbilityComponent copiedComponent = serverPlayer.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
+                            copiedComponent.decrementUses(copiedIndex);
+                            CopiedAbilityHelper.syncToClient(serverPlayer);
+
+                            boolean exhausted = uses != -1 && uses <= 1;
+                            if (exhausted) {
+                                selected.clear();
+                                component.getAbilities().remove(selectedIndex);
+                                int newSelected = Math.max(0, selectedIndex - 1);
+                                component.setSelectedAbility(newSelected);
+                                AbilityWheelHelper.syncToClient(serverPlayer);
+                            } else {
+                                // Keep selection active with decremented uses
+                                selected.setSelection(copiedIndex, uses == -1 ? -1 : uses - 1);
+                            }
+                        }
                     }
                 }
             }

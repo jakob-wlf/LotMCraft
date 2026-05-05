@@ -200,6 +200,13 @@ public class ModAttachments {
                     AttachmentType.serializable(CopiedAbilityComponent::new).copyOnDeath().build()
             );
 
+    public static final Supplier<AttachmentType<SelectedCopiedAbilityComponent>> SELECTED_COPIED_ABILITY_COMPONENT =
+            ATTACHMENT_TYPES.register("selected_copied_ability_component", () ->
+                    AttachmentType.builder(SelectedCopiedAbilityComponent::new)
+                            .serialize(SelectedCopiedAbilityComponent.SERIALIZER)
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<TeamComponent>> TEAM_COMPONENT =
             ATTACHMENT_TYPES.register("team_component", () ->
                     AttachmentType.builder(TeamComponent::new)
