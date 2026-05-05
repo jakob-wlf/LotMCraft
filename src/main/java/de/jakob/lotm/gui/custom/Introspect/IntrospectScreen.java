@@ -127,6 +127,11 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                     ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
                     availableAbilities.addAll(pathwayAbilities);
                 }
+                // if pathway is null, give the abilities of the same current pathway as the player
+                else {
+                    ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(menu.getPathway(), i);
+                    availableAbilities.addAll(pathwayAbilities);
+                }
             }
         }
 
