@@ -14,6 +14,7 @@ import de.jakob.lotm.events.custom.TargetEntityEvent;
 import de.jakob.lotm.events.custom.TargetLocationEvent;
 import de.jakob.lotm.events.custom.TargetNonLivingEntityEvent;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
@@ -421,6 +422,42 @@ public class AbilityUtil {
     }
 
     // ==================== TARGET ENTITY METHODS ====================
+
+    @Nullable
+    public static LivingEntity getTargetEntityPrioritizePlayer(LivingEntity entity, int radius, float entityDetectionRadius) {
+        LivingEntity nearestPlayer = null;
+        double nearestDistSq = Double.MAX_VALUE;
+
+        for (ServerPlayer player : entity.level().getEntitiesOfClass(ServerPlayer.class, entity.getBoundingBox().inflate(radius))) {
+            if (player == entity) continue;
+            if (AllyUtil.areAllies(entity, player)) continue;
+
+            double distSq = player.distanceToSqr(entity);
+            if (distSq < nearestDistSq) {
+                nearestDistSq = distSq;
+                nearestPlayer = player;
+            }
+        }
+
+        if (nearestPlayer != null) return nearestPlayer;
+
+        // Fall back to nearest non-ally living entity by proximity
+        LivingEntity nearestEntity = null;
+        double nearestEntityDistSq = Double.MAX_VALUE;
+
+        for (LivingEntity target : entity.level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(radius))) {
+            if (target == entity) continue;
+            if (!mayTarget(entity, target)) continue;
+
+            double distSq = target.distanceToSqr(entity);
+            if (distSq < nearestEntityDistSq) {
+                nearestEntityDistSq = distSq;
+                nearestEntity = target;
+            }
+        }
+
+        return nearestEntity;
+    }
 
     @Nullable
     public static LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius) {
