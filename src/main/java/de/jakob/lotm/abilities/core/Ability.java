@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.abilities.error.ParasitationAbility;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
+import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gamerule.ModGameRules;
@@ -194,6 +195,14 @@ public abstract class Ability {
         // Creative + OP players can use any ability up to their sequence
         if(entity instanceof Player player && player.isCreative() && player.hasPermissions(2)) {
             return getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence);
+        }
+
+        // use the old system in case of controlling - will change once worms get added
+        ControllingDataComponent controllingDataComponent = entity.getData(ModAttachments.CONTROLLING_DATA);
+        if (controllingDataComponent.isControlling()) {
+            if(getRequirements().containsKey(pathway) && getRequirements().get(pathway) >= sequence) {
+                return true;
+            }
         }
 
         // Check pathway

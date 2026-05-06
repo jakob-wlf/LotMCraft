@@ -175,7 +175,6 @@ public class BeyonderData {
                 playerMap.removeHonorificName(player);
 
             if(clearCharStack) playerMap.clearStack(player);
-            else playerMap.setStack(player, sequence, sequence);
         }
 
         if(Objects.equals(sequence, LOTMCraft.NON_BEYONDER_SEQ)
@@ -196,7 +195,7 @@ public class BeyonderData {
         component.setPathway(pathway);
         component.setSequence(sequence);
         if(clearCharStack) component.clearCharacteristicStack();
-        else component.setCharacteristicStack(0, sequence);
+        else component.setCharacteristicStack(0, sequence - 1);
         if (resetSpirituality) component.setSpirituality(getMaxSpirituality(pathway, sequence));
         component.setDigestionProgress(0);
         component.setGriefingEnabled(griefing);
