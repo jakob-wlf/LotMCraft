@@ -287,30 +287,6 @@ Seven selectable modes:
 
 ---
 
-### Weakness Detection
-**Sequence Requirement:** 6
-**Spirituality Cost:** 2.5 per second (toggle)
-*(Cannot be used by NPCs)*
-
-- **Detection Range:** 20 blocks
-- **Debuff Range:** 12 blocks
-- Scans nearby entities and assigns violation tiers visually. Stronger Beyonders (lower sequence) are ignored.
-
-**Violation conditions** (each adds +1 tier):
-- Armor below 10
-- Health below 30% of max
-- Speed above 0.22
-
-**Tier Effects (applied within 12 blocks, every second):**
-
-| Tier | Color | Damage Boost | Debuffs |
-|------|-------|-------------|---------|
-| 1 | Yellow | +15% | Slowness I, 2s |
-| 2 | Orange | +30% | Slowness II (2s) + Weakness I (2s) |
-| 3 | Red | +50% | Slowness III (2s) + Weakness II (2s) + 5 direct damage every second |
-
----
-
 ### Distortion
 **Sequence Requirement:** 6
 **Spirituality Cost:** 55
