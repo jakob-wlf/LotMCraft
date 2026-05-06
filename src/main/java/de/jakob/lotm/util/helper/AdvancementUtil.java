@@ -98,7 +98,7 @@ public class AdvancementUtil {
 
         float digestionProgress = entity instanceof Player p ? BeyonderData.getDigestionProgress(p) : 0f;
         int difference = Math.abs(prevSequence - sequence);
-        double failureChance = calculateFailureChance(difference, digestionProgress, sanity);
+        double failureChance = difference >= 2? 1.0f : calculateFailureChance(difference, digestionProgress, sanity);
         if (BeyonderData.hasSwitchedPathway(entity)) failureChance = Math.min(1.0, failureChance + 0.1);
 
         if(prevSequence == sequence) {

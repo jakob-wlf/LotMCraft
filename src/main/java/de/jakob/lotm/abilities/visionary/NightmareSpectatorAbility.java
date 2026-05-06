@@ -24,10 +24,12 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
+import static de.jakob.lotm.abilities.visionary.DreamTraversalAbility.checkAsleep;
+
 public class NightmareSpectatorAbility extends Ability {
 
     public NightmareSpectatorAbility(String id) {
-        super(id, 20f);
+        super(id, 10f);
         canBeCopied = false;
     }
 
@@ -77,7 +79,7 @@ public class NightmareSpectatorAbility extends Ability {
             return;
         }
 
-        if(!target.hasEffect(ModEffects.ASLEEP) && entitySeq >= 4) {
+        if(!checkAsleep(entity, target)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.must_be_asleep").withColor(0xFFff124d));
             return;
         }
