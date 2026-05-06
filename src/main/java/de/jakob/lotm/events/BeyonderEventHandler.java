@@ -573,6 +573,10 @@ public class BeyonderEventHandler {
     public static void onTravel(EntityTravelToDimensionEvent event) {
         if(!(event.getEntity() instanceof LivingEntity entity)) return;
 
+        Level level = entity.level();
+        if(level.isClientSide()) return;
+        if(!level.getGameRules().getBoolean(ModGameRules.SEQUENCE_DIMENSION_LOCK)) return;
+
         ResourceKey<Level> target = event.getDimension();
 
         int seq = BeyonderData.getSequence(entity);
