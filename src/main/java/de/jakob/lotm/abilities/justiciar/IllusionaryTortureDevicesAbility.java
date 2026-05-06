@@ -193,7 +193,7 @@ public class IllusionaryTortureDevicesAbility extends SelectableAbility {
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 120, 1));
         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 120, 1));
         target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 0));
-        applySanity(entity, target, 0.20f);
+        applySanity(entity, target, 0.1f);
 
         serverLevel.playSound(null, entity.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.5f, 0.6f);
         serverLevel.playSound(null, target.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.0f, 1.4f);
