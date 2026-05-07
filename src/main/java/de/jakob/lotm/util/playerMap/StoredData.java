@@ -58,6 +58,17 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 ;
     }
 
+    public String getSelfInfo() {
+        return "Name: " + trueName
+                + "\n--- Path: " + pathway
+                + "\n--- Seq: " + sequence
+                + "\n--- Honorific Name: " + honorificName.getAllInfo()
+                + "\n--- Char stack: " + java.util.Arrays.toString(charStack)
+                + "\n--- Pathway history: " + getPathwayHistoryInfo()
+                + "\n--- Sefirot: " + (claimedSefirot.isEmpty() ? "none" : claimedSefirot)
+                ;
+    }
+
     private String getPathwayHistoryInfo() {
         StringBuilder sb = new StringBuilder();
         boolean any = false;
