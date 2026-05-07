@@ -138,7 +138,6 @@ public class TheftHandler {
         } else if (entity instanceof WitherSkeleton) {
             loot.add(new TheftLoot(new ItemStack(Items.BONE), 2, 6));
             loot.add(new TheftLoot(new ItemStack(Items.COAL), 1, 4));
-            loot.add(new TheftLoot(new ItemStack(Items.WITHER_SKELETON_SKULL), 0, 1));
         } else if (entity instanceof Zombie) {
             loot.add(new TheftLoot(new ItemStack(Items.ROTTEN_FLESH), 1, 6));
             loot.add(new TheftLoot(new ItemStack(Items.IRON_INGOT), 0, 2));
