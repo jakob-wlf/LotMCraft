@@ -1,6 +1,6 @@
 package de.jakob.lotm.abilities.core;
 
-import de.jakob.lotm.abilities.Twilight_Giant.*;
+import de.jakob.lotm.abilities.twilight_giant.*;
 import de.jakob.lotm.abilities.abyss.*;
 import de.jakob.lotm.abilities.common.*;
 import de.jakob.lotm.abilities.justiciar.*;

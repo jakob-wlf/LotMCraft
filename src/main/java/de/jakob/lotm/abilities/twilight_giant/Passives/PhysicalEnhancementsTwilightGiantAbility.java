@@ -1,4 +1,4 @@
-package de.jakob.lotm.abilities.Twilight_Giant.Passives;
+package de.jakob.lotm.abilities.twilight_giant.Passives;
 
 
 import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;

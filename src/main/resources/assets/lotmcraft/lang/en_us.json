@@ -1206,6 +1206,10 @@
   "item.lotmcraft.pure_idealism_ability": "Pure Idealism",
   "item.lotmcraft.pure_idealism_ability.description": "The better your mental state - the stronger you are",
 
+  "item.lotmcraft.weapon_mastery_ability": "Weapon Mastery Passive",
+  "item.lotmcraft.weapon_mastery_ability.description": "Holding any type of weapon will give corresponding buffs to them",
+
+
   "_comment003": "Effects-----------------------------------------------------------------------------",
   "effect.lotmcraft.asleep": "Asleep",
   "effect.lotmcraft.loosing_control": "Loosing Control",

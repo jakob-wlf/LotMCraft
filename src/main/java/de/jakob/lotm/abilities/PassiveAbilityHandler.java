@@ -1,7 +1,8 @@
 package de.jakob.lotm.abilities;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.Twilight_Giant.Passives.PhysicalEnhancementsTwilightGiantAbility;
+import de.jakob.lotm.abilities.twilight_giant.Passives.PhysicalEnhancementsTwilightGiantAbility;
+import de.jakob.lotm.abilities.twilight_giant.Passives.WeaponMasteryPassiveAbility;
 import de.jakob.lotm.abilities.abyss.passives.FireResistanceAbyssAbility;
 import de.jakob.lotm.abilities.abyss.passives.PhysicalEnhancementsAbyssAbility;
 import de.jakob.lotm.abilities.abyss.passives.WordImmunityAbility;
@@ -70,6 +71,7 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_JUSTICIAR = ITEMS.registerItem("physical_enhancements_justiciar_ability", PhysicalEnhancementsJusticiarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_Twilight_Giant = ITEMS.registerItem("physical_enhancements_twilight_giant_ability", PhysicalEnhancementsTwilightGiantAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
+
     public static final DeferredItem<Item> ORDER_JUSTICIAR = ITEMS.registerItem("order_justiciar_ability", OrderJusticiarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> ENHANCED_MENTAL_ATTRIBUTES_JUSTICIAR = ITEMS.registerItem("enhanced_mental_attributes_justiciar_ability", EnhancedMentalAttributesAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> CHAOS_HUNTING_JUSTICIAR = ITEMS.registerItem("chaos_hunting_justiciar_ability", ChaosHuntingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
@@ -111,6 +113,9 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> VIRTUAL_AVATAR = ITEMS.registerItem("virtual_avatar_ability", VirtualAvatarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> META_AWARENESS = ITEMS.registerItem("meta_awareness_ability", MetaAwarenessAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PURE_IDEALISM = ITEMS.registerItem("pure_idealism_ability", PureIdealism::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
+    public static final DeferredItem<Item> WEAPON_MASTERY_PASSIVE = ITEMS.registerItem("weapon_mastery_ability", WeaponMasteryPassiveAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
 
     public static void registerAbilities(IEventBus eventBus) {
         ITEMS.register(eventBus);

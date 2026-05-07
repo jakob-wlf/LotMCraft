@@ -1,4 +1,4 @@
-package de.jakob.lotm.abilities.Twilight_Giant;
+package de.jakob.lotm.abilities.twilight_giant;
 
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import net.minecraft.world.effect.MobEffectCategory;
