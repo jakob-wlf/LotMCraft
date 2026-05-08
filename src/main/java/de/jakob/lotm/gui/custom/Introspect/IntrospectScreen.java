@@ -130,8 +130,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             } else {
                 var discernmentComponent = minecraft.player.getData(ModAttachments.DISCERNMENT_DATA);
 
-                LOTMCraft.LOGGER.info("INIT SKILLS: is disc {}, path {}, seq {}", discernmentComponent.isDiscerning(), menu.getPathway(), menu.getSequence());
-
                 if(discernmentComponent.isDiscerning()){
                     ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
                     availableAbilities.addAll(controllerPathwayAbilities);
