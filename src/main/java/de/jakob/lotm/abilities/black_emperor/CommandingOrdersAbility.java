@@ -26,11 +26,7 @@ import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class CommandingOrdersAbility extends ToggleAbility {
@@ -42,6 +38,8 @@ public class CommandingOrdersAbility extends ToggleAbility {
     private static final Map<UUID, ActiveOrder> ACTIVE_ORDERS = new HashMap<>();
     private static final Map<UUID, Long> REFLECTED_UNTIL = new HashMap<>();
     private static final long REFLECT_DURATION_TICKS = 60L;
+
+    private static final HashSet<UUID> active = new HashSet<>();
 
     private record ActiveOrder(
             UUID casterId,
@@ -69,6 +67,7 @@ public class CommandingOrdersAbility extends ToggleAbility {
     public void start(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
         entity.sendSystemMessage(Component.literal("§5Commanding Orders: ON"));
+        active.add(entity.getUUID());
     }
 
     @Override
@@ -80,11 +79,14 @@ public class CommandingOrdersAbility extends ToggleAbility {
     public void stop(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
         entity.sendSystemMessage(Component.literal("§cCommanding Orders: OFF"));
+        active.remove(entity.getUUID());
     }
 
     public static boolean handleAuthorityChat(LivingEntity caster, String rawMessage) {
         if (caster == null || caster.level().isClientSide) return false;
         if (!(caster.level() instanceof ServerLevel serverLevel)) return false;
+
+        if(!active.contains(caster.getUUID())) return false;
 
         String commandRaw = rawMessage.trim().toLowerCase(Locale.ROOT);
         if (commandRaw.isEmpty()) return false;
