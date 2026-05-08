@@ -53,7 +53,6 @@ public class DreamTraversalAbility extends SelectableAbility {
         super(id, 1f);
         this.autoClear = false;
         canBeUsedInArtifact = false;
-        canBeCopied = false;
     }
 
     @Override

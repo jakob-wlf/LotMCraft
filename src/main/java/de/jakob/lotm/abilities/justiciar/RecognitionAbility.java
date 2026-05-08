@@ -16,12 +16,9 @@ public class RecognitionAbility extends ToggleAbility {
 
     public RecognitionAbility(String id) {
         super(id);
-        canBeCopied = true;
         canBeUsedByNPC = false;
-        canBeReplicated = true;
-        cannotBeStolen = false;
         doesNotIncreaseDigestion = true;
-        canBeUsedInArtifact = true;
+        canBeUsedInArtifact = false;
     }
 
     @Override

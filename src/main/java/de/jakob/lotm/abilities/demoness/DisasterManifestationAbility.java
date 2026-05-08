@@ -33,7 +33,6 @@ import java.util.Map;
 public class DisasterManifestationAbility extends SelectableAbility {
     public DisasterManifestationAbility(String id) {
         super(id, 4);
-        this.canBeCopied = false;
         postsUsedAbilityEventManually = true;
         canBeShared = false;
     }

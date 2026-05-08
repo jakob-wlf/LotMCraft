@@ -58,10 +58,7 @@ public class NightmareAbility extends SelectableAbility {
 
     public NightmareAbility(String id) {
         super(id, 1);
-
-        canBeCopied = false;
         canBeUsedByNPC = false;
-        canBeReplicated = false;
         autoClear = false;
     }
 

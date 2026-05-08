@@ -19,6 +19,9 @@ public class AvatarCreationAbility extends Ability {
         canBeUsedByNPC = false;
         canBeCopied = false;
         canBeUsedInArtifact =false;
+        canBeShared = false;
+        cannotBeStolen = true;
+        canBeReplicated = false;
     }
 
     @Override

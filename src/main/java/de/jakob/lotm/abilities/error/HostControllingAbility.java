@@ -18,6 +18,8 @@ public class HostControllingAbility extends SelectableAbility {
         canBeReplicated = false;
         canBeUsedInArtifact = false;
         canAlwaysBeUsed = true;
+        canBeShared = false;
+        cannotBeStolen = true;
     }
 
     @Override

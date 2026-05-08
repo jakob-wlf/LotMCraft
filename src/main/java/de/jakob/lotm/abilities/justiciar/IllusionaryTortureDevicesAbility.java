@@ -42,10 +42,7 @@ public class IllusionaryTortureDevicesAbility extends SelectableAbility {
 
     public IllusionaryTortureDevicesAbility(String id) {
         super(id, 1.5f);
-        canBeCopied = true;
         canBeUsedByNPC = true;
-        cannotBeStolen = false;
-        canBeReplicated = true;
     }
 
     @Override

@@ -42,7 +42,6 @@ public class PuppeteeringAbility extends Ability {
     public PuppeteeringAbility(String id) {
         super(id, 1);
 
-        canBeCopied = false;
     }
 
     @Override

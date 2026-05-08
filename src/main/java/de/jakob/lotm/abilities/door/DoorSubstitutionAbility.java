@@ -37,6 +37,7 @@ public class DoorSubstitutionAbility extends Ability {
         canBeCopied = false;
         canBeReplicated = false;
         canBeUsedInArtifact = false;
+        canBeShared = false;
     }
 
     @Override

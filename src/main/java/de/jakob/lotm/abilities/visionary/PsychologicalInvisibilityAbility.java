@@ -44,6 +44,8 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
     public PsychologicalInvisibilityAbility(String id) {
         super(id);
         canBeCopied = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
     }
 
     @Override

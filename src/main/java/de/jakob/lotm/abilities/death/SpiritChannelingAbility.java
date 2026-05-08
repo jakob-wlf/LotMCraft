@@ -73,6 +73,11 @@ public class SpiritChannelingAbility extends SelectableAbility {
 
     public SpiritChannelingAbility(String id) {
         super(id, 4f);
+        canBeCopied = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
+        canBeUsedInArtifact = false;
+        canBeShared = false;
     }
 
     @Override

@@ -17,9 +17,7 @@ public class LuckPerceptionAbility extends ToggleAbility {
         super(id);
 
         canBeUsedByNPC = false;
-        canBeCopied = false;
         autoClear = false;
-        canBeShared = false;
     }
 
     @Override

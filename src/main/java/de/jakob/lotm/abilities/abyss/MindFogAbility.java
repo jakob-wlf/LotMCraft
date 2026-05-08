@@ -29,9 +29,6 @@ public class MindFogAbility extends ToggleAbility {
 
     public MindFogAbility(String id) {
         super(id, "fog");
-        canBeUsedByNPC = false;
-        this.canBeCopied = false;
-        this.canBeReplicated = false;
         autoClear = false;
         interactionRadius = 20;
     }

@@ -33,7 +33,6 @@ public class HandOfDeathAbility extends SelectableAbility {
 
     public HandOfDeathAbility(String id) {
         super(id, 60f);
-        canBeCopied = false;
         canBeShared = false;
     }
 
