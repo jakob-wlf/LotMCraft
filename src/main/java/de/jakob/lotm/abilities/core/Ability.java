@@ -3,10 +3,7 @@ package de.jakob.lotm.abilities.core;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.abilities.error.ParasitationAbility;
-import de.jakob.lotm.attachments.AbilityCooldownComponent;
-import de.jakob.lotm.attachments.ControllingDataComponent;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
@@ -203,6 +200,12 @@ public abstract class Ability {
             if(getRequirements().containsKey(pathway) && getRequirements().get(pathway) >= sequence) {
                 return true;
             }
+        }
+
+        DiscernmentComponent discernmentComponent = entity.getData(ModAttachments.DISCERNMENT_DATA.get());
+        if(discernmentComponent.isDiscerning()){
+            if(getRequirements().containsKey(pathway) && getRequirements().get(pathway) >= sequence)
+                return true;
         }
 
         // Check pathway

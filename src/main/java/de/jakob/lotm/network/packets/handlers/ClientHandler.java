@@ -482,6 +482,10 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(new ShapeShiftingSelectionGui(packet.entityTypes()));
     }
 
+    public static void handleDiscernmentScreenPacket(OpenDiscernmentScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new DiscernmentSelectionGui(packet.saved()));
+    }
+
     public static void handleHistoricalVoidBorrowingScreenPacket(OpenHistoricalVoidBorrowingScreenPacket packet) {
         Minecraft.getInstance().setScreen(new HistoricalVoidBorrowingSelectionGui(packet.options()));
     }
@@ -556,6 +560,14 @@ public class ClientHandler {
         }
         entity.getData(ModAttachments.CONTROLLING_DATA.get()).setControlling(packet.isControlling());
         entity.getData(ModAttachments.CONTROLLING_DATA.get()).setBodyEntity(packet.bodyEntity());
+    }
+
+    public static void handleDiscernmentDataPacket(SyncDiscernmentDataPacket packet) {
+        Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
+        if(entity == null) {
+            return;
+        }
+        entity.getData(ModAttachments.DISCERNMENT_DATA.get()).setDiscerning(packet.isDiscerning());
     }
 
     public static void syncKillCount(int killCount) {
