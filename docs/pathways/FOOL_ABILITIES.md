@@ -1,48 +1,60 @@
 # Fool Pathway Abilities
 
-## Spirituality
-
-Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passively.
-
-| Sequence | Max Spirituality | Regen/sec |
-|----------|-----------------|-----------|
-| 9        | 630             | 7.6/s     |
-| 8        | 700             | 8.4/s     |
-| 7        | 2,730           | 32.8/s    |
-| 6        | 4,200           | 50.4/s    |
-| 5        | 6,650           | 79.8/s    |
-| 4        | 13,650          | 163.8/s   |
-| 3        | 17,500          | 210.0/s   |
-| 2        | 35,000          | 420.0/s   |
-| 1        | 70,000          | 840.0/s   |
-| 0        | 210,000         | 2,520.0/s |
-
----
-
 ## Active Abilities
 
 ---
 
 ### Fooling
 **Sequence Requirement:** 0
-**Spirituality Cost:** 80000
-**Cooldown:** 45 seconds
-*(Cannot be shared)*
+**Spirituality Cost:** 300 base, plus upkeep on sustained modes
+**Cooldown:** 18 seconds
+*(Cannot be copied, replicated, or shared)*
 
-- **Radius:** `50 × max(multiplier/4, 1)` blocks.
-- **Duration:** `60 × max(multiplier/4, 1)` seconds.
-- Applies the **Fooling** status to all entities in range for the duration.
+Seven selectable deity-level modes:
 
-**Fooling Status:**
-- **Inverted movement** — all directional input is reversed (forward↔back, left↔right, jump↔sneak). Stored as an attachment so it cannot be removed by milk or effect-clearing mechanics.
-- **Scrambled abilities** — on every ability use, **25% chance** the ability fails entirely; otherwise a random ability from the target's own pathway is cast instead of the intended one.
-- **Stun** — every 10 seconds, the target is stunned for **3 seconds** (complete inability to act).
+**Mode 0 - Fool History**
+- **Range:** 35 blocks, allies included.
+- On self or an ally: restores them to a battle-ready state by fully refreshing health, spirituality, and ability cooldowns while clearing major debuffs.
+- On an enemy Beyonder: temporarily fools history into treating their sequence as different for **30 seconds**.
+- Default cast makes the target register as **weaker**; *Shift* makes the target register as **stronger**.
+- Enemy history masks drain **40 spirituality per second** from the Fool while maintained.
+
+**Mode 1 - Fool Time**
+- **Range:** 40 blocks, allies included.
+- Default cast rewinds the target to an earlier recorded position and partially restores their former health/spirituality state.
+- *Shift* displaces the target into a false “future,” relocating them to a random nearby destination.
+
+**Mode 2 - Fool Fate**
+- **Range:** 35 blocks, allies included.
+- On self or an ally: grants **60 seconds** of protection against **Losing Control**, canceling the next losing-control effect or damage instance.
+- On an enemy Beyonder of lower standing than the Fool: forces fate to acknowledge them as already losing control, applying **Losing Control** and backlash damage.
+
+**Mode 3 - Blind Stupidity**
+- **Range:** 35 blocks, allies included.
+- Afflicts the target for **20-30 seconds** with the Fooling effect.
+- While afflicted, the target's inventory is repeatedly shuffled, their selected hotbar slot changes, and ability usage almost always fails; the rare successful input misfires into a random ability instead.
+
+**Mode 4 - Realm of Mysteries**
+- Toggle aura centered on the caster with a radius of **5 chunks / 80 blocks**.
+- Allies inside gain **Concealment**, **Regeneration**, **Speed**, and **Resistance**.
+- Enemies inside suffer **Blindness**, **Weakness**, and become easier to track.
+- Costs **65 spirituality per second** while active.
+
+**Mode 5 - Lord of the Spirit World**
+- **Range:** 45 blocks, allies included.
+- Sends **2-3 temporary angel-level spirit servants** to either aid the targeted ally/self or attack the targeted enemy.
+- Current implementation uses the targeted entity/player instead of a separate player-selection GUI.
+
+**Mode 6 - Star Grafting**
+- **Range:** 45 blocks.
+- Grafts a false supernova onto a target point, creating a large blast that deals very high damage, sets victims ablaze, and throws them back.
+- Intended as the sequence 0 upgrade path for Fool's incomplete star-level offensive authority.
 
 ---
 
 ### Grafting
 **Sequence Requirement:** 1
-**Spirituality Cost:** 10000
+**Spirituality Cost:** 1400
 **Cooldown:** 1 second
 *(Cannot be copied, replicated; cannot be used by NPCs)*
 
@@ -75,7 +87,7 @@ Four selectable modes. All graft effects last **30 seconds** and are used in a t
 
 ### Miracle Creation
 **Sequence Requirement:** 2
-**Spirituality Cost:** 7000
+**Spirituality Cost:** 1200
 **Cooldown:** 5 seconds
 *(Cannot be copied)*
 
@@ -106,7 +118,7 @@ Opens a coordinate entry UI; teleports the caster to the specified location.
 
 ### Historical Void Hiding
 **Sequence Requirement:** 3
-**Spirituality Cost:** 250 per tick (toggle)
+**Spirituality Cost:** 25 per tick (toggle)
 *(Cannot be copied, replicated, stolen, or used in artifacts)*
 
 - Enters a **hidden state** in the Historical Void — the caster is lifted 5 blocks upward, frozen in place, and becomes invisible.
@@ -121,7 +133,7 @@ Opens a coordinate entry UI; teleports the caster to the specified location.
 
 ### Historical Void Summoning
 **Sequence Requirement:** 3
-**Spirituality Cost:** 5000
+**Spirituality Cost:** 920
 **Cooldown:** 1 second
 *(Cannot be copied, replicated, stolen, used by NPCs, or used in artifacts)*
 
@@ -201,7 +213,7 @@ Four selectable modes. Requires the caster to have one or more active marionette
 
 ### Shape Shifting
 **Sequence Requirement:** 6
-**Spirituality Cost:** 1000
+**Spirituality Cost:** 100
 **Cooldown:** 5 seconds
 *(Cannot be copied, replicated; cannot be used by NPCs)*
 
@@ -218,8 +230,8 @@ Two selectable modes:
 
 ### Air Bullet
 **Sequence Requirement:** 7
-**Spirituality Cost:** 100
-**Cooldown:** 1.5 seconds
+**Spirituality Cost:** 20
+**Cooldown:** 0.75 seconds
 
 - **Range:** 10 blocks; **Hit Radius:** 2.5 blocks
 - Fires a compressed air projectile that travels 1 block/tick.
@@ -232,8 +244,8 @@ Two selectable modes:
 
 ### Flame Controlling
 **Sequence Requirement:** 7
-**Spirituality Cost:** 100
-**Cooldown:** 1.5 seconds
+**Spirituality Cost:** 20
+**Cooldown:** 0.75 seconds
 
 - **Range:** 10 blocks; **Hit Radius:** 2.5 blocks
 - Fires a flame projectile that travels 1 block/tick.
@@ -246,8 +258,8 @@ Two selectable modes:
 
 ### Flaming Jump
 **Sequence Requirement:** 7
-**Spirituality Cost:** 60
-**Cooldown:** 1 second
+**Spirituality Cost:** 12
+**Cooldown:** 0.05 seconds
 *(Cannot be used by NPCs)*
 
 - Teleports the caster to a **targeted fire block** within 50 blocks.
@@ -289,34 +301,20 @@ Two selectable modes:
 ### Physical Enhancements (Fool)
 **Sequence Requirement:** 9
 
-Includes **Fire Resistance** at Seq 7 and below.
+Provides passive buffs that scale with the caster's current sequence. No Night Vision or Fire Resistance at any sequence. Lower Strength at Seq 9 (no Strength at Seq 9, Strength +1 at Seq 8–7).
 
 | Sequence | Strength | Resistance | Speed | Bonus Health | Regeneration | Other |
 |----------|----------|------------|-------|--------------|--------------|-------|
-| 9        | —        | —          | +1    | —            | —            | — |
-| 8        | +1       | —          | +2    | +3           | —            | — |
-| 7        | +1       | —          | +3    | +3           | +1           | Fire Resistance +1 |
-| 6        | +1       | +1         | +3    | +4           | +1           | Fire Resistance +1 |
-| 5        | +2       | +2         | +3    | +5           | +1           | Fire Resistance +2 |
-| 4        | +1       | +4         | +5    | +12          | +2           | Fire Resistance +2 |
-| 3        | +2       | +5         | +5    | +13          | +2           | Fire Resistance +3 |
-| 2        | +3       | +8         | +6    | +21          | +3           | Fire Resistance +4 |
-| 1        | +3       | +8         | +6    | +26          | +3           | Fire Resistance +4 |
-| 0        | +4       | +10        | +7    | +36          | +4           | Fire Resistance +5 |
-
----
-
-### Miracle of Resurrection
-**Sequence Requirement:** 2
-
-- **Passive:** When the caster would die, if they have resurrection attempts remaining:
-  - Death is **cancelled**.
-  - Inventory is **dropped** at the death location.
-  - Caster is **teleported** to a random position up to 50 blocks away in the Overworld (surface level).
-  - Caster is immediately placed into **Historical Void Hiding**.
-  - Caster is **fully healed** and all effects are removed.
-  - All abilities are **disabled for 10 minutes**.
-  - One resurrection attempt is consumed.
+| 9        | —        | —          | +2    | —            | +1           | — |
+| 8        | +1       | +4         | +2    | +5           | +2           | — |
+| 7        | +1       | +4         | +2    | +5           | +2           | — |
+| 6        | +2       | +6         | +2    | +7           | +2           | — |
+| 5        | +2       | +8         | +2    | +9           | +2           | — |
+| 4        | +3       | +13        | +4    | +16          | +3           | — |
+| 3        | +3       | +14        | +4    | +17          | +3           | — |
+| 2        | +4       | +17        | +5    | +25          | +4           | — |
+| 1        | +4       | +18        | +5    | +30          | +4           | — |
+| 0        | +5       | +18        | +5    | +20          | +5           | — |
 
 ---
 

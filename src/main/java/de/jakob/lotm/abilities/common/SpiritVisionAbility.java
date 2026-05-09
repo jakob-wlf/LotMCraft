@@ -30,6 +30,8 @@ import org.joml.Vector3f;
 import java.util.*;
 
 public class SpiritVisionAbility extends ToggleAbility {
+    private static final float DEFAULT_SPIRITUALITY_COST = 0.5f;
+    private static final float HANGED_SPIRITUALITY_COST = 18.0f;
 
     public SpiritVisionAbility(String id) {
         super(id);
@@ -48,6 +50,7 @@ public class SpiritVisionAbility extends ToggleAbility {
         Map<String, Integer> reqs = new HashMap(
                 Map.of(
                         "fool", 9,
+                        "hanged_man", 9,
                         "door", 7,
                         "hermit", 9,
                         "demoness", 7,
@@ -225,7 +228,12 @@ public class SpiritVisionAbility extends ToggleAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return .5f;
+        return DEFAULT_SPIRITUALITY_COST;
+    }
+
+    @Override
+    protected float getSpiritualityCostForEntity(LivingEntity entity) {
+        return "hanged_man".equals(BeyonderData.getPathway(entity)) ? HANGED_SPIRITUALITY_COST : DEFAULT_SPIRITUALITY_COST;
     }
 
 }

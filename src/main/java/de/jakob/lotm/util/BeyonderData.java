@@ -3,6 +3,7 @@ package de.jakob.lotm.util;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.abilities.fool.FoolingAbility;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -49,6 +50,7 @@ public class BeyonderData {
         implementedRecipes.put("demoness", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("red_priest", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("visionary", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
+        implementedRecipes.put("hanged_man", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("mother", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("abyss", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("wheel_of_fortune", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
@@ -89,6 +91,7 @@ public class BeyonderData {
             "error",
             "sun",
             "tyrant",
+            "hanged_man",
             "darkness",
             "demoness",
             "red_priest",
@@ -307,6 +310,11 @@ public class BeyonderData {
             }
         }
 
+        Integer fooledSequence = FoolingAbility.getFooledSequenceOverride(entity);
+        if (fooledSequence != null) {
+            return fooledSequence;
+        }
+
         BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
         return component.getSequence();
     }
@@ -443,10 +451,10 @@ public class BeyonderData {
             return 0f;
 
         return switch (path){
-            case "darkness", "fool", "wheel_of_fortune" -> getMaxSpirituality(seq, 3.5f);
+            case "darkness", "fool", "wheel_of_fortune", "hanged_man" -> getMaxSpirituality(seq, 3.5f);
             case "door", "death" -> getMaxSpirituality(seq, 3);
             case "twilight_giant", "hermit", "error" -> getMaxSpirituality(seq, 2);
-            case "demoness", "white_tower", "visionary", "sun", "tyrant", "hanged_man", "moon",
+            case "demoness", "white_tower", "visionary", "sun", "tyrant", "moon",
                  "mother", "abyss", "black_emperor", "justiciar", "chained"
                     -> getMaxSpirituality(seq, 1);
             case "red_priest" -> getMaxSpirituality(seq, 0.8f);

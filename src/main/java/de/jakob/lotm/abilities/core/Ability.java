@@ -1,9 +1,8 @@
 package de.jakob.lotm.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.error.ParasitationAbility;
+import de.jakob.lotm.abilities.fool.FoolingAbility;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
-import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gamerule.ModGameRules;
@@ -96,7 +95,7 @@ public abstract class Ability {
 
         // Consume spirituality
         if(shouldConsumeSpirituality(newUser) && consumeSpirituality) {
-            BeyonderData.reduceSpirituality(newUser, getSpiritualityCost());
+            BeyonderData.reduceSpirituality(newUser, getEffectiveSpiritualityCost(newUser));
         }
 
         // Digest potion
@@ -106,7 +105,7 @@ public abstract class Ability {
 
         // Handle Cooldown
         AbilityCooldownComponent component = newUser.getData(ModAttachments.COOLDOWN_COMPONENT);
-        component.setCooldown(id, cooldown);
+        component.setCooldown(id, getEffectiveCooldown(newUser));
 
         if(AbilityUtil.hasArtifactScaling(entity)){
             artifactScalingMap.put(entity.getUUID(), AbilityUtil.getArtifactScalingSeq(entity));
@@ -119,10 +118,6 @@ public abstract class Ability {
 
         if(this.autoClear){
             clearArtifactScaling(entity);
-        }
-
-        if(AbilityUtil.ignoreAllies.containsKey(entity.getUUID()) && !AbilityUtil.ignoreAllies.get(entity.getUUID())){
-            AbilityUtil.ignoreAllies.remove(entity.getUUID());
         }
 
         // Track ability use for Recording/Replicating detection
@@ -147,8 +142,24 @@ public abstract class Ability {
 
     protected abstract float getSpiritualityCost();
 
+    protected float getSpiritualityCostForEntity(LivingEntity entity) {
+        return getSpiritualityCost();
+    }
+
     public float multiplier(LivingEntity entity) {
-        return (float) AbilityUtil.getMultiplierWithArt(entity, this);
+        return (float) (AbilityUtil.getMultiplierWithArt(entity, this) * FoolingAbility.getRealmPowerMultiplier(entity, this));
+    }
+
+    protected float getEffectiveSpiritualityCost(LivingEntity entity) {
+        return getSpiritualityCostForEntity(entity) * FoolingAbility.getRealmSpiritualityCostMultiplier(entity, this);
+    }
+
+    public float getPublicEffectiveSpiritualityCost(LivingEntity entity) {
+        return getEffectiveSpiritualityCost(entity);
+    }
+
+    protected int getEffectiveCooldown(LivingEntity entity) {
+        return Math.max(1, Math.round(cooldown * FoolingAbility.getRealmCooldownMultiplier(entity, this)));
     }
 
     public void onHold(Level level, LivingEntity entity) {
@@ -170,20 +181,31 @@ public abstract class Ability {
             return getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence);
         }
 
-        // use the old system in case of controlling - will change once worms get added
-        ControllingDataComponent controllingDataComponent = entity.getData(ModAttachments.CONTROLLING_DATA);
-        if (controllingDataComponent.isControlling()) {
-            if(getRequirements().containsKey(pathway) && getRequirements().get(pathway) >= sequence) {
-                return true;
+        // Check current pathway
+        if(getRequirements().containsKey(pathway) && getRequirements().get(pathway) >= sequence) {
+            int reqSeq = getRequirements().get(pathway);
+            // Switched pathway players only access seq 9-5 abilities once they have a char stack at seq 4 or stronger
+            if (BeyonderData.hasSwitchedPathway(entity) && reqSeq > 4) {
+                int[] stacks = BeyonderData.getCharStacks(entity);
+                boolean hasStack = false;
+                for (int i = 1; i <= 4; i++) { if (stacks[i] > 0) { hasStack = true; break; } }
+                if (!hasStack) return false;
             }
+            return true;
         }
 
-        // Check pathway
-        for(int i = sequence; i < BeyonderData.getPathwayHistory(entity).length; i++) {
-            if(BeyonderData.getPathwayHistory(entity)[i] == null) continue;
-            String userPath = BeyonderData.getPathwayHistory(entity)[i];
-            if(getRequirements().containsKey(userPath) && getRequirements().get(userPath) == i) {
-                return true;
+        // Check historical pathways from domain switches — abilities from the previous pathway are
+        // accessible only down to the switch point (e.g. switched at seq 4, so only fool seq 5–9 carry over)
+        if(!entity.level().isClientSide()) {
+            String[] pathwayHistory = BeyonderData.getPathwayHistory(entity);
+            if(pathwayHistory.length < 10) return false;
+            for (int seq = sequence + 1; seq <= 9; seq++) {
+                String historicalPathway = pathwayHistory[seq];
+                if (historicalPathway != null
+                        && getRequirements().containsKey(historicalPathway)
+                        && getRequirements().get(historicalPathway) >= seq) {
+                    return true;
+                }
             }
         }
 
@@ -200,11 +222,11 @@ public abstract class Ability {
         AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
         if(component.isOnCooldown(id)) return false;
 
-        if(shouldConsumeSpirituality(entity) && doesConsumeSpirituality && BeyonderData.getSpirituality(entity) <= getSpiritualityCost()) return false;
+        if(shouldConsumeSpirituality(entity) && doesConsumeSpirituality && BeyonderData.getSpirituality(entity) <= getEffectiveSpiritualityCost(entity)) return false;
 
         if(!(entity instanceof Player) && !canBeUsedByNPC) return false;
 
-        if(entity instanceof Player player && player.isSpectator() && !ParasitationAbility.isConcealed(player.getUUID())) return false;
+        if(entity instanceof Player player && player.isSpectator()) return false;
 
         DisabledAbilitiesComponent disabledComponent = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
         if((disabledComponent.isAbilityUsageDisabled() || disabledComponent.isSpecificAbilityDisabled(this.getId())) && !this.canAlwaysBeUsed) return false;
@@ -237,10 +259,10 @@ public abstract class Ability {
             return 0f;
         }
 
-        float cooldownMultiplier = Math.clamp(((float) cooldown) / (20 * 7), .2f, 2.25f);
+        float cooldownMultiplier = Math.clamp(((float) cooldown) / (20 * 7), .1f, 2.25f);
 
-        float rawDigestion = (1f / (80f * Math.max(.5f, ((10 - requiredSequence) * .5f)))) * cooldownMultiplier;
-        float digestion = rawDigestion * (entity.level().getGameRules().getInt(ModGameRules.DIGESTION_RATE) / 10f);
+        float rawDigestion = (1f / (100f * Math.max(.5f, ((10 - requiredSequence) * .5f)))) * cooldownMultiplier;
+        float digestion = rawDigestion * (entity.level().getGameRules().getInt(ModGameRules.DIGESTION_RATE) / 100f);
 
         return digestion;
     }
@@ -295,13 +317,5 @@ public abstract class Ability {
 
     public boolean getShouldBeHidden(){
         return shouldBeHidden;
-    }
-
-    public int getCooldown() {
-        return cooldown;
-    }
-
-    public float spiritualityCost() {
-        return getSpiritualityCost();
     }
 }

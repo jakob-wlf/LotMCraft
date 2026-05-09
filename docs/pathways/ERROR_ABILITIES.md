@@ -44,6 +44,22 @@ Stolen copies cannot be used if the ability is already owned by the thief at the
 
 ---
 
+### Error
+**Sequence Requirement:** 0
+**Spirituality Cost:** 80
+**Cooldown:** 30 seconds
+*(Cannot be copied, replicated, or used in artifacts)*
+
+- **Radius:** 24 blocks
+- **Duration:** 30 seconds
+- Applies an **Error state** to all nearby enemies.
+- While a target is affected:
+  - **Targeting goes wrong:** targeted entities may be replaced with a different nearby entity, and targeted locations may be offset randomly.
+  - **Damage goes wrong:** incoming damage may instead **heal** the victim or be **redirected** to another errored target.
+  - **Reality glitches:** every second the target may be **randomly displaced**, briefly **lose ability usage**, and suffer **Confusion**.
+
+---
+
 ### Time Manipulation
 **Sequence Requirement:** 1
 **Spirituality Cost:** 10000

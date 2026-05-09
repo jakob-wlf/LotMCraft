@@ -7,7 +7,6 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.PlayerSelectionWorkType;
 import de.jakob.lotm.util.data.PlayerInfo;
 import de.jakob.lotm.util.scheduling.ClientScheduler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -31,7 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DivinationAbility extends SelectableAbility {
     public static final Set<UUID> dangerPremonitionActive = new HashSet<>();
-    public static final Set<UUID> DIVINATION_IMMUNE = Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+    private static final float DEFAULT_SPIRITUALITY_COST = 10.0f;
+    private static final float HANGED_SPIRITUALITY_COST = 12.0f;
 
     public DivinationAbility(String id) {
         super(id, 1);
@@ -47,6 +47,7 @@ public class DivinationAbility extends SelectableAbility {
         Map<String, Integer> reqs = new HashMap(
                 Map.of(
                         "fool", 9,
+                        "hanged_man", 9,
                         "door", 7,
                         "hermit", 9,
                         "demoness", 7,
@@ -56,7 +57,7 @@ public class DivinationAbility extends SelectableAbility {
         ));
 
         for(String pathway : BeyonderData.pathways) {
-            if (!reqs.containsKey(pathway) && !pathway.equalsIgnoreCase("death"))
+            if (!reqs.containsKey(pathway))
                 reqs.put(pathway, 4);
         }
         return reqs;
@@ -64,7 +65,12 @@ public class DivinationAbility extends SelectableAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 10;
+        return DEFAULT_SPIRITUALITY_COST;
+    }
+
+    @Override
+    protected float getSpiritualityCostForEntity(LivingEntity entity) {
+        return "hanged_man".equals(BeyonderData.getPathway(entity)) ? HANGED_SPIRITUALITY_COST : DEFAULT_SPIRITUALITY_COST;
     }
 
     @Override
@@ -187,13 +193,12 @@ public class DivinationAbility extends SelectableAbility {
                 .getPlayers()
                 .stream()
                 .filter(p -> p != player)
-                .filter(p -> !DIVINATION_IMMUNE.contains(p.getUUID()))
                 .map(p -> new PlayerInfo(p.getUUID(), p.getGameProfile().getName()))
                 .toList();
 
         PacketDistributor.sendToPlayer(
                 player,
-                new OpenPlayerDivinationScreenPacket(players, PlayerSelectionWorkType.DIVINATION)
+                new OpenPlayerDivinationScreenPacket(players)
         );
     }
 

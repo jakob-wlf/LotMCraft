@@ -48,6 +48,11 @@ public class AdvancementsEventHandler {
             if (sequence <= 5) grantAdvancement(player, "reach_sequence_5");
             if (sequence <= 3) grantAdvancement(player, "reach_sequence_3");
             if (sequence <= 1) grantAdvancement(player, "reach_sequence_1");
+            if (sequence == 0
+                    && BeyonderData.pathwayInfos.containsKey("fool")
+                    && "fool".equals(BeyonderData.getPathway(player))) {
+                grantAdvancement(player, "become_the_fool");
+            }
         }
 
         // Only run the heavier checks every 20 ticks to reduce performance impact

@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.mother;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.server.level.ServerLevel;
@@ -15,18 +16,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HealingAbility extends SelectableAbility {
+    private static final float DEFAULT_SPIRITUALITY_COST = 25.0f;
+    private static final float HANGED_SPIRITUALITY_COST = 100.0f;
+
     public HealingAbility(String id) {
         super(id, 10);
     }
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("mother", 8));
+        return new HashMap<>(Map.of(
+                "mother", 8,
+                "hanged_man", 6
+        ));
     }
 
     @Override
     protected float getSpiritualityCost() {
-        return 25;
+        return DEFAULT_SPIRITUALITY_COST;
+    }
+
+    @Override
+    protected float getSpiritualityCostForEntity(LivingEntity entity) {
+        return "hanged_man".equals(BeyonderData.getPathway(entity)) ? HANGED_SPIRITUALITY_COST : DEFAULT_SPIRITUALITY_COST;
     }
 
     @Override

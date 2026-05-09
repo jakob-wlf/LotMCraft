@@ -2,6 +2,7 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.hanged.ShepherdGrazingUtil;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.FoolingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -15,6 +16,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+import java.util.ArrayList;
 
 public record UseSelectedAbilityPacket() implements CustomPacketPayload {
 
@@ -31,9 +34,9 @@ public record UseSelectedAbilityPacket() implements CustomPacketPayload {
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer serverPlayer) {
 
-                // Fooling effect: 25% chance to fail entirely, otherwise scramble to a random ability.
+                // Blind Stupidity: abilities almost never fire correctly and, when they do, they misfire.
                 if (serverPlayer.getData(ModAttachments.FOOLING_COMPONENT).isFooled()) {
-                    if (new java.util.Random().nextFloat() < 0.25f) return;
+                    if (new java.util.Random().nextFloat() < 0.9f) return;
                     if (serverPlayer.level() instanceof ServerLevel serverLevel) {
                         String pathway = BeyonderData.getPathway(serverPlayer);
                         int sequence   = BeyonderData.getSequence(serverPlayer);
@@ -47,17 +50,23 @@ public record UseSelectedAbilityPacket() implements CustomPacketPayload {
                 }
 
                 AbilityWheelComponent component = serverPlayer.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
-
-                if (component.getAbilities().isEmpty()) {
+                ArrayList<String> abilities = ShepherdGrazingUtil.getAbilityWheelAbilities(serverPlayer);
+                if (abilities.isEmpty()) {
                     return;
                 }
 
                 int selectedIndex = component.getSelectedAbility();
-                if (selectedIndex >= 0 && selectedIndex < component.getAbilities().size()) {
-                    String abilityId = component.getAbilities().get(selectedIndex);
+                if (selectedIndex >= 0 && selectedIndex < abilities.size()) {
+                    String abilityId = abilities.get(selectedIndex);
                     Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
 
                     if (ability != null && serverPlayer.level() instanceof ServerLevel serverLevel) {
+                        if (ShepherdGrazingUtil.isActiveGrazedAbility(serverPlayer, abilityId)) {
+                            ShepherdGrazingUtil.tryUseGrazedAbility(serverPlayer,
+                                    serverPlayer.getData(ModAttachments.SHEPHERD_GRAZING_COMPONENT).getActiveSoulId(),
+                                    ability);
+                            return;
+                        }
                         boolean isSharedAbility = isSharedAbility(serverPlayer, abilityId);
                         ability.useAbility(serverLevel, serverPlayer, true, !isSharedAbility, true);
                     }

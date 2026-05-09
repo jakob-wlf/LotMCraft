@@ -34,9 +34,9 @@ public record UseKeyboundAbilityPacket(int selectedAbility) implements CustomPac
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
 
-            // Fooling effect: 25% chance to fail entirely, otherwise scramble to a random ability.
+            // Blind Stupidity: abilities almost never fire correctly and, when they do, they misfire.
             if (player.getData(ModAttachments.FOOLING_COMPONENT).isFooled()) {
-                if (new java.util.Random().nextFloat() < 0.25f) return;
+                if (new java.util.Random().nextFloat() < 0.9f) return;
                 String pathway = BeyonderData.getPathway(player);
                 int sequence   = BeyonderData.getSequence(player);
                 Ability randomAbility = LOTMCraft.abilityHandler.getRandomAbility(pathway, sequence, new java.util.Random(), false, java.util.Collections.emptyList());

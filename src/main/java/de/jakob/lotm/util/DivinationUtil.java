@@ -74,6 +74,7 @@ public class DivinationUtil {
     private static int getLowerSequenceDivinationPower(String pathway) {
         return switch (pathway) {
             case "fool" -> 1;
+            case "hanged_man" -> 1;
             case "wheel_of_fortune" -> 2;
             case "darkness" -> 1;
             default -> 0;

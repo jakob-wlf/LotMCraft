@@ -28,6 +28,12 @@ import de.jakob.lotm.abilities.justiciar.passives.PhysicalEnhancementsJusticiarA
 import de.jakob.lotm.abilities.fool.passives.PaperDaggersAbility;
 import de.jakob.lotm.abilities.fool.passives.PhysicalEnhancementsFoolAbility;
 import de.jakob.lotm.abilities.fool.passives.PuppeteeringEnhancementsAbility;
+import de.jakob.lotm.abilities.hanged.passives.SecretsSuppliantPerceptionAbility;
+import de.jakob.lotm.abilities.hanged.passives.FleshSofteningAbility;
+import de.jakob.lotm.abilities.hanged.passives.GrazingAbility;
+import de.jakob.lotm.abilities.hanged.passives.PhysicalEnhancementsHangedAbility;
+import de.jakob.lotm.abilities.hanged.passives.RoseBishopRegenerationAbility;
+import de.jakob.lotm.abilities.hanged.passives.TrueCreatorRavingsAbility;
 import de.jakob.lotm.abilities.mother.passives.PhysicalEnhancementsMotherAbility;
 import de.jakob.lotm.abilities.red_priest.passive.FireResistanceAbility;
 import de.jakob.lotm.abilities.red_priest.passive.FlamingHitAbility;
@@ -62,6 +68,7 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_FOOL = ITEMS.registerItem("physical_enhancements_fool_ability", PhysicalEnhancementsFoolAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_ERROR = ITEMS.registerItem("physical_enhancements_error_ability", PhysicalEnhancementsErrorAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_DARKNESS = ITEMS.registerItem("physical_enhancements_darkness_ability", PhysicalEnhancementsDarknessAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_HANGED = ITEMS.registerItem("physical_enhancements_hanged_ability", PhysicalEnhancementsHangedAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_DOOR = ITEMS.registerItem("physical_enhancements_door_ability", PhysicalEnhancementsDoorAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_MOTHER = ITEMS.registerItem("physical_enhancements_mother_ability", PhysicalEnhancementsMotherAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_VISIONARY = ITEMS.registerItem("physical_enhancements_visionary_ability", PhysicalEnhancementsVisionaryAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
@@ -89,6 +96,11 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> PAPER_DAGGERS = ITEMS.registerItem("paper_dagger_ability", PaperDaggersAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PUPPETEERING_ENHANCEMENTS = ITEMS.registerItem("puppeteering_enhancements_ability", PuppeteeringEnhancementsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> MIRACLE_OF_RESURRECTION = ITEMS.registerItem("miracle_of_resurrection_ability", MiracleOfResurrectionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> SECRETS_SUPPLIANT_PERCEPTION = ITEMS.registerItem("secrets_suppliant_perception_ability", SecretsSuppliantPerceptionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> TRUE_CREATOR_RAVINGS = ITEMS.registerItem("true_creator_ravings_ability", TrueCreatorRavingsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> FLESH_SOFTENING = ITEMS.registerItem("flesh_softening_ability", FleshSofteningAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> ROSE_BISHOP_REGENERATION = ITEMS.registerItem("rose_bishop_regeneration_ability", RoseBishopRegenerationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> GRAZING = ITEMS.registerItem("grazing_ability", GrazingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     public static final DeferredItem<Item> NOCTURNALITY = ITEMS.registerItem("nocturnality_ability", NocturnalityAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> DARKNESS_REVIVAL = ITEMS.registerItem("darkness_revival_ability", DarknessRevivalAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));

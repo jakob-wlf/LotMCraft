@@ -9,6 +9,7 @@ import de.jakob.lotm.abilities.demoness.*;
 import de.jakob.lotm.abilities.door.*;
 import de.jakob.lotm.abilities.error.*;
 import de.jakob.lotm.abilities.fool.*;
+import de.jakob.lotm.abilities.hanged.*;
 import de.jakob.lotm.abilities.mother.*;
 import de.jakob.lotm.abilities.red_priest.*;
 import de.jakob.lotm.abilities.sun.*;
@@ -120,7 +121,13 @@ public class AbilityHandler {
 
 
         // FOOL PATHWAY
-        abilities.add(new FoolingAbility("fooling_ability"));
+        abilities.add(new FoolingHistoryAbility());
+        abilities.add(new FoolingTimeAbility());
+        abilities.add(new FoolingFateAbility());
+        abilities.add(new FoolingBlindStupidityAbility());
+        abilities.add(new FoolingRealmOfMysteriesAbility());
+        abilities.add(new LordOfSpiritWorldAbility());
+        abilities.add(new StarGraftingAbility());
         abilities.add(new AirBulletAbility("air_bullet_ability"));
         abilities.add(new FlameControllingAbility("flame_controlling_ability"));
         abilities.add(new PaperFigurineSubstituteAbility("paper_figurine_substitute_ability"));
@@ -133,6 +140,21 @@ public class AbilityHandler {
         abilities.add(new HistoricalVoidHidingAbility("historical_void_hiding_ability"));
         abilities.add(new MiracleCreationAbility("miracle_creation_ability"));
         abilities.add(new GraftingAbility("grafting_ability"));
+
+        // HANGED MAN PATHWAY
+        abilities.add(new ListeningAbility("listening_ability"));
+        abilities.add(new SummonShadowsAbility("summon_shadows_ability"));
+        abilities.add(new ShadowCurseAbility("shadow_curse_ability"));
+        abilities.add(new ShadowManipulationAbility("shadow_manipulation_ability"));
+        abilities.add(new ShadowLurkingAbility("shadow_lurking_ability"));
+        abilities.add(new ShadowShapingAbility("shadow_shaping_ability"));
+        abilities.add(new FleshCloakAbility("flesh_cloak_ability"));
+        abilities.add(new FleshBloodFusionAbility("flesh_blood_fusion_ability"));
+        abilities.add(new FleshBombAbility("flesh_bomb_ability"));
+        abilities.add(new FleshBloodServantsAbility("flesh_blood_servants_ability"));
+        abilities.add(new FleshBloodCurseAbility("flesh_blood_curse_ability"));
+        abilities.add(new DevouringAbility("devouring_ability"));
+        abilities.add(new ShepherdGrazingAbility("shepherd_grazing_ability"));
 
         // DARKNESS PATHWAY
         abilities.add(new MidnightPoemAbility("midnight_poem_ability"));
@@ -276,6 +298,7 @@ public class AbilityHandler {
 
 
         // ERROR PATHWAY
+        abilities.add(new ErrorAbility("error_ability"));
         abilities.add(new TheftAbility("theft_ability"));
         abilities.add(new MentalDisruptionAbility("mental_disruption_ability"));
         abilities.add(new DecryptionAbility("decryption_ability"));

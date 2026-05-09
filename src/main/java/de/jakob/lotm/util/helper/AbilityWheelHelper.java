@@ -2,6 +2,7 @@ package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.hanged.ShepherdGrazingUtil;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
@@ -105,8 +106,8 @@ public class AbilityWheelHelper {
      */
     public static void setSelectedAbility(ServerPlayer player, int index) {
         AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
-        
-        if (index >= 0 && index < component.getAbilities().size()) {
+
+        if (index >= 0 && index < ShepherdGrazingUtil.getAbilityWheelAbilities(player).size()) {
             component.setSelectedAbility(index);
             syncToClient(player);
         }
@@ -119,9 +120,13 @@ public class AbilityWheelHelper {
      */
     public static void syncToClient(ServerPlayer player) {
         AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
+        ArrayList<String> mergedAbilities = ShepherdGrazingUtil.getAbilityWheelAbilities(player);
+        if (component.getSelectedAbility() >= mergedAbilities.size()) {
+            component.setSelectedAbility(Math.max(0, mergedAbilities.size() - 1));
+        }
         PacketHandler.sendToPlayer(
                 player,
-                new SyncAbilityWheelPacket(component.getAbilities(), component.getSelectedAbility())
+                new SyncAbilityWheelPacket(mergedAbilities, component.getSelectedAbility())
         );
     }
 
@@ -132,16 +137,17 @@ public class AbilityWheelHelper {
      */
     public static String getSelectedAbilityId(ServerPlayer player) {
         AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
-        
-        if (component.getAbilities().isEmpty()) {
+        ArrayList<String> mergedAbilities = ShepherdGrazingUtil.getAbilityWheelAbilities(player);
+
+        if (mergedAbilities.isEmpty()) {
             return null;
         }
-        
+
         int selectedIndex = component.getSelectedAbility();
-        if (selectedIndex >= 0 && selectedIndex < component.getAbilities().size()) {
-            return component.getAbilities().get(selectedIndex);
+        if (selectedIndex >= 0 && selectedIndex < mergedAbilities.size()) {
+            return mergedAbilities.get(selectedIndex);
         }
-        
+
         return null;
     }
 }

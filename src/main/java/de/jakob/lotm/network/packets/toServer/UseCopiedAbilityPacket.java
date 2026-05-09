@@ -2,6 +2,7 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.hanged.ShepherdGrazingUtil;
 import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.helper.CopiedAbilityHelper;
@@ -41,9 +42,21 @@ public record UseCopiedAbilityPacket(int abilityIndex) implements CustomPacketPa
                 if (ability == null) return;
 
                 if (serverPlayer.level() instanceof ServerLevel serverLevel) {
-                    ability.useAbility(serverLevel, serverPlayer, true, false, false);
+                    boolean used = true;
+                    if (ShepherdGrazingUtil.GRAZED_COPY_TYPE.equals(data.copyType())) {
+                        used = ShepherdGrazingUtil.tryUseGrazedAbility(serverPlayer, data, ability);
+                    } else {
+                        ability.useAbility(serverLevel, serverPlayer, true, false, false);
+                    }
 
-                    component.decrementUses(packet.abilityIndex());
+                    if (!used) {
+                        CopiedAbilityHelper.syncToClient(serverPlayer);
+                        return;
+                    }
+
+                    if (!ShepherdGrazingUtil.GRAZED_COPY_TYPE.equals(data.copyType())) {
+                        component.decrementUses(packet.abilityIndex());
+                    }
 
                     CopiedAbilityHelper.syncToClient(serverPlayer);
                 }
