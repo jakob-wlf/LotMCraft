@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_attendant_of_mysteries",
+  "display": {
+    "icon": {
+      "id": "minecraft:nether_star"
+    },
+    "title": "The Fool",
+    "description": "You have transcended all boundaries and become The Fool — the origin of all pathways.",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "become_the_fool": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
