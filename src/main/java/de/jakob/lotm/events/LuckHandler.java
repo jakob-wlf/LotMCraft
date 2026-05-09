@@ -91,8 +91,8 @@ public class LuckHandler {
     );
 
     private static final ItemDrop[] POSSIBLE_LUCK_DROPS = {
-            new ItemDrop(Items.GOLDEN_CARROT,  32, 0.30),
-            new ItemDrop(Items.DIAMOND,         6, 0.05),
+            //new ItemDrop(Items.GOLDEN_CARROT,  32, 0.30),
+            //new ItemDrop(Items.DIAMOND,         6, 0.05),
             new ItemDrop(Items.GOLD_INGOT,     22, 0.15),
             new ItemDrop(Items.EMERALD,        22, 0.15),
             new ItemDrop(Items.LAPIS_LAZULI,   22, 0.12),

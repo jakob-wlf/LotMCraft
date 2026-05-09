@@ -57,7 +57,7 @@ public class NightmareAbility extends SelectableAbility {
     }
 
     public NightmareAbility(String id) {
-        super(id, 1);
+        super(id, 0.5f);
         canBeUsedByNPC = false;
         autoClear = false;
     }
@@ -69,12 +69,17 @@ public class NightmareAbility extends SelectableAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 0;
+        return 40;
     }
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.nightmare.nightmare", "ability.lotmcraft.nightmare.reshape", "ability.lotmcraft.nightmare.restrict", "ability.lotmcraft.nightmare.attack", "ability.lotmcraft.nightmare.teleport"};
+        return new String[]{
+                "ability.lotmcraft.nightmare.nightmare",
+                //"ability.lotmcraft.nightmare.reshape",
+                "ability.lotmcraft.nightmare.restrict",
+                "ability.lotmcraft.nightmare.attack",
+                "ability.lotmcraft.nightmare.teleport"};
     }
 
     @Override
