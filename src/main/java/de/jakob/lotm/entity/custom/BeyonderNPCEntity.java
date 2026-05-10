@@ -102,7 +102,11 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String skinName) {
-        this(entityType, level, hostile, skinName, getRandomPathway(), getWeightedHighSequence());
+        this(entityType, level, hostile, skinName, getRandomSpawnSelection());
+    }
+
+    private BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String skinName, SpawnSelection selection) {
+        this(entityType, level, hostile, skinName, selection.pathway(), selection.sequence());
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String pathway, int sequence) {
@@ -151,11 +155,21 @@ public class BeyonderNPCEntity extends PathfinderMob {
      * Generates a weighted random sequence number favoring higher sequences (3-9).
      * Uses exponential distribution to make higher sequences more likely.
      */
-    private static int getWeightedHighSequence() {
+    private static SpawnSelection getRandomSpawnSelection() {
+        String pathway = getRandomPathway();
+        return new SpawnSelection(pathway, getWeightedHighSequence(pathway));
+    }
+
+    private static int getWeightedHighSequence(String pathway) {
         Random random = new Random();
         double normalizedValue = random.nextDouble();
         double weighted = Math.pow(normalizedValue, SEQUENCE_WEIGHT_EXPONENT);
-        return MIN_SEQUENCE + (int) (weighted * (MAX_SEQUENCE - MIN_SEQUENCE + 1));
+        int minSequence = getMinimumSpawnSequence(pathway);
+        return minSequence + (int) (weighted * (MAX_SEQUENCE - minSequence + 1));
+    }
+
+    private static int getMinimumSpawnSequence(String pathway) {
+        return "hanged_man".equals(pathway) ? 1 : MIN_SEQUENCE;
     }
 
     // ========================= Entity Data Initialization =========================
@@ -548,6 +562,9 @@ public class BeyonderNPCEntity extends PathfinderMob {
         } catch (IllegalArgumentException e) {
             return null;
         }
+    }
+
+    private record SpawnSelection(String pathway, int sequence) {
     }
 
     // ========================= Loot and Drops =========================

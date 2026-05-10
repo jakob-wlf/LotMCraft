@@ -53,6 +53,7 @@ public class SummonShadowsAbility extends Ability {
                 HangedPathwayConstants.SEQUENCE_SHADOW_ASCETIC, SUMMON_PULSE_COUNT, MAX_COUNT_SCALE_SEQ1));
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 26, 1.8f, true, false, false);
         Vec3 center = target != null ? target.position() : AbilityUtil.getTargetLocation(entity, 24, 1.4f);
+        HangedRenderEffectUtil.playBurst(de.jakob.lotm.rendering.effectRendering.EffectManager.Effect.SHADOW_SUMMON, serverLevel, center.add(0, 0.8, 0), entity);
         HangedEffectUtil.spawnShadowBurst(serverLevel, center.add(0, 0.8, 0), 1.0 * areaScale, 22);
 
         if (random.nextDouble() < BACKLASH_CHANCE) {
@@ -74,6 +75,7 @@ public class SummonShadowsAbility extends Ability {
             double radius = (1.6 + random.nextDouble() * 3.0) * areaScale;
             Vec3 strike = center.add(Math.cos(angle) * radius, 0.2, Math.sin(angle) * radius);
 
+            HangedRenderEffectUtil.playBurst(de.jakob.lotm.rendering.effectRendering.EffectManager.Effect.SHADOW_SUMMON, serverLevel, strike.add(0, 0.8, 0), entity);
             HangedEffectUtil.spawnShadowBurst(serverLevel, strike.add(0, 0.8, 0), 0.9 * areaScale, 20);
             HangedEffectUtil.playShadowPulse(serverLevel, strike, 0.6f + random.nextFloat() * 0.25f);
 

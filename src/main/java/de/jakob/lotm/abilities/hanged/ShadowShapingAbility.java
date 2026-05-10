@@ -83,6 +83,7 @@ public class ShadowShapingAbility extends SelectableAbility {
         Vec3 slashEnd = VectorUtil.getRelativePosition(start, direction, 0, -offsetRight, -4.8 * areaScale);
         Set<Integer> hitEntities = new HashSet<>();
 
+        HangedRenderEffectUtil.playShadowBlade(serverLevel, entity, slashStart, slashEnd, 18);
         HangedEffectUtil.playShadowCast(serverLevel, entity.position());
         HangedEffectUtil.spawnShadowBurst(serverLevel, start, 0.6, 18);
 
@@ -116,6 +117,7 @@ public class ShadowShapingAbility extends SelectableAbility {
         float damageScale = HangedPathwayConstants.scaleForCurrentSequence(entity, HangedPathwayConstants.SEQUENCE_SHADOW_ASCETIC, MAX_DAMAGE_SCALE_SEQ1);
         double areaScale = HangedPathwayConstants.scaleForCurrentSequence(entity, HangedPathwayConstants.SEQUENCE_SHADOW_ASCETIC, MAX_AREA_SCALE_SEQ1);
         Vec3 impact = AbilityUtil.getTargetLocation(entity, 24, 1.6f);
+        HangedRenderEffectUtil.playBurst(de.jakob.lotm.rendering.effectRendering.EffectManager.Effect.SHADOW_SUMMON, serverLevel, impact.add(0, 0.6, 0), entity);
         HangedEffectUtil.playShadowCast(serverLevel, entity.position());
         HangedEffectUtil.spawnShadowTrail(serverLevel, entity.getEyePosition(), impact.add(0, 0.6, 0), 0.55);
 
@@ -159,6 +161,7 @@ public class ShadowShapingAbility extends SelectableAbility {
 
             double sideOffset = (wave[0] % 2 == 0 ? 2.2 : -2.2) * areaScale;
             Vec3 launch = VectorUtil.getRelativePosition(center, entity.getLookAngle().normalize(), 0, sideOffset, -3.2 * areaScale);
+            HangedRenderEffectUtil.playBurst(de.jakob.lotm.rendering.effectRendering.EffectManager.Effect.SHADOW_SUMMON, serverLevel, center, entity);
             HangedEffectUtil.spawnShadowTrail(serverLevel, launch, center, 0.35);
             HangedEffectUtil.spawnShadowBurst(serverLevel, center, 0.7 * areaScale, 18);
             HangedEffectUtil.playShadowPulse(serverLevel, center, 0.75f);

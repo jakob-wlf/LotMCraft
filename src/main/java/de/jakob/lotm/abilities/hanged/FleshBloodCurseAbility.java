@@ -84,6 +84,8 @@ public class FleshBloodCurseAbility extends Ability {
 
         AbilityUtil.sendActionBar(entity,
                 Component.translatable(APPLIED_MESSAGE, target.getDisplayName()).withColor(HangedPathwayConstants.pathwayColor()));
+        HangedRenderEffectUtil.playBurst(de.jakob.lotm.rendering.effectRendering.EffectManager.Effect.FLESH_CURSE, serverLevel,
+                target.position().add(0, target.getBbHeight() * 0.5, 0), entity);
         HangedEffectUtil.playFleshCast(serverLevel, entity.position());
         HangedEffectUtil.spawnFleshBurst(serverLevel, target.position().add(0, target.getBbHeight() * 0.5, 0), 0.75 * areaScale, 24);
 

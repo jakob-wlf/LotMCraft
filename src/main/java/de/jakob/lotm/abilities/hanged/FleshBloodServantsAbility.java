@@ -5,6 +5,7 @@ import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.subordinates.SubordinateUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -62,16 +63,20 @@ public class FleshBloodServantsAbility extends Ability {
                 HangedPathwayConstants.SEQUENCE_ROSE_BISHOP, SERVANT_LIFETIME, MAX_DURATION_SCALE_SEQ1));
         AbilityUtil.sendActionBar(entity,
                 Component.translatable(SUMMONED_MESSAGE).withColor(HangedPathwayConstants.pathwayColor()));
+        HangedRenderEffectUtil.playBurst(de.jakob.lotm.rendering.effectRendering.EffectManager.Effect.FLESH_CURSE, serverLevel,
+                entity.position().add(0, entity.getBbHeight() * 0.45, 0), entity);
         HangedEffectUtil.playFleshCast(serverLevel, entity.position());
         HangedEffectUtil.spawnFleshBurst(serverLevel, entity.position().add(0, entity.getBbHeight() * 0.45, 0), 0.9 * areaScale, 30);
 
         for (int i = 0; i < servantCount; i++) {
             Vec3 spawnPos = entity.position().add(level.random.nextDouble(), 0, level.random.nextDouble());
-            BeyonderNPCEntity servant = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), serverLevel, false, HangedPathwayConstants.PATHWAY_ID, 8);
+            int servantSequence = getServantSequence(entity);
+            BeyonderNPCEntity servant = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), serverLevel, false, HangedPathwayConstants.PATHWAY_ID, servantSequence);
             servant.setPos(spawnPos);
             servant.setCustomName(Component.translatable("entity.lotmcraft.flesh_blood_servant"));
             servant.setPersistenceRequired();
             serverLevel.addFreshEntity(servant);
+            HangedRenderEffectUtil.playBurst(de.jakob.lotm.rendering.effectRendering.EffectManager.Effect.FLESH_CURSE, serverLevel, spawnPos.add(0, 0.8, 0));
             HangedEffectUtil.spawnFleshBurst(serverLevel, spawnPos.add(0, 0.8, 0), 0.65, 18);
             HangedEffectUtil.playFleshPulse(serverLevel, spawnPos, 0.7f + level.random.nextFloat() * 0.2f);
 
@@ -97,6 +102,12 @@ public class FleshBloodServantsAbility extends Ability {
 
             ServerScheduler.scheduleDelayed(servantLifetime, () -> selfDestruct(servant, entity, serverLevel));
         }
+    }
+
+    private int getServantSequence(LivingEntity caster) {
+        int casterSequence = BeyonderData.getSequence(caster);
+        int weakestImplemented = BeyonderData.getHighestImplementedSequence(HangedPathwayConstants.PATHWAY_ID);
+        return Math.max(weakestImplemented, Math.min(9, casterSequence + 1));
     }
 
     private void selfDestruct(BeyonderNPCEntity servant, LivingEntity caster, ServerLevel serverLevel) {

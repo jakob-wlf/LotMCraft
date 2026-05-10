@@ -117,10 +117,42 @@ public class ShepherdGrazingComponent implements INBTSerializable<CompoundTag> {
         }
     }
 
+    public static final class ManifestedSoulData {
+        private final String soulId;
+        private final String entityUuid;
+
+        public ManifestedSoulData(String soulId, UUID entityUuid) {
+            this.soulId = soulId;
+            this.entityUuid = entityUuid == null ? "" : entityUuid.toString();
+        }
+
+        public String soulId() {
+            return soulId;
+        }
+
+        public UUID entityUuid() {
+            return entityUuid.isEmpty() ? null : UUID.fromString(entityUuid);
+        }
+
+        public CompoundTag toTag() {
+            CompoundTag tag = new CompoundTag();
+            tag.putString("SoulId", soulId);
+            tag.putString("EntityUuid", entityUuid);
+            return tag;
+        }
+
+        public static ManifestedSoulData fromTag(CompoundTag tag) {
+            return new ManifestedSoulData(
+                    tag.getString("SoulId"),
+                    tag.getString("EntityUuid").isEmpty() ? null : UUID.fromString(tag.getString("EntityUuid"))
+            );
+        }
+    }
+
     private final ArrayList<GrazedSoulData> souls = new ArrayList<>();
+    private final ArrayList<ManifestedSoulData> manifestedSouls = new ArrayList<>();
+    private final ArrayList<String> activeSoulIds = new ArrayList<>();
     private String activeSoulId = "";
-    private String manifestedSoulId = "";
-    private String manifestedEntityUuid = "";
     private float permanentSanityCap = 1.0f;
 
     public ArrayList<GrazedSoulData> getSouls() {
@@ -131,17 +163,21 @@ public class ShepherdGrazingComponent implements INBTSerializable<CompoundTag> {
         souls.add(soul);
         if (activeSoulId.isEmpty()) {
             activeSoulId = soul.soulId();
+            activeSoulIds.add(soul.soulId());
         }
     }
 
     public void removeSoul(String soulId) {
         souls.removeIf(soul -> Objects.equals(soul.soulId(), soulId));
+        removeManifestedSoul(soulId);
         if (Objects.equals(activeSoulId, soulId)) {
-            activeSoulId = souls.isEmpty() ? "" : souls.get(0).soulId();
-        }
-        if (Objects.equals(manifestedSoulId, soulId)) {
-            manifestedSoulId = "";
-            manifestedEntityUuid = "";
+            activeSoulIds.remove(soulId);
+            activeSoulId = activeSoulIds.isEmpty() ? (souls.isEmpty() ? "" : souls.get(0).soulId()) : activeSoulIds.get(0);
+            if (!activeSoulId.isEmpty() && !activeSoulIds.contains(activeSoulId)) {
+                activeSoulIds.add(0, activeSoulId);
+            }
+        } else {
+            activeSoulIds.remove(soulId);
         }
     }
 
@@ -160,30 +196,166 @@ public class ShepherdGrazingComponent implements INBTSerializable<CompoundTag> {
 
     public void setActiveSoulId(String activeSoulId) {
         this.activeSoulId = activeSoulId == null ? "" : activeSoulId;
+        if (this.activeSoulId.isEmpty()) {
+            if (!activeSoulIds.isEmpty()) {
+                activeSoulIds.clear();
+            }
+            return;
+        }
+
+        activeSoulIds.remove(this.activeSoulId);
+        activeSoulIds.add(0, this.activeSoulId);
     }
 
     public String getActiveSoulId() {
         return activeSoulId;
     }
 
+    public ArrayList<String> getActiveSoulIds() {
+        return new ArrayList<>(activeSoulIds);
+    }
+
+    public ArrayList<GrazedSoulData> getActiveSouls() {
+        ArrayList<GrazedSoulData> activeSouls = new ArrayList<>();
+        for (String soulId : activeSoulIds) {
+            GrazedSoulData soul = getSoul(soulId);
+            if (soul != null) {
+                activeSouls.add(soul);
+            }
+        }
+        return activeSouls;
+    }
+
+    public int getActiveSoulCount() {
+        return activeSoulIds.size();
+    }
+
+    public boolean isSoulActive(String soulId) {
+        return activeSoulIds.contains(soulId);
+    }
+
+    public void ensureActiveSoul(String soulId, int maxActiveSouls) {
+        if (soulId == null || soulId.isEmpty()) {
+            return;
+        }
+
+        activeSoulIds.remove(soulId);
+        activeSoulIds.add(0, soulId);
+        while (activeSoulIds.size() > Math.max(1, maxActiveSouls)) {
+            activeSoulIds.remove(activeSoulIds.size() - 1);
+        }
+        activeSoulId = activeSoulIds.get(0);
+    }
+
+    public boolean toggleActiveSoul(String soulId, int maxActiveSouls) {
+        if (soulId == null || soulId.isEmpty()) {
+            return false;
+        }
+
+        if (activeSoulIds.contains(soulId)) {
+            if (activeSoulIds.size() <= 1) {
+                return false;
+            }
+            activeSoulIds.remove(soulId);
+            if (Objects.equals(activeSoulId, soulId)) {
+                activeSoulId = activeSoulIds.get(0);
+            }
+            return false;
+        }
+
+        if (activeSoulIds.size() >= Math.max(1, maxActiveSouls)) {
+            return false;
+        }
+
+        activeSoulIds.add(soulId);
+        if (activeSoulId.isEmpty()) {
+            activeSoulId = soulId;
+        }
+        return true;
+    }
+
+    public boolean trimActiveSouls(int maxActiveSouls) {
+        int clampedMax = Math.max(1, maxActiveSouls);
+        boolean changed = false;
+        while (activeSoulIds.size() > clampedMax) {
+            activeSoulIds.remove(activeSoulIds.size() - 1);
+            changed = true;
+        }
+        if (activeSoulIds.isEmpty() && !souls.isEmpty()) {
+            activeSoulIds.add(souls.get(0).soulId());
+            changed = true;
+        }
+        String newPrimary = activeSoulIds.isEmpty() ? "" : activeSoulIds.get(0);
+        if (!Objects.equals(activeSoulId, newPrimary)) {
+            activeSoulId = newPrimary;
+            changed = true;
+        }
+        return changed;
+    }
+
     public String getManifestedSoulId() {
-        return manifestedSoulId;
+        return manifestedSouls.isEmpty() ? "" : manifestedSouls.get(0).soulId();
     }
 
     public void setManifestedSoulId(String manifestedSoulId) {
-        this.manifestedSoulId = manifestedSoulId == null ? "" : manifestedSoulId;
+        if (manifestedSoulId == null || manifestedSoulId.isEmpty()) {
+            manifestedSouls.clear();
+            return;
+        }
+
+        UUID existingUuid = getManifestedEntityUuid();
+        manifestedSouls.clear();
+        manifestedSouls.add(new ManifestedSoulData(manifestedSoulId, existingUuid));
     }
 
     public UUID getManifestedEntityUuid() {
-        return manifestedEntityUuid.isEmpty() ? null : UUID.fromString(manifestedEntityUuid);
+        return manifestedSouls.isEmpty() ? null : manifestedSouls.get(0).entityUuid();
     }
 
     public void setManifestedEntityUuid(UUID manifestedEntityUuid) {
-        this.manifestedEntityUuid = manifestedEntityUuid == null ? "" : manifestedEntityUuid.toString();
+        if (manifestedSouls.isEmpty()) {
+            if (manifestedEntityUuid != null) {
+                manifestedSouls.add(new ManifestedSoulData("", manifestedEntityUuid));
+            }
+            return;
+        }
+
+        ManifestedSoulData first = manifestedSouls.get(0);
+        manifestedSouls.set(0, new ManifestedSoulData(first.soulId(), manifestedEntityUuid));
     }
 
     public boolean hasManifestedSoul() {
-        return !manifestedSoulId.isEmpty() && !manifestedEntityUuid.isEmpty();
+        return !manifestedSouls.isEmpty();
+    }
+
+    public ArrayList<ManifestedSoulData> getManifestedSouls() {
+        return new ArrayList<>(manifestedSouls);
+    }
+
+    public int getManifestedSoulCount() {
+        return manifestedSouls.size();
+    }
+
+    public boolean isSoulManifested(String soulId) {
+        return manifestedSouls.stream().anyMatch(data -> Objects.equals(data.soulId(), soulId));
+    }
+
+    public UUID getManifestedEntityUuid(String soulId) {
+        for (ManifestedSoulData data : manifestedSouls) {
+            if (Objects.equals(data.soulId(), soulId)) {
+                return data.entityUuid();
+            }
+        }
+        return null;
+    }
+
+    public void manifestSoul(String soulId, UUID entityUuid) {
+        manifestedSouls.removeIf(data -> Objects.equals(data.soulId(), soulId) || Objects.equals(data.entityUuid(), entityUuid));
+        manifestedSouls.add(new ManifestedSoulData(soulId, entityUuid));
+    }
+
+    public void removeManifestedSoul(String soulId) {
+        manifestedSouls.removeIf(data -> Objects.equals(data.soulId(), soulId));
     }
 
     public float getPermanentSanityCap() {
@@ -201,10 +373,20 @@ public class ShepherdGrazingComponent implements INBTSerializable<CompoundTag> {
         for (GrazedSoulData soul : souls) {
             soulsTag.add(soul.toTag());
         }
+        ListTag manifestedSoulsTag = new ListTag();
+        for (ManifestedSoulData data : manifestedSouls) {
+            manifestedSoulsTag.add(data.toTag());
+        }
         tag.put("Souls", soulsTag);
+        tag.put("ManifestedSouls", manifestedSoulsTag);
         tag.putString("ActiveSoulId", activeSoulId);
-        tag.putString("ManifestedSoulId", manifestedSoulId);
-        tag.putString("ManifestedEntityUuid", manifestedEntityUuid);
+        ListTag activeSoulIdsTag = new ListTag();
+        for (String soulId : activeSoulIds) {
+            CompoundTag soulIdTag = new CompoundTag();
+            soulIdTag.putString("SoulId", soulId);
+            activeSoulIdsTag.add(soulIdTag);
+        }
+        tag.put("ActiveSoulIds", activeSoulIdsTag);
         tag.putFloat("PermanentSanityCap", permanentSanityCap);
         return tag;
     }
@@ -212,13 +394,46 @@ public class ShepherdGrazingComponent implements INBTSerializable<CompoundTag> {
     @Override
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
         souls.clear();
+        manifestedSouls.clear();
         ListTag soulsTag = tag.getList("Souls", Tag.TAG_COMPOUND);
         for (int i = 0; i < soulsTag.size(); i++) {
             souls.add(GrazedSoulData.fromTag(soulsTag.getCompound(i)));
         }
+        if (tag.contains("ManifestedSouls", Tag.TAG_LIST)) {
+            ListTag manifestedSoulsTag = tag.getList("ManifestedSouls", Tag.TAG_COMPOUND);
+            for (int i = 0; i < manifestedSoulsTag.size(); i++) {
+                manifestedSouls.add(ManifestedSoulData.fromTag(manifestedSoulsTag.getCompound(i)));
+            }
+        } else {
+            String manifestedSoulId = tag.getString("ManifestedSoulId");
+            String manifestedEntityUuid = tag.getString("ManifestedEntityUuid");
+            if (!manifestedSoulId.isEmpty() && !manifestedEntityUuid.isEmpty()) {
+                manifestedSouls.add(new ManifestedSoulData(manifestedSoulId, UUID.fromString(manifestedEntityUuid)));
+            }
+        }
         activeSoulId = tag.getString("ActiveSoulId");
-        manifestedSoulId = tag.getString("ManifestedSoulId");
-        manifestedEntityUuid = tag.getString("ManifestedEntityUuid");
+        activeSoulIds.clear();
+        if (tag.contains("ActiveSoulIds", Tag.TAG_LIST)) {
+            ListTag activeSoulIdsTag = tag.getList("ActiveSoulIds", Tag.TAG_COMPOUND);
+            for (int i = 0; i < activeSoulIdsTag.size(); i++) {
+                String soulId = activeSoulIdsTag.getCompound(i).getString("SoulId");
+                if (!soulId.isEmpty()) {
+                    activeSoulIds.add(soulId);
+                }
+            }
+        } else if (!activeSoulId.isEmpty()) {
+            activeSoulIds.add(activeSoulId);
+        }
+        activeSoulIds.removeIf(soulId -> getSoul(soulId) == null);
+        if (!activeSoulId.isEmpty() && !activeSoulIds.contains(activeSoulId) && getSoul(activeSoulId) != null) {
+            activeSoulIds.add(0, activeSoulId);
+        }
+        if (activeSoulIds.isEmpty() && !souls.isEmpty()) {
+            activeSoulId = souls.get(0).soulId();
+            activeSoulIds.add(activeSoulId);
+        } else if (!activeSoulIds.isEmpty()) {
+            activeSoulId = activeSoulIds.get(0);
+        }
         permanentSanityCap = tag.contains("PermanentSanityCap") ? tag.getFloat("PermanentSanityCap") : 1.0f;
     }
 }

@@ -18,13 +18,13 @@ public record PathwayInfos(
     }
 
     public String getSequenceName(int sequence) {
-        if(sequence < 0 || sequence > sequenceNames.length)
+        if(sequence < 0 || sequence >= sequenceNames.length)
             return "";
         return Component.translatable("lotm.sequence." + sequenceNames[sequence]).getString();
     }
 
     public String getRawSequenceName(int sequence) {
-        if(sequence < 0 || sequence > sequenceNames.length)
+        if(sequence < 0 || sequence >= sequenceNames.length)
             return "";
         return sequenceNames[sequence];
     }

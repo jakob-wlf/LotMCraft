@@ -81,6 +81,7 @@ public class ShadowManipulationAbility extends Ability {
         if (BeyonderData.isBeyonder(target)) {
             target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).disableAbilityUsageForTime("shadow_manipulation", duration, target);
         }
+        HangedRenderEffectUtil.playMovableAt(de.jakob.lotm.rendering.effectRendering.MovableEffectManager.MovableEffect.SHADOW_BINDING, serverLevel, target, duration, false);
         HangedEffectUtil.playShadowCast(serverLevel, target.position());
         HangedEffectUtil.spawnShadowBurst(serverLevel, target.position().add(0, target.getBbHeight() * 0.5, 0), (shepherdMastery ? 1.1 : 0.8) * areaScale, shepherdMastery ? 34 : 24);
         target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.DARKNESS_GENERIC, entity),

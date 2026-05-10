@@ -109,7 +109,14 @@ public class MovableEffectManager {
         LIFE_AURA(1),
         FEAR_AURA(2),
         BEAMS_OF_LIGHT(3),
-        SPACE_TEAR(4);
+        SPACE_TEAR(4),
+        SHADOW_CLOAK(5),
+        FLESH_CLOAK(6),
+        FLESH_FIELD(7),
+        DEPRAVITY_ARMOR(8),
+        BLOOD_POOL(9),
+        SHADOW_BINDING(10),
+        FLESH_MAW(11);
 
 
         private final int index;

@@ -544,6 +544,43 @@ public class PotionItemHandler {
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
 
+    public static DeferredItem<Item> SECRETS_SUPPLICANT_POTION = ITEMS.registerItem("secrets_supplicant_potion", properties ->
+                    new BeyonderPotion(properties, 9, "hanged_man"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> LISTENER_POTION = ITEMS.registerItem("listener_potion", properties ->
+                    new BeyonderPotion(properties, 8, "hanged_man"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> SHADOW_ASCETIC_POTION = ITEMS.registerItem("shadow_ascetic_potion", properties ->
+                    new BeyonderPotion(properties, 7, "hanged_man"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> ROSE_BISHOP_POTION = ITEMS.registerItem("rose_bishop_potion", properties ->
+                    new BeyonderPotion(properties, 6, "hanged_man"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> SHEPHERD_POTION = ITEMS.registerItem("shepherd_potion", properties ->
+                    new BeyonderPotion(properties, 5, "hanged_man"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> BLACK_KNIGHT_POTION = ITEMS.registerItem("black_knight_potion", properties ->
+                    new BeyonderPotion(properties, 4, "hanged_man"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> TRINITY_TEMPLAR_POTION = ITEMS.registerItem("trinity_templar_potion", properties ->
+                    new BeyonderPotion(properties, 3, "hanged_man"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> PROFANE_PRESBYTER_POTION = ITEMS.registerItem("profane_presbyter_potion", properties ->
+                    new BeyonderPotion(properties, 2, "hanged_man"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> DARK_ANGEL_POTION = ITEMS.registerItem("dark_angel_potion", properties ->
+                    new BeyonderPotion(properties, 1, "hanged_man"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+
         
 
     public static DeferredItem<Item> EMPTY_BOTTLE = ITEMS.registerItem("empty_bottle", Item::new);

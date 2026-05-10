@@ -9,6 +9,7 @@ import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.LordOfMysteriesUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -158,6 +159,10 @@ public abstract class Ability {
         return getEffectiveSpiritualityCost(entity);
     }
 
+    public int getPublicEffectiveCooldown(LivingEntity entity) {
+        return getEffectiveCooldown(entity);
+    }
+
     protected int getEffectiveCooldown(LivingEntity entity) {
         return Math.max(1, Math.round(cooldown * FoolingAbility.getRealmCooldownMultiplier(entity, this)));
     }
@@ -182,8 +187,12 @@ public abstract class Ability {
         }
 
         // Check current pathway
-        if(getRequirements().containsKey(pathway) && getRequirements().get(pathway) >= sequence) {
-            int reqSeq = getRequirements().get(pathway);
+        if (LordOfMysteriesUtil.matchesAnyRequirement(pathway, sequence, getRequirements())) {
+            int reqSeq = getRequirements().entrySet().stream()
+                    .filter(entry -> LordOfMysteriesUtil.matchesRequirement(pathway, sequence, entry.getKey(), entry.getValue()))
+                    .map(Map.Entry::getValue)
+                    .max(Integer::compareTo)
+                    .orElse(sequence);
             // Switched pathway players only access seq 9-5 abilities once they have a char stack at seq 4 or stronger
             if (BeyonderData.hasSwitchedPathway(entity) && reqSeq > 4) {
                 int[] stacks = BeyonderData.getCharStacks(entity);
@@ -250,6 +259,10 @@ public abstract class Ability {
         int sequence = BeyonderData.getSequence(entity);
 
         if (!getRequirements().containsKey(BeyonderData.getPathway(entity))) {
+            if (LordOfMysteriesUtil.isLordOfMysteries(entity)
+                    && getRequirements().keySet().stream().anyMatch(LordOfMysteriesUtil.TRINITY_PATHWAYS::contains)) {
+                return 0f;
+            }
             return 0f;
         }
 

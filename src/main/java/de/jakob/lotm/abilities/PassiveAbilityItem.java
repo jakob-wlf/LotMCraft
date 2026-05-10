@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities;
 
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.LordOfMysteriesUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -39,9 +40,8 @@ public abstract class PassiveAbilityItem extends Item {
                 return false;
             }
 
-            if(getRequirements().containsKey(pathway)) {
-                Integer minSeq = getRequirements().get(pathway);
-                if (minSeq != null && sequence <= minSeq) return true;
+            if (LordOfMysteriesUtil.matchesAnyRequirement(pathway, sequence, getRequirements())) {
+                return true;
             }
 
             if (!(this instanceof PhysicalEnhancementsAbility)) {
@@ -59,9 +59,8 @@ public abstract class PassiveAbilityItem extends Item {
             String pathway = BeyonderData.getPathway(entity);
             int sequence = BeyonderData.getSequence(entity);
 
-            if(getRequirements().containsKey(pathway)) {
-                Integer minSeq = getRequirements().get(pathway);
-                if (minSeq != null && sequence <= minSeq) return true;
+            if (LordOfMysteriesUtil.matchesAnyRequirement(pathway, sequence, getRequirements())) {
+                return true;
             }
 
             if (!(this instanceof PhysicalEnhancementsAbility)) {

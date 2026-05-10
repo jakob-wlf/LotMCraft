@@ -5,6 +5,7 @@ package de.jakob.lotm.gui.custom.Introspect;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.lord_of_mysteries.LordOfMysteriesAbility;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
@@ -122,18 +123,22 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (showAllAbilities) {
             availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesUpToSequenceOrdered(menu.getSequence()));
         } else {
-            // use the old system in case of controlling - will change once worms get added
-            ControllingDataComponent controllingDataComponent = minecraft.player.getData(ModAttachments.CONTROLLING_DATA);
-            if (controllingDataComponent.isControlling()) {
-                ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
-                availableAbilities.addAll(controllerPathwayAbilities);
+            if ("lord_of_mysteries".equals(menu.getPathway())) {
+                availableAbilities.addAll(LordOfMysteriesAbility.getGrantedAbilities());
             } else {
-                String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
-                for(int i = menu.getSequence(); i < pathwayHistory.length; i++) {
-                    String pathway = pathwayHistory[i];
-                    if(pathway != null) {
-                        ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
-                        availableAbilities.addAll(pathwayAbilities);
+                // use the old system in case of controlling - will change once worms get added
+                ControllingDataComponent controllingDataComponent = minecraft.player.getData(ModAttachments.CONTROLLING_DATA);
+                if (controllingDataComponent.isControlling()) {
+                    ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
+                    availableAbilities.addAll(controllerPathwayAbilities);
+                } else {
+                    String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
+                    for(int i = Math.max(0, menu.getSequence()); i < pathwayHistory.length; i++) {
+                        String pathway = pathwayHistory[i];
+                        if(pathway != null) {
+                            ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
+                            availableAbilities.addAll(pathwayAbilities);
+                        }
                     }
                 }
             }
@@ -759,12 +764,13 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 tooltipLines.add(Component.literal(""));
             }
 
-            int cooldown = hoveredAbility.getCooldown();
+            Player viewer = this.minecraft != null ? this.minecraft.player : null;
+            int cooldown = viewer != null ? hoveredAbility.getPublicEffectiveCooldown(viewer) : 0;
             if (cooldown > 0) {
                 tooltipLines.add(Component.literal("Cooldown: ").withStyle(ChatFormatting.DARK_GRAY).append(Component.literal(cooldown / 20 + "s").withStyle(ChatFormatting.BLUE)));
             }
 
-            float spiritualityCost = hoveredAbility.spiritualityCost();
+            float spiritualityCost = viewer != null ? hoveredAbility.getPublicEffectiveSpiritualityCost(viewer) : 0.0f;
             if (spiritualityCost > 0) {
                 tooltipLines.add(Component.literal("Spirituality Cost: ").withStyle(ChatFormatting.DARK_GRAY).append(Component.literal(spiritualityCost + "").withStyle(ChatFormatting.DARK_PURPLE)));
             }

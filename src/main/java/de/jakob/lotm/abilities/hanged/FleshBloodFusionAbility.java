@@ -77,6 +77,7 @@ public class FleshBloodFusionAbility extends ToggleAbility {
                 exitPoolForm(player);
                 compressPlayer(player);
             }
+            HangedRenderEffectUtil.playMovableAt(de.jakob.lotm.rendering.effectRendering.MovableEffectManager.MovableEffect.FLESH_CLOAK, serverLevel, host, 24, false);
             HangedEffectUtil.spawnFleshBurst(serverLevel, host.position().add(0, host.getBbHeight() * 0.45, 0), 0.7, 24);
             HangedEffectUtil.playFleshCast(serverLevel, host.position());
             AbilityUtil.sendActionBar(entity,
@@ -89,6 +90,7 @@ public class FleshBloodFusionAbility extends ToggleAbility {
         if (entity instanceof Player player) {
             enterPoolForm(player);
         }
+        HangedRenderEffectUtil.playMovable(de.jakob.lotm.rendering.effectRendering.MovableEffectManager.MovableEffect.BLOOD_POOL, serverLevel, entity, 22, false);
         HangedEffectUtil.spawnFleshBurst(serverLevel, entity.position().add(0, entity.getBbHeight() * 0.4, 0), 0.7, 24);
         HangedEffectUtil.playFleshCast(serverLevel, entity.position());
         AbilityUtil.sendActionBar(entity,
@@ -114,6 +116,9 @@ public class FleshBloodFusionAbility extends ToggleAbility {
             entity.teleportTo(host.getX(), host.getY() + host.getBbHeight() * 0.35, host.getZ());
             entity.setDeltaMovement(Vec3.ZERO);
 
+            if (entity.tickCount % 18 == 0) {
+                HangedRenderEffectUtil.playMovableAt(de.jakob.lotm.rendering.effectRendering.MovableEffectManager.MovableEffect.FLESH_CLOAK, serverLevel, host, 22, false);
+            }
             if (entity.tickCount % 6 == 0) {
                 HangedEffectUtil.spawnFleshAura(serverLevel, host);
             }
@@ -155,6 +160,9 @@ public class FleshBloodFusionAbility extends ToggleAbility {
             entity.fallDistance = 0;
             if (entity instanceof Player player) {
                 maintainPoolForm(player, buffScale);
+            }
+            if (entity.tickCount % 16 == 0) {
+                HangedRenderEffectUtil.playMovable(de.jakob.lotm.rendering.effectRendering.MovableEffectManager.MovableEffect.BLOOD_POOL, serverLevel, entity, 20, false);
             }
             if (entity.tickCount % 6 == 0) {
                 HangedEffectUtil.spawnFleshAura(serverLevel, entity);

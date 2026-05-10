@@ -60,15 +60,16 @@ public record UseSelectedAbilityPacket() implements CustomPacketPayload {
                     String abilityId = abilities.get(selectedIndex);
                     Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
 
-                    if (ability != null && serverPlayer.level() instanceof ServerLevel serverLevel) {
-                        if (ShepherdGrazingUtil.isActiveGrazedAbility(serverPlayer, abilityId)) {
-                            ShepherdGrazingUtil.tryUseGrazedAbility(serverPlayer,
-                                    serverPlayer.getData(ModAttachments.SHEPHERD_GRAZING_COMPONENT).getActiveSoulId(),
-                                    ability);
-                            return;
-                        }
-                        boolean isSharedAbility = isSharedAbility(serverPlayer, abilityId);
-                        ability.useAbility(serverLevel, serverPlayer, true, !isSharedAbility, true);
+                        if (ability != null && serverPlayer.level() instanceof ServerLevel serverLevel) {
+                            if (ShepherdGrazingUtil.isActiveGrazedAbility(serverPlayer, abilityId)) {
+                                String soulId = ShepherdGrazingUtil.getActiveSoulIdForAbility(serverPlayer, abilityId);
+                                if (soulId != null) {
+                                    ShepherdGrazingUtil.tryUseGrazedAbility(serverPlayer, soulId, ability);
+                                    return;
+                                }
+                            }
+                            boolean isSharedAbility = isSharedAbility(serverPlayer, abilityId);
+                            ability.useAbility(serverLevel, serverPlayer, true, !isSharedAbility, true);
                     }
                 }
             }

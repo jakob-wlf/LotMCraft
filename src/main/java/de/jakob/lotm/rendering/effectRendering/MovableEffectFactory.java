@@ -40,6 +40,13 @@ public class MovableEffectFactory {
             case 2 -> new FearAuraEffect(location, duration, infinite);
             case 3 -> new BeamsOfLightEffect(location, duration);
             case 4 -> new SpaceTearEffect(location, duration, infinite);
+            case 5 -> new HangedAuraEffect(location, duration, infinite, HangedAuraEffect.Profile.SHADOW_CLOAK);
+            case 6 -> new HangedAuraEffect(location, duration, infinite, HangedAuraEffect.Profile.FLESH_CLOAK);
+            case 7 -> new HangedAuraEffect(location, duration, infinite, HangedAuraEffect.Profile.FLESH_FIELD);
+            case 8 -> new HangedAuraEffect(location, duration, infinite, HangedAuraEffect.Profile.DEPRAVITY_ARMOR);
+            case 9 -> new HangedAuraEffect(location, duration, infinite, HangedAuraEffect.Profile.BLOOD_POOL);
+            case 10 -> new HangedAuraEffect(location, duration, infinite, HangedAuraEffect.Profile.SHADOW_BINDING);
+            case 11 -> new HangedAuraEffect(location, duration, infinite, HangedAuraEffect.Profile.FLESH_MAW);
             default -> throw new IllegalArgumentException("Unknown movable effect index: " + effectIndex);
         };
 

@@ -55,6 +55,9 @@ public class FleshCloakAbility extends ToggleAbility {
         entity.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 40, absorptionAmplifier, false, false, false));
         entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, damageAmplifier, false, false, false));
 
+        if (entity.tickCount % 20 == 0) {
+            HangedRenderEffectUtil.playMovable(de.jakob.lotm.rendering.effectRendering.MovableEffectManager.MovableEffect.FLESH_CLOAK, serverLevel, entity, 24, false);
+        }
         if (entity.tickCount % 6 == 0) {
             HangedEffectUtil.spawnFleshAura(serverLevel, entity);
         }
@@ -67,6 +70,7 @@ public class FleshCloakAbility extends ToggleAbility {
     public void start(Level level, LivingEntity entity) {
         CLOAKED_ENTITIES.add(entity.getUUID());
         if (level instanceof ServerLevel serverLevel) {
+            HangedRenderEffectUtil.playMovable(de.jakob.lotm.rendering.effectRendering.MovableEffectManager.MovableEffect.FLESH_CLOAK, serverLevel, entity, 24, false);
             HangedEffectUtil.spawnFleshBurst(serverLevel, entity.position().add(0, entity.getBbHeight() * 0.5, 0), 0.7, 24);
             HangedEffectUtil.playFleshCast(serverLevel, entity.position());
         }

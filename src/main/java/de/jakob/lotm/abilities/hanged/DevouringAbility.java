@@ -81,6 +81,8 @@ public class DevouringAbility extends Ability {
 
         AbilityUtil.sendActionBar(entity,
                 Component.translatable(DEVOUR_MESSAGE, target.getDisplayName()).withColor(HangedPathwayConstants.pathwayColor()));
+        HangedRenderEffectUtil.playMovableAt(de.jakob.lotm.rendering.effectRendering.MovableEffectManager.MovableEffect.FLESH_MAW, serverLevel, target,
+                Math.round(CHANNEL_DURATION * durationScale), false);
         HangedEffectUtil.playFleshCast(serverLevel, entity.position());
         HangedEffectUtil.spawnFleshBurst(serverLevel, target.position().add(0, target.getBbHeight() * 0.45, 0), 0.7 * areaScale, 22);
 

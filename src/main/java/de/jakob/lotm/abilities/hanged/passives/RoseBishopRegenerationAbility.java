@@ -71,7 +71,7 @@ public class RoseBishopRegenerationAbility extends PassiveAbilityItem {
         }
     }
 
-    private static boolean consumeBlood(Player player) {
+    static boolean consumeBlood(Player player) {
         ItemStack offhand = player.getOffhandItem();
         if (offhand.is(ModItems.BLOOD)) {
             offhand.shrink(1);

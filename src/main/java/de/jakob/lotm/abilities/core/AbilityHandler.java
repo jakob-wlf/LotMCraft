@@ -16,6 +16,7 @@ import de.jakob.lotm.abilities.sun.*;
 import de.jakob.lotm.abilities.tyrant.*;
 import de.jakob.lotm.abilities.visionary.*;
 import de.jakob.lotm.abilities.wheel_of_fortune.*;
+import de.jakob.lotm.util.LordOfMysteriesUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -140,6 +141,7 @@ public class AbilityHandler {
         abilities.add(new HistoricalVoidHidingAbility("historical_void_hiding_ability"));
         abilities.add(new MiracleCreationAbility("miracle_creation_ability"));
         abilities.add(new GraftingAbility("grafting_ability"));
+        abilities.add(new PillarAuthorityAbility("pillar_authority_ability"));
 
         // HANGED MAN PATHWAY
         abilities.add(new ListeningAbility("listening_ability"));
@@ -155,6 +157,13 @@ public class AbilityHandler {
         abilities.add(new FleshBloodCurseAbility("flesh_blood_curse_ability"));
         abilities.add(new DevouringAbility("devouring_ability"));
         abilities.add(new ShepherdGrazingAbility("shepherd_grazing_ability"));
+        abilities.add(new CullOfSpiritualFleshAbility("cull_of_spiritual_flesh_ability"));
+        abilities.add(new BlackArmorAbility("black_armor_ability"));
+        abilities.add(new ShadowOfDepravationAbility("shadow_of_depravation_ability"));
+        abilities.add(new CommandeeringShadowsAbility("commandeering_shadows_ability"));
+        abilities.add(new FleshRugAbility("flesh_rug_ability"));
+        abilities.add(new ProfaneLanguageAbility("profane_language_ability"));
+        abilities.add(new DarkAngelAuthorityAbility("dark_angel_authority_ability"));
 
         // DARKNESS PATHWAY
         abilities.add(new MidnightPoemAbility("midnight_poem_ability"));
@@ -346,16 +355,14 @@ public class AbilityHandler {
     public HashSet<Ability> getByPathwayAndSequenceExact(String pathway, int sequence) {
         return abilities
                 .stream()
-                .filter(ability ->
-                        ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) == sequence)
+                .filter(ability -> matchesAbilityQuery(ability, pathway, sequence, true))
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
     public ArrayList<Ability> getByPathwayAndSequenceExactOrdered(String pathway, int sequence) {
         return abilities
                 .stream()
-                .filter(ability ->
-                        ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) == sequence)
+                .filter(ability -> matchesAbilityQuery(ability, pathway, sequence, true))
                 .sorted(Comparator.comparing(Ability::getId))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
@@ -363,16 +370,15 @@ public class AbilityHandler {
     public HashSet<Ability> getByPathwayAndSequence(String pathway, int sequence) {
         return abilities
                 .stream()
-                .filter(ability ->
-                        ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) >= sequence)
+                .filter(ability -> matchesAbilityQuery(ability, pathway, sequence, false))
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
     public ArrayList<Ability> getByPathwayAndSequenceExactOrderedBySequence(String pathway, int sequence) {
         return new ArrayList<>(
                 abilities.stream()
-                        .filter(ability -> ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) == sequence)
-                        .sorted(Comparator.comparing(ability -> ability.getRequirements().get(pathway)))
+                        .filter(ability -> matchesAbilityQuery(ability, pathway, sequence, true))
+                        .sorted(Comparator.comparing(ability -> getBestMatchingRequirement(ability, pathway, sequence)))
                         .toList()
         );
     }
@@ -408,11 +414,25 @@ public class AbilityHandler {
     public ArrayList<Ability> getByPathwayAndSequenceOrderedBySequence(String pathway, int sequence) {
         return new ArrayList<>(
                 abilities.stream()
-                        .filter(ability -> ability.getRequirements().containsKey(pathway) && ability.getRequirements().get(pathway) >= sequence)
+                        .filter(ability -> matchesAbilityQuery(ability, pathway, sequence, false))
                         .sorted(Comparator.comparing(Ability::getId))
-                        .sorted(Comparator.comparing(ability -> ability.getRequirements().get(pathway)))
+                        .sorted(Comparator.comparing(ability -> getBestMatchingRequirement(ability, pathway, sequence)))
                         .toList()
         );
+    }
+
+    private boolean matchesAbilityQuery(Ability ability, String pathway, int sequence, boolean exact) {
+        return ability.getRequirements().entrySet().stream().anyMatch(entry ->
+                LordOfMysteriesUtil.matchesRequirement(pathway, sequence, entry.getKey(), entry.getValue())
+                        && (exact ? entry.getValue() == sequence : entry.getValue() >= sequence));
+    }
+
+    private int getBestMatchingRequirement(Ability ability, String pathway, int sequence) {
+        return ability.getRequirements().entrySet().stream()
+                .filter(entry -> LordOfMysteriesUtil.matchesRequirement(pathway, sequence, entry.getKey(), entry.getValue()))
+                .map(Map.Entry::getValue)
+                .max(Integer::compareTo)
+                .orElse(sequence);
     }
 
     public ArrayList<Ability> getAllAbilitiesUpToSequenceOrdered(int sequence) {

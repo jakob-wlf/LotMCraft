@@ -1,6 +1,7 @@
 package de.jakob.lotm.rendering.effectRendering;
 
 import de.jakob.lotm.rendering.effectRendering.impl.FateSiphoningEffect;
+import de.jakob.lotm.rendering.effectRendering.impl.ShadowBladeEffect;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.client.Minecraft;
@@ -38,6 +39,7 @@ public class DirectionalEffectFactory {
                                                        LivingEntity entity) {
         ActiveDirectionalEffect effect = switch (effectIndex) {
             case 0 -> new FateSiphoningEffect(startX, startY, startZ, endX, endY, endZ, duration);
+            case 1 -> new ShadowBladeEffect(startX, startY, startZ, endX, endY, endZ, duration);
             default -> throw new IllegalArgumentException("Unknown directional effect index: " + effectIndex);
         };
 

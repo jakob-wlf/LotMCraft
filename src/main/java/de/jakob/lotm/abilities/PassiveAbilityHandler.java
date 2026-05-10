@@ -25,14 +25,17 @@ import de.jakob.lotm.abilities.justiciar.passives.ChaosHuntingAbility;
 import de.jakob.lotm.abilities.justiciar.passives.EnhancedMentalAttributesAbility;
 import de.jakob.lotm.abilities.justiciar.passives.OrderJusticiarAbility;
 import de.jakob.lotm.abilities.justiciar.passives.PhysicalEnhancementsJusticiarAbility;
+import de.jakob.lotm.abilities.lord_of_mysteries.LordOfMysteriesAbility;
 import de.jakob.lotm.abilities.fool.passives.PaperDaggersAbility;
 import de.jakob.lotm.abilities.fool.passives.PhysicalEnhancementsFoolAbility;
 import de.jakob.lotm.abilities.fool.passives.PuppeteeringEnhancementsAbility;
+import de.jakob.lotm.abilities.hanged.passives.DarkAngelAbility;
 import de.jakob.lotm.abilities.hanged.passives.SecretsSuppliantPerceptionAbility;
 import de.jakob.lotm.abilities.hanged.passives.FleshSofteningAbility;
 import de.jakob.lotm.abilities.hanged.passives.GrazingAbility;
 import de.jakob.lotm.abilities.hanged.passives.PhysicalEnhancementsHangedAbility;
 import de.jakob.lotm.abilities.hanged.passives.RoseBishopRegenerationAbility;
+import de.jakob.lotm.abilities.hanged.passives.TrinityTemplarAbility;
 import de.jakob.lotm.abilities.hanged.passives.TrueCreatorRavingsAbility;
 import de.jakob.lotm.abilities.mother.passives.PhysicalEnhancementsMotherAbility;
 import de.jakob.lotm.abilities.red_priest.passive.FireResistanceAbility;
@@ -101,6 +104,9 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> FLESH_SOFTENING = ITEMS.registerItem("flesh_softening_ability", FleshSofteningAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> ROSE_BISHOP_REGENERATION = ITEMS.registerItem("rose_bishop_regeneration_ability", RoseBishopRegenerationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> GRAZING = ITEMS.registerItem("grazing_ability", GrazingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> TRINITY_TEMPLAR = ITEMS.registerItem("trinity_templar_ability", TrinityTemplarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> DARK_ANGEL = ITEMS.registerItem("dark_angel_ability", DarkAngelAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> LORD_OF_MYSTERIES = ITEMS.registerItem("lord_of_mysteries_ability", LordOfMysteriesAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static final DeferredItem<Item> NOCTURNALITY = ITEMS.registerItem("nocturnality_ability", NocturnalityAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> DARKNESS_REVIVAL = ITEMS.registerItem("darkness_revival_ability", DarknessRevivalAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));

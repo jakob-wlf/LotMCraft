@@ -105,17 +105,21 @@ public class BeyonderData {
 
     public static int getHighestImplementedSequence(String pathway) {
         return switch (pathway) {
-            case "mother", "darkness", "fool", "wheel_of_fortune", "error", "visionary", "demoness", "red_priest", "sun", "tyrant", "door", "abyss", "death","justiciar" -> 1;
+            case "lord_of_mysteries" -> -1;
+            case "mother", "darkness", "fool", "wheel_of_fortune", "error", "visionary", "demoness", "red_priest", "sun", "tyrant", "door", "abyss", "death", "justiciar", "hanged_man" -> 1;
             default -> 9;
         };
     }
 
     public static String getSequenceName(String pathway, int sequence) {
+        if ("lord_of_mysteries".equals(pathway) && sequence == -1) {
+            return "lord_of_mysteries";
+        }
         if(!pathwayInfos.containsKey(pathway))
             return "Unknown";
 
         PathwayInfos infos = pathwayInfos.get(pathway);
-        if(sequence == LOTMCraft.NON_BEYONDER_SEQ || sequence >= infos.sequenceNames().length)
+        if(sequence == LOTMCraft.NON_BEYONDER_SEQ || sequence < 0 || sequence >= infos.sequenceNames().length)
             return "Unknown";
 
         return infos.getSequenceName(sequence);
@@ -151,6 +155,7 @@ public class BeyonderData {
         pathwayInfos.put("chained", new PathwayInfos("chained", 0xFFb18fbf, new String[]{"chained", "abomination", "ancient_bane", "disciple_of_silence", "puppet", "wraith", "zombie", "werewolf", "lunatic", "prisoner"}, new String[]{"abyss"}));
         pathwayInfos.put("black_emperor", new PathwayInfos("black_emperor", 0xFF181040, new String[]{"black_emperor", "prince_of_abolition", "duke_of_entropy", "frenzied_mage", "ear_of_the_fallen", "mentor_of_disorder", "baron_of_corruption", "briber", "barbarian", "lawyer"}, new String[]{"justiciar"}));
         pathwayInfos.put("justiciar", new PathwayInfos("justiciar", 0xFFfcd99f, new String[]{"justiciar", "hand_of_order", "balancer", "chaos_hunter", "imperative_mage", "disciplinary_paladin", "judge", "interrogator", "sheriff", "arbiter"}, new String[]{"black_emperor"}));
+        pathwayInfos.put("lord_of_mysteries", new PathwayInfos("lord_of_mysteries", 0xFFc7cbe8, new String[]{"lord_of_mysteries", "lord_of_mysteries", "lord_of_mysteries", "lord_of_mysteries", "lord_of_mysteries", "lord_of_mysteries", "lord_of_mysteries", "lord_of_mysteries", "lord_of_mysteries", "lord_of_mysteries"}, new String[]{"fool", "door", "error"}));
         pathwayInfos.put("placeholder", new PathwayInfos("placeholder", 0xFFfcd99f, new String[]{"", "", "", "", "", "", "", "", "", "",}, new String[]{}));
     }
 
@@ -204,11 +209,11 @@ public class BeyonderData {
 
         if(clearPathwayHistory) {
             component.setPathwayHistory(new String[10]);
-            for(int i = sequence; i < 10; i++) {
+            for(int i = Math.max(0, sequence); i < 10; i++) {
                 component.getPathwayHistory()[i] = pathway;
             }
         }
-        if(addToPathwayHistory) {
+        if(addToPathwayHistory && sequence >= 0 && sequence < 10) {
             component.getPathwayHistory()[sequence] = pathway;
         }
 
@@ -402,10 +407,22 @@ public class BeyonderData {
 
 
     public static double getMultiplierForSequence(int sequence) {
+        if (sequence < 0) {
+            return multiplier[0];
+        }
+        if (sequence >= multiplier.length) {
+            return 1.0;
+        }
         return multiplier[sequence];
     }
 
     public static double getSanityDecreaseMultiplierForSequence(int sequence) {
+        if (sequence < 0) {
+            return sanityDecreaseMultiplier[0];
+        }
+        if (sequence >= sanityDecreaseMultiplier.length) {
+            return 1.0;
+        }
         return sanityDecreaseMultiplier[sequence];
     }
 
@@ -447,6 +464,9 @@ public class BeyonderData {
     }
 
     public static float getMaxSpirituality(String path, int seq){
+        if ("lord_of_mysteries".equals(path) && seq == -1) {
+            return 180000f;
+        }
         if(seq >= LOTMCraft.NON_BEYONDER_SEQ || !(seq < spiritualityLookup.length) || seq <= -1)
             return 0f;
 

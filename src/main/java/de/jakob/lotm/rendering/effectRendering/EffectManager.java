@@ -106,7 +106,10 @@ public class EffectManager {
         PROHIBITION(35),
         IMPRISON(36),
         ANCIENT_COURT(37),
-        NATION_OF_THE_DEAD(38);
+        NATION_OF_THE_DEAD(38),
+        SHADOW_SUMMON(39),
+        FLESH_CURSE(40),
+        SEA_OF_DARKNESS(41);
 
         private final int index;
 

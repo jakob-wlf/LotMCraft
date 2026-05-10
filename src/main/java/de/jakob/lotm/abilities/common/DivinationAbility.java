@@ -7,6 +7,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.PlayerSelectionWorkType;
 import de.jakob.lotm.util.data.PlayerInfo;
 import de.jakob.lotm.util.scheduling.ClientScheduler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -30,6 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DivinationAbility extends SelectableAbility {
     public static final Set<UUID> dangerPremonitionActive = new HashSet<>();
+    public static final Set<UUID> DIVINATION_IMMUNE = new HashSet<>();
     private static final float DEFAULT_SPIRITUALITY_COST = 10.0f;
     private static final float HANGED_SPIRITUALITY_COST = 12.0f;
 
@@ -198,7 +200,7 @@ public class DivinationAbility extends SelectableAbility {
 
         PacketDistributor.sendToPlayer(
                 player,
-                new OpenPlayerDivinationScreenPacket(players)
+                new OpenPlayerDivinationScreenPacket(players, PlayerSelectionWorkType.DIVINATION)
         );
     }
 
@@ -259,5 +261,6 @@ public class DivinationAbility extends SelectableAbility {
             previousCoordinates.remove(player.getUUID());
         }
         dreamDivinationUsers.remove(player.getUUID());
+        DIVINATION_IMMUNE.remove(player.getUUID());
     }
 }

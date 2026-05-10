@@ -7,10 +7,31 @@ import net.minecraft.world.item.Items;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 public class PotionRecipes {
+    private static final List<ItemStack> HANGED_RANDOM_INGREDIENTS = List.of(
+            new ItemStack(Items.BLACK_DYE, 1),
+            new ItemStack(Items.INK_SAC, 1),
+            new ItemStack(Items.ROTTEN_FLESH, 1),
+            new ItemStack(Items.BONE, 1),
+            new ItemStack(Items.WITHER_ROSE, 1),
+            new ItemStack(Items.SPIDER_EYE, 1),
+            new ItemStack(Items.SOUL_SAND, 1),
+            new ItemStack(Items.CRYING_OBSIDIAN, 1),
+            new ItemStack(Items.LEAD, 1),
+            new ItemStack(Items.CHAIN, 1),
+            new ItemStack(Items.AMETHYST_SHARD, 1),
+            new ItemStack(Items.WRITABLE_BOOK, 1),
+            new ItemStack(Items.ENDER_PEARL, 1),
+            new ItemStack(Items.CLOCK, 1),
+            new ItemStack(Items.BLAZE_POWDER, 1),
+            new ItemStack(Items.ECHO_SHARD, 1),
+            new ItemStack(Items.NETHER_WART, 1),
+            new ItemStack(Items.MAGMA_CREAM, 1)
+    );
 
     public static final Set<PotionRecipe> RECIPES = new HashSet<>();
 
@@ -804,6 +825,38 @@ public class PotionRecipes {
                 new ItemStack(Items.NETHER_STAR, 1),
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 1)))
         ));
+
+        addHangedRecipes();
+    }
+
+    private static void addHangedRecipes() {
+        addHangedRecipe((BeyonderPotion) PotionItemHandler.SECRETS_SUPPLICANT_POTION.get(), 9);
+        addHangedRecipe((BeyonderPotion) PotionItemHandler.LISTENER_POTION.get(), 8);
+        addHangedRecipe((BeyonderPotion) PotionItemHandler.SHADOW_ASCETIC_POTION.get(), 7);
+        addHangedRecipe((BeyonderPotion) PotionItemHandler.ROSE_BISHOP_POTION.get(), 6);
+        addHangedRecipe((BeyonderPotion) PotionItemHandler.SHEPHERD_POTION.get(), 5);
+        addHangedRecipe((BeyonderPotion) PotionItemHandler.BLACK_KNIGHT_POTION.get(), 4);
+        addHangedRecipe((BeyonderPotion) PotionItemHandler.TRINITY_TEMPLAR_POTION.get(), 3);
+        addHangedRecipe((BeyonderPotion) PotionItemHandler.PROFANE_PRESBYTER_POTION.get(), 2);
+        addHangedRecipe((BeyonderPotion) PotionItemHandler.DARK_ANGEL_POTION.get(), 1);
+    }
+
+    private static void addHangedRecipe(BeyonderPotion potion, int sequence) {
+        ItemStack ingredientOne = copyHangedIngredient(sequence * 2);
+        ItemStack ingredientTwo = copyHangedIngredient((sequence * 2) + 5);
+        ItemStack characteristic = new ItemStack(Objects.requireNonNull(
+                BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("hanged_man", sequence)));
+
+        RECIPES.add(new PotionRecipe(
+                potion,
+                ingredientOne,
+                ingredientTwo,
+                characteristic
+        ));
+    }
+
+    private static ItemStack copyHangedIngredient(int index) {
+        return HANGED_RANDOM_INGREDIENTS.get(Math.floorMod(index, HANGED_RANDOM_INGREDIENTS.size())).copy();
     }
 
     @Nullable

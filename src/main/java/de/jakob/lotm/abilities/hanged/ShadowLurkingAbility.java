@@ -60,6 +60,9 @@ public class ShadowLurkingAbility extends ToggleAbility {
         entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20, 0, false, false, false));
         entity.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, 15, 4, false, false, false));
 
+        if (entity.tickCount % 18 == 0) {
+            HangedRenderEffectUtil.playMovable(de.jakob.lotm.rendering.effectRendering.MovableEffectManager.MovableEffect.SHADOW_CLOAK, serverLevel, entity, 22, false);
+        }
         if (entity.tickCount % 5 == 0) {
             HangedEffectUtil.spawnShadowAura(serverLevel, entity);
         }
@@ -92,6 +95,7 @@ public class ShadowLurkingAbility extends ToggleAbility {
     public void start(Level level, LivingEntity entity) {
         LURKING_ENTITIES.add(entity.getUUID());
         if (level instanceof ServerLevel serverLevel) {
+            HangedRenderEffectUtil.playMovable(de.jakob.lotm.rendering.effectRendering.MovableEffectManager.MovableEffect.SHADOW_CLOAK, serverLevel, entity, 22, false);
             HangedEffectUtil.spawnShadowBurst(serverLevel, entity.position().add(0, entity.getBbHeight() * 0.55, 0), 0.9, 28);
             HangedEffectUtil.playShadowCast(serverLevel, entity.position());
         }

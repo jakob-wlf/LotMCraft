@@ -36,10 +36,13 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
     }
 
     public String[] getPathwayHistory() {
-        for(int i = 0; i < sequence; i++) {
+        int clearUntil = Math.max(0, Math.min(sequence, pathwayHistory.length));
+        int fillFrom = Math.max(0, Math.min(sequence, pathwayHistory.length));
+
+        for(int i = 0; i < clearUntil; i++) {
             pathwayHistory[i] = null;
         }
-        for(int i = sequence; i < 10; i++) {
+        for(int i = fillFrom; i < 10; i++) {
             if (pathwayHistory[i] == null || pathwayHistory[i].isEmpty()) {
                 pathwayHistory[i] = pathway;
             }

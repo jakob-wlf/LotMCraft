@@ -81,7 +81,8 @@ public class DirectionalEffectManager {
     // -------------------------------------------------------------------------
 
     public enum DirectionalEffect {
-        FATE_SIPHONING(0);
+        FATE_SIPHONING(0),
+        SHADOW_BLADE(1);
 
         private final int index;
 

@@ -82,6 +82,9 @@ public class EffectFactory {
             case 36 -> new ImprisonEffect(x, y, z);
             case 37 -> new AncientCourtEffect(x, y, z);
             case 38 -> new NationOfTheDeadEffect(x, y, z);
+            case 39 -> new HangedBurstEffect(x, y, z, HangedBurstEffect.Profile.SHADOW_SUMMON);
+            case 40 -> new HangedBurstEffect(x, y, z, HangedBurstEffect.Profile.FLESH_CURSE);
+            case 41 -> new HangedBurstEffect(x, y, z, HangedBurstEffect.Profile.SEA_OF_DARKNESS);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
 
