@@ -547,7 +547,8 @@ public class SpiritChannelingAbility extends SelectableAbility {
         if (level.isClientSide) return;
 
         float healAmount = entity.getMaxHealth() * 0.10f;
-        entity.heal(healAmount);
+        float newHealth = Math.min(entity.getHealth() + healAmount, entity.getMaxHealth());
+        entity.setHealth(newHealth);
 
         Vec3 pos = entity.position().add(0, entity.getEyeHeight() / 2, 0);
         ParticleUtil.spawnParticles((ServerLevel) level, EARTH_DUST, pos, 25, 0.4, entity.getEyeHeight() / 2, 0.4, 0);

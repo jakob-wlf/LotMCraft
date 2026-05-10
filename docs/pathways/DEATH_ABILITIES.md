@@ -247,7 +247,7 @@ Three selectable modes:
 **Spirits**
 - Spawns a visual portal near the caster's look target.
 - Every 4 ticks for 20 seconds (400 ticks), spawns one undead mob and one spirit mob from the portal as subordinates.
-  - **Undead:** Zombie, Skeleton, Husk, Drowned, Stray, or Wither Skeleton (random).
+  - **Undead:** Zombie, Skeleton, Husk, Drowned, Stray, or Wither Skeleton (random).  
   - **Spirits:** Spirit Ghost, Spirit Dervish, Spirit Bubbles, Blue Wizard, or Translucent Wizard (random).
 - Summoned mobs despawn after 60 seconds.
 - Re-using the mode while a portal is open closes it instead.
