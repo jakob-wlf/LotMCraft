@@ -3,6 +3,7 @@ package de.jakob.lotm.network.packets.handlers;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.visionary.prophecy.VisionaryAbilityMenus;
 import de.jakob.lotm.attachments.AllyComponent;
@@ -601,5 +602,20 @@ public class ClientHandler {
         }
 
         AnimationUtil.playAnimation(player, AnimationUtil.getResourceLocationById(packet.animId()));
+    }
+
+    public static void handleAbilitySelectionPacket(SyncAbilitySelectionPacket packet) {
+        if (!(LOTMCraft.abilityHandler.getById(packet.abilityId()) instanceof SelectableAbility selectable)) return;
+        var player = Minecraft.getInstance().player;
+        if (player == null) return;
+        selectable.setSelectedAbilityClient(player.getUUID(), packet.selectedIndex());
+    }
+
+
+    public static void handleSyncWeaknessDetectionPacket(SyncWeaknessDetectionTargetsAbilityPacket packet) {
+        WeaknessDetectionRenderLayer.activeWeaknessDetection.clear();
+        if (packet.active()) {
+            WeaknessDetectionRenderLayer.activeWeaknessDetection.putAll(packet.targets());
+        }
     }
 }
