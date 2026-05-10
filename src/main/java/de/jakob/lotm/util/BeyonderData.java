@@ -34,7 +34,7 @@ import java.util.*;
 public class BeyonderData {
     private static final int[] spiritualityLookup = {60000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180};
     private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
-    private static final double[] sanityDecreaseMultiplier = {.003, .0125, .025, .05, .1, .65, .75, .88, 1.0, 1.0};
+    private static final double[] sanityDecreaseMultiplier = {.01, .02, .025, .05, .1, .65, .75, .88, 1.0, 1.0};
 
     public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>();
 
@@ -155,24 +155,30 @@ public class BeyonderData {
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence) {
-        setBeyonder(entity, pathway, sequence, false, false, true, false, true);
+        setBeyonder(entity, pathway, sequence, false, false, true, false, true, true);
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack) {
-        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, true);
+        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, true, true);
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack, boolean resetSpirituality) {
+        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, resetSpirituality, true);
+    }
+
+    public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack, boolean resetSpirituality, boolean putIntoMap) {
         if(entity.level() instanceof ServerLevel serverLevel) {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
 
         if(entity instanceof ServerPlayer player) {
-            if(!skipCheck && !playerMap.check(pathway, sequence)) return;
+            if(!skipCheck) {
+                if (!playerMap.check(pathway, sequence)) return;
 
-            if(!BeyonderData.getPathway(player).equals(pathway)
-                    || BeyonderData.getSequence(player) < sequence)
-                playerMap.removeHonorificName(player);
+                if (!BeyonderData.getPathway(player).equals(pathway)
+                        || BeyonderData.getSequence(player) < sequence)
+                    playerMap.removeHonorificName(player);
+            }
 
             if(clearCharStack) playerMap.clearStack(player);
         }
@@ -227,7 +233,9 @@ public class BeyonderData {
 
             if(entity instanceof ServerPlayer serverPlayer) {
                 PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
-                playerMap.put(serverPlayer);
+
+                if(putIntoMap)
+                    playerMap.put(serverPlayer);
 
                 SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicStack());
                 PacketHandler.sendToAllPlayers(packet);

@@ -14,7 +14,6 @@ import java.util.Map;
 public class EssenceOfWarAbility extends Ability {
     public EssenceOfWarAbility(String id) {
         super(id, 180);
-        canBeCopied = false;
         canBeShared = false;
     }
 

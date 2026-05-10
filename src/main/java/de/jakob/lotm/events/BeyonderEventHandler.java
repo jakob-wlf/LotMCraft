@@ -19,6 +19,7 @@ import de.jakob.lotm.potions.BeyonderPotion;
 import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.DiscernmentUtil;
 import de.jakob.lotm.util.playerMap.StoredData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
@@ -46,6 +47,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.Objects;
 import java.util.Random;
+import java.util.UUID;
 
 import static de.jakob.lotm.util.BeyonderData.playerMap;
 import static de.jakob.lotm.util.BeyonderData.getSequence;
@@ -255,15 +257,29 @@ public class BeyonderEventHandler {
 
         if (charItem == null) return;
 
-        ItemEntity itemEntity = new ItemEntity(
-                player.level(),
-                player.getX(),
-                player.getY(),
-                player.getZ(),
-                new ItemStack(charItem.asItem())
-        );
+        if(DiscernmentUtil.died.containsKey(player.getUUID())){
+            String path = DiscernmentUtil.died.get(player.getUUID());
 
-        event.getDrops().add(itemEntity);
+            UUID id = playerMap.findPlayerByUniqueness(path);
+            if (id != null){
+                var target = player.level().getPlayerByUUID(id);
+
+                if(target != null){
+                    target.addItem(new ItemStack(charItem));
+                }
+            }
+        }
+        else {
+            ItemEntity itemEntity = new ItemEntity(
+                    player.level(),
+                    player.getX(),
+                    player.getY(),
+                    player.getZ(),
+                    new ItemStack(charItem.asItem())
+            );
+
+            event.getDrops().add(itemEntity);
+        }
     }
 
     @SubscribeEvent

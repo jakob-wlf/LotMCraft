@@ -25,8 +25,6 @@ public class PlacateAbility extends SelectableAbility {
         interactionRadius = 18;
         interactionCacheTicks = 20 * 5;
 
-        canBeCopied = false;
-        canBeReplicated = false;
     }
 
     @Override

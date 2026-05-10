@@ -37,6 +37,8 @@ public class MirrorSubstituteAbility extends Ability {
         canBeCopied = false;
         canBeReplicated = false;
         canBeUsedInArtifact = false;
+        cannotBeStolen = true;
+        canBeShared = false;
     }
 
     @Override

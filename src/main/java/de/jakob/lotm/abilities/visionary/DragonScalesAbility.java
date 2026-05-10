@@ -35,6 +35,7 @@ public class DragonScalesAbility extends ToggleAbility {
         canBeReplicated =false;
         canBeUsedInArtifact = false;
         cannotBeStolen = true;
+        canBeShared = false;
     }
 
     @Override

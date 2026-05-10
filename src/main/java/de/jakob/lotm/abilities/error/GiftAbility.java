@@ -40,8 +40,6 @@ import java.util.Random;
 public class GiftAbility extends SelectableAbility {
     public GiftAbility(String id) {
         super(id, 1f);
-        canBeCopied = false;
-        canBeReplicated = false;
         canBeUsedByNPC = false;
     }
 

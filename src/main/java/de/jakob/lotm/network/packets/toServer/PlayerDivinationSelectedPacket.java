@@ -83,7 +83,7 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
             return;
         }
 
-        if (!DreamTraversalAbility.checkAsleep(player, targetPlayer)) {
+        if (DreamTraversalAbility.checkAsleep(player, targetPlayer)) {
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.dream_traversal.must_be_asleep").withColor(0xFFff124d));
             return;
         }

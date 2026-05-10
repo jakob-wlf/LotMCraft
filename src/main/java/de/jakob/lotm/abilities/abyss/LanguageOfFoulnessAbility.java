@@ -28,7 +28,6 @@ import java.util.Map;
 public class LanguageOfFoulnessAbility extends SelectableAbility {
     public LanguageOfFoulnessAbility(String id) {
         super(id, 3);
-        this.canBeCopied = false;
     }
 
     @Override

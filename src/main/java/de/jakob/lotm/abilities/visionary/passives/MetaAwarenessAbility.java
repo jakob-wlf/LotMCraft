@@ -137,7 +137,7 @@ public class MetaAwarenessAbility extends PassiveAbilityItem {
     }
 
     private static boolean hasMetaAwareness(ServerPlayer player) {
-        // Check if the player has this passive item in their inventory
-        return BeyonderData.getSequence(player) <= 1 && BeyonderData.getPathway(player).equals("visionary");
+        var data = BeyonderData.playerMap.get(player.getUUID()).get();
+        return data.sequence() <= 1 && data.pathway().equals("visionary");
     }
 }

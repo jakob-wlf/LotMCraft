@@ -23,7 +23,6 @@ public class DecryptionAbility extends ToggleAbility {
         super(id);
 
         canBeUsedByNPC = false;
-        canBeReplicated = false;
         autoClear = false;
     }
 

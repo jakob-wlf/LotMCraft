@@ -38,6 +38,7 @@ public class PsychologicalCueAbility extends ToggleAbility {
         cannotBeStolen = true;
         autoClear = false;
         canBeShared = false;
+        canBeUsedInArtifact = false;
     }
 
     @Override

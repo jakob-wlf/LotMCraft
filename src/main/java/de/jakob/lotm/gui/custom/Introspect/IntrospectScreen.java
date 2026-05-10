@@ -128,12 +128,20 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
                 availableAbilities.addAll(controllerPathwayAbilities);
             } else {
-                String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
-                for(int i = menu.getSequence(); i < pathwayHistory.length; i++) {
-                    String pathway = pathwayHistory[i];
-                    if(pathway != null) {
-                        ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
-                        availableAbilities.addAll(pathwayAbilities);
+                var discernmentComponent = minecraft.player.getData(ModAttachments.DISCERNMENT_DATA);
+
+                if(discernmentComponent.isDiscerning()){
+                    ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
+                    availableAbilities.addAll(controllerPathwayAbilities);
+                }
+                else {
+                    String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
+                    for (int i = menu.getSequence(); i < pathwayHistory.length; i++) {
+                        String pathway = pathwayHistory[i];
+                        if (pathway != null) {
+                            ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
+                            availableAbilities.addAll(pathwayAbilities);
+                        }
                     }
                 }
             }

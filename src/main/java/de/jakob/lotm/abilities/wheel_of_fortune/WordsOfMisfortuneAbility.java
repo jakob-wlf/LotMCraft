@@ -15,7 +15,6 @@ public class WordsOfMisfortuneAbility extends Ability {
         super(id, 4);
 
         canBeUsedByNPC = false;
-        canBeCopied = false;
         canBeShared = false;
     }
 

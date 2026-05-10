@@ -146,8 +146,19 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
                 break;
 
             case "visionary":
-                e.getData(ModAttachments.SANITY_COMPONENT.get())
-                        .decreaseSanityWithSequenceDifference(0.09168f, e, BeyonderData.getSequence(entity), BeyonderData.getSequence(e));
+                int seq = BeyonderData.getSequence(entity);
+                int targetSeq = BeyonderData.getSequence(e);
+
+                if(targetSeq > seq) break;
+
+                int diff = targetSeq - seq;
+                int amp = 5 + diff;
+
+                if(amp <= 0) break;
+
+                if(!e.hasEffect(ModEffects.LOOSING_CONTROL))
+                    e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 3, amp));
+
                 break;
 
             default:

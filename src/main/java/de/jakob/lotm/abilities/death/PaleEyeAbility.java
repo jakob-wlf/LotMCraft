@@ -29,6 +29,8 @@ public class PaleEyeAbility extends ToggleAbility {
         canBeCopied = false;
         canBeUsedInArtifact = false;
         canBeShared = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
     }
 
     @Override

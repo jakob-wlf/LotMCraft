@@ -48,6 +48,9 @@ public class DreamMazeAbility extends SelectableAbility {
         this.canBeCopied = false;
         this.canBeUsedByNPC = false;
         canBeShared = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
+        canBeUsedInArtifact = false;
     }
 
     @Override

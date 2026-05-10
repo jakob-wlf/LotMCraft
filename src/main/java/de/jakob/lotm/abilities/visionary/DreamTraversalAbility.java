@@ -53,7 +53,6 @@ public class DreamTraversalAbility extends SelectableAbility {
         super(id, 1f);
         this.autoClear = false;
         canBeUsedInArtifact = false;
-        canBeCopied = false;
     }
 
     @Override
@@ -137,7 +136,7 @@ public class DreamTraversalAbility extends SelectableAbility {
             return;
         }
 
-        if (!checkAsleep(entity, target)) {
+        if (checkAsleep(entity, target)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.must_be_asleep").withColor(0xFFff124d));
             return;
         }
@@ -189,7 +188,7 @@ public class DreamTraversalAbility extends SelectableAbility {
             return;
         }
 
-        if (!checkAsleep(entity, target)) {
+        if (checkAsleep(entity, target)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.must_be_asleep").withColor(0xFFff124d));
             return;
         }
@@ -241,7 +240,7 @@ public class DreamTraversalAbility extends SelectableAbility {
     }
 
     public static boolean checkAsleep(LivingEntity entity, LivingEntity target){
-        return requiresAsleep(entity) && (target.hasEffect(ModEffects.ASLEEP) || target.isSleeping());
+        return requiresAsleep(entity) && !(target.hasEffect(ModEffects.ASLEEP) || target.isSleeping());
     }
 
     public static int getRangeBySeq(int seq){

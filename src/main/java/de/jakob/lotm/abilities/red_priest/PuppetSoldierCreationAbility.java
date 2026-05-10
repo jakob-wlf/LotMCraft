@@ -16,8 +16,6 @@ import java.util.Map;
 public class PuppetSoldierCreationAbility extends Ability {
     public PuppetSoldierCreationAbility(String id) {
         super(id, 20 * 60 * 2);
-        canBeCopied = false;
-        canBeReplicated = false;
         canBeShared = false;
     }
 

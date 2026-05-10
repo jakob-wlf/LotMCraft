@@ -46,6 +46,8 @@ public class MaliceSeedAbility extends Ability {
         this.canBeCopied = false;
         this.canBeReplicated = false;
         this.canBeUsedInArtifact = false;
+        this.cannotBeStolen = true;
+        canBeShared = false;
     }
 
     @Override

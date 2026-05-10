@@ -36,7 +36,7 @@ public class JurisdictionAbility extends Ability {
     public JurisdictionAbility(String id) {
         super(id, 0f, "jurisdiction");
         hasOptimalDistance = false;
-        this.doesNotIncreaseDigestion = false;
+        this.doesNotIncreaseDigestion = true;
     }
 
     @Override

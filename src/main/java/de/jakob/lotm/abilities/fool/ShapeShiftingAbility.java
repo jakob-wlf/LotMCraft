@@ -17,9 +17,7 @@ import java.util.Map;
 public class ShapeShiftingAbility extends SelectableAbility {
     public ShapeShiftingAbility(String id) {
         super(id, 5);
-        canBeCopied = false;
         canBeUsedByNPC = false;
-        canBeReplicated = false;
     }
 
     @Override

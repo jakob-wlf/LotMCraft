@@ -45,7 +45,6 @@ public class MarionetteControllingAbility extends SelectableAbility {
     public MarionetteControllingAbility(String id) {
         super(id, .5f);
 
-        canBeCopied = false;
         canBeUsedByNPC = false;
     }
 

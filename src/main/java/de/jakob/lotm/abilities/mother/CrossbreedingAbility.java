@@ -31,8 +31,6 @@ public class CrossbreedingAbility extends Ability {
         super(id, 1);
 
         canBeUsedByNPC = false;
-        canBeCopied = false;
-        canBeReplicated = false;
     }
 
     @Override

@@ -76,6 +76,16 @@ public class PlayerMap extends SavedData {
         return false;
     }
 
+    public @Nullable UUID findPlayerByUniqueness(String pathway) {
+        for (var data : map.entrySet()) {
+            if (data.getValue().uniqueness().equalsIgnoreCase(pathway)) {
+               return data.getKey();
+            }
+        }
+
+        return null;
+    }
+
     public void setUniqueness(LivingEntity entity, String pathway) {
         if (!(entity instanceof ServerPlayer)) return;
 
