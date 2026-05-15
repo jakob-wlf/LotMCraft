@@ -323,8 +323,9 @@ public class BeyonderEventHandler {
                 int originalSeq = data.sequence();
                 // Store the original sequence so onPlayerDrops drops the right characteristic
                 // Regress from the original sequence, not the temporary sacrificed one
-                StoredData dataAtOriginalSeq = StoredData.builder.copyFrom(data).sequence(originalSeq).build();
-                playerMap.put(player, dataAtOriginalSeq.regressSeq());
+                //StoredData dataAtOriginalSeq = StoredData.builder.copyFrom(data).sequence(originalSeq).build();
+                //playerMap.put(player, dataAtOriginalSeq.regressSeq());
+                BeyonderData.setCharStack(player, data.charStack()[data.sequence()] - 1, data.sequence(), true);
             } else {
                 playerMap.put(player, regressed);
             }
