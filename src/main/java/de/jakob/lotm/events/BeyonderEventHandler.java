@@ -23,6 +23,7 @@ import de.jakob.lotm.util.DiscernmentUtil;
 import de.jakob.lotm.util.playerMap.StoredData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
+import de.jakob.lotm.util.playerMap.StoredDataBuilder;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -301,6 +302,11 @@ public class BeyonderEventHandler {
             }
 
             StoredData data = playerMap.get(player).get();
+            //StoredData regressed = data.regressSeq(player.getServer().getGameRules().getBoolean(ModGameRules.LOOSE_CHAR_ON_REGRESSION));
+            //StoredData regressed = data.regressSeq(false, player.getServer().getGameRules().getBoolean(ModGameRules.LOOSE_CHAR_ON_REGRESSION));
+
+
+
             StoredData regressed = data.regressSeq(false);
 
             SacrificeRevertComponent revert = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);
@@ -310,6 +316,12 @@ public class BeyonderEventHandler {
                 player.getPersistentData().putInt("sacrifice_drop_sequence", originalSeq);
                 player.getPersistentData().putBoolean("sacrifice_bar_clear", true);
                 revert.clear();
+                // Regress from the original sequence, not the temporary sacrificed one
+                StoredData dataAtOriginalSeq = StoredData.builder.copyFrom(data).sequence(originalSeq).build();
+                playerMap.put(player, dataAtOriginalSeq.regressSeq());
+            } else if(player.level().getGameRules().getBoolean(ModGameRules.LOOSE_CHAR_ON_REGRESSION)  && data.charStack()[data.sequence()] > 0){
+                int originalSeq = data.sequence();
+                // Store the original sequence so onPlayerDrops drops the right characteristic
                 // Regress from the original sequence, not the temporary sacrificed one
                 StoredData dataAtOriginalSeq = StoredData.builder.copyFrom(data).sequence(originalSeq).build();
                 playerMap.put(player, dataAtOriginalSeq.regressSeq());
@@ -329,7 +341,7 @@ public class BeyonderEventHandler {
                 ClientBeyonderCache.removePlayer(player.getUUID());
             } else
                 ClientBeyonderCache.updateData(player.getUUID(), regressed.pathway(), regressed.sequence(),
-                        0.0f, false, true, 0.0f);
+                        0.0f, false, true, 1.0f);
         }
     }
 

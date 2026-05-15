@@ -92,7 +92,12 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
             return builder.copyFrom(this).charStack(charStack[sequence] - 1, sequence).build();
         }
 
+
+
         int newSequence = sequence + 1;
+
+
+
         boolean becomesNonBeyonder = (newSequence == LOTMCraft.NON_BEYONDER_SEQ);
         String sefirot = claimedSefirot;
 
