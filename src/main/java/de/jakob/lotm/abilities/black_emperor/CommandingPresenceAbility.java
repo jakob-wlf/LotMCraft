@@ -72,6 +72,10 @@ public class CommandingPresenceAbility extends ToggleAbility {
 
     public CommandingPresenceAbility(String id) {
         super(id);
+        canBeCopied = false;
+        canBeReplicated = false;
+        canBeShared = false;
+        cannotBeStolen = true;
         canBeUsedByNPC = false;
     }
 

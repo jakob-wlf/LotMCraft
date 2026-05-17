@@ -776,7 +776,9 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                 CompoundTag tag = specificInfo.originalBeforeBorrowing();
                 if (tag.getBoolean("WalkStolen")) {
                     AttributeInstance movementSpeed = player.getAttribute(Attributes.MOVEMENT_SPEED);
-                    movementSpeed.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk"), -100, AttributeModifier.Operation.ADD_VALUE));
+                    if(!movementSpeed.hasModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk"))) {
+                        movementSpeed.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk"), -100, AttributeModifier.Operation.ADD_VALUE));
+                    }
                     ServerScheduler.scheduleDelayed(20 * 20, () -> {
                         AttributeInstance movementSpeedInner = player.getAttribute(Attributes.MOVEMENT_SPEED);
 
