@@ -62,7 +62,7 @@ public class PaleEyeAbility extends ToggleAbility {
             ParticleUtil.spawnParticles((ServerLevel) level, paleDust, targetEntity.getEyePosition(), 100, 0.5, 0.5, 0.5, 0.1);
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SOUL, targetEntity.getEyePosition(), 100, 0.5, 0.5, 0.5, 0.05);
             ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.SOUL_FIRE_FLAME, targetEntity.position(), 1.1, 90);
-            targetEntity.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC), Float.MAX_VALUE);
+            targetEntity.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), Float.MAX_VALUE);
             return;
         }
 
