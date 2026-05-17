@@ -630,6 +630,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                UseQueuedSoulAbilityPacket.TYPE,
+                UseQueuedSoulAbilityPacket.STREAM_CODEC,
+                UseQueuedSoulAbilityPacket::handle
+        );
+
+        registrar.playToServer(
                 UseSharedAbilityPacket.TYPE,
                 UseSharedAbilityPacket.STREAM_CODEC,
                 UseSharedAbilityPacket::handle

@@ -1,5 +1,6 @@
 package de.jakob.lotm.abilities.core;
 
+import de.jakob.lotm.abilities.twilight_giant.*;
 import de.jakob.lotm.abilities.abyss.*;
 import de.jakob.lotm.abilities.common.*;
 import de.jakob.lotm.abilities.justiciar.*;
@@ -323,6 +324,23 @@ public class AbilityHandler {
         abilities.add(new HandOfDeathAbility("hand_of_death_ability"));
         abilities.add(new DeathFlameAbility("death_flame_ability"));
         abilities.add(new NationOfTheDeadAbility("nation_of_the_dead_ability"));
+        abilities.add(new WordOfSpiritAbility("word_of_spirit_ability"));
+
+        //Twilight Giant Pathway
+        abilities.add(new CombatMasteryAbility("combat_mastery_ability"));
+        abilities.add(new SupernaturalResistanceAbility("supernatural_resistance_ability"));
+
+
+
+
+
+
+
+
+
+
+
+
 
         //abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
     }

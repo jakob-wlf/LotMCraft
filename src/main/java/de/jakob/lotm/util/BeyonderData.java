@@ -56,6 +56,7 @@ public class BeyonderData {
         implementedRecipes.put("black_emperor", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("death", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("justiciar", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
+        implementedRecipes.put("twilight_giant", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}));
 
     }
 
@@ -99,13 +100,14 @@ public class BeyonderData {
             "wheel_of_fortune",
             "death",
             "justiciar",
+            "twilight_giant",
             "black_emperor"
     );
 
     public static int getHighestImplementedSequence(String pathway) {
         return switch (pathway) {
-            case "mother", "darkness", "fool", "wheel_of_fortune", "error", "visionary", "demoness", "red_priest", "sun", "tyrant", "door", "abyss", "death","justiciar" -> 1;
-            case "black_emperor" -> 7;
+            case "mother", "darkness", "fool", "wheel_of_fortune", "error", "visionary", "demoness", "red_priest", "sun", "tyrant", "door", "abyss", "death","justiciar","twilight_giant" -> 1;
+            case "black_emperor" -> 7;  
             default -> 9;
         };
     }
@@ -518,6 +520,7 @@ public class BeyonderData {
         component.addMultiplier(id, (float) modifier);
     }
 
+    
 
     public static void removeModifier(LivingEntity entity, String id) {
         MultiplierModifierComponent component = entity.getData(ModAttachments.MULTIPLIER_MODIFIER_COMPONENT);

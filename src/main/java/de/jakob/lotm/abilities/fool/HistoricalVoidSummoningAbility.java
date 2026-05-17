@@ -1059,12 +1059,20 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         if (entity.tickCount % 600 != 0) return;
         if (level.isClientSide || !(level instanceof ServerLevel serverLevel)) return;
 
-        if(entity.getPersistentData().getBoolean("VoidSummoned")) {
-            if (entity.getPersistentData().getLong("VoidSummonTime") < serverLevel.getGameTime()) {
-                entity.remove(Entity.RemovalReason.DISCARDED);
-            }
-            if (serverLevel.getPlayerByUUID(entity.getPersistentData().getUUID("VoidSummonOwner")) instanceof ServerPlayer serverPlayer) {
-                decrementSummonedCount(serverPlayer, entity.getPersistentData().getLong("VoidSummonTime"));
+        CompoundTag data = entity.getPersistentData();
+        if (!data.getBoolean("VoidSummoned")) {
+            return;
+        }
+
+        boolean hasSummonTime = data.contains("VoidSummonTime", Tag.TAG_LONG);
+        if (hasSummonTime && data.getLong("VoidSummonTime") < serverLevel.getGameTime()) {
+            entity.remove(Entity.RemovalReason.DISCARDED);
+        }
+
+        if (hasSummonTime && data.hasUUID("VoidSummonOwner")) {
+            Player owner = serverLevel.getPlayerByUUID(data.getUUID("VoidSummonOwner"));
+            if (owner instanceof ServerPlayer serverPlayer) {
+                decrementSummonedCount(serverPlayer, data.getLong("VoidSummonTime"));
             }
         }
     }
