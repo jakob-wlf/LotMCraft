@@ -227,6 +227,7 @@ public class KeyInputHandler {
 
         if (LOTMCraft.returnToMainBody != null && LOTMCraft.returnToMainBody.consumeClick()) {
             PacketHandler.sendToServer(new ReturnToMainBodyPacket());
+            PacketHandler.sendToServer(new StopDiscernmentPacket());
         }
         if (LOTMCraft.openArtifactWheel != null && LOTMCraft.openArtifactWheel.consumeClick()) {
             openArtifactWheel();

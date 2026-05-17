@@ -6,6 +6,7 @@ import de.jakob.lotm.abilities.twilight_giant.Passives.WeaponMasteryPassiveAbili
 import de.jakob.lotm.abilities.abyss.passives.FireResistanceAbyssAbility;
 import de.jakob.lotm.abilities.abyss.passives.PhysicalEnhancementsAbyssAbility;
 import de.jakob.lotm.abilities.abyss.passives.WordImmunityAbility;
+import de.jakob.lotm.abilities.black_emperor.passives.PhysicalEnhancementsBlackEmperorAbility;
 import de.jakob.lotm.abilities.darkness.passives.DarknessRevivalAbility;
 import de.jakob.lotm.abilities.darkness.passives.NocturnalityAbility;
 import de.jakob.lotm.abilities.darkness.passives.PhysicalEnhancementsDarknessAbility;
@@ -76,6 +77,7 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> ENHANCED_MENTAL_ATTRIBUTES_JUSTICIAR = ITEMS.registerItem("enhanced_mental_attributes_justiciar_ability", EnhancedMentalAttributesAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> CHAOS_HUNTING_JUSTICIAR = ITEMS.registerItem("chaos_hunting_justiciar_ability", ChaosHuntingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
+    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_BLACK_EMPEROR = ITEMS.registerItem("physical_enhancements_black_emperor_ability", PhysicalEnhancementsBlackEmperorAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     public static final DeferredItem<Item> FLAMING_HIT = ITEMS.registerItem("flaming_hit_ability", FlamingHitAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> FIRE_RESISTANCE = ITEMS.registerItem("fire_resistance_ability", FireResistanceAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));

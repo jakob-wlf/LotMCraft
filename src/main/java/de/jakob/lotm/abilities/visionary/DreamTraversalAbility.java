@@ -53,7 +53,6 @@ public class DreamTraversalAbility extends SelectableAbility {
         super(id, 1f);
         this.autoClear = false;
         canBeUsedInArtifact = false;
-        canBeCopied = false;
     }
 
     @Override
@@ -125,7 +124,6 @@ public class DreamTraversalAbility extends SelectableAbility {
 
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-
         int targetSeq = BeyonderData.getSequence(target);
         if(BeyonderData.getPathway(target).equals("visionary") && BeyonderData.getSequence(target) <
                 BeyonderData.getSequence(entity)){
@@ -138,7 +136,7 @@ public class DreamTraversalAbility extends SelectableAbility {
             return;
         }
 
-        if (requiresAsleep(entity) && !target.hasEffect(ModEffects.ASLEEP)) {
+        if (checkAsleep(entity, target)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.must_be_asleep").withColor(0xFFff124d));
             return;
         }
@@ -190,7 +188,7 @@ public class DreamTraversalAbility extends SelectableAbility {
             return;
         }
 
-        if (requiresAsleep(entity) && !target.hasEffect(ModEffects.ASLEEP)) {
+        if (checkAsleep(entity, target)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.must_be_asleep").withColor(0xFFff124d));
             return;
         }
@@ -237,8 +235,12 @@ public class DreamTraversalAbility extends SelectableAbility {
         PsychologicalInvisibilityAbility.removeInvisFromOtherSkills(entity);
     }
 
-    public static boolean requiresAsleep(LivingEntity entity) {
+    private static boolean requiresAsleep(LivingEntity entity) {
         return BeyonderData.getSequence(entity) > 3;
+    }
+
+    public static boolean checkAsleep(LivingEntity entity, LivingEntity target){
+        return requiresAsleep(entity) && !(target.hasEffect(ModEffects.ASLEEP) || target.isSleeping());
     }
 
     public static int getRangeBySeq(int seq){
@@ -255,8 +257,7 @@ public class DreamTraversalAbility extends SelectableAbility {
 
     public static void performTeleport(LivingEntity entity, LivingEntity target){
         entity.teleportTo(target.getX(), target.getY(), target.getZ());
-        ParticleUtil.spawnParticles((ServerLevel) entity.level(), dust, target.position().add(0, entity.getEyeHeight() / 2, 0), 100, .35, entity.getEyeHeight() / 2, .35, 0);
-    }
+        }
 
     @SubscribeEvent
     public static void onDamage(LivingIncomingDamageEvent event) {

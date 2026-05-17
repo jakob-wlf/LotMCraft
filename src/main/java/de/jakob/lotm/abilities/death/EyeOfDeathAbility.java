@@ -51,6 +51,12 @@ public class EyeOfDeathAbility extends ToggleAbility {
 
     public EyeOfDeathAbility(String id) {
         super(id);
+
+        canBeCopied = false;
+        canBeShared = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
+        canBeUsedInArtifact = false;
     }
 
     @Override

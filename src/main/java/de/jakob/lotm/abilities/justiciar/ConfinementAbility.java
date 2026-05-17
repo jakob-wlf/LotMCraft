@@ -3,11 +3,13 @@ package de.jakob.lotm.abilities.justiciar;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -17,6 +19,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -27,13 +31,9 @@ public class ConfinementAbility extends Ability {
 
     public static final List<ConfinementZone> ACTIVE_ZONES = new CopyOnWriteArrayList<>();
 
-
-
-    // Yellow/gold dust particle for the cage outline
-    private static final DustParticleOptions GOLD_DUST = new DustParticleOptions(
-            new Vector3f(1.0f, 0.85f, 0.1f), 1.2f);
-    private static final DustParticleOptions RED_DUST = new DustParticleOptions(
-            new Vector3f(0.9f, 0.3f, 0.1f), 1.0f);
+    private static final DustParticleOptions GOLD_DUST      = new DustParticleOptions(new Vector3f(1.0f, 0.80f, 0.0f), 1.3f);
+    private static final DustParticleOptions PALE_GOLD_DUST = new DustParticleOptions(new Vector3f(1.0f, 0.92f, 0.45f), 0.85f);
+    private static final DustParticleOptions EMBER_DUST     = new DustParticleOptions(new Vector3f(1.0f, 0.35f, 0.05f), 1.0f);
 
     public ConfinementAbility(String id) {
         super(id, 30f, "confinement");
@@ -57,104 +57,117 @@ public class ConfinementAbility extends Ability {
         if (level.isClientSide) return;
         ServerLevel serverLevel = (ServerLevel) level;
 
-        // Remove any existing confinement from this caster before placing a new one
         ACTIVE_ZONES.stream()
                 .filter(z -> z.ownerId.equals(entity.getUUID()))
                 .findFirst()
-                .ifPresent(existing -> {
-                    for (BlockPos pos : existing.barriers) {
-                        if (serverLevel.getBlockState(pos).is(Blocks.BARRIER)) {
-                            serverLevel.removeBlock(pos, false);
-                        }
-                    }
-                    existing.deactivate();
-                    ACTIVE_ZONES.remove(existing);
-                });
+                .ifPresent(existing -> removeZone(existing, serverLevel));
 
-        int RADIUS = 6;
-        int DURATION = 1200*(int) Math.max(multiplier(entity)/4,1);
-
-
-        Vec3 center = AbilityUtil.getTargetLocation(entity, 12, 2f);
+        int radius   = 6;
+        int duration = 1200 * (int) Math.max(multiplier(entity) / 4, 1);
+        Vec3 center  = AbilityUtil.getTargetLocation(entity, 12, 2f);
 
         List<BlockPos> placed = new ArrayList<>();
-
-        // Build hollow cube of BARRIER blocks (only faces of cube, not interior)
-        for (int dx = -RADIUS; dx <= RADIUS; dx++) {
-            for (int dy = -RADIUS; dy <= RADIUS; dy++) {
-                for (int dz = -RADIUS; dz <= RADIUS; dz++) {
-                    boolean onFace = Math.abs(dx) == RADIUS || Math.abs(dy) == RADIUS || Math.abs(dz) == RADIUS;
-                    if (!onFace) continue;
-
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dy = -radius; dy <= radius; dy++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    if (Math.abs(dx) != radius && Math.abs(dy) != radius && Math.abs(dz) != radius) continue;
                     BlockPos pos = BlockPos.containing(center.x + dx, center.y + dy, center.z + dz);
                     if (!serverLevel.getBlockState(pos).isAir()) continue;
-
                     serverLevel.setBlock(pos, Blocks.BARRIER.defaultBlockState(), 3);
                     placed.add(pos);
                 }
             }
         }
 
-        ConfinementZone zone = new ConfinementZone(entity.getUUID(), center, RADIUS, serverLevel, placed);
+        ConfinementZone zone = new ConfinementZone(entity.getUUID(), center, radius, serverLevel, placed);
         ACTIVE_ZONES.add(zone);
 
-        // Spawn particles along edges every 10 ticks for the duration
-        ServerScheduler.scheduleForDuration(0, 10, DURATION, () -> {
-            if (!zone.isActive()) return;
-            spawnEdgeParticles(serverLevel, center, RADIUS);
-        }, () -> {
-            // Cleanup: remove barriers and deactivate zone
-            for (BlockPos pos : zone.barriers) {
-                if (serverLevel.getBlockState(pos).is(Blocks.BARRIER)) {
-                    serverLevel.removeBlock(pos, false);
-                }
-            }
-            zone.deactivate();
-            ACTIVE_ZONES.remove(zone);
-        }, serverLevel);
+        spawnSummonEffect(serverLevel, center, radius);
 
-        NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, center, entity, this, interactionFlags, RADIUS, 20 * 2));
+        Location centerLoc = new Location(center, serverLevel);
+
+        ServerScheduler.scheduleForDuration(0, 8, duration, () -> {
+                    if (!zone.isActive()) return;
+                    spawnEdgeParticles(serverLevel, center, radius);
+                    spawnCornerFlares(serverLevel, center, radius);
+                }, () -> removeZone(zone, serverLevel), serverLevel,
+                () -> AbilityUtil.getTimeInArea(entity, centerLoc));
+
+        NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, center, entity, this, interactionFlags, radius, 20 * 2));
     }
 
-    /**
-     * Spawns dust particles along the 12 edges of the cage cube.
-     */
+    private static void spawnSummonEffect(ServerLevel level, Vec3 center, int radius) {
+        Location loc = new Location(center, level);
+
+        ParticleUtil.createParticleSpirals(
+                GOLD_DUST, loc,
+                0.5, radius, radius, 3.0, 2.0, 60, 4, 3
+        );
+
+        ServerScheduler.scheduleForDuration(0, 1, 25, () -> {
+            for (int corner = 0; corner < 8; corner++) {
+                double cx = center.x + ((corner & 1) == 0 ? -radius : radius);
+                double cy = center.y + ((corner & 2) == 0 ? -radius : radius);
+                double cz = center.z + ((corner & 4) == 0 ? -radius : radius);
+                level.sendParticles(GOLD_DUST, cx, cy, cz, 2, 0.15, 0.15, 0.15, 0);
+                level.sendParticles(ParticleTypes.ENCHANT, cx, cy, cz, 3, 0.2, 0.2, 0.2, 0.08);
+            }
+        }, level);
+    }
+
     private static void spawnEdgeParticles(ServerLevel level, Vec3 center, int r) {
         double cx = center.x, cy = center.y, cz = center.z;
+        double step = 0.7;
+        double pulse = Math.sin(System.currentTimeMillis() * 0.004) * 0.08;
 
-        // 12 edges of the cube — iterate each edge in steps of 0.6 blocks
-        double step = 0.6;
-
-        // 4 vertical edges
         for (int sx : new int[]{-r, r}) {
             for (int sz : new int[]{-r, r}) {
                 for (double dy = -r; dy <= r; dy += step) {
-                    spawnEdgeDust(level, cx + sx, cy + dy, cz + sz);
+                    level.sendParticles(GOLD_DUST, cx + sx, cy + dy + pulse, cz + sz, 1, 0.03, 0.03, 0.03, 0);
+                    if (Math.random() < 0.12) {
+                        level.sendParticles(PALE_GOLD_DUST, cx + sx, cy + dy, cz + sz, 1, 0.05, 0.05, 0.05, 0);
+                    }
                 }
             }
         }
-
-        // 4 horizontal edges along X axis
         for (int sy : new int[]{-r, r}) {
             for (int sz : new int[]{-r, r}) {
                 for (double dx = -r; dx <= r; dx += step) {
-                    spawnEdgeDust(level, cx + dx, cy + sy, cz + sz);
+                    level.sendParticles(GOLD_DUST, cx + dx, cy + sy + pulse, cz + sz, 1, 0.03, 0.03, 0.03, 0);
                 }
             }
         }
-
-        // 4 horizontal edges along Z axis
         for (int sx : new int[]{-r, r}) {
             for (int sy : new int[]{-r, r}) {
                 for (double dz = -r; dz <= r; dz += step) {
-                    spawnEdgeDust(level, cx + sx, cy + sy, cz + dz);
+                    level.sendParticles(GOLD_DUST, cx + sx, cy + sy + pulse, cz + dz, 1, 0.03, 0.03, 0.03, 0);
                 }
             }
         }
     }
 
-    private static void spawnEdgeDust(ServerLevel level, double x, double y, double z) {
-        ParticleUtil.spawnParticles(level, GOLD_DUST, new Vec3(x, y, z), 1, 0.05, 0.01);
+    private static void spawnCornerFlares(ServerLevel level, Vec3 center, int r) {
+        for (int corner = 0; corner < 8; corner++) {
+            double cx = center.x + ((corner & 1) == 0 ? -r : r);
+            double cy = center.y + ((corner & 2) == 0 ? -r : r);
+            double cz = center.z + ((corner & 4) == 0 ? -r : r);
+            if (Math.random() < 0.4) {
+                level.sendParticles(EMBER_DUST, cx, cy, cz, 1, 0.1, 0.15, 0.1, 0);
+            }
+            if (Math.random() < 0.2) {
+                level.sendParticles(ParticleTypes.ENCHANT, cx, cy, cz, 2, 0.15, 0.15, 0.15, 0.05);
+            }
+        }
+    }
+
+    private static void removeZone(ConfinementZone zone, ServerLevel level) {
+        for (BlockPos pos : zone.barriers) {
+            if (level.getBlockState(pos).is(Blocks.BARRIER)) {
+                level.removeBlock(pos, false);
+            }
+        }
+        zone.deactivate();
+        ACTIVE_ZONES.remove(zone);
     }
 
     @SubscribeEvent
@@ -166,17 +179,36 @@ public class ConfinementAbility extends Ability {
         Vec3 destination = new Vec3(event.getTargetX(), event.getTargetY(), event.getTargetZ());
 
         for (ConfinementZone zone : ACTIVE_ZONES) {
-            if (!zone.level.equals(serverLevel)) continue;
-            if (!zone.isActive()) continue;
-
-            boolean insideNow = entity.position().distanceTo(zone.center) <= zone.radius + 1.0;
+            if (!zone.level.equals(serverLevel) || !zone.isActive()) continue;
+            boolean insideNow  = entity.position().distanceTo(zone.center) <= zone.radius + 1.0;
             boolean outsideDest = destination.distanceTo(zone.center) > zone.radius;
-
             if (insideNow && outsideDest) {
                 event.setCanceled(true);
                 return;
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onCasterDeath(LivingDeathEvent event) {
+        UUID id = event.getEntity().getUUID();
+        if (!(event.getEntity().level() instanceof ServerLevel serverLevel)) return;
+
+        ACTIVE_ZONES.stream()
+                .filter(z -> z.ownerId.equals(id))
+                .findFirst()
+                .ifPresent(z -> removeZone(z, serverLevel));
+    }
+
+    @SubscribeEvent
+    public static void onCasterLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        UUID id = event.getEntity().getUUID();
+        if (!(event.getEntity().level() instanceof ServerLevel serverLevel)) return;
+
+        ACTIVE_ZONES.stream()
+                .filter(z -> z.ownerId.equals(id))
+                .findFirst()
+                .ifPresent(z -> removeZone(z, serverLevel));
     }
 
     public static class ConfinementZone {
@@ -188,19 +220,14 @@ public class ConfinementAbility extends Ability {
         private boolean active = true;
 
         public ConfinementZone(UUID ownerId, Vec3 center, double radius, ServerLevel level, List<BlockPos> barriers) {
-            this.ownerId = ownerId;
-            this.center = center;
-            this.radius = radius;
-            this.level = level;
+            this.ownerId  = ownerId;
+            this.center   = center;
+            this.radius   = radius;
+            this.level    = level;
             this.barriers = barriers;
         }
 
-        public boolean isActive() {
-            return active;
-        }
-
-        public void deactivate() {
-            active = false;
-        }
+        public boolean isActive() { return active; }
+        public void deactivate()  { active = false; }
     }
 }

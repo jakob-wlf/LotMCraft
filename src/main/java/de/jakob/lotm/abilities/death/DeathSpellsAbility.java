@@ -153,7 +153,7 @@ public class DeathSpellsAbility extends SelectableAbility {
                 if (!AbilityUtil.mayTarget(caster, target)) return;
                 boolean hit = target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, caster), (float) (DamageLookup.lookupDamage(4, .6) * multiplier(caster)));
                 if (hit) {
-                    caster.heal(2.5f * 0.6f);
+                    caster.setHealth(Math.min(caster.getHealth() + 2.5f * 0.6f, caster.getMaxHealth()));
                     ParticleUtil.spawnSphereParticles(level, ParticleTypes.SOUL_FIRE_FLAME, caster.getEyePosition(), 0.8, 8);
                     ParticleUtil.spawnParticles(level, ParticleTypes.SOUL, caster.getEyePosition(), 3, 0.15);
                 }

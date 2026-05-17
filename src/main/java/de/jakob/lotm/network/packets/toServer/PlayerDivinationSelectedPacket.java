@@ -4,7 +4,6 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.visionary.DreamTraversalAbility;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.effect.ModEffects;
-import de.jakob.lotm.network.packets.toClient.OpenPlayerDivinationScreenPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.DivinationUtil;
 import de.jakob.lotm.util.PlayerSelectionWorkType;
@@ -84,7 +83,7 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
             return;
         }
 
-        if (DreamTraversalAbility.requiresAsleep(player) && !targetPlayer.hasEffect(ModEffects.ASLEEP)) {
+        if (DreamTraversalAbility.checkAsleep(player, targetPlayer)) {
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.dream_traversal.must_be_asleep").withColor(0xFFff124d));
             return;
         }

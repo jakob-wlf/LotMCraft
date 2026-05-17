@@ -44,6 +44,8 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
     public PsychologicalInvisibilityAbility(String id) {
         super(id);
         canBeCopied = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
     }
 
     @Override
@@ -53,7 +55,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
 
     @Override
     public float getSpiritualityCost() {
-        return 13;
+        return 6;
     }
 
     @Override

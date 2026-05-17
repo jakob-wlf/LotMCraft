@@ -19,9 +19,11 @@ import de.jakob.lotm.potions.BeyonderPotion;
 import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.DiscernmentUtil;
 import de.jakob.lotm.util.playerMap.StoredData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
+import de.jakob.lotm.util.playerMap.StoredDataBuilder;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -46,6 +48,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.Objects;
 import java.util.Random;
+import java.util.UUID;
 
 import static de.jakob.lotm.util.BeyonderData.playerMap;
 import static de.jakob.lotm.util.BeyonderData.getSequence;
@@ -251,19 +254,33 @@ public class BeyonderEventHandler {
         BeyonderCharacteristicItem charItem = BeyonderCharacteristicItemHandler
                 .selectCharacteristicOfPathwayAndSequence(BeyonderData.getPathway(player), dropSequence);
 
-        BeyonderData.setBeyonder(player, data.pathway(), data.sequence(), true, false, true, false);
+        BeyonderData.setBeyonder(player, data.pathway(), data.sequence(), true, false, false, false);
 
         if (charItem == null) return;
 
-        ItemEntity itemEntity = new ItemEntity(
-                player.level(),
-                player.getX(),
-                player.getY(),
-                player.getZ(),
-                new ItemStack(charItem.asItem())
-        );
+        if(DiscernmentUtil.died.containsKey(player.getUUID())){
+            String path = DiscernmentUtil.died.get(player.getUUID());
 
-        event.getDrops().add(itemEntity);
+            UUID id = playerMap.findPlayerByUniqueness(path);
+            if (id != null){
+                var target = player.level().getPlayerByUUID(id);
+
+                if(target != null){
+                    target.addItem(new ItemStack(charItem));
+                }
+            }
+        }
+        else {
+            ItemEntity itemEntity = new ItemEntity(
+                    player.level(),
+                    player.getX(),
+                    player.getY(),
+                    player.getZ(),
+                    new ItemStack(charItem.asItem())
+            );
+
+            event.getDrops().add(itemEntity);
+        }
     }
 
     @SubscribeEvent
@@ -285,6 +302,11 @@ public class BeyonderEventHandler {
             }
 
             StoredData data = playerMap.get(player).get();
+            //StoredData regressed = data.regressSeq(player.getServer().getGameRules().getBoolean(ModGameRules.LOOSE_CHAR_ON_REGRESSION));
+            //StoredData regressed = data.regressSeq(false, player.getServer().getGameRules().getBoolean(ModGameRules.LOOSE_CHAR_ON_REGRESSION));
+
+
+
             StoredData regressed = data.regressSeq(false);
 
             SacrificeRevertComponent revert = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);
@@ -297,6 +319,13 @@ public class BeyonderEventHandler {
                 // Regress from the original sequence, not the temporary sacrificed one
                 StoredData dataAtOriginalSeq = StoredData.builder.copyFrom(data).sequence(originalSeq).build();
                 playerMap.put(player, dataAtOriginalSeq.regressSeq());
+            } else if(player.level().getGameRules().getBoolean(ModGameRules.LOOSE_CHAR_ON_REGRESSION)  && data.charStack()[data.sequence()] > 0){
+                int originalSeq = data.sequence();
+                // Store the original sequence so onPlayerDrops drops the right characteristic
+                // Regress from the original sequence, not the temporary sacrificed one
+                //StoredData dataAtOriginalSeq = StoredData.builder.copyFrom(data).sequence(originalSeq).build();
+                //playerMap.put(player, dataAtOriginalSeq.regressSeq());
+                BeyonderData.setCharStack(player, data.charStack()[data.sequence()] - 1, data.sequence(), true);
             } else {
                 playerMap.put(player, regressed);
             }
@@ -313,7 +342,7 @@ public class BeyonderEventHandler {
                 ClientBeyonderCache.removePlayer(player.getUUID());
             } else
                 ClientBeyonderCache.updateData(player.getUUID(), regressed.pathway(), regressed.sequence(),
-                        0.0f, false, true, 0.0f);
+                        0.0f, false, true, 1.0f);
         }
     }
 
@@ -573,13 +602,17 @@ public class BeyonderEventHandler {
     public static void onTravel(EntityTravelToDimensionEvent event) {
         if(!(event.getEntity() instanceof LivingEntity entity)) return;
 
+        Level level = entity.level();
+        if(level.isClientSide()) return;
+        if(!level.getGameRules().getBoolean(ModGameRules.SEQUENCE_DIMENSION_LOCK)) return;
+
         ResourceKey<Level> target = event.getDimension();
 
         int seq = BeyonderData.getSequence(entity);
         String path =  BeyonderData.getPathway(entity);
 
 
-        if (target == Level.NETHER && seq > 5){
+        if (target == Level.NETHER && seq > 7){
             event.setCanceled(true);
         }
         else if (target == Level.END){

@@ -57,11 +57,8 @@ public class NightmareAbility extends SelectableAbility {
     }
 
     public NightmareAbility(String id) {
-        super(id, 1);
-
-        canBeCopied = false;
+        super(id, 0.5f);
         canBeUsedByNPC = false;
-        canBeReplicated = false;
         autoClear = false;
     }
 
@@ -72,22 +69,27 @@ public class NightmareAbility extends SelectableAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 0;
+        return 40;
     }
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.nightmare.nightmare", "ability.lotmcraft.nightmare.reshape", "ability.lotmcraft.nightmare.restrict", "ability.lotmcraft.nightmare.attack", "ability.lotmcraft.nightmare.teleport"};
+        return new String[]{
+                "ability.lotmcraft.nightmare.nightmare",
+                //"ability.lotmcraft.nightmare.reshape",
+                "ability.lotmcraft.nightmare.restrict",
+                "ability.lotmcraft.nightmare.attack",
+                "ability.lotmcraft.nightmare.teleport"};
     }
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch(abilityIndex) {
             case 0 -> nightmare(level, entity);
-            case 1 -> reshape(level, entity);
-            case 2 -> restrict(level, entity);
-            case 3 -> attack(level, entity);
-            case 4 -> teleport(level, entity);
+            //case 1 -> reshape(level, entity);
+            case 1 -> restrict(level, entity);
+            case 2 -> attack(level, entity);
+            case 3 -> teleport(level, entity);
         }
 
         if(abilityIndex != 3){

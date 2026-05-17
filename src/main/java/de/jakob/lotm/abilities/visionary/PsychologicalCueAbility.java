@@ -38,6 +38,7 @@ public class PsychologicalCueAbility extends ToggleAbility {
         cannotBeStolen = true;
         autoClear = false;
         canBeShared = false;
+        canBeUsedInArtifact = false;
     }
 
     @Override
@@ -78,7 +79,7 @@ public class PsychologicalCueAbility extends ToggleAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 5;
+        return 3.5f;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)

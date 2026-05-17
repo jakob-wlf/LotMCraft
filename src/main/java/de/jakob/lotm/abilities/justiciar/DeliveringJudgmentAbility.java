@@ -19,9 +19,7 @@ public class DeliveringJudgmentAbility extends Ability {
     public DeliveringJudgmentAbility(String id) {
         super(id, 5f);
         hasOptimalDistance = false;
-        canBeCopied = false;
         canBeShared = false;
-        canBeReplicated = false;
     }
 
     @Override

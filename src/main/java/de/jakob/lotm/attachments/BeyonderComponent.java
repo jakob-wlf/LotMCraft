@@ -39,6 +39,11 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
         for(int i = 0; i < sequence; i++) {
             pathwayHistory[i] = null;
         }
+        for(int i = sequence; i < 10; i++) {
+            if (pathwayHistory[i] == null || pathwayHistory[i].isEmpty()) {
+                pathwayHistory[i] = pathway;
+            }
+        }
         return pathwayHistory;
     }
 
@@ -51,7 +56,8 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
     }
 
     public void setCharacteristicStack(int characteristicStack, int sequence) {
-        this.characteristicStack[sequence] = characteristicStack;
+        if(sequence <= 9 && sequence > 0)
+            this.characteristicStack[sequence] = characteristicStack;
     }
 
     public void clearCharacteristicStack() {

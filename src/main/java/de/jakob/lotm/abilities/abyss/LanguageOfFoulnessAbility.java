@@ -28,7 +28,6 @@ import java.util.Map;
 public class LanguageOfFoulnessAbility extends SelectableAbility {
     public LanguageOfFoulnessAbility(String id) {
         super(id, 3);
-        this.canBeCopied = false;
     }
 
     @Override
@@ -54,7 +53,7 @@ public class LanguageOfFoulnessAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 15, 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 15* (int) Math.max(multiplier(entity)/4,1), 2);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.language_of_foulness.no_target").withColor(0x723b94));
             return;
@@ -77,7 +76,7 @@ public class LanguageOfFoulnessAbility extends SelectableAbility {
             return;
         }
 
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 8, () -> {
+        ServerScheduler.scheduleForDuration(0, 1, 20 * 2, () -> {
             if(random.nextInt(8) == 0) {
                 target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDps(6, .8, 8, 8) * (int) Math.max(multiplier(entity)/4,1)));
             }

@@ -1,5 +1,6 @@
 package de.jakob.lotm.abilities.death;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
@@ -31,6 +32,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import org.joml.Vector3f;
 
@@ -38,9 +40,10 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class NationOfTheDeadAbility extends Ability {
 
-    private static final int DURATION_TICKS = 20 * 100;
+    private static final int DURATION_TICKS = 20 * 85;
     private static final float BASE_DPS_PERCENT = 0.03f;
     private static final float PER_SEQ_STEP = 0.005f;
 
@@ -369,7 +372,6 @@ public class NationOfTheDeadAbility extends Ability {
 
             spawnDomainSkeleton(serverLevel, deathPos, caster, domain);
 
-            // Death-at-location particle burst
             serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
                     deathPos.x, deathPos.y + 0.5, deathPos.z, 40, 0.5, 0.7, 0.5, 0.05);
             serverLevel.sendParticles(ParticleTypes.SOUL,
@@ -378,7 +380,6 @@ public class NationOfTheDeadAbility extends Ability {
                     deathPos.x, deathPos.y + 1.0, deathPos.z, 20, 0.4, 0.5, 0.4, 0);
             serverLevel.sendParticles(VOID_DUST,
                     deathPos.x, deathPos.y + 0.3, deathPos.z, 16, 0.5, 0.3, 0.5, 0);
-            // Rising column from death point
             for (int i = 0; i < 20; i++) {
                 double dy = i * 0.4;
                 serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,

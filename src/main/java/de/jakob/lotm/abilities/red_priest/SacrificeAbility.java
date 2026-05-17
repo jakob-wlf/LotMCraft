@@ -106,7 +106,7 @@ public class SacrificeAbility extends Ability {
         int animationTicks = 35;
         ServerScheduler.scheduleDelayed(animationTicks, () -> {
             float savedDigestion = BeyonderData.getDigestionProgress(player);
-            BeyonderData.setBeyonder(player, pathway, tempSeq, true, false, false, false);
+            BeyonderData.setBeyonder(player, pathway, tempSeq, true, false, true, false);
             // Temp sequence starts at 0 digestion — prevents drinking potions to exploit the advance
             BeyonderData.setDigestionProgress(player, 0);
             PacketHandler.syncBeyonderDataToPlayer(player);

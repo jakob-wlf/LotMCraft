@@ -106,7 +106,7 @@ public class ElectricShockEntity extends Entity {
         // Check for entity hits
         List<Entity> entities = level().getEntities(this, new AABB(startPos, currentEnd));
         for (Entity entity : entities) {
-            if (entity != this && !entity.isSpectator()) {
+            if (entity != this && entity != source && !entity.isSpectator()) {
                 onHitEntity(entity);
                 discard();
                 return;

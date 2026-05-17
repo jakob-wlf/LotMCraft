@@ -28,7 +28,6 @@ public class CurseOfMisfortuneAbility extends Ability {
     public CurseOfMisfortuneAbility(String id) {
         super(id, 12, "unluck");
         postsUsedAbilityEventManually = true;
-        this.canBeCopied = false;
         canBeShared = false;
     }
 

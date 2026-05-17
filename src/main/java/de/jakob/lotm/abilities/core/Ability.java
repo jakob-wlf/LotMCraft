@@ -1,10 +1,9 @@
 package de.jakob.lotm.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.abilities.error.ParasitationAbility;
-import de.jakob.lotm.attachments.AbilityCooldownComponent;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
@@ -21,6 +20,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
+import de.jakob.lotm.abilities.black_emperor.MausoleumDomainAbility;
+import de.jakob.lotm.util.helper.AbilityUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -95,7 +96,7 @@ public abstract class Ability {
 
         // Consume spirituality
         if(shouldConsumeSpirituality(newUser) && consumeSpirituality) {
-            BeyonderData.reduceSpirituality(newUser, getSpiritualityCost());
+            BeyonderData.reduceSpirituality(newUser, getInflatedSpiritualityCost(newUser, serverLevel));
         }
 
         // Digest potion
@@ -105,7 +106,17 @@ public abstract class Ability {
 
         // Handle Cooldown
         AbilityCooldownComponent component = newUser.getData(ModAttachments.COOLDOWN_COMPONENT);
-        component.setCooldown(id, cooldown);
+        int inflatedCooldown = cooldown;
+        var pdata = newUser.getPersistentData();
+        if (pdata.contains(EntropySubAbility.SENSORY_DECAY_COOLDOWN_MULT_KEY)) {
+            if (pdata.getLong(EntropySubAbility.SENSORY_DECAY_COOLDOWN_UNTIL_KEY) > serverLevel.getGameTime()) {
+                inflatedCooldown = (int)(cooldown * pdata.getFloat(EntropySubAbility.SENSORY_DECAY_COOLDOWN_MULT_KEY));
+            } else {
+                pdata.remove(EntropySubAbility.SENSORY_DECAY_COOLDOWN_MULT_KEY);
+                pdata.remove(EntropySubAbility.SENSORY_DECAY_COOLDOWN_UNTIL_KEY);
+            }
+        }
+        component.setCooldown(id, inflatedCooldown);
 
         if(AbilityUtil.hasArtifactScaling(entity)){
             artifactScalingMap.put(entity.getUUID(), AbilityUtil.getArtifactScalingSeq(entity));
@@ -146,6 +157,20 @@ public abstract class Ability {
 
     protected abstract float getSpiritualityCost();
 
+    public float getInflatedSpiritualityCost(LivingEntity entity, ServerLevel level) {
+        float base = getSpiritualityCost();
+        var pdata = entity.getPersistentData();
+        if (pdata.contains(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY)) {
+            if (pdata.getLong(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY) > level.getGameTime()) {
+                return base * pdata.getFloat(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
+            } else {
+                pdata.remove(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
+                pdata.remove(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY);
+            }
+        }
+        return base;
+    }
+
     public float multiplier(LivingEntity entity) {
         return (float) AbilityUtil.getMultiplierWithArt(entity, this);
     }
@@ -169,31 +194,26 @@ public abstract class Ability {
             return getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence);
         }
 
-        // Check current pathway
-        if(getRequirements().containsKey(pathway) && getRequirements().get(pathway) >= sequence) {
-            int reqSeq = getRequirements().get(pathway);
-            // Switched pathway players only access seq 9-5 abilities once they have a char stack at seq 4 or stronger
-            if (BeyonderData.hasSwitchedPathway(entity) && reqSeq > 4) {
-                int[] stacks = BeyonderData.getCharStacks(entity);
-                boolean hasStack = false;
-                for (int i = 1; i <= 4; i++) { if (stacks[i] > 0) { hasStack = true; break; } }
-                if (!hasStack) return false;
+        // use the old system in case of controlling - will change once worms get added
+        ControllingDataComponent controllingDataComponent = entity.getData(ModAttachments.CONTROLLING_DATA);
+        if (controllingDataComponent.isControlling()) {
+            if(getRequirements().containsKey(pathway) && getRequirements().get(pathway) >= sequence) {
+                return true;
             }
-            return true;
         }
 
-        // Check historical pathways from domain switches — abilities from the previous pathway are
-        // accessible only down to the switch point (e.g. switched at seq 4, so only fool seq 5–9 carry over)
-        if(!entity.level().isClientSide()) {
-            String[] pathwayHistory = BeyonderData.getPathwayHistory(entity);
-            if(pathwayHistory.length < 10) return false;
-            for (int seq = sequence + 1; seq <= 9; seq++) {
-                String historicalPathway = pathwayHistory[seq];
-                if (historicalPathway != null
-                        && getRequirements().containsKey(historicalPathway)
-                        && getRequirements().get(historicalPathway) >= seq) {
-                    return true;
-                }
+        DiscernmentComponent discernmentComponent = entity.getData(ModAttachments.DISCERNMENT_DATA.get());
+        if(discernmentComponent.isDiscerning()){
+            if(getRequirements().containsKey(pathway) && getRequirements().get(pathway) >= sequence)
+                return true;
+        }
+
+        // Check pathway
+        for(int i = sequence; i < BeyonderData.getPathwayHistory(entity).length; i++) {
+            if(BeyonderData.getPathwayHistory(entity)[i] == null) continue;
+            String userPath = BeyonderData.getPathwayHistory(entity)[i];
+            if(getRequirements().containsKey(userPath) && getRequirements().get(userPath) == i) {
+                return true;
             }
         }
 
@@ -206,6 +226,14 @@ public abstract class Ability {
 
     public boolean canUse(LivingEntity entity, boolean hasToHaveAbility, boolean doesConsumeSpirituality) {
         if(!hasAbility(entity) && hasToHaveAbility) return false;
+
+        if (MausoleumDomainAbility.isInsideMausoleumDomain(entity.getUUID())) {
+            if (entity instanceof ServerPlayer player) {
+                AbilityUtil.sendActionBar(player,
+                        Component.literal("Your abilities are sealed.").withColor(0xFF5555));
+            }
+            return false;
+        }
 
         AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
         if(component.isOnCooldown(id)) return false;

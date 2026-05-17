@@ -31,7 +31,6 @@ public class SteelMasteryAbility extends SelectableAbility {
 
     public SteelMasteryAbility(String id) {
         super(id, 2);
-        canBeCopied = false;
     }
 
     @Override

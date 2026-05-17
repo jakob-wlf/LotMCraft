@@ -22,8 +22,6 @@ import java.util.Map;
 public class CalamityAttractionAbility extends Ability {
     public CalamityAttractionAbility(String id) {
         super(id, 10);
-        canBeCopied = false;
-        canBeReplicated = false;
     }
 
     @Override

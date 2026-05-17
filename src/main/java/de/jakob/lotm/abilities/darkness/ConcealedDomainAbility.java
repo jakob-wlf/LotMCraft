@@ -14,7 +14,6 @@ public class ConcealedDomainAbility extends Ability {
 
     public ConcealedDomainAbility(String id) {
         super(id, 2f);
-        this.canBeCopied = false;
         this.canBeUsedByNPC = false;
     }
 

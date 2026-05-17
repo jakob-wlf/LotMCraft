@@ -25,9 +25,7 @@ public class SwordOfJudgmentAbility extends Ability {
         hasOptimalDistance = true;
         optimalDistance = 10f;
         postsUsedAbilityEventManually = true;
-        canBeCopied = true;
         canBeUsedByNPC = false;
-        canBeReplicated = true;
         canBeShared = false;
     }
 
@@ -64,7 +62,7 @@ public class SwordOfJudgmentAbility extends Ability {
         ProhibitionAbility.FAIL_COUNT_BY_ENTITY.remove(target.getUUID());
 
         // Spawn the sword 15 blocks above the target
-        float damage = target.getMaxHealth() * 0.4f;
+        float damage = target.getMaxHealth() * 0.55f;
         Vec3 spawnPos = target.position().add(0, 15, 0);
         JudgmentSwordEntity sword = new JudgmentSwordEntity(serverLevel, spawnPos, damage, entity, target, this);
         serverLevel.addFreshEntity(sword);

@@ -58,6 +58,17 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 ;
     }
 
+    public String getSelfInfo() {
+        return "Name: " + trueName
+                + "\n--- Path: " + pathway
+                + "\n--- Seq: " + sequence
+                + "\n--- Honorific Name: " + honorificName.getAllInfo()
+                + "\n--- Char stack: " + java.util.Arrays.toString(charStack)
+                + "\n--- Pathway history: " + getPathwayHistoryInfo()
+                + "\n--- Sefirot: " + (claimedSefirot.isEmpty() ? "none" : claimedSefirot)
+                ;
+    }
+
     private String getPathwayHistoryInfo() {
         StringBuilder sb = new StringBuilder();
         boolean any = false;
@@ -81,7 +92,12 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
             return builder.copyFrom(this).charStack(charStack[sequence] - 1, sequence).build();
         }
 
+
+
         int newSequence = sequence + 1;
+
+
+
         boolean becomesNonBeyonder = (newSequence == LOTMCraft.NON_BEYONDER_SEQ);
         String sefirot = claimedSefirot;
 
