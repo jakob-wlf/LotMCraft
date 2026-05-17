@@ -151,6 +151,7 @@ public class ControllingUtil {
                     nfd.putString("pathway", currentPathway);
                     nfd.putInt("sequence", currentSequence);
                     nfd.putFloat("digestionProgress", BeyonderData.getDigestionProgress(player));
+                    nfd.putIntArray("characteristicStack", BeyonderData.getCharStacks(player));
                 }
             }
         }
