@@ -115,6 +115,15 @@ public class WindManipulationAbility extends SelectableAbility {
         PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
     }
 
+    @Override
+    public boolean isSubAbilityAllowed(LivingEntity entity, int selectedAbility) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (entitySeq > 4) {
+            return selectedAbility < 3;
+        }
+        return true;
+    }
+
 
     private void flight(Level level, LivingEntity entity) {
         if(level.isClientSide)

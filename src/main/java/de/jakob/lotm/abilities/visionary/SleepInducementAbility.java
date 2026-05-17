@@ -189,4 +189,13 @@ public class SleepInducementAbility extends SelectableAbility {
         selectedAbilities.put(entity.getUUID(), selectedAbility);
         PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
     }
+
+    @Override
+    public boolean isSubAbilityAllowed(LivingEntity entity, int selectedAbility) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (entitySeq > 3) {
+            return selectedAbility == 0;
+        }
+        return true;
+    }
 }

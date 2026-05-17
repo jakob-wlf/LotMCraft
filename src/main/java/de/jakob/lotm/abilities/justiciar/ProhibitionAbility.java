@@ -188,6 +188,21 @@ public class ProhibitionAbility extends SelectableAbility {
         PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
     }
 
+    @Override
+    public boolean isSubAbilityAllowed(LivingEntity entity, int selectedAbility) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (entitySeq > 6) {
+            return selectedAbility < 2;
+        }
+        if (entitySeq > 4) {
+            return selectedAbility < 3;
+        }
+        if (entitySeq > 3) {
+            return selectedAbility < 4;
+        }
+        return true;
+    }
+
     public enum ProhibitionType {
         BEYONDER_ABILITIES("Beyonder Abilities"),
         COMBAT("Combat"),

@@ -130,6 +130,21 @@ public class MidnightPoemAbility extends SelectableAbility {
     }
 
     @Override
+    public boolean isSubAbilityAllowed(LivingEntity entity, int selectedAbility) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (entitySeq > 6) {
+            return selectedAbility < 2;
+        }
+        if (entitySeq > 4) {
+            return selectedAbility < 3;
+        }
+        if (entitySeq > 3) {
+            return selectedAbility < 4;
+        }
+        return true;
+    }
+
+    @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch (abilityIndex) {
             case 0 -> lullaby(level, entity);

@@ -118,6 +118,18 @@ public class GiftAbility extends SelectableAbility {
     }
 
     @Override
+    public boolean isSubAbilityAllowed(LivingEntity entity, int selectedAbility) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (entitySeq > 5) {
+            return selectedAbility == 0;
+        }
+        if (entitySeq > 1) {
+            return selectedAbility < 3;
+        }
+        return true;
+    }
+
+    @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
         switch(selectedAbility){
             case 0 -> giftItem(level, entity);

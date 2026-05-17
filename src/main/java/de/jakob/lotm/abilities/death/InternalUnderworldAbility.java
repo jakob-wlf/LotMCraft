@@ -6,6 +6,7 @@ import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.entity.custom.spirits.*;
+import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.BeyonderData;
@@ -283,7 +284,6 @@ public class InternalUnderworldAbility extends SelectableAbility {
         if (!event.getLevel().isClientSide()) return;
 
         PacketHandler.sendToServer(new UseQueuedSoulAbilityPacket());
-        event.setCanceled(true);
     }
 
     private static ServerPlayer resolveCapturePlayer(LivingDeathEvent event, LivingEntity victim) {
@@ -495,7 +495,11 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
         for (int i = 0; i < Math.min(abilities.size(), 54); i++) {
             Ability ability = abilities.get(i);
-            ItemStack item = createAbilityDisplayItem(ability);
+            boolean showSubSelect = false;
+            if (ability instanceof SelectableAbility selectableAbility) {
+                showSubSelect = countAllowedSubAbilities(selectableAbility, player) > 1;
+            }
+            ItemStack item = createAbilityDisplayItem(ability, showSubSelect);
             CompoundTag tag = new CompoundTag();
             tag.putString("AbilityId", ability.getId());
             item.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
@@ -518,6 +522,22 @@ public class InternalUnderworldAbility extends SelectableAbility {
                         if (!tag.contains("AbilityId")) return;
 
                         String abilityId = tag.getString("AbilityId");
+                        Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+                        if (ability instanceof SelectableAbility selectableAbility) {
+                            int allowedCount = countAllowedSubAbilities(selectableAbility, player);
+                            if (allowedCount > 1) {
+                                player.closeContainer();
+                                level.getServer().execute(() -> openSoulSubAbilityGui(level, player, abilityId));
+                                return;
+                            }
+                            if (allowedCount == 1) {
+                                int onlyIndex = firstAllowedSubAbilityIndex(selectableAbility, player);
+                                if (onlyIndex >= 0) {
+                                    selectableAbility.setSelectedAbility(player, onlyIndex);
+                                }
+                            }
+                        }
+
                         player.closeContainer();
                         level.getServer().execute(() -> queueSoulAbility(player, abilityId));
                     }
@@ -526,14 +546,145 @@ public class InternalUnderworldAbility extends SelectableAbility {
         ));
     }
 
+    private static void openSoulSubAbilityGui(ServerLevel level, ServerPlayer player, String abilityId) {
+        Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+        if (!(ability instanceof SelectableAbility selectableAbility)) {
+            queueSoulAbility(player, abilityId);
+            return;
+        }
+
+        String[] subAbilities = selectableAbility.getAbilityNamesCopy();
+        if (subAbilities.length == 0) {
+            queueSoulAbility(player, abilityId);
+            return;
+        }
+
+        SimpleContainer container = new SimpleContainer(54) {
+            @Override
+            public boolean canTakeItem(Container target, int index, ItemStack stack) {
+                return false;
+            }
+        };
+
+        int slot = 0;
+        for (int i = 0; i < subAbilities.length; i++) {
+            if (!selectableAbility.isSubAbilityAllowed(player, i)) {
+                continue;
+            }
+            String subAbility = subAbilities[i];
+            if (subAbility == null || subAbility.isEmpty()) continue;
+
+            ItemStack item = createSubAbilityDisplayItem(subAbility);
+            CompoundTag tag = new CompoundTag();
+            tag.putString("AbilityId", abilityId);
+            tag.putInt("SubAbilityIndex", i);
+            item.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+            if (slot < 54) {
+                container.setItem(slot, item);
+                slot++;
+            } else {
+                break;
+            }
+        }
+
+        final int containerSize = container.getContainerSize();
+        Component title = Component.literal("Internal Underworld - " + prettyAbilityName(abilityId));
+
+        player.openMenu(new SimpleMenuProvider(
+                (id, inv, p) -> new ChestMenu(MenuType.GENERIC_9x6, id, inv, container, 6) {
+                    @Override
+                    public void clicked(int slotId, int button, net.minecraft.world.inventory.ClickType clickType, Player clickPlayer) {
+                        if (slotId < 0 || slotId >= containerSize) return;
+                        ItemStack clicked = container.getItem(slotId);
+                        if (clicked.isEmpty()) return;
+
+                        CustomData customData = clicked.get(DataComponents.CUSTOM_DATA);
+                        if (customData == null) return;
+                        CompoundTag tag = customData.copyTag();
+                        if (!tag.contains("AbilityId") || !tag.contains("SubAbilityIndex", Tag.TAG_INT)) return;
+
+                        String selectedAbilityId = tag.getString("AbilityId");
+                        int selectedIndex = tag.getInt("SubAbilityIndex");
+                        Ability selected = LOTMCraft.abilityHandler.getById(selectedAbilityId);
+                        if (!(selected instanceof SelectableAbility selectable)) return;
+                        if (!selectable.isSubAbilityAllowed(player, selectedIndex)) {
+                            player.sendSystemMessage(Component.literal("That sub-ability is locked for your sequence")
+                                    .withStyle(ChatFormatting.RED));
+                            return;
+                        }
+
+                        selectable.setSelectedAbility(player, selectedIndex);
+                        player.closeContainer();
+
+                        String[] nameKeys = selectable.getAbilityNamesCopy();
+                        if (nameKeys.length > 0) {
+                            String nameKey = nameKeys[Math.min(selectedIndex, nameKeys.length - 1)];
+                            if (nameKey != null && !nameKey.isEmpty()) {
+                                player.sendSystemMessage(Component.literal("Sub-ability selected: ")
+                                        .append(Component.translatable(nameKey))
+                                        .withStyle(ChatFormatting.AQUA));
+                            }
+                        }
+
+                        level.getServer().execute(() -> queueSoulAbility(player, selectedAbilityId));
+                    }
+                },
+                title
+        ));
+    }
+
     private static ItemStack createAbilityDisplayItem(Ability ability) {
         ItemStack item = new ItemStack(Items.BOOK);
         item.set(DataComponents.CUSTOM_NAME, Component.literal(prettyAbilityName(ability.getId()))
                 .withStyle(ChatFormatting.AQUA));
+        List<Component> lore = new ArrayList<>();
+        lore.add(Component.literal("Cast as yourself").withStyle(ChatFormatting.GRAY));
+        item.set(DataComponents.LORE, new ItemLore(lore));
+        return item;
+    }
+
+    private static ItemStack createAbilityDisplayItem(Ability ability, boolean showSubSelect) {
+        ItemStack item = new ItemStack(Items.BOOK);
+        item.set(DataComponents.CUSTOM_NAME, Component.literal(prettyAbilityName(ability.getId()))
+                .withStyle(ChatFormatting.AQUA));
+        List<Component> lore = new ArrayList<>();
+        if (showSubSelect) {
+            lore.add(Component.literal("Select sub-ability").withStyle(ChatFormatting.GRAY));
+        }
+        lore.add(Component.literal("Cast as yourself").withStyle(ChatFormatting.GRAY));
+        item.set(DataComponents.LORE, new ItemLore(lore));
+        return item;
+    }
+
+        private static ItemStack createSubAbilityDisplayItem(String subAbilityKey) {
+        ItemStack item = new ItemStack(Items.PAPER);
+        item.set(DataComponents.CUSTOM_NAME, Component.translatable(subAbilityKey)
+            .withStyle(ChatFormatting.AQUA));
         item.set(DataComponents.LORE, new ItemLore(List.of(
-                Component.literal("Cast as yourself").withStyle(ChatFormatting.GRAY)
+            Component.literal("Queue this ability").withStyle(ChatFormatting.GRAY)
         )));
         return item;
+        }
+
+    private static int countAllowedSubAbilities(SelectableAbility ability, LivingEntity entity) {
+        String[] names = ability.getAbilityNamesCopy();
+        int count = 0;
+        for (int i = 0; i < names.length; i++) {
+            if (ability.isSubAbilityAllowed(entity, i)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private static int firstAllowedSubAbilityIndex(SelectableAbility ability, LivingEntity entity) {
+        String[] names = ability.getAbilityNamesCopy();
+        for (int i = 0; i < names.length; i++) {
+            if (ability.isSubAbilityAllowed(entity, i)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private static String prettyAbilityName(String id) {
