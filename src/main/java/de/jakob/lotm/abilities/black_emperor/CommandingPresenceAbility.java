@@ -72,10 +72,6 @@ public class CommandingPresenceAbility extends ToggleAbility {
 
     public CommandingPresenceAbility(String id) {
         super(id);
-        canBeCopied = false;
-        canBeReplicated = false;
-        canBeShared = false;
-        cannotBeStolen = true;
         canBeUsedByNPC = false;
     }
 
@@ -195,7 +191,7 @@ public class CommandingPresenceAbility extends ToggleAbility {
             boolean isBeyonder = BeyonderData.isBeyonder(target);
             int targetSeq = isBeyonder ? BeyonderData.getSequence(target) : Integer.MAX_VALUE;
 
-            if (isBeyonder && targetSeq < selfSeq && !(target instanceof Player)) {
+            if (isBeyonder && targetSeq <= selfSeq && !(target instanceof Player)) {
                 continue;
             }
 
