@@ -145,7 +145,7 @@ public class AdvancementUtil {
         ServerScheduler.scheduleDelayed(finalDuration, () -> {
             if (!activeAdvancements.containsKey(entity.getUUID())) return;
             activeAdvancements.remove(entity.getUUID());
-            BeyonderData.addCharStack(entity, sequence);
+            BeyonderData.addCharStack(entity, sequence, pathway);
             sendThirdPersonPacket(entity);
         });
     }

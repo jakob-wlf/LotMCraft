@@ -477,11 +477,11 @@ public class PlayerMap extends SavedData {
         setDirty();
     }
 
-    public void addStack(LivingEntity entity, int value, int sequence) {
+    public void addStack(LivingEntity entity, int value, int sequence, String pathway) {
         if (!contains(entity)) put(entity);
 
         int current = playerMap.get(entity.getUUID()).get().charStack()[sequence];
-        setStack(entity, current + value, sequence);
+        setStack(entity, current + value, sequence, pathway);
     }
 
     /**
@@ -505,12 +505,12 @@ public class PlayerMap extends SavedData {
         setDirty();
     }
 
-    public void setStack(LivingEntity entity, int value, int sequence) {
+    public void setStack(LivingEntity entity, int value, int sequence, String pathway) {
         if (!contains(entity)) put(entity);
 
         map.put(entity.getUUID(), StoredData.builder
                 .copyFrom(map.get(entity.getUUID()))
-                .charStack(value, sequence, map.get(entity.getUUID()).pathway())
+                .charStack(value, sequence, pathway)
                 .build());
 
         setDirty();

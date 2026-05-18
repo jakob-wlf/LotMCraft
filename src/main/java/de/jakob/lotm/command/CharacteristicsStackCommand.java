@@ -43,7 +43,7 @@ public class CharacteristicsStackCommand {
                                                         return 0;
                                                     }
 
-                                                    BeyonderData.setCharStack(livingEntity, stack, seq, true);
+                                                    BeyonderData.setCharStack(livingEntity, stack, seq, true, BeyonderData.getPathway(livingEntity));
 
                                                     return 1;
                                                 }
@@ -73,7 +73,7 @@ public class CharacteristicsStackCommand {
                                 return 0;
                             }
 
-                            BeyonderData.setCharStack(livingEntity, 0, seq, true);
+                            BeyonderData.setCharStack(livingEntity, 0, seq, true, BeyonderData.getPathway(livingEntity));
 
                             return 1;
                         })

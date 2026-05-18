@@ -877,10 +877,10 @@ public class BeyonderData {
         }
     }
 
-    public static void addCharStack(LivingEntity player, int sequence) {
+    public static void addCharStack(LivingEntity player, int sequence, String pathway) {
         if (!isBeyonder(player)) return;
 
-        playerMap.addStack(player, 1, sequence);
+        playerMap.addStack(player, 1, sequence, pathway);
         BeyonderComponent component = player.getData(ModAttachments.BEYONDER_COMPONENT);
         component.setCharacteristicStack(component.getCharacteristicStack()[sequence] + 1, sequence);
         component.setDigestionProgress(0);
@@ -889,10 +889,10 @@ public class BeyonderData {
         if (player instanceof ServerPlayer sp) PacketHandler.syncBeyonderDataToPlayer(sp);
     }
 
-    public static void setCharStack(LivingEntity player, int value, int sequence, boolean ignoreDigestion) {
+    public static void setCharStack(LivingEntity player, int value, int sequence, boolean ignoreDigestion, String pathway) {
         if (!isBeyonder(player)) return;
 
-        playerMap.setStack(player, value, sequence);
+        playerMap.setStack(player, value, sequence, pathway);
         BeyonderComponent component = player.getData(ModAttachments.BEYONDER_COMPONENT);
         component.setCharacteristicStack(value, sequence);
 

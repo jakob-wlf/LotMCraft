@@ -66,6 +66,6 @@ public class AvatarCreationAbility extends Ability {
         level.addFreshEntity(avatar);
 
         if(sequence != LOTMCraft.NON_BEYONDER_SEQ)
-            BeyonderData.setCharStack(entity, sequence, stacks[sequence] - 1, true);
+            BeyonderData.setCharStack(entity, sequence, stacks[sequence] - 1, true, BeyonderData.getPathway(entity));
     }
 }
