@@ -8,6 +8,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.*;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -15,6 +16,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                          String trueName,
                          Boolean modified, Vec3 lastPosition,
                          int[] charStack,
+                         ArrayList<Characteristic> chars,
                          String[] pathwayHistory,
                          String uniqueness, //none if no uniqueness :)
                          LinkedList<Prophecy> prophecies,
@@ -219,6 +221,6 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
         String sefirot = tag.getString(NBT_SEFIROT);
 
         return new StoredData(path, seq, name, trueName, modified, lastPos,
-                charStack, history, uniqueness, prophecies, sefirot);
+                charStack, new ArrayList<>(), history, uniqueness, prophecies, sefirot);
     }
 }

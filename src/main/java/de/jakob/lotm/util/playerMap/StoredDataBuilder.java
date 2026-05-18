@@ -2,10 +2,10 @@ package de.jakob.lotm.util.playerMap;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
-import de.jakob.lotm.util.playerMap.HonorificName;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -17,6 +17,7 @@ public class StoredDataBuilder {
     private Boolean modified;
     private Vec3 lastPosition;
     private int[] charStack;
+    private ArrayList<Characteristic> charList;
     private String[] pathwayHistory;
     private LinkedList<Prophecy> prophecyList;
     private String uniqueness;
@@ -34,6 +35,7 @@ public class StoredDataBuilder {
         modified = false;
         lastPosition = new Vec3(0, 0, 0);
         charStack = new int[11];
+        charList = new ArrayList<Characteristic>();
         pathwayHistory = new String[10];
         prophecyList = new LinkedList<>();
         uniqueness = "none";
@@ -51,6 +53,7 @@ public class StoredDataBuilder {
             modified = data.modified();
             lastPosition = data.lastPosition();
             charStack = Arrays.copyOf(data.charStack(), 10);
+            charList = data.chars();
             pathwayHistory = Arrays.copyOf(data.pathwayHistory(), 10);
             prophecyList = data.prophecies();
             sefirot = data.claimedSefirot();
@@ -129,7 +132,7 @@ public class StoredDataBuilder {
     public StoredData build(){
         StoredData buff = new StoredData(pathway, sequence,
                 honorificName, trueName, modified,
-                lastPosition, charStack, pathwayHistory, uniqueness,
+                lastPosition, charStack, charList, pathwayHistory, uniqueness,
                 prophecyList, sefirot);
 
         clean();
