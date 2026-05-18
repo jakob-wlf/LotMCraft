@@ -2,8 +2,6 @@ package de.jakob.lotm.util.playerMap;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
-import de.jakob.lotm.util.playerMap.HonorificName;
-import de.jakob.lotm.util.playerMap.StoredDataBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.*;
 import net.minecraft.world.phys.Vec3;
@@ -91,7 +89,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
     public StoredData regressSeq(boolean respectCharStack) {
         if (respectCharStack && charStack[sequence] > 0) {
             // Still has stacks — lose one, stay at current sequence
-            return builder.copyFrom(this).charStack(charStack[sequence] - 1, sequence).build();
+            return builder.copyFrom(this).charStack(charStack[sequence] - 1, sequence, pathway).build();
         }
 
 
@@ -129,7 +127,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 .pathway(regressedPathway)
                 .sequence(newSequence)
                 .honorificName((newSequence >= 3) ? HonorificName.EMPTY : honorificName)
-                .charStack(0, sequence)   // reset stack on regression
+                .charStack(0, sequence, pathway)   // reset stack on regression
                 .pathwayHistory(becomesNonBeyonder ? new String[10] : clearedHistory)
                 .uniqueness("none")
                 .sefirot(sefirot)

@@ -9,4 +9,21 @@ public class Characteristic {
         this.ammount = ammount;
         this.sequence = sequence;
     }
+
+    public String Pathway(){
+        return pathway;
+    }
+
+    public void setAmmount(int ammount){
+        this.ammount = ammount;
+    }
+
+    public int Ammount(){
+        return ammount;
+    }
+
+    public int Sequence(){
+        return sequence;
+    }
+
 }
