@@ -86,6 +86,7 @@ public abstract class SelectableAbility extends Ability {
 
     public boolean isSubAbilityAllowed(LivingEntity entity, int selectedAbility) {
         return true;
+    }
     public void setSelectedAbilityClient(java.util.UUID uuid, int selectedAbility) {
         if(selectedAbility < 0 || selectedAbility >= getAbilityNames().length)
             return;

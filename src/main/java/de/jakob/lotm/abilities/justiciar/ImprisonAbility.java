@@ -38,6 +38,7 @@ public class ImprisonAbility extends Ability {
         interactionRadius = 15;
         hasOptimalDistance = false;
         postsUsedAbilityEventManually = true;
+        canBeUsedByNPC = false;
     }
 
     @Override
