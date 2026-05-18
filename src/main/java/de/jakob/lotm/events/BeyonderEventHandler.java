@@ -50,8 +50,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
-import static de.jakob.lotm.util.BeyonderData.playerMap;
-import static de.jakob.lotm.util.BeyonderData.getSequence;
+import static de.jakob.lotm.util.BeyonderData.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderEventHandler {
@@ -378,7 +377,7 @@ public class BeyonderEventHandler {
                 // Regress from the original sequence, not the temporary sacrificed one
                 //StoredData dataAtOriginalSeq = StoredData.builder.copyFrom(data).sequence(originalSeq).build();
                 //playerMap.put(player, dataAtOriginalSeq.regressSeq());
-                BeyonderData.setCharStack(player, data.charStack()[data.sequence()] - 1, data.sequence(), true);
+                BeyonderData.setCharStack(player, data.charStack()[data.sequence()] - 1, data.sequence(), true, getPathway(player));
             } else {
                 playerMap.put(player, regressed);
             }
@@ -544,7 +543,7 @@ public class BeyonderEventHandler {
 
             if (hasStack) {
                 // Consume one stack instead of desequencing
-                BeyonderData.setCharStack(victim, BeyonderData.getCurrentCharStack(victim) - 1, getSequence(victim), true);
+                BeyonderData.setCharStack(victim, BeyonderData.getCurrentCharStack(victim) - 1, getSequence(victim), true, BeyonderData.getPathway(victim));
             } else {
                 // No stack — desequence the victim, using regressSeq so domain-switched players restore to their previous pathway
                 if (victim instanceof ServerPlayer sp && BeyonderData.playerMap.get(sp).isPresent()) {

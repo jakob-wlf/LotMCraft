@@ -1,19 +1,19 @@
 package de.jakob.lotm.attachments;
 
+import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.*;
-import net.minecraft.world.level.levelgen.structure.structures.OceanMonumentPieces;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.UnknownNullability;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.ArrayList;
 
 public class BeyonderComponent implements INBTSerializable<CompoundTag> {
 
     private int sequence = 10;
     private String pathway = "none";
     private String[] pathwayHistory = new String[10];
+    private ArrayList<Characteristic> charList = new ArrayList<Characteristic>();
     private int[] characteristicStack = new int[11];
     private float spirituality = 0;
     private float digestionProgress = 0;

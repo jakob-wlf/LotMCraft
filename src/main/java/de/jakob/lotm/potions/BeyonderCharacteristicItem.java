@@ -67,7 +67,8 @@ public class BeyonderCharacteristicItem extends Item {
                         return InteractionResultHolder.fail(stack);
                     }
 
-                    BeyonderData.setCharStack(player, (stacks[seq] + 1), seq, true);
+
+                    BeyonderData.setCharStack(player, (stacks[seq] + 1), seq, true, pathway);
                     BeyonderData.setDigestionProgress(player, 0);
                     player.setItemInHand(hand, ItemStack.EMPTY);
                     return InteractionResultHolder.success(ItemStack.EMPTY);
