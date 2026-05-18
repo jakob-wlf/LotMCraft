@@ -31,6 +31,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
     public static final String NBT_PROPHECIES      = "beyonder_map_prophecies";
     public static final String NBT_UNIQUENESS = "beyonder_map_uniqueness";
     public static final String NBT_SEFIROT = "beyonder_map_claimed_sefirot";
+    public static final String NBT_CHAR_LIST       = "beyonder_map_char_list";
 
     public static final String NBT_LAST_POSITION_X = "beyonder_map_last_position_x";
     public static final String NBT_LAST_POSITION_Y = "beyonder_map_last_position_y";
@@ -55,6 +56,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 + "\n--- Amount of prophecies: " + prophecies.size()
                 + "\n--- Sefirot: " + (claimedSefirot.isEmpty() ? "none" : claimedSefirot)
                 + "\n--- Was modified: " + modified
+                + "\n--- CharList: " + chars.toString()
                 ;
     }
 
@@ -66,6 +68,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 + "\n--- Char stack: " + java.util.Arrays.toString(charStack)
                 + "\n--- Pathway history: " + getPathwayHistoryInfo()
                 + "\n--- Sefirot: " + (claimedSefirot.isEmpty() ? "none" : claimedSefirot)
+                + "\n--- CharList: " + chars.toString()
                 ;
     }
 
@@ -156,7 +159,13 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
         for (int stackCount : charStack) {
             charStackList.add(IntTag.valueOf(stackCount));
         }
+
         tag.put(NBT_CHAR_STACK, charStackList);
+        ListTag charStacks = new ListTag();
+        for (Characteristic characteristic : chars){
+            charStacks.add(characteristic.toNBT(provider));
+        }
+        tag.put(NBT_CHAR_LIST, charStacks);
 
         ListTag propheciesList = new ListTag();
         for (var prophecy : prophecies) {
@@ -198,6 +207,20 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
             }
         }
 
+        ArrayList<Characteristic> chars = new ArrayList<Characteristic>();
+        if (tag.contains(NBT_CHAR_LIST, tag.TAG_LIST)){
+            ListTag charStacks = tag.getList(NBT_CHAR_LIST, Tag.TAG_COMPOUND);
+
+            for (var charTag : charStacks){
+                if (charTag instanceof CompoundTag compound) {
+                    chars.add(Characteristic.fromNBT(compound, provider));
+                }
+            }
+        }
+
+
+
+
         String[] history = new String[10];
         if (tag.contains(NBT_PATHWAY_HISTORY, Tag.TAG_LIST)) {
             ListTag histList = tag.getList(NBT_PATHWAY_HISTORY, Tag.TAG_STRING);
@@ -219,6 +242,6 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
         String sefirot = tag.getString(NBT_SEFIROT);
 
         return new StoredData(path, seq, name, trueName, modified, lastPos,
-                charStack, new ArrayList<>(), history, uniqueness, prophecies, sefirot);
+                charStack, chars, history, uniqueness, prophecies, sefirot);
     }
 }

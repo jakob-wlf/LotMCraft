@@ -121,6 +121,7 @@ public class StoredDataBuilder {
 
     public StoredDataBuilder clearCharStack() {
         charStack = new int[10];
+        charList = new ArrayList<>();
         return this;
     }
 
