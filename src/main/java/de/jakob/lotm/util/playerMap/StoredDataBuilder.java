@@ -99,8 +99,8 @@ public class StoredDataBuilder {
             charStack[sequence] = stack;
 
         for (Characteristic characteristic : charList) {
-            if (Objects.equals(characteristic.Pathway(), pathway)) {
-                characteristic.setAmmount(stack);
+            if (Objects.equals(characteristic.pathway(), pathway)) {
+                characteristic.setStack(stack);
                 return this;
             }
         }
