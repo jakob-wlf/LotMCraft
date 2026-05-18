@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Objects;
 
 public class StoredDataBuilder {
     private String pathway;
@@ -93,9 +94,28 @@ public class StoredDataBuilder {
         return this;
     }
 
-    public StoredDataBuilder charStack(int stack, int sequence) {
+    public StoredDataBuilder charStack(int stack, int sequence, String pathway) {
         if(sequence >= 0 && sequence < 10)
             charStack[sequence] = stack;
+
+        for (Characteristic characteristic : charList) {
+            if (Objects.equals(characteristic.Pathway(), pathway)) {
+                characteristic.setAmmount(stack);
+                return this;
+            }
+        }
+        charList.add(new Characteristic(pathway, stack, sequence));
+
+        return this;
+    }
+
+    public StoredDataBuilder charList(ArrayList<Characteristic> charList){
+        this.charList = charList;
+        return this;
+    }
+
+    public StoredDataBuilder clearCharList(){
+        charList = new ArrayList<>();
         return this;
     }
 

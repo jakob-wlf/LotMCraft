@@ -510,7 +510,7 @@ public class PlayerMap extends SavedData {
 
         map.put(entity.getUUID(), StoredData.builder
                 .copyFrom(map.get(entity.getUUID()))
-                .charStack(value, sequence)
+                .charStack(value, sequence, map.get(entity.getUUID()).pathway())
                 .build());
 
         setDirty();
