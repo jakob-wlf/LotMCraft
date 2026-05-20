@@ -57,11 +57,13 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
 
     public void setCharacteristicStack(int characteristicStack, int sequence) {
         if(sequence <= 9 && sequence > 0)
+
             this.characteristicStack[sequence] = characteristicStack;
     }
 
     public void clearCharacteristicStack() {
         this.characteristicStack = new int[11];
+        this.charList = new ArrayList<>();
     }
 
     public float getSpirituality() {
