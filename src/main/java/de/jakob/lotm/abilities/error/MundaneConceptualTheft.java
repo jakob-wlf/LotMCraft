@@ -86,7 +86,7 @@ public class MundaneConceptualTheft extends SelectableAbility {
             }
             return;
         }
-        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level)) return;
+        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level, AbilityUtil.getSeqWithArt(entity, this))) return;
         if(abilityIndex == 3) {
             stealDistance(serverLevel, entity);
             return;

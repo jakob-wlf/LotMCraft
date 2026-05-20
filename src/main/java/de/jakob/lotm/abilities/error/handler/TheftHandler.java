@@ -138,7 +138,6 @@ public class TheftHandler {
         } else if (entity instanceof WitherSkeleton) {
             loot.add(new TheftLoot(new ItemStack(Items.BONE), 2, 6));
             loot.add(new TheftLoot(new ItemStack(Items.COAL), 1, 4));
-            loot.add(new TheftLoot(new ItemStack(Items.WITHER_SKELETON_SKULL), 0, 1));
         } else if (entity instanceof Zombie) {
             loot.add(new TheftLoot(new ItemStack(Items.ROTTEN_FLESH), 1, 6));
             loot.add(new TheftLoot(new ItemStack(Items.IRON_INGOT), 0, 2));
@@ -192,8 +191,8 @@ public class TheftHandler {
 
         // --- End / stronghold ---
         else if (entity instanceof EnderDragon) {
-            loot.add(new TheftLoot(new ItemStack(Items.DRAGON_BREATH), 1, 4));
-            loot.add(new TheftLoot(new ItemStack(Items.DRAGON_EGG), 0, 1));
+            loot.add(new TheftLoot(new ItemStack(Items.EGG), 1, 4));
+            loot.add(new TheftLoot(new ItemStack(Items.POTATO), 0, 1));
         } else if (entity instanceof Shulker) {
             loot.add(new TheftLoot(new ItemStack(Items.SHULKER_SHELL), 0, 2));
         } else if (entity instanceof Silverfish) {

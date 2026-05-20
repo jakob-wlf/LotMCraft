@@ -43,7 +43,7 @@ import java.io.IOException;
 public class BeyonderData {
     private static final int[] spiritualityLookup = {60000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180};
     private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
-    private static final double[] sanityDecreaseMultiplier = {.003, .0125, .025, .05, .1, .65, .75, .88, 1.0, 1.0};
+    private static final double[] sanityDecreaseMultiplier = {.01, .02, .025, .05, .1, .65, .75, .88, 1.0, 1.0};
 
     // Stored soul snapshots count toward global sequence slot limits.
     private static final String INTERNAL_UNDERWORLD_SOULS_TAG = "InternalUnderworldSouls";
@@ -65,6 +65,7 @@ public class BeyonderData {
         implementedRecipes.put("abyss", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("wheel_of_fortune", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("error", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
+        implementedRecipes.put("black_emperor", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("death", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("justiciar", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("twilight_giant", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}));
@@ -111,12 +112,14 @@ public class BeyonderData {
             "wheel_of_fortune",
             "death",
             "justiciar",
-            "twilight_giant"
+            "twilight_giant",
+            "black_emperor"
     );
 
     public static int getHighestImplementedSequence(String pathway) {
         return switch (pathway) {
             case "mother", "darkness", "fool", "wheel_of_fortune", "error", "visionary", "demoness", "red_priest", "sun", "tyrant", "door", "abyss", "death","justiciar","twilight_giant" -> 1;
+            case "black_emperor" -> 7;  
             default -> 9;
         };
     }
@@ -160,20 +163,25 @@ public class BeyonderData {
         pathwayInfos.put("moon", new PathwayInfos("moon", 0xFFf5384b, new String[]{"moon", "beauty_goddess", "life-giver", "high_summoner", "shaman_king", "scarlet_scholar", "potions_professor", "vampire", "beast_tamer", "apothecary"}, new String[]{"mother"}));
         pathwayInfos.put("abyss", new PathwayInfos("abyss", 0xFFa3070c, new String[]{"abyss", "filthy_monarch", "bloody_archduke", "blatherer", "demon", "desire_apostle", "devil", "serial_killer", "unwinged_angel", "criminal"}, new String[]{"chained"}));
         pathwayInfos.put("chained", new PathwayInfos("chained", 0xFFb18fbf, new String[]{"chained", "abomination", "ancient_bane", "disciple_of_silence", "puppet", "wraith", "zombie", "werewolf", "lunatic", "prisoner"}, new String[]{"abyss"}));
-        pathwayInfos.put("black_emperor", new PathwayInfos("black_emperor", 0xFF181040, new String[]{"black_emperor", "prince_of_abolition", "duke_of_entropy", "frenzied_mage", "ear_of_the_fallen", "mentor_of_disorder", "baron_of_corruption", "briber", "barbarian", "lawyer"}, new String[]{"justiciar"}));
+        pathwayInfos.put("black_emperor", new PathwayInfos("black_emperor", 0xFF3D2A9C, new String[]{"black_emperor", "prince_of_abolition", "duke_of_entropy", "frenzied_mage", "earl_of_the_fallen", "mentor_of_disorder", "baron_of_corruption", "briber", "barbarian", "lawyer"}, new String[]{"justiciar"}));
         pathwayInfos.put("justiciar", new PathwayInfos("justiciar", 0xFFfcd99f, new String[]{"justiciar", "hand_of_order", "balancer", "chaos_hunter", "imperative_mage", "disciplinary_paladin", "judge", "interrogator", "sheriff", "arbiter"}, new String[]{"black_emperor"}));
         pathwayInfos.put("placeholder", new PathwayInfos("placeholder", 0xFFfcd99f, new String[]{"", "", "", "", "", "", "", "", "", "",}, new String[]{}));
+        pathwayInfos.put("none", new PathwayInfos( "none", 0xFFFFFFFF, new String[]{"", "", "", "", "", "", "", "", "", "",}, new String[]{}));
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence) {
-        setBeyonder(entity, pathway, sequence, false, false, true, false, true);
+        setBeyonder(entity, pathway, sequence, false, false, true, false, true, true);
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack) {
-        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, true);
+        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, true, true);
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack, boolean resetSpirituality) {
+        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, resetSpirituality, true);
+    }
+
+    public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack, boolean resetSpirituality, boolean putIntoMap) {
         if(entity.level() instanceof ServerLevel serverLevel) {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
@@ -181,12 +189,12 @@ public class BeyonderData {
         if(entity instanceof ServerPlayer player) {
             if(!skipCheck && !hasSequenceSlotAvailable(player.serverLevel(), pathway, sequence)) return;
 
-            if(!BeyonderData.getPathway(player).equals(pathway)
-                    || BeyonderData.getSequence(player) < sequence)
-                playerMap.removeHonorificName(player);
+                if (!BeyonderData.getPathway(player).equals(pathway)
+                        || BeyonderData.getSequence(player) < sequence)
+                    playerMap.removeHonorificName(player);
+            }
 
             if(clearCharStack) playerMap.clearStack(player);
-            else playerMap.setStack(player, sequence, sequence);
         }
 
         if(Objects.equals(sequence, LOTMCraft.NON_BEYONDER_SEQ)
@@ -207,7 +215,7 @@ public class BeyonderData {
         component.setPathway(pathway);
         component.setSequence(sequence);
         if(clearCharStack) component.clearCharacteristicStack();
-        else component.setCharacteristicStack(0, sequence);
+        else component.setCharacteristicStack(0, sequence - 1);
         if (resetSpirituality) component.setSpirituality(getMaxSpirituality(pathway, sequence));
         component.setDigestionProgress(0);
         component.setGriefingEnabled(griefing);
@@ -216,6 +224,9 @@ public class BeyonderData {
 
         if(clearPathwayHistory) {
             component.setPathwayHistory(new String[10]);
+            for(int i = sequence; i < 10; i++) {
+                component.getPathwayHistory()[i] = pathway;
+            }
         }
         if(addToPathwayHistory) {
             component.getPathwayHistory()[sequence] = pathway;
@@ -235,7 +246,9 @@ public class BeyonderData {
 
             if(entity instanceof ServerPlayer serverPlayer) {
                 PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
-                playerMap.put(serverPlayer);
+
+                if(putIntoMap)
+                    playerMap.put(serverPlayer);
 
                 SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicStack());
                 PacketHandler.sendToAllPlayers(packet);

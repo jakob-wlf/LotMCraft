@@ -43,7 +43,6 @@ import java.util.concurrent.ConcurrentMap;
 
 public class AbilityUtil {
 
-    // ThreadLocal flag to prevent firing TargetEntityEvent when called from getTargetLocation
     private static final ThreadLocal<Boolean> INSIDE_GET_TARGET_LOCATION = ThreadLocal.withInitial(() -> false);
 
     //if map contains entiy - ignore ally

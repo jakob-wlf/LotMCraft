@@ -39,6 +39,11 @@ public class SpiritCommunicationAbility extends SelectableAbility {
 
     public SpiritCommunicationAbility(String id) {
         super(id, 7f);
+        canBeCopied = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
+        canBeUsedInArtifact = false;
+        canBeShared = false;
     }
 
     @Override

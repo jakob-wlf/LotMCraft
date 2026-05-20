@@ -1,5 +1,6 @@
 package de.jakob.lotm.abilities.core;
 
+import de.jakob.lotm.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncToggleAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -69,12 +70,24 @@ public abstract class ToggleAbility extends Ability {
 
     public void prepareTick(Level level, LivingEntity entity) {
         if(!level.isClientSide && shouldConsumeSpirituality(entity)) {
-            if(BeyonderData.getSpirituality(entity) <= getSpiritualityCost()) {
+            float cost = getSpiritualityCost();
+            if (level instanceof ServerLevel sl) {
+                var pdata = entity.getPersistentData();
+                if (pdata.contains(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY)) {
+                    if (pdata.getLong(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY) > sl.getGameTime()) {
+                        cost *= pdata.getFloat(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
+                    } else {
+                        pdata.remove(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
+                        pdata.remove(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY);
+                    }
+                }
+            }
+            if(BeyonderData.getSpirituality(entity) <= cost) {
                 cancel((ServerLevel) level, entity);
                 return;
             }
 
-            BeyonderData.reduceSpirituality(entity, getSpiritualityCost());
+            BeyonderData.reduceSpirituality(entity, cost);
         }
 
         tick(level, entity);

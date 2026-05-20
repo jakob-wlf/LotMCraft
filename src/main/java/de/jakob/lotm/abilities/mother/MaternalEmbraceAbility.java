@@ -21,7 +21,6 @@ import java.util.Map;
 public class MaternalEmbraceAbility extends Ability {
     public MaternalEmbraceAbility(String id) {
         super(id, 20);
-        canBeCopied = false;
     }
 
     @Override

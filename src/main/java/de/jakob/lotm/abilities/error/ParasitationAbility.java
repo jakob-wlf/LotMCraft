@@ -44,6 +44,7 @@ public class ParasitationAbility extends SelectableAbility {
         canBeReplicated = false;
         canBeUsedInArtifact = false;
         canBeShared = false;
+        cannotBeStolen = true;
     }
 
     @Override

@@ -85,4 +85,8 @@ public class TelepathyOverlayRenderer {
             startingY += font.lineHeight * 2;
         }
     }
+
+    public static void clearCache() {
+        entitiesLookedAtByPlayerWithActiveTelepathy.clear();
+    }
 }

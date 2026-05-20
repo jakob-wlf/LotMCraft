@@ -35,9 +35,9 @@ public class QuestRegistry {
         registerQuest(new DefendVillageQuest("defend_village", 8));
         registerQuest(new KillTyrantSeq4Quest("kill_tyrant_seq4", 5));
         registerQuest(new KillBeyonderGenericQuest("kill_seq4", 5, 4));
-        registerQuest(new KillBeyonderGenericQuest("kill_seq3", 4, 3));
+        /*registerQuest(new KillBeyonderGenericQuest("kill_seq3", 4, 3));
         registerQuest(new KillBeyonderGenericQuest("kill_seq2", 3, 2));
-        registerQuest(new KillBeyonderGenericQuest("kill_seq1", 2, 1));
+        registerQuest(new KillBeyonderGenericQuest("kill_seq1", 2, 1));*/
         registerQuest(new CollectCharacteristicsQuest("collect_low_seq_characteristics", 6, 5));
         registerQuest(new FindStructureQuest("find_random_structures", 8));
         registerQuest(new KillPlayerQuest("kill_player_target", 1));

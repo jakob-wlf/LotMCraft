@@ -29,7 +29,13 @@ public class AbilityWheelComponent implements INBTSerializable<CompoundTag> {
         this.selectedAbility = selectedAbility;
     }
 
+    public AbilityWheelComponent copy(){
+        var result = new AbilityWheelComponent();
+        result.abilities = new ArrayList<>(abilities);
+        result.selectedAbility = selectedAbility;
 
+        return result;
+    }
 
     @Override
     public CompoundTag serializeNBT(HolderLookup.Provider provider) {

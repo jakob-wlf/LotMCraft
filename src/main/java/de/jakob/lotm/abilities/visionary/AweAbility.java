@@ -2,8 +2,10 @@ package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -74,6 +76,8 @@ public class AweAbility extends Ability {
                 e.addEffect(new MobEffectInstance(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 10, 11, false, false, false)));
                 e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20 * 10, 6, false, false, false));
                 e.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), (float) DamageLookup.lookupDamage(7, .675) * (int) Math.max(multiplier(entity)/4,1));
+
+                VisionaryLoosingControlHandler.applyEffect(entity, e, this);
 
                 ServerScheduler.scheduleForDuration(0, 8, 20 * 10, () -> {
                     Location eLoc = new Location(e.position(), e.level());

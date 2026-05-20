@@ -3,6 +3,7 @@ package de.jakob.lotm.network.packets.handlers;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.visionary.prophecy.VisionaryAbilityMenus;
 import de.jakob.lotm.attachments.AllyComponent;
@@ -499,6 +500,10 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(new ShapeShiftingSelectionGui(packet.entityTypes()));
     }
 
+    public static void handleDiscernmentScreenPacket(OpenDiscernmentScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new DiscernmentSelectionGui(packet.saved()));
+    }
+
     public static void handleHistoricalVoidBorrowingScreenPacket(OpenHistoricalVoidBorrowingScreenPacket packet) {
         Minecraft.getInstance().setScreen(new HistoricalVoidBorrowingSelectionGui(packet.options()));
     }
@@ -559,6 +564,13 @@ public class ClientHandler {
         }
     }
 
+    public static void handleSyncWeaknessDetectionPacket(SyncWeaknessDetectionTargetsAbilityPacket packet) {
+        WeaknessDetectionRenderLayer.activeWeaknessDetection.clear();
+        if (packet.active()) {
+            WeaknessDetectionRenderLayer.activeWeaknessDetection.putAll(packet.targets());
+        }
+    }
+
     public static void handleControllingDataPacket(SyncControllingDataPacket packet) {
         Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
         if(entity == null) {
@@ -566,6 +578,14 @@ public class ClientHandler {
         }
         entity.getData(ModAttachments.CONTROLLING_DATA.get()).setControlling(packet.isControlling());
         entity.getData(ModAttachments.CONTROLLING_DATA.get()).setBodyEntity(packet.bodyEntity());
+    }
+
+    public static void handleDiscernmentDataPacket(SyncDiscernmentDataPacket packet) {
+        Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
+        if(entity == null) {
+            return;
+        }
+        entity.getData(ModAttachments.DISCERNMENT_DATA.get()).setDiscerning(packet.isDiscerning());
     }
 
     public static void syncKillCount(int killCount) {
@@ -619,5 +639,12 @@ public class ClientHandler {
         }
 
         AnimationUtil.playAnimation(player, AnimationUtil.getResourceLocationById(packet.animId()));
+    }
+
+    public static void handleAbilitySelectionPacket(SyncAbilitySelectionPacket packet) {
+        if (!(LOTMCraft.abilityHandler.getById(packet.abilityId()) instanceof SelectableAbility selectable)) return;
+        var player = Minecraft.getInstance().player;
+        if (player == null) return;
+        selectable.setSelectedAbilityClient(player.getUUID(), packet.selectedIndex());
     }
 }

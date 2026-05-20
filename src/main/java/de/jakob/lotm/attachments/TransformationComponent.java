@@ -65,6 +65,12 @@ public class TransformationComponent {
         PacketHandler.sendToAllPlayers(new SyncTransformationPacket(entity.getId(), isTransformed, transformationIndex, additionalData));
     }
 
+    public void reset() {
+        isTransformed = false;
+        transformationIndex = 0;
+        additionalData = "";
+    }
+
     public boolean shouldCancelDefaultRendering() {
         return switch (transformationIndex) {
             case 4 -> false;

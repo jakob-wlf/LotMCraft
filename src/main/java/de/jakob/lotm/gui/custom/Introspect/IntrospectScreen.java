@@ -5,6 +5,8 @@ package de.jakob.lotm.gui.custom.Introspect;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.attachments.ControllingDataComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
@@ -25,6 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -119,31 +122,29 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (showAllAbilities) {
             availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesUpToSequenceOrdered(menu.getSequence()));
         } else {
-            String[] pathwayHistoryCheck = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
-            boolean hasSwitched = java.util.Arrays.stream(pathwayHistoryCheck)
-                    .anyMatch(e -> e != null && !e.isEmpty() && !e.equals(menu.getPathway()));
-            int[] stacks = BeyonderData.getCharStacks(minecraft.player);
-            boolean hasCharStack = false;
-            for (int i = 1; i <= 4; i++) {
-                if (stacks[i] > 0) { hasCharStack = true; break; }
-            }
-            java.util.LinkedHashSet<Ability> abilitySet = new java.util.LinkedHashSet<>();
-            if (hasSwitched && !hasCharStack) {
-                LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence())
-                        .stream().filter(a -> a.getRequirements().getOrDefault(menu.getPathway(), -1) <= 4).forEach(abilitySet::add);
+            // use the old system in case of controlling - will change once worms get added
+            ControllingDataComponent controllingDataComponent = minecraft.player.getData(ModAttachments.CONTROLLING_DATA);
+            if (controllingDataComponent.isControlling()) {
+                ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
+                availableAbilities.addAll(controllerPathwayAbilities);
             } else {
-                abilitySet.addAll(LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence()));
-            }
+                var discernmentComponent = minecraft.player.getData(ModAttachments.DISCERNMENT_DATA);
 
-            String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
-            for (int seq = menu.getSequence() + 1; seq <= 9; seq++) {
-                String historicalPathway = pathwayHistory[seq];
-                if (historicalPathway != null && !historicalPathway.isEmpty() && !historicalPathway.equals(menu.getPathway())) {
-                    abilitySet.addAll(LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(historicalPathway, seq));
-                    break;
+                if(discernmentComponent.isDiscerning()){
+                    ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
+                    availableAbilities.addAll(controllerPathwayAbilities);
+                }
+                else {
+                    String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
+                    for (int i = menu.getSequence(); i < pathwayHistory.length; i++) {
+                        String pathway = pathwayHistory[i];
+                        if (pathway != null) {
+                            ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
+                            availableAbilities.addAll(pathwayAbilities);
+                        }
+                    }
                 }
             }
-            availableAbilities.addAll(abilitySet);
         }
 
         // Deduplicate: abilities like Cogitation/Ally match all pathways and can be added

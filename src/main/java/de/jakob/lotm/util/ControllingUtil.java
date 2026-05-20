@@ -51,7 +51,7 @@ public class ControllingUtil {
 
         if (target == null || !target.isAlive()) return;
 
-        ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
+        ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA.get());
 
         if (data.isControlling()) return ;
 
@@ -151,6 +151,7 @@ public class ControllingUtil {
                     nfd.putString("pathway", currentPathway);
                     nfd.putInt("sequence", currentSequence);
                     nfd.putFloat("digestionProgress", BeyonderData.getDigestionProgress(player));
+                    nfd.putIntArray("characteristicStack", BeyonderData.getCharStacks(player));
                 }
             }
         }

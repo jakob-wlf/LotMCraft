@@ -15,9 +15,7 @@ public class AncientCourtOfJudgmentAbility extends Ability {
 
     public AncientCourtOfJudgmentAbility(String id) {
         super(id, 20 * 60 * 2, "purification", "light_source", "light_strong", "light_weak");
-        canBeCopied = false;
         canBeUsedByNPC = false;
-        canBeReplicated = false;
         canBeShared = false;
     }
 

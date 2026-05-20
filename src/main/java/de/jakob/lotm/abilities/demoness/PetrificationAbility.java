@@ -34,7 +34,6 @@ import java.util.UUID;
 public class PetrificationAbility extends SelectableAbility {
     public PetrificationAbility(String id) {
         super(id, 60);
-        canBeCopied = false;
         autoClear = false;
     }
 

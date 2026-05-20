@@ -40,7 +40,6 @@ public class LoopHoleCreationAbility extends Ability {
 
     public LoopHoleCreationAbility(String id) {
         super(id, 16f);
-        canBeCopied = false;
         autoClear = false;
         canBeShared = false;
     }
@@ -60,7 +59,7 @@ public class LoopHoleCreationAbility extends Ability {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }
-        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level)) return;
+        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level, AbilityUtil.getSeqWithArt(entity, this))) return;
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 40, 2);
         UUID loopholeId = UUID.randomUUID();
 

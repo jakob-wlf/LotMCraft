@@ -28,7 +28,6 @@ public class ConceptualTheftAbility extends SelectableAbility {
         super(id, 10);
 
         canBeUsedByNPC = false;
-        canBeCopied = false;
         canBeShared = false;
     }
 

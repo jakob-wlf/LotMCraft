@@ -51,9 +51,7 @@ public class GraftingAbility extends SelectableAbility {
     public GraftingAbility(String id) {
         super(id, 1);
 
-        canBeCopied = false;
         canBeUsedByNPC = false;
-        canBeReplicated = false;
         canBeShared = false;
     }
 

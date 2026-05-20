@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -122,6 +123,39 @@ public class ClientScheduler {
         }
 
         tasks.put(id, scheduledTask);
+        return id;
+    }
+
+    public static UUID scheduleUntil(ClientLevel level, Runnable task,
+                                     @Nullable Runnable onFinish,
+                                     AtomicBoolean breakCondition) {
+        return scheduleUntil(level, task, 1, onFinish, breakCondition, () -> 1.0);
+    }
+
+    public static UUID scheduleUntil(ClientLevel level, Runnable task, int interval,
+                                     @Nullable Runnable onFinish,
+                                     AtomicBoolean breakCondition) {
+        return scheduleUntil(level, task, interval, onFinish, breakCondition, () -> 1.0);
+    }
+
+    public static UUID scheduleUntil(ClientLevel level, Runnable task, int interval,
+                                     @Nullable Runnable onFinish,
+                                     AtomicBoolean breakCondition,
+                                     Supplier<Double> timeMultiplier) {
+        UUID id = UUID.randomUUID();
+        ClientScheduler.ScheduledTask scheduledTask = new ClientScheduler.ScheduledTask(
+                id, task, 0, interval, -1, level, () -> !breakCondition.get(), timeMultiplier);
+        tasks.put(id, scheduledTask);
+
+        if (onFinish != null) {
+            UUID finishId = UUID.randomUUID();
+            ClientScheduler.ScheduledTask finishTask = new ClientScheduler.ScheduledTask(
+                    finishId, onFinish, 0, 1, 1, level, breakCondition::get, timeMultiplier);
+            tasks.put(finishId, finishTask);
+
+            scheduledTask.setLinkedTaskId(finishId);
+        }
+
         return id;
     }
 

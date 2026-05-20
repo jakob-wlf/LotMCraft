@@ -68,6 +68,14 @@ neoForge {
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            programArguments.addAll '--username', 'Dev'
+        }
+
+        client2 {
+            client()
+            gameDirectory = project.file('run2')
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            programArguments.addAll '--username', 'Player2'
         }
 
         server {

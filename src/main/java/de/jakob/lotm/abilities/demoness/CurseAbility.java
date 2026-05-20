@@ -36,7 +36,6 @@ public class CurseAbility extends Ability {
         super(id, 80f, "curse");
 
         canBeUsedByNPC = false;
-        canBeCopied = false;
         autoClear = false;
     }
 

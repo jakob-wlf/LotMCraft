@@ -34,8 +34,6 @@ public class ChainOfCommandAbility extends Ability {
 
         instance = this;
 
-        canBeCopied = false;
-        canBeReplicated = false;
         canBeUsedByNPC = false;
     }
 

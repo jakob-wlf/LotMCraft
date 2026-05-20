@@ -99,7 +99,8 @@ public class PhysicalEnhancementsVisionaryAbility extends PhysicalEnhancementsAb
                     new PhysicalEnhancement(EnhancementType.HEALTH, 30),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 4),
-                    new PhysicalEnhancement(EnhancementType.CONCEALMENT, 0)
+                    new PhysicalEnhancement(EnhancementType.CONCEALMENT, 0),
+                    new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
             case 0 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 6),
