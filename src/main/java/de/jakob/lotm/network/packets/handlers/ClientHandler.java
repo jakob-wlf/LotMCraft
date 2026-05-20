@@ -11,6 +11,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
 import de.jakob.lotm.gui.custom.CoordinateInput.CoordinateInputScreen;
+import de.jakob.lotm.gui.custom.InternalUnderworld.InternalUnderworldAbilityScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.Quest.QuestAcceptanceScreen;
 import de.jakob.lotm.gui.custom.SelectionGui.*;
@@ -27,11 +28,13 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -53,6 +56,21 @@ import java.util.UUID;
 public class ClientHandler {
     public static void openCoordinateScreen(Player player, String use) {
         Minecraft.getInstance().setScreen(new CoordinateInputScreen(player, use));
+    }
+
+    public static void handleOpenInternalUnderworldAbilityScreenPacket() {
+        // Swap generic chest UI with the custom Internal Underworld screen.
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) return;
+        if (!(mc.screen instanceof AbstractContainerScreen<?> containerScreen)) return;
+        if (containerScreen instanceof InternalUnderworldAbilityScreen) return;
+        if (!(containerScreen.getMenu() instanceof ChestMenu chestMenu)) return;
+
+        String title = containerScreen.getTitle().getString();
+        String selectSoulTitle = Component.translatable("ability.lotmcraft.internal_underworld.select_soul").getString();
+        if (!title.startsWith("Internal Underworld - ") || title.equals(selectSoulTitle)) return;
+
+        mc.setScreen(new InternalUnderworldAbilityScreen(chestMenu, mc.player.getInventory(), containerScreen.getTitle()));
     }
 
     public static void syncLivingEntityBeyonderData(SyncLivingEntityBeyonderDataPacket packet) {

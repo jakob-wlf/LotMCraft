@@ -1103,8 +1103,7 @@
 
   "lotmcraft.combat_mastery_ability": "Combat Mastery",
   "lotmcraft.combat_mastery_ability.description": "When activating this ability the next attack you do deals a critical hit",
-  "lotmcraft.supernatural_resistance_ability": "Supernatural Resistance",
-  "lotmcraft.supernatural_resistance_ability.description": "A self buff skill that grants Resistance and clears negative effects",
+  
 
 
 
@@ -1206,10 +1205,16 @@
   "item.lotmcraft.pure_idealism_ability": "Pure Idealism",
   "item.lotmcraft.pure_idealism_ability.description": "The better your mental state - the stronger you are",
 
-  "item.lotmcraft.weapon_mastery_ability": "Weapon Mastery Passive",
-  "item.lotmcraft.weapon_mastery_ability.description": "Holding any type of weapon will give corresponding buffs to them",
-
-
+  
+  
+  "item.lotmcraft.weapon_mastery_ability": "Weapon Mastery",
+  "item.lotmcraft.weapon_mastery_ability.description": "Holding a weapon boosts attack damage and attack speed. Bows, crossbows, and tridents charge faster.",
+  "lotmcraft.supernatural_resistance_ability": "Supernatural Resistance",
+  "lotmcraft.supernatural_resistance_ability.description": "A self buff skill that grants Resistance and clears negative effects",
+  
+  
+  
+  
   "_comment003": "Effects-----------------------------------------------------------------------------",
   "effect.lotmcraft.asleep": "Asleep",
   "effect.lotmcraft.loosing_control": "Loosing Control",

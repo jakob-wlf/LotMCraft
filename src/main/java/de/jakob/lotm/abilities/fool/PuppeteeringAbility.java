@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PuppeteeringAbility extends Ability {
 
@@ -172,6 +173,9 @@ public class PuppeteeringAbility extends Ability {
         entitiesBeingManipulated.put(entity.getUUID(), target);
 
         AtomicBoolean stopped = new AtomicBoolean(false);
+        AtomicInteger elapsedTicks = new AtomicInteger(0);
+        int totalTicks = Math.max(1, time);
+        AtomicBoolean completed = new AtomicBoolean(false);
 
         Vec3 startTemp = entity.getEyePosition().add(entity.getLookAngle().normalize());
         Vec3 endTemp = target.getEyePosition();
@@ -222,6 +226,12 @@ public class PuppeteeringAbility extends Ability {
                 return;
             }
 
+            if (entity instanceof ServerPlayer player) {
+                int elapsed = Math.min(totalTicks, elapsedTicks.addAndGet(2));
+                int percent = Math.min(100, Math.round(elapsed * 100.0f / totalTicks));
+                AbilityUtil.sendActionBar(player, Component.literal(percent + "%").withColor(0xFFa26fc9));
+            }
+
             Vec3 end = target.getEyePosition();
 
             for(int i = 0; i < 3; i++) {
@@ -249,7 +259,14 @@ public class PuppeteeringAbility extends Ability {
         }, () -> {
             entitiesBeingManipulated.remove(entity.getUUID());
             if(stopped.get()) {
+                if (entity instanceof ServerPlayer player) {
+                    AbilityUtil.sendActionBar(player, Component.literal("Failed").withColor(0xFFff124d));
+                }
                 return;
+            }
+            completed.set(true);
+            if (entity instanceof ServerPlayer player) {
+                AbilityUtil.sendActionBar(player, Component.literal("Success").withColor(0xFF4CAF50));
             }
             MarionetteComponent component = entity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
             if(entity instanceof Player player && !component.isMarionette()) {

@@ -227,14 +227,23 @@ public class BeyonderEventHandler {
         // sorry nihil i have to mess with your method :)
         // cancel the drop of items completely for summoned entities
         if (event.getEntity().getPersistentData().contains("VoidSummoned")) {
-            event.setCanceled(true);
-            return;
+            boolean underworldSummoned = event.getEntity().getPersistentData().getBoolean("UnderworldSummonedSoul");
+            if (!underworldSummoned) {
+                event.setCanceled(true);
+                return;
+            }
         }
 
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
         if (!BeyonderData.isBeyonder(player)) return;
         if (!player.serverLevel().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)) return;
+
+        // If the soul was captured by Internal Underworld, skip characteristic drops.
+        boolean capturedByUnderworld = player.getPersistentData().getBoolean("InternalUnderworldCaptured");
+        if (capturedByUnderworld) {
+            player.getPersistentData().remove("InternalUnderworldCaptured");
+        }
 
         // onDeath (LivingDeathEvent) already handled regression and cleared the revert component.
         // Here we only need to drop the correct characteristic item.
@@ -252,6 +261,8 @@ public class BeyonderEventHandler {
                 .selectCharacteristicOfPathwayAndSequence(BeyonderData.getPathway(player), dropSequence);
 
         BeyonderData.setBeyonder(player, data.pathway(), data.sequence(), true, false, true, false);
+
+        if (capturedByUnderworld) return;
 
         if (charItem == null) return;
 

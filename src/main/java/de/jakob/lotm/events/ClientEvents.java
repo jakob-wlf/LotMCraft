@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.darkness.NightmareAbility;
 import de.jakob.lotm.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
+import de.jakob.lotm.gui.custom.InternalUnderworld.InternalUnderworldAbilityScreen;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.InventoryOpenedPacket;
@@ -11,8 +12,11 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.pathways.PathwayInfos;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.inventory.ChestMenu;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -123,6 +127,28 @@ public class ClientEvents {
 
     @SubscribeEvent
     public static void onScreenOpen(ScreenEvent.Opening event) {
+        if (event.getScreen() instanceof InternalUnderworldAbilityScreen) {
+            return;
+        }
+
+        // Swap matching chest titles into the custom underworld ability UI.
+        if (event.getScreen() instanceof AbstractContainerScreen<?> containerScreen
+                && containerScreen.getMenu() instanceof ChestMenu chestMenu) {
+            String title = containerScreen.getTitle().getString();
+            String selectSoulTitle = Component.translatable("ability.lotmcraft.internal_underworld.select_soul").getString();
+            if (title.startsWith("Internal Underworld - ") && !title.equals(selectSoulTitle)) {
+                Minecraft mc = Minecraft.getInstance();
+                if (mc.player != null) {
+                    event.setNewScreen(new InternalUnderworldAbilityScreen(
+                            chestMenu,
+                            mc.player.getInventory(),
+                            containerScreen.getTitle()
+                    ));
+                    return;
+                }
+            }
+        }
+
         if (!(event.getScreen() instanceof InventoryScreen)) return;
 
         PacketHandler.sendToServer(new InventoryOpenedPacket());

@@ -19,8 +19,12 @@ import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.pathways.PathwayInfos;
+import de.jakob.lotm.abilities.death.InternalUnderworldAbility;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtAccounter;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,13 +32,21 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.nbt.NbtIo;
 
 import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.io.IOException;
 
 public class BeyonderData {
     private static final int[] spiritualityLookup = {60000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180};
     private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
     private static final double[] sanityDecreaseMultiplier = {.003, .0125, .025, .05, .1, .65, .75, .88, 1.0, 1.0};
+
+    // Stored soul snapshots count toward global sequence slot limits.
+    private static final String INTERNAL_UNDERWORLD_SOULS_TAG = "InternalUnderworldSouls";
 
     public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>();
 
@@ -167,7 +179,7 @@ public class BeyonderData {
         }
 
         if(entity instanceof ServerPlayer player) {
-            if(!skipCheck && !playerMap.check(pathway, sequence)) return;
+            if(!skipCheck && !hasSequenceSlotAvailable(player.serverLevel(), pathway, sequence)) return;
 
             if(!BeyonderData.getPathway(player).equals(pathway)
                     || BeyonderData.getSequence(player) < sequence)
@@ -208,7 +220,6 @@ public class BeyonderData {
         if(addToPathwayHistory) {
             component.getPathwayHistory()[sequence] = pathway;
         }
-
         UniquenessComponent uniquenessComponent = entity.getData(ModAttachments.UNIQUENESS_COMPONENT);
         uniquenessComponent.setHasUniqueness(false);
         uniquenessComponent.resetKillCount();
@@ -242,6 +253,167 @@ public class BeyonderData {
             }
         }
 
+    }
+
+    public static boolean hasSequenceSlotAvailable(ServerLevel level, String pathway, int sequence) {
+        return hasSequenceSlotAvailableWithAdjustment(level, pathway, sequence, -1, 0);
+    }
+
+    public static boolean hasSequenceSlotAvailableWithAdjustment(ServerLevel level, String pathway, int sequence,
+                                                                 int adjustSequence, int adjustAmount) {
+        if (pathway == null || pathway.isEmpty()) return true;
+        if (sequence < 0 || sequence > 8) return true;
+        if (playerMap == null) return true;
+
+        // Global counts include players, stored souls, active summoned souls, and marionettes owned by players.
+        int[] marionetteCounts = countActiveMarionettesBySequence(level, pathway);
+        int seq0 = playerMap.count(pathway, 0) + countStoredSouls(level, pathway, 0) + InternalUnderworldAbility.countActiveSouls(pathway, 0) + marionetteCounts[0];
+        int seq1 = playerMap.count(pathway, 1) + countStoredSouls(level, pathway, 1) + InternalUnderworldAbility.countActiveSouls(pathway, 1) + marionetteCounts[1];
+        int seq2 = playerMap.count(pathway, 2) + countStoredSouls(level, pathway, 2) + InternalUnderworldAbility.countActiveSouls(pathway, 2) + marionetteCounts[2];
+        int seq3 = playerMap.count(pathway, 3) + countStoredSouls(level, pathway, 3) + InternalUnderworldAbility.countActiveSouls(pathway, 3) + marionetteCounts[3];
+        int seq4 = playerMap.count(pathway, 4) + countStoredSouls(level, pathway, 4) + InternalUnderworldAbility.countActiveSouls(pathway, 4) + marionetteCounts[4];
+        int seq5 = playerMap.count(pathway, 5) + countStoredSouls(level, pathway, 5) + InternalUnderworldAbility.countActiveSouls(pathway, 5) + marionetteCounts[5];
+        int seq6 = playerMap.count(pathway, 6) + countStoredSouls(level, pathway, 6) + InternalUnderworldAbility.countActiveSouls(pathway, 6) + marionetteCounts[6];
+        int seq7 = playerMap.count(pathway, 7) + countStoredSouls(level, pathway, 7) + InternalUnderworldAbility.countActiveSouls(pathway, 7) + marionetteCounts[7];
+        int seq8 = playerMap.count(pathway, 8) + countStoredSouls(level, pathway, 8) + InternalUnderworldAbility.countActiveSouls(pathway, 8) + marionetteCounts[8];
+
+        if (adjustAmount != 0) {
+            switch (adjustSequence) {
+                case 0 -> seq0 += adjustAmount;
+                case 1 -> seq1 += adjustAmount;
+                case 2 -> seq2 += adjustAmount;
+                case 3 -> seq3 += adjustAmount;
+                case 4 -> seq4 += adjustAmount;
+                case 5 -> seq5 += adjustAmount;
+                case 6 -> seq6 += adjustAmount;
+                case 7 -> seq7 += adjustAmount;
+                case 8 -> seq8 += adjustAmount;
+            }
+        }
+
+        switch (sequence) {
+            case 0:
+                return seq0 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT);
+            case 1:
+                return seq0 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)
+                        && seq1 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_1_AMOUNT);
+            case 2:
+                return seq2 + seq1 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_2_AMOUNT);
+            case 3:
+                return seq3 + seq2 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_3_AMOUNT);
+            case 4:
+                return seq4 + seq3 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_4_AMOUNT);
+            case 5:
+                return seq5 + seq4 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_5_AMOUNT);
+            case 6:
+                return seq6 + seq5 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_6_AMOUNT);
+            case 7:
+                return seq7 + seq6 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_7_AMOUNT);
+            case 8:
+                return seq8 + seq7 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_8_AMOUNT);
+            default:
+                return true;
+        }
+    }
+
+    private static int countStoredSouls(ServerLevel level, String pathway, int sequence) {
+        if (pathway == null || pathway.isEmpty()) return 0;
+        int count = 0;
+        // Walk player persistent data (online or offline) to find stored souls.
+        for (Map.Entry<UUID, StoredData> entry : playerMap.entrySet()) {
+            CompoundTag data = getPersistentDataForCount(level, entry.getKey());
+            if (data == null || !data.contains(INTERNAL_UNDERWORLD_SOULS_TAG, Tag.TAG_LIST)) continue;
+            ListTag list = data.getList(INTERNAL_UNDERWORLD_SOULS_TAG, Tag.TAG_COMPOUND);
+            for (int i = 0; i < list.size(); i++) {
+                CompoundTag soul = list.getCompound(i);
+                if (!pathway.equals(soul.getString("Pathway"))) continue;
+                if (!soul.contains("Sequence", Tag.TAG_INT)) continue;
+                if (soul.getInt("Sequence") == sequence) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    public static int countTotalSequence(ServerLevel level, String pathway, int sequence) {
+        if (playerMap == null) return 0;
+        int marionettes = 0;
+        if (sequence >= 0 && sequence <= 8) {
+            int[] marionetteCounts = countActiveMarionettesBySequence(level, pathway);
+            marionettes = marionetteCounts[sequence];
+        }
+        return playerMap.count(pathway, sequence)
+                + countStoredSouls(level, pathway, sequence)
+                + InternalUnderworldAbility.countActiveSouls(pathway, sequence)
+                + marionettes;
+    }
+
+    private static int[] countActiveMarionettesBySequence(ServerLevel level, String pathway) {
+        int[] counts = new int[9];
+        if (pathway == null || pathway.isEmpty()) return counts;
+        if (playerMap == null) return counts;
+        if (level.getServer() == null) return counts;
+
+        for (ServerLevel l : level.getServer().getAllLevels()) {
+            for (Entity entity : l.getAllEntities()) {
+                if (!(entity instanceof LivingEntity living)) continue;
+                MarionetteComponent component = living.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+                if (!component.isMarionette()) continue;
+
+                String controllerUUID = component.getControllerUUID();
+                if (controllerUUID == null || controllerUUID.isEmpty()) continue;
+
+                UUID controllerId;
+                try {
+                    controllerId = UUID.fromString(controllerUUID);
+                } catch (IllegalArgumentException ignored) {
+                    continue;
+                }
+
+                if (!playerMap.contains(controllerId)) continue;
+                if (!pathway.equals(getPathway(living))) continue;
+
+                int seq = getSequence(living, true);
+                if (seq < 0 || seq > 8) continue;
+
+                counts[seq]++;
+            }
+        }
+
+        return counts;
+    }
+
+    private static CompoundTag getPersistentDataForCount(ServerLevel level, UUID playerId) {
+        ServerPlayer online = level.getServer().getPlayerList().getPlayer(playerId);
+        if (online != null) {
+            return online.getPersistentData();
+        }
+
+        CompoundTag root = readOfflinePlayerData(level, playerId);
+        if (root == null) return null;
+
+        if (root.contains("NeoForgeData", Tag.TAG_COMPOUND)) {
+            return root.getCompound("NeoForgeData");
+        }
+        if (root.contains("ForgeData", Tag.TAG_COMPOUND)) {
+            return root.getCompound("ForgeData");
+        }
+
+        return null;
+    }
+
+    private static CompoundTag readOfflinePlayerData(ServerLevel level, UUID playerId) {
+        Path playerDataDir = level.getServer().getWorldPath(LevelResource.PLAYER_DATA_DIR);
+        Path playerFile = playerDataDir.resolve(playerId.toString() + ".dat");
+        if (!Files.exists(playerFile)) return null;
+
+        try {
+            return NbtIo.readCompressed(playerFile, NbtAccounter.unlimitedHeap());
+        } catch (IOException e) {
+            LOTMCraft.LOGGER.warn("Failed to read playerdata for {}", playerId, e);
+            return null;
+        }
     }
 
     private static void callPassiveEffectsOnRemoved(LivingEntity entity, ServerLevel serverLevel) {

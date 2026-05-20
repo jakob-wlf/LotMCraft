@@ -52,7 +52,7 @@ public class UniquenessCommand {
 
                                     if (UniquenessEntity.anyPlayerHoldsUniqueness(context.getSource().getLevel(), pathway)) return 0;
 
-                                    if (BeyonderData.playerMap != null && BeyonderData.playerMap.count(pathway, 0) > 0) return 0;
+                                    if (BeyonderData.countTotalSequence(context.getSource().getLevel(), pathway, 0) > 0) return 0;
 
                                     UniquenessEntity.trySpawn(context.getSource().getLevel(), context.getSource().getPosition().add(0, -2, 0), pathway);
                                     return 1;
