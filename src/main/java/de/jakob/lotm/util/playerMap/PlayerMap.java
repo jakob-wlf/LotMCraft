@@ -63,7 +63,6 @@ public class PlayerMap extends SavedData {
             if(obj.getValue().claimedSefirot().equals(sefirot))
                 return obj.getKey();
         }
-
         return null;
     }
 
