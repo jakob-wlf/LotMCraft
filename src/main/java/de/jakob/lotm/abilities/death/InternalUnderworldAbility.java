@@ -3,10 +3,14 @@ package de.jakob.lotm.abilities.death;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.PassiveAbilityHandler;
+import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.entity.custom.spirits.*;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.entity.ModEntities;
 
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.BeyonderData;
@@ -18,8 +22,10 @@ import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.UseQueuedSoulAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.OpenInternalUnderworldAbilityScreenPacket;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -52,6 +58,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,14 +66,26 @@ import java.util.concurrent.ConcurrentHashMap;
 @EventBusSubscriber
 public class InternalUnderworldAbility extends SelectableAbility {
 
+    // Player NBT keys and runtime flags used by the Internal Underworld system.
     private static final String STORED_SOULS_TAG = "InternalUnderworldSouls";
     private static final String CAPTURE_MODE_TAG = "InternalUnderworldCaptureMode";
     private static final String PENDING_ABILITY_TAG = "InternalUnderworldPendingAbility";
+    private static final String INTERNAL_UNDERWORLD_LOCKED_TAG = "InternalUnderworldLocked";
+    private static final String INTERNAL_UNDERWORLD_CAPTURED_TAG = "InternalUnderworldCaptured";
+    // Base passive timings; scaled per sequence below.
+    private static final int SOUL_PASSIVE_DURATION_TICKS = 20 * 60;
+    private static final int SOUL_PASSIVE_COOLDOWN_TICKS = 20 * 60 * 5;
 
     private record ActiveSoul(LivingEntity entity, CompoundTag soulData) {}
+    private record ActiveSoulPassive(PassiveAbilityItem ability, int remainingTicks) {}
+    public record FreedSoulSlots(Set<String> seq0Paths, Set<String> seq1Paths) {}
+    // Runtime-only tracking for released souls and passive timers per player.
     private static final Map<UUID, List<ActiveSoul>> activeSouls = new ConcurrentHashMap<>();
+    private static final Map<UUID, ActiveSoulPassive> activeSoulPassives = new ConcurrentHashMap<>();
+    private static final Map<UUID, Integer> soulPassiveCooldowns = new ConcurrentHashMap<>();
 
     private static boolean isCapturableEntity(LivingEntity entity) {
+        // Only undead/spirit-like entities can be absorbed into the underworld.
         if (    entity instanceof Zombie
                 || entity instanceof ZombieVillager
                 || entity instanceof Husk
@@ -90,6 +109,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
     }
 
     private static int getMaxSouls(int sequence) {
+        // Capacity scales with sequence; lower sequence gets a bigger vault.
         return switch (sequence) {
             case 5 -> 5;
             case 4 -> 15;
@@ -136,6 +156,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
         if (!(entity instanceof ServerPlayer player)) return;
 
+        // Block the ability when purified by a stronger effect.
         if (InteractionHandler.isInteractionPossibleStrictlyHigher(new Location(entity.position(), serverLevel), "purification", BeyonderData.getSequence(entity), -1)) return;
 
         switch (selectedAbility) {
@@ -151,6 +172,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (!(event.getTarget() instanceof LivingEntity target)) return;
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
+        // If we're not capturing, a right click can consume a queued soul ability.
         if (!isInCaptureMode(player)) {
             if (tryConsumePendingAbility(player, serverLevel)) {
                 event.setCanceled(true);
@@ -159,8 +181,15 @@ public class InternalUnderworldAbility extends SelectableAbility {
         }
         if (getActiveSoulForEntity(player, target) != null) return;
 
+        // Capture mode consumes the click and attempts to absorb the target.
         event.setCanceled(true);
         clearCaptureMode(player);
+
+        if (isInternalUnderworldLocked(player)) {
+            player.sendSystemMessage(Component.literal("Your Internal Underworld is locked")
+                .withStyle(ChatFormatting.RED));
+            return;
+        }
 
         if (!isCapturableEntity(target)) {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.not_capturable")
@@ -204,7 +233,10 @@ public class InternalUnderworldAbility extends SelectableAbility {
     public static void onLivingDeath(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof LivingEntity victim)) return;
         if (!(victim.level() instanceof ServerLevel serverLevel)) return;
-        if (!(victim instanceof BeyonderNPCEntity)) return;
+
+        // Auto-capture beyonder souls on death when the killer is eligible.
+        boolean isBeyonderPlayer = victim instanceof ServerPlayer && BeyonderData.isBeyonder(victim);
+        if (!(victim instanceof BeyonderNPCEntity) && !isBeyonderPlayer) return;
 
         ServerPlayer player = resolveCapturePlayer(event, victim);
         if (player == null) return;
@@ -214,15 +246,33 @@ public class InternalUnderworldAbility extends SelectableAbility {
         int playerSeq = BeyonderData.getSequence(player);
         if (playerSeq > 5) return;
 
-        if (getStoredSouls(player).size() >= getMaxSouls(playerSeq)) {
-            player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.full")
+        if (isInternalUnderworldLocked(player) && !isBeyonderPlayer) return;
+
+        String victimPathway = BeyonderData.getPathway(victim);
+        int victimSeq = BeyonderData.getSequence(victim);
+        boolean slotAvailable = BeyonderData.hasSequenceSlotAvailable(serverLevel, victimPathway, victimSeq);
+        if (!slotAvailable && isBeyonderPlayer) {
+            slotAvailable = BeyonderData.hasSequenceSlotAvailableWithAdjustment(serverLevel, victimPathway, victimSeq, victimSeq, -1);
+        }
+        if (!slotAvailable) {
+            player.sendSystemMessage(Component.literal("No sequence slots available for that soul")
                     .withStyle(ChatFormatting.RED));
             return;
         }
 
+        if (getStoredSouls(player).size() >= getMaxSouls(playerSeq)) {
+            if (isBeyonderPlayer) {
+                removeLowestSequenceSoul(player);
+            } else {
+                player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.full")
+                        .withStyle(ChatFormatting.RED));
+                return;
+            }
+        }
+
         spawnCaptureAttemptParticles(serverLevel, victim);
 
-        if (player.getRandom().nextFloat() >= 0.5f) {
+        if (!isBeyonderPlayer && player.getRandom().nextFloat() >= 0.5f) {
             spawnFailureParticles(serverLevel, victim);
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.escaped")
                     .withStyle(ChatFormatting.GRAY));
@@ -231,6 +281,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
         CompoundTag soulData = buildSoulData(victim);
         if (soulData == null) return;
+        victim.getPersistentData().putBoolean(INTERNAL_UNDERWORLD_CAPTURED_TAG, true);
         addStoredSoul(player, soulData);
         spawnCaptureSuccessParticles(serverLevel, victim);
         serverLevel.playSound(null, victim.blockPosition(), SoundEvents.SOUL_ESCAPE.value(), SoundSource.PLAYERS, 1.0f, 0.7f);
@@ -247,6 +298,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
         if (!(event.getTarget() instanceof LivingEntity target)) return;
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
+        // Right-click a summoned soul to open its ability menu.
         ActiveSoul activeSoul = getActiveSoulForEntity(player, target);
         if (activeSoul == null) return;
 
@@ -264,6 +316,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
+        // Allow queued soul abilities to trigger on block interactions.
         if (tryConsumePendingAbility(player, serverLevel)) {
             event.setCanceled(true);
         }
@@ -274,6 +327,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
+        // Allow queued soul abilities to trigger on item interactions.
         if (tryConsumePendingAbility(player, serverLevel)) {
             event.setCanceled(true);
         }
@@ -283,10 +337,53 @@ public class InternalUnderworldAbility extends SelectableAbility {
     public static void onRightClickEmpty(PlayerInteractEvent.RightClickEmpty event) {
         if (!event.getLevel().isClientSide()) return;
 
+        // Client sends a packet so queued abilities can trigger on empty click.
         PacketHandler.sendToServer(new UseQueuedSoulAbilityPacket());
     }
 
+    @SubscribeEvent
+    public static void onPlayerTick(PlayerTickEvent.Post event) {
+        if (event.getEntity().level().isClientSide) return;
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        Integer cooldown = soulPassiveCooldowns.get(player.getUUID());
+        if (cooldown != null) {
+            int remaining = cooldown - 1;
+            if (remaining <= 0) {
+                soulPassiveCooldowns.remove(player.getUUID());
+            } else {
+                soulPassiveCooldowns.put(player.getUUID(), remaining);
+            }
+        }
+
+        ActiveSoulPassive activePassive = activeSoulPassives.get(player.getUUID());
+
+        if (player.tickCount % 20 == 0 && (activePassive != null || cooldown != null)) {
+            updateSoulPassiveMenu(player);
+        }
+
+        if (activePassive == null) return;
+
+        if (player.tickCount % 5 == 0) {
+            activePassive.ability().tick(player.level(), player);
+        }
+
+        int remaining = activePassive.remainingTicks() - 1;
+        if (remaining <= 0) {
+            activePassive.ability().onPassiveAbilityRemoved(player, player.serverLevel());
+            activeSoulPassives.remove(player.getUUID());
+            int cooldownTicks = getPassiveCooldownTicks(BeyonderData.getSequence(player));
+            soulPassiveCooldowns.put(player.getUUID(), cooldownTicks);
+            player.sendSystemMessage(Component.literal("Your Passive Has Ended Your On Cooldown For " + formatRemainingTime(cooldownTicks))
+                    .withStyle(ChatFormatting.RED));
+            updateSoulPassiveMenu(player);
+        } else {
+            activeSoulPassives.put(player.getUUID(), new ActiveSoulPassive(activePassive.ability(), remaining));
+        }
+    }
+
     private static ServerPlayer resolveCapturePlayer(LivingDeathEvent event, LivingEntity victim) {
+        // Resolve kill ownership through direct source, projectiles, and ownership chains.
         ServerLevel level = (ServerLevel) victim.level();
 
         ServerPlayer fromSource = resolvePlayerFromEntity(event.getSource().getEntity(), level);
@@ -301,10 +398,6 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
         ServerPlayer fromKillCredit = resolvePlayerFromEntity(victim.getKillCredit(), level);
         if (fromKillCredit != null) return fromKillCredit;
-
-        if (level.players().size() == 1) {
-            return level.players().get(0);
-        }
 
         return null;
     }
@@ -323,6 +416,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
         if (entity instanceof LivingEntity living) {
             SubordinateComponent subordinateComponent = living.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
             if (subordinateComponent.isSubordinate()) {
+                // Subordinates inherit their controller for capture credit.
                 try {
                     UUID controllerId = UUID.fromString(subordinateComponent.getControllerUUID());
                     ServerPlayer controller = level.getServer().getPlayerList().getPlayer(controllerId);
@@ -334,6 +428,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
             MarionetteComponent marionetteComponent = living.getData(ModAttachments.MARIONETTE_COMPONENT.get());
             if (marionetteComponent.isMarionette()) {
+                // Marionettes inherit their controller for capture credit.
                 try {
                     UUID controllerId = UUID.fromString(marionetteComponent.getControllerUUID());
                     return level.getServer().getPlayerList().getPlayer(controllerId);
@@ -347,6 +442,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
     }
 
     private static void activateCaptureMode(ServerPlayer player) {
+        // Capture mode waits for the next right click on a valid target.
         player.getPersistentData().putBoolean(CAPTURE_MODE_TAG, true);
         player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.capture_mode_on")
                 .withStyle(ChatFormatting.DARK_AQUA));
@@ -360,10 +456,24 @@ public class InternalUnderworldAbility extends SelectableAbility {
         return player.getPersistentData().getBoolean(CAPTURE_MODE_TAG);
     }
 
+    private static boolean isInternalUnderworldLocked(ServerPlayer player) {
+        return player.getPersistentData().getBoolean(INTERNAL_UNDERWORLD_LOCKED_TAG);
+    }
+
+    private static void toggleInternalUnderworldLock(ServerPlayer player) {
+        // Lock prevents new souls from being captured into storage.
+        CompoundTag data = player.getPersistentData();
+        boolean locked = data.getBoolean(INTERNAL_UNDERWORLD_LOCKED_TAG);
+        data.putBoolean(INTERNAL_UNDERWORLD_LOCKED_TAG, !locked);
+        player.sendSystemMessage(Component.literal(!locked ? "Internal Underworld locked" : "Internal Underworld unlocked")
+                .withStyle(!locked ? ChatFormatting.RED : ChatFormatting.GREEN));
+    }
+
     private static CompoundTag buildSoulData(LivingEntity entity) {
         if (entity == null) return null;
         ResourceLocation typeKey = EntityType.getKey(entity.getType());
         if (typeKey == null) return null;
+        // Store a snapshot that can recreate the entity without UUID conflicts.
         CompoundTag soulData = new CompoundTag();
         soulData.putString("EntityType", typeKey.toString());
         soulData.putString("DisplayName", entity.hasCustomName() ? entity.getCustomName().getString() : entity.getName().getString());
@@ -374,6 +484,21 @@ public class InternalUnderworldAbility extends SelectableAbility {
         entityNBT.remove("Health");
         soulData.put("EntityNBT", entityNBT);
 
+        if (entity instanceof BeyonderNPCEntity npc) {
+            soulData.putBoolean("IsBeyonderNPC", true);
+            soulData.putString("BeyonderSkin", npc.getSkinName());
+            soulData.putBoolean("BeyonderHostile", npc.isHostile());
+        } else {
+            soulData.putBoolean("IsBeyonderNPC", false);
+        }
+
+        if (entity instanceof ServerPlayer player) {
+            soulData.putBoolean("IsPlayerSoul", true);
+            soulData.putUUID("OriginalPlayerUUID", player.getUUID());
+        } else {
+            soulData.putBoolean("IsPlayerSoul", false);
+        }
+
         if (BeyonderData.isBeyonder(entity)) {
             soulData.putString("Pathway", BeyonderData.getPathway(entity));
             soulData.putInt("Sequence", BeyonderData.getSequence(entity));
@@ -382,7 +507,8 @@ public class InternalUnderworldAbility extends SelectableAbility {
         return soulData;
     }
 
-    private void openReleaseGui(ServerLevel level, ServerPlayer player) {
+    private static void openReleaseGui(ServerLevel level, ServerPlayer player) {
+        // Release GUI lets you summon, discard, or lock the underworld.
         List<CompoundTag> storedSouls = getStoredSouls(player);
 
         if (storedSouls.isEmpty()) {
@@ -418,7 +544,9 @@ public class InternalUnderworldAbility extends SelectableAbility {
         discardItem.set(DataComponents.CUSTOM_DATA, CustomData.of(discardTag));
         container.setItem(1, discardItem);
 
-        int slot = 2;
+        container.setItem(2, createUnderworldLockItem(player));
+
+        int slot = 3;
         for (int i = 0; i < storedSouls.size() && slot < container.getContainerSize(); i++) {
             container.setItem(slot++, createSoulDisplayItem(storedSouls.get(i)));
         }
@@ -444,6 +572,13 @@ public class InternalUnderworldAbility extends SelectableAbility {
                             return;
                         }
 
+                        if (tag.contains("IsUnderworldLock")) {
+                            toggleInternalUnderworldLock(player);
+                            player.closeContainer();
+                            level.getServer().execute(() -> openReleaseGui(level, player));
+                            return;
+                        }
+
                         if (tag.contains("IsReleaseAll")) {
                             player.closeContainer();
                             level.getServer().execute(() -> releaseAllSouls(level, player));
@@ -453,9 +588,17 @@ public class InternalUnderworldAbility extends SelectableAbility {
                         if (!tag.contains("SoulData")) return;
                         CompoundTag soulData = tag.getCompound("SoulData");
 
+                        boolean isRightClick = clickType == net.minecraft.world.inventory.ClickType.PICKUP && button == 1;
+                        if (isRightClick) {
+                            player.closeContainer();
+                            level.getServer().execute(() -> openSoulAbilityGui(level, player, soulData));
+                            return;
+                        }
+
                         if (discardMode) {
                             removeStoredSoul(player, soulData);
-                            player.closeContainer();
+                            refreshSoulListContainer(container, player);
+                            ((ChestMenu) player.containerMenu).broadcastChanges();
                             player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.discarded")
                                     .withStyle(ChatFormatting.GRAY));
                         } else {
@@ -469,8 +612,10 @@ public class InternalUnderworldAbility extends SelectableAbility {
     }
 
     private static void openSoulAbilityGui(ServerLevel level, ServerPlayer player, CompoundTag soulData) {
+        // Build a menu for active and passive abilities this soul can grant.
         String pathway = soulData.contains("Pathway") ? soulData.getString("Pathway") : "";
         int sequence = soulData.contains("Sequence", Tag.TAG_INT) ? soulData.getInt("Sequence") : -1;
+        int playerSequence = BeyonderData.getSequence(player);
 
         if (pathway.isEmpty() || sequence < 0) {
             player.sendSystemMessage(Component.literal("This soul has no abilities").withStyle(ChatFormatting.RED));
@@ -480,8 +625,10 @@ public class InternalUnderworldAbility extends SelectableAbility {
         List<Ability> abilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(pathway, sequence)
             .stream()
             .filter(ability -> !(ability instanceof ToggleAbility))
+            .filter(ability -> isAbilityAllowedFor(pathway, playerSequence, ability))
             .toList();
-        if (abilities.isEmpty()) {
+        List<PassiveAbilityItem> passiveAbilities = getSoulPassives(pathway, sequence, playerSequence);
+        if (abilities.isEmpty() && passiveAbilities.isEmpty()) {
             player.sendSystemMessage(Component.literal("This soul has no abilities").withStyle(ChatFormatting.RED));
             return;
         }
@@ -493,7 +640,8 @@ public class InternalUnderworldAbility extends SelectableAbility {
             }
         };
 
-        for (int i = 0; i < Math.min(abilities.size(), 54); i++) {
+        int maxAbilitySlots = 45;
+        for (int i = 0; i < Math.min(abilities.size(), maxAbilitySlots); i++) {
             Ability ability = abilities.get(i);
             boolean showSubSelect = false;
             if (ability instanceof SelectableAbility selectableAbility) {
@@ -505,6 +653,45 @@ public class InternalUnderworldAbility extends SelectableAbility {
             item.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
             container.setItem(i, item);
         }
+
+        ActiveSoulPassive activePassive = activeSoulPassives.get(player.getUUID());
+        int cooldownTicks = soulPassiveCooldowns.getOrDefault(player.getUUID(), 0);
+        int passiveSlot = 45;
+        if (playerSequence > 2) {
+            ItemStack lockedItem = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+            lockedItem.set(DataComponents.CUSTOM_NAME, Component.literal("Passives Locked")
+                    .withStyle(ChatFormatting.RED));
+            lockedItem.set(DataComponents.LORE, new ItemLore(List.of(
+                    Component.literal("Unlocks at Sequence 2").withStyle(ChatFormatting.GRAY)
+            )));
+            CompoundTag lockedTag = new CompoundTag();
+            lockedTag.putBoolean("PassivesLocked", true);
+            lockedItem.set(DataComponents.CUSTOM_DATA, CustomData.of(lockedTag));
+            container.setItem(passiveSlot, lockedItem);
+        } else {
+            for (int i = 0; i < passiveAbilities.size() && passiveSlot < 53; i++) {
+                PassiveAbilityItem passiveAbility = passiveAbilities.get(i);
+                ItemStack item = createPassiveAbilityDisplayItem(passiveAbility, activePassive, cooldownTicks, playerSequence);
+                CompoundTag tag = new CompoundTag();
+                ResourceLocation passiveId = BuiltInRegistries.ITEM.getKey(passiveAbility);
+                if (passiveId != null) {
+                    tag.putString("PassiveId", passiveId.toString());
+                    item.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+                    container.setItem(passiveSlot, item);
+                    passiveSlot++;
+                }
+            }
+        }
+
+        ItemStack backItem = new ItemStack(Items.ARROW);
+        backItem.set(DataComponents.CUSTOM_NAME, Component.literal("Back").withStyle(ChatFormatting.YELLOW));
+        backItem.set(DataComponents.LORE, new ItemLore(List.of(
+                Component.literal("Return to soul list").withStyle(ChatFormatting.GRAY)
+        )));
+        CompoundTag backTag = new CompoundTag();
+        backTag.putBoolean("BackToSouls", true);
+        backItem.set(DataComponents.CUSTOM_DATA, CustomData.of(backTag));
+        container.setItem(53, backItem);
 
         final int containerSize = container.getContainerSize();
 
@@ -519,6 +706,22 @@ public class InternalUnderworldAbility extends SelectableAbility {
                         CustomData customData = clicked.get(DataComponents.CUSTOM_DATA);
                         if (customData == null) return;
                         CompoundTag tag = customData.copyTag();
+                        if (tag.contains("BackToSouls")) {
+                            player.closeContainer();
+                            level.getServer().execute(() -> openReleaseGui(level, player));
+                            return;
+                        }
+
+                        if (tag.contains("PassiveId")) {
+                            PassiveAbilityItem passiveAbility = resolvePassiveAbility(tag.getString("PassiveId"));
+                            if (passiveAbility != null) {
+                                level.getServer().execute(() -> {
+                                    activateSoulPassive(player, passiveAbility);
+                                    updateSoulPassiveMenu(player);
+                                });
+                            }
+                            return;
+                        }
                         if (!tag.contains("AbilityId")) return;
 
                         String abilityId = tag.getString("AbilityId");
@@ -544,9 +747,12 @@ public class InternalUnderworldAbility extends SelectableAbility {
                 },
                 Component.literal("Internal Underworld - Soul Abilities")
         ));
+            // Swap the vanilla chest screen for the custom underworld UI.
+            PacketHandler.sendToPlayer(player, new OpenInternalUnderworldAbilityScreenPacket());
     }
 
     private static void openSoulSubAbilityGui(ServerLevel level, ServerPlayer player, String abilityId) {
+        // Sub-ability picker for SelectableAbility entries.
         Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
         if (!(ability instanceof SelectableAbility selectableAbility)) {
             queueSoulAbility(player, abilityId);
@@ -631,6 +837,8 @@ public class InternalUnderworldAbility extends SelectableAbility {
                 },
                 title
         ));
+            // Swap the vanilla chest screen for the custom underworld UI.
+            PacketHandler.sendToPlayer(player, new OpenInternalUnderworldAbilityScreenPacket());
     }
 
     private static ItemStack createAbilityDisplayItem(Ability ability) {
@@ -652,6 +860,32 @@ public class InternalUnderworldAbility extends SelectableAbility {
             lore.add(Component.literal("Select sub-ability").withStyle(ChatFormatting.GRAY));
         }
         lore.add(Component.literal("Cast as yourself").withStyle(ChatFormatting.GRAY));
+        item.set(DataComponents.LORE, new ItemLore(lore));
+        return item;
+    }
+
+    private static ItemStack createPassiveAbilityDisplayItem(PassiveAbilityItem abilityItem, ActiveSoulPassive activePassive, int cooldownTicks, int playerSequence) {
+        // Show remaining duration/cooldown state for soul passives.
+        ItemStack item = new ItemStack(abilityItem);
+        List<Component> lore = new ArrayList<>();
+        boolean isActive = activePassive != null && activePassive.ability() == abilityItem;
+        int durationTicks = getPassiveDurationTicks(playerSequence);
+        int baseCooldownTicks = getPassiveCooldownTicks(playerSequence);
+        if (isActive) {
+            item.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
+            lore.add(Component.literal("Active: " + formatRemainingTime(activePassive.remainingTicks()))
+                    .withStyle(ChatFormatting.GRAY));
+        } else if (cooldownTicks > 0) {
+            lore.add(Component.literal("Duration: " + formatDurationLabel(durationTicks))
+                .withStyle(ChatFormatting.GRAY));
+            lore.add(Component.literal("Cooldown: " + formatRemainingTime(cooldownTicks))
+                    .withStyle(ChatFormatting.RED));
+        } else {
+            lore.add(Component.literal("Activate for " + formatDurationLabel(durationTicks))
+                    .withStyle(ChatFormatting.GRAY));
+            lore.add(Component.literal("Cooldown: " + formatDurationLabel(baseCooldownTicks))
+                .withStyle(ChatFormatting.GRAY));
+        }
         item.set(DataComponents.LORE, new ItemLore(lore));
         return item;
     }
@@ -701,6 +935,137 @@ public class InternalUnderworldAbility extends SelectableAbility {
         return sb.toString().trim();
     }
 
+    private static boolean isAbilityAllowedFor(String pathway, int minSequence, Ability ability) {
+        Integer reqSeq = ability.getRequirements().get(pathway);
+        return reqSeq != null && minSequence <= reqSeq;
+    }
+
+    private static List<PassiveAbilityItem> getSoulPassives(String pathway, int soulSequence, int playerSequence) {
+        if (pathway == null || pathway.isEmpty() || soulSequence < 0) return Collections.emptyList();
+        if (playerSequence > 2) return Collections.emptyList();
+        int minSequence = soulSequence;
+
+        return PassiveAbilityHandler.ITEMS.getEntries().stream()
+                .map(entry -> (PassiveAbilityItem) entry.get())
+            .filter(item -> !(item instanceof PhysicalEnhancementsAbility))
+            .filter(item -> isPassiveAllowedFor(pathway, minSequence, item))
+                .toList();
+    }
+
+    private static boolean isPassiveAllowedFor(String pathway, int minSequence, PassiveAbilityItem item) {
+        Integer reqSeq = item.getRequirements().get(pathway);
+        return reqSeq != null && minSequence <= reqSeq;
+    }
+
+    private static PassiveAbilityItem resolvePassiveAbility(String passiveId) {
+        if (passiveId == null || passiveId.isEmpty()) return null;
+        ResourceLocation id = ResourceLocation.tryParse(passiveId);
+        if (id == null) return null;
+        if (BuiltInRegistries.ITEM.get(id) instanceof PassiveAbilityItem passiveAbility) {
+            return passiveAbility;
+        }
+        return null;
+    }
+
+    private static void activateSoulPassive(ServerPlayer player, PassiveAbilityItem passiveAbility) {
+        if (!(player.level() instanceof ServerLevel serverLevel)) return;
+
+        ActiveSoulPassive existing = activeSoulPassives.get(player.getUUID());
+        if (existing != null) {
+            if (existing.ability() == passiveAbility) {
+                cancelSoulPassive(player, existing);
+                return;
+            }
+            player.sendSystemMessage(Component.literal("A passive is already active").withStyle(ChatFormatting.RED));
+            return;
+        }
+
+        if (soulPassiveCooldowns.containsKey(player.getUUID())) {
+            player.sendSystemMessage(Component.literal("Your Passive Is On Cooldown")
+                    .withStyle(ChatFormatting.RED));
+            return;
+        }
+
+        int durationTicks = getPassiveDurationTicks(BeyonderData.getSequence(player));
+        passiveAbility.onPassiveAbilityGained(player, serverLevel);
+        activeSoulPassives.put(player.getUUID(), new ActiveSoulPassive(passiveAbility, durationTicks));
+        player.sendSystemMessage(Component.literal("Passive activated for " + formatDurationLabel(durationTicks) + ": ")
+                .append(passiveAbility.getName(new ItemStack(passiveAbility)))
+                .withStyle(ChatFormatting.AQUA));
+    }
+
+    private static void cancelSoulPassive(ServerPlayer player, ActiveSoulPassive activePassive) {
+        if (!(player.level() instanceof ServerLevel serverLevel)) return;
+
+        activePassive.ability().onPassiveAbilityRemoved(player, serverLevel);
+        activeSoulPassives.remove(player.getUUID());
+        int cooldownTicks = getPassiveCooldownTicks(BeyonderData.getSequence(player));
+        soulPassiveCooldowns.put(player.getUUID(), cooldownTicks);
+        player.sendSystemMessage(Component.literal("Passive canceled. Cooldown: " + formatDurationLabel(cooldownTicks))
+                .withStyle(ChatFormatting.RED));
+        updateSoulPassiveMenu(player);
+    }
+
+    private static void updateSoulPassiveMenu(ServerPlayer player) {
+        if (!(player.containerMenu instanceof ChestMenu menu)) return;
+        int playerSequence = BeyonderData.getSequence(player);
+        if (playerSequence > 2) return;
+
+        ActiveSoulPassive activePassive = activeSoulPassives.get(player.getUUID());
+        boolean foundPassive = false;
+
+        int cooldownTicks = soulPassiveCooldowns.getOrDefault(player.getUUID(), 0);
+        for (int slotId = 45; slotId < 53; slotId++) {
+            ItemStack stack = menu.getSlot(slotId).getItem();
+            if (stack.isEmpty()) continue;
+
+            CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+            if (customData == null) continue;
+            CompoundTag tag = customData.copyTag();
+            if (!tag.contains("PassiveId")) continue;
+
+            PassiveAbilityItem passiveAbility = resolvePassiveAbility(tag.getString("PassiveId"));
+            if (passiveAbility == null) continue;
+
+            ItemStack updated = createPassiveAbilityDisplayItem(passiveAbility, activePassive, cooldownTicks, playerSequence);
+            CompoundTag newTag = new CompoundTag();
+            newTag.putString("PassiveId", tag.getString("PassiveId"));
+            updated.set(DataComponents.CUSTOM_DATA, CustomData.of(newTag));
+            menu.getSlot(slotId).set(updated);
+            foundPassive = true;
+        }
+
+        if (foundPassive) {
+            menu.broadcastChanges();
+        }
+    }
+
+    private static String formatRemainingTime(int remainingTicks) {
+        int totalSeconds = Math.max(0, (remainingTicks + 19) / 20);
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+        return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+    }
+
+    private static String formatDurationLabel(int ticks) {
+        int minutes = Math.max(1, (ticks + 1199) / 1200);
+        return minutes + "m";
+    }
+
+    private static int getPassiveDurationTicks(int sequence) {
+        if (sequence <= 0) return 20 * 60 * 10;
+        if (sequence == 1) return 20 * 60 * 5;
+        if (sequence == 2) return 20 * 60;
+        return SOUL_PASSIVE_DURATION_TICKS;
+    }
+
+    private static int getPassiveCooldownTicks(int sequence) {
+        if (sequence <= 0) return 20 * 60 * 3;
+        if (sequence == 1) return 20 * 60 * 5;
+        if (sequence == 2) return 20 * 60 * 10;
+        return SOUL_PASSIVE_COOLDOWN_TICKS;
+    }
+
     private static void castSoulAbility(ServerLevel level, ServerPlayer player, String abilityId) {
         Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
         if (ability == null) return;
@@ -710,6 +1075,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
     private static void queueSoulAbility(ServerPlayer player, String abilityId) {
         if (abilityId == null || abilityId.isEmpty()) return;
+        // Queue the ability for the next right-click action in the world.
         player.getPersistentData().putString(PENDING_ABILITY_TAG, abilityId);
         player.sendSystemMessage(Component.literal("Ability queued: " + prettyAbilityName(abilityId))
                 .withStyle(ChatFormatting.AQUA));
@@ -724,6 +1090,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
             return false;
         }
 
+        // Consume and immediately cast as the player.
         data.remove(PENDING_ABILITY_TAG);
         castSoulAbility(level, player, abilityId);
         return true;
@@ -736,6 +1103,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
     }
 
     private static ActiveSoul getActiveSoulForEntity(ServerPlayer player, LivingEntity target) {
+        // Prune dead souls and match by entity UUID.
         List<ActiveSoul> souls = activeSouls.get(player.getUUID());
         if (souls == null || souls.isEmpty()) return null;
 
@@ -760,7 +1128,8 @@ public class InternalUnderworldAbility extends SelectableAbility {
     }
 
 
-    private void releaseAllSouls(ServerLevel level, ServerPlayer player) {
+    private static void releaseAllSouls(ServerLevel level, ServerPlayer player) {
+        // Summon every stored soul as an active underworld entity.
         List<CompoundTag> storedSouls = getStoredSouls(player);
 
         if (storedSouls.isEmpty()) {
@@ -783,24 +1152,56 @@ public class InternalUnderworldAbility extends SelectableAbility {
                 .withStyle(ChatFormatting.DARK_AQUA));
     }
 
-    private void releaseSoul(ServerLevel level, ServerPlayer player, CompoundTag soulData) {
+    private static void releaseSoul(ServerLevel level, ServerPlayer player, CompoundTag soulData) {
         try {
-            Optional<EntityType<?>> optionalType = EntityType.byString(soulData.getString("EntityType"));
-            if (optionalType.isEmpty()) {
+            // Recreate the entity and mark it as an underworld summon.
+            String entityTypeId = soulData.getString("EntityType");
+            boolean isPlayerSoul = "minecraft:player".equals(entityTypeId) || soulData.getBoolean("IsPlayerSoul");
+            boolean isBeyonderNpc = soulData.getBoolean("IsBeyonderNPC");
+            Optional<EntityType<?>> optionalType = EntityType.byString(entityTypeId);
+            if (!isPlayerSoul && !isBeyonderNpc && optionalType.isEmpty()) {
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.failed").withStyle(ChatFormatting.RED));
                 return;
             }
+            net.minecraft.world.entity.Entity entity;
 
-            net.minecraft.world.entity.Entity entity = optionalType.get().create(level);
-            if (entity == null) {
-                player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.failed").withStyle(ChatFormatting.RED));
-                return;
-            }
+            if (isPlayerSoul || isBeyonderNpc) {
+                String pathway = soulData.contains("Pathway") ? soulData.getString("Pathway") : "none";
+                int sequence = soulData.contains("Sequence", Tag.TAG_INT)
+                        ? soulData.getInt("Sequence")
+                        : LOTMCraft.NON_BEYONDER_SEQ;
+                boolean hostile = soulData.getBoolean("BeyonderHostile");
+                String skin = soulData.getString("BeyonderSkin");
 
-            if (soulData.contains("EntityNBT")) {
-                CompoundTag nbt = soulData.getCompound("EntityNBT").copy();
-                nbt.remove("UUID");
-                entity.load(nbt);
+                EntityType<? extends BeyonderNPCEntity> npcType = ModEntities.BEYONDER_NPC.get();
+                if (skin != null && !skin.isEmpty()) {
+                    entity = new BeyonderNPCEntity(npcType, level, hostile, skin, pathway, sequence, true);
+                } else {
+                    entity = new BeyonderNPCEntity(npcType, level, hostile, pathway, sequence, true);
+                }
+
+                if (entity instanceof BeyonderNPCEntity npc) {
+                    npc.setQuestId("");
+                    if (isPlayerSoul && soulData.contains("OriginalPlayerUUID")) {
+                        npc.setTargetPlayerUUID(soulData.getUUID("OriginalPlayerUUID"));
+                    }
+                }
+                if (soulData.contains("DisplayName")) {
+                    entity.setCustomName(Component.literal(soulData.getString("DisplayName")));
+                    entity.setCustomNameVisible(true);
+                }
+            } else {
+                entity = optionalType.get().create(level);
+                if (entity == null) {
+                    player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.failed").withStyle(ChatFormatting.RED));
+                    return;
+                }
+
+                if (soulData.contains("EntityNBT")) {
+                    CompoundTag nbt = soulData.getCompound("EntityNBT").copy();
+                    nbt.remove("UUID");
+                    entity.load(nbt);
+                }
             }
 
             Vec3 look = player.getLookAngle();
@@ -808,6 +1209,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
             entity.moveTo(pos.x, pos.y, pos.z, player.getYRot(), 0);
             entity.setUUID(UUID.randomUUID());
             entity.getPersistentData().putBoolean("VoidSummoned", true);
+            entity.getPersistentData().putBoolean("UnderworldSummonedSoul", true);
 
             boolean spawned = level.addFreshEntity(entity);
 
@@ -838,6 +1240,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
     }
 
     private void recallAllSouls(ServerPlayer player) {
+        // Recall active souls back into storage and remove their entities.
         List<ActiveSoul> souls = activeSouls.remove(player.getUUID());
         if (souls == null || souls.isEmpty()) {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.no_active_souls")
@@ -863,6 +1266,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
     }
 
     public static void recallSoulsOnLogout(ServerPlayer player) {
+        // Safety cleanup when the owner leaves the server.
         List<ActiveSoul> souls = activeSouls.remove(player.getUUID());
         if (souls == null) return;
         for (ActiveSoul soul : souls) {
@@ -879,6 +1283,45 @@ public class InternalUnderworldAbility extends SelectableAbility {
         for (ActiveSoul soul : souls) {
             if (soul.entity().isAlive()) soul.entity().discard();
         }
+    }
+
+    public static void clearStoredSouls(ServerPlayer player) {
+        player.getPersistentData().remove(STORED_SOULS_TAG);
+    }
+
+    public static FreedSoulSlots clearStoredSoulsAndCollectFreedPaths(ServerPlayer player) {
+        // Used on death to free global seq0/seq1 slots from stored souls.
+        CompoundTag data = player.getPersistentData();
+        if (!data.contains(STORED_SOULS_TAG, Tag.TAG_LIST)) {
+            return new FreedSoulSlots(Collections.emptySet(), Collections.emptySet());
+        }
+
+        ListTag list = data.getList(STORED_SOULS_TAG, Tag.TAG_COMPOUND);
+        Set<String> seq0Paths = new HashSet<>();
+        Set<String> seq1Paths = new HashSet<>();
+
+        for (int i = 0; i < list.size(); i++) {
+            CompoundTag soul = list.getCompound(i);
+            if (!soul.contains("Sequence", Tag.TAG_INT)) {
+                continue;
+            }
+            int sequence = soul.getInt("Sequence");
+            if (sequence != 0 && sequence != 1) {
+                continue;
+            }
+            String pathway = soul.getString("Pathway");
+            if (pathway == null || pathway.isEmpty() || "none".equals(pathway)) {
+                continue;
+            }
+            if (sequence == 0) {
+                seq0Paths.add(pathway);
+            } else {
+                seq1Paths.add(pathway);
+            }
+        }
+
+        data.remove(STORED_SOULS_TAG);
+        return new FreedSoulSlots(seq0Paths, seq1Paths);
     }
 
     private static void spawnCaptureAttemptParticles(ServerLevel level, LivingEntity target) {
@@ -919,7 +1362,36 @@ public class InternalUnderworldAbility extends SelectableAbility {
         level.sendParticles(ParticleTypes.SOUL, pos.x, pos.y, pos.z, 15, 0.3, 0.3, 0.3, 0.03);
     }
 
-    private ItemStack createSoulDisplayItem(CompoundTag soulData) {
+    private static ItemStack createUnderworldLockItem(ServerPlayer player) {
+        // Toggle to prevent new souls from entering via death capture.
+        boolean locked = isInternalUnderworldLocked(player);
+        ItemStack item = new ItemStack(locked ? Items.IRON_DOOR : Items.OAK_DOOR);
+        item.set(DataComponents.CUSTOM_NAME, Component.literal("Underworld Lock: " + (locked ? "ON" : "OFF"))
+                .withStyle(locked ? ChatFormatting.RED : ChatFormatting.GREEN));
+        item.set(DataComponents.LORE, new ItemLore(List.of(
+                Component.literal("Prevents new souls from entering").withStyle(ChatFormatting.GRAY)
+        )));
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean("IsUnderworldLock", true);
+        item.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        return item;
+    }
+
+    private static void refreshSoulListContainer(SimpleContainer container, ServerPlayer player) {
+        int startSlot = 3;
+        for (int i = startSlot; i < container.getContainerSize(); i++) {
+            container.setItem(i, ItemStack.EMPTY);
+        }
+
+        List<CompoundTag> storedSouls = getStoredSouls(player);
+        int slot = startSlot;
+        for (int i = 0; i < storedSouls.size() && slot < container.getContainerSize(); i++) {
+            container.setItem(slot++, createSoulDisplayItem(storedSouls.get(i)));
+        }
+    }
+
+    private static ItemStack createSoulDisplayItem(CompoundTag soulData) {
+        // Display entry for the soul list GUI.
         ItemStack item = new ItemStack(Items.PLAYER_HEAD);
         item.set(DataComponents.CUSTOM_NAME, Component.literal(soulData.getString("DisplayName")).withStyle(ChatFormatting.LIGHT_PURPLE));
         String pathway = soulData.contains("Pathway") ? soulData.getString("Pathway") : "none";
@@ -951,6 +1423,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
     private static void addStoredSoul(ServerPlayer player, CompoundTag soulData) {
         if (soulData == null) return;
+        // Persist the snapshot in player NBT, trimming to capacity.
         CompoundTag data = player.getPersistentData();
         ListTag list = data.contains(STORED_SOULS_TAG)
                 ? data.getList(STORED_SOULS_TAG, Tag.TAG_COMPOUND)
@@ -964,11 +1437,56 @@ public class InternalUnderworldAbility extends SelectableAbility {
         data.put(STORED_SOULS_TAG, list);
     }
 
+    private static void removeLowestSequenceSoul(ServerPlayer player) {
+        CompoundTag data = player.getPersistentData();
+        if (!data.contains(STORED_SOULS_TAG)) return;
+
+        ListTag list = data.getList(STORED_SOULS_TAG, Tag.TAG_COMPOUND);
+        if (list.isEmpty()) return;
+
+        // Remove the weakest soul (highest sequence number) first.
+        int worstIndex = -1;
+        int worstSeq = -1;
+        for (int i = 0; i < list.size(); i++) {
+            CompoundTag soul = list.getCompound(i);
+            int seq = soul.contains("Sequence", Tag.TAG_INT)
+                    ? soul.getInt("Sequence")
+                    : LOTMCraft.NON_BEYONDER_SEQ;
+            if (seq > worstSeq) {
+                worstSeq = seq;
+                worstIndex = i;
+            }
+        }
+
+        if (worstIndex >= 0) {
+            list.remove(worstIndex);
+            data.put(STORED_SOULS_TAG, list);
+        }
+    }
+
     private static void removeStoredSoul(ServerPlayer player, CompoundTag soulData) {
         CompoundTag data = player.getPersistentData();
         if (!data.contains(STORED_SOULS_TAG)) return;
         ListTag list = data.getList(STORED_SOULS_TAG, Tag.TAG_COMPOUND);
         list.remove(soulData);
         data.put(STORED_SOULS_TAG, list);
+    }
+
+    public static int countActiveSouls(String pathway, int sequence) {
+        // Used by global slot checks to count summoned underworld souls.
+        if (pathway == null || pathway.isEmpty()) return 0;
+        int count = 0;
+        for (List<ActiveSoul> souls : activeSouls.values()) {
+            for (ActiveSoul soul : souls) {
+                if (!soul.entity().isAlive()) continue;
+                CompoundTag data = soul.soulData();
+                if (!pathway.equals(data.getString("Pathway"))) continue;
+                if (!data.contains("Sequence", Tag.TAG_INT)) continue;
+                if (data.getInt("Sequence") == sequence) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 }

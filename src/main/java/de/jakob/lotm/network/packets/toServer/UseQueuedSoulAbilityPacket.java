@@ -22,6 +22,7 @@ public record UseQueuedSoulAbilityPacket() implements CustomPacketPayload {
     }
 
     public static void handle(UseQueuedSoulAbilityPacket packet, IPayloadContext context) {
+        // Trigger queued soul abilities on the server after an empty right-click.
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer serverPlayer) {
                 InternalUnderworldAbility.consumeQueuedSoulAbility(serverPlayer);

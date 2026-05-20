@@ -46,7 +46,7 @@ public class UniquenessEventHandler {
 
         if (UniquenessEntity.anyPlayerHoldsUniqueness(level, pathway)) return;
 
-        if (BeyonderData.playerMap != null && BeyonderData.playerMap.count(pathway, 0) > 0) return;
+        if (BeyonderData.countTotalSequence(level, pathway, 0) > 0) return;
 
         if (BeyonderData.playerMap == null || BeyonderData.playerMap.count(pathway, 1) == 0) return;
 

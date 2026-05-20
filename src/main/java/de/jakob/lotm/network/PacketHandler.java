@@ -182,6 +182,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                OpenInternalUnderworldAbilityScreenPacket.TYPE,
+                OpenInternalUnderworldAbilityScreenPacket.STREAM_CODEC,
+                OpenInternalUnderworldAbilityScreenPacket::handle
+        );
+
+        registrar.playToClient(
                 OpenCoordinateScreenTravelersDoorPacket.TYPE,
                 OpenCoordinateScreenTravelersDoorPacket.STREAM_CODEC,
                 OpenCoordinateScreenTravelersDoorPacket::handle

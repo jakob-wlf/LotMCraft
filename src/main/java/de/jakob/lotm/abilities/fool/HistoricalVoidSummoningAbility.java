@@ -549,13 +549,18 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         // Try direct UUID lookup first
         Entity entity = level.getEntity(entityUUID);
 
-        if(entity != null && entity.getPersistentData().getBoolean("VoidSummoned")) {
-            long entitySummonTime = entity.getPersistentData().getLong("VoidSummonTime");
-            UUID ownerId = entity.getPersistentData().getUUID("VoidSummonOwner");
+        if(entity != null) {
+            CompoundTag entityData = entity.getPersistentData();
+            if(entityData.getBoolean("VoidSummoned")
+                    && entityData.contains("VoidSummonTime", Tag.TAG_LONG)
+                    && entityData.contains("VoidSummonOwner", Tag.TAG_INT_ARRAY)) {
+                long entitySummonTime = entityData.getLong("VoidSummonTime");
+                UUID ownerId = entityData.getUUID("VoidSummonOwner");
 
-            if(entitySummonTime == summonTime && ownerId.equals(player.getUUID())) {
-                entity.remove(Entity.RemovalReason.DISCARDED);
-                removed = true;
+                if(entitySummonTime == summonTime && ownerId.equals(player.getUUID())) {
+                    entity.remove(Entity.RemovalReason.DISCARDED);
+                    removed = true;
+                }
             }
         }
 
@@ -563,9 +568,12 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         if(!removed) {
             AABB searchBox = new AABB(player.blockPosition()).inflate(100);
             List<Entity> entities = level.getEntities((Entity)null, searchBox, e -> {
-                if(e.getPersistentData().getBoolean("VoidSummoned")) {
-                    long entitySummonTime = e.getPersistentData().getLong("VoidSummonTime");
-                    UUID ownerId = e.getPersistentData().getUUID("VoidSummonOwner");
+                CompoundTag entityData = e.getPersistentData();
+                if(entityData.getBoolean("VoidSummoned")
+                        && entityData.contains("VoidSummonTime", Tag.TAG_LONG)
+                        && entityData.contains("VoidSummonOwner", Tag.TAG_INT_ARRAY)) {
+                    long entitySummonTime = entityData.getLong("VoidSummonTime");
+                    UUID ownerId = entityData.getUUID("VoidSummonOwner");
                     return entitySummonTime == summonTime && ownerId.equals(player.getUUID());
                 }
                 return false;
@@ -1069,7 +1077,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
             entity.remove(Entity.RemovalReason.DISCARDED);
         }
 
-        if (hasSummonTime && data.hasUUID("VoidSummonOwner")) {
+        if (hasSummonTime && data.contains("VoidSummonOwner", Tag.TAG_INT_ARRAY)) {
             Player owner = serverLevel.getPlayerByUUID(data.getUUID("VoidSummonOwner"));
             if (owner instanceof ServerPlayer serverPlayer) {
                 decrementSummonedCount(serverPlayer, data.getLong("VoidSummonTime"));

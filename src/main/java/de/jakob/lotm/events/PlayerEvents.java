@@ -52,7 +52,11 @@ import de.jakob.lotm.LOTMCraft;
 
 
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class PlayerEvents {
@@ -78,6 +82,7 @@ public class PlayerEvents {
             if(BeyonderData.isBeyonder(player))
                 BeyonderData.playerMap.addLastPosition(player);
 
+            // Return any active souls to storage when the owner logs out.
             de.jakob.lotm.abilities.death.InternalUnderworldAbility.recallSoulsOnLogout(player);
 
             // Revert sacrifice upgrade if active when logging out
@@ -142,6 +147,30 @@ public class PlayerEvents {
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             de.jakob.lotm.abilities.death.InternalUnderworldAbility.despawnSoulsOnDeath(player);
+            // Clear stored souls and announce freed seq0/seq1 slots.
+            de.jakob.lotm.abilities.death.InternalUnderworldAbility.FreedSoulSlots freed =
+                    de.jakob.lotm.abilities.death.InternalUnderworldAbility.clearStoredSoulsAndCollectFreedPaths(player);
+            if (!freed.seq0Paths().isEmpty() || !freed.seq1Paths().isEmpty()) {
+                if (!freed.seq0Paths().isEmpty()) {
+                    String message = "A True God slot has been opened: " + formatPathList(freed.seq0Paths());
+                    player.getServer().getPlayerList().broadcastSystemMessage(
+                        Component.literal(message).withStyle(ChatFormatting.GOLD), false);
+                }
+                if (!freed.seq1Paths().isEmpty()) {
+                    int count = freed.seq1Paths().size();
+                    String prefix;
+                    if (count == 1) {
+                        prefix = "An angel slot has been opened: ";
+                    } else if (count == 2) {
+                        prefix = "Multiple angel slots have been opened: ";
+                    } else {
+                        prefix = "All angel slots have opened: ";
+                    }
+                    String message = prefix + formatPathList(freed.seq1Paths());
+                    player.getServer().getPlayerList().broadcastSystemMessage(
+                        Component.literal(message).withStyle(ChatFormatting.GOLD), false);
+                }
+            }
         }
         if(!(event.getEntity().level() instanceof ServerLevel level)) {
             return;
@@ -157,6 +186,12 @@ public class PlayerEvents {
             new Vector3f(.05f, 0, 0),
             1.5f
     );
+
+    private static String formatPathList(Set<String> paths) {
+        List<String> list = new ArrayList<>(paths);
+        Collections.sort(list);
+        return String.join(", ", list);
+    }
 
     @SubscribeEvent
     public static void onDamage(LivingIncomingDamageEvent event) {

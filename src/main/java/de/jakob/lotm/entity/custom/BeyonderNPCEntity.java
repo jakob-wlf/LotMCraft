@@ -13,6 +13,7 @@ import de.jakob.lotm.potions.PotionRecipeItem;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.quest.QuestManager;
 import de.jakob.lotm.quest.QuestRegistry;
+import de.jakob.lotm.entity.custom.uniqueness.UniquenessEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -106,18 +107,28 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String pathway, int sequence) {
-        this(entityType, level, hostile, getRandomSkin(), pathway, sequence);
+        this(entityType, level, hostile, getRandomSkin(), pathway, sequence, false);
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile,
                              String skinName, String pathway, int sequence) {
+        this(entityType, level, hostile, skinName, pathway, sequence, false);
+    }
+
+    public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile,
+                             String pathway, int sequence, boolean forceSequence) {
+        this(entityType, level, hostile, getRandomSkin(), pathway, sequence, forceSequence);
+    }
+
+    public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile,
+                             String skinName, String pathway, int sequence, boolean forceSequence) {
         super(entityType, level);
         this.defaultHostile = hostile;
         this.setHostile(hostile);
         this.setSkinName(skinName);
 
         // Validate and adjust sequence if needed
-        if (sequence < BeyonderData.getHighestImplementedSequence(pathway)) {
+        if (!forceSequence && sequence < BeyonderData.getHighestImplementedSequence(pathway)) {
             Random random = new Random();
             sequence = random.nextInt(BeyonderData.getHighestImplementedSequence(pathway), 10);
         }
@@ -207,8 +218,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
             // Initialize quest data on first spawn
             if (!this.getPersistentData().getBoolean("Initialized")) {
                 this.getPersistentData().putBoolean("Initialized", true);
-
-                if (random.nextFloat() < QUEST_SPAWN_CHANCE) {
+                boolean underworldSummoned = this.getPersistentData().getBoolean("UnderworldSummonedSoul");
+                if (!underworldSummoned && random.nextFloat() < QUEST_SPAWN_CHANCE) {
                     String randomQuestId = QuestRegistry.getRandomMatchingQuest(this);
                     if (randomQuestId != null) {
                         setQuestId(randomQuestId);
@@ -560,21 +571,37 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
         Random random = new Random();
 
-        // don't drop anything if historical summoned
-        if (this.getPersistentData().contains("VoidSummoned")) {
+        // Don't drop anything if this entity was summoned (historical/underworld).
+        boolean underworldSummoned = this.getPersistentData().getBoolean("UnderworldSummonedSoul");
+        if (this.getPersistentData().contains("VoidSummoned") && !underworldSummoned) {
             super.dropCustomDeathLoot(level, damageSource, recentlyHit);
             return;
         }
 
+        // If captured into an Internal Underworld, skip characteristic drops.
+        boolean capturedByUnderworld = this.getPersistentData().getBoolean("InternalUnderworldCaptured");
+
+        // Seq 0 NPCs release their uniqueness on death if none is present/held.
+        if (sequence == 0
+                && BeyonderData.implementedPathways.contains(pathway)
+                && !UniquenessEntity.existsInWorld(level, pathway)
+                && !UniquenessEntity.anyPlayerHoldsUniqueness(level, pathway)) {
+            UniquenessEntity.trySpawn(level, this.position(), pathway);
+        }
+
         // Drop characteristic
-        BeyonderCharacteristicItem characteristicItem =
-                BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, sequence);
-        if (characteristicItem != null) {
-            this.spawnAtLocation(characteristicItem);
+        boolean isSeq0UnderworldSoul = underworldSummoned && sequence == 0;
+
+        if (!capturedByUnderworld && !isSeq0UnderworldSoul) {
+            BeyonderCharacteristicItem characteristicItem =
+                    BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, sequence);
+            if (characteristicItem != null) {
+                this.spawnAtLocation(characteristicItem);
+            }
         }
 
         // Drop recipe with chance
-        if (random.nextInt(RECIPE_DROP_CHANCE) == 0) {
+        if (!underworldSummoned && random.nextInt(RECIPE_DROP_CHANCE) == 0) {
             PotionRecipeItem recipeItem =
                     PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, sequence);
             if (recipeItem != null) {
