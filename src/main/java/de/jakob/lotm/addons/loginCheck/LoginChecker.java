@@ -16,7 +16,7 @@ public class LoginChecker {
     @SubscribeEvent
     public static void onClientJoin(ClientPlayerNetworkEvent.LoggingIn event) {
         Minecraft mc = Minecraft.getInstance();
-        
+
         if (mc.hasSingleplayerServer() || mc.isLocalServer()) {
             disconnect(mc, "This mod is only usable on the official server.");
             return;
