@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.util.BeyonderData;
@@ -48,10 +49,15 @@ public class TelepathyAbility extends ToggleAbility {
             return;
         }
 
-        if (PsychologicalInvisibilityAbility.invisiblePlayers.containsKey(target.getUUID())) {
-            if (AbilityUtil.getSeqWithArt(entity, this) >=
-                    PsychologicalInvisibilityAbility.invisiblePlayers.get(target.getUUID()))
-                return;
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (VisionaryHandler.shouldStayInvisible(entitySeq, target)){
+            return;
+        }
+        else if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this, false)){
+            return;
+        }
+        else if(AbilityUtil.isTargetSignificantlyStronger(entitySeq, BeyonderData.getSequence(target))){
+            return;
         }
 
         SanityComponent sanity = target.getData(ModAttachments.SANITY_COMPONENT);
@@ -66,7 +72,6 @@ public class TelepathyAbility extends ToggleAbility {
                 ? target.getCustomName().getString()
                 : target.getType().getDescription().getString();
 
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetSeq = BeyonderData.getSequence(target);
         int diff = entitySeq - targetSeq;
 

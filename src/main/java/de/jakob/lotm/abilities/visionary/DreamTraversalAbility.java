@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
@@ -41,6 +42,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import static de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler.checkAsleep;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class DreamTraversalAbility extends SelectableAbility {
@@ -124,15 +127,8 @@ public class DreamTraversalAbility extends SelectableAbility {
 
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        int targetSeq = BeyonderData.getSequence(target);
-        if(BeyonderData.getPathway(target).equals("visionary") && BeyonderData.getSequence(target) <
-                BeyonderData.getSequence(entity)){
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed").withColor(0xFFff124d));
-
-            if(targetSeq <= 1 && target instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer entityPlayer){
-                MetaAwarenessAbility.onDivined(entityPlayer, targetPlayer);
-            }
-
+        int entitySeq = BeyonderData.getSequence(entity);
+        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
             return;
         }
 
@@ -176,15 +172,7 @@ public class DreamTraversalAbility extends SelectableAbility {
             return;
         }
 
-        int targetSeq = BeyonderData.getSequence(target);
-        if(BeyonderData.getPathway(target).equals("visionary") && BeyonderData.getSequence(target) <
-                BeyonderData.getSequence(player)){
-            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.dream_traversal.failed").withColor(0xFFff124d));
-
-            if(targetSeq <= 1 && target instanceof ServerPlayer targetPlayer){
-                MetaAwarenessAbility.onDivined(player, targetPlayer);
-            }
-
+        if(VisionaryHandler.shouldFailAndTrigger(BeyonderData.getSequence(entity), entity, target, this)){
             return;
         }
 
@@ -233,14 +221,6 @@ public class DreamTraversalAbility extends SelectableAbility {
         }
 
         PsychologicalInvisibilityAbility.removeInvisFromOtherSkills(entity);
-    }
-
-    private static boolean requiresAsleep(LivingEntity entity) {
-        return BeyonderData.getSequence(entity) > 3;
-    }
-
-    public static boolean checkAsleep(LivingEntity entity, LivingEntity target){
-        return requiresAsleep(entity) && !(target.hasEffect(ModEffects.ASLEEP) || target.isSleeping());
     }
 
     public static int getRangeBySeq(int seq){

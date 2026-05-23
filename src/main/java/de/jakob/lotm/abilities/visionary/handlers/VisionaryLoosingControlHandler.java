@@ -17,14 +17,6 @@ public class VisionaryLoosingControlHandler {
     private static int getAmplifier(LivingEntity entity, LivingEntity target, Ability skill) {
         Random random = new Random();
 
-        if(AbilityUtil.isTargetSignificantlyWeaker(entity, target)) {
-            return 6;
-        }
-
-        if(AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
-            return 1;
-        }
-
         if(BeyonderData.isBeyonder(entity) && BeyonderData.isBeyonder(target)) {
             int targetSequence = BeyonderData.getSequence(target);
             int sequence = AbilityUtil.getSeqWithArt(entity, skill);
@@ -53,4 +45,15 @@ public class VisionaryLoosingControlHandler {
     }
 
 
+    private static int getBasePerSeq(int seq){
+        return switch (seq){
+            case 9,8,7 -> 1;
+            case 6, 5 -> 2;
+            case 4,3 -> 3;
+            case 2 -> 4;
+            case 1 -> 5;
+            case 0 -> 6;
+            default -> 0;
+        };
+    }
 }

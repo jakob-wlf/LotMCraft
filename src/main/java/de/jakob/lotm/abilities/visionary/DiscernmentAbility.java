@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.visionary;
 import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
@@ -85,6 +86,14 @@ public class DiscernmentAbility extends SelectableAbility {
         String path = BeyonderData.getPathway(target);
         int seq = BeyonderData.getSequence(target);
 
+        if(VisionaryHandler.shouldFailAndTrigger(BeyonderData.getSequence(entity), entity, target, this)){
+            return;
+        }
+        if(path.equals("visionary")){
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.discernment_ability.failed").withColor(0xf5c56c));
+            return;
+        }
+
         int diff = seq - BeyonderData.getSequence(entity) ;
 
         if (random.nextInt(10 - diff) != 0) {
@@ -154,7 +163,7 @@ public class DiscernmentAbility extends SelectableAbility {
     private static int getMeditationDuration(int seq, int targetSeq){
         int diff = 10 - (targetSeq - seq);
 
-        return 20 * diff;
+        return 50 * diff;
     }
 
     @SubscribeEvent

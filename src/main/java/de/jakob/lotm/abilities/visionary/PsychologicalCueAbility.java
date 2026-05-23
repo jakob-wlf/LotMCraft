@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.visionary;
 import com.ibm.icu.impl.UCaseProps;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.abilities.visionary.prophecy.triggers.TriggerHelper;
 import de.jakob.lotm.effect.ModEffects;
@@ -114,6 +115,9 @@ public class PsychologicalCueAbility extends ToggleAbility {
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));
             return;
         }
+
+        if(target instanceof ServerPlayer playerTarget)
+            MetaAwarenessAbility.sendWithMessage(player, playerTarget, "Tried to use cue");
 
         if(AbilityUtil.isTargetSignificantlyStronger(map.get(player.getUUID()), BeyonderData.getSequence(target))){
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));

@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
@@ -72,6 +73,10 @@ public class PlacateAbility extends SelectableAbility {
                         entity, 40, 1f, true, true);
         if(!(targetPlayer instanceof ServerPlayer)) targetPlayer = entity;
 
+        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, targetPlayer, this)){
+            return;
+        }
+
         List<Prophecy> all = new LinkedList<>(
                 BeyonderData.playerMap.get(targetPlayer).get().prophecies()
         );
@@ -101,7 +106,6 @@ public class PlacateAbility extends SelectableAbility {
         }
 
         BeyonderData.playerMap.setProphecies(targetPlayer.getUUID(), all);
-
     }
 
     private static int getCuesRemovedPerSeq(int seq){
@@ -202,6 +206,11 @@ public class PlacateAbility extends SelectableAbility {
 
     private void placateEntity(LivingEntity caster, LivingEntity entity) {
         int entitySeq = AbilityUtil.getSeqWithArt(caster, this);
+
+        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, caster, entity, this)){
+            return;
+        }
+
         entity.getData(ModAttachments.SANITY_COMPONENT).increaseSanityWithSequenceDifference(getSanityPerSeq(entitySeq), entity, AbilityUtil.getSeqWithArt(caster, this), BeyonderData.getSequence(entity));
         entity.removeEffect(ModEffects.LOOSING_CONTROL);
         entity.removeEffect(ModEffects.MENTAL_PLAGUE);

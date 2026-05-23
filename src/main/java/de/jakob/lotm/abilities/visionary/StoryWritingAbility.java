@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.abilities.visionary.prophecy.triggers.TriggerHelper;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
@@ -96,6 +97,12 @@ public class StoryWritingAbility extends ToggleAbility {
         if(trigger == null){
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));
             return;
+        }
+
+        var target = player.level().getPlayerByUUID(trigger.getTarget());
+        if(target != null){
+            if(target instanceof ServerPlayer playerTarget)
+                MetaAwarenessAbility.sendWithMessage(player, playerTarget, "Tried to use story writing");
         }
 
         BeyonderData.playerMap.addProphecy(trigger.getTarget(), new Prophecy(trigger.getTarget(), trigger, trigger.getType(), player.getUUID()));

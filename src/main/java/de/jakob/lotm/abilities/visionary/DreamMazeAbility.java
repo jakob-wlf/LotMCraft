@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.attachments.DreamMazeData;
 import de.jakob.lotm.dimension.DreamMazeEventHandler;
@@ -119,14 +120,7 @@ public class DreamMazeAbility extends SelectableAbility {
             if (data.isOccupant(target.getUUID())) continue;
 
             int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-            int targetSeq = BeyonderData.getSequence(target);
-            if(BeyonderData.getPathway(target).equals("visionary") && targetSeq < entitySeq){
-                AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed").withColor(0xFFff124d));
-
-                if(targetSeq <= 1 && target instanceof ServerPlayer targetPlayer){
-                    MetaAwarenessAbility.onDivined(caster, targetPlayer);
-                }
-
+            if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
                 return;
             }
 

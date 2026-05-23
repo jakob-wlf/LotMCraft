@@ -25,7 +25,7 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-import static de.jakob.lotm.abilities.visionary.DreamTraversalAbility.checkAsleep;
+import static de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler.checkAsleep;
 
 public class NightmareSpectatorAbility extends Ability {
 

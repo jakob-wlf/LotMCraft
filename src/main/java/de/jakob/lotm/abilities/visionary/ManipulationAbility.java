@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.visionary;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.item.ModItems;
@@ -107,13 +108,7 @@ public class ManipulationAbility extends SelectableAbility {
 
                 int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
                 int targetSeq = BeyonderData.getSequence(target);
-                if(BeyonderData.getPathway(target).equals("visionary") && targetSeq < entitySeq){
-                    AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed").withColor(0xFFff124d));
-
-                    if(targetSeq <= 1 && target instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer entityPlayer){
-                        MetaAwarenessAbility.onDivined(entityPlayer, targetPlayer);
-                    }
-
+                if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
                     return;
                 }
 

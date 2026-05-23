@@ -1,8 +1,10 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSpectatingAbilityPacket;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,6 +22,7 @@ public class SpectatingAbility extends ToggleAbility {
         super(id);
 
         canBeUsedByNPC = false;
+        autoClear = false;
     }
 
     @Override
@@ -51,11 +54,16 @@ public class SpectatingAbility extends ToggleAbility {
 
         LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f, true, true);
 
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
         if(lookedAt != null) {
-            if (PsychologicalInvisibilityAbility.invisiblePlayers.containsKey(lookedAt.getUUID())) {
-                if (AbilityUtil.getSeqWithArt(entity, this) >=
-                        PsychologicalInvisibilityAbility.invisiblePlayers.get(lookedAt.getUUID()))
-                    return;
+            if (VisionaryHandler.shouldStayInvisible(seq, lookedAt)){
+                return;
+            }
+            else if(VisionaryHandler.shouldFailAndTrigger(seq, entity, lookedAt, this, false)){
+                return;
+            }
+            else if(AbilityUtil.isTargetSignificantlyStronger(seq, BeyonderData.getSequence(lookedAt))){
+                return;
             }
         }
 
@@ -70,7 +78,8 @@ public class SpectatingAbility extends ToggleAbility {
             if(entity instanceof ServerPlayer player) {
                 PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(false, -1));
             }
-            return;
+
+            clearArtifactScaling(entity);
         }
 
     }

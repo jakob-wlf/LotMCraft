@@ -25,7 +25,7 @@ import java.util.UUID;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MetaAwarenessAbility extends PassiveAbilityItem {
     private static final Map<UUID, Long> COOLDOWNS = new HashMap<>();
-    private static final long COOLDOWN_MS = 5000; // 5s cooldown
+    private static final long COOLDOWN_MS = 10000; // 10s cooldown
 
     public static final Set<String> COMMON_WORDS = Set.of(
             "a","about","above","after","again","against","all","am","an","and","any","are",
@@ -74,7 +74,7 @@ public class MetaAwarenessAbility extends PassiveAbilityItem {
             boolean match = false;
 
             for (int i = 0; i < username.length(); i++) {
-                for (int j = i + 3; j <= username.length(); j++) {
+                for (int j = i + 2; j <= username.length(); j++) {
                     String part = username.substring(i, j);
 
                     if (COMMON_WORDS.contains(part)) continue;
@@ -103,6 +103,10 @@ public class MetaAwarenessAbility extends PassiveAbilityItem {
         triggerAutoPrayer(diviner, target, "");
     }
 
+    public static void sendWithMessage(ServerPlayer diviner, ServerPlayer target, String message) {
+        if (!hasMetaAwareness(target)) return;
+        triggerAutoPrayer(diviner, target, message);
+    }
 
     public static void triggerAutoPrayer(ServerPlayer sender, ServerPlayer target, String msg) {
         // Cooldown check on the target (prevent spam if their name is said repeatedly)
