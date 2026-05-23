@@ -286,6 +286,14 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<RegenDisableComponent>> REGEN_DISABLER =
+            ATTACHMENT_TYPES.register("regen_disabler", () ->
+                    AttachmentType.builder(RegenDisableComponent::new)
+                            .serialize(RegenDisableComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

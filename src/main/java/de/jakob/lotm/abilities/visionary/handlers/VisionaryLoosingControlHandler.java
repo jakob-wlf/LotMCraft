@@ -15,21 +15,11 @@ import java.util.Random;
 public class VisionaryLoosingControlHandler {
 
     private static int getAmplifier(LivingEntity entity, LivingEntity target, Ability skill) {
-        Random random = new Random();
+        int targetSequence = BeyonderData.getSequence(target);
+        int sequence = AbilityUtil.getSeqWithArt(entity, skill);
+        int diff = targetSequence - sequence;
 
-        if(BeyonderData.isBeyonder(entity) && BeyonderData.isBeyonder(target)) {
-            int targetSequence = BeyonderData.getSequence(target);
-            int sequence = AbilityUtil.getSeqWithArt(entity, skill);
-
-            if(targetSequence <= sequence) {
-                return 2;
-            }
-            else {
-                return random.nextInt(3, 5);
-            }
-        }
-
-        return 1;
+        return diff + getBasePerSeq(sequence);
     }
 
     public static void applyEffect(LivingEntity entity, LivingEntity target, Ability skill){
@@ -38,9 +28,11 @@ public class VisionaryLoosingControlHandler {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, skill);
         int targetSeq = BeyonderData.getSequence(target);
 
+        amplifier = amplifier <= 0 ? 1 : amplifier;
+
         if(targetSeq >= entitySeq) {
             if (!target.hasEffect(ModEffects.LOOSING_CONTROL) || target.getEffect(ModEffects.LOOSING_CONTROL).getAmplifier() < amplifier)
-                target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 8, amplifier));
+                target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, amplifier));
         }
     }
 
@@ -49,10 +41,11 @@ public class VisionaryLoosingControlHandler {
         return switch (seq){
             case 9,8,7 -> 1;
             case 6, 5 -> 2;
-            case 4,3 -> 3;
-            case 2 -> 4;
-            case 1 -> 5;
-            case 0 -> 6;
+            case 4 -> 6;
+            case 3 -> 10;
+            case 2 -> 20;
+            case 1 -> 30;
+            case 0 -> 50;
             default -> 0;
         };
     }

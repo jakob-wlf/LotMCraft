@@ -378,6 +378,8 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
 
         if (regenLevel <= 0) return;
 
+        if(entity.getData(ModAttachments.REGEN_DISABLER.get()).isDisabled()) return;
+
         if (reducedRegen.containsKey(entity.getUUID())) {
             long expiryTime = reducedRegen.get(entity.getUUID());
             if (System.currentTimeMillis() >= expiryTime) {

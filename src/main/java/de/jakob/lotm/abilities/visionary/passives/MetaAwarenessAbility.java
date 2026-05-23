@@ -99,16 +99,20 @@ public class MetaAwarenessAbility extends PassiveAbilityItem {
 
     // Called from PlayerDivinationSelectedPacket.handle when a divination succeeds. If the divined target has MetaAwareness, auto-pray  to the diviner.
     public static void onDivined(ServerPlayer diviner, ServerPlayer target) {
+        if(target.equals(diviner)) return;
+
         if (!hasMetaAwareness(target)) return;
         triggerAutoPrayer(diviner, target, "");
     }
 
     public static void sendWithMessage(ServerPlayer diviner, ServerPlayer target, String message) {
+        if(target.equals(diviner)) return;
+
         if (!hasMetaAwareness(target)) return;
         triggerAutoPrayer(diviner, target, message);
     }
 
-    public static void triggerAutoPrayer(ServerPlayer sender, ServerPlayer target, String msg) {
+   private static void triggerAutoPrayer(ServerPlayer sender, ServerPlayer target, String msg) {
         // Cooldown check on the target (prevent spam if their name is said repeatedly)
         long now = System.currentTimeMillis();
         Long lastTrigger = COOLDOWNS.get(target.getUUID());
