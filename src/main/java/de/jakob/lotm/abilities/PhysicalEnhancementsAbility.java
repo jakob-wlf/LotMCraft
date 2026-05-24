@@ -47,12 +47,12 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
     private static final Map<UUID, Map<String, TemporaryEnhancement>> temporaryEnhancements = new ConcurrentHashMap<>();
     private static final Map<UUID, Map<String, EnhancementBoost>> enhancementBoosts = new ConcurrentHashMap<>();
     public static final Map<UUID, Long> reducedRegen = new ConcurrentHashMap<>();
+    public static final Map<UUID, Long> cancelAllHealing = new ConcurrentHashMap<>();
 
-    /** Suppresses passive regen for the given entity for the specified duration in milliseconds. */
-    public static void suppressRegen(LivingEntity entity, long durationMs) {
+    public static void suppressAllHealing(LivingEntity entity, long durationMs) {
         long expiry = System.currentTimeMillis() + durationMs;
-        if (!reducedRegen.containsKey(entity.getUUID()) || reducedRegen.get(entity.getUUID()) < expiry) {
-            reducedRegen.put(entity.getUUID(), expiry);
+        if (!cancelAllHealing.containsKey(entity.getUUID()) || cancelAllHealing.get(entity.getUUID()) < expiry) {
+            cancelAllHealing.put(entity.getUUID(), expiry);
         }
         entity.removeEffect(MobEffects.REGENERATION);
     }
@@ -618,13 +618,26 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
         @SubscribeEvent
         public static void onLivingHeal(LivingHealEvent event) {
             UUID uuid = event.getEntity().getUUID();
+
+            Long cancelExpiry = cancelAllHealing.get(uuid);
+            if (cancelExpiry != null) {
+                if (System.currentTimeMillis() >= cancelExpiry) {
+                    cancelAllHealing.remove(uuid);
+                } else {
+                    event.setCanceled(true);
+                    return;
+                }
+            }
+
             Long expiry = reducedRegen.get(uuid);
             if (expiry == null) return;
             if (System.currentTimeMillis() >= expiry) {
                 reducedRegen.remove(uuid);
                 return;
             }
-            event.setCanceled(true);
+            if (event.getEntity() instanceof LivingEntity living) {
+                living.removeEffect(MobEffects.REGENERATION);
+            }
         }
 
         @SubscribeEvent

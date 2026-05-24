@@ -312,7 +312,7 @@ public class NationOfTheDeadAbility extends Ability {
                     return;
                 }
 
-                PhysicalEnhancementsAbility.suppressRegen(target, 2000);
+                PhysicalEnhancementsAbility.suppressAllHealing(target, 2000);
 
                 target.addEffect(new MobEffectInstance(MobEffects.WITHER, 40, 1, false, false, false));
                 target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 2, false, false, false));

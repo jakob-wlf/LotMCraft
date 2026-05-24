@@ -488,7 +488,7 @@ public class SpiritChannelingAbility extends SelectableAbility {
                 ParticleUtil.spawnParticles((ServerLevel) level, EARTH_DUST, pos, 8, 0.3);
                 ParticleUtil.spawnParticles((ServerLevel) level, STONE_DUST, pos, 4, 0.2);
 
-                if (AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1.2f * (int) Math.max(multiplier(entity) / 4, 1),
+                if (AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5f* (int) Math.max(multiplier(entity) / 4, 1),
                         DamageLookup.lookupDamage(7, 0.5) * (int) Math.max(multiplier(entity) / 4, 1), pos, true, false,
                         ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity))) {
                     hasHit.set(true);
@@ -503,7 +503,7 @@ public class SpiritChannelingAbility extends SelectableAbility {
                     return;
                 }
 
-                currentPos[0] = pos.add(finalFistDir.scale(0.8));
+                currentPos[0] = pos.add(finalFistDir.scale(2);
             }, null, (ServerLevel) level, () -> 1.0);
         }
     }

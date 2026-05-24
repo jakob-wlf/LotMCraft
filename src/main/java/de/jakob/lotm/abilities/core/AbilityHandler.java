@@ -308,8 +308,7 @@ public class AbilityHandler {
         abilities.add(new HandOfDeathAbility("hand_of_death_ability"));
         abilities.add(new DeathFlameAbility("death_flame_ability"));
         abilities.add(new NationOfTheDeadAbility("nation_of_the_dead_ability"));
-
-        //abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
+        abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
     }
 
     public HashSet<Ability> getAbilities() {
