@@ -4,13 +4,11 @@ import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenDiscernmentScreenPacket;
-import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.DiscernmentUtil;
+import de.jakob.lotm.util.PureIdealismUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
@@ -31,11 +29,11 @@ import java.util.Map;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class DiscernmentAbility extends SelectableAbility {
+public class PureIdealismAbility extends SelectableAbility {
     public static HashMap<UUID, Pair<String, Integer>> preMeditation = new HashMap<>();
     public static HashSet<UUID> meditating = new HashSet<>();
 
-    public DiscernmentAbility(String id) {
+    public PureIdealismAbility(String id) {
         super(id, 5f);
 
         canBeCopied = false;
@@ -49,9 +47,9 @@ public class DiscernmentAbility extends SelectableAbility {
     @Override
     protected String[] getAbilityNames() {
         return new String[]{
-                "ability.lotmcraft.discernment_ability.gather_role",
-                "ability.lotmcraft.discernment_ability.immerse_into_role",
-                "ability.lotmcraft.discernment_ability.meditate"
+                "ability.lotmcraft.pure_idealism_ability.gather_role",
+                "ability.lotmcraft.pure_idealism_ability.immerse_into_role",
+                "ability.lotmcraft.pure_idealism_ability.meditate"
         };
     }
 
@@ -149,7 +147,7 @@ public class DiscernmentAbility extends SelectableAbility {
         if (!(entity instanceof ServerPlayer player)) return;
 
         var component = player.getData(ModAttachments.DISCERNMENT_DATA.get());
-        if (component.isDiscerning()) DiscernmentUtil.stopDiscernment(player);
+        if (component.isDiscerning()) PureIdealismUtil.stopDiscernment(player);
 
         PacketHandler.sendToPlayer(player, new OpenDiscernmentScreenPacket(component.getSavedPathsAndSeqs()));
     }

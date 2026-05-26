@@ -2,17 +2,11 @@ package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.*;
-import de.jakob.lotm.damage.ModDamageTypes;
-import de.jakob.lotm.util.helper.AbilityBarHelper;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Containers;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.GameType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -20,11 +14,10 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class DiscernmentUtil {
+public class PureIdealismUtil {
 
     public static HashMap<UUID, String> died = new HashMap<>();
 
@@ -135,7 +128,7 @@ public class DiscernmentUtil {
         float limit = max * 0.4f;
 
         if(current <= limit){
-            DiscernmentUtil.stopDiscernment(player);
+            PureIdealismUtil.stopDiscernment(player);
         }
     }
 }

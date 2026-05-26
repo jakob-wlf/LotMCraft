@@ -2,7 +2,7 @@ package de.jakob.lotm.network.packets.toServer;
 
 import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.util.DiscernmentUtil;
+import de.jakob.lotm.util.PureIdealismUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -44,7 +44,7 @@ public record DiscernmentSelectedPacket(Pair<String, Integer> pair) implements C
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
 
-            DiscernmentUtil.startDiscernment(player, packet.pair.getFirst(), packet.pair.getSecond());
+            PureIdealismUtil.startDiscernment(player, packet.pair.getFirst(), packet.pair.getSecond());
         });
     }
 }

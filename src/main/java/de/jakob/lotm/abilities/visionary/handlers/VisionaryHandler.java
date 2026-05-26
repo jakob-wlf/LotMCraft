@@ -24,7 +24,7 @@ public class VisionaryHandler {
     }
 
     public static boolean shouldFailAndTrigger(int seq, LivingEntity caster, LivingEntity target, @Nullable Ability skill){
-        return shouldFailAndTrigger(seq, caster, target, skill, true);
+        return shouldFailAndTrigger(seq, caster, target, skill, false);
     }
 
     public static boolean shouldFailAndTrigger(int seq, LivingEntity caster, LivingEntity target, @Nullable Ability skill, boolean shouldSendFailMessage){
@@ -78,13 +78,13 @@ public class VisionaryHandler {
     }
 
 
-    public static boolean isInvisible(LivingEntity entity){
-        return PsychologicalInvisibilityAbility.finalInvisiblePlayers.containsKey(entity.getUUID());
+    public static boolean isInvisible(LivingEntity target){
+        return PsychologicalInvisibilityAbility.finalInvisiblePlayers.containsKey(target.getUUID());
     }
 
-    public static boolean shouldStayInvisible(int seq, LivingEntity entity){
-        if(isInvisible(entity)){
-            return seq >= PsychologicalInvisibilityAbility.finalInvisiblePlayers.get(entity.getUUID());
+    public static boolean shouldStayInvisible(int seq, LivingEntity target){
+        if(isInvisible(target)){
+            return seq >= PsychologicalInvisibilityAbility.finalInvisiblePlayers.get(target.getUUID());
         }
 
         return false;

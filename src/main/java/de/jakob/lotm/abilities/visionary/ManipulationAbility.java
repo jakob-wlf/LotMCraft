@@ -98,6 +98,10 @@ public class ManipulationAbility extends SelectableAbility {
         List<LivingEntity> nearby = AbilityUtil.getNearbyEntities(
                 entity, serverLevel, entity.position(), 20, false, true);
 
+        if(VisionaryHandler.shouldFailAndTrigger(casterSeq, entity, target, this)){
+            return;
+        }
+
         for (LivingEntity nearby_entity : nearby) {
             if (nearby_entity.getUUID().equals(entity.getUUID())) continue;
             if (nearby_entity.getUUID().equals(target.getUUID())) continue;
@@ -106,17 +110,15 @@ public class ManipulationAbility extends SelectableAbility {
                 // Force beyonder players of lower sequence to use abilities
                 if (!BeyonderData.isBeyonder(nearbyPlayer)) continue;
 
-                int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-                int targetSeq = BeyonderData.getSequence(target);
-                if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
-                    return;
+                if(VisionaryHandler.shouldFailAndTrigger(casterSeq, entity, nearby_entity, this)){
+                   continue;
                 }
 
-                if (BeyonderData.getSequence(nearbyPlayer) <= casterSeq) continue;
+                if (BeyonderData.getSequence(nearbyPlayer) < casterSeq) continue;
                 forcePlayerAbilities(nearbyPlayer, target, serverLevel);
             } else if (nearby_entity instanceof Mob mob) {
                 // For beyonder mobs, check sequence. For non-beyonder mobs, always incite.
-                if (BeyonderData.isBeyonder(mob) && BeyonderData.getSequence(mob) <= casterSeq) continue;
+                if (BeyonderData.isBeyonder(mob) && BeyonderData.getSequence(mob) < casterSeq) continue;
 
                 LivingEntity originalTarget = mob.getTarget();
                 mob.setTarget(target);

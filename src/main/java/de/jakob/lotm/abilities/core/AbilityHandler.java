@@ -233,7 +233,7 @@ public class AbilityHandler {
         abilities.add(new MentalPlagueAbility("mental_plague_ability"));
         abilities.add(new DreamWeaveAbility("dream_weave_ability"));
         abilities.add(new DreamMazeAbility("dream_maze_ability"));
-        abilities.add(new DiscernmentAbility("discernment_ability"));
+        abilities.add(new PureIdealismAbility("pure_idealism_ability"));
         abilities.add(new DisasterFantasiaAbility("disaster_fantasia_ability"));
         abilities.add(new StoryWritingAbility("story_writing_ability"));
         abilities.add(new EnvisionPositionAbility("envision_position_ability"));

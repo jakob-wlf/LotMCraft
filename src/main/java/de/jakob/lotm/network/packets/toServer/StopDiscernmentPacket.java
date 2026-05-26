@@ -1,11 +1,8 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.error.ParasitationAbility;
-import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.util.ControllingUtil;
-import de.jakob.lotm.util.DiscernmentUtil;
+import de.jakob.lotm.util.PureIdealismUtil;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -30,7 +27,7 @@ public record StopDiscernmentPacket() implements CustomPacketPayload {
                 var component = serverPlayer.getData(ModAttachments.DISCERNMENT_DATA.get());
 
                 if(component.isDiscerning()){
-                    DiscernmentUtil.stopDiscernment(serverPlayer);
+                    PureIdealismUtil.stopDiscernment(serverPlayer);
                 }
             }
         });

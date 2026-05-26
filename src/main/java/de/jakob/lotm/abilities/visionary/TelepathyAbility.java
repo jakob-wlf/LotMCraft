@@ -7,6 +7,7 @@ import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -18,7 +19,7 @@ public class TelepathyAbility extends ToggleAbility {
     public TelepathyAbility(String id) {
         super(id);
         autoClear = false;
-
+        canBeUsedByNPC = false;
     }
 
     @Override
@@ -38,6 +39,7 @@ public class TelepathyAbility extends ToggleAbility {
     @Override
     public void tick(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
+        if(!(entity instanceof ServerPlayer player)) return;
 
         // Only update every 10 ticks
         if (entity.tickCount % 10 != 0) return;
@@ -75,10 +77,16 @@ public class TelepathyAbility extends ToggleAbility {
         int targetSeq = BeyonderData.getSequence(target);
         int diff = entitySeq - targetSeq;
 
+        var plague = target.getData(ModAttachments.MENTAL_PLAGUE.get());
+        boolean shouldRenderPlague = plague.hasMentalPlague() && (plague.isOwner(player)
+                || plague.getSequence() >= entitySeq);
+
         AbilityUtil.sendActionBar(entity, Component.literal(
                 "§d" + name + " §7| Sanity: " + color + sanityPercent + "%" +
                         ((diff <= 0 && entitySeq <= 4) ? "§7 Pathway: " + BeyonderData.getPathway(target) +
-                                " Sequence: " + targetSeq : "")
+                                " Sequence: " + targetSeq + (shouldRenderPlague?
+                                " Has plague from: " + plague.getOwnerName() + " Seq: " + plague.getSequence() +
+                                        " Stage: " + plague.getStage() : "") : "")
         ));
     }
 

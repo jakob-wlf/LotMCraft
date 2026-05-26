@@ -19,7 +19,7 @@ import de.jakob.lotm.potions.BeyonderPotion;
 import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.util.DiscernmentUtil;
+import de.jakob.lotm.util.PureIdealismUtil;
 import de.jakob.lotm.util.playerMap.StoredData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
@@ -257,8 +257,8 @@ public class BeyonderEventHandler {
 
         if (charItem == null) return;
 
-        if(DiscernmentUtil.died.containsKey(player.getUUID())){
-            String path = DiscernmentUtil.died.get(player.getUUID());
+        if(PureIdealismUtil.died.containsKey(player.getUUID())){
+            String path = PureIdealismUtil.died.get(player.getUUID());
 
             UUID id = playerMap.findPlayerByUniqueness(path);
             if (id != null){

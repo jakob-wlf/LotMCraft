@@ -99,10 +99,15 @@ public class DreamTraversalAbility extends SelectableAbility {
 
         if(!(entity instanceof ServerPlayer player)) return;
 
+        int seq = BeyonderData.getSequence(entity);
+        int range = getRangeBySeq(seq);
+
         List<PlayerInfo> players = server.getPlayerList()
                 .getPlayers()
                 .stream()
-                .filter(p -> p != player)
+                .filter(p -> (p != player) &&
+                        !VisionaryHandler.shouldStayInvisible(seq, p) &&
+                        (p.distanceTo(entity) <= range))
                 .map(p -> new PlayerInfo(p.getUUID(), p.getGameProfile().getName()))
                 .toList();
 
@@ -225,12 +230,12 @@ public class DreamTraversalAbility extends SelectableAbility {
 
     public static int getRangeBySeq(int seq){
         return switch (seq){
-            case 5 -> 100;
-            case 4 -> 250;
-            case 3 -> 500;
-            case 2 -> 1000;
-            case 1 -> 2500;
-            case 0 -> 10000;
+            case 5 -> 250;
+            case 4 -> 500;
+            case 3 -> 1000;
+            case 2 -> 7500;
+            case 1 -> 15000;
+            case 0 -> 200000;
             default -> 0;
         };
     }
