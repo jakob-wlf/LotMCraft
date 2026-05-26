@@ -213,7 +213,23 @@ public class PlacateAbility extends SelectableAbility {
 
         entity.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(getSanityPerSeq(entitySeq), entity);
         entity.removeEffect(ModEffects.LOOSING_CONTROL);
-        entity.removeEffect(ModEffects.MENTAL_PLAGUE);
+
+        var mentalPlague = entity.getData(ModAttachments.MENTAL_PLAGUE.get());
+        if(mentalPlague.hasMentalPlague()){
+            if(!AbilityUtil.isTargetSignificantlyStronger(entitySeq, mentalPlague.getSequence())){
+                if(entitySeq > mentalPlague.getSequence()){
+                    int stage = mentalPlague.getStage();
+
+                    mentalPlague.setStage(--stage);
+                    if(stage <= 0){
+                        mentalPlague.reset();
+                    }
+                }
+                else{
+                    mentalPlague.reset();
+                }
+            }
+        }
 
         if(caster instanceof ServerPlayer player)
             RingEffectManager.createRingForPlayer(entity.getEyePosition().subtract(0, .4, 0), 2, 60, 255 / 255f, 211 / 255f, 92 / 255f, 1, .5f, .75f, (ServerLevel) caster.level(), player);

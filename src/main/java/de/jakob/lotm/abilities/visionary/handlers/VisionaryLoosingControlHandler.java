@@ -36,6 +36,15 @@ public class VisionaryLoosingControlHandler {
         }
     }
 
+    public static void forceApplyEffect(LivingEntity target, int entitySeq, int bonus){
+        int targetSequence = BeyonderData.getSequence(target);
+        int diff = targetSequence - entitySeq;
+        int amplifier = diff + getBasePerSeq(entitySeq) + bonus;
+
+        amplifier = amplifier <= 0 ? 1 : amplifier;
+        target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, amplifier));
+    }
+
 
     private static int getBasePerSeq(int seq){
         return switch (seq){

@@ -58,6 +58,26 @@ public class VisionaryHandler {
         return false;
     }
 
+    public static boolean shouldFail(int seq, LivingEntity target){
+        int seqTarget = BeyonderData.getSequence(target);
+        String pathTarget = BeyonderData.getPathway(target);
+
+        if(target instanceof ServerPlayer targetPlayer) {
+            var data = BeyonderData.playerMap.get(targetPlayer.getUUID()).get();
+            seqTarget = data.sequence();
+            pathTarget = data.pathway();
+        }
+
+        if(!pathTarget.equals("visionary")) return false;
+
+        if(seqTarget < seq){
+            return true;
+        }
+
+        return false;
+    }
+
+
     public static boolean isInvisible(LivingEntity entity){
         return PsychologicalInvisibilityAbility.finalInvisiblePlayers.containsKey(entity.getUUID());
     }

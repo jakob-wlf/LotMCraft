@@ -294,6 +294,14 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<MentalPlagueComponent>> MENTAL_PLAGUE =
+            ATTACHMENT_TYPES.register("mental_plague", () ->
+                    AttachmentType.builder(MentalPlagueComponent::new)
+                            .serialize(MentalPlagueComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

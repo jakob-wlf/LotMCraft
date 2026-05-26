@@ -103,12 +103,6 @@ public class DiscernmentAbility extends SelectableAbility {
 
         preMeditation.put(entity.getUUID(), Pair.of(path, seq));
         player.sendSystemMessage(Component.literal("Discerned role: sequence " + seq + " of " + path + " pathway").withColor(0xf5c56c));
-
-        if(target instanceof ServerPlayer playerTarget) {
-            if (path.equals("visionary") && seq <= 1) {
-                MetaAwarenessAbility.onDivined(player, playerTarget);
-            }
-        }
     }
 
     private void meditate(Level level, LivingEntity entity){
