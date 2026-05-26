@@ -522,8 +522,6 @@ public class PacketHandler {
                 SyncDiscernmentDataPacket.STREAM_CODEC,
                 SyncDiscernmentDataPacket::handle
         );
-
-
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {

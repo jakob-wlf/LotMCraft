@@ -3,6 +3,7 @@ package de.jakob.lotm.util;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,6 +29,8 @@ public class PureIdealismUtil {
         if(component.isDiscerning()) return;
         if(!component.hasSaved(path, sequence)) return;
 
+        boolean shouldDie = BeyonderData.getSequence(entity) > 0 && sequence <= 0;
+
         AbilityWheelComponent wheelData = entity.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
         AbilityBarComponent barData = entity.getData(ModAttachments.ABILITY_BAR_COMPONENT);
 
@@ -51,6 +54,11 @@ public class PureIdealismUtil {
         barData.setAbilities(savedBarData.getAbilities());
 
         component.syncData(player);
+
+        if(shouldDie){
+            ServerScheduler.scheduleDelayed(getDurationPerSeq(BeyonderData.getSequence(entity)), () -> {stopDiscernment(entity);});
+        }
+
     }
 
     public static void stopDiscernment(LivingEntity entity){
@@ -84,6 +92,14 @@ public class PureIdealismUtil {
             entity.kill();
             died.put(entity.getUUID(), path);
         }
+    }
+
+    private static int getDurationPerSeq(int seq){
+        return switch (seq){
+            case 2 -> 240;
+            case 1 -> 560;
+            default -> 0;
+        };
     }
 
     @SubscribeEvent

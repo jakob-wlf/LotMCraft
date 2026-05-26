@@ -79,12 +79,12 @@ public class VisionaryHandler {
 
 
     public static boolean isInvisible(LivingEntity target){
-        return PsychologicalInvisibilityAbility.finalInvisiblePlayers.containsKey(target.getUUID());
+        return PsychologicalInvisibilityAbility.invisiblePlayersClient.containsKey(target.getUUID());
     }
 
     public static boolean shouldStayInvisible(int seq, LivingEntity target){
         if(isInvisible(target)){
-            return seq >= PsychologicalInvisibilityAbility.finalInvisiblePlayers.get(target.getUUID());
+            return seq >= PsychologicalInvisibilityAbility.invisiblePlayersClient.get(target.getUUID());
         }
 
         return false;

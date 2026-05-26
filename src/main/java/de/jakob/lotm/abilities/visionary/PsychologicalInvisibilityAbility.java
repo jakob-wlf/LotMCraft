@@ -46,6 +46,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         canBeCopied = false;
         canBeReplicated = false;
         cannotBeStolen = true;
+        canBeUsedByNPC = false;
     }
 
     @Override
