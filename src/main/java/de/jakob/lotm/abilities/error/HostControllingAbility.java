@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.error;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.network.chat.Component;
@@ -53,10 +54,16 @@ public class HostControllingAbility extends SelectableAbility {
             case 0 -> {
                 float healthToDrain = (float) (DamageLookup.lookupDamage(4, .75f) * multiplier(entity));
 
+                if(BeyonderData.getSequence(host) <= BeyonderData.getSequence(entity))
+                    healthToDrain = healthToDrain/2.0f;
+
                 host.hurt(entity.damageSources().magic(), healthToDrain);
                 entity.heal(healthToDrain);
             }
             case 1 -> {
+                if(BeyonderData.getSequence(host) <= BeyonderData.getSequence(entity)){
+                    return;
+                }
                 host.setHealth(0.5f);
                 host.hurt(entity.damageSources().magic(), 1000);
             }

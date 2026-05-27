@@ -227,6 +227,12 @@ public class ParasitationAbility extends SelectableAbility {
             return;
         }
 
+        if(BeyonderData.getSequence(target) == BeyonderData.getSequence(player)){
+            if(Math.random() > 0.5){
+                return;
+            }
+        }
+
         // If currently controlling, switch to concealed
         if (controllingMap.containsKey(entity.getUUID())) {
             exitControl(serverLevel, player);
@@ -246,7 +252,7 @@ public class ParasitationAbility extends SelectableAbility {
 
     private boolean isValidConcealedTarget(LivingEntity entity, LivingEntity target) {
         if (!BeyonderData.isBeyonder(target)) return true;
-        return BeyonderData.getSequence(target) > BeyonderData.getSequence(entity);
+        return BeyonderData.getSequence(target) >= BeyonderData.getSequence(entity);
     }
 
     private void startConcealed(ServerLevel serverLevel, ServerPlayer serverPlayer, LivingEntity host) {
