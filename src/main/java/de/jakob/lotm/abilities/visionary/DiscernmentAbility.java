@@ -95,17 +95,16 @@ public class DiscernmentAbility extends ToggleAbility {
         Scoreboard scoreboard = player.getScoreboard();
 
         ChatFormatting color;
-        if (entity instanceof Player) {
-            color = ChatFormatting.LIGHT_PURPLE;
-        } else if (entity instanceof Mob mob) {
+        if (entity instanceof Mob mob) {
             if (BeyonderData.isBeyonder(mob))
                 color = ChatFormatting.GOLD;
             else if (mob instanceof Enemy)
                 color = ChatFormatting.RED;
             else
                 color = ChatFormatting.GREEN;
-        } else {
-            color = ChatFormatting.WHITE;
+        }
+        else {
+            color = ChatFormatting.LIGHT_PURPLE;
         }
 
         String teamName = "glow_" + color.getName();
@@ -121,7 +120,6 @@ public class DiscernmentAbility extends ToggleAbility {
         UUID uuid = entity.getUUID();
         String entityId = entity.getStringUUID();
 
-        // 🔥 SAFE REMOVE (only if we know previous team)
         String previousTeam = ENTITY_TEAM_MAP.get(uuid);
         if (previousTeam != null && !previousTeam.equals(teamName)) {
             PlayerTeam oldTeam = scoreboard.getPlayerTeam(previousTeam);

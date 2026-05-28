@@ -18,7 +18,7 @@ public record Prophecy(UUID targetID, TriggerBase trigger, TriggerEnum triggerTy
     public static final String CASTER_ID = "caster_id";
 
     public boolean checkAndPerform(Level level, LivingEntity entity){
-        return trigger.checkTrigger(level, entity);
+        return trigger.checkTrigger(level, entity, casterId);
     }
 
     public CompoundTag toNBT(HolderLookup.Provider provider){

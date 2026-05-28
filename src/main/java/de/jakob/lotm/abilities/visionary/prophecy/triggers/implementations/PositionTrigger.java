@@ -20,6 +20,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.UUID;
+
 public class PositionTrigger extends TriggerBase {
     public PositionTrigger(ActionBase action, TriggerContextBase context) {
         super(action, context);
@@ -36,7 +38,7 @@ public class PositionTrigger extends TriggerBase {
     }
 
     @Override
-    public boolean checkTrigger(Level level, LivingEntity entity) {
+    public boolean checkTrigger(Level level, LivingEntity entity, UUID casterId) {
         if (!(context instanceof TriggerPositionContext position)) return true;
         if (!(entity instanceof ServerPlayer serverPlayer)) return true;
 
@@ -62,7 +64,7 @@ public class PositionTrigger extends TriggerBase {
         double dist = pos.distanceTo(target);
 
         if (dist <= position.range) {
-            action.action(level, entity);
+            action.action(level, entity, casterId);
 
             return true;
         }

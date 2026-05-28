@@ -14,6 +14,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.UUID;
+
 public class SanityTrigger extends TriggerBase {
     public SanityTrigger(ActionBase action, TriggerContextBase context) {
         super(action, context);
@@ -30,7 +32,7 @@ public class SanityTrigger extends TriggerBase {
     }
 
     @Override
-    public boolean checkTrigger(Level level, LivingEntity entity) {
+    public boolean checkTrigger(Level level, LivingEntity entity, UUID casterId) {
         if(!(context instanceof TriggerNumbersContext numbers)) return true;
 
         float value = -1;
@@ -49,7 +51,7 @@ public class SanityTrigger extends TriggerBase {
         var operation = numbers.operation;
 
         if(checkOperation(value, sanity, operation)){
-            action.action(level, entity);
+            action.action(level, entity, casterId);
             return true;
         }
 

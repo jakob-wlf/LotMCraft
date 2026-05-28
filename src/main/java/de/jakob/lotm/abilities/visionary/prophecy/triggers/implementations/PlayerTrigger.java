@@ -35,7 +35,7 @@ public class PlayerTrigger extends TriggerBase {
     }
 
     @Override
-    public boolean checkTrigger(Level level, LivingEntity entity) {
+    public boolean checkTrigger(Level level, LivingEntity entity, UUID casterId) {
         if (!(context instanceof TriggerPlayerContext players)) return true;
         if (!(level instanceof ServerLevel serverLevel)) return true;
 
@@ -61,7 +61,7 @@ public class PlayerTrigger extends TriggerBase {
 
         for (var e : playersEntities) {
             if (e.equals(target)) {
-                action.action(level, entity);
+                action.action(level, entity, casterId);
                 return true;
             }
         }

@@ -14,13 +14,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
+import java.util.UUID;
+
 public class DropItemAction extends ActionBase {
     public DropItemAction(ActionContextBase context) {
         super(context);
     }
 
     @Override
-    public void action(Level level, LivingEntity entity) {
+    public void action(Level level, LivingEntity entity, UUID casterId) {
         if (entity instanceof ServerPlayer serverPlayer) {
             
             if(!(context instanceof ActionItemsContext itemsContext)) return;

@@ -19,7 +19,8 @@ public enum ActionsEnum {
     SAY,
     WEATHER,
     TIME,
-    WHISPERS
+    WHISPERS,
+    SUICIDE
     //DOUBLE
     ;
 

@@ -122,6 +122,8 @@ public class StoryWritingAbility extends ToggleAbility {
             LinkedList<Prophecy> buff2 = new LinkedList<>(prophecies);
 
             for(var obj : buff2){
+                if(!obj.trigger().isGeneralLoop()) continue;
+
                 if (obj.checkAndPerform(player.level(), player)){
                     buff1.add(obj);
                 }

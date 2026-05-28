@@ -85,7 +85,7 @@ public class TelepathyAbility extends ToggleAbility {
                 "§d" + name + " §7| Sanity: " + color + sanityPercent + "%" +
                         ((diff <= 0 && entitySeq <= 4) ? "§7 Pathway: " + BeyonderData.getPathway(target) +
                                 " Sequence: " + targetSeq + (shouldRenderPlague?
-                                " Has plague from: " + plague.getOwnerName() + " Seq: " + plague.getSequence() +
+                                "\n Has plague from: " + plague.getOwnerName() + " Seq: " + plague.getSequence() +
                                         " Stage: " + plague.getStage() : "") : "")
         ));
     }

@@ -26,6 +26,7 @@ public abstract class  TriggerBase {
 
     protected final ActionBase action;
     protected final TriggerContextBase context;
+    protected final boolean isGeneralLoop = true;
 
     public TriggerBase(ActionBase action, TriggerContextBase context){
         this.action = action;
@@ -45,6 +46,8 @@ public abstract class  TriggerBase {
         return tag;
     }
 
+    public boolean isGeneralLoop() {return isGeneralLoop;}
+
     public UUID getTarget(){
         return context.getTargetId();
     }
@@ -59,7 +62,7 @@ public abstract class  TriggerBase {
 
     public abstract int getRequiredSeq();
 
-    public abstract boolean checkTrigger(Level level, LivingEntity entity);
+    public abstract boolean checkTrigger(Level level, LivingEntity entity, UUID casterId);
 
     public static TriggerBase load(TriggerEnum type, CompoundTag tag, HolderLookup.Provider provider) {
         ActionsEnum actionType = ActionsEnum.fromNBT(tag, ACTION_TYPE);

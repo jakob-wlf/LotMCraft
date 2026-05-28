@@ -106,6 +106,12 @@ public class TriggerHelper {
 
         if(amount + 1 > amountPerSeq) return null;
 
+        int count = data.prophecies().stream().filter(obj ->
+                obj.trigger().getType().equals(trigger.getType())
+                        && obj.trigger().getActionType().equals(action.getType())).toList().size();
+
+        if(count + 1 > getCountPerSeq(casterSeq)) return null;
+
         return trigger;
     }
 
@@ -117,7 +123,21 @@ public class TriggerHelper {
             case 2 -> 25;
             case 1 -> 40;
             case 0 -> 80;
+            case -1 -> 9999999;
             default -> 1;
+        };
+    }
+
+    public static int getCountPerSeq(int seq){
+        return switch (seq){
+            case 7 -> 1;
+            case 6,5 -> 2;
+            case 4,3 -> 4;
+            case 2 -> 5;
+            case 1 -> 7;
+            case 0 -> 9;
+            case -1 -> 99999999;
+            default -> 0;
         };
     }
 

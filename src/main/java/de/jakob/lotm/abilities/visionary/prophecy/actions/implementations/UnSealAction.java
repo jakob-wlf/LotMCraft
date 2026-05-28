@@ -10,6 +10,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.UUID;
+
 public class UnSealAction extends ActionBase {
     public UnSealAction(ActionContextBase context) {
         super(context);
@@ -26,7 +28,7 @@ public class UnSealAction extends ActionBase {
     }
 
     @Override
-    public void action(Level level, LivingEntity entity) {
+    public void action(Level level, LivingEntity entity, UUID casterId) {
         entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT.get()).enableAllAbilities();
     }
 

@@ -15,6 +15,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.UUID;
+
 public class HasItemTrigger extends TriggerBase {
     public HasItemTrigger(ActionBase action, TriggerContextBase context) {
         super(action, context);
@@ -31,13 +33,13 @@ public class HasItemTrigger extends TriggerBase {
     }
 
     @Override
-    public boolean checkTrigger(Level level, LivingEntity entity) {
+    public boolean checkTrigger(Level level, LivingEntity entity, UUID casterId) {
         if(!(entity instanceof ServerPlayer player)) return false;
 
         if(context instanceof TriggerItemsContext items){
             for(var obj : items.stacksList){
                 if(player.getInventory().contains(obj)){
-                    action.action(level, entity);
+                    action.action(level, entity, casterId);
                     return true;
                 }
             }
