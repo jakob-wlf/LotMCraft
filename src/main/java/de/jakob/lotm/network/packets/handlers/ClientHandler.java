@@ -68,7 +68,8 @@ public class ClientHandler {
 
         String title = containerScreen.getTitle().getString();
         String selectSoulTitle = Component.translatable("ability.lotmcraft.internal_underworld.select_soul").getString();
-        if (!title.startsWith("Internal Underworld - ") || title.equals(selectSoulTitle)) return;
+        boolean isUnderworldTitle = title.startsWith("Internal Underworld - ") || title.equals(selectSoulTitle);
+        if (!isUnderworldTitle) return;
 
         mc.setScreen(new InternalUnderworldAbilityScreen(chestMenu, mc.player.getInventory(), containerScreen.getTitle()));
     }

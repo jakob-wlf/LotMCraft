@@ -1,5 +1,6 @@
 package de.jakob.lotm.abilities.death;
 
+import com.mojang.authlib.GameProfile;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.core.ToggleAbility;
@@ -11,6 +12,10 @@ import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.entity.custom.spirits.*;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.util.helper.AbilityBarHelper;
+import de.jakob.lotm.util.pathways.PathwayInfos;
 
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.BeyonderData;
@@ -26,6 +31,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.UseQueuedSoulAbilityPacket;
 import de.jakob.lotm.network.packets.toClient.OpenInternalUnderworldAbilityScreenPacket;
+import de.jakob.lotm.network.packets.toClient.UpdateAbilityBarPacket;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -48,10 +54,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -72,6 +80,10 @@ public class InternalUnderworldAbility extends SelectableAbility {
     private static final String PENDING_ABILITY_TAG = "InternalUnderworldPendingAbility";
     private static final String INTERNAL_UNDERWORLD_LOCKED_TAG = "InternalUnderworldLocked";
     private static final String INTERNAL_UNDERWORLD_CAPTURED_TAG = "InternalUnderworldCaptured";
+    private static final String SOUL_KEY_TAG = "SoulKey";
+    private static final String FAVORITED_SOUL_TAG = "IsFavorited";
+    private static final int FAVORITED_ROW_START_SLOT = 45;
+    private static final int FAVORITED_ROW_END_SLOT = 53;
     // Base passive timings; scaled per sequence below.
     private static final int SOUL_PASSIVE_DURATION_TICKS = 20 * 60;
     private static final int SOUL_PASSIVE_COOLDOWN_TICKS = 20 * 60 * 5;
@@ -368,8 +380,13 @@ public class InternalUnderworldAbility extends SelectableAbility {
             activePassive.ability().tick(player.level(), player);
         }
 
-        int remaining = activePassive.remainingTicks() - 1;
-        if (remaining <= 0) {
+        int remainingTicks = activePassive.remainingTicks() - 1;
+        if (remainingTicks <= 0) {
+            if (BeyonderData.getSequence(player) <= 0) {
+                activeSoulPassives.put(player.getUUID(), new ActiveSoulPassive(activePassive.ability(), 1));
+                return;
+            }
+
             activePassive.ability().onPassiveAbilityRemoved(player, player.serverLevel());
             activeSoulPassives.remove(player.getUUID());
             int cooldownTicks = getPassiveCooldownTicks(BeyonderData.getSequence(player));
@@ -378,7 +395,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
                     .withStyle(ChatFormatting.RED));
             updateSoulPassiveMenu(player);
         } else {
-            activeSoulPassives.put(player.getUUID(), new ActiveSoulPassive(activePassive.ability(), remaining));
+            activeSoulPassives.put(player.getUUID(), new ActiveSoulPassive(activePassive.ability(), remainingTicks));
         }
     }
 
@@ -475,6 +492,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
         if (typeKey == null) return null;
         // Store a snapshot that can recreate the entity without UUID conflicts.
         CompoundTag soulData = new CompoundTag();
+        soulData.putString(SOUL_KEY_TAG, UUID.randomUUID().toString());
         soulData.putString("EntityType", typeKey.toString());
         soulData.putString("DisplayName", entity.hasCustomName() ? entity.getCustomName().getString() : entity.getName().getString());
 
@@ -495,6 +513,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
         if (entity instanceof ServerPlayer player) {
             soulData.putBoolean("IsPlayerSoul", true);
             soulData.putUUID("OriginalPlayerUUID", player.getUUID());
+            soulData.putString("OriginalPlayerName", player.getGameProfile().getName());
         } else {
             soulData.putBoolean("IsPlayerSoul", false);
         }
@@ -546,10 +565,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
         container.setItem(2, createUnderworldLockItem(player));
 
-        int slot = 3;
-        for (int i = 0; i < storedSouls.size() && slot < container.getContainerSize(); i++) {
-            container.setItem(slot++, createSoulDisplayItem(storedSouls.get(i)));
-        }
+        populateSoulListContainer(container, player, storedSouls);
 
         final int containerSize = container.getContainerSize();
 
@@ -588,6 +604,15 @@ public class InternalUnderworldAbility extends SelectableAbility {
                         if (!tag.contains("SoulData")) return;
                         CompoundTag soulData = tag.getCompound("SoulData");
 
+                        boolean isMiddleClick = clickType == net.minecraft.world.inventory.ClickType.CLONE || button == 2;
+                        if (isMiddleClick) {
+                            if (toggleSoulFavorite(player, soulData)) {
+                                refreshSoulListContainer(container, player);
+                                ((ChestMenu) player.containerMenu).broadcastChanges();
+                            }
+                            return;
+                        }
+
                         boolean isRightClick = clickType == net.minecraft.world.inventory.ClickType.PICKUP && button == 1;
                         if (isRightClick) {
                             player.closeContainer();
@@ -609,6 +634,8 @@ public class InternalUnderworldAbility extends SelectableAbility {
                 },
                 Component.translatable("ability.lotmcraft.internal_underworld.select_soul")
         ));
+            // Swap the vanilla chest screen for the custom underworld UI.
+            PacketHandler.sendToPlayer(player, new OpenInternalUnderworldAbilityScreenPacket());
     }
 
     private static void openSoulAbilityGui(ServerLevel level, ServerPlayer player, CompoundTag soulData) {
@@ -726,11 +753,34 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
                         String abilityId = tag.getString("AbilityId");
                         Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+                        boolean isMiddleClick = clickType == net.minecraft.world.inventory.ClickType.CLONE || button == 2;
+                        if (isMiddleClick) {
+                            if (ability instanceof SelectableAbility selectableAbility) {
+                                int allowedCount = countAllowedSubAbilities(selectableAbility, player);
+                                if (allowedCount > 1) {
+                                    player.closeContainer();
+                                    CompoundTag soulDataCopy = soulData.copy();
+                                    level.getServer().execute(() -> openSoulSubAbilityGui(level, player, abilityId, soulDataCopy, true));
+                                    return;
+                                }
+                                if (allowedCount == 1) {
+                                    int onlyIndex = firstAllowedSubAbilityIndex(selectableAbility, player);
+                                    if (onlyIndex >= 0) {
+                                        selectableAbility.setSelectedAbility(player, onlyIndex);
+                                    }
+                                }
+                            }
+
+                            player.closeContainer();
+                            level.getServer().execute(() -> openSoulBindSlotGui(level, player, abilityId));
+                            return;
+                        }
                         if (ability instanceof SelectableAbility selectableAbility) {
                             int allowedCount = countAllowedSubAbilities(selectableAbility, player);
                             if (allowedCount > 1) {
                                 player.closeContainer();
-                                level.getServer().execute(() -> openSoulSubAbilityGui(level, player, abilityId));
+                                CompoundTag soulDataCopy = soulData.copy();
+                                level.getServer().execute(() -> openSoulSubAbilityGui(level, player, abilityId, soulDataCopy, false));
                                 return;
                             }
                             if (allowedCount == 1) {
@@ -751,7 +801,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
             PacketHandler.sendToPlayer(player, new OpenInternalUnderworldAbilityScreenPacket());
     }
 
-    private static void openSoulSubAbilityGui(ServerLevel level, ServerPlayer player, String abilityId) {
+    private static void openSoulSubAbilityGui(ServerLevel level, ServerPlayer player, String abilityId, CompoundTag soulData, boolean bindOnSelect) {
         // Sub-ability picker for SelectableAbility entries.
         Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
         if (!(ability instanceof SelectableAbility selectableAbility)) {
@@ -780,18 +830,28 @@ public class InternalUnderworldAbility extends SelectableAbility {
             String subAbility = subAbilities[i];
             if (subAbility == null || subAbility.isEmpty()) continue;
 
-            ItemStack item = createSubAbilityDisplayItem(subAbility);
+            ItemStack item = createSubAbilityDisplayItem(subAbility, selectableAbility);
             CompoundTag tag = new CompoundTag();
             tag.putString("AbilityId", abilityId);
             tag.putInt("SubAbilityIndex", i);
             item.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-            if (slot < 54) {
+            if (slot < 53) {
                 container.setItem(slot, item);
                 slot++;
             } else {
                 break;
             }
         }
+
+        ItemStack backItem = new ItemStack(Items.ARROW);
+        backItem.set(DataComponents.CUSTOM_NAME, Component.literal("Back").withStyle(ChatFormatting.YELLOW));
+        backItem.set(DataComponents.LORE, new ItemLore(List.of(
+                Component.literal("Return to ability list").withStyle(ChatFormatting.GRAY)
+        )));
+        CompoundTag backTag = new CompoundTag();
+        backTag.putBoolean("BackToSoulAbilities", true);
+        backItem.set(DataComponents.CUSTOM_DATA, CustomData.of(backTag));
+        container.setItem(53, backItem);
 
         final int containerSize = container.getContainerSize();
         Component title = Component.literal("Internal Underworld - " + prettyAbilityName(abilityId));
@@ -807,6 +867,11 @@ public class InternalUnderworldAbility extends SelectableAbility {
                         CustomData customData = clicked.get(DataComponents.CUSTOM_DATA);
                         if (customData == null) return;
                         CompoundTag tag = customData.copyTag();
+                        if (tag.contains("BackToSoulAbilities")) {
+                            player.closeContainer();
+                            level.getServer().execute(() -> openSoulAbilityGui(level, player, soulData));
+                            return;
+                        }
                         if (!tag.contains("AbilityId") || !tag.contains("SubAbilityIndex", Tag.TAG_INT)) return;
 
                         String selectedAbilityId = tag.getString("AbilityId");
@@ -832,7 +897,11 @@ public class InternalUnderworldAbility extends SelectableAbility {
                             }
                         }
 
-                        level.getServer().execute(() -> queueSoulAbility(player, selectedAbilityId));
+                        if (bindOnSelect) {
+                            level.getServer().execute(() -> openSoulBindSlotGui(level, player, selectedAbilityId));
+                        } else {
+                            level.getServer().execute(() -> queueSoulAbility(player, selectedAbilityId));
+                        }
                     }
                 },
                 title
@@ -841,12 +910,94 @@ public class InternalUnderworldAbility extends SelectableAbility {
             PacketHandler.sendToPlayer(player, new OpenInternalUnderworldAbilityScreenPacket());
     }
 
+    private static void openSoulBindSlotGui(ServerLevel level, ServerPlayer player, String abilityId) {
+        Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+        if (ability == null) return;
+
+        ArrayList<String> abilities = new ArrayList<>(AbilityBarHelper.getAbilities(player));
+        int maxSlots = 6;
+        int currentCount = Math.min(abilities.size(), maxSlots);
+
+        SimpleContainer container = new SimpleContainer(9) {
+            @Override
+            public boolean canTakeItem(Container target, int index, ItemStack stack) {
+                return false;
+            }
+        };
+
+        for (int i = 0; i < maxSlots; i++) {
+            boolean enabled = i < currentCount || (i == currentCount && currentCount < maxSlots);
+            ItemStack item = new ItemStack(enabled ? Items.LIME_STAINED_GLASS_PANE : Items.GRAY_STAINED_GLASS_PANE);
+            item.set(DataComponents.CUSTOM_NAME, Component.literal("Bind to Slot " + (i + 1))
+                    .withStyle(enabled ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.literal(enabled ? "Assign to this keybind" : "Fill previous slots first")
+                    .withStyle(ChatFormatting.GRAY));
+            item.set(DataComponents.LORE, new ItemLore(lore));
+
+            CompoundTag tag = new CompoundTag();
+            tag.putInt("BindSlot", i);
+            if (!enabled) {
+                tag.putBoolean("BindLocked", true);
+            }
+            item.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+            container.setItem(i, item);
+        }
+
+        Component title = Component.literal("Bind Ability - " + prettyAbilityName(abilityId));
+        player.openMenu(new SimpleMenuProvider(
+                (id, inv, p) -> new ChestMenu(MenuType.GENERIC_9x1, id, inv, container, 1) {
+                    @Override
+                    public void clicked(int slotId, int button, net.minecraft.world.inventory.ClickType clickType, Player clickPlayer) {
+                        if (slotId < 0 || slotId >= container.getContainerSize()) return;
+                        ItemStack clicked = container.getItem(slotId);
+                        if (clicked.isEmpty()) return;
+
+                        CustomData customData = clicked.get(DataComponents.CUSTOM_DATA);
+                        if (customData == null) return;
+                        CompoundTag tag = customData.copyTag();
+                        if (!tag.contains("BindSlot", Tag.TAG_INT)) return;
+
+                        if (tag.getBoolean("BindLocked")) {
+                            player.sendSystemMessage(Component.literal("Fill previous slots first").withStyle(ChatFormatting.RED));
+                            return;
+                        }
+
+                        int bindSlot = tag.getInt("BindSlot");
+                        ArrayList<String> updated = new ArrayList<>(AbilityBarHelper.getAbilities(player));
+                        if (updated.size() > maxSlots) {
+                            updated = new ArrayList<>(updated.subList(0, maxSlots));
+                        }
+
+                        if (bindSlot < updated.size()) {
+                            updated.set(bindSlot, abilityId);
+                        } else if (bindSlot == updated.size() && updated.size() < maxSlots) {
+                            updated.add(abilityId);
+                        } else {
+                            player.sendSystemMessage(Component.literal("Cannot skip empty slots").withStyle(ChatFormatting.RED));
+                            return;
+                        }
+
+                        AbilityBarHelper.setAbilities(player, updated);
+                        PacketHandler.sendToPlayer(player, new UpdateAbilityBarPacket(updated));
+                        player.sendSystemMessage(Component.literal("Bound to slot " + (bindSlot + 1))
+                                .withStyle(ChatFormatting.GREEN));
+                        player.closeContainer();
+                    }
+                },
+                title
+        ));
+
+        PacketHandler.sendToPlayer(player, new OpenInternalUnderworldAbilityScreenPacket());
+    }
+
     private static ItemStack createAbilityDisplayItem(Ability ability) {
         ItemStack item = new ItemStack(Items.BOOK);
         item.set(DataComponents.CUSTOM_NAME, Component.literal(prettyAbilityName(ability.getId()))
                 .withStyle(ChatFormatting.AQUA));
         List<Component> lore = new ArrayList<>();
         lore.add(Component.literal("Cast as yourself").withStyle(ChatFormatting.GRAY));
+        appendAbilityCostLore(ability, lore);
         item.set(DataComponents.LORE, new ItemLore(lore));
         return item;
     }
@@ -860,6 +1011,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
             lore.add(Component.literal("Select sub-ability").withStyle(ChatFormatting.GRAY));
         }
         lore.add(Component.literal("Cast as yourself").withStyle(ChatFormatting.GRAY));
+        appendAbilityCostLore(ability, lore);
         item.set(DataComponents.LORE, new ItemLore(lore));
         return item;
     }
@@ -873,32 +1025,62 @@ public class InternalUnderworldAbility extends SelectableAbility {
         int baseCooldownTicks = getPassiveCooldownTicks(playerSequence);
         if (isActive) {
             item.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
-            lore.add(Component.literal("Active: " + formatRemainingTime(activePassive.remainingTicks()))
-                    .withStyle(ChatFormatting.GRAY));
+            String activeLabel = playerSequence <= 0
+                    ? "Active: Infinite"
+                    : "Active: " + formatRemainingTime(activePassive.remainingTicks());
+            lore.add(Component.literal(activeLabel).withStyle(ChatFormatting.GRAY));
         } else if (cooldownTicks > 0) {
             lore.add(Component.literal("Duration: " + formatDurationLabel(durationTicks))
                 .withStyle(ChatFormatting.GRAY));
             lore.add(Component.literal("Cooldown: " + formatRemainingTime(cooldownTicks))
                     .withStyle(ChatFormatting.RED));
         } else {
-            lore.add(Component.literal("Activate for " + formatDurationLabel(durationTicks))
+            if (playerSequence <= 0) {
+                lore.add(Component.literal("Activate for Infinite").withStyle(ChatFormatting.GRAY));
+            } else {
+                lore.add(Component.literal("Activate for " + formatDurationLabel(durationTicks))
+                        .withStyle(ChatFormatting.GRAY));
+                lore.add(Component.literal("Cooldown: " + formatDurationLabel(baseCooldownTicks))
                     .withStyle(ChatFormatting.GRAY));
-            lore.add(Component.literal("Cooldown: " + formatDurationLabel(baseCooldownTicks))
-                .withStyle(ChatFormatting.GRAY));
+            }
         }
         item.set(DataComponents.LORE, new ItemLore(lore));
         return item;
     }
 
-        private static ItemStack createSubAbilityDisplayItem(String subAbilityKey) {
+    private static ItemStack createSubAbilityDisplayItem(String subAbilityKey, Ability ability) {
         ItemStack item = new ItemStack(Items.PAPER);
         item.set(DataComponents.CUSTOM_NAME, Component.translatable(subAbilityKey)
             .withStyle(ChatFormatting.AQUA));
-        item.set(DataComponents.LORE, new ItemLore(List.of(
-            Component.literal("Queue this ability").withStyle(ChatFormatting.GRAY)
-        )));
+        List<Component> lore = new ArrayList<>();
+        lore.add(Component.literal("Queue this ability").withStyle(ChatFormatting.GRAY));
+        appendAbilityCostLore(ability, lore);
+        item.set(DataComponents.LORE, new ItemLore(lore));
         return item;
+    }
+
+    private static void appendAbilityCostLore(Ability ability, List<Component> lore) {
+        if (ability == null) {
+            return;
         }
+        int cooldownTicks = ability.getCooldown();
+        if (cooldownTicks > 0) {
+            int seconds = (cooldownTicks + 19) / 20;
+            lore.add(Component.literal("Cooldown: " + seconds + "s").withStyle(ChatFormatting.GRAY));
+        }
+        float cost = ability.spiritualityCost();
+        if (cost > 0) {
+            lore.add(Component.literal("Spirituality Cost: " + formatSpiritualityCost(cost))
+                    .withStyle(ChatFormatting.DARK_PURPLE));
+        }
+    }
+
+    private static String formatSpiritualityCost(float cost) {
+        if (Math.abs(cost - Math.round(cost)) < 0.01f) {
+            return Integer.toString(Math.round(cost));
+        }
+        return String.format(Locale.US, "%.1f", cost);
+    }
 
     private static int countAllowedSubAbilities(SelectableAbility ability, LivingEntity entity) {
         String[] names = ability.getAbilityNamesCopy();
@@ -980,18 +1162,25 @@ public class InternalUnderworldAbility extends SelectableAbility {
             return;
         }
 
-        if (soulPassiveCooldowns.containsKey(player.getUUID())) {
+        if (soulPassiveCooldowns.containsKey(player.getUUID()) && BeyonderData.getSequence(player) > 0) {
             player.sendSystemMessage(Component.literal("Your Passive Is On Cooldown")
                     .withStyle(ChatFormatting.RED));
             return;
         }
 
-        int durationTicks = getPassiveDurationTicks(BeyonderData.getSequence(player));
+        int sequence = BeyonderData.getSequence(player);
+        int durationTicks = getPassiveDurationTicks(sequence);
+        if (sequence <= 0) {
+            durationTicks = 1;
+        }
         passiveAbility.onPassiveAbilityGained(player, serverLevel);
         activeSoulPassives.put(player.getUUID(), new ActiveSoulPassive(passiveAbility, durationTicks));
-        player.sendSystemMessage(Component.literal("Passive activated for " + formatDurationLabel(durationTicks) + ": ")
-                .append(passiveAbility.getName(new ItemStack(passiveAbility)))
-                .withStyle(ChatFormatting.AQUA));
+        String activeLabel = sequence <= 0
+            ? "Passive activated (Infinite): "
+            : "Passive activated for " + formatDurationLabel(durationTicks) + ": ";
+        player.sendSystemMessage(Component.literal(activeLabel)
+            .append(passiveAbility.getName(new ItemStack(passiveAbility)))
+            .withStyle(ChatFormatting.AQUA));
     }
 
     private static void cancelSoulPassive(ServerPlayer player, ActiveSoulPassive activePassive) {
@@ -999,10 +1188,15 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
         activePassive.ability().onPassiveAbilityRemoved(player, serverLevel);
         activeSoulPassives.remove(player.getUUID());
-        int cooldownTicks = getPassiveCooldownTicks(BeyonderData.getSequence(player));
-        soulPassiveCooldowns.put(player.getUUID(), cooldownTicks);
-        player.sendSystemMessage(Component.literal("Passive canceled. Cooldown: " + formatDurationLabel(cooldownTicks))
-                .withStyle(ChatFormatting.RED));
+        int sequence = BeyonderData.getSequence(player);
+        if (sequence > 0) {
+            int cooldownTicks = getPassiveCooldownTicks(sequence);
+            soulPassiveCooldowns.put(player.getUUID(), cooldownTicks);
+            player.sendSystemMessage(Component.literal("Passive canceled. Cooldown: " + formatDurationLabel(cooldownTicks))
+                    .withStyle(ChatFormatting.RED));
+        } else {
+            player.sendSystemMessage(Component.literal("Passive canceled.").withStyle(ChatFormatting.RED));
+        }
         updateSoulPassiveMenu(player);
     }
 
@@ -1384,24 +1578,75 @@ public class InternalUnderworldAbility extends SelectableAbility {
         }
 
         List<CompoundTag> storedSouls = getStoredSouls(player);
-        int slot = startSlot;
-        for (int i = 0; i < storedSouls.size() && slot < container.getContainerSize(); i++) {
-            container.setItem(slot++, createSoulDisplayItem(storedSouls.get(i)));
+        populateSoulListContainer(container, player, storedSouls);
+    }
+
+    private static void populateSoulListContainer(SimpleContainer container, ServerPlayer player, List<CompoundTag> storedSouls) {
+        List<CompoundTag> favorited = new ArrayList<>();
+        List<CompoundTag> normal = new ArrayList<>();
+        for (CompoundTag soul : storedSouls) {
+            if (soul.getBoolean(FAVORITED_SOUL_TAG)) {
+                favorited.add(soul);
+            } else {
+                normal.add(soul);
+            }
         }
+
+        int favoriteRowEnd = Math.min(FAVORITED_ROW_END_SLOT, container.getContainerSize() - 1);
+        if (FAVORITED_ROW_START_SLOT <= favoriteRowEnd) {
+            int favIndex = 0;
+            for (int slot = FAVORITED_ROW_START_SLOT; slot <= favoriteRowEnd; slot++) {
+                if (favIndex < favorited.size()) {
+                    container.setItem(slot, createSoulDisplayItem(favorited.get(favIndex++)));
+                } else {
+                    container.setItem(slot, createFavoritedPlaceholderItem());
+                }
+            }
+        }
+
+        int normalIndex = 0;
+        for (int slot = 3; slot < container.getContainerSize() && normalIndex < normal.size(); slot++) {
+            if (slot >= FAVORITED_ROW_START_SLOT && slot <= FAVORITED_ROW_END_SLOT) {
+                continue;
+            }
+            container.setItem(slot, createSoulDisplayItem(normal.get(normalIndex++)));
+        }
+    }
+
+    private static ItemStack createFavoritedPlaceholderItem() {
+        ItemStack item = new ItemStack(Items.BLACK_STAINED_GLASS_PANE);
+        item.set(DataComponents.CUSTOM_NAME, Component.literal("Favorited Souls")
+                .withStyle(ChatFormatting.DARK_GRAY));
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean("IsFavoritedSlot", true);
+        item.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        return item;
     }
 
     private static ItemStack createSoulDisplayItem(CompoundTag soulData) {
         // Display entry for the soul list GUI.
-        ItemStack item = new ItemStack(Items.PLAYER_HEAD);
-        item.set(DataComponents.CUSTOM_NAME, Component.literal(soulData.getString("DisplayName")).withStyle(ChatFormatting.LIGHT_PURPLE));
+        ItemStack item = createSoulIconItem(soulData);
         String pathway = soulData.contains("Pathway") ? soulData.getString("Pathway") : "none";
         int sequence = soulData.contains("Sequence", Tag.TAG_INT) ? soulData.getInt("Sequence") : -1;
         String sequenceText = sequence >= 0 ? Integer.toString(sequence) : "-";
+
+        int nameColor = 0xFFFFFFFF;
+        int detailColor = 0xFFCCCCCC;
+        int pathwayColor = "none".equals(pathway) ? detailColor : getPathwayColorOrDefault(pathway, detailColor);
+        int separatorColor = 0xFF2B2B2B;
+        Component entityLabel = getSoulEntityLabel(soulData);
+        boolean simpleEntityLabel = soulData.getBoolean("IsBeyonderNPC") || soulData.getBoolean("IsPlayerSoul");
+        Component entityLine = simpleEntityLabel
+            ? entityLabel.copy().withStyle(style -> style.withColor(detailColor).withItalic(false))
+            : buildLabelValue("Entity: ", entityLabel, detailColor);
+
+        item.set(DataComponents.CUSTOM_NAME, Component.literal(soulData.getString("DisplayName"))
+            .withStyle(style -> style.withColor(nameColor).withItalic(false)));
         item.set(DataComponents.LORE, new ItemLore(List.of(
-                Component.literal("-------------------").withStyle(style -> style.withColor(0xFF7ECFCF).withItalic(false)),
-            Component.literal(soulData.getString("EntityType")).withStyle(style -> style.withColor(0x7ECFCF).withItalic(false)),
-            Component.literal("Pathway: " + pathway).withStyle(style -> style.withColor(0x7ECFCF).withItalic(false)),
-            Component.literal("Sequence: " + sequenceText).withStyle(style -> style.withColor(0x7ECFCF).withItalic(false))
+                Component.literal("-------------------").withStyle(style -> style.withColor(separatorColor).withItalic(false)),
+            entityLine,
+            buildLabelValue("Pathway: ", Component.literal(pathway), pathwayColor),
+            buildLabelValue("Sequence: ", Component.literal(sequenceText), pathwayColor)
         )));
 
         CompoundTag tag = new CompoundTag();
@@ -1409,6 +1654,159 @@ public class InternalUnderworldAbility extends SelectableAbility {
         item.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
 
         return item;
+    }
+
+    private static ItemStack createSoulIconItem(CompoundTag soulData) {
+        if (soulData.getBoolean("IsPlayerSoul")) {
+            return createPlayerSoulHead(soulData);
+        }
+
+        if (soulData.getBoolean("IsBeyonderNPC")) {
+            return createPathwaySymbolItem(soulData);
+        }
+
+        return new ItemStack(Items.PLAYER_HEAD);
+    }
+
+    private static Component getSoulEntityLabel(CompoundTag soulData) {
+        if (soulData.getBoolean("IsBeyonderNPC")) {
+            return Component.literal("Beyonder NPC");
+        }
+        if (soulData.getBoolean("IsPlayerSoul")) {
+            return Component.literal("Player");
+        }
+
+        String entityTypeId = soulData.getString("EntityType");
+        Optional<EntityType<?>> entityType = EntityType.byString(entityTypeId);
+        if (entityType.isPresent()) {
+            return Component.translatable(entityType.get().getDescriptionId());
+        }
+        if (entityTypeId != null && !entityTypeId.isEmpty()) {
+            return Component.literal(prettyEntityName(entityTypeId));
+        }
+        return Component.literal("Unknown");
+    }
+
+    private static Component buildLabelValue(String label, Component value, int valueColor) {
+        int labelColor = 0xFFAAAAAA;
+        return Component.literal(label)
+                .withStyle(style -> style.withColor(labelColor).withItalic(false))
+                .append(value.copy().withStyle(style -> style.withColor(valueColor).withItalic(false)));
+    }
+
+    private static String prettyEntityName(String id) {
+        String raw = id;
+        int colonIndex = raw.indexOf(':');
+        if (colonIndex >= 0 && colonIndex + 1 < raw.length()) {
+            raw = raw.substring(colonIndex + 1);
+        }
+        raw = raw.replace('_', ' ');
+        String[] parts = raw.split(" ");
+        StringBuilder sb = new StringBuilder();
+        for (String part : parts) {
+            if (part.isEmpty()) continue;
+            sb.append(Character.toUpperCase(part.charAt(0)));
+            if (part.length() > 1) sb.append(part.substring(1));
+            sb.append(' ');
+        }
+        return sb.toString().trim();
+    }
+
+    private static ItemStack createPlayerSoulHead(CompoundTag soulData) {
+        ItemStack item = new ItemStack(Items.PLAYER_HEAD);
+        if (soulData.hasUUID("OriginalPlayerUUID")) {
+            UUID playerId = soulData.getUUID("OriginalPlayerUUID");
+            String profileName = soulData.getString("OriginalPlayerName");
+            if (profileName == null || profileName.trim().isEmpty()) {
+                profileName = soulData.getString("DisplayName");
+            }
+            if (profileName != null && profileName.trim().isEmpty()) {
+                profileName = null;
+            }
+
+            GameProfile profile = new GameProfile(playerId, profileName);
+            item.set(DataComponents.PROFILE, new ResolvableProfile(profile));
+        }
+        return item;
+    }
+
+    private static ItemStack createPathwaySymbolItem(CompoundTag soulData) {
+        String pathway = soulData.contains("Pathway") ? soulData.getString("Pathway") : "";
+        int sequence = soulData.contains("Sequence", Tag.TAG_INT) ? soulData.getInt("Sequence") : -1;
+
+        if (pathway.isEmpty()) {
+            return new ItemStack(Items.NAME_TAG);
+        }
+
+        if (sequence == 0) {
+            ItemStack uniqueness = getUniquenessItemStack(pathway);
+            if (!uniqueness.isEmpty()) {
+                return uniqueness;
+            }
+        }
+
+        if (sequence >= 1) {
+            ItemStack characteristic = createCharacteristicStack(pathway, sequence);
+            if (!characteristic.isEmpty()) {
+                return characteristic;
+            }
+        }
+
+        ItemStack fallbackCharacteristic = createCharacteristicStack(pathway, sequence);
+        if (!fallbackCharacteristic.isEmpty()) {
+            return fallbackCharacteristic;
+        }
+
+        return new ItemStack(Items.NAME_TAG);
+    }
+
+    private static ItemStack createCharacteristicStack(String pathway, int sequence) {
+        BeyonderCharacteristicItem characteristic = null;
+        if (sequence > 0) {
+            characteristic = BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, sequence);
+        } else {
+            List<BeyonderCharacteristicItem> all = BeyonderCharacteristicItemHandler.selectAllOfPathway(pathway);
+            if (!all.isEmpty()) {
+                characteristic = all.get(0);
+            }
+        }
+
+        if (characteristic == null) {
+            return ItemStack.EMPTY;
+        }
+
+        ItemStack stack = new ItemStack(characteristic);
+        applySequenceCount(stack, sequence);
+        return stack;
+    }
+
+    private static void applySequenceCount(ItemStack stack, int sequence) {
+        if (sequence <= 1) {
+            return;
+        }
+        int max = Math.max(1, stack.getMaxStackSize());
+        int count = Math.min(sequence, max);
+        if (count > 1) {
+            stack.setCount(count);
+        }
+    }
+
+    private static ItemStack getUniquenessItemStack(String pathway) {
+        try {
+            Item item = BuiltInRegistries.ITEM.get(
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, pathway + "_uniqueness")
+            );
+            if (item == Items.AIR) return ItemStack.EMPTY;
+            return new ItemStack(item);
+        } catch (Exception e) {
+            return ItemStack.EMPTY;
+        }
+    }
+
+    private static int getPathwayColorOrDefault(String pathway, int fallback) {
+        if (pathway == null || pathway.isEmpty()) return fallback;
+        PathwayInfos infos = BeyonderData.pathwayInfos.get(pathway);
+        return infos != null ? infos.color() : fallback;
     }
 
     private static List<CompoundTag> getStoredSouls(ServerPlayer player) {
@@ -1470,6 +1868,87 @@ public class InternalUnderworldAbility extends SelectableAbility {
         ListTag list = data.getList(STORED_SOULS_TAG, Tag.TAG_COMPOUND);
         list.remove(soulData);
         data.put(STORED_SOULS_TAG, list);
+    }
+
+    private static boolean toggleSoulFavorite(ServerPlayer player, CompoundTag soulData) {
+        CompoundTag data = player.getPersistentData();
+        if (!data.contains(STORED_SOULS_TAG, Tag.TAG_LIST)) return false;
+        ListTag list = data.getList(STORED_SOULS_TAG, Tag.TAG_COMPOUND);
+
+        String soulKey = soulData.getString(SOUL_KEY_TAG);
+        int favoritedCount = countFavoritedSouls(list);
+
+        for (int i = 0; i < list.size(); i++) {
+            CompoundTag stored = list.getCompound(i);
+            if (!soulKey.isEmpty() && soulKey.equals(stored.getString(SOUL_KEY_TAG))) {
+                return applyFavoriteToggle(player, data, list, stored, favoritedCount);
+            }
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            CompoundTag stored = list.getCompound(i);
+            if (matchesSoul(stored, soulData)) {
+                if (!stored.contains(SOUL_KEY_TAG, Tag.TAG_STRING)) {
+                    stored.putString(SOUL_KEY_TAG, UUID.randomUUID().toString());
+                }
+                return applyFavoriteToggle(player, data, list, stored, favoritedCount);
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean applyFavoriteToggle(ServerPlayer player, CompoundTag data, ListTag list, CompoundTag stored, int favoritedCount) {
+        boolean isFavorited = stored.getBoolean(FAVORITED_SOUL_TAG);
+        if (!isFavorited && favoritedCount >= 9) {
+            player.sendSystemMessage(Component.literal("Favorited souls row is full")
+                    .withStyle(ChatFormatting.RED));
+            return false;
+        }
+
+        boolean newValue = !isFavorited;
+        stored.putBoolean(FAVORITED_SOUL_TAG, newValue);
+        data.put(STORED_SOULS_TAG, list);
+        player.sendSystemMessage(Component.literal(newValue ? "Soul favorited" : "Soul unfavorited")
+                .withStyle(newValue ? ChatFormatting.GREEN : ChatFormatting.GRAY));
+        return true;
+    }
+
+    private static int countFavoritedSouls(ListTag list) {
+        int count = 0;
+        for (int i = 0; i < list.size(); i++) {
+            if (list.getCompound(i).getBoolean(FAVORITED_SOUL_TAG)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private static boolean matchesSoul(CompoundTag stored, CompoundTag soulData) {
+        boolean storedPlayer = stored.getBoolean("IsPlayerSoul");
+        boolean targetPlayer = soulData.getBoolean("IsPlayerSoul");
+        if (storedPlayer != targetPlayer) return false;
+
+        if (storedPlayer && stored.hasUUID("OriginalPlayerUUID") && soulData.hasUUID("OriginalPlayerUUID")) {
+            return stored.getUUID("OriginalPlayerUUID").equals(soulData.getUUID("OriginalPlayerUUID"));
+        }
+
+        if (!stored.getString("EntityType").equals(soulData.getString("EntityType"))) return false;
+        if (!stored.getString("DisplayName").equals(soulData.getString("DisplayName"))) return false;
+
+        if (stored.getBoolean("IsBeyonderNPC") != soulData.getBoolean("IsBeyonderNPC")) return false;
+
+        if (stored.contains("Pathway") || soulData.contains("Pathway")) {
+            if (!stored.getString("Pathway").equals(soulData.getString("Pathway"))) return false;
+        }
+
+        if (stored.contains("Sequence", Tag.TAG_INT) || soulData.contains("Sequence", Tag.TAG_INT)) {
+            if (stored.getInt("Sequence") != soulData.getInt("Sequence")) return false;
+        }
+
+        String storedSkin = stored.getString("BeyonderSkin");
+        String targetSkin = soulData.getString("BeyonderSkin");
+        return storedSkin.equals(targetSkin);
     }
 
     public static int countActiveSouls(String pathway, int sequence) {

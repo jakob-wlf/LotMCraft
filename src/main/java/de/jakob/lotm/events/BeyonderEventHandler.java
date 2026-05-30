@@ -234,16 +234,21 @@ public class BeyonderEventHandler {
             }
         }
 
+        if (event.isCanceled()) return;
+
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
         if (!BeyonderData.isBeyonder(player)) return;
-        if (!player.serverLevel().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)) return;
 
         // If the soul was captured by Internal Underworld, skip characteristic drops.
         boolean capturedByUnderworld = player.getPersistentData().getBoolean("InternalUnderworldCaptured");
         if (capturedByUnderworld) {
             player.getPersistentData().remove("InternalUnderworldCaptured");
+        } else {
+            dropCharacteristicStacks(player, event);
         }
+
+        if (!player.serverLevel().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)) return;
 
         // onDeath (LivingDeathEvent) already handled regression and cleared the revert component.
         // Here we only need to drop the correct characteristic item.
@@ -275,6 +280,43 @@ public class BeyonderEventHandler {
         );
 
         event.getDrops().add(itemEntity);
+    }
+
+    private static void dropCharacteristicStacks(ServerPlayer player, LivingDropsEvent event) {
+        String pathway = BeyonderData.getPathway(player);
+        if (pathway == null || pathway.isBlank() || "none".equals(pathway)) return;
+
+        int[] stacks = BeyonderData.getCharStacks(player);
+        boolean hadStacks = false;
+
+        for (int seq = 1; seq < Math.min(stacks.length, 10); seq++) {
+            int count = stacks[seq];
+            if (count <= 0) continue;
+            hadStacks = true;
+
+            BeyonderCharacteristicItem charItem =
+                    BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, seq);
+            if (charItem == null) continue;
+
+            int remaining = count;
+            int maxStack = Math.max(1, new ItemStack(charItem.asItem()).getMaxStackSize());
+            while (remaining > 0) {
+                int stackSize = Math.min(remaining, maxStack);
+                ItemEntity itemEntity = new ItemEntity(
+                        player.level(),
+                        player.getX(),
+                        player.getY(),
+                        player.getZ(),
+                        new ItemStack(charItem.asItem(), stackSize)
+                );
+                event.getDrops().add(itemEntity);
+                remaining -= stackSize;
+            }
+        }
+
+        if (hadStacks) {
+            BeyonderData.clearCharStack(player);
+        }
     }
 
     @SubscribeEvent

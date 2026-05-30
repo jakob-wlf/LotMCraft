@@ -28,6 +28,7 @@ public class UniquenessEventHandler {
     private static final int SPAWN_CHECK_INTERVAL = 6000;
 
     private static final int SPAWN_RADIUS_BLOCKS = 180;
+    private static final int DEATH_SPAWN_RADIUS_BLOCKS = 20;
 
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
@@ -35,6 +36,8 @@ public class UniquenessEventHandler {
         ServerLevel overworld = server.overworld();
 
         if (overworld.getGameTime() % SPAWN_CHECK_INTERVAL != 0) return;
+
+        if (UniquenessEntity.anySeq0Presence(overworld)) return;
 
         for (String pathway : BeyonderData.implementedPathways) {
             trySpawnUniqueness(overworld, pathway);
@@ -84,6 +87,7 @@ public class UniquenessEventHandler {
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
+        if (event.isCanceled()) return;
         LivingEntity entity = event.getEntity();
         if (entity.level().isClientSide) return;
         if (!(entity.level() instanceof ServerLevel serverLevel)) return;
@@ -98,7 +102,12 @@ public class UniquenessEventHandler {
                     comp.setHasUniqueness(false);
                     comp.setUniquenessPathway("");
                     BeyonderData.playerMap.setUniqueness(player, "none");
-                    UniquenessEntity.trySpawn(serverLevel, deathPos, pathway);
+
+                    if (!UniquenessEntity.anySeq0Presence(serverLevel, player)) {
+                        Vec3 spawnPos = randomSpawnAround(deathPos, DEATH_SPAWN_RADIUS_BLOCKS);
+                        UniquenessEntity.trySpawn(serverLevel, spawnPos, pathway);
+                    }
+
                     if (player instanceof ServerPlayer sp) {
                         PacketHandler.syncUniquenessToPlayer(sp);
                     }
@@ -114,5 +123,15 @@ public class UniquenessEventHandler {
                 PacketHandler.syncUniquenessToPlayer(killerPlayer);
             }
         }
+    }
+
+    private static Vec3 randomSpawnAround(Vec3 origin, int radius) {
+        double minDistance = Math.min(2.0, radius);
+        double maxDistance = Math.max(minDistance, radius);
+        double distance = minDistance + RANDOM.nextDouble() * (maxDistance - minDistance);
+        double angle = RANDOM.nextDouble() * Math.PI * 2.0;
+        double dx = Math.cos(angle) * distance;
+        double dz = Math.sin(angle) * distance;
+        return new Vec3(origin.x + dx, origin.y, origin.z + dz);
     }
 }
