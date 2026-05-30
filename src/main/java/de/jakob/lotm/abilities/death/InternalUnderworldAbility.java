@@ -996,6 +996,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
         item.set(DataComponents.CUSTOM_NAME, Component.literal(prettyAbilityName(ability.getId()))
                 .withStyle(ChatFormatting.AQUA));
         List<Component> lore = new ArrayList<>();
+        lore.add(Component.literal("Middle click to bind").withStyle(ChatFormatting.GRAY));
         lore.add(Component.literal("Cast as yourself").withStyle(ChatFormatting.GRAY));
         appendAbilityCostLore(ability, lore);
         item.set(DataComponents.LORE, new ItemLore(lore));
@@ -1010,6 +1011,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
         if (showSubSelect) {
             lore.add(Component.literal("Select sub-ability").withStyle(ChatFormatting.GRAY));
         }
+        lore.add(Component.literal("Middle click to bind").withStyle(ChatFormatting.GRAY));
         lore.add(Component.literal("Cast as yourself").withStyle(ChatFormatting.GRAY));
         appendAbilityCostLore(ability, lore);
         item.set(DataComponents.LORE, new ItemLore(lore));
@@ -1639,6 +1641,9 @@ public class InternalUnderworldAbility extends SelectableAbility {
         Component entityLine = simpleEntityLabel
             ? entityLabel.copy().withStyle(style -> style.withColor(detailColor).withItalic(false))
             : buildLabelValue("Entity: ", entityLabel, detailColor);
+        boolean isFavorited = soulData.getBoolean(FAVORITED_SOUL_TAG);
+        Component favoriteHint = Component.literal(isFavorited ? "Middle click to unfavorite" : "Middle click to favorite")
+            .withStyle(style -> style.withColor(detailColor).withItalic(false));
 
         item.set(DataComponents.CUSTOM_NAME, Component.literal(soulData.getString("DisplayName"))
             .withStyle(style -> style.withColor(nameColor).withItalic(false)));
@@ -1646,7 +1651,8 @@ public class InternalUnderworldAbility extends SelectableAbility {
                 Component.literal("-------------------").withStyle(style -> style.withColor(separatorColor).withItalic(false)),
             entityLine,
             buildLabelValue("Pathway: ", Component.literal(pathway), pathwayColor),
-            buildLabelValue("Sequence: ", Component.literal(sequenceText), pathwayColor)
+            buildLabelValue("Sequence: ", Component.literal(sequenceText), pathwayColor),
+            favoriteHint
         )));
 
         CompoundTag tag = new CompoundTag();
