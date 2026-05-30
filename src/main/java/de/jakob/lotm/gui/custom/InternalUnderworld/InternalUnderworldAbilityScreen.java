@@ -12,6 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -66,6 +67,19 @@ public class InternalUnderworldAbilityScreen extends AbstractContainerScreen<Che
         RenderSystem.disableDepthTest();
         renderTooltip(guiGraphics, mouseX, mouseY);
         RenderSystem.enableDepthTest();
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 2) {
+            Slot slot = getChestSlotAt(mouseX, mouseY);
+            if (slot != null) {
+                this.slotClicked(slot, slot.index, button, ClickType.PICKUP);
+                return true;
+            }
+        }
+
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -358,5 +372,17 @@ public class InternalUnderworldAbilityScreen extends AbstractContainerScreen<Che
             case 0 -> 53;
             default -> 5;
         };
+    }
+
+    private Slot getChestSlotAt(double mouseX, double mouseY) {
+        for (Slot slot : this.menu.slots) {
+            if (!isChestSlot(slot)) {
+                continue;
+            }
+            if (this.isHovering(slot.x, slot.y, 16, 16, mouseX, mouseY)) {
+                return slot;
+            }
+        }
+        return null;
     }
 }
