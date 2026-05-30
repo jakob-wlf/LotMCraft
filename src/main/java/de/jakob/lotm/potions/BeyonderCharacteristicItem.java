@@ -2,8 +2,10 @@ package de.jakob.lotm.potions;
 
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.pathways.PathwayInfos;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -58,6 +60,13 @@ public class BeyonderCharacteristicItem extends Item {
                 var stacks = BeyonderData.getCharStacks(player);
 
                 if(stacks[seq] >= 0 && seq >= 1 && BeyonderData.getDigestionProgress(player) == 1.0){
+                    if (level instanceof ServerLevel serverLevel
+                            && !BeyonderData.hasSequenceSlotAvailableWithAdjustment(serverLevel, path, seq, seq, 1)) {
+                        player.sendSystemMessage(Component.literal("No sequence slots available for that characteristic")
+                                .withStyle(ChatFormatting.RED));
+                        return InteractionResultHolder.fail(stack);
+                    }
+
                     BeyonderData.setCharStack(player, (stacks[seq] + 1), seq, true);
                     BeyonderData.setDigestionProgress(player, 0);
                     player.setItemInHand(hand, ItemStack.EMPTY);

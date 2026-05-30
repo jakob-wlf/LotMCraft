@@ -585,7 +585,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
         if (sequence == 0
                 && BeyonderData.implementedPathways.contains(pathway)
                 && !UniquenessEntity.existsInWorld(level, pathway)
-                && !UniquenessEntity.anyPlayerHoldsUniqueness(level, pathway)) {
+                && !UniquenessEntity.anyPlayerHoldsUniqueness(level, pathway)
+                && !UniquenessEntity.anySeq0Presence(level, this)) {
             UniquenessEntity.trySpawn(level, this.position(), pathway);
         }
 

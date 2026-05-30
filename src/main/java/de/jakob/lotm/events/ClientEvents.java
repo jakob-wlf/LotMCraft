@@ -137,7 +137,8 @@ public class ClientEvents {
                 && containerScreen.getMenu() instanceof ChestMenu chestMenu) {
             String title = containerScreen.getTitle().getString();
             String selectSoulTitle = Component.translatable("ability.lotmcraft.internal_underworld.select_soul").getString();
-            if (title.startsWith("Internal Underworld - ") && !title.equals(selectSoulTitle)) {
+            boolean isUnderworldTitle = title.startsWith("Internal Underworld - ") || title.equals(selectSoulTitle);
+            if (isUnderworldTitle) {
                 Minecraft mc = Minecraft.getInstance();
                 if (mc.player != null) {
                     event.setNewScreen(new InternalUnderworldAbilityScreen(

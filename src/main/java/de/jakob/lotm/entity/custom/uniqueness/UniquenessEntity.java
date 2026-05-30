@@ -8,6 +8,8 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -244,6 +246,76 @@ public class UniquenessEntity extends Entity {
         if (!ACTIVE_ENTITIES.containsKey(pathway)) return false;
         Entity entity = level.getEntity(ACTIVE_ENTITIES.get(pathway));
         return entity != null && !entity.isRemoved();
+    }
+
+    public static boolean anySeq0Presence(ServerLevel level) {
+        return anySeq0Presence(level, null);
+    }
+
+    public static boolean anySeq0Presence(ServerLevel level, Entity ignore) {
+        if (level == null || level.getServer() == null) return false;
+
+        String ignorePathway = null;
+        boolean ignoreIsSeq0 = false;
+        Map<String, Integer> ignoreStoredCounts = new HashMap<>();
+        if (ignore instanceof LivingEntity living && BeyonderData.isBeyonder(living)) {
+            if (BeyonderData.getSequence(living) == 0) {
+                ignoreIsSeq0 = true;
+                ignorePathway = BeyonderData.getPathway(living);
+            }
+        }
+        if (ignore instanceof ServerPlayer player) {
+            ignoreStoredCounts = countSeq0StoredSouls(player);
+        }
+
+        for (String pathway : BeyonderData.implementedPathways) {
+            int count = BeyonderData.countTotalSequence(level, pathway, 0);
+            if (ignoreIsSeq0 && pathway.equalsIgnoreCase(ignorePathway)) {
+                count = Math.max(0, count - 1);
+            }
+            int ignoreStored = ignoreStoredCounts.getOrDefault(pathway, 0);
+            if (ignoreStored > 0) {
+                count = Math.max(0, count - ignoreStored);
+            }
+            if (count > 0) {
+                return true;
+            }
+        }
+
+        for (ServerLevel world : level.getServer().getAllLevels()) {
+            for (Entity entity : world.getAllEntities()) {
+                if (entity == ignore) continue;
+                if (!(entity instanceof LivingEntity living)) continue;
+                if (!BeyonderData.isBeyonder(living)) continue;
+                if (BeyonderData.getSequence(living) == 0) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static Map<String, Integer> countSeq0StoredSouls(ServerPlayer player) {
+        Map<String, Integer> counts = new HashMap<>();
+        CompoundTag data = player.getPersistentData();
+        if (!data.contains("InternalUnderworldSouls", Tag.TAG_LIST)) {
+            return counts;
+        }
+
+        ListTag list = data.getList("InternalUnderworldSouls", Tag.TAG_COMPOUND);
+        for (int i = 0; i < list.size(); i++) {
+            CompoundTag soul = list.getCompound(i);
+            if (!soul.contains("Sequence", Tag.TAG_INT)) continue;
+            if (soul.getInt("Sequence") != 0) continue;
+
+            String pathway = soul.getString("Pathway");
+            if (pathway == null || pathway.isEmpty() || "none".equals(pathway)) continue;
+
+            counts.put(pathway, counts.getOrDefault(pathway, 0) + 1);
+        }
+
+        return counts;
     }
 
     @Override

@@ -2,6 +2,7 @@ package de.jakob.lotm.gui.custom.InternalUnderworld;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.util.BeyonderData;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -28,6 +29,13 @@ public class InternalUnderworldAbilityScreen extends AbstractContainerScreen<Che
     private static final int SLOT_BG_COLOR = 0xFF102540;
     private static final int SLOT_BORDER_COLOR = 0xFF1A385E;
     private static final int ICON_BORDER_COLOR = 0xFFFFFFFF;
+    private static final int SOUL_PANEL_BG_COLOR = 0xFF0B1408;
+    private static final int SOUL_PANEL_INNER_COLOR = 0xFF101B0A;
+    private static final int SOUL_PANEL_BORDER_COLOR = 0xFF000000;
+    private static final int SOUL_SLOT_BG_COLOR = 0xFF15230E;
+    private static final int SOUL_SLOT_BORDER_COLOR = 0xFF000000;
+    private static final int SOUL_TEXT_COLOR = 0xFFFFFFFF;
+    private static final float SOUL_ICON_SCALE = 0.78f;
 
     // Cache ability display names to ids for items without explicit tags.
     private static final Map<String, String> ABILITY_NAME_TO_ID = new HashMap<>();
@@ -52,6 +60,9 @@ public class InternalUnderworldAbilityScreen extends AbstractContainerScreen<Che
             this.hoveredSlot = null;
         }
         renderAbilityIcons(guiGraphics);
+        if (isSoulPickingMenu()) {
+            renderSoulSequenceNumbers(guiGraphics);
+        }
         RenderSystem.disableDepthTest();
         renderTooltip(guiGraphics, mouseX, mouseY);
         RenderSystem.enableDepthTest();
@@ -62,9 +73,16 @@ public class InternalUnderworldAbilityScreen extends AbstractContainerScreen<Che
         int x = this.leftPos;
         int y = this.topPos;
 
-        guiGraphics.fill(x, y, x + this.imageWidth, y + this.imageHeight, PANEL_BG_COLOR);
-        guiGraphics.fill(x + 2, y + 2, x + this.imageWidth - 2, y + this.imageHeight - 2, PANEL_INNER_COLOR);
-        guiGraphics.renderOutline(x, y, this.imageWidth, this.imageHeight, PANEL_BORDER_COLOR);
+        boolean soulMenu = isSoulPickingMenu();
+        int panelBg = soulMenu ? SOUL_PANEL_BG_COLOR : PANEL_BG_COLOR;
+        int panelInner = soulMenu ? SOUL_PANEL_INNER_COLOR : PANEL_INNER_COLOR;
+        int panelBorder = soulMenu ? SOUL_PANEL_BORDER_COLOR : PANEL_BORDER_COLOR;
+        int slotBg = soulMenu ? SOUL_SLOT_BG_COLOR : SLOT_BG_COLOR;
+        int slotBorder = soulMenu ? SOUL_SLOT_BORDER_COLOR : SLOT_BORDER_COLOR;
+
+        guiGraphics.fill(x, y, x + this.imageWidth, y + this.imageHeight, panelBg);
+        guiGraphics.fill(x + 2, y + 2, x + this.imageWidth - 2, y + this.imageHeight - 2, panelInner);
+        guiGraphics.renderOutline(x, y, this.imageWidth, this.imageHeight, panelBorder);
 
         for (Slot slot : this.menu.slots) {
             if (!isChestSlot(slot)) {
@@ -72,8 +90,8 @@ public class InternalUnderworldAbilityScreen extends AbstractContainerScreen<Che
             }
             int sx = x + slot.x;
             int sy = y + slot.y;
-            guiGraphics.fill(sx, sy, sx + 18, sy + 18, SLOT_BG_COLOR);
-            guiGraphics.renderOutline(sx, sy, 18, 18, SLOT_BORDER_COLOR);
+            guiGraphics.fill(sx, sy, sx + 18, sy + 18, slotBg);
+            guiGraphics.renderOutline(sx, sy, 18, 18, slotBorder);
         }
     }
 
@@ -87,7 +105,20 @@ public class InternalUnderworldAbilityScreen extends AbstractContainerScreen<Che
             displayText = this.font.plainSubstrByWidth(titleText, Math.max(0, maxWidth - dotsWidth)) + "...";
         }
         int titleX = Math.max(4, (this.imageWidth - this.font.width(displayText)) / 2);
-        guiGraphics.drawString(this.font, displayText, titleX, this.titleLabelY, 0xBFD7FF, false);
+        int titleColor = isSoulPickingMenu() ? SOUL_TEXT_COLOR : 0xBFD7FF;
+        guiGraphics.drawString(this.font, displayText, titleX, this.titleLabelY, titleColor, false);
+
+        if (isSoulPickingMenu()) {
+            int currentSouls = countDisplayedSouls();
+            int playerSeq = this.minecraft != null && this.minecraft.player != null
+                    ? BeyonderData.getSequence(this.minecraft.player)
+                    : 0;
+            int maxSouls = getMaxSoulsForSequence(playerSeq);
+            String soulText = "Souls: " + currentSouls + "/" + maxSouls;
+            int soulTextX = Math.max(4, (this.imageWidth - this.font.width(soulText)) / 2);
+            int soulTextY = this.imageHeight - 12;
+            guiGraphics.drawString(this.font, soulText, soulTextX, soulTextY, SOUL_TEXT_COLOR, false);
+        }
     }
 
     @Override
@@ -96,10 +127,15 @@ public class InternalUnderworldAbilityScreen extends AbstractContainerScreen<Che
             return;
         }
 
+        if (isSoulPickingMenu()) {
+            super.renderSlot(guiGraphics, slot);
+            return;
+        }
+
         ItemStack stack = slot.getItem();
         if (!stack.isEmpty()) {
             String abilityId = getAbilityId(stack);
-            if (abilityId == null || abilityId.isEmpty()) {
+            if ((abilityId == null || abilityId.isEmpty()) && !isSoulPickingMenu()) {
                 abilityId = resolveAbilityIdFromName(stack);
             }
             // Skip default item rendering when we will draw a custom ability icon.
@@ -138,9 +174,14 @@ public class InternalUnderworldAbilityScreen extends AbstractContainerScreen<Che
             int x = this.leftPos + slot.x;
             int y = this.topPos + slot.y;
 
-            guiGraphics.fill(x, y, x + 18, y + 18, SLOT_BG_COLOR);
-            guiGraphics.renderOutline(x, y, 18, 18, SLOT_BORDER_COLOR);
-            guiGraphics.fill(x, y, x + 18, y + 18, 0xFF0A1B36);
+            boolean soulMenu = isSoulPickingMenu();
+            int slotBg = soulMenu ? SOUL_SLOT_BG_COLOR : SLOT_BG_COLOR;
+            int slotBorder = soulMenu ? SOUL_SLOT_BORDER_COLOR : SLOT_BORDER_COLOR;
+            int iconBg = soulMenu ? SOUL_PANEL_BG_COLOR : PANEL_BG_COLOR;
+
+            guiGraphics.fill(x, y, x + 18, y + 18, slotBg);
+            guiGraphics.renderOutline(x, y, 18, 18, slotBorder);
+            guiGraphics.fill(x, y, x + 18, y + 18, iconBg);
             drawAbilityIcon(guiGraphics, abilityId, x + 1, y + 1);
             guiGraphics.renderOutline(x + 1, y + 1, 16, 16, ICON_BORDER_COLOR);
         }
@@ -185,6 +226,84 @@ public class InternalUnderworldAbilityScreen extends AbstractContainerScreen<Che
         return ABILITY_NAME_TO_ID.get(displayName);
     }
 
+    private static boolean isSoulDisplayItem(ItemStack stack) {
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data == null) {
+            return false;
+        }
+        return data.copyTag().contains("SoulData");
+    }
+
+    private void renderSoulSequenceNumbers(GuiGraphics guiGraphics) {
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(0.0f, 0.0f, 500.0f);
+        for (Slot slot : this.menu.slots) {
+            if (!isChestSlot(slot)) {
+                continue;
+            }
+            ItemStack stack = slot.getItem();
+            if (stack.isEmpty() || !isSoulDisplayItem(stack)) {
+                continue;
+            }
+
+            CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+            if (data == null) {
+                continue;
+            }
+            CompoundTag tag = data.copyTag();
+            if (!tag.contains("SoulData")) {
+                continue;
+            }
+            CompoundTag soulData = tag.getCompound("SoulData");
+            if (!soulData.contains("Sequence")) {
+                continue;
+            }
+
+            int sequence = soulData.getInt("Sequence");
+            if (sequence <= 0) {
+                continue;
+            }
+            String seqText = Integer.toString(sequence);
+
+            int x = this.leftPos + slot.x + 16 - this.font.width(seqText);
+            int y = this.topPos + slot.y + 10;
+            guiGraphics.drawString(this.font, seqText, x, y, 0xFFFFFFFF, true);
+        }
+        guiGraphics.pose().popPose();
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
+    }
+
+    private boolean isSoulPickingMenu() {
+        for (Slot slot : this.menu.slots) {
+            if (!isChestSlot(slot)) {
+                continue;
+            }
+            ItemStack stack = slot.getItem();
+            if (!stack.isEmpty() && isSoulDisplayItem(stack)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void renderScaledSoulItem(GuiGraphics guiGraphics, Slot slot, ItemStack stack) {
+        int x = this.leftPos + slot.x;
+        int y = this.topPos + slot.y;
+        float scale = SOUL_ICON_SCALE;
+        float centerX = x + 9.0f;
+        float centerY = y + 9.0f;
+
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(centerX, centerY, 0.0f);
+        guiGraphics.pose().scale(scale, scale, 1.0f);
+        guiGraphics.pose().translate(-8.0f, -8.0f, 0.0f);
+        guiGraphics.renderItem(stack, 0, 0);
+        guiGraphics.pose().popPose();
+    }
+
     private static void buildAbilityNameCache() {
         // Build a lookup of pretty display names to ability ids.
         ABILITY_NAME_TO_ID.clear();
@@ -213,5 +332,31 @@ public class InternalUnderworldAbilityScreen extends AbstractContainerScreen<Che
 
     private boolean isChestSlot(Slot slot) {
         return slot.index < chestSlotCount;
+    }
+
+    private int countDisplayedSouls() {
+        int count = 0;
+        for (Slot slot : this.menu.slots) {
+            if (!isChestSlot(slot)) {
+                continue;
+            }
+            ItemStack stack = slot.getItem();
+            if (!stack.isEmpty() && isSoulDisplayItem(stack)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private static int getMaxSoulsForSequence(int sequence) {
+        return switch (sequence) {
+            case 5 -> 5;
+            case 4 -> 15;
+            case 3 -> 20;
+            case 2 -> 35;
+            case 1 -> 45;
+            case 0 -> 53;
+            default -> 5;
+        };
     }
 }
