@@ -19,12 +19,12 @@ public class SequenceSlotsCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("showavalibleseqslots")
-                .requires(source -> source.hasPermission(2))
+                .requires(source -> source.hasPermission(0))
                 .executes(context -> showAvailable(context.getSource()))
         );
 
         dispatcher.register(Commands.literal("showclaimedseqslots")
-                .requires(source -> source.hasPermission(2))
+                .requires(source -> source.hasPermission(0))
                 .executes(context -> showClaimed(context.getSource()))
         );
     }
