@@ -37,6 +37,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -116,7 +117,7 @@ public class BeyonderEventHandler {
     public static void onTotemUsed(LivingUseTotemEvent event) {
         LivingEntity entity = event.getEntity();
 
-        if (BeyonderData.isBeyonder(entity)) {
+        if (BeyonderData.isBeyonder(entity) && !event.getEntity().level().getGameRules().getBoolean(ModGameRules.ALLOW_TOTEMS)) {
             event.setCanceled(true);
         }
     }

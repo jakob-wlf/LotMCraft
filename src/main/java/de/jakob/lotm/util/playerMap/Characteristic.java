@@ -9,6 +9,7 @@ public class Characteristic {
     private final String pathway;
     private int stack;
     private final int sequence;
+    private boolean enabled;
 
     public static final String CHAR_PATH = "char_path";
     public static final String CHAR_STACK = "char_stack";
@@ -27,6 +28,14 @@ public class Characteristic {
         tag.putInt(CHAR_SEQ, sequence);
     tag.putInt(CHAR_STACK, stack);
         return tag;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String pathway(){

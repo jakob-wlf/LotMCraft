@@ -7,6 +7,7 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class BeyonderComponent implements INBTSerializable<CompoundTag> {
 
@@ -51,14 +52,23 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
         this.pathwayHistory = pathwayHistory;
     }
 
+    public ArrayList<Characteristic> getCharacteristicList(){
+        return charList;
+    }
+
     public int[] getCharacteristicStack() {
         return characteristicStack;
     }
 
     public void setCharacteristicStack(int characteristicStack, int sequence) {
-        if(sequence <= 9 && sequence > 0)
-
+        if(sequence <= 9 && sequence > 0) {
+            Characteristic tmp = this.charList.stream().filter(characteristic -> characteristic.sequence() == sequence).findAny().orElse(new Characteristic(this.pathway, characteristicStack, sequence));
+            tmp.setStack(characteristicStack);
             this.characteristicStack[sequence] = characteristicStack;
+            if(!this.charList.contains(tmp))
+                this.charList.add(tmp);
+        }
+
     }
 
     public void clearCharacteristicStack() {
@@ -115,6 +125,16 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
         }
         tag.put("characteristicStack", characteristicStackTag);
 
+        ListTag characteristicListTag = new ListTag();
+        for(Characteristic characteristic : charList){
+            CompoundTag entry = new CompoundTag();
+            entry.putString("pathway",characteristic.pathway());
+            entry.putInt("sequnece", characteristic.sequence());
+            entry.putInt("stack", characteristic.stack());
+            characteristicListTag.add(entry);
+        }
+        tag.put("characteristicList", characteristicListTag);
+
         tag.putFloat("spirituality", spirituality);
         tag.putFloat("digestionProgress", digestionProgress);
         tag.putBoolean("isGriefingEnabled", isGriefingEnabled);
@@ -144,6 +164,13 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
             int index = entry.getInt("index");
             int value = entry.getInt("value");
             this.characteristicStack[index] = value;
+        }
+
+        this.charList = new ArrayList<>();
+        ListTag characteristicListTag = compoundTag.getList("characteristicList", Tag.TAG_COMPOUND);
+        for(int i = 0; i < characteristicListTag.size(); i++){
+            CompoundTag entry = characteristicListTag.getCompound(i);
+            this.charList.add(new Characteristic(entry.getString("pathway"), entry.getInt("stack"), entry.getInt("sequence")));
         }
 
         this.spirituality = compoundTag.getFloat("spirituality");
