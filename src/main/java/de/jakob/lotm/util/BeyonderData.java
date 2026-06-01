@@ -214,13 +214,24 @@ public class BeyonderData {
         BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
         component.setPathway(pathway);
         component.setSequence(sequence);
-        if (clearCharStack) component.clearCharacteristics();
-        else component.setCharacteristic(0, sequence - 1, pathway);
+        if (clearCharStack) {
+            component.clearCharacteristics();
+            component.setCharacteristic(1, sequence, pathway);
+        } else {
+            int current = component.getCharacteristicList().stream()
+                    .filter(c -> c.sequence() == sequence && c.pathway().equals(pathway))
+                    .mapToInt(Characteristic::stack)
+                    .findFirst().orElse(0);
+            component.setCharacteristic(current + 1, sequence, pathway);
+        }
+
         if (resetSpirituality) component.setSpirituality(getMaxSpirituality(pathway, sequence));
         component.setDigestionProgress(0);
         component.setGriefingEnabled(griefing);
 
         BeyonderDataTickHandler.invalidateCache(entity);
+
+        recalculateCharStackModifiers(entity);
 
         if (clearPathwayHistory) {
             component.setPathwayHistory(new String[10]);
@@ -278,55 +289,35 @@ public class BeyonderData {
         if (sequence < 0 || sequence > 8) return true;
         if (playerMap == null) return true;
 
-        // Global counts include players, stored souls, active summoned souls, and marionettes owned by players.
-        int[] marionetteCounts = countActiveMarionettesBySequence(level, pathway);
-        int seq0 = playerMap.count(pathway, 0) + countStoredSouls(level, pathway, 0) + InternalUnderworldAbility.countActiveSouls(pathway, 0) + marionetteCounts[0];
-        int seq1 = playerMap.count(pathway, 1) + countStoredSouls(level, pathway, 1) + InternalUnderworldAbility.countActiveSouls(pathway, 1) + marionetteCounts[1];
-        int seq2 = playerMap.count(pathway, 2) + countStoredSouls(level, pathway, 2) + InternalUnderworldAbility.countActiveSouls(pathway, 2) + marionetteCounts[2];
-        int seq3 = playerMap.count(pathway, 3) + countStoredSouls(level, pathway, 3) + InternalUnderworldAbility.countActiveSouls(pathway, 3) + marionetteCounts[3];
-        int seq4 = playerMap.count(pathway, 4) + countStoredSouls(level, pathway, 4) + InternalUnderworldAbility.countActiveSouls(pathway, 4) + marionetteCounts[4];
-        int seq5 = playerMap.count(pathway, 5) + countStoredSouls(level, pathway, 5) + InternalUnderworldAbility.countActiveSouls(pathway, 5) + marionetteCounts[5];
-        int seq6 = playerMap.count(pathway, 6) + countStoredSouls(level, pathway, 6) + InternalUnderworldAbility.countActiveSouls(pathway, 6) + marionetteCounts[6];
-        int seq7 = playerMap.count(pathway, 7) + countStoredSouls(level, pathway, 7) + InternalUnderworldAbility.countActiveSouls(pathway, 7) + marionetteCounts[7];
-        int seq8 = playerMap.count(pathway, 8) + countStoredSouls(level, pathway, 8) + InternalUnderworldAbility.countActiveSouls(pathway, 8) + marionetteCounts[8];
-
-        if (adjustAmount != 0) {
-            switch (adjustSequence) {
-                case 0 -> seq0 += adjustAmount;
-                case 1 -> seq1 += adjustAmount;
-                case 2 -> seq2 += adjustAmount;
-                case 3 -> seq3 += adjustAmount;
-                case 4 -> seq4 += adjustAmount;
-                case 5 -> seq5 += adjustAmount;
-                case 6 -> seq6 += adjustAmount;
-                case 7 -> seq7 += adjustAmount;
-                case 8 -> seq8 += adjustAmount;
-            }
+        int count = countTotalSequence(level, pathway, sequence);
+        if (adjustAmount != 0 && adjustSequence == sequence) {
+            count += adjustAmount;
         }
 
-        switch (sequence) {
-            case 0:
-                return seq0 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT);
-            case 1:
-                return seq0 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)
-                        && seq1 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_1_AMOUNT);
-            case 2:
-                return seq2 + seq1 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_2_AMOUNT);
-            case 3:
-                return seq3 + seq2 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_3_AMOUNT);
-            case 4:
-                return seq4 + seq3 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_4_AMOUNT);
-            case 5:
-                return seq5 + seq4 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_5_AMOUNT);
-            case 6:
-                return seq6 + seq5 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_6_AMOUNT);
-            case 7:
-                return seq7 + seq6 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_7_AMOUNT);
-            case 8:
-                return seq8 + seq7 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_8_AMOUNT);
-            default:
-                return true;
+        int limit = switch (sequence) {
+            case 0 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT);
+            case 1 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_1_AMOUNT);
+            case 2 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_2_AMOUNT);
+            case 3 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_3_AMOUNT);
+            case 4 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_4_AMOUNT);
+            case 5 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_5_AMOUNT);
+            case 6 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_6_AMOUNT);
+            case 7 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_7_AMOUNT);
+            case 8 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_8_AMOUNT);
+            default -> Integer.MAX_VALUE;
+        };
+
+        if (count >= limit) return false;
+
+        // Additional lore-based constraints
+        if (sequence == 1) {
+            // Cannot become Sequence 1 if a Sequence 0 already exists
+            int seq0 = countTotalSequence(level, pathway, 0);
+            if (adjustAmount != 0 && adjustSequence == 0) seq0 += adjustAmount;
+            if (seq0 >= level.getServer().getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)) return false;
         }
+
+        return true;
     }
 
     private static int countStoredSouls(ServerLevel level, String pathway, int sequence) {
@@ -897,8 +888,6 @@ public class BeyonderData {
     }
 
     public static void addCharacteristic(LivingEntity player, int sequence, String pathway) {
-        if (!isBeyonder(player)) return;
-
         playerMap.addStack(player, 1, sequence, pathway);
         BeyonderComponent component = player.getData(ModAttachments.BEYONDER_COMPONENT);
         int currentPathwayStack = component.getCharacteristicList().stream()

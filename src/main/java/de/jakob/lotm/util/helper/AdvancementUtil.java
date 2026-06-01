@@ -71,7 +71,6 @@ public class AdvancementUtil {
 
         if (entity instanceof Player player && player.isCreative()) {
             setBeyonder(entity, pathway, sequence);
-            BeyonderData.addCharacteristic(entity, sequence, pathway);
             return;
         }
 
@@ -174,7 +173,6 @@ public class AdvancementUtil {
             activeAdvancements.remove(entity.getUUID());
             if (onSuccessPreSet != null) onSuccessPreSet.run();
             setBeyonder(entity, finalPathway, finalSequence);
-            BeyonderData.addCharacteristic(entity, finalSequence, finalPathway);
             sendThirdPersonPacket(entity);
         });
     }

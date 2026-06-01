@@ -203,8 +203,10 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
     }
 
     public static StoredData fromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-        String path     = tag.getString(NBT_PATHWAY);
-        int    seq      = tag.getInt(NBT_SEQUENCE);
+        String path = tag.contains(NBT_PATHWAY) ? tag.getString(NBT_PATHWAY) : "none";
+        if (path.isEmpty()) path = "none";
+
+        int seq = tag.contains(NBT_SEQUENCE) ? tag.getInt(NBT_SEQUENCE) : LOTMCraft.NON_BEYONDER_SEQ;
         HonorificName name = HonorificName.fromNBT(tag.getCompound(NBT_HONORIFIC_NAME));
         String trueName = tag.getString(NBT_TRUE_NAME);
 
@@ -222,33 +224,43 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
             for (int i = 0; i < charStacks.size(); i++) {
                 chars.add(Characteristic.fromNBT(charStacks.getCompound(i), provider));
             }
-        } else if (tag.contains(NBT_CHAR_STACK)) {
-            Tag stackTag = tag.get(NBT_CHAR_STACK);
-            if (stackTag instanceof IntArrayTag intArrayTag) {
-                int[] array = intArrayTag.getAsIntArray();
-                for (int i = 0; i < Math.min(array.length, 10); i++) {
-                    if (array[i] > 0 && !path.equals("none")) {
-                        chars.add(new Characteristic(path, array[i], i));
-                    }
-                }
-            } else if (stackTag instanceof ListTag listTag) {
-                if (listTag.getElementType() == Tag.TAG_INT) {
-                    for (int i = 0; i < Math.min(listTag.size(), 10); i++) {
-                        int value = listTag.getInt(i);
-                        if (value > 0 && !path.equals("none")) {
-                            chars.add(new Characteristic(path, value, i));
+        } else {
+            // Check both possible legacy keys
+            String legacyKey = tag.contains(NBT_CHAR_STACK) ? NBT_CHAR_STACK : (tag.contains("characteristicStack") ? "characteristicStack" : null);
+
+            if (legacyKey != null) {
+                Tag stackTag = tag.get(legacyKey);
+                if (stackTag instanceof IntArrayTag intArrayTag) {
+                    int[] array = intArrayTag.getAsIntArray();
+                    for (int i = 0; i < Math.min(array.length, 10); i++) {
+                        if (array[i] > 0) {
+                            String charPath = path.equals("none") ? "placeholder" : path;
+                            chars.add(new Characteristic(charPath, array[i], i));
                         }
                     }
-                } else if (listTag.getElementType() == Tag.TAG_COMPOUND) {
-                    for (int i = 0; i < listTag.size(); i++) {
-                        chars.add(Characteristic.fromNBT(listTag.getCompound(i), provider));
+                } else if (stackTag instanceof ListTag listTag) {
+                    if (listTag.getElementType() == Tag.TAG_INT) {
+                        for (int i = 0; i < Math.min(listTag.size(), 10); i++) {
+                            int value = listTag.getInt(i);
+                            if (value > 0) {
+                                String charPath = path.equals("none") ? "placeholder" : path;
+                                chars.add(new Characteristic(charPath, value, i));
+                            }
+                        }
+                    } else if (listTag.getElementType() == Tag.TAG_COMPOUND) {
+                        for (int i = 0; i < listTag.size(); i++) {
+                            chars.add(Characteristic.fromNBT(listTag.getCompound(i), provider));
+                        }
                     }
                 }
             }
         }
 
-
-
+        // If we have a pathway but no characteristics were found in migration,
+        // add at least the base characteristic for the current sequence.
+        if (chars.isEmpty() && !path.equals("none") && seq < LOTMCraft.NON_BEYONDER_SEQ) {
+            chars.add(new Characteristic(path, 1, seq));
+        }
 
         String[] history = new String[10];
         if (tag.contains(NBT_PATHWAY_HISTORY, Tag.TAG_LIST)) {

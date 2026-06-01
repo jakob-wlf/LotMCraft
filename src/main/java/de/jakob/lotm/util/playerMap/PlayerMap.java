@@ -294,12 +294,8 @@ public class PlayerMap extends SavedData {
                     .mapToInt(Characteristic::stack)
                     .sum();
 
-            boolean isPartOfLadder = path.equals(obj.pathway()) && seq >= obj.sequence() && seq < 10;
-
             if (path.equals(obj.pathway()) && seq == obj.sequence()) {
                 res += Math.max(1, totalOfThisType);
-            } else if (isPartOfLadder) {
-                res += Math.max(0, totalOfThisType - 1);
             } else {
                 res += totalOfThisType;
             }
@@ -308,46 +304,26 @@ public class PlayerMap extends SavedData {
     }
 
     public boolean check(String path, int seq){
-        int seq_0 = count(path, 0),
-                seq_1 = count(path, 1),
-                seq_2 = count(path, 2),
-                seq_3 = count(path, 3),
-                seq_4 = count(path, 4),
-                seq_5 = count(path, 5),
-                seq_6 = count(path, 6),
-                seq_7 = count(path, 7),
-                seq_8 = count(path, 8)
-        ;
+        int currentCount = count(path, seq);
+        int limit = switch (seq) {
+            case 0 -> server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT);
+            case 1 -> server.getGameRules().getInt(ModGameRules.SEQ_1_AMOUNT);
+            case 2 -> server.getGameRules().getInt(ModGameRules.SEQ_2_AMOUNT);
+            case 3 -> server.getGameRules().getInt(ModGameRules.SEQ_3_AMOUNT);
+            case 4 -> server.getGameRules().getInt(ModGameRules.SEQ_4_AMOUNT);
+            case 5 -> server.getGameRules().getInt(ModGameRules.SEQ_5_AMOUNT);
+            case 6 -> server.getGameRules().getInt(ModGameRules.SEQ_6_AMOUNT);
+            case 7 -> server.getGameRules().getInt(ModGameRules.SEQ_7_AMOUNT);
+            case 8 -> server.getGameRules().getInt(ModGameRules.SEQ_8_AMOUNT);
+            default -> Integer.MAX_VALUE;
+        };
 
-        switch (seq) {
-            case 0:
-                if (seq_0 >= server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)) return false;
-                break;
-            case 1:
-                if (seq_0 >= server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)
-                        || seq_1 >= server.getGameRules().getInt(ModGameRules.SEQ_1_AMOUNT)) return false;
-                break;
-            case 2:
-                if (seq_2 + seq_1 >= server.getGameRules().getInt(ModGameRules.SEQ_2_AMOUNT)) return false;
-                break;
-            case 3:
-                if (seq_3 + seq_2 >= server.getGameRules().getInt(ModGameRules.SEQ_3_AMOUNT)) return false;
-                break;
-            case 4:
-                if (seq_4 + seq_3 >= server.getGameRules().getInt(ModGameRules.SEQ_4_AMOUNT)) return false;
-                break;
-            case 5:
-                if (seq_5 + seq_4 >= server.getGameRules().getInt(ModGameRules.SEQ_5_AMOUNT)) return false;
-                break;
-            case 6:
-                if (seq_6 + seq_5 >= server.getGameRules().getInt(ModGameRules.SEQ_6_AMOUNT)) return false;
-                break;
-            case 7:
-                if (seq_7 + seq_6 >= server.getGameRules().getInt(ModGameRules.SEQ_7_AMOUNT)) return false;
-                break;
-            case 8:
-                if (seq_8 + seq_7 >= server.getGameRules().getInt(ModGameRules.SEQ_8_AMOUNT)) return false;
-                break;
+        if (currentCount >= limit) return false;
+
+        // Additional lore-based constraints
+        if (seq == 1) {
+            // Cannot become Sequence 1 if a Sequence 0 already exists
+            if (count(path, 0) >= server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)) return false;
         }
 
         return true;

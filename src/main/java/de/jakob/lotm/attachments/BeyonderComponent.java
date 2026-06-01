@@ -156,8 +156,9 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
 
     @Override
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag compoundTag) {
-        this.sequence = compoundTag.getInt("sequence");
-        this.pathway = compoundTag.getString("pathway");
+        this.pathway = compoundTag.contains("pathway") ? compoundTag.getString("pathway") : "none";
+        if (this.pathway.isEmpty()) this.pathway = "none";
+        this.sequence = compoundTag.contains("sequence") ? compoundTag.getInt("sequence") : de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ;
 
         ListTag pathwayHistoryTag = compoundTag.getList("pathwayHistory", 8); // 8 is the ID for StringTag
         this.pathwayHistory = new String[pathwayHistoryTag.size()];
@@ -176,29 +177,42 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
             for (int i = 0; i < characteristicListTag.size(); i++) {
                 this.charList.add(Characteristic.fromNBT(characteristicListTag.getCompound(i), provider));
             }
-        } else if (compoundTag.contains("characteristicStack")) {
-            Tag stackTag = compoundTag.get("characteristicStack");
-            if (stackTag instanceof IntArrayTag intArrayTag) {
-                int[] array = intArrayTag.getAsIntArray();
-                for (int i = 0; i < Math.min(array.length, 10); i++) {
-                    if (array[i] > 0 && !this.pathway.equals("none")) {
-                        this.charList.add(new Characteristic(this.pathway, array[i], i));
-                    }
-                }
-            } else if (stackTag instanceof ListTag listTag) {
-                if (listTag.getElementType() == Tag.TAG_INT) {
-                    for (int i = 0; i < Math.min(listTag.size(), 10); i++) {
-                        int value = listTag.getInt(i);
-                        if (value > 0 && !this.pathway.equals("none")) {
-                            this.charList.add(new Characteristic(this.pathway, value, i));
+        } else {
+            // Check both possible legacy keys
+            String legacyKey = compoundTag.contains("characteristicStack") ? "characteristicStack" : (compoundTag.contains("beyonder_map_char_stack") ? "beyonder_map_char_stack" : null);
+
+            if (legacyKey != null) {
+                Tag stackTag = compoundTag.get(legacyKey);
+                if (stackTag instanceof IntArrayTag intArrayTag) {
+                    int[] array = intArrayTag.getAsIntArray();
+                    for (int i = 0; i < Math.min(array.length, 10); i++) {
+                        if (array[i] > 0) {
+                            String charPath = this.pathway.equals("none") ? "placeholder" : this.pathway;
+                            this.charList.add(new Characteristic(charPath, array[i], i));
                         }
                     }
-                } else if (listTag.getElementType() == Tag.TAG_COMPOUND) {
-                    for (int i = 0; i < listTag.size(); i++) {
-                        this.charList.add(Characteristic.fromNBT(listTag.getCompound(i), provider));
+                } else if (stackTag instanceof ListTag listTag) {
+                    if (listTag.getElementType() == Tag.TAG_INT) {
+                        for (int i = 0; i < Math.min(listTag.size(), 10); i++) {
+                            int value = listTag.getInt(i);
+                            if (value > 0) {
+                                String charPath = this.pathway.equals("none") ? "placeholder" : this.pathway;
+                                this.charList.add(new Characteristic(charPath, value, i));
+                            }
+                        }
+                    } else if (listTag.getElementType() == Tag.TAG_COMPOUND) {
+                        for (int i = 0; i < listTag.size(); i++) {
+                            this.charList.add(Characteristic.fromNBT(listTag.getCompound(i), provider));
+                        }
                     }
                 }
             }
+        }
+
+        // If we have a pathway but no characteristics were found in migration,
+        // add at least the base characteristic for the current sequence.
+        if (this.charList.isEmpty() && !this.pathway.equals("none") && this.sequence < de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ) {
+            this.charList.add(new Characteristic(this.pathway, 1, this.sequence));
         }
 
         this.spirituality = compoundTag.getFloat("spirituality");
