@@ -2,7 +2,9 @@ package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gamerule.ClientGameruleCache;
+import de.jakob.lotm.util.playerMap.Characteristic;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -90,6 +92,11 @@ public class ClientBeyonderCache {
         dataCache.remove(playerUUID);
     }
 
+    public static ArrayList<Characteristic> getCharList(UUID playerUUID) {
+        BeyonderClientData data = dataCache.get(playerUUID);
+        return data.charList();
+    }
+
     // Inner record to store client-side beyonder data
-    private record BeyonderClientData(String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress, String[] pathwayHistory, int[] charStacks) {}
+    private record BeyonderClientData(String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress, String[] pathwayHistory, ArrayList<Characteristic> charList, int[] charStacks) {}
 }

@@ -16,6 +16,7 @@ import de.jakob.lotm.util.ClientQuestData;
 import de.jakob.lotm.util.ClientUniquenessCache;
 import de.jakob.lotm.util.data.ClientData;
 import de.jakob.lotm.util.helper.ClientTeamData;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -126,6 +127,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             ControllingDataComponent controllingDataComponent = minecraft.player.getData(ModAttachments.CONTROLLING_DATA);
             if (controllingDataComponent.isControlling()) {
                 ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
+
                 availableAbilities.addAll(controllerPathwayAbilities);
             } else {
                 var discernmentComponent = minecraft.player.getData(ModAttachments.DISCERNMENT_DATA);
@@ -136,6 +138,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 }
                 else {
                     String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
+                    ArrayList<Characteristic> charList = ClientBeyonderCache.getCharList(minecraft.player.getUUID());
                     for (int i = menu.getSequence(); i < pathwayHistory.length; i++) {
                         String pathway = pathwayHistory[i];
                         if (pathway != null) {
