@@ -5,11 +5,13 @@ import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AvatarCreationAbility extends Ability {
@@ -48,7 +50,14 @@ public class AvatarCreationAbility extends Ability {
             return;
         }
 
-        var stacks = BeyonderData.playerMap.get(entity).get().charStack();
+        List<Characteristic> charList = BeyonderData.getCharList(entity);
+        int[] stacks = new int[10];
+        for (Characteristic c : charList) {
+            if (c.sequence() >= 0 && c.sequence() < 10) {
+                stacks[c.sequence()] += c.stack();
+            }
+        }
+
         int sequence = LOTMCraft.NON_BEYONDER_SEQ;
         int entitySeq = BeyonderData.getSequence(entity);
 
@@ -66,6 +75,6 @@ public class AvatarCreationAbility extends Ability {
         level.addFreshEntity(avatar);
 
         if(sequence != LOTMCraft.NON_BEYONDER_SEQ)
-            BeyonderData.setCharStack(entity, sequence, stacks[sequence] - 1, true, BeyonderData.getPathway(entity));
+            BeyonderData.setCharacteristic(entity, stacks[sequence] - 1, sequence, true, BeyonderData.getPathway(entity));
     }
 }

@@ -7,15 +7,13 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class BeyonderComponent implements INBTSerializable<CompoundTag> {
 
-    private int sequence = 10;
+    private int sequence = de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ;
     private String pathway = "none";
     private String[] pathwayHistory = new String[10];
     private ArrayList<Characteristic> charList = new ArrayList<Characteristic>();
-    private int[] characteristicStack = new int[11];
     private float spirituality = 0;
     private float digestionProgress = 0;
     private boolean isGriefingEnabled = true;
@@ -56,24 +54,52 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
         return charList;
     }
 
-    public int[] getCharacteristicStack() {
-        return characteristicStack;
+
+    public void setCharacteristic(int stackValue, int sequence, String pathway) {
+        if(sequence <= 9 && sequence >= 0) {
+            Characteristic tmp = this.charList.stream()
+                    .filter(characteristic -> characteristic.sequence() == sequence && characteristic.pathway().equals(pathway))
+                    .findAny()
+                    .orElse(null);
+
+            if (tmp == null) {
+                if (stackValue > 0) {
+                    this.charList.add(new Characteristic(pathway, stackValue, sequence));
+                }
+            } else {
+                if (stackValue <= 0) {
+                    this.charList.remove(tmp);
+                } else {
+                    tmp.setStack(stackValue);
+                }
+            }
+            syncHighest();
+        }
     }
 
-    public void setCharacteristicStack(int characteristicStack, int sequence) {
-        if(sequence <= 9 && sequence > 0) {
-            Characteristic tmp = this.charList.stream().filter(characteristic -> characteristic.sequence() == sequence).findAny().orElse(new Characteristic(this.pathway, characteristicStack, sequence));
-            tmp.setStack(characteristicStack);
-            this.characteristicStack[sequence] = characteristicStack;
-            if(!this.charList.contains(tmp))
-                this.charList.add(tmp);
+    public void syncHighest() {
+        if (charList.isEmpty()) {
+            this.pathway = "none";
+            this.sequence = de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ;
+            return;
         }
 
+        int min = charList.stream().mapToInt(Characteristic::sequence).min().orElse(de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ);
+        this.sequence = min;
+
+        boolean currentMatches = charList.stream().anyMatch(c -> c.sequence() == min && c.pathway().equals(this.pathway));
+        if (!currentMatches) {
+            this.pathway = charList.stream()
+                    .filter(c -> c.sequence() == min)
+                    .map(Characteristic::pathway)
+                    .findFirst()
+                    .orElse("none");
+        }
     }
 
-    public void clearCharacteristicStack() {
-        this.characteristicStack = new int[11];
+    public void clearCharacteristics() {
         this.charList = new ArrayList<>();
+        syncHighest();
     }
 
     public float getSpirituality() {
@@ -116,22 +142,9 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
         }
         tag.put("pathwayHistory", pathwayHistoryTag);
 
-        ListTag characteristicStackTag = new ListTag();
-        for (int i = 0; i < characteristicStack.length; i++) {
-            CompoundTag entry = new CompoundTag();
-            entry.putInt("index", i);
-            entry.putInt("value", characteristicStack[i]);
-            characteristicStackTag.add(entry);
-        }
-        tag.put("characteristicStack", characteristicStackTag);
-
         ListTag characteristicListTag = new ListTag();
         for(Characteristic characteristic : charList){
-            CompoundTag entry = new CompoundTag();
-            entry.putString("pathway",characteristic.pathway());
-            entry.putInt("sequnece", characteristic.sequence());
-            entry.putInt("stack", characteristic.stack());
-            characteristicListTag.add(entry);
+            characteristicListTag.add(characteristic.toNBT(provider));
         }
         tag.put("characteristicList", characteristicListTag);
 
@@ -157,24 +170,40 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
             }
         }
 
-        this.characteristicStack = new int[11];
-        ListTag characteristicStackTag = compoundTag.getList("characteristicStack", 10); // 10 = CompoundTag
-        for (int i = 0; i < characteristicStackTag.size(); i++) {
-            CompoundTag entry = characteristicStackTag.getCompound(i);
-            int index = entry.getInt("index");
-            int value = entry.getInt("value");
-            this.characteristicStack[index] = value;
-        }
-
         this.charList = new ArrayList<>();
-        ListTag characteristicListTag = compoundTag.getList("characteristicList", Tag.TAG_COMPOUND);
-        for(int i = 0; i < characteristicListTag.size(); i++){
-            CompoundTag entry = characteristicListTag.getCompound(i);
-            this.charList.add(new Characteristic(entry.getString("pathway"), entry.getInt("stack"), entry.getInt("sequence")));
+        if (compoundTag.contains("characteristicList", Tag.TAG_LIST)) {
+            ListTag characteristicListTag = compoundTag.getList("characteristicList", Tag.TAG_COMPOUND);
+            for (int i = 0; i < characteristicListTag.size(); i++) {
+                this.charList.add(Characteristic.fromNBT(characteristicListTag.getCompound(i), provider));
+            }
+        } else if (compoundTag.contains("characteristicStack")) {
+            Tag stackTag = compoundTag.get("characteristicStack");
+            if (stackTag instanceof IntArrayTag intArrayTag) {
+                int[] array = intArrayTag.getAsIntArray();
+                for (int i = 0; i < Math.min(array.length, 10); i++) {
+                    if (array[i] > 0 && !this.pathway.equals("none")) {
+                        this.charList.add(new Characteristic(this.pathway, array[i], i));
+                    }
+                }
+            } else if (stackTag instanceof ListTag listTag) {
+                if (listTag.getElementType() == Tag.TAG_INT) {
+                    for (int i = 0; i < Math.min(listTag.size(), 10); i++) {
+                        int value = listTag.getInt(i);
+                        if (value > 0 && !this.pathway.equals("none")) {
+                            this.charList.add(new Characteristic(this.pathway, value, i));
+                        }
+                    }
+                } else if (listTag.getElementType() == Tag.TAG_COMPOUND) {
+                    for (int i = 0; i < listTag.size(); i++) {
+                        this.charList.add(Characteristic.fromNBT(listTag.getCompound(i), provider));
+                    }
+                }
+            }
         }
 
         this.spirituality = compoundTag.getFloat("spirituality");
         this.digestionProgress = compoundTag.getFloat("digestionProgress");
         this.isGriefingEnabled = compoundTag.getBoolean("isGriefingEnabled");
+        syncHighest();
     }
 }

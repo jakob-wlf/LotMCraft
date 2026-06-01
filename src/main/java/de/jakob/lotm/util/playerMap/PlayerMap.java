@@ -175,18 +175,13 @@ public class PlayerMap extends SavedData {
                 ((ServerPlayer) entity).getGameProfile().getName(), sequence, pathway,
                 isNull ? "none" : data.trueName(), isNull ? LOTMCraft.NON_BEYONDER_SEQ : data.sequence(), isNull ? "none" : data.pathway());
 
-        int[] componentCharStack = entity.getData(ModAttachments.BEYONDER_COMPONENT)
-                .getCharacteristicStack();
-
-        String[] pathwayHistory = entity.getData(ModAttachments.BEYONDER_COMPONENT).getPathwayHistory();
-
         map.put(entity.getUUID(), StoredData.builder
                 .copyFrom(data)
                 .pathway(pathway)
                 .sequence(sequence)
                 .trueName(((ServerPlayer) entity).getGameProfile().getName())
-                .charStackArray(componentCharStack)
-                .pathwayHistory(pathwayHistory)
+                .charList(entity.getData(ModAttachments.BEYONDER_COMPONENT).getCharacteristicList())
+                .pathwayHistory(BeyonderData.getPathwayHistory(entity))
                 .uniqueness(uniqueness)
                 .build());
 
@@ -294,9 +289,19 @@ public class PlayerMap extends SavedData {
     public int count(String path, int seq) {
         int res = 0;
         for (var obj : map.values()) {
-            if (obj.pathway().equals(path) && obj.sequence() == seq) {
-                res++;
-                res += obj.charStack()[seq];
+            int totalOfThisType = obj.chars().stream()
+                    .filter(c -> c.pathway().equals(path) && c.sequence() == seq)
+                    .mapToInt(Characteristic::stack)
+                    .sum();
+
+            boolean isPartOfLadder = path.equals(obj.pathway()) && seq >= obj.sequence() && seq < 10;
+
+            if (path.equals(obj.pathway()) && seq == obj.sequence()) {
+                res += Math.max(1, totalOfThisType);
+            } else if (isPartOfLadder) {
+                res += Math.max(0, totalOfThisType - 1);
+            } else {
+                res += totalOfThisType;
             }
         }
         return res;
@@ -479,7 +484,10 @@ public class PlayerMap extends SavedData {
     public void addStack(LivingEntity entity, int value, int sequence, String pathway) {
         if (!contains(entity)) put(entity);
 
-        int current = playerMap.get(entity.getUUID()).get().charStack()[sequence];
+        int current = map.get(entity.getUUID()).chars().stream()
+                .filter(c -> c.pathway().equals(pathway) && c.sequence() == sequence)
+                .mapToInt(Characteristic::stack)
+                .sum();
         setStack(entity, current + value, sequence, pathway);
     }
 
@@ -509,7 +517,7 @@ public class PlayerMap extends SavedData {
 
         map.put(entity.getUUID(), StoredData.builder
                 .copyFrom(map.get(entity.getUUID()))
-                .charStack(value, sequence, pathway)
+                .characteristic(value, sequence, pathway)
                 .build());
 
         setDirty();
@@ -520,7 +528,7 @@ public class PlayerMap extends SavedData {
 
         map.put(entity.getUUID(), StoredData.builder
                 .copyFrom(map.get(entity.getUUID()))
-                .clearCharStack()
+                .clearCharList()
                 .build());
 
         setDirty();

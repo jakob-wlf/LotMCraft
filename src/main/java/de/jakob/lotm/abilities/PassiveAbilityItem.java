@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities;
 
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -32,14 +33,19 @@ public abstract class PassiveAbilityItem extends Item {
 
     public boolean shouldApplyTo(LivingEntity entity) {
         if (entity.level().isClientSide()) {
+            ArrayList<Characteristic> charList = ClientBeyonderCache.getCharList(entity.getUUID());
+            for (Characteristic c : charList) {
+                Integer minSeq = getRequirements().get(c.pathway());
+                if (minSeq != null && c.sequence() <= minSeq) return true;
+            }
+
+            // Fallback to primary pathway/sequence and history
             String pathway = ClientBeyonderCache.getPathway(entity.getUUID());
             int sequence = ClientBeyonderCache.getSequence(entity.getUUID());
 
-            if(pathway == null) {
-                return false;
-            }
+            if (pathway == null || pathway.equals("none")) return false;
 
-            if(getRequirements().containsKey(pathway)) {
+            if (getRequirements().containsKey(pathway)) {
                 Integer minSeq = getRequirements().get(pathway);
                 if (minSeq != null && sequence <= minSeq) return true;
             }
@@ -56,10 +62,19 @@ public abstract class PassiveAbilityItem extends Item {
 
             return false;
         } else {
+            ArrayList<Characteristic> charList = BeyonderData.getCharList(entity);
+            for (Characteristic c : charList) {
+                Integer minSeq = getRequirements().get(c.pathway());
+                if (minSeq != null && c.sequence() <= minSeq) return true;
+            }
+
+            // Fallback to primary pathway/sequence and history
             String pathway = BeyonderData.getPathway(entity);
             int sequence = BeyonderData.getSequence(entity);
 
-            if(getRequirements().containsKey(pathway)) {
+            if (pathway.equals("none")) return false;
+
+            if (getRequirements().containsKey(pathway)) {
                 Integer minSeq = getRequirements().get(pathway);
                 if (minSeq != null && sequence <= minSeq) return true;
             }

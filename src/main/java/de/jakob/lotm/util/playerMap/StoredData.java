@@ -13,7 +13,6 @@ import java.util.LinkedList;
 public record StoredData(String pathway, Integer sequence, HonorificName honorificName,
                          String trueName,
                          Boolean modified, Vec3 lastPosition,
-                         int[] charStack,
                          ArrayList<Characteristic> chars,
                          String[] pathwayHistory,
                          String uniqueness, //none if no uniqueness :)
@@ -51,7 +50,6 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 + "\n--- Seq: " + sequence
                 + "\n--- Honorific Name: " + honorificName.getAllInfo()
                 + "\n--- Logout Position: " + (int) lastPosition.x + " " + (int) lastPosition.y + " " + (int) lastPosition.z
-                + "\n--- Char stack: " + java.util.Arrays.toString(charStack)
                 + "\n--- Pathway history: " + getPathwayHistoryInfo()
                 + "\n--- Amount of prophecies: " + prophecies.size()
                 + "\n--- Sefirot: " + (claimedSefirot.isEmpty() ? "none" : claimedSefirot)
@@ -65,7 +63,6 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 + "\n--- Path: " + pathway
                 + "\n--- Seq: " + sequence
                 + "\n--- Honorific Name: " + honorificName.getAllInfo()
-                + "\n--- Char stack: " + java.util.Arrays.toString(charStack)
                 + "\n--- Pathway history: " + getPathwayHistoryInfo()
                 + "\n--- Sefirot: " + (claimedSefirot.isEmpty() ? "none" : claimedSefirot)
                 + "\n--- CharList: " + chars.toString()
@@ -89,10 +86,37 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
 
     public StoredData regressSeq() { return regressSeq(true); }
 
+    public int getHighestSequence() {
+        int min = sequence;
+        for (Characteristic c : chars) {
+            if (c.sequence() < min) {
+                min = c.sequence();
+            }
+        }
+        return min;
+    }
+
+    public String getHighestPathway() {
+        int min = sequence;
+        String bestPathway = pathway;
+        for (Characteristic c : chars) {
+            if (c.sequence() < min) {
+                min = c.sequence();
+                bestPathway = c.pathway();
+            }
+        }
+        return bestPathway;
+    }
+
+
     public StoredData regressSeq(boolean respectCharStack) {
-        if (respectCharStack && charStack[sequence] > 0) {
+        int currentStack = chars.stream()
+                .filter(c -> c.sequence() == sequence && c.pathway().equals(pathway))
+                .mapToInt(Characteristic::stack)
+                .sum();
+        if (respectCharStack && currentStack > 0) {
             // Still has stacks — lose one, stay at current sequence
-            return builder.copyFrom(this).charStack(charStack[sequence] - 1, sequence, pathway).build();
+            return builder.copyFrom(this).characteristic(currentStack - 1, sequence, pathway).build();
         }
 
 
@@ -130,7 +154,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 .pathway(regressedPathway)
                 .sequence(newSequence)
                 .honorificName((newSequence >= 3) ? HonorificName.EMPTY : honorificName)
-                .charStack(0, sequence, pathway)   // reset stack on regression
+                .characteristic(0, sequence, pathway)   // reset stack on regression
                 .pathwayHistory(becomesNonBeyonder ? new String[10] : clearedHistory)
                 .uniqueness("none")
                 .sefirot(sefirot)
@@ -154,13 +178,6 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
         tag.putDouble(NBT_LAST_POSITION_Y, lastPosition.y());
         tag.putDouble(NBT_LAST_POSITION_Z, lastPosition.z());
 
-        // single int stack
-        ListTag charStackList = new ListTag();
-        for (int stackCount : charStack) {
-            charStackList.add(IntTag.valueOf(stackCount));
-        }
-
-        tag.put(NBT_CHAR_STACK, charStackList);
         ListTag charStacks = new ListTag();
         for (Characteristic characteristic : chars){
             charStacks.add(characteristic.toNBT(provider));
@@ -199,21 +216,33 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 tag.getDouble(NBT_LAST_POSITION_Y),
                 tag.getDouble(NBT_LAST_POSITION_Z));
 
-        int[] charStack = new int[10];
-        if (tag.contains(NBT_CHAR_STACK, Tag.TAG_LIST)) {
-            ListTag charStackList = tag.getList(NBT_CHAR_STACK, Tag.TAG_INT);
-            for (int i = 0; i < Math.min(charStackList.size(), 10); i++) {
-                charStack[i] = charStackList.getInt(i);
-            }
-        }
-
         ArrayList<Characteristic> chars = new ArrayList<Characteristic>();
-        if (tag.contains(NBT_CHAR_LIST, tag.TAG_LIST)){
+        if (tag.contains(NBT_CHAR_LIST, Tag.TAG_LIST)){
             ListTag charStacks = tag.getList(NBT_CHAR_LIST, Tag.TAG_COMPOUND);
-
-            for (var charTag : charStacks){
-                if (charTag instanceof CompoundTag compound) {
-                    chars.add(Characteristic.fromNBT(compound, provider));
+            for (int i = 0; i < charStacks.size(); i++) {
+                chars.add(Characteristic.fromNBT(charStacks.getCompound(i), provider));
+            }
+        } else if (tag.contains(NBT_CHAR_STACK)) {
+            Tag stackTag = tag.get(NBT_CHAR_STACK);
+            if (stackTag instanceof IntArrayTag intArrayTag) {
+                int[] array = intArrayTag.getAsIntArray();
+                for (int i = 0; i < Math.min(array.length, 10); i++) {
+                    if (array[i] > 0 && !path.equals("none")) {
+                        chars.add(new Characteristic(path, array[i], i));
+                    }
+                }
+            } else if (stackTag instanceof ListTag listTag) {
+                if (listTag.getElementType() == Tag.TAG_INT) {
+                    for (int i = 0; i < Math.min(listTag.size(), 10); i++) {
+                        int value = listTag.getInt(i);
+                        if (value > 0 && !path.equals("none")) {
+                            chars.add(new Characteristic(path, value, i));
+                        }
+                    }
+                } else if (listTag.getElementType() == Tag.TAG_COMPOUND) {
+                    for (int i = 0; i < listTag.size(); i++) {
+                        chars.add(Characteristic.fromNBT(listTag.getCompound(i), provider));
+                    }
                 }
             }
         }
@@ -241,7 +270,18 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
 
         String sefirot = tag.getString(NBT_SEFIROT);
 
-        return new StoredData(path, seq, name, trueName, modified, lastPos,
-                charStack, chars, history, uniqueness, prophecies, sefirot);
+        return new StoredDataBuilder()
+                .pathway(path)
+                .sequence(seq)
+                .honorificName(name)
+                .trueName(trueName)
+                .modified(modified)
+                .lastPosition(lastPos)
+                .charList(chars)
+                .pathwayHistory(history)
+                .uniqueness(uniqueness)
+                .prophecies(prophecies)
+                .sefirot(sefirot)
+                .build();
     }
 }

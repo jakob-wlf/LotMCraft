@@ -23,6 +23,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncOnHoldAbilityPacket;
 import de.jakob.lotm.network.packets.toClient.SyncToggleAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -45,6 +46,7 @@ public class BeyonderDataTickHandler {
 
     // In BeyonderDataTickHandler
     private static final Map<UUID, Set<PassiveAbilityItem>> cachedAbilities = new ConcurrentHashMap<>();
+    private static final Map<UUID, Set<PassiveAbilityItem>> lastTickedAbilities = new ConcurrentHashMap<>();
 
     public static void invalidateCache(LivingEntity entity) {
         cachedAbilities.remove(entity.getUUID());
@@ -123,8 +125,6 @@ public class BeyonderDataTickHandler {
 
             if(entity.tickCount % 200 == 0) {
                 invalidateCache(livingEntity);
-                PhysicalEnhancementsAbility.resetEnhancements(event.getEntity().getUUID());
-                invalidateCache(livingEntity); // also re-filter applicable abilities
             }
 
             // Tick Passive Abilities, and onHold for currently selected Ability and tick luck
@@ -191,15 +191,51 @@ public class BeyonderDataTickHandler {
 
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
-        PhysicalEnhancementsAbility.resetEnhancements(event.getEntity().getUUID());
+        PhysicalEnhancementsAbility.resetEnhancements(event.getEntity());
         invalidateCache(event.getEntity()); // also re-filter applicable abilities
+        lastTickedAbilities.remove(event.getEntity().getUUID());
+    }
+
+    @SubscribeEvent
+    public static void onLivingDeath(net.neoforged.neoforge.event.entity.living.LivingDeathEvent event) {
+        lastTickedAbilities.remove(event.getEntity().getUUID());
+        cachedAbilities.remove(event.getEntity().getUUID());
     }
 
     private static void tickAbilities(LivingEntity entity) {
         if(entity.level().isClientSide) return;
 
+        UUID uuid = entity.getUUID();
+        Set<PassiveAbilityItem> current = getApplicableAbilities(entity);
+        Set<PassiveAbilityItem> last = lastTickedAbilities.get(uuid);
+
+        if (last != null && !last.equals(current)) {
+            // Handle removal
+            for (PassiveAbilityItem ability : last) {
+                if (!current.contains(ability)) {
+                    ability.onPassiveAbilityRemoved(entity, (ServerLevel)entity.level());
+                }
+            }
+            // Handle gain
+            for (PassiveAbilityItem ability : current) {
+                if (!last.contains(ability)) {
+                    ability.onPassiveAbilityGained(entity, (ServerLevel)entity.level());
+                }
+            }
+        } else if (last == null && !current.isEmpty()) {
+            for (PassiveAbilityItem ability : current) {
+                ability.onPassiveAbilityGained(entity, (ServerLevel)entity.level());
+            }
+        }
+
+        if (current.isEmpty()) {
+            lastTickedAbilities.remove(uuid);
+        } else {
+            lastTickedAbilities.put(uuid, new HashSet<>(current));
+        }
+
         // Passive Abilities
-        getApplicableAbilities(entity).forEach(abilityItem -> {
+        current.forEach(abilityItem -> {
             abilityItem.tick(entity.level(), entity);
         });
 

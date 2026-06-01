@@ -17,7 +17,6 @@ public class StoredDataBuilder {
     private String trueName;
     private Boolean modified;
     private Vec3 lastPosition;
-    private int[] charStack;
     private ArrayList<Characteristic> charList;
     private String[] pathwayHistory;
     private LinkedList<Prophecy> prophecyList;
@@ -35,7 +34,6 @@ public class StoredDataBuilder {
         trueName = "none";
         modified = false;
         lastPosition = new Vec3(0, 0, 0);
-        charStack = new int[11];
         charList = new ArrayList<Characteristic>();
         pathwayHistory = new String[10];
         prophecyList = new LinkedList<>();
@@ -53,8 +51,7 @@ public class StoredDataBuilder {
             trueName = data.trueName();
             modified = data.modified();
             lastPosition = data.lastPosition();
-            charStack = Arrays.copyOf(data.charStack(), 10);
-            charList = data.chars();
+            charList = new ArrayList<>(data.chars());
             pathwayHistory = Arrays.copyOf(data.pathwayHistory(), 10);
             prophecyList = data.prophecies();
             sefirot = data.claimedSefirot();
@@ -94,23 +91,30 @@ public class StoredDataBuilder {
         return this;
     }
 
-    public StoredDataBuilder charStack(int stack, int sequence, String pathway) {
-        if(sequence >= 0 && sequence < 10)
-            charStack[sequence] = stack;
-
+    public StoredDataBuilder characteristic(int stack, int sequence, String pathway) {
+        Characteristic target = null;
         for (Characteristic characteristic : charList) {
-            if (Objects.equals(characteristic.pathway(), pathway)) {
-                characteristic.setStack(stack);
-                return this;
+            if (Objects.equals(characteristic.pathway(), pathway) && characteristic.sequence() == sequence) {
+                target = characteristic;
+                break;
             }
         }
-        charList.add(new Characteristic(pathway, stack, sequence));
+
+        if (target != null) {
+            if (stack <= 0) {
+                charList.remove(target);
+            } else {
+                target.setStack(stack);
+            }
+        } else if (stack > 0) {
+            charList.add(new Characteristic(pathway, stack, sequence));
+        }
 
         return this;
     }
 
     public StoredDataBuilder charList(ArrayList<Characteristic> charList){
-        this.charList = charList;
+        this.charList = charList == null ? new ArrayList<>() : new ArrayList<>(charList);
         return this;
     }
 
@@ -119,19 +123,9 @@ public class StoredDataBuilder {
         return this;
     }
 
-    public StoredDataBuilder clearCharStack() {
-        charStack = new int[10];
-        charList = new ArrayList<>();
-        return this;
-    }
 
     public StoredDataBuilder uniqueness(String uniqueness) {
         this.uniqueness = uniqueness;
-        return this;
-    }
-
-    public StoredDataBuilder charStackArray(int[] stack) {
-        this.charStack = Arrays.copyOf(stack, 10);
         return this;
     }
 
@@ -151,9 +145,34 @@ public class StoredDataBuilder {
     }
 
     public StoredData build(){
+        if (!charList.isEmpty()) {
+            int minSeq = charList.stream().mapToInt(Characteristic::sequence).min().orElse(LOTMCraft.NON_BEYONDER_SEQ);
+            this.sequence = minSeq;
+
+            boolean currentMatches = false;
+            for (Characteristic c : charList) {
+                if (c.sequence() == minSeq && c.pathway().equals(this.pathway)) {
+                    currentMatches = true;
+                    break;
+                }
+            }
+
+            if (!currentMatches) {
+                for (Characteristic c : charList) {
+                    if (c.sequence() == minSeq) {
+                        this.pathway = c.pathway();
+                        break;
+                    }
+                }
+            }
+        } else {
+            this.pathway = "none";
+            this.sequence = LOTMCraft.NON_BEYONDER_SEQ;
+        }
+
         StoredData buff = new StoredData(pathway, sequence,
                 honorificName, trueName, modified,
-                lastPosition, charStack, charList, pathwayHistory, uniqueness,
+                lastPosition, charList, pathwayHistory, uniqueness,
                 prophecyList, sefirot);
 
         clean();

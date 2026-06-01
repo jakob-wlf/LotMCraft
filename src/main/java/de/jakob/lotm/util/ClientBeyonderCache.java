@@ -13,11 +13,11 @@ public class ClientBeyonderCache {
     private static final Map<UUID, BeyonderClientData> dataCache = new ConcurrentHashMap<>();
 
     public static void updateData(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, boolean isPlayer, float digestionProgress) {
-        updateData(playerUUID, pathway, sequence, spirituality, griefingEnabled, isPlayer, digestionProgress, new String[10], new int[10]);
+        updateData(playerUUID, pathway, sequence, spirituality, griefingEnabled, isPlayer, digestionProgress, new String[10], new ArrayList<>());
     }
 
-    public static void updateData(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, boolean isPlayer, float digestionProgress, String[] pathwayHistory, int[] charStacks) {
-        dataCache.put(playerUUID, new BeyonderClientData(pathway, sequence, spirituality, griefingEnabled, digestionProgress, pathwayHistory, charStacks));
+    public static void updateData(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, boolean isPlayer, float digestionProgress, String[] pathwayHistory, ArrayList<Characteristic> charList) {
+        dataCache.put(playerUUID, new BeyonderClientData(pathway, sequence, spirituality, griefingEnabled, digestionProgress, pathwayHistory, charList));
     }
 
     public static String getPathway(UUID playerUUID) {
@@ -30,25 +30,36 @@ public class ClientBeyonderCache {
         return data != null ? data.sequence() : LOTMCraft.NON_BEYONDER_SEQ;
     }
 
-    public static int getCharStack(UUID playerUUID) {
+    public static int getCharacteristicCount(UUID playerUUID) {
+        BeyonderClientData data = dataCache.get(playerUUID);
+        if (data == null) return 0;
+        return getCharacteristicCount(playerUUID, data.pathway());
+    }
+
+    public static int getCharacteristicCount(UUID playerUUID, String pathway) {
         BeyonderClientData data = dataCache.get(playerUUID);
         if (data == null) return 0;
         int seq = data.sequence();
-        return (seq >= 0 && seq < 10) ? data.charStacks()[seq] : 0;
+        if (seq < 0 || seq >= 11) return 0;
+
+        return data.charList().stream()
+                .filter(c -> c.sequence() == seq && c.pathway().equals(pathway))
+                .mapToInt(Characteristic::stack)
+                .sum();
     }
 
-    public static int[] getCharStacks(UUID playerUUID) {
-        BeyonderClientData data = dataCache.get(playerUUID);
-        return data != null ? data.charStacks() : new int[10];
-    }
 
-    public static void setCharStack(UUID playerUUID, int charStack) {
+    public static void setCharacteristicCount(UUID playerUUID, int charStack) {
         BeyonderClientData data = dataCache.get(playerUUID);
         if (data != null) {
-            int[] stacks = java.util.Arrays.copyOf(data.charStacks(), 10);
             int seq = data.sequence();
-            if (seq >= 0 && seq < 10) stacks[seq] = charStack;
-            dataCache.put(playerUUID, new BeyonderClientData(data.pathway(), data.sequence(), data.spirituality(), data.griefingEnabled(), data.digestionProgress(), data.pathwayHistory(), stacks));
+            String pathway = data.pathway();
+            ArrayList<Characteristic> newList = new ArrayList<>(data.charList());
+            newList.removeIf(c -> c.sequence() == seq && c.pathway().equals(pathway));
+            if (charStack > 0) {
+                newList.add(new Characteristic(pathway, charStack, seq));
+            }
+            dataCache.put(playerUUID, new BeyonderClientData(data.pathway(), data.sequence(), data.spirituality(), data.griefingEnabled(), data.digestionProgress(), data.pathwayHistory(), newList));
         }
     }
 
@@ -73,10 +84,32 @@ public class ClientBeyonderCache {
         return data != null && data.griefingEnabled();
     }
 
-    public static boolean isBeyonder(UUID playerUUID) {
+    public static int getHighestSequence(UUID playerUUID) {
         BeyonderClientData data = dataCache.get(playerUUID);
+        if (data == null) return LOTMCraft.NON_BEYONDER_SEQ;
+        int min = data.sequence();
+        for (Characteristic c : data.charList()) {
+            if (c.sequence() < min) min = c.sequence();
+        }
+        return min;
+    }
 
-        return data != null && !data.pathway().equals("none") && data.sequence() != LOTMCraft.NON_BEYONDER_SEQ;
+    public static String getHighestPathway(UUID playerUUID) {
+        BeyonderClientData data = dataCache.get(playerUUID);
+        if (data == null) return "none";
+        int min = data.sequence();
+        String bestPathway = data.pathway();
+        for (Characteristic c : data.charList()) {
+            if (c.sequence() < min) {
+                min = c.sequence();
+                bestPathway = c.pathway();
+            }
+        }
+        return bestPathway;
+    }
+
+    public static boolean isBeyonder(UUID playerUUID) {
+        return getHighestSequence(playerUUID) < LOTMCraft.NON_BEYONDER_SEQ;
     }
 
     public static String[] getPathwayHistory(UUID playerUUID) {
@@ -94,9 +127,9 @@ public class ClientBeyonderCache {
 
     public static ArrayList<Characteristic> getCharList(UUID playerUUID) {
         BeyonderClientData data = dataCache.get(playerUUID);
-        return data.charList();
+        return data != null ? data.charList() : new ArrayList<>();
     }
 
     // Inner record to store client-side beyonder data
-    private record BeyonderClientData(String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress, String[] pathwayHistory, ArrayList<Characteristic> charList, int[] charStacks) {}
+    private record BeyonderClientData(String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress, String[] pathwayHistory, ArrayList<Characteristic> charList) {}
 }

@@ -2,7 +2,6 @@ package de.jakob.lotm.util.helper;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -72,6 +71,7 @@ public class AdvancementUtil {
 
         if (entity instanceof Player player && player.isCreative()) {
             setBeyonder(entity, pathway, sequence);
+            BeyonderData.addCharacteristic(entity, sequence, pathway);
             return;
         }
 
@@ -145,7 +145,7 @@ public class AdvancementUtil {
         ServerScheduler.scheduleDelayed(finalDuration, () -> {
             if (!activeAdvancements.containsKey(entity.getUUID())) return;
             activeAdvancements.remove(entity.getUUID());
-            BeyonderData.addCharStack(entity, sequence, pathway);
+            BeyonderData.addCharacteristic(entity, finalSequence, finalPathway);
             sendThirdPersonPacket(entity);
         });
     }
@@ -174,6 +174,7 @@ public class AdvancementUtil {
             activeAdvancements.remove(entity.getUUID());
             if (onSuccessPreSet != null) onSuccessPreSet.run();
             setBeyonder(entity, finalPathway, finalSequence);
+            BeyonderData.addCharacteristic(entity, finalSequence, finalPathway);
             sendThirdPersonPacket(entity);
         });
     }

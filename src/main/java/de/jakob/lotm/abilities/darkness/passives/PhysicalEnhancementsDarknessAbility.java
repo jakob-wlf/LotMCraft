@@ -134,8 +134,4 @@ public class PhysicalEnhancementsDarknessAbility extends PhysicalEnhancementsAbi
         };
     }
 
-    @Override
-    protected int getCurrentSequenceLevel(LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
-    }
 }
