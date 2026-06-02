@@ -163,10 +163,11 @@ public class PlayerMap extends SavedData {
         String uniqueness = uniquenessComponent.hasUniqueness() ? uniquenessComponent.getUniquenessPathway() : "none";
 
 
-        // Don't store if this is default/empty data
-//        if(pathway.equals("none") || sequence == LOTMCraft.NON_BEYONDER_SEQ) {
-//            return; // Don't overwrite existing data with empty data
-//        }
+        // Don't overwrite existing map entries with empty/default data (prevents data loss when entity component is uninitialized)
+        if ((pathway.equals("none") || sequence == LOTMCraft.NON_BEYONDER_SEQ) && map.containsKey(entity.getUUID())) {
+            LOTMCraft.LOGGER.info("Skipping put for {} because entity has empty/default beyonder data", ((ServerPlayer) entity).getGameProfile().getName());
+            return;
+        }
 
         var data = map.get(entity.getUUID());
         boolean isNull = data == null;
