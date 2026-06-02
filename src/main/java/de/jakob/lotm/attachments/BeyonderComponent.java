@@ -209,19 +209,25 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
                     } else if (listTag.getElementType() == Tag.TAG_COMPOUND) {
                         // Some legacy formats stored a list of compounds with {index:int, value:int} entries.
                         // Detect that shape and migrate accordingly (applying +1 like older code did).
-                        boolean looksLikeIndexValue = false;
-                        if (listTag.size() > 0) {
-                            var first = listTag.getCompound(0);
-                            looksLikeIndexValue = first.contains("index", Tag.TAG_INT) && first.contains("value", Tag.TAG_INT);
+                        // Detect per-entry whether this list is index/value pairs or full Characteristic compounds.
+                        boolean anyIndexValue = false;
+                        for (int j = 0; j < listTag.size(); j++) {
+                            CompoundTag cand = listTag.getCompound(j);
+                            if (cand.contains("index", Tag.TAG_INT) && cand.contains("value", Tag.TAG_INT)) {
+                                anyIndexValue = true;
+                                break;
+                            }
                         }
 
-                        if (looksLikeIndexValue) {
+                        if (anyIndexValue) {
                             int[] characteristicStack = new int[10];
                             for (int j = 0; j < listTag.size(); j++) {
                                 CompoundTag entry = listTag.getCompound(j);
-                                int index = entry.getInt("index");
-                                int value = entry.getInt("value");
-                                if (index >= 0 && index < characteristicStack.length) characteristicStack[index] = value;
+                                if (entry.contains("index", Tag.TAG_INT) && entry.contains("value", Tag.TAG_INT)) {
+                                    int index = entry.getInt("index");
+                                    int value = entry.getInt("value");
+                                    if (index >= 0 && index < characteristicStack.length) characteristicStack[index] = value;
+                                }
                             }
                             de.jakob.lotm.LOTMCraft.LOGGER.info("BeyonderComponent.deserializeNBT: migrated characteristicStack {}", java.util.Arrays.toString(characteristicStack));
                             if (this.sequence < de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ) {
