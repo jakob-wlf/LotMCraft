@@ -235,6 +235,15 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
                                 else if (entry.contains("value", Tag.TAG_SHORT)) value = entry.getShort("value");
                                 else if (entry.contains("value", Tag.TAG_BYTE)) value = entry.getByte("value");
                                 else if (entry.contains("value", Tag.TAG_LONG)) value = (int) entry.getLong("value");
+                                else if (entry.contains("value", Tag.TAG_STRING)) {
+                                    try { value = Integer.parseInt(entry.getString("value")); } catch (NumberFormatException ignored) { }
+                                }
+
+                                // Fallback: if still zero, try to parse any tag named 'value' by its toString
+                                if (value == 0 && entry.contains("value")) {
+                                    var raw = entry.get("value");
+                                    try { value = Integer.parseInt(raw.toString().replaceAll("[^0-9-]","")); } catch (Exception ignored) { }
+                                }
 
                                 de.jakob.lotm.LOTMCraft.LOGGER.info("BeyonderComponent.deserializeNBT: legacy entry {} -> {} (raw keys {})", index, value, entry.getAllKeys());
                                 if (index >= 0 && index < characteristicStack.length) {
