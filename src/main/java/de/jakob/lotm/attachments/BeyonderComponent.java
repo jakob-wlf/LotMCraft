@@ -187,7 +187,7 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
                 if (stackTag instanceof IntArrayTag intArrayTag) {
                     int[] array = intArrayTag.getAsIntArray();
                     for (int i = 0; i < Math.min(array.length, 10); i++) {
-                        if (array[i] > 0) {
+                    if (array[i] > 0 && this.sequence <= i) {
                             String charPath = this.pathway.equals("none") ? "placeholder" : this.pathway;
                             // Legacy stored values were (stack - 1) in some versions; migrate to proper stack by +1
                             this.charList.add(new Characteristic(charPath, array[i] + 1, i));
@@ -197,7 +197,7 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
                     if (listTag.getElementType() == Tag.TAG_INT) {
                         for (int i = 0; i < Math.min(listTag.size(), 10); i++) {
                             int value = listTag.getInt(i);
-                            if (value > 0) {
+                            if (value > 0 && this.sequence <= i) {
                                 String charPath = this.pathway.equals("none") ? "placeholder" : this.pathway;
                                 // Legacy int lists represent (stack - 1) in some versions; migrate by +1
                                 this.charList.add(new Characteristic(charPath, value + 1, i));
@@ -222,7 +222,7 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
                             }
                             if (this.sequence < de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ) {
                                 for (int i = 0; i < 10; i++) {
-                                    if (i <= this.sequence) {
+                                    if (this.sequence <= i) {
                                         String ph = (this.pathwayHistory[i] == null || this.pathwayHistory[i].isEmpty()) ? this.pathway : this.pathwayHistory[i];
                                         this.charList.add(new Characteristic(ph, characteristicStack[i] + 1, i));
                                     }
