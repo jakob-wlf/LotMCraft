@@ -128,12 +128,12 @@ public class DisasterManifestationAbility extends SelectableAbility {
 
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, pos, entity, this, new String[]{"explosion"}, 60, 20 * 15));
 
-        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f,(float) DamageLookup.lookupDamage(2, .35)  * (int)Math.max(multiplier(entity)/4,1), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35) *  (int)Math.max(multiplier(entity)/4,1), entity, target);
+        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f,(float) DamageLookup.lookupDamage(2, .35)  * (int)Math.max(multiplier(entity)/4,1), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35) *  (int)Math.max(multiplier(entity)/4,1), entity, target, 3);
         tornado.setPos(pos);
         serverLevel.addFreshEntity(tornado);
 
-        for(int i = 0; i < 30; i++) {
-            TornadoEntity additionalTornado = target == null || random.nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35)  * (int)Math.max(multiplier(entity)/4,1), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35) *  (int)Math.max(multiplier(entity)/4,1), entity, target);
+        for(int i = 0; i < 25; i++) {
+            TornadoEntity additionalTornado = target == null || random.nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35)  * (int)Math.max(multiplier(entity)/4,1), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35) *  (int)Math.max(multiplier(entity)/4,1), entity, target, 2.5f);
             Vec3 randomOffset = new Vec3((serverLevel.random.nextDouble() - 0.5) * 120, 3, (serverLevel.random.nextDouble() - 0.5) * 120);
             additionalTornado.setPos(pos.add(randomOffset));
             serverLevel.addFreshEntity(additionalTornado);

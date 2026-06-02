@@ -166,6 +166,27 @@ public class ServerScheduler {
         return id;
     }
 
+    public static UUID scheduleUntil(ServerLevel level, Runnable task, int interval,
+                                     @Nullable Runnable onFinish,
+                                     Supplier<Boolean> breakCondition,
+                                     Supplier<Double> timeMultiplier) {
+        UUID id = UUID.randomUUID();
+        ScheduledTask scheduledTask = new ScheduledTask(
+                id, task, 0, interval, -1, level, () -> !breakCondition.get(), timeMultiplier);
+        tasks.put(id, scheduledTask);
+
+        if (onFinish != null) {
+            UUID finishId = UUID.randomUUID();
+            ScheduledTask finishTask = new ScheduledTask(
+                    finishId, onFinish, 0, 1, 1, level, breakCondition::get, timeMultiplier);
+            tasks.put(finishId, finishTask);
+
+            scheduledTask.setLinkedTaskId(finishId);
+        }
+
+        return id;
+    }
+
     // -------------------------------------------------------------------------
     // Utility
     // -------------------------------------------------------------------------

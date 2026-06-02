@@ -58,7 +58,7 @@ public class SanityEventHandler {
 
         // Clear all sanity effects if above threshold
 
-        // ---------------- SANITY → BEYONDER INSTABILITY ----------------
+        // ---------------- SANITY ----------------
         if (BeyonderData.isBeyonder(entity)) {
             Random random = new Random();
             double sanityMultiplier = getSanityMultiplier(entity, sanity, sanityValue);

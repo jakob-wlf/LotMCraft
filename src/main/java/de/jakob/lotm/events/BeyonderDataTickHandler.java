@@ -43,7 +43,6 @@ public class BeyonderDataTickHandler {
     private static final Set<PassiveAbilityItem> passiveAbilities = ConcurrentHashMap.newKeySet();
 
 
-    // In BeyonderDataTickHandler
     private static final Map<UUID, Set<PassiveAbilityItem>> cachedAbilities = new ConcurrentHashMap<>();
 
     public static void invalidateCache(LivingEntity entity) {
@@ -55,7 +54,6 @@ public class BeyonderDataTickHandler {
     private static Set<PassiveAbilityItem> getApplicableAbilities(LivingEntity entity) {
         if (passiveAbilities.isEmpty()) {
             synchronized (INIT_LOCK) {
-                // Double-checked locking: re-test inside the lock
                 if (passiveAbilities.isEmpty()) {
                     List<PassiveAbilityItem> items = PassiveAbilityHandler.ITEMS
                             .getEntries()
@@ -92,16 +90,13 @@ public class BeyonderDataTickHandler {
             disabledFlightComponent.setCooldownTicks(disabledFlightComponent.getCooldownTicks() - 1);
         }
 
-        // Tick Fooling attachment — re-apply a 2-tick cosmetic effect each tick so the HUD always shows it
         if (!livingEntity.level().isClientSide) {
             FoolingComponent foolingComponent = livingEntity.getData(ModAttachments.FOOLING_COMPONENT);
             if (foolingComponent.isFooled()) {
-                // Trigger a new stun on the interval, based on remaining ticks
                 if (foolingComponent.getTicksRemaining() % FoolingEffect.STUN_INTERVAL_TICKS == 0) {
                     foolingComponent.applyStun(FoolingEffect.STUN_DURATION_TICKS);
                 }
 
-                // Zero velocity and suppress client movement every tick while stunned
                 if (foolingComponent.isStunned()) {
                     livingEntity.setDeltaMovement(0, 0, 0);
                     livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 2, 254, false, false, false));
@@ -109,7 +104,6 @@ public class BeyonderDataTickHandler {
                 }
 
                 foolingComponent.tick();
-                // Re-apply with the actual remaining ticks so the HUD countdown is accurate
                 livingEntity.addEffect(new MobEffectInstance(ModEffects.FOOLING, foolingComponent.getTicksRemaining(), 0, false, true, true));
             } else if (livingEntity.hasEffect(ModEffects.FOOLING)) {
                 livingEntity.removeEffect(ModEffects.FOOLING);
@@ -123,8 +117,8 @@ public class BeyonderDataTickHandler {
 
             if(entity.tickCount % 200 == 0) {
                 invalidateCache(livingEntity);
-                PhysicalEnhancementsAbility.resetEnhancements(event.getEntity().getUUID());
-                invalidateCache(livingEntity); // also re-filter applicable abilities
+                PhysicalEnhancementsAbility.resetEnhancements(event.getEntity().getUUID(), livingEntity, false);
+                invalidateCache(livingEntity);
             }
 
             // Tick Passive Abilities, and onHold for currently selected Ability and tick luck
@@ -191,20 +185,18 @@ public class BeyonderDataTickHandler {
 
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
-        PhysicalEnhancementsAbility.resetEnhancements(event.getEntity().getUUID());
-        invalidateCache(event.getEntity()); // also re-filter applicable abilities
+        PhysicalEnhancementsAbility.resetEnhancements(event.getEntity().getUUID(), event.getEntity(), true);
+        invalidateCache(event.getEntity());
     }
 
     private static void tickAbilities(LivingEntity entity) {
         if(entity.level().isClientSide) return;
 
-        // Passive Abilities
         getApplicableAbilities(entity).forEach(abilityItem -> {
             abilityItem.tick(entity.level(), entity);
         });
 
         if(entity instanceof ServerPlayer player) {
-            // Sync on Hold for currently selected Ability
             AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
             if(component.getSelectedAbility() < 0 || component.getSelectedAbility() >= component.getAbilities().size()) {
                 return;

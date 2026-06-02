@@ -32,9 +32,6 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
     private static final int SLOT_SIZE = 30;
     private static final int SLOT_HOVER_SIZE = 32;
 
-    // FIX: Raised cap to 27 to match the new max ability count.
-    // Previously this was 14, which caused getSlotAtPosition (using full count)
-    // to diverge from renderAbilitySlots (capped at 14), breaking hover alignment.
     private static final int MAX_ABILITIES = 27;
 
     private int hoveredSlot = -1;
@@ -68,8 +65,6 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
             return;
         }
 
-        // FIX: clamp here once and use this clamped count everywhere downstream.
-        // Previously the cap was applied inconsistently across methods.
         int count = Math.min(abilities.size(), MAX_ABILITIES);
         hoveredSlot = getSlotAtPosition(mouseX, mouseY, count);
     }
@@ -86,8 +81,6 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
             return;
         }
 
-        // FIX: apply the cap once here, pass the clamped count to every downstream call
-        // so all rendering methods operate on the same count as the hover detection.
         int count = Math.min(abilities.size(), MAX_ABILITIES);
         List<String> clampedAbilities = abilities.subList(0, count);
 
@@ -119,7 +112,6 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
     }
 
     private void renderSectionLines(GuiGraphics guiGraphics, int centerX, int centerY, List<String> abilities) {
-        // FIX: use abilities.size() directly — the list is already clamped by the caller.
         int abilityCount = abilities.size();
         int lineColor = 0x4Dc4a8e3;
 
@@ -196,9 +188,6 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
     }
 
     private void renderAbilitySlots(GuiGraphics guiGraphics, int centerX, int centerY, List<String> abilities) {
-        // FIX: use abilities.size() directly — the list is already clamped by the caller.
-        // Previously this applied Math.min(abilities.size(), 14) here independently,
-        // which diverged from getSlotAtPosition's count and broke hover alignment.
         int abilityCount = abilities.size();
 
         for (int i = 0; i < abilityCount; i++) {
@@ -264,10 +253,6 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
     }
 
     private SlotPosition getSlotPosition(int index, int totalSlots, int centerX, int centerY) {
-        // FIX: unified radius — previously this used 85 for ≤5 and 95 for >5,
-        // which was fine, but keeping a single value simplifies reasoning.
-        // For 27 slots packed tightly, 75 keeps icons within the wheel background.
-        // Adjust this value if icons clip the wheel edge.
         int radius;
         if (totalSlots <= 5) {
             radius = 85;
@@ -304,11 +289,6 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
 
         double degreesPerSection = 360.0 / totalSlots;
 
-        // This offset must stay consistent with how getSlotPosition places slots.
-        // getSlotPosition uses:  angle = index * (360/n) - 90
-        // So slot 0 is at 270° (straight up). Sections are centered on each slot,
-        // meaning section boundaries are at ±(degreesPerSection/2) from each slot.
-        // The adjustment below rotates the mouse angle into that same coordinate space.
         double adjustedAngle = angleDegrees - 270 + (degreesPerSection / 2.0);
 
         while (adjustedAngle < 0) {

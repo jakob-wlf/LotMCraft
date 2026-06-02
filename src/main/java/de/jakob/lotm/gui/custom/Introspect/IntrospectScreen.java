@@ -33,7 +33,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private ResourceLocation containerBackground;
     private Inventory playerInventory;
 
-    // Abilities section
     private boolean showAbilities = false;
     private boolean showAllAbilities = false;
     private Button toggleAbilitiesButton;
@@ -44,12 +43,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     private Button apotheosisButton = null;
 
-    // Quest section
     private boolean showQuests = false;
     private Button toggleQuestsButton;
     private Button discardQuestButton;
 
-    // Tab management for abilities
     private enum Tab {
         ABILITY_WHEEL,
         ABILITY_BAR,
@@ -60,11 +57,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private Button wheelTabButton;
     private Button barTabButton;
 
-    // Ability management
     private final List<Ability> availableAbilities = new ArrayList<>();
     private final List<Ability> abilityWheelSlots = new ArrayList<>();
     private final List<Ability> abilityBarSlots = new ArrayList<>();
-    // Client-side personal shared wheel ordering
     private final List<String> sharedWheelSlots = new ArrayList<>();
     private int draggedFromSharedWheelIndex = -1;
     private int draggedFromSharedPoolIndex = -1;
@@ -75,7 +70,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private int dragOffsetX = 0;
     private int dragOffsetY = 0;
 
-    // UI dimensions for abilities panel
     private static final int ABILITIES_PANEL_WIDTH = 120;
     private static final int ABILITIES_PANEL_HEIGHT = 115;
     private static final int ABILITY_WHEEL_HEIGHT = 100;
@@ -83,16 +77,15 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private static final int ABILITY_ICON_SIZE = 16;
     private static final int ABILITY_WHEEL_MAX = 24;
     private static final int ABILITY_BAR_MAX = 6;
-    private static final int SHARED_POOL_HEIGHT = 50;   // top: all shared abilities + add/remove
-    private static final int SHARED_WHEEL_HEIGHT = 60;  // bottom: personal shared wheel slots
+    private static final int SHARED_POOL_HEIGHT = 50;
+    private static final int SHARED_WHEEL_HEIGHT = 60;
 
-    // UI dimensions for quests panel
+
     private static final int QUESTS_PANEL_WIDTH = 140;
     private static final int COMPLETED_QUESTS_HEIGHT = 80;
     private static final int ACTIVE_QUEST_HEIGHT = 120;
     private static final int QUEST_ITEM_SIZE = 16;
 
-    // Placeholder keybinds - easy to change later
     private static final String[] KEYBIND_LABELS = {"1", "2", "3", "4", "5", "6"};
 
     private int abilitiesScrollOffset = 0;
@@ -130,15 +123,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             }
         }
 
-        // Deduplicate: abilities like Cogitation/Ally match all pathways and can be added
-        // twice when a pathway history entry exists (once for current pathway, once for historical).
         List<Ability> unique = availableAbilities.stream().distinct().toList();
         availableAbilities.clear();
         availableAbilities.addAll(unique);
 
         availableAbilities.removeIf(Ability::getShouldBeHidden);
 
-        // Calculate max scroll
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
         int rows = (int) Math.ceil((double) availableAbilities.size() / iconsPerRow);
         int visibleRows = (ABILITIES_PANEL_HEIGHT - 20) / (ABILITY_ICON_SIZE + 2);
@@ -180,16 +170,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         this.killCount = ClientSacrificeCache.getKillCount();
 
-        // Request ability bar data from server
         PacketHandler.sendToServer(new RequestAbilityBarPacket());
 
-        // Request quest data from server
         PacketHandler.sendToServer(new RequestQuestDataPacket());
 
-        // Request team/shared abilities data from server
         PacketHandler.sendToServer(new RequestSharedAbilitiesPacket());
 
-        // Restore shared wheel from ClientData so it persists across screen opens
         sharedWheelSlots.clear();
         sharedWheelSlots.addAll(ClientData.getSharedWheelAbilities());
 
@@ -200,17 +186,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         KEYBIND_LABELS[4] = LOTMCraft.useAbilityBarAbility5.getKey().getDisplayName().getString();
         KEYBIND_LABELS[5] = LOTMCraft.useAbilityBarAbility6.getKey().getDisplayName().getString();
 
-        // Update scroll for quests
         updateCompletedQuestsScroll();
 
-        // Update positions when buttons are created
         updateButtonPositions();
     }
 
     private String abbreviateKeybind(String keybind) {
-        // Handle common long keybind names
         if (keybind.startsWith("Button ")) {
-            return "B" + keybind.substring(7); // "Button 5" -> "B5"
+            return "B" + keybind.substring(7);
         }
         if (keybind.equalsIgnoreCase("Not Bound") || keybind.equalsIgnoreCase("Unbound")) {
             return "-";
@@ -224,7 +207,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (keybind.equalsIgnoreCase("Right Mouse Button")) {
             return "RMB";
         }
-        // Truncate if still too long
         if (keybind.length() > 5) {
             return keybind.substring(0, 4) + "…";
         }
@@ -232,13 +214,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private void updateButtonPositions() {
-        // Clear existing widgets
         this.clearWidgets();
 
-        // Calculate base position
         int baseLeftPos = this.leftPos;
 
-        // Add abilities toggle button to the left of the main screen
         int abilitiesButtonX = baseLeftPos - 65;
         int abilitiesButtonY = this.topPos + 10;
 
@@ -246,7 +225,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         button -> {
                             showAbilities = !showAbilities;
                             if (showAbilities) {
-                                showQuests = false; // Turn off quests when abilities is turned on
+                                showQuests = false;
                             }
                             button.setMessage(Component.literal(showAbilities ? "< Hide" : "Abilities >"));
                             updateButtonPositions();
@@ -256,7 +235,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         this.addRenderableWidget(toggleAbilitiesButton);
 
-        // Add quests toggle button to the left, below abilities button
         int questsButtonX = baseLeftPos - 65;
         int questsButtonY = this.topPos + 35;
 
@@ -264,7 +242,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         button -> {
                             showQuests = !showQuests;
                             if (showQuests) {
-                                showAbilities = false; // Turn off abilities when quests is turned on
+                                showAbilities = false;
                             }
                             button.setMessage(Component.literal(showQuests ? "< Hide" : "Quests >"));
                             updateButtonPositions();
@@ -289,7 +267,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             this.addRenderableWidget(messageButton);
         }
 
-        // Add Apotheosis button if player has uniqueness and is Sequence 1
         if (ClientUniquenessCache.hasUniqueness() && menu.getSequence() == 1) {
             int apotheosisButtonX = baseLeftPos - 65;
             int apotheosisButtonY = this.topPos + 110;
@@ -315,7 +292,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             this.addRenderableWidget(apotheosisButton);
         }
 
-        // Add "All Abilities" toggle button for creative + OP players
         if (isCreativeOp()) {
             int allAbilitiesButtonX = baseLeftPos - 65;
             int allAbilitiesButtonY = this.topPos + 85;
@@ -335,19 +311,16 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             this.addRenderableWidget(toggleAllAbilitiesButton);
         }
 
-        // Add abilities panel buttons if shown
         if (showAbilities) {
             addAbilityButtons(baseLeftPos);
         }
 
-        // Add quest panel buttons if shown
         if (showQuests) {
             addQuestButtons(baseLeftPos);
         }
     }
 
     private void addAbilityButtons(int baseLeftPos) {
-        // Add tab buttons
         int tabButtonY = this.topPos;
         int panelX = baseLeftPos + this.imageWidth + 5;
 
@@ -388,14 +361,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             currentTab = Tab.ABILITY_WHEEL;
         }
 
-        // Highlight active tab
         if (currentTab == Tab.ABILITY_WHEEL) {
             wheelTabButton.active = false;
         } else if (currentTab == Tab.ABILITY_BAR) {
             barTabButton.active = false;
         }
 
-        // Add clear button based on current tab
         int clearButtonX = baseLeftPos + this.imageWidth + 5;
         int clearButtonY;
 
@@ -423,17 +394,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private void addQuestButtons(int baseLeftPos) {
-        // Calculate position - quests panel goes to the right of main screen (same as abilities)
         int panelX = baseLeftPos + this.imageWidth + 5;
 
-        // Add discard quest button if there's an active quest
         if (ClientQuestData.hasActiveQuest()) {
             int discardButtonY = this.topPos + COMPLETED_QUESTS_HEIGHT + 5 + ACTIVE_QUEST_HEIGHT + 5;
 
             discardQuestButton = Button.builder(Component.literal("Discard Quest").withStyle(ChatFormatting.RED),
                             button -> {
                                 PacketHandler.sendToServer(new DiscardQuestPacket());
-                                // Refresh quest data
                                 PacketHandler.sendToServer(new RequestQuestDataPacket());
                             })
                     .bounds(panelX, discardButtonY, QUESTS_PANEL_WIDTH, 20)
@@ -472,29 +440,24 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
-        // Render quest panel if visible
         if (showQuests) {
             renderQuestPanel(guiGraphics, mouseX, mouseY);
         }
 
-        // Render abilities panel if visible
         if (showAbilities) {
             renderAbilitiesPanel(guiGraphics, mouseX, mouseY);
         }
 
-        // Render dragged ability on top
         if (draggedAbility != null) {
             renderAbilityIcon(guiGraphics, draggedAbility, mouseX - dragOffsetX, mouseY - dragOffsetY);
         }
 
         this.renderTooltip(guiGraphics, mouseX, mouseY);
 
-        // Render ability tooltips if hovering and not dragging
         if (showAbilities && draggedAbility == null) {
             renderAbilityTooltips(guiGraphics, mouseX, mouseY);
         }
 
-        // Render quest item tooltips
         if (showQuests) {
             renderQuestItemTooltips(guiGraphics, mouseX, mouseY);
         }
@@ -502,28 +465,22 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     private void renderQuestPanel(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         int baseLeftPos = this.leftPos;
-        // Quest panel now on the right side (same position as abilities)
         int panelX = baseLeftPos + this.imageWidth + 5;
         int panelY = this.topPos;
 
-        // Render completed quests section
         renderCompletedQuestsSection(guiGraphics, panelX, panelY, mouseX, mouseY);
 
-        // Render active quest section
         int activeQuestY = panelY + COMPLETED_QUESTS_HEIGHT + 5;
         renderActiveQuestSection(guiGraphics, panelX, activeQuestY, mouseX, mouseY);
     }
 
     private void renderCompletedQuestsSection(GuiGraphics guiGraphics, int panelX, int panelY, int mouseX, int mouseY) {
-        // Render background
         guiGraphics.fill(panelX, panelY, panelX + QUESTS_PANEL_WIDTH, panelY + COMPLETED_QUESTS_HEIGHT, 0xCC000000);
         guiGraphics.renderOutline(panelX, panelY, QUESTS_PANEL_WIDTH, COMPLETED_QUESTS_HEIGHT, 0xFFAAAAAA);
 
-        // Render label
         Component label = Component.literal("Completed Quests").withStyle(ChatFormatting.BOLD);
         guiGraphics.drawString(this.font, label, panelX + 5, panelY + 5, 0xFFFFFFFF, true);
 
-        // Render completed quests list (scrollable)
         int listY = panelY + 15;
         int listHeight = COMPLETED_QUESTS_HEIGHT - 20;
 
@@ -545,7 +502,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             guiGraphics.drawString(this.font, questName, panelX + 15, textY, 0xFFCCCCCC, false);
         }
 
-        // Show scroll indicator if needed
         if (maxCompletedQuestsScroll > 0) {
             Component scrollHint = Component.literal("(Scroll)").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
             int hintWidth = this.font.width(scrollHint);
@@ -555,16 +511,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private void renderActiveQuestSection(GuiGraphics guiGraphics, int panelX, int panelY, int mouseX, int mouseY) {
-        // Render background
         guiGraphics.fill(panelX, panelY, panelX + QUESTS_PANEL_WIDTH, panelY + ACTIVE_QUEST_HEIGHT, 0xCC000000);
         guiGraphics.renderOutline(panelX, panelY, QUESTS_PANEL_WIDTH, ACTIVE_QUEST_HEIGHT, 0xFFAAAAAA);
-
-        // Render label
         Component label = Component.literal("Active Quest").withStyle(ChatFormatting.BOLD);
         guiGraphics.drawString(this.font, label, panelX + 5, panelY + 5, 0xFFFFFFFF, true);
 
         if (!ClientQuestData.hasActiveQuest()) {
-            // No active quest
             Component noQuest = Component.literal("No active quest").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
             int textWidth = this.font.width(noQuest);
             guiGraphics.drawString(this.font, noQuest, panelX + (QUESTS_PANEL_WIDTH - textWidth) / 2,
@@ -574,7 +526,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         int contentY = panelY + 15;
 
-        // Render quest name
         Component questName = Component.literal(ClientQuestData.getActiveQuestName())
                 .withStyle(ChatFormatting.BOLD)
                 .withColor(BeyonderData.pathwayInfos.get(menu.getPathway()).color());
@@ -588,7 +539,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         guiGraphics.drawString(this.font, questName, panelX + 5, contentY, 0xFFFFFFFF, false);
         contentY += this.font.lineHeight + 3;
 
-        // Render quest description (wrapped)
         String description = ClientQuestData.getActiveQuestDescription();
         List<String> wrappedDesc = wrapText(description, QUESTS_PANEL_WIDTH - 10);
         for (String line : wrappedDesc) {
@@ -597,21 +547,16 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
         contentY += 3;
 
-        // Render progress bar
         float progress = ClientQuestData.getActiveQuestProgress();
         int barWidth = QUESTS_PANEL_WIDTH - 10;
         int barHeight = 10;
 
-        // Background
         guiGraphics.fill(panelX + 5, contentY, panelX + 5 + barWidth, contentY + barHeight, 0xFF333333);
-        // Progress
         int progressWidth = (int) (barWidth * progress);
         guiGraphics.fillGradient(panelX + 5, contentY, panelX + 5 + progressWidth, contentY + barHeight,
                 0xFF2196F3, 0xFF1976D2);
-        // Border
         guiGraphics.renderOutline(panelX + 5, contentY, barWidth, barHeight, 0xFF666666);
 
-        // Progress text
         Component progressText = Component.literal((int)(progress * 100) + "%");
         int progressTextWidth = this.font.width(progressText);
         guiGraphics.drawString(this.font, progressText,
@@ -619,12 +564,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         contentY += barHeight + 5;
 
-        // Render rewards label
         Component rewardsLabel = Component.literal("Rewards:").withStyle(ChatFormatting.BOLD);
         guiGraphics.drawString(this.font, rewardsLabel, panelX + 5, contentY, 0xFFFFFFFF, false);
         contentY += this.font.lineHeight + 2;
 
-        // Render reward items
         List<ItemStack> rewards = ClientQuestData.getActiveQuestRewards();
         int rewardX = panelX + 5;
         int rewardY = contentY;
@@ -634,14 +577,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             int x = rewardX + (i % 4) * (QUEST_ITEM_SIZE + 6);
             int y = rewardY + (i / 4) * (QUEST_ITEM_SIZE + 6);
 
-            // Render item
             guiGraphics.renderItem(reward, x, y);
             guiGraphics.renderItemDecorations(this.font, reward, x, y);
         }
 
         contentY += (((rewards.size() - 1) / 4) + 1) * (QUEST_ITEM_SIZE + 6) + 2;
 
-        // Render digestion reward
         int digestion = ClientQuestData.getActiveQuestDigestionReward();
         if (digestion > 0) {
             Component digestionText = Component.literal("+" + digestion + " Digestion").withStyle(ChatFormatting.GOLD);
@@ -653,14 +594,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (!ClientQuestData.hasActiveQuest()) return;
 
         int baseLeftPos = this.leftPos;
-        // Quest panel
         int panelX = baseLeftPos + this.imageWidth + 5;
         int panelY = this.topPos + COMPLETED_QUESTS_HEIGHT + 5;
 
-        // Calculate rewards position (simplified - adjust based on actual layout)
         List<ItemStack> rewards = ClientQuestData.getActiveQuestRewards();
         int rewardX = panelX + 5;
-        int rewardY = panelY + 80; // Approximate position
+        int rewardY = panelY + 80;
 
         for (int i = 0; i < rewards.size() && i < 8; i++) {
             ItemStack reward = rewards.get(i);
@@ -675,7 +614,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
     }
 
-    // ===== ABILITY RENDERING METHODS (from original) =====
+    // ===== ABILITY RENDERING METHODS ===== <-- not ai generated separators btw...
 
     private void renderAbilityTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         int baseLeftPos = this.leftPos;
@@ -683,10 +622,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int panelY = this.topPos + 15;
         int slotY = panelY + ABILITIES_PANEL_HEIGHT + 5;
 
-        // Check for hover over available abilities
         Ability hoveredAbility = getAbilityAt(mouseX, mouseY, panelX, panelY, availableAbilities, true);
 
-        // If not hovering over available abilities, check current tab's slots
         if (hoveredAbility == null) {
             if (currentTab == Tab.ABILITY_WHEEL) {
                 int wheelSlot = getAbilityWheelSlot((int) mouseX, (int) mouseY, panelX, slotY);
@@ -695,7 +632,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 }
             } else if (currentTab == Tab.SHARED_ABILITIES && ClientTeamData.hasTeam()) {
                 int iconsPerRow2 = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
-                // Tooltip over sharing pool
                 List<String> allPooledTooltip = getAllPooledAbilities();
                 for (int s = 0; s < allPooledTooltip.size(); s++) {
                     int sRow = s / iconsPerRow2 - sharedPoolScrollOffset;
@@ -707,7 +643,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         break;
                     }
                 }
-                // Tooltip over shared wheel
                 if (hoveredAbility == null) {
                     int wheelY2 = slotY + SHARED_POOL_HEIGHT + 5;
                     int iconsPerRowW2 = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);

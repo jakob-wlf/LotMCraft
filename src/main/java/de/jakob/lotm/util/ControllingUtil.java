@@ -238,7 +238,7 @@ public class ControllingUtil {
                         copyEntities(originalBody, player);
                         copyPosition(originalBody, player);
 
-                        PhysicalEnhancementsAbility.resetEnhancements(player.getUUID());
+                        PhysicalEnhancementsAbility.resetEnhancements(player.getUUID(), player, true);
 
                         float health = bodyTag.getFloat("Health");
                         ServerScheduler.scheduleDelayed(5, () -> {

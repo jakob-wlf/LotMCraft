@@ -97,12 +97,12 @@ public class ProphecyAbility extends SelectableAbility {
 
                 Vec3 pos = AbilityUtil.getTargetLocation(entity, 12, 2);
 
-                TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, 1), entity) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, 32.5f * (int) Math.max(BeyonderData.getMultiplier(entity)/2,1), entity, target);
+                TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, 1), entity) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, 32.5f * (int) Math.max(BeyonderData.getMultiplier(entity)/2,1), entity, target, 2);
                 tornado.setPos(pos);
                 level.addFreshEntity(tornado);
 
                 for(int i = 0; i < 5; i++) {
-                    TornadoEntity additionalTornado = target == null || (new Random()).nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (int) Math.max(BeyonderData.getMultiplier(entity)/2,1), entity) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (int) Math.max(BeyonderData.getMultiplier(entity)/2,1), entity, target);
+                    TornadoEntity additionalTornado = target == null || (new Random()).nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (int) Math.max(BeyonderData.getMultiplier(entity)/2,1), entity) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (int) Math.max(BeyonderData.getMultiplier(entity)/2,1), entity, target, 2);
                     Vec3 randomOffset = new Vec3((level.random.nextDouble() - 0.5) * 40, 3, (level.random.nextDouble() - 0.5) * 40);
                     additionalTornado.setPos(pos.add(randomOffset));
                     level.addFreshEntity(additionalTornado);
