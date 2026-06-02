@@ -161,14 +161,15 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
         this.sequence = compoundTag.contains("sequence") ? compoundTag.getInt("sequence") : de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ;
 
         ListTag pathwayHistoryTag = compoundTag.getList("pathwayHistory", 8); // 8 is the ID for StringTag
-        this.pathwayHistory = new String[pathwayHistoryTag.size()];
-        for (int i = 0; i < pathwayHistoryTag.size(); i++) {
+        // Ensure a fixed-size history array of length 10 and don't trust the serialized size.
+        this.pathwayHistory = new String[10];
+        for (int i = 0; i < Math.min(10, pathwayHistoryTag.size()); i++) {
             String pathwayEntry = pathwayHistoryTag.getString(i);
-            if(pathwayEntry.isEmpty()) {
-                this.pathwayHistory[i] = null;
-            } else {
-                this.pathwayHistory[i] = pathwayEntry;
-            }
+            this.pathwayHistory[i] = pathwayEntry.isEmpty() ? null : pathwayEntry;
+        }
+        // Fill remaining slots with nulls explicitly (already null by default, but kept for clarity)
+        for (int i = pathwayHistoryTag.size(); i < 10; i++) {
+            this.pathwayHistory[i] = null;
         }
 
         this.charList = new ArrayList<>();
@@ -188,7 +189,8 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
                     for (int i = 0; i < Math.min(array.length, 10); i++) {
                         if (array[i] > 0) {
                             String charPath = this.pathway.equals("none") ? "placeholder" : this.pathway;
-                            this.charList.add(new Characteristic(charPath, array[i], i));
+                            // Legacy stored values were (stack - 1) in some versions; migrate to proper stack by +1
+                            this.charList.add(new Characteristic(charPath, array[i] + 1, i));
                         }
                     }
                 } else if (stackTag instanceof ListTag listTag) {
@@ -197,12 +199,39 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
                             int value = listTag.getInt(i);
                             if (value > 0) {
                                 String charPath = this.pathway.equals("none") ? "placeholder" : this.pathway;
-                                this.charList.add(new Characteristic(charPath, value, i));
+                                // Legacy int lists represent (stack - 1) in some versions; migrate by +1
+                                this.charList.add(new Characteristic(charPath, value + 1, i));
                             }
                         }
                     } else if (listTag.getElementType() == Tag.TAG_COMPOUND) {
-                        for (int i = 0; i < listTag.size(); i++) {
-                            this.charList.add(Characteristic.fromNBT(listTag.getCompound(i), provider));
+                        // Some legacy formats stored a list of compounds with {index:int, value:int} entries.
+                        // Detect that shape and migrate accordingly (applying +1 like older code did).
+                        boolean looksLikeIndexValue = false;
+                        if (listTag.size() > 0) {
+                            var first = listTag.getCompound(0);
+                            looksLikeIndexValue = first.contains("index", Tag.TAG_INT) && first.contains("value", Tag.TAG_INT);
+                        }
+
+                        if (looksLikeIndexValue) {
+                            int[] characteristicStack = new int[10];
+                            for (int j = 0; j < listTag.size(); j++) {
+                                CompoundTag entry = listTag.getCompound(j);
+                                int index = entry.getInt("index");
+                                int value = entry.getInt("value");
+                                if (index >= 0 && index < characteristicStack.length) characteristicStack[index] = value;
+                            }
+                            if (this.sequence < de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ) {
+                                for (int i = 0; i < 10; i++) {
+                                    if (i <= this.sequence) {
+                                        String ph = (this.pathwayHistory[i] == null || this.pathwayHistory[i].isEmpty()) ? this.pathway : this.pathwayHistory[i];
+                                        this.charList.add(new Characteristic(ph, characteristicStack[i] + 1, i));
+                                    }
+                                }
+                            }
+                        } else {
+                            for (int i = 0; i < listTag.size(); i++) {
+                                this.charList.add(Characteristic.fromNBT(listTag.getCompound(i), provider));
+                            }
                         }
                     }
                 }
