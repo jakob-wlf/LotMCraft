@@ -5,12 +5,9 @@ import de.jakob.lotm.attachments.ApotheosisComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.UniquenessComponent;
 import de.jakob.lotm.gamerule.ModGameRules;
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncApotheosisPacket;
 import de.jakob.lotm.util.BeyonderData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -67,7 +64,7 @@ public record RequestUniquenessApotheosisPacket() implements CustomPacketPayload
             return;
         }
 
-        int charStack = BeyonderData.getCurrentCharStack(player);
+        int charStack = BeyonderData.getCurrentCharacteristicCount(player);
         int requiredStack = player.serverLevel().getGameRules().getInt(ModGameRules.CHARSTACK_REQUIRED_FOR_APOTHEOSIS);
         int killCount = comp.getKillCount();
 

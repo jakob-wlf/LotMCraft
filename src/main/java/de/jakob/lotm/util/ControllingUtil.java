@@ -11,6 +11,7 @@ import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -151,7 +152,12 @@ public class ControllingUtil {
                     nfd.putString("pathway", currentPathway);
                     nfd.putInt("sequence", currentSequence);
                     nfd.putFloat("digestionProgress", BeyonderData.getDigestionProgress(player));
-                    nfd.putIntArray("characteristicStack", BeyonderData.getCharStacks(player));
+                    
+                    ListTag characteristicListTag = new ListTag();
+                    for(Characteristic characteristic : BeyonderData.getCharList(player)){
+                        characteristicListTag.add(characteristic.toNBT(level.registryAccess()));
+                    }
+                    nfd.put("characteristicList", characteristicListTag);
                 }
             }
         }
@@ -239,7 +245,7 @@ public class ControllingUtil {
                         copyEntities(originalBody, player);
                         copyPosition(originalBody, player);
 
-                        PhysicalEnhancementsAbility.resetEnhancements(player.getUUID());
+                        PhysicalEnhancementsAbility.resetEnhancements(player);
 
                         float health = bodyTag.getFloat("Health");
                         ServerScheduler.scheduleDelayed(5, () -> {

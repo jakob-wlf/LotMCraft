@@ -4,7 +4,6 @@ import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
-import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -39,7 +38,7 @@ public class SanityEventHandler {
         boolean hasSwitched = BeyonderData.hasSwitchedPathway(entity);
         boolean hasUndigestedStack = isBeyonder
                 && entity instanceof Player digestionPlayer
-                && BeyonderData.getCurrentCharStack(entity) > 0
+                && BeyonderData.getCurrentCharacteristicCount(entity) > 0
                 && BeyonderData.getDigestionProgress(digestionPlayer) < 1.0f;
 
         boolean shouldDrain = isHighSequence || sanityComp.getSanity() < .2f || hasUndigestedStack || hasSwitched;

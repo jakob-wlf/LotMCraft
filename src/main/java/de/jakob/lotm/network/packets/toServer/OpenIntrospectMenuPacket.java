@@ -51,8 +51,8 @@ public record OpenIntrospectMenuPacket(int sequence, String pathway) implements 
                 if(!BeyonderData.isBeyonder(player))
                     return;
 
-                int sequence = BeyonderData.getSequence(player);
-                String pathway = BeyonderData.getPathway(player);
+                int sequence = BeyonderData.getHighestSequence(player);
+                String pathway = BeyonderData.getHighestPathway(player);
                 float digestionProgress = BeyonderData.getDigestionProgress(player);
 
                 List<ItemStack> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.ITEMS.getEntries().stream().filter(entry -> {
@@ -72,6 +72,7 @@ public record OpenIntrospectMenuPacket(int sequence, String pathway) implements 
                     buf.writeUtf(pathway);
                 });
 
+                PacketHandler.syncBeyonderDataToPlayer(player);
                 PacketHandler.sendToPlayer(player, new SyncIntrospectMenuPacket(sequence, pathway, sanity));
                 PacketHandler.sendToPlayer(player, new SyncAbilityWheelDataPacket(abilityWheelComponent.getAbilities()));
                 PacketHandler.sendToPlayer(player, new SyncKillCountPacket(player.getData(ModAttachments.KILL_COUNT_COMPONENT).getKillCount()));

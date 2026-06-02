@@ -3,6 +3,7 @@ package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -10,7 +11,9 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SyncBeyonderDataPacket(String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress, String[] pathwayHistory, int[] charStacks) implements CustomPacketPayload {
+import java.util.ArrayList;
+
+public record SyncBeyonderDataPacket(String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress, String[] pathwayHistory, ArrayList<Characteristic> charList) implements CustomPacketPayload {
     public static final Type<SyncBeyonderDataPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sync_beyonder_data"));
 
@@ -32,11 +35,29 @@ public record SyncBeyonderDataPacket(String pathway, int sequence, float spiritu
                     }
             );
 
-    private static final StreamCodec<FriendlyByteBuf, int[]> CHAR_STACKS_CODEC =
+    private static final StreamCodec<FriendlyByteBuf, ArrayList<Characteristic>> CHAR_LIST_CODEC =
             StreamCodec.of(
-                    (buf, stacks) -> { for (int i = 0; i < 10; i++) ByteBufCodecs.VAR_INT.encode(buf, i < stacks.length ? stacks[i] : 0); },
-                    buf -> { int[] stacks = new int[10]; for (int i = 0; i < 10; i++) stacks[i] = ByteBufCodecs.VAR_INT.decode(buf); return stacks; }
+                    (buf, chars) -> {
+                        ByteBufCodecs.VAR_INT.encode(buf, chars.size());
+                        for (Characteristic characteristic : chars) {
+                            ByteBufCodecs.STRING_UTF8.encode(buf, characteristic.pathway());
+                            ByteBufCodecs.VAR_INT.encode(buf, characteristic.stack());
+                            ByteBufCodecs.VAR_INT.encode(buf, characteristic.sequence());
+                        }
+                    },
+                    buf -> {
+                        int size = ByteBufCodecs.VAR_INT.decode(buf);
+                        ArrayList<Characteristic> chars = new ArrayList<>(size);
+                        for (int i = 0; i < size; i++) {
+                            String path = ByteBufCodecs.STRING_UTF8.decode(buf);
+                            int stack = ByteBufCodecs.VAR_INT.decode(buf);
+                            int seq = ByteBufCodecs.VAR_INT.decode(buf);
+                            chars.add(new Characteristic(path, stack, seq));
+                        }
+                        return chars;
+                    }
             );
+
 
     public static final StreamCodec<FriendlyByteBuf, SyncBeyonderDataPacket> STREAM_CODEC =
             StreamCodec.of(
@@ -47,7 +68,7 @@ public record SyncBeyonderDataPacket(String pathway, int sequence, float spiritu
                         ByteBufCodecs.BOOL.encode(buf, packet.griefingEnabled());
                         ByteBufCodecs.FLOAT.encode(buf, packet.digestionProgress());
                         PATHWAY_HISTORY_CODEC.encode(buf, packet.pathwayHistory());
-                        CHAR_STACKS_CODEC.encode(buf, packet.charStacks());
+                        CHAR_LIST_CODEC.encode(buf, packet.charList());
                     },
                     buf -> new SyncBeyonderDataPacket(
                             ByteBufCodecs.STRING_UTF8.decode(buf),
@@ -56,7 +77,7 @@ public record SyncBeyonderDataPacket(String pathway, int sequence, float spiritu
                             ByteBufCodecs.BOOL.decode(buf),
                             ByteBufCodecs.FLOAT.decode(buf),
                             PATHWAY_HISTORY_CODEC.decode(buf),
-                            CHAR_STACKS_CODEC.decode(buf)
+                            CHAR_LIST_CODEC.decode(buf)
                     )
             );
 
@@ -76,7 +97,7 @@ public record SyncBeyonderDataPacket(String pathway, int sequence, float spiritu
                     true,
                     packet.digestionProgress(),
                     packet.pathwayHistory(),
-                    packet.charStacks()
+                    packet.charList()
             );
         });
     }

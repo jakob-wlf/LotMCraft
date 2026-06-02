@@ -105,8 +105,4 @@ public class PhysicalEnhancementsMotherAbility extends PhysicalEnhancementsAbili
         };
     }
 
-    @Override
-    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
-    }
 }
