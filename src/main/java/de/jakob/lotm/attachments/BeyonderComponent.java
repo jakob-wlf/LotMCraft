@@ -226,7 +226,15 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
                                 if (entry.contains("index", Tag.TAG_INT) && entry.contains("value", Tag.TAG_INT)) {
                                     int index = entry.getInt("index");
                                     int value = entry.getInt("value");
-                                    if (index >= 0 && index < characteristicStack.length) characteristicStack[index] = value;
+                                    de.jakob.lotm.LOTMCraft.LOGGER.info("BeyonderComponent.deserializeNBT: legacy entry {} -> {} (raw keys {})", index, value, entry.getAllKeys());
+                                    if (index >= 0 && index < characteristicStack.length) {
+                                        characteristicStack[index] = value;
+                                        de.jakob.lotm.LOTMCraft.LOGGER.info("BeyonderComponent.deserializeNBT: wrote characteristicStack[{}] = {}", index, value);
+                                    } else {
+                                        de.jakob.lotm.LOTMCraft.LOGGER.info("BeyonderComponent.deserializeNBT: legacy entry index {} out of bounds", index);
+                                    }
+                                } else {
+                                    de.jakob.lotm.LOTMCraft.LOGGER.info("BeyonderComponent.deserializeNBT: legacy compound missing index/value, keys {}", entry.getAllKeys());
                                 }
                             }
                             de.jakob.lotm.LOTMCraft.LOGGER.info("BeyonderComponent.deserializeNBT: migrated characteristicStack {}", java.util.Arrays.toString(characteristicStack));
