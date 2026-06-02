@@ -5,6 +5,8 @@ package de.jakob.lotm.gui.custom.Introspect;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.attachments.ControllingDataComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
@@ -113,12 +115,19 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (showAllAbilities) {
             availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesUpToSequenceOrdered(menu.getSequence()));
         } else {
-            String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
-            for(int i = menu.getSequence(); i < pathwayHistory.length; i++) {
-                String pathway = pathwayHistory[i];
-                if(pathway != null) {
-                    ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
-                    availableAbilities.addAll(pathwayAbilities);
+            // use the old system in case of controlling - will change once worms get added
+            ControllingDataComponent controllingDataComponent = minecraft.player.getData(ModAttachments.CONTROLLING_DATA);
+            if (controllingDataComponent.isControlling()) {
+                ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
+                availableAbilities.addAll(controllerPathwayAbilities);
+            } else {
+                String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
+                for(int i = menu.getSequence(); i < pathwayHistory.length; i++) {
+                    String pathway = pathwayHistory[i];
+                    if(pathway != null) {
+                        ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
+                        availableAbilities.addAll(pathwayAbilities);
+                    }
                 }
             }
         }
