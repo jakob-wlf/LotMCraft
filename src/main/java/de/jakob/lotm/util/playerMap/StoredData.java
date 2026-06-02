@@ -230,26 +230,15 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
 
             }
         } else {
-            if (tag.contains(NBT_CHAR_STACK)) {
-                Tag stackTag = tag.get(NBT_CHAR_STACK);
-                if (stackTag instanceof IntArrayTag intArrayTag) {
-                    int[] array = intArrayTag.getAsIntArray();
-                    for (int i = 0; i < Math.min(array.length, 10); i++) {
-                        int value = array[i];
-                        if (value > 0) {
-                            String charPath = path.equals("none") ? "placeholder" : path;
-                            chars.add(new Characteristic(charPath, value, i));
-                            LOTMCraft.LOGGER.info("Loaded legacy char " + i + " for " + path);
-                        }
-                    }
-                } else if (stackTag instanceof ListTag listTag && listTag.getElementType() == Tag.TAG_INT) {
-                    for (int i = 0; i < Math.min(listTag.size(), 10); i++) {
-                        int value = listTag.getInt(i);
-                        if (value > 0) {
-                            String charPath = path.equals("none") ? "placeholder" : path;
-                            chars.add(new Characteristic(charPath, value, i));
-                            LOTMCraft.LOGGER.info("Loaded legacy char " + i + " for " + path);
-                        }
+            int[] charStack = new int[10];
+            if (tag.contains(NBT_CHAR_STACK, Tag.TAG_LIST)) {
+                ListTag charStackList = tag.getList(NBT_CHAR_STACK, Tag.TAG_INT);
+                for (int i = 0; i < Math.min(charStackList.size(), 10); i++) {
+                    charStack[i] = charStackList.getInt(i);
+                }
+                for (int i = 0; i < charStack.length; i++) {
+                    if (seq <= i) {
+                        chars.add(new Characteristic(path, charStack[i] + 1, i));
                     }
                 }
             }

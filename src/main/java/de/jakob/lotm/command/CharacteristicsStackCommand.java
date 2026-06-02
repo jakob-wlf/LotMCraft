@@ -36,7 +36,7 @@ public class CharacteristicsStackCommand {
                                                         return 0;
                                                     }
 
-                                                    if(seq >= LOTMCraft.NON_BEYONDER_SEQ || seq < 1){
+                                                    if(seq >= LOTMCraft.NON_BEYONDER_SEQ || seq < 0){
                                                         source.sendFailure(Component.literal("Invalid sequence!"));
                                                         return 0;
                                                     }
@@ -66,7 +66,7 @@ public class CharacteristicsStackCommand {
                                                         return 0;
                                                     }
 
-                                                    if(seq >= LOTMCraft.NON_BEYONDER_SEQ || seq < 1){
+                                                    if(seq >= LOTMCraft.NON_BEYONDER_SEQ || seq < 0){
                                                         source.sendFailure(Component.literal("Invalid sequence!"));
                                                         return 0;
                                                     }
@@ -101,7 +101,7 @@ public class CharacteristicsStackCommand {
                                         return 0;
                                     }
 
-                                    if(seq >= LOTMCraft.NON_BEYONDER_SEQ || seq < 1){
+                                    if(seq >= LOTMCraft.NON_BEYONDER_SEQ || seq < 0){
                                         source.sendFailure(Component.literal("Invalid sequence!"));
                                         return 0;
                                     }
@@ -124,7 +124,7 @@ public class CharacteristicsStackCommand {
                                                 return 0;
                                             }
 
-                                            if(seq >= LOTMCraft.NON_BEYONDER_SEQ || seq < 1){
+                                            if(seq >= LOTMCraft.NON_BEYONDER_SEQ || seq < 0){
                                                 source.sendFailure(Component.literal("Invalid sequence!"));
                                                 return 0;
                                             }

@@ -744,7 +744,7 @@ public class BeyonderData {
             return ClientBeyonderCache.getCharacteristicCount(entity.getUUID());
         }
 
-        if(sequence > 9 || sequence < 1) return 0;
+        if(sequence > 9 || sequence < 0) return 0;
 
         return entity.getData(ModAttachments.BEYONDER_COMPONENT).getCharacteristicList().stream()
                 .filter(c -> c.sequence() == sequence)
