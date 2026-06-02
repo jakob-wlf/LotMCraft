@@ -13,6 +13,7 @@ import java.util.UUID;
 public abstract class SelectableAbility extends Ability {
 
     protected final HashMap<UUID, Integer> selectedAbilities = new HashMap<>();
+    protected final HashMap<UUID, Integer> castedSubAbility = new HashMap<>();
 
     public SelectableAbility(String id, float cooldown, String... interactionFlags) {
         super(id, cooldown, interactionFlags);
@@ -40,10 +41,18 @@ public abstract class SelectableAbility extends Ability {
         }
 
         int selectedAbility = selectedAbilities.get(entity.getUUID());
+        if(castedSubAbility.containsKey(entity.getUUID())) {
+            selectedAbility = castedSubAbility.get(entity.getUUID());
+            castedSubAbility.remove(entity.getUUID());
+        }
         castSelectedAbility(level, entity, selectedAbility);
     }
 
     protected abstract void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility);
+
+    public void addSubAbilityOverride(LivingEntity entity, int selectedAbility) {
+        castedSubAbility.put(entity.getUUID(), selectedAbility);
+    }
 
     public void nextAbility(LivingEntity entity) {
         if(getAbilityNames().length == 0)

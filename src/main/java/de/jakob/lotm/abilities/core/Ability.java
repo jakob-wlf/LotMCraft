@@ -268,6 +268,18 @@ public abstract class Ability {
         return getName().withStyle(ChatFormatting.BOLD).withColor(color);
     }
 
+    public Component getNameFormatted(LivingEntity entity) {
+        if(getRequirements().isEmpty()) {
+            return Component.translatable("lotmcraft." + getId()).withStyle(ChatFormatting.BOLD);
+        }
+
+        String pathway = BeyonderData.getPathway(entity);
+
+        int color = BeyonderData.pathwayInfos.containsKey(pathway) ? BeyonderData.pathwayInfos.get(pathway).color() : 0xFFFFFF;
+        return getName().withStyle(ChatFormatting.BOLD).withColor(color);
+    }
+
+
     @Nullable
     public Component getDescription() {
         MutableComponent description = Component.translatable("lotmcraft." + getId() + ".description");

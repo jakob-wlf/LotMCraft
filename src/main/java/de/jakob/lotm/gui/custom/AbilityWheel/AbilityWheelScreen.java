@@ -3,11 +3,15 @@ package de.jakob.lotm.gui.custom.AbilityWheel;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.events.KeyInputHandler;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.UpdateSelectedAbilityPacket;
 import de.jakob.lotm.network.packets.toServer.UseSelectedAbilityPacket;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.ClientData;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -221,8 +225,19 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
         guiGraphics.fill(x, y, x + borderWidth, y + size, borderColor);
         guiGraphics.fill(x + size - borderWidth, y, x + size, y + size, borderColor);
 
+        // Parse sub-ability index from abilityId (e.g. "someid:2")
+        int colonIdx = abilityId.lastIndexOf(':');
+        int subIndex = -1;
+        String baseId = abilityId;
+        if (colonIdx >= 0) {
+            try {
+                subIndex = Integer.parseInt(abilityId.substring(colonIdx + 1));
+                baseId = abilityId.substring(0, colonIdx);
+            } catch (NumberFormatException ignored) {}
+        }
+
         try {
-            ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/abilities/" + abilityId + ".png");
+            ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/abilities/" + baseId + ".png");
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, texture);
 
@@ -241,10 +256,30 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
             guiGraphics.fill(x + padding, y + padding, x + size - padding, y + size - padding, 0xFF8B6914);
         }
 
+        // Draw sub-index badge in the bottom-right corner of the slot
+        if (subIndex >= 0) {
+            String badge = String.valueOf(subIndex);
+            int bx = pos.x + size / 2 - net.minecraft.client.Minecraft.getInstance().font.width(badge) - 2;
+            int by = pos.y + size / 2 - net.minecraft.client.Minecraft.getInstance().font.lineHeight + 1;
+            guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, badge, bx, by, 0xFFFFFF, false);
+        }
+
         if (isHovered) {
-            Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+            Ability ability = LOTMCraft.abilityHandler.getById(baseId);
             if (ability != null) {
-                Component name = ability.getNameFormatted();
+                Component name;
+                if (subIndex >= 0 && ability instanceof SelectableAbility sa) {
+                    String[] names = sa.getAbilityNamesCopy();
+                    if (subIndex < names.length) {
+                        String pathway = BeyonderData.getPathway(ClientHandler.getPlayer());
+                        int color = BeyonderData.pathwayInfos.containsKey(pathway) ? BeyonderData.pathwayInfos.get(pathway).color() : 0xFFFFFF;
+                        name = Component.translatable(names[subIndex]).withStyle(ChatFormatting.BOLD).withColor(color);
+                    }
+                    else
+                        name = ability.getNameFormatted(ClientHandler.getPlayer());
+                } else {
+                    name = ability.getNameFormatted(ClientHandler.getPlayer());
+                }
                 int textWidth = net.minecraft.client.Minecraft.getInstance().font.width(name);
                 guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, name,
                         pos.x - textWidth / 2, pos.y - size / 2 - 12, 0xFFFFFF, true);
