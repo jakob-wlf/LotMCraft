@@ -184,8 +184,10 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
 
             if (legacyKey != null) {
                 Tag stackTag = compoundTag.get(legacyKey);
+                de.jakob.lotm.LOTMCraft.LOGGER.info("BeyonderComponent.deserializeNBT: found legacy key {} with tag class {}", legacyKey, stackTag.getClass().getSimpleName());
                 if (stackTag instanceof IntArrayTag intArrayTag) {
                     int[] array = intArrayTag.getAsIntArray();
+                    de.jakob.lotm.LOTMCraft.LOGGER.info("BeyonderComponent.deserializeNBT: migrating IntArrayTag {}", java.util.Arrays.toString(java.util.Arrays.copyOf(array, Math.min(array.length, 10))));
                     for (int i = 0; i < Math.min(array.length, 10); i++) {
                     if (array[i] > 0 && this.sequence <= i) {
                             String charPath = this.pathway.equals("none") ? "placeholder" : this.pathway;
@@ -194,6 +196,7 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
                         }
                     }
                 } else if (stackTag instanceof ListTag listTag) {
+                    de.jakob.lotm.LOTMCraft.LOGGER.info("BeyonderComponent.deserializeNBT: migrating ListTag of size {} and elementType {}", listTag.size(), listTag.getElementType());
                     if (listTag.getElementType() == Tag.TAG_INT) {
                         for (int i = 0; i < Math.min(listTag.size(), 10); i++) {
                             int value = listTag.getInt(i);
@@ -220,6 +223,7 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
                                 int value = entry.getInt("value");
                                 if (index >= 0 && index < characteristicStack.length) characteristicStack[index] = value;
                             }
+                            de.jakob.lotm.LOTMCraft.LOGGER.info("BeyonderComponent.deserializeNBT: migrated characteristicStack {}", java.util.Arrays.toString(characteristicStack));
                             if (this.sequence < de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ) {
                                 for (int i = 0; i < 10; i++) {
                                     if (this.sequence <= i) {
