@@ -5,10 +5,12 @@ import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.*;
 import net.minecraft.world.phys.Vec3;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 public record StoredData(String pathway, Integer sequence, HonorificName honorificName,
                          String trueName,
@@ -203,15 +205,17 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
     }
 
     public static StoredData fromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-        String path = tag.contains(NBT_PATHWAY) ? tag.getString(NBT_PATHWAY) : "none";
-        if (path.isEmpty()) path = "none";
 
-        int seq = tag.contains(NBT_SEQUENCE) ? tag.getInt(NBT_SEQUENCE) : LOTMCraft.NON_BEYONDER_SEQ;
+        String path = tag.getString(NBT_PATHWAY);
+        LOTMCraft.LOGGER.info("Loading data for " + path);
+
+
+        int seq = tag.getInt(NBT_SEQUENCE);
         HonorificName name = HonorificName.fromNBT(tag.getCompound(NBT_HONORIFIC_NAME));
         String trueName = tag.getString(NBT_TRUE_NAME);
 
         boolean modified = tag.getBoolean(NBT_MODIFIED);
-        String uniqueness = tag.contains(NBT_UNIQUENESS) ? tag.getString(NBT_UNIQUENESS) : "none";
+        String uniqueness = tag.getString(NBT_UNIQUENESS);
 
         Vec3 lastPos = new Vec3(
                 tag.getDouble(NBT_LAST_POSITION_X),
@@ -223,37 +227,33 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
             ListTag charStacks = tag.getList(NBT_CHAR_LIST, Tag.TAG_COMPOUND);
             for (int i = 0; i < charStacks.size(); i++) {
                 chars.add(Characteristic.fromNBT(charStacks.getCompound(i), provider));
+
             }
         } else {
-            // Check both possible legacy keys
-            String legacyKey = tag.contains(NBT_CHAR_STACK) ? NBT_CHAR_STACK : (tag.contains("characteristicStack") ? "characteristicStack" : null);
-
-            if (legacyKey != null) {
-                Tag stackTag = tag.get(legacyKey);
+            if (tag.contains(NBT_CHAR_STACK)) {
+                Tag stackTag = tag.get(NBT_CHAR_STACK);
                 if (stackTag instanceof IntArrayTag intArrayTag) {
                     int[] array = intArrayTag.getAsIntArray();
                     for (int i = 0; i < Math.min(array.length, 10); i++) {
-                        if (array[i] > 0) {
+                        int value = array[i];
+                        if (value > 0) {
                             String charPath = path.equals("none") ? "placeholder" : path;
-                            chars.add(new Characteristic(charPath, array[i], i));
+                            chars.add(new Characteristic(charPath, value, i));
+                            LOTMCraft.LOGGER.info("Loaded legacy char " + i + " for " + path);
                         }
                     }
-                } else if (stackTag instanceof ListTag listTag) {
-                    if (listTag.getElementType() == Tag.TAG_INT) {
-                        for (int i = 0; i < Math.min(listTag.size(), 10); i++) {
-                            int value = listTag.getInt(i);
-                            if (value > 0) {
-                                String charPath = path.equals("none") ? "placeholder" : path;
-                                chars.add(new Characteristic(charPath, value, i));
-                            }
-                        }
-                    } else if (listTag.getElementType() == Tag.TAG_COMPOUND) {
-                        for (int i = 0; i < listTag.size(); i++) {
-                            chars.add(Characteristic.fromNBT(listTag.getCompound(i), provider));
+                } else if (stackTag instanceof ListTag listTag && listTag.getElementType() == Tag.TAG_INT) {
+                    for (int i = 0; i < Math.min(listTag.size(), 10); i++) {
+                        int value = listTag.getInt(i);
+                        if (value > 0) {
+                            String charPath = path.equals("none") ? "placeholder" : path;
+                            chars.add(new Characteristic(charPath, value, i));
+                            LOTMCraft.LOGGER.info("Loaded legacy char " + i + " for " + path);
                         }
                     }
                 }
             }
+
         }
 
         // If we have a pathway but no characteristics were found in migration,
@@ -261,6 +261,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
         if (chars.isEmpty() && !path.equals("none") && seq < LOTMCraft.NON_BEYONDER_SEQ) {
             chars.add(new Characteristic(path, 1, seq));
         }
+        LOTMCraft.LOGGER.info("Loaded " + chars.stream().map(Characteristic::toString).collect(Collectors.joining(", ")) + " chars for " + path);
 
         String[] history = new String[10];
         if (tag.contains(NBT_PATHWAY_HISTORY, Tag.TAG_LIST)) {
