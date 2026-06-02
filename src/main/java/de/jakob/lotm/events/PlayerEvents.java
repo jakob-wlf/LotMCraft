@@ -136,10 +136,23 @@ public class PlayerEvents {
                 if (component.getCharacteristicList().size() <= 1) {
                     Optional<de.jakob.lotm.util.playerMap.StoredData> stored = BeyonderData.playerMap != null ? BeyonderData.playerMap.get(player) : Optional.empty();
                     if (stored.isPresent() && !stored.get().chars().isEmpty()) {
-                        component.setCharacteristicList(new ArrayList<>(stored.get().chars()));
-                        component.syncHighest();
-                        PacketHandler.syncBeyonderDataToPlayer(player);
-                        de.jakob.lotm.LOTMCraft.LOGGER.info("Applied PlayerMap fallback migration for player {}", player.getGameProfile().getName());
+                        // Decide whether to prefer stored PlayerMap chars over migrated component chars.
+                        int compSum = component.getCharacteristicList().stream().mapToInt(c -> c.stack()).sum();
+                        long compNonDefault = component.getCharacteristicList().stream().filter(c -> c.stack() > 1).count();
+                        int storedSum = stored.get().chars().stream().mapToInt(c -> c.stack()).sum();
+
+                        boolean shouldApply = false;
+                        // If component has no non-default stacks (all stacks == 1), prefer stored data
+                        if (compNonDefault == 0 && storedSum > 0) shouldApply = true;
+                        // Or if totals differ significantly (migration probably wrong)
+                        if (!shouldApply && storedSum != compSum) shouldApply = true;
+
+                        if (shouldApply) {
+                            component.setCharacteristicList(new ArrayList<>(stored.get().chars()));
+                            component.syncHighest();
+                            PacketHandler.syncBeyonderDataToPlayer(player);
+                            de.jakob.lotm.LOTMCraft.LOGGER.info("Applied PlayerMap fallback migration for player {} (compSum={}, storedSum={}, compNonDefault={})", player.getGameProfile().getName(), compSum, storedSum, compNonDefault);
+                        }
                     }
                 }
             } catch (Exception e) {
