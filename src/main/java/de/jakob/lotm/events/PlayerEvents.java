@@ -59,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
@@ -128,6 +129,22 @@ public class PlayerEvents {
             }
 
             PacketHandler.sendToPlayer(player, new SyncGriefingGamerulePacket(player.level().getGameRules().getBoolean(ModGameRules.ALLOW_GRIEFING)));
+
+            // Fallback migration: if component migration produced only a minimal char list, prefer stored PlayerMap chars
+            try {
+                var component = player.getData(ModAttachments.BEYONDER_COMPONENT);
+                if (component.getCharacteristicList().size() <= 1) {
+                    Optional<de.jakob.lotm.util.playerMap.StoredData> stored = BeyonderData.playerMap != null ? BeyonderData.playerMap.get(player) : Optional.empty();
+                    if (stored.isPresent() && !stored.get().chars().isEmpty()) {
+                        component.setCharacteristicList(new ArrayList<>(stored.get().chars()));
+                        component.syncHighest();
+                        PacketHandler.syncBeyonderDataToPlayer(player);
+                        de.jakob.lotm.LOTMCraft.LOGGER.info("Applied PlayerMap fallback migration for player {}", player.getGameProfile().getName());
+                    }
+                }
+            } catch (Exception e) {
+                de.jakob.lotm.LOTMCraft.LOGGER.warn("Error during BeyonderComponent fallback migration for {}", player.getGameProfile().getName(), e);
+            }
 
             NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
             if(!component.isHasReceivedNewPlayerPerks() && player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC)) {

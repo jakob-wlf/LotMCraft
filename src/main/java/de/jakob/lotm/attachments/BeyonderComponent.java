@@ -54,6 +54,11 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
         return charList;
     }
 
+    public void setCharacteristicList(ArrayList<Characteristic> list) {
+        this.charList = list == null ? new ArrayList<>() : new ArrayList<>(list);
+        syncHighest();
+    }
+
 
     public void setCharacteristic(int stackValue, int sequence, String pathway) {
         if(sequence <= 9 && sequence >= 0) {
