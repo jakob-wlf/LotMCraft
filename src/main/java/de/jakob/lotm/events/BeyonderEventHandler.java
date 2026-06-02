@@ -560,7 +560,7 @@ public class BeyonderEventHandler {
             float diff = BeyonderData.getSequence(player) - BeyonderData.getSequence(victim);
 
             if (diff >= 0) {
-                BeyonderData.digest(player, (0.01f + (diff * 0.1f)), true);
+                BeyonderData.digest(player, (0.01f + (diff * 0.1f)), false);
             }
 
             victim.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, 20 * 5, 99, false, false));

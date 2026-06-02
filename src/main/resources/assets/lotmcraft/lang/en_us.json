@@ -1809,6 +1809,9 @@
   "lotm.uniqueness.spawned": "The uniqueness of your pathway has manifested in the world...",
   "lotm.uniqueness.picked_up": " has claimed the uniqueness!",
 
+  "_comment016": "Acting-------------------------------------------------------------------------",
+  "lotm.acting.plant_crop": "Plant Crops",
+
   "lotm.griefing": "Griefing Enabled",
   "lotm.griefing_required": "Griefing must be enabled",
   "lotm.temporarily_disabled": "This ability is temporarily disabled and will be reenabled shortly",

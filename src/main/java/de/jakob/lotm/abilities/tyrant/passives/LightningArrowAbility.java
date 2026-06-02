@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.tyrant.passives;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -18,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
 import org.joml.Vector3f;
 
@@ -55,6 +57,13 @@ public class LightningArrowAbility extends PassiveAbilityItem {
             return;
         }
 
+        ParticleUtil.spawnParticles(
+                serverLevel,
+                ModParticles.LIGHTNING.get(),
+                player.getEyePosition(),
+                20, .4, .1
+        );
+
         serverLevel.playSound(null, arrow.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, arrow.getSoundSource(), 1.0f, 1.0f);
 
         arrow.setDeltaMovement(
@@ -62,12 +71,29 @@ public class LightningArrowAbility extends PassiveAbilityItem {
         );
 
         arrow.setBaseDamage(
-                arrow.getBaseDamage() * 4.0
+                arrow.getBaseDamage() * 3.0
         );
+    }
 
-        ServerScheduler.scheduleUntil(serverLevel, () -> {
-            ParticleUtil.spawnParticles(serverLevel, ParticleTypes.ELECTRIC_SPARK, arrow.position(), 10, .1, 0);
-            ParticleUtil.spawnParticles(serverLevel, dust, arrow.position(), 10, .1, 0);
-        }, 0, null, () -> !arrow.isAlive() || arrow.onGround(), () -> 1.0);
+    @SubscribeEvent
+    public static void onArrowHit(ProjectileImpactEvent event) {
+        if(!(event.getProjectile() instanceof AbstractArrow arrow))
+            return;
+
+        if (!(arrow.getOwner() instanceof Player player))
+            return;
+
+        if(!((LightningArrowAbility) PassiveAbilityHandler.LIGHTNING_ARROW.get()).shouldApplyTo(player)) {
+            return;
+        }
+
+        Level level = arrow.level();
+        if(!(level instanceof ServerLevel serverLevel)) return;
+        ParticleUtil.spawnParticles(
+                serverLevel,
+                ModParticles.LIGHTNING.get(),
+                arrow.position(),
+                50, .2, .2
+        );
     }
 }

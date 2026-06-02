@@ -167,7 +167,7 @@ public class BeyonderDataTickHandler {
 
             // Slowly digest potion
             if(player.tickCount % 20 == 0) {
-                BeyonderData.digest(player, 1 / (20 * 60 * 60f), false);
+                BeyonderData.digest(player, 1 / (20 * 60 * 60f), true);
             }
         }
 

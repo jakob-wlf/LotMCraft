@@ -85,7 +85,7 @@ public class AbilityIconRenderer {
             String badge = String.valueOf(subIndex);
             int bx = x + ICON_WIDTH - net.minecraft.client.Minecraft.getInstance().font.width(badge);
             int by = y + ICON_HEIGHT - net.minecraft.client.Minecraft.getInstance().font.lineHeight / 2;
-            guiGraphics.fill(bx - 1, by - 1, bx + net.minecraft.client.Minecraft.getInstance().font.width(badge) + 1, by + net.minecraft.client.Minecraft.getInstance().font.lineHeight + 1, 0xAA000000);
+            guiGraphics.fill(bx, by, bx + net.minecraft.client.Minecraft.getInstance().font.width(badge), by + net.minecraft.client.Minecraft.getInstance().font.lineHeight, 0xAA000000);
             guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, badge, bx, by, 0xFFFFFF, false);
         }
 

@@ -638,10 +638,14 @@ public class BeyonderData {
         return false;
     }
 
-    public static void digest(Player player, float amount, boolean countTowardsCooldown) {
+    public static void digest(Player player, float amount, boolean accountForDigestionRate) {
         if (hasSwitchedPathway(player)) amount /= 2f;
         float current = getDigestionProgress(player);
+        if(accountForDigestionRate) {
+            amount *= (player.level().getGameRules().getInt(ModGameRules.DIGESTION_RATE) / 10f);
+        }
         float newAmount = Math.min(1.0f, current + amount);
+
         if(newAmount == 1.0f && current < 1.0f) {
             AbilityUtil.sendActionBar(player, Component.translatable("lotm.digested").withColor(0xbd64d1));
             if(player.level() instanceof ServerLevel serverLevel) {
