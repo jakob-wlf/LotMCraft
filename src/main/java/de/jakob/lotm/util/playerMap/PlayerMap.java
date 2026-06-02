@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.level.storage.DimensionDataStorage;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -167,7 +166,6 @@ public class PlayerMap extends SavedData {
         // Don't overwrite existing map entries with empty/default data (prevents data loss when entity component is uninitialized)
         if ((pathway.equals("none") || sequence == LOTMCraft.NON_BEYONDER_SEQ) && map.containsKey(entity.getUUID())) {
             LOTMCraft.LOGGER.info("Skipping put for {} because entity has empty/default beyonder data", ((ServerPlayer) entity).getGameProfile().getName());
-
             return;
         }
 
@@ -356,19 +354,7 @@ public class PlayerMap extends SavedData {
 
     public static PlayerMap get(ServerLevel level) {
         LOTMCraft.LOGGER.info("Loading beyonderMap");
-        PlayerMap playerMap = level.getDataStorage().computeIfAbsent(FACTORY, NBT_BEYONDER_MAP);
-        for(Map.Entry<UUID, StoredData> entry : playerMap.map.entrySet()){
-            if (entry.getValue().charStack() != null){
-                int charStack[] = entry.getValue().charStack();
-                for (int i = 0; i < charStack.length; i++) {
-                    entry.setValue(new StoredDataBuilder().copyFrom(entry.getValue()).characteristic(charStack[i], i, entry.getValue().pathway()).build());
-                }
-
-            }
-            entry.setValue(new StoredDataBuilder().copyFrom(entry.getValue()).build());
-        }
-
-        return playerMap;
+        return level.getServer().overworld().getDataStorage().computeIfAbsent(FACTORY, NBT_BEYONDER_MAP_CLASS);
     }
 
     public void setLevel(ServerLevel level){
