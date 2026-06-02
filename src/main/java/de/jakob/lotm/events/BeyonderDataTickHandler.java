@@ -88,6 +88,12 @@ public class BeyonderDataTickHandler {
         AbilityCooldownComponent component = livingEntity.getData(ModAttachments.COOLDOWN_COMPONENT);
         component.tick();
 
+        //Virtual Personas heal
+        if(livingEntity instanceof ServerPlayer player) {
+            VirtualPersonaComponent virtualPersonaComponent = player.getData(ModAttachments.VIRTUAL_PERSONAS);
+            virtualPersonaComponent.heal(player);
+        }
+
         // Tick flight cooldown
         DisabledFlightComponent disabledFlightComponent = livingEntity.getData(ModAttachments.FLIGHT_DISABLE_COMPONENT);
         if(disabledFlightComponent.getCooldownTicks() > 0) {

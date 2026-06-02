@@ -56,7 +56,7 @@ public class PureIdealismUtil {
         component.syncData(player);
 
         if(shouldDie){
-            ServerScheduler.scheduleDelayed(getDurationPerSeq(BeyonderData.getSequence(entity)), () -> {stopDiscernment(entity);});
+            ServerScheduler.scheduleDelayed(20 * getDurationPerSeq(BeyonderData.getSequence(entity)), () -> {stopDiscernment(entity);});
         }
 
     }
@@ -98,7 +98,7 @@ public class PureIdealismUtil {
         return switch (seq){
             case 2 -> 240;
             case 1 -> 560;
-            default -> 0;
+            default -> 1;
         };
     }
 

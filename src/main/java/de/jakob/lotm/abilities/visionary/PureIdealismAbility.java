@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class PureIdealismAbility extends SelectableAbility {
@@ -88,35 +89,52 @@ public class PureIdealismAbility extends SelectableAbility {
             return;
         }
         if(path.equals("visionary")){
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.discernment_ability.failed").withColor(0xf5c56c));
+            AbilityUtil.sendActionBar(entity, Component.translatable( "ability.lotmcraft.pure_idealism_ability.failed").withColor(0xf5c56c));
             return;
         }
 
         int diff = seq - BeyonderData.getSequence(entity) ;
 
         if (random.nextInt(10 - diff) != 0) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.discernment_ability.failed").withColor(0xf5c56c));
+            AbilityUtil.sendActionBar(entity, Component.translatable( "ability.lotmcraft.pure_idealism_ability.failed").withColor(0xf5c56c));
             return;
         }
 
+
         preMeditation.put(entity.getUUID(), Pair.of(path, seq));
+
+        var pair = preMeditation.get(entity.getUUID());
+        LOTMCraft.LOGGER.info("SAVED: path: {}, seq: {}", pair.getFirst(), pair.getSecond());
+
         player.sendSystemMessage(Component.literal("Discerned role: sequence " + seq + " of " + path + " pathway").withColor(0xf5c56c));
     }
 
     private void meditate(Level level, LivingEntity entity){
         if (!(level instanceof ServerLevel serverLevel)) return;
         if (!(entity instanceof ServerPlayer player)) return;
-        if(meditating.contains(entity.getUUID())) return;;
+        if(meditating.contains(entity.getUUID())) return;
+
+        var pair1 = preMeditation.get(entity.getUUID());
+
+        LOTMCraft.LOGGER.info("MEDITATE: is null: {}", pair1 == null);
+        if(pair1 == null){
+            preMeditation.remove(entity.getUUID());
+            meditating.remove(entity.getUUID());
+            return;
+        }
 
         meditating.add(entity.getUUID());
 
-        ServerScheduler.scheduleForDuration(0, 2, 20 *
-                getMeditationDuration(BeyonderData.getSequence(entity), preMeditation.get(entity.getUUID()).getSecond().intValue()),
+        LOTMCraft.LOGGER.info("MEDITATE: path: {}, seq: {}", pair1.getFirst(), pair1.getSecond());
+
+        AtomicReference<UUID> taskIdRef = new AtomicReference<>();
+        var taskId = ServerScheduler.scheduleForDuration(0, 2, 20 *
+                getMeditationDuration(BeyonderData.getSequence(entity), pair1.getSecond()),
                 ()-> {
                     if(!entity.isAlive() || entity.isRemoved()) {
                         preMeditation.remove(entity.getUUID());
                         meditating.remove(entity.getUUID());
-                        return;
+                        ServerScheduler.cancel(taskIdRef.get());
                     }
 
                     var pos = entity.position();
@@ -140,6 +158,8 @@ public class PureIdealismAbility extends SelectableAbility {
                         meditating.remove(entity.getUUID());
                 },
                 serverLevel);
+
+        taskIdRef.set(taskId);
     }
 
     private void immerseIntoRole(Level level, LivingEntity entity) {

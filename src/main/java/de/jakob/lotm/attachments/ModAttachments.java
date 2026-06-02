@@ -302,6 +302,14 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<VirtualPersonaComponent>> VIRTUAL_PERSONAS = ATTACHMENT_TYPES.register(
+            "virtual_personas",
+            () -> AttachmentType.builder(VirtualPersonaComponent::new)
+                    .serialize(VirtualPersonaComponent.SERIALIZER)
+                    .copyOnDeath()
+                    .build()
+    );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

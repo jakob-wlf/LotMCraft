@@ -49,8 +49,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
-import static de.jakob.lotm.util.BeyonderData.playerMap;
-import static de.jakob.lotm.util.BeyonderData.getSequence;
+import static de.jakob.lotm.util.BeyonderData.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderEventHandler {
@@ -84,6 +83,9 @@ public class BeyonderEventHandler {
             ParasitationComponent parasitationComponent = serverPlayer.getData(ModAttachments.PARASITE_COMPONENT);
             parasitationComponent.setParasited(false);
             parasitationComponent.setParasiteUUID(null);
+
+            VirtualPersonaComponent personaComponent = serverPlayer.getData(ModAttachments.VIRTUAL_PERSONAS);
+            personaComponent.onJoin();
 
             serverPlayer.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, 20 * 5, 99));
             BeyonderData.recalculateCharStackModifiers(serverPlayer);
@@ -258,16 +260,7 @@ public class BeyonderEventHandler {
         if (charItem == null) return;
 
         if(PureIdealismUtil.died.containsKey(player.getUUID())){
-            String path = PureIdealismUtil.died.get(player.getUUID());
-
-            UUID id = playerMap.findPlayerByUniqueness(path);
-            if (id != null){
-                var target = player.level().getPlayerByUUID(id);
-
-                if(target != null){
-                    target.addItem(new ItemStack(charItem));
-                }
-            }
+            return;
         }
         else {
             ItemEntity itemEntity = new ItemEntity(
@@ -285,6 +278,9 @@ public class BeyonderEventHandler {
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
+
+            VirtualPersonaComponent personaComponent = player.getData(ModAttachments.VIRTUAL_PERSONAS);
+            personaComponent.onDeath((ServerLevel) player.level(), player.getUUID());
 
             var source = event.getSource().getEntity();
             if (source != null) {

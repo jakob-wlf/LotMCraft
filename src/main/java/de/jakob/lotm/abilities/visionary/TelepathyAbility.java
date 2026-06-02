@@ -62,6 +62,17 @@ public class TelepathyAbility extends ToggleAbility {
             return;
         }
 
+        performTelepaty(player, target, entitySeq);
+    }
+
+    @Override
+    public void stop(Level level, LivingEntity entity) {
+        AbilityUtil.sendActionBar(entity, Component.literal(""));
+
+        clearArtifactScaling(entity);
+    }
+
+    public static void performTelepaty(ServerPlayer entity, LivingEntity target, int entitySeq){
         SanityComponent sanity = target.getData(ModAttachments.SANITY_COMPONENT);
         int sanityPercent = Math.round(sanity.getSanity() * 100);
 
@@ -78,22 +89,15 @@ public class TelepathyAbility extends ToggleAbility {
         int diff = entitySeq - targetSeq;
 
         var plague = target.getData(ModAttachments.MENTAL_PLAGUE.get());
-        boolean shouldRenderPlague = plague.hasMentalPlague() && (plague.isOwner(player)
+        boolean shouldRenderPlague = plague.hasMentalPlague() && (plague.isOwner(entity)
                 || plague.getSequence() >= entitySeq);
 
         AbilityUtil.sendActionBar(entity, Component.literal(
                 "§d" + name + " §7| Sanity: " + color + sanityPercent + "%" +
                         ((diff <= 0 && entitySeq <= 4) ? "§7 Pathway: " + BeyonderData.getPathway(target) +
                                 " Sequence: " + targetSeq + (shouldRenderPlague?
-                                "\n Has plague from: " + plague.getOwnerName() + " Seq: " + plague.getSequence() +
+                                " Has plague from: " + plague.getOwnerName() + " Seq: " + plague.getSequence() +
                                         " Stage: " + plague.getStage() : "") : "")
         ));
-    }
-
-    @Override
-    public void stop(Level level, LivingEntity entity) {
-        AbilityUtil.sendActionBar(entity, Component.literal(""));
-
-        clearArtifactScaling(entity);
     }
 }

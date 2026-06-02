@@ -226,6 +226,7 @@ public class MentalPlagueAbility extends SelectableAbility {
         }
         else{
             if(component.getInfected() >= MentalPlagueComponent.MAX_INFECTED) return;
+            if(component.getStage() < 2) return;
 
             var nearBy = AbilityUtil.getNearbyEntities(livingEntity, level, livingEntity.position(), 20);
             for(var e : nearBy){
