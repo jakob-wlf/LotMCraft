@@ -22,6 +22,7 @@ import de.jakob.lotm.rendering.*;
 import de.jakob.lotm.rendering.effectRendering.impl.VFXRenderer;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.ClientSacrificeCache;
+import de.jakob.lotm.util.ClientAccommodationCache;
 import de.jakob.lotm.util.helper.AnimationUtil;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
 import net.minecraft.client.CameraType;
@@ -579,6 +580,15 @@ public class ClientHandler {
     public static void syncSacrificeDuration(int totalTicks) {
         ClientSacrificeCache.setTotalTicks(totalTicks);
         ClientSacrificeCache.setRemainingTicks(totalTicks);
+    }
+
+    public static void syncSefirotAccommodation(int progressTicks, int totalTicks) {
+        if (totalTicks <= 0 || progressTicks <= 0) {
+            ClientAccommodationCache.reset();
+            return;
+        }
+
+        ClientAccommodationCache.setProgress(progressTicks, totalTicks);
     }
 
     public static void syncCullAbility(boolean active, UUID playerUUID) {

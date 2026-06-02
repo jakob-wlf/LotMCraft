@@ -158,6 +158,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncSefirotAccommodationPacket.TYPE,
+                SyncSefirotAccommodationPacket.STREAM_CODEC,
+                SyncSefirotAccommodationPacket::handle
+        );
+
+        registrar.playToClient(
                 AddEffectPacket.TYPE,
                 AddEffectPacket.STREAM_CODEC,
                 AddEffectPacket::handle

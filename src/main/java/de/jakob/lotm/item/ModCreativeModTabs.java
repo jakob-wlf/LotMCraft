@@ -30,10 +30,16 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.CRYSTAL_BALL.get());
                         output.accept(ModItems.CANE.get());
                         output.accept(ModItems.GUIDING_BOOK.get());
+                        output.accept(ModItems.UPPER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
+                        output.accept(ModItems.RIGHT_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
+                        output.accept(ModItems.LEFT_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
+                        output.accept(ModItems.LOWER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
+                        output.accept(ModItems.MYSTERIOUS_TABLET.get());
                         output.accept(ModItems.MYSTICAL_RING.get());
                         output.accept(ModBlocks.BREWING_CAULDRON.get());
                         output.accept(ModBlocks.VOID);
                         output.accept(ModBlocks.SOLID_VOID);
+                        output.accept(ModItems.DROPS_OF_ETERNAL_DARKNESS_BUCKET.get());
                     })
                     .build());
 

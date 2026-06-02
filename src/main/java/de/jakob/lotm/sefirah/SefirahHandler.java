@@ -17,7 +17,11 @@ import java.util.Arrays;
 
 public class SefirahHandler {
 
-    public static final String[] implementedSefirah = new String[]{"sefirah_castle", "empty"};
+    public static final String[] implementedSefirah = new String[]{
+            "sefirah_castle",
+            "river_of_eternal_darkness",
+            "empty"
+    };
 
     public static boolean claimSefirot(ServerPlayer player, String sefirot) {
         return claimSefirot(player, sefirot, false);
@@ -120,6 +124,20 @@ public class SefirahHandler {
                 if(playTeleportEffect) {
                     EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 24, -57, 0, sefirotLevel);
                 }
+            }
+            case "river_of_eternal_darkness" -> {
+                ServerLevel riverLevel = player.serverLevel().getServer().getLevel(
+                        de.jakob.lotm.dimension.ModDimensions.RIVER_OF_ETERNAL_DARKNESS_DIMENSION_KEY);
+                if (riverLevel == null) {
+                    return;
+                }
+
+                player.teleportTo(riverLevel,
+                        0,
+                        65,
+                        -90,
+                        0,
+                        0);
             }
         }
     }

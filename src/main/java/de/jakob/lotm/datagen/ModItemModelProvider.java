@@ -34,6 +34,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.GUIDING_BOOK.get());
         basicItem(ModItems.CRYSTAL_BALL.get());
         basicItem(ModItems.CANE.get());
+        basicItem(ModItems.UPPER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
+        basicItem(ModItems.RIGHT_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
+        basicItem(ModItems.LEFT_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
+        basicItem(ModItems.LOWER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
+        basicItem(ModItems.MYSTERIOUS_TABLET.get());
 
         tintableItem(ModItems.SEALED_ARTIFACT.get());
         tintableItem(ModItems.SEALED_ARTIFACT_BELL.get());

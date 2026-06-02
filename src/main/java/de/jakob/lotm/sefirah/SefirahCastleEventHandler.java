@@ -3,109 +3,161 @@ package de.jakob.lotm.sefirah;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.dimension.ModDimensions;
-import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.item.custom.MysteriousTabletItem;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.SyncSefirotAccommodationPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.pathways.PathwayInfos;
+import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
+import de.jakob.lotm.util.data.EntityLocation;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import java.util.List;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.ServerChatEvent;
+import net.neoforged.neoforge.event.CommandEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class SefirahCastleEventHandler {
 
-    public static HashMap<UUID, Integer> luckRitualProgress = new HashMap<>();
-    public static HashMap<UUID, Long> timeoutForRitual = new HashMap<>();
+    private static final String SEFIROT_ID = "sefirah_castle";
+    private static final int REQUIRED_TICKS = 20 * 60 * 5;
+    private static final int COMMAND_PERMISSION_LEVEL = 2;
 
+    private static final Set<String> ALLOWED_PATHWAYS = Set.of("fool", "door", "error");
 
-    // Check for ritual -------------------------------------------------------------------------------
+    private static final Map<UUID, Integer> ritualTicks = new HashMap<>();
+    private static final Map<UUID, UUID> ritualTabletIds = new HashMap<>();
+    private static final Map<UUID, UUID> ritualBeamEffectIds = new HashMap<>();
+    private static final Set<UUID> ritualAnnounced = new HashSet<>();
+
     @SubscribeEvent
-    public static void onChatMessageSent(ServerChatEvent event) {
-        UUID playerUUID = event.getPlayer().getUUID();
-
-        // Check for timeout
-        if(timeoutForRitual.containsKey(playerUUID) && timeoutForRitual.get(playerUUID) <= System.currentTimeMillis()) {
-            timeoutForRitual.remove(playerUUID);
-            luckRitualProgress.remove(playerUUID);
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
         }
-
-        String rawMessage = event.getRawText();
-
-        // Check chants
-        if(!checkIfChantIsCompleted(rawMessage, playerUUID, event.getPlayer().position(), event.getPlayer().serverLevel())) {
+        if (!(player.level() instanceof ServerLevel serverLevel)) {
             return;
         }
 
-        timeoutForRitual.remove(playerUUID);
-        luckRitualProgress.remove(playerUUID);
-
-        // Check for pathway requirement
-        if(!BeyonderData.isBeyonder(event.getPlayer()) ||
-                (!BeyonderData.getPathway(event.getPlayer()).equalsIgnoreCase("fool") &&
-                        !BeyonderData.getPathway(event.getPlayer()).equalsIgnoreCase("door") &&
-                        !BeyonderData.getPathway(event.getPlayer()).equalsIgnoreCase("error"))) {
-            AbilityUtil.sendActionBar(event.getPlayer(), Component.translatable("lotm.sefirot.wrong_pathway").withColor(0x942de3));
+        ItemStack stack = event.getItemStack();
+        if (!(stack.getItem() instanceof MysteriousTabletItem tabletItem)) {
             return;
         }
 
-        // Claim Sefirah Castle
-        if (!SefirahHandler.claimSefirot(event.getPlayer(), "sefirah_castle")) {
-            AbilityUtil.sendActionBar(event.getPlayer(), Component.translatable("lotm.sefirot.sefirah_castle_already_occupied").withColor(0x942de3));
-            return;
-        }
-
-        SefirahHandler.teleportToSefirot(event.getPlayer(), true);
-    }
-
-    private static boolean checkIfChantIsCompleted(String rawMessage, UUID playerUUID, Vec3 pos, ServerLevel serverLevel) {
-        // Check for first chant
-        if(!luckRitualProgress.containsKey(playerUUID)) {
-            if(!rawMessage.equalsIgnoreCase("The Immortal Lord of Heaven and Earth for Blessings")) {
-                return false;
+        if (!canStartRitual(player)) {
+            Component failMessage = getStartFailureMessage(player);
+            if (failMessage != null) {
+                player.sendSystemMessage(failMessage);
             }
-            luckRitualProgress.put(playerUUID, 0);
-            timeoutForRitual.put(playerUUID, System.currentTimeMillis() + (60 * 1000));
-
-            EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE_PARTICLES, pos.x, pos.y, pos.z, serverLevel);
-            return false;
+            event.setCanceled(true);
+            return;
         }
 
-        // Check for subsequent chants
-        int ritualProgress = luckRitualProgress.get(playerUUID);
-
-        if(!rawMessage.equalsIgnoreCase(getNextIncantationForProgressIndex(ritualProgress))) {
-            luckRitualProgress.remove(playerUUID);
-            timeoutForRitual.remove(playerUUID);
-            return false;
+        if (!tabletItem.syncTablet(serverLevel, stack)) {
+            event.setCanceled(true);
+            return;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE_PARTICLES, pos.x, pos.y, pos.z, serverLevel);
+        UUID tabletId = MysteriousTabletItem.getTabletId(stack);
+        if (tabletId == null) {
+            tabletId = UUID.randomUUID();
+            MysteriousTabletItem.setTabletId(stack, tabletId);
+        }
 
-        luckRitualProgress.replace(playerUUID, ritualProgress + 1);
-
-        return ritualProgress == 2;
+        startRitual(player, tabletId);
+        event.setCanceled(true);
     }
 
+    @SubscribeEvent
+    public static void onPlayerTick(PlayerTickEvent.Post event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        if (!(player.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        if (player.tickCount % 20 != 0) {
+            return;
+        }
 
+        if (!ritualTicks.containsKey(player.getUUID())) {
+            return;
+        }
 
-    // Disable abilities inside the castle and disable griefing inside completely --------------------
+        tickRitual(player, serverLevel);
+    }
+
+    @SubscribeEvent
+    public static void onCommand(CommandEvent event) {
+        CommandSourceStack source = event.getParseResults().getContext().getSource();
+        if (!(source.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        if (player.hasPermissions(COMMAND_PERMISSION_LEVEL)) {
+            return;
+        }
+        if (!isAccommodating(player)) {
+            return;
+        }
+
+        event.setCanceled(true);
+        player.sendSystemMessage(Component.translatable("lotm.sefirot.command_blocked"));
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        if (!isAccommodating(player)) {
+            return;
+        }
+        resetRitual(player, true);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerDeath(LivingDeathEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        if (!isAccommodating(player)) {
+            return;
+        }
+        resetRitual(player, true);
+    }
+
     @SubscribeEvent
     public static void onEntityTick(EntityTickEvent.Post event) {
-        if(!(event.getEntity().level() instanceof ServerLevel serverLevel)) {
+        if (!(event.getEntity().level() instanceof ServerLevel serverLevel)) {
             return;
         }
 
-        if(!(event.getEntity() instanceof LivingEntity entity)) {
+        if (!(event.getEntity() instanceof LivingEntity entity)) {
             return;
         }
 
@@ -119,19 +171,192 @@ public class SefirahCastleEventHandler {
         }
 
         // Disable ability use
-        if(!(entity instanceof ServerPlayer player) || !SefirahHandler.getClaimedSefirot(player).equalsIgnoreCase("sefirah_castle")) {
+        if (!(entity instanceof ServerPlayer player) || !SefirahHandler.getClaimedSefirot(player).equalsIgnoreCase(SEFIROT_ID)) {
             DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-            component.disableAbilityUsageForTime("sefirah_castle", 20 * 20, entity);
+            component.disableAbilityUsageForTime(SEFIROT_ID, 20 * 20, entity);
         }
     }
 
-    private static String getNextIncantationForProgressIndex(int progress) {
-        return switch (progress) {
-            case 0 -> "The Sky Lord of Heaven and Earth for Blessings";
-            case 1 -> "The Exalted Thearch of Heaven and Earth for Blessings";
-            case 2 -> "The Celestial Worthy of Heaven and Earth for Blessings";
-            default -> "";
-        };
+    private static void startRitual(ServerPlayer player, UUID tabletId) {
+        UUID playerId = player.getUUID();
+        if (ritualTicks.containsKey(playerId)) {
+            return;
+        }
+        // Consume the tablet immediately on start
+        int slot = findTabletSlot(player, tabletId);
+        if (slot >= 0) {
+            player.getInventory().removeItem(slot, 1);
+        }
+        ritualTicks.put(playerId, 0);
+        ritualTabletIds.put(playerId, tabletId);
+        ritualAnnounced.remove(playerId);
+        // Start the geometry sky beam, visible to all players in the level
+        if (player.level() instanceof ServerLevel sl) {
+            UUID beamId = MovableEffectManager.playEffect(
+                    MovableEffectManager.MovableEffect.SKY_BEAM,
+                    new EntityLocation(player),
+                    0, true, sl, player);
+            ritualBeamEffectIds.put(playerId, beamId);
+        }
+        PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(0, REQUIRED_TICKS));
     }
 
+    private static void tickRitual(ServerPlayer player, ServerLevel serverLevel) {
+        if (!canContinueRitual(player)) {
+            resetRitual(player, true);
+            return;
+        }
+
+        UUID playerId = player.getUUID();
+        if (!ritualAnnounced.contains(playerId)) {
+            player.getServer().getPlayerList().broadcastSystemMessage(
+                    Component.translatable("lotm.sefirot.sefirah_castle_started", player.getName().getString()),
+                    false);
+            ritualAnnounced.add(playerId);
+        }
+
+        int ticks = ritualTicks.getOrDefault(playerId, 0) + 20;
+        ritualTicks.put(playerId, ticks);
+
+        applyAccommodationEffects(player, serverLevel);
+
+        PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(ticks, REQUIRED_TICKS));
+
+        if (ticks < REQUIRED_TICKS) {
+            return;
+        }
+
+        boolean claimed = SefirahHandler.claimSefirot(player, SEFIROT_ID, true);
+        if (claimed) {
+            player.sendSystemMessage(Component.translatable("lotm.sefirot.sefirah_castle_claimed"));
+            SefirahHandler.teleportToSefirot(player, true);
+        } else {
+            player.sendSystemMessage(Component.translatable("lotm.sefirot.sefirah_castle_already_occupied"));
+            dropTablet(player);
+        }
+
+        resetRitual(player, false);
+    }
+
+    private static void applyAccommodationEffects(ServerPlayer player, ServerLevel serverLevel) {
+        DisabledAbilitiesComponent component = player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        component.disableAbilityUsageForTime("sefirah_castle_accommodation", 40, player);
+
+        // Heavy particle cloud around the player
+        Vec3 center = player.position().add(0, player.getEyeHeight() * 0.5, 0);
+        ParticleUtil.spawnParticles(serverLevel, dustForPathway("fool"),  center, 150, 2.5, 2.5, 2.5, 0.05);
+        ParticleUtil.spawnParticles(serverLevel, dustForPathway("error"), center, 150, 2.5, 2.5, 2.5, 0.05);
+        ParticleUtil.spawnParticles(serverLevel, dustForPathway("door"),  center, 150, 2.5, 2.5, 2.5, 0.05);
+        // Extra dense inner burst at eye level
+        ParticleUtil.spawnParticles(serverLevel, dustForPathway("fool"),  center, 80, 0.6, 0.6, 0.6, 0.02);
+        ParticleUtil.spawnParticles(serverLevel, dustForPathway("error"), center, 80, 0.6, 0.6, 0.6, 0.02);
+        ParticleUtil.spawnParticles(serverLevel, dustForPathway("door"),  center, 80, 0.6, 0.6, 0.6, 0.02);
+    }
+
+    private static DustParticleOptions dustForPathway(String pathway) {
+        PathwayInfos info = BeyonderData.pathwayInfos.get(pathway);
+        int color = info != null ? info.color() : 0xFFFFFF;
+
+        float r = ((color >> 16) & 0xFF) / 255f;
+        float g = ((color >> 8) & 0xFF) / 255f;
+        float b = (color & 0xFF) / 255f;
+
+        return new DustParticleOptions(new Vector3f(r, g, b), 1.0f);
+    }
+
+    private static boolean canStartRitual(ServerPlayer player) {
+        if (!BeyonderData.isBeyonder(player)) {
+            return false;
+        }
+
+        if (SefirotData.get(player.server).isSefirotClaimed(SEFIROT_ID)) {
+            return false;
+        }
+
+        if (SefirahHandler.hasSefirot(player)) {
+            return false;
+        }
+
+        String pathway = BeyonderData.getPathway(player);
+        return ALLOWED_PATHWAYS.contains(pathway);
+    }
+
+    private static boolean canContinueRitual(ServerPlayer player) {
+        if (!canStartRitual(player)) {
+            return false;
+        }
+        return ritualTabletIds.containsKey(player.getUUID());
+    }
+
+    private static Component getStartFailureMessage(ServerPlayer player) {
+        if (!BeyonderData.isBeyonder(player)) {
+            return Component.translatable("lotm.sefirot.wrong_pathway");
+        }
+
+        if (SefirotData.get(player.server).isSefirotClaimed(SEFIROT_ID)) {
+            return Component.translatable("lotm.sefirot.sefirah_castle_already_occupied");
+        }
+
+        if (SefirahHandler.hasSefirot(player)) {
+            return Component.translatable("lotm.sefirot.already_has_sefirot");
+        }
+
+        String pathway = BeyonderData.getPathway(player);
+        if (!ALLOWED_PATHWAYS.contains(pathway)) {
+            return Component.translatable("lotm.sefirot.wrong_pathway");
+        }
+
+        return null;
+    }
+
+    private static void consumeTablet(ServerPlayer player) {
+        UUID tabletId = ritualTabletIds.get(player.getUUID());
+        if (tabletId == null) {
+            return;
+        }
+        int slot = findTabletSlot(player, tabletId);
+        if (slot < 0) {
+            return;
+        }
+        player.getInventory().removeItem(slot, 1);
+    }
+
+    private static void dropTablet(ServerPlayer player) {
+        ItemStack toDrop = new ItemStack(de.jakob.lotm.item.ModItems.MYSTERIOUS_TABLET.get());
+        player.drop(toDrop, true);
+    }
+
+    private static int findTabletSlot(ServerPlayer player, UUID tabletId) {
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack stack = player.getInventory().getItem(i);
+            if (!(stack.getItem() instanceof MysteriousTabletItem)) {
+                continue;
+            }
+            UUID stackId = MysteriousTabletItem.getTabletId(stack);
+            if (tabletId.equals(stackId)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static boolean isAccommodating(ServerPlayer player) {
+        return ritualTicks.containsKey(player.getUUID());
+    }
+
+    private static void resetRitual(ServerPlayer player, boolean dropTablet) {
+        if (dropTablet) {
+            dropTablet(player);
+        }
+        UUID playerId = player.getUUID();
+        // Stop the geometry sky beam
+        UUID beamId = ritualBeamEffectIds.remove(playerId);
+        if (beamId != null && player.level() instanceof ServerLevel sl) {
+            MovableEffectManager.removeEffect(beamId, sl);
+        }
+        ritualTicks.remove(playerId);
+        ritualTabletIds.remove(playerId);
+        ritualAnnounced.remove(playerId);
+        PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(0, 0));
+    }
 }
