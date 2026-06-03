@@ -216,8 +216,9 @@ public abstract class Ability {
                 return true;
             }
         }
+        return BeyonderData.getCharList(entity).stream().anyMatch(character -> getRequirements().containsKey(character.pathway()) && getRequirements().get(character.pathway()) >= sequence);
 
-        return false;
+        //return false;
     }
 
     public boolean canUse(LivingEntity entity) {
