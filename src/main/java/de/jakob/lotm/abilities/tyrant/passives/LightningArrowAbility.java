@@ -57,6 +57,8 @@ public class LightningArrowAbility extends PassiveAbilityItem {
             return;
         }
 
+        if(event.loadedFromDisk()) return;
+
         ParticleUtil.spawnParticles(
                 serverLevel,
                 ModParticles.LIGHTNING.get(),
@@ -71,7 +73,7 @@ public class LightningArrowAbility extends PassiveAbilityItem {
         );
 
         arrow.setBaseDamage(
-                arrow.getBaseDamage() * 3.0
+                arrow.getBaseDamage() * 2.0
         );
     }
 

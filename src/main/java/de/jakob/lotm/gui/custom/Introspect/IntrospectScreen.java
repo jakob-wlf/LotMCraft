@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.acting.ActingTask;
+import de.jakob.lotm.acting.ActingTaskRegistry;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.*;
@@ -49,6 +51,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private Button toggleQuestsButton;
     private Button discardQuestButton;
 
+    private boolean showActing = false;
+    private Button toggleActingButton;
+
     private enum Tab {
         ABILITY_WHEEL,
         ABILITY_BAR,
@@ -90,6 +95,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private static final int COMPLETED_QUESTS_HEIGHT = 80;
     private static final int ACTIVE_QUEST_HEIGHT = 120;
     private static final int QUEST_ITEM_SIZE = 16;
+
+    private static final int ACTING_PANEL_WIDTH = 140;
+    private static final int ACTING_PANEL_HEIGHT = 120;
 
     private static final String[] KEYBIND_LABELS = {"1", "2", "3", "4", "5", "6"};
 
@@ -279,7 +287,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         toggleAbilitiesButton = Button.builder(Component.literal(showAbilities ? "< Hide" : "Abilities >"),
                         button -> {
                             showAbilities = !showAbilities;
-                            if (showAbilities) showQuests = false;
+                            if (showAbilities) {
+                                showQuests = false;
+                                showActing = false;
+                            }
                             button.setMessage(Component.literal(showAbilities ? "< Hide" : "Abilities >"));
                             updateButtonPositions();
                         })
@@ -293,7 +304,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         toggleQuestsButton = Button.builder(Component.literal(showQuests ? "< Hide" : "Quests >"),
                         button -> {
                             showQuests = !showQuests;
-                            if (showQuests) showAbilities = false;
+                            if (showQuests) {
+                                showAbilities = false;
+                                showActing = false;
+                            }
                             button.setMessage(Component.literal(showQuests ? "< Hide" : "Quests >"));
                             updateButtonPositions();
                         })
@@ -301,8 +315,25 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 .build();
         this.addRenderableWidget(toggleQuestsButton);
 
+        int actingButtonX = baseLeftPos - 65;
+        int actingButtonY = this.topPos + 60;
+
+        toggleActingButton = Button.builder(Component.literal(showActing ? "< Hide" : "Acting >"),
+                        button -> {
+                            showActing = !showActing;
+                            if (showActing) {
+                                showAbilities = false;
+                                showQuests = false;
+                            }
+                            button.setMessage(Component.literal(showActing ? "< Hide" : "Acting >"));
+                            updateButtonPositions();
+                        })
+                .bounds(actingButtonX, actingButtonY, 60, 20)
+                .build();
+        this.addRenderableWidget(toggleActingButton);
+
         int messageButtonX = baseLeftPos - 65;
-        int messageButtonY = this.topPos + 60;
+        int messageButtonY = this.topPos + 85;
 
         messageButton = Button.builder(Component.literal("Honorific"),
                         button -> openHonorificNamesMenu())
@@ -337,7 +368,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         if (isCreativeOp()) {
             int allAbilitiesButtonX = baseLeftPos - 65;
-            int allAbilitiesButtonY = this.topPos + 85;
+            int allAbilitiesButtonY = this.topPos + 135;
 
             toggleAllAbilitiesButton = Button.builder(
                             Component.literal(showAllAbilities ? "All: ON" : "All: OFF")
@@ -518,6 +549,60 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (showQuests) {
             renderQuestItemTooltips(guiGraphics, mouseX, mouseY);
         }
+
+        if(showActing) {
+            renderActingPanel(guiGraphics);
+        }
+    }
+
+    private void renderActingPanel(GuiGraphics guiGraphics) {
+        int baseLeftPos = this.leftPos;
+        int panelX = baseLeftPos + this.imageWidth + 5;
+        int panelY = this.topPos;
+
+        guiGraphics.fill(panelX, panelY, panelX + ACTING_PANEL_WIDTH, panelY + ACTING_PANEL_HEIGHT, 0xCC000000);
+        guiGraphics.renderOutline(panelX, panelY, ACTING_PANEL_WIDTH, ACTING_PANEL_HEIGHT, 0xFFAAAAAA);
+
+        Component label = Component.literal("Acting").withStyle(ChatFormatting.BOLD);
+        guiGraphics.drawString(this.font, label, panelX + 5, panelY + 5, 0xFFFFFFFF, true);
+
+        int listY = panelY + 15;
+        int listHeight = COMPLETED_QUESTS_HEIGHT - 20;
+
+        List<ActingTask> actingRequirements = new ArrayList<>(ActingTaskRegistry.getTasksFor(menu.getPathway(), menu.getSequence()));
+        int skipLineAmount = 0;
+        int lineHeight = this.font.lineHeight + 2;
+
+        int startIndex = 0;
+        int endIndex = Math.min(actingRequirements.size(), startIndex + (listHeight / lineHeight));
+
+        for (int i = startIndex; i < endIndex; i++) {
+            String questId = actingRequirements.get(i).getId();
+            Component actingName = Component.translatable("lotm.acting." + questId);
+            if (actingName.getString().length() > 24) {
+                actingName = Component.literal(actingName.getString().substring(0, 21).strip() + "…");
+            }
+            int textY = listY + (i - startIndex) * lineHeight + 5 + skipLineAmount * lineHeight;
+            guiGraphics.drawString(this.font, "- ", panelX + 5, textY, BeyonderData.pathwayInfos.get(menu.getPathway()).color(), false);
+            guiGraphics.drawString(this.font, actingName, panelX + 15, textY, 0xFFCCCCCC, false);
+
+            if(!Component.translatable("lotm.acting." + questId + ".description").getString().equals("lotm.acting." + questId + ".description")) {
+                Component description = Component.translatable("lotm.acting." + questId + ".description");
+                List<String> wrappedDesc = wrapText(description.getString(), ACTING_PANEL_WIDTH - 20);
+                for (String line : wrappedDesc) {
+                    textY += this.font.lineHeight;
+                    guiGraphics.drawString(this.font, line, panelX + 15, textY, 0xFF888888, false);
+                }
+                skipLineAmount += wrappedDesc.size();
+            }
+        }
+
+        if(actingRequirements.isEmpty()) {
+            Component noReqs = Component.literal("No acting requirements yet").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
+            int textWidth = this.font.width(noReqs);
+            guiGraphics.drawString(this.font, noReqs, panelX + (ACTING_PANEL_WIDTH - textWidth) / 2,
+                    panelY + ACTING_PANEL_HEIGHT / 2 - this.font.lineHeight / 2, 0xFF888888, false);
+        }
     }
 
     private void renderQuestPanel(GuiGraphics guiGraphics, int mouseX, int mouseY) {
@@ -554,7 +639,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 questName = Component.literal(questName.getString().substring(0, 21).strip() + "…");
             }
             int textY = listY + (i - startIndex) * lineHeight;
-            guiGraphics.drawString(this.font, "✓", panelX + 5, textY, 0xFF4CAF50, false);
+            guiGraphics.drawString(this.font, "✓ ", panelX + 5, textY, 0xFF4CAF50, false);
             guiGraphics.drawString(this.font, questName, panelX + 15, textY, 0xFFCCCCCC, false);
         }
 
