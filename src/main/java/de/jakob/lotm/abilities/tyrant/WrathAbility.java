@@ -18,7 +18,7 @@ import java.util.UUID;
 
 public class WrathAbility extends Ability {
     public WrathAbility(String id) {
-        super(id, 5);
+        super(id, 12);
         canBeUsedByNPC = false;
     }
 
@@ -35,12 +35,13 @@ public class WrathAbility extends Ability {
         PhysicalEnhancementsAbility.addEnhancementBoost(entity, PhysicalEnhancementsAbility.EnhancementType.STRENGTH, "folk_of_rage_wrath_strength", 3);
         PhysicalEnhancementsAbility.addEnhancementBoost(entity, PhysicalEnhancementsAbility.EnhancementType.SPEED, "folk_of_rage_wrath_speed", 2);
         UUID entityId = entity.getUUID();
-        ServerScheduler.scheduleDelayed(5 * 20, () -> {
+        ServerScheduler.scheduleDelayed(20 * 10, () -> {
             LivingEntity target = (LivingEntity) ((ServerLevel) level).getEntity(entityId);
             if (target == null) return;
 
             PhysicalEnhancementsAbility.removeEnhancementBoost(target, "folk_of_rage_wrath_strength");
             PhysicalEnhancementsAbility.removeEnhancementBoost(target, "folk_of_rage_wrath_speed");
+            BeyonderData.removeModifier(target, "folk_of_rage_wrath");
         }, (ServerLevel) level);
     }
 
