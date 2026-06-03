@@ -6,6 +6,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.UniquenessComponent;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -56,7 +57,7 @@ public record RequestUniquenessApotheosisPacket() implements CustomPacketPayload
         }
 
         String pathway = comp.getUniquenessPathway();
-        if (pathway.isEmpty() || !pathway.equalsIgnoreCase(BeyonderData.getPathway(player))) {
+        if (pathway.isEmpty() || !(BeyonderData.getCharList(player).stream().filter(c -> c.pathway().equalsIgnoreCase(pathway)).mapToInt(Characteristic::sequence).max().orElse(-1) ==1)){
             player.displayClientMessage(
                     Component.translatable("lotm.uniqueness.fail"),
                     true
@@ -64,7 +65,7 @@ public record RequestUniquenessApotheosisPacket() implements CustomPacketPayload
             return;
         }
 
-        int charStack = BeyonderData.getCurrentCharacteristicCount(player);
+        int charStack = BeyonderData.getCharList(player).stream().filter(c -> c.pathway().equalsIgnoreCase(pathway) && c.sequence() == 1).mapToInt(Characteristic::stack).max().orElse(-1);
         int requiredStack = player.serverLevel().getGameRules().getInt(ModGameRules.CHARSTACK_REQUIRED_FOR_APOTHEOSIS);
         int killCount = comp.getKillCount();
 

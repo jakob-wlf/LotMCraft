@@ -78,7 +78,7 @@ public class BeyonderCharacteristicItem extends Item {
             if(seq >= playerSeq){
                 if((seq >= 1 || playerSeq == 0) && (BeyonderData.getDigestionProgress(player) >= 1.0 || playerSeq == 0)){
                     if (level instanceof ServerLevel serverLevel
-                            && !BeyonderData.hasSequenceSlotAvailableWithAdjustment(serverLevel, path, seq, seq, 1)) {
+                            && !BeyonderData.hasSequenceSlotAvailableWithAdjustment(serverLevel, path, seq, seq, 0)) {
                         player.sendSystemMessage(Component.literal("No sequence slots available for that characteristic")
                                 .withStyle(ChatFormatting.RED));
                         return InteractionResultHolder.fail(stack);

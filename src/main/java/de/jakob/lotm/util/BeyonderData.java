@@ -940,11 +940,9 @@ public class BeyonderData {
         Map<Integer, Integer> extraStacks = new HashMap<>();
         for (Characteristic c : getCharList(player)) {
             int seq = c.sequence();
-            int count = c.stack();
+            int count = c.stack() - 1;
 
-            if (mainPathway.equals(c.pathway()) && seq >= sequence && seq < 10) {
-                count--;
-            }
+
 
             if (count > 0) {
                 extraStacks.put(seq, extraStacks.getOrDefault(seq, 0) + count);
@@ -971,7 +969,7 @@ public class BeyonderData {
             case 4 -> 1.03f;
             case 3 -> 1.15f;
             case 2 -> 1.25f;
-            case 1 -> 1.0f + (float) stacks/7 ;
+            case 1 -> (1.0f + (float) stacks/7) ;
             default -> 0.0f;
         };
     }

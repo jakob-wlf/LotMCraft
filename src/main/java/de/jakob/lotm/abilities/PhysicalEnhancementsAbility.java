@@ -142,20 +142,22 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
 
         for(int i = 9; i >= seq; i--){
             final int s = i;
-            int buff;
+            float buff;
 
             if (i == 1) {
-                buff = characteristics.stream()
+                buff = (int) characteristics.stream()
                         .filter(c -> c.pathway().equals(myPathway) && c.sequence() == 1)
-                        .mapToInt(Characteristic::stack)
-                        .sum();
+                        .count();
             } else {
-                buff = characteristics.stream()
+                buff = (int) characteristics.stream()
                         .filter(c -> c.pathway().equals(myPathway) && c.sequence() == s)
-                        .mapToInt(c -> Math.max(0, c.stack() - 1))
-                        .sum();
+                        .count();
             }
-
+            int stacks = characteristics.stream()
+                    .filter(c -> c.pathway().equals(myPathway) && c.sequence() == s)
+                    .mapToInt(c -> Math.max(0, c.stack() - 1))
+                    .sum();
+            buff *=  ((stacks*4f)/(stacks+17f) + 1);
             switch (i){
                 case 8 -> result += buff;
                 case 7 -> result += buff * 2;

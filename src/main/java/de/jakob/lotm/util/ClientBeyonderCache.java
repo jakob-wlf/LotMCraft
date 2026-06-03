@@ -39,7 +39,11 @@ public class ClientBeyonderCache {
     public static int getCharacteristicCount(UUID playerUUID, String pathway) {
         BeyonderClientData data = dataCache.get(playerUUID);
         if (data == null) return 0;
-        int seq = data.sequence();
+        int seq = data.charList().stream()
+                .filter(c -> c.pathway().equalsIgnoreCase(pathway))
+                .mapToInt(Characteristic::sequence)
+                .max()
+                .orElse(-1);
         if (seq < 0 || seq >= 11) return 0;
 
         return data.charList().stream()

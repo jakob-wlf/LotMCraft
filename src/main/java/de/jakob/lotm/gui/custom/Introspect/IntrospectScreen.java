@@ -349,17 +349,17 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
 
         // Add Apotheosis button if player has uniqueness and is Sequence 1
-        if (ClientUniquenessCache.hasUniqueness() && menu.getSequence() == 1) {
+        if (ClientUniquenessCache.hasUniqueness()) {
             int apotheosisButtonX = baseLeftPos - 65;
             int apotheosisButtonY = this.topPos + 110;
 
             boolean canApotheosize = false;
             if (this.minecraft != null && this.minecraft.player != null) {
-                int charStack = ClientBeyonderCache.getCharacteristicCount(this.minecraft.player.getUUID(), menu.getPathway());
+                int charStack = ClientBeyonderCache.getCharacteristicCount(this.minecraft.player.getUUID(), ClientUniquenessCache.getPathway());
                 canApotheosize = ClientUniquenessCache.getKillCount() >= RequestUniquenessApotheosisPacket.KILLS_REQUIRED_FOR_APOTHEOSIS && charStack >= 2;
             }
             final boolean finalCanApotheosize = canApotheosize;
-
+            LOTMCraft.LOGGER.info("Apotheosis button: canApotheosize={}, killCount={}", finalCanApotheosize, ClientUniquenessCache.getKillCount());
             apotheosisButton = Button.builder(
                             Component.literal("Apotheosis").withStyle(
                                     finalCanApotheosize ? ChatFormatting.GOLD : ChatFormatting.GRAY),
