@@ -25,7 +25,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.event.CommandEvent;
+import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -101,11 +103,20 @@ public class SefirahCastleEventHandler {
         if (!(player.level() instanceof ServerLevel serverLevel)) {
             return;
         }
-        if (player.tickCount % 20 != 0) {
+        if (!ritualTicks.containsKey(player.getUUID())) {
             return;
         }
 
-        if (!ritualTicks.containsKey(player.getUUID())) {
+        // Update beam position every 5 ticks for smooth tracking even at long range
+        // (within render distance the client uses the entity directly; outside it relies on these packets)
+        if (player.tickCount % 5 == 0) {
+            UUID beamId = ritualBeamEffectIds.get(player.getUUID());
+            if (beamId != null) {
+                MovableEffectManager.updateEffectPosition(beamId, new EntityLocation(player), serverLevel);
+            }
+        }
+
+        if (player.tickCount % 20 != 0) {
             return;
         }
 
@@ -151,6 +162,28 @@ public class SefirahCastleEventHandler {
         resetRitual(player, true);
     }
 
+    /**
+     * Seal the Spirit World for ALL dimension travellers while any
+     * Sefirah Castle ritual is in progress.
+     */
+    @SubscribeEvent
+    public static void onEntityTravelToDimension(EntityTravelToDimensionEvent event) {
+        if (ritualTicks.isEmpty()) return;
+
+        ResourceKey<net.minecraft.world.level.Level> target  = event.getDimension();
+        ResourceKey<net.minecraft.world.level.Level> current = event.getEntity().level().dimension();
+
+        boolean goingIn  = target  == ModDimensions.SPIRIT_WORLD_DIMENSION_KEY;
+        boolean goingOut = current == ModDimensions.SPIRIT_WORLD_DIMENSION_KEY;
+
+        if (!goingIn && !goingOut) return;
+
+        event.setCanceled(true);
+        if (event.getEntity() instanceof ServerPlayer sp) {
+            sp.sendSystemMessage(Component.translatable("lotm.sefirot.sefirah_castle_spirit_world_locked"));
+        }
+    }
+
     @SubscribeEvent
     public static void onEntityTick(EntityTickEvent.Post event) {
         if (!(event.getEntity().level() instanceof ServerLevel serverLevel)) {
@@ -190,13 +223,16 @@ public class SefirahCastleEventHandler {
         ritualTicks.put(playerId, 0);
         ritualTabletIds.put(playerId, tabletId);
         ritualAnnounced.remove(playerId);
-        // Start the geometry sky beam, visible to all players in the level
+        // Start the geometry sky beam, visible to all players in the level except the accommodating
+        // player themselves (it's extremely distracting in first-person)
         if (player.level() instanceof ServerLevel sl) {
             UUID beamId = MovableEffectManager.playEffect(
                     MovableEffectManager.MovableEffect.SKY_BEAM,
                     new EntityLocation(player),
                     0, true, sl, player);
             ritualBeamEffectIds.put(playerId, beamId);
+            // Immediately cancel it on the accommodating player's own client
+            MovableEffectManager.removeEffect(beamId, player);
         }
         PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(0, REQUIRED_TICKS));
     }
@@ -224,6 +260,13 @@ public class SefirahCastleEventHandler {
 
         if (ticks < REQUIRED_TICKS) {
             return;
+        }
+
+        // Remove the beam BEFORE teleporting — after teleport player.level() changes dimension,
+        // so the RemoveMovableEffect packet would be sent to the wrong set of players.
+        UUID finishBeamId = ritualBeamEffectIds.remove(playerId);
+        if (finishBeamId != null) {
+            MovableEffectManager.removeEffect(finishBeamId, serverLevel);
         }
 
         boolean claimed = SefirahHandler.claimSefirot(player, SEFIROT_ID, true);

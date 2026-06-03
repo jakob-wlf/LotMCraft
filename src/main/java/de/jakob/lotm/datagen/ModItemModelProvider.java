@@ -2,6 +2,7 @@ package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
+import de.jakob.lotm.abilities.common.passives.ElevatedDivinationAbility;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
@@ -82,7 +83,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         });
 
         PassiveAbilityHandler.ITEMS.getEntries().forEach(i -> {
-            itemWithCustomDisplay(i.get());
+            if (i.get() instanceof ElevatedDivinationAbility) {
+                itemWithCustomDisplayAbilityTexture(i.get(), "divination_ability");
+            } else {
+                itemWithCustomDisplay(i.get());
+            }
         });
 
         itemWithCustomDisplay(ModItems.FOOL_Card.get());
@@ -126,6 +131,30 @@ public class ModItemModelProvider extends ItemModelProvider {
                 .end()
                 .transform(ItemDisplayContext.FIXED)
                 .scale(1, 1, 1)
+                .end()
+                .end();
+    }
+
+    // Helper method for items that use an ability texture (textures/abilities/) instead of item texture
+    private void itemWithCustomDisplayAbilityTexture(Item item, String abilityTextureName) {
+        String itemName = getItemName(item);
+        getBuilder(itemName)
+                .parent(getExistingFile(mcLoc("item/generated")))
+                .texture("layer0", modLoc("abilities/" + abilityTextureName))
+                .transforms()
+                .transform(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND)
+                .scale(0, 0, 0)
+                .end()
+                .transform(ItemDisplayContext.THIRD_PERSON_LEFT_HAND)
+                .scale(0, 0, 0)
+                .end()
+                .transform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+                .translation(1.25f, 4.25f, 0.75f)
+                .scale(0.39f, 0.39f, 0.39f)
+                .end()
+                .transform(ItemDisplayContext.FIRST_PERSON_LEFT_HAND)
+                .translation(1.25f, 4.25f, 0.75f)
+                .scale(0.39f, 0.39f, 0.39f)
                 .end()
                 .end();
     }

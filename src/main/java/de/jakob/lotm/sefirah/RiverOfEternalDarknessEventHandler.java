@@ -82,7 +82,7 @@ public class RiverOfEternalDarknessEventHandler {
 
     private static void applyDarkWaterEffects(LivingEntity entity) {
         if (entity instanceof ServerPlayer player) {
-            if (isRiverOwner(player) || isAccommodating(player)) {
+            if (isRiverOwner(player) || isAccommodating(player) || isEligibleAccommodator(player)) {
                 return;
             }
             ensureWellBase(player);
@@ -115,6 +115,14 @@ public class RiverOfEternalDarknessEventHandler {
 
         Ability ability = LOTMCraft.abilityHandler.getById("cogitation_ability");
         return ability instanceof ToggleAbility toggleAbility && toggleAbility.isActiveForEntity(player);
+    }
+
+    private static boolean isEligibleAccommodator(ServerPlayer player) {
+        if (!BeyonderData.isBeyonder(player)) return false;
+        if (SefirotData.get(player.server).isSefirotClaimed(RIVER_SEFIROT_ID)) return false;
+        if (SefirahHandler.hasSefirot(player)) return false;
+        String pathway = BeyonderData.getPathway(player);
+        return ALLOWED_PATHWAYS.contains(pathway);
     }
 
     private static boolean isRiverOwner(ServerPlayer player) {

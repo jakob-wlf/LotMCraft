@@ -89,6 +89,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncSefirotAuthorityDataPacket.TYPE,
+                SyncSefirotAuthorityDataPacket.STREAM_CODEC,
+                SyncSefirotAuthorityDataPacket::handle
+        );
+
+        registrar.playToClient(
                 UseAbilityPacket.TYPE,
                 UseAbilityPacket.STREAM_CODEC,
                 UseAbilityPacket::handle
@@ -748,6 +754,12 @@ public class PacketHandler {
                 RequestUniquenessApotheosisPacket.TYPE,
                 RequestUniquenessApotheosisPacket.STREAM_CODEC,
                 RequestUniquenessApotheosisPacket::handle
+        );
+
+        registrar.playToServer(
+                ToggleSefirotAuthorityAbilityPacket.TYPE,
+                ToggleSefirotAuthorityAbilityPacket.STREAM_CODEC,
+                ToggleSefirotAuthorityAbilityPacket::handle
         );
     }
 

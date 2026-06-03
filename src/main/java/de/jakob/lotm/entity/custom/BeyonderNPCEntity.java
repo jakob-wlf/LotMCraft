@@ -68,7 +68,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
     private static final double SEQUENCE_WEIGHT_EXPONENT = 0.35;
     private static final float QUEST_SPAWN_CHANCE = 0.55f;
     private static final int RECIPE_DROP_CHANCE = 4;
-    private static final int TABLET_FRAGMENT_DROP_CHANCE = 5000;
+    private static final int TABLET_FRAGMENT_DROP_CHANCE = 10;
     private static final int DEFAULT_PUPPET_LIFETIME = 20 * 60 * 4; // 4 minutes
 
     // ========================= Entity Data Accessors =========================

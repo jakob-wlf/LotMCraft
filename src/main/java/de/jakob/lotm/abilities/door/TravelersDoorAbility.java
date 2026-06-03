@@ -119,6 +119,11 @@ public class TravelersDoorAbility extends SelectableAbility {
 
                 travelersDoorUsers.remove(player.getUUID());
 
+                if (de.jakob.lotm.sefirah.SefirahCastleEventHandler.isAccommodating(player)) {
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("lotm.sefirot.sefirah_castle_spirit_world_locked"));
+                    return;
+                }
+
                 int spiritualityCost = getCostForDistance(player.position(), validatedPos);
                 if(BeyonderData.getSpirituality(player) < spiritualityCost) {
                     spawnFailureParticles(serverLevel, targetLoc);

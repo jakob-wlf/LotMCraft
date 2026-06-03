@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.common.passives.ElevatedDivinationAbility;
 import de.jakob.lotm.abilities.twilight_giant.Passives.PhysicalEnhancementsTwilightGiantAbility;
 import de.jakob.lotm.abilities.twilight_giant.Passives.WeaponMasteryPassiveAbility;
 import de.jakob.lotm.abilities.abyss.passives.FireResistanceAbyssAbility;
@@ -115,6 +116,9 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> PURE_IDEALISM = ITEMS.registerItem("pure_idealism_ability", PureIdealism::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     public static final DeferredItem<Item> WEAPON_MASTERY_PASSIVE = ITEMS.registerItem("weapon_mastery_ability", WeaponMasteryPassiveAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
+    // Sefirot passives
+    public static final DeferredItem<Item> ELEVATED_DIVINATION_PASSIVE = ITEMS.registerItem("elevated_divination_ability", ElevatedDivinationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
 
     public static void registerAbilities(IEventBus eventBus) {

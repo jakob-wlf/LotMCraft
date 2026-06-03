@@ -100,6 +100,16 @@ public class SefirahSkyBeamEffect extends ActiveMovableEffect {
         RenderSystem.disableCull();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
+        // Disable fog so the beam is visible through render-distance fog
+        RenderSystem.setShaderFogStart(Float.MAX_VALUE);
+        RenderSystem.setShaderFogEnd(Float.MAX_VALUE);
+
+        // Dark transparent edge halo — standard blend so it darkens the
+        // surroundings, giving the beam a shadowed black border.
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+                               GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        renderCylinder(m, tick, 2.8f, 0f, 0f, 0f, 0.38f);
+
         // Additive blend — beam glows and blooms
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
                                GlStateManager.DestFactor.ONE);
@@ -117,6 +127,23 @@ public class SefirahSkyBeamEffect extends ActiveMovableEffect {
         RenderSystem.disableBlend();
 
         poseStack.popPose();
+    }
+
+    /**
+     * Returns the current interpolated RGB color [r, g, b] used by the beam.
+     * Called by VFXRenderer to drive the global fog tint visible to all players.
+     */
+    public float[] computeColor() {
+        float phase = (currentTick % COLOR_CYCLE) / COLOR_CYCLE * 3f;
+        int fi = (int) phase % 3;
+        int ti = (fi + 1) % 3;
+        float t = phase - (int) phase;
+        t = t * t * (3f - 2f * t); // smooth-step
+        return new float[]{
+                PATH_COLORS[fi][0] + (PATH_COLORS[ti][0] - PATH_COLORS[fi][0]) * t,
+                PATH_COLORS[fi][1] + (PATH_COLORS[ti][1] - PATH_COLORS[fi][1]) * t,
+                PATH_COLORS[fi][2] + (PATH_COLORS[ti][2] - PATH_COLORS[fi][2]) * t
+        };
     }
 
     // ─────────────────────────────────────────────────────────────────────────

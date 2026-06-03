@@ -15,8 +15,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class AncientTraderSpawner {
-    private static final int CHECK_INTERVAL_TICKS = 20 * 60 * 5;
-    private static final double SPAWN_CHANCE = 0.01;
+    private static final int CHECK_INTERVAL_TICKS = 20 * 60 * 10;
+    private static final double SPAWN_CHANCE = 0.05;
     private static final int MIN_SPAWN_RADIUS = 24;
     private static final int MAX_SPAWN_RADIUS = 64;
     private static final int MAX_ATTEMPTS = 10;

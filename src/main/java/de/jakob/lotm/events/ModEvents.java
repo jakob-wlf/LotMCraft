@@ -244,6 +244,7 @@ public class ModEvents {
         SefirotCommand.register(event.getDispatcher());
         SequenceSlotsCommand.register(event.getDispatcher());
         AncientTraderCommand.register(event.getDispatcher());
+        FragmentCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

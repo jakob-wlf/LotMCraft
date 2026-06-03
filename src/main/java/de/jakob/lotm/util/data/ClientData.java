@@ -1,6 +1,7 @@
 package de.jakob.lotm.util.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ClientData {
@@ -13,6 +14,26 @@ public class ClientData {
     // Personal shared wheel ordering, set from IntrospectScreen's Shared tab
     private static List<String> sharedWheelAbilities = new ArrayList<>();
     private static int selectedSharedAbility = 0;
+
+    // Sefirot Authority: available and unlocked cross-path ability IDs
+    private static List<String> sefirotAvailableAbilityIds = new ArrayList<>();
+    private static List<String> sefirotUnlockedAbilityIds  = new ArrayList<>();
+
+    public static List<String> getSefirotAvailableAbilityIds() {
+        return Collections.unmodifiableList(sefirotAvailableAbilityIds);
+    }
+
+    public static void setSefirotAvailableAbilityIds(List<String> ids) {
+        sefirotAvailableAbilityIds = new ArrayList<>(ids);
+    }
+
+    public static List<String> getSefirotUnlockedAbilityIds() {
+        return Collections.unmodifiableList(sefirotUnlockedAbilityIds);
+    }
+
+    public static void setSefirotUnlockedAbilityIds(List<String> ids) {
+        sefirotUnlockedAbilityIds = new ArrayList<>(ids);
+    }
 
     public static List<String> getSharedWheelAbilities() {
         return sharedWheelAbilities;

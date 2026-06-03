@@ -278,6 +278,13 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<SefirotUnlockedAbilitiesComponent>> SEFIROT_UNLOCKED_ABILITIES =
+            ATTACHMENT_TYPES.register("sefirot_unlocked_abilities", () ->
+                    AttachmentType.serializable(SefirotUnlockedAbilitiesComponent::new)
+                            .copyOnDeath()
+                            .build()
+            );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

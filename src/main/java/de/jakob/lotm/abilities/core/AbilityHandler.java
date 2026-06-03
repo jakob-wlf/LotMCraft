@@ -12,6 +12,7 @@ import de.jakob.lotm.abilities.error.*;
 import de.jakob.lotm.abilities.fool.*;
 import de.jakob.lotm.abilities.mother.*;
 import de.jakob.lotm.abilities.red_priest.*;
+import de.jakob.lotm.abilities.sefirah.*;
 import de.jakob.lotm.abilities.sun.*;
 import de.jakob.lotm.abilities.tyrant.*;
 import de.jakob.lotm.abilities.visionary.*;
@@ -315,6 +316,9 @@ public class AbilityHandler {
         //Twilight Giant Pathway
         abilities.add(new CombatMasteryAbility("combat_mastery_ability"));
         abilities.add(new SupernaturalResistanceAbility("supernatural_resistance_ability"));
+
+        // Sefirot Abilities
+        abilities.add(new SefirotAuthorityAbility("sefirot_authority_ability"));
 
 
 

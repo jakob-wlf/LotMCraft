@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.data.ServerLocation;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -42,6 +43,12 @@ public class SefirahHandler {
         if (buff)
             BeyonderData.playerMap.setSefirot(player.getUUID(), sefirot);
 
+        // Grant Sefirot Authority ability to anyone who owns a sefirot
+        if (hasSefirot(player)) {
+            AbilityWheelHelper.addAbility(player, "sefirot_authority_ability");
+            SefirotAuthorityManager.updatePlayerAuthority(player);
+        }
+
         return buff;
     }
 
@@ -60,6 +67,8 @@ public class SefirahHandler {
     public static void unclaimSefirot(ServerPlayer player){
         BeyonderData.playerMap.setSefirot(player.getUUID(), "");
         SefirotData.get(player.server).unclaimSefirot(player.getUUID());
+        AbilityWheelHelper.removeAbility(player, "sefirot_authority_ability");
+        SefirotAuthorityManager.clearPlayerAuthority(player);
     }
 
     public static void teleportToSefirot(ServerPlayer player) {

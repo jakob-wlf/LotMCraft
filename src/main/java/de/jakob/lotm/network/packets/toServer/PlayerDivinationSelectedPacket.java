@@ -1,9 +1,12 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.common.passives.ElevatedDivinationAbility;
 import de.jakob.lotm.abilities.visionary.DreamTraversalAbility;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.sefirah.SefirahHandler;
+import de.jakob.lotm.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.network.packets.toClient.OpenPlayerDivinationScreenPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.DivinationUtil;
@@ -111,11 +114,21 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
             return;
         }
 
+        // Sefirot Authority: divination on this target fails unless the diviner also owns a sefirot
+        if (SefirotAuthorityManager.blocksDivination(targetPlayer.getUUID(), player)) {
+            player.sendSystemMessage(Component.literal(
+                    "§8Your divination dissolves — the target is shielded by a higher authority."));
+            return;
+        }
+
         int playerSequence = BeyonderData.getSequence(player);
         int targetSequence = BeyonderData.getSequence(targetPlayer);
 
+        boolean elevated = ElevatedDivinationAbility.ELEVATED_DIVINATION_ACTIVE.contains(player.getUUID())
+                && !SefirahHandler.hasSefirot(targetPlayer);
+
             int divinationDifference = 3 + DivinationUtil.getDivinationPower(player) - DivinationUtil.getConcealmentPower(targetPlayer);
-            if (divinationDifference <= 0){
+            if (!elevated && divinationDifference <= 0){
                 player.sendSystemMessage(Component.literal("§cDivination failed"));
                 if(playerSequence < 4 && targetSequence > 3){
                     player.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 200, 2));
@@ -142,8 +155,21 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
                 default            -> 100;
             };
 
-        if (distance >= maxDistance) {
+        if (!elevated && distance >= maxDistance) {
             player.sendSystemMessage(Component.literal("§cPlayer is very far from you"));
+            return;
+        }
+
+        // Elevated Divination always shows full coordinates
+        if (elevated) {
+            player.sendSystemMessage(Component.literal(String.format(
+                    "§5[Elevated] You sense §d%s§5 at §d%d, %d, %d§5, about §d%d blocks §5away...",
+                    targetPlayer.getGameProfile().getName(),
+                    targetPlayer.blockPosition().getX(),
+                    targetPlayer.blockPosition().getY(),
+                    targetPlayer.blockPosition().getZ(),
+                    distance
+            )));
             return;
         }
 

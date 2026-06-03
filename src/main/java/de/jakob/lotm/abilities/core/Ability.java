@@ -161,6 +161,12 @@ public abstract class Ability {
     public boolean hasAbility(LivingEntity entity) {
         if(!BeyonderData.isBeyonder(entity)) return false;
 
+        // Check sefirot-authority-granted abilities (server-side only)
+        if (!entity.level().isClientSide()
+                && entity.getData(de.jakob.lotm.attachments.ModAttachments.SEFIROT_UNLOCKED_ABILITIES).hasAbility(this.id)) {
+            return true;
+        }
+
         String pathway = BeyonderData.getPathway(entity);
         int sequence = BeyonderData.getSequence(entity);
 
