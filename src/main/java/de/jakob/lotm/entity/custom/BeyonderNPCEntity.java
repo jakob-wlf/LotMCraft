@@ -2,11 +2,13 @@ package de.jakob.lotm.entity.custom;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.attachments.MysteriousTabletData;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.custom.goals.AbilityUseGoal;
 import de.jakob.lotm.entity.custom.goals.RangedCombatGoal;
 import de.jakob.lotm.gamerule.ModGameRules;
+import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItem;
@@ -66,6 +68,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
     private static final double SEQUENCE_WEIGHT_EXPONENT = 0.35;
     private static final float QUEST_SPAWN_CHANCE = 0.55f;
     private static final int RECIPE_DROP_CHANCE = 4;
+    private static final int TABLET_FRAGMENT_DROP_CHANCE = 10;
     private static final int DEFAULT_PUPPET_LIFETIME = 20 * 60 * 4; // 4 minutes
 
     // ========================= Entity Data Accessors =========================
@@ -607,6 +610,15 @@ public class BeyonderNPCEntity extends PathfinderMob {
                     PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, sequence);
             if (recipeItem != null) {
                 this.spawnAtLocation(recipeItem);
+            }
+        }
+
+        if (!underworldSummoned
+                && random.nextInt(TABLET_FRAGMENT_DROP_CHANCE) == 0
+                && ("door".equals(pathway) || "error".equals(pathway) || "fool".equals(pathway))) {
+            MysteriousTabletData data = MysteriousTabletData.get(level.getServer());
+            if (data.canSpawnFragment(MysteriousTabletData.FragmentType.RIGHT)) {
+                this.spawnAtLocation(ModItems.RIGHT_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
             }
         }
 

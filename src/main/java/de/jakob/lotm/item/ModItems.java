@@ -1,10 +1,12 @@
 package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.MysteriousTabletData;
 import de.jakob.lotm.artifacts.SealedArtifactItem;
 import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.fluid.ModFluids;
 import de.jakob.lotm.item.custom.*;
-import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.BlockItem;import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
@@ -29,6 +31,32 @@ public class ModItems {
     public static final DeferredItem<Item> MIRROR = ITEMS.registerItem("mirror", Item::new, new Item.Properties().stacksTo(1));
     public static final DeferredItem<Item> BLOOD = ITEMS.registerItem("blood", Item::new, new Item.Properties().stacksTo(1));
     public static final DeferredItem<Item> STORY_BOOK = ITEMS.registerItem("story_book", StoryBookItem::new, new Item.Properties().stacksTo(1));
+
+    public static final DeferredItem<Item> UPPER_FRAGMENT_OF_A_MYSTERIOUS_TABLET = ITEMS.registerItem(
+            "upper_fragment_of_a_mysterious_tablet",
+            properties -> new MysteriousTabletFragmentItem(properties, MysteriousTabletData.FragmentType.UPPER),
+            new Item.Properties().stacksTo(1)
+    );
+    public static final DeferredItem<Item> RIGHT_FRAGMENT_OF_A_MYSTERIOUS_TABLET = ITEMS.registerItem(
+            "right_fragment_of_a_mysterious_tablet",
+            properties -> new MysteriousTabletFragmentItem(properties, MysteriousTabletData.FragmentType.RIGHT),
+            new Item.Properties().stacksTo(1)
+    );
+    public static final DeferredItem<Item> LEFT_FRAGMENT_OF_A_MYSTERIOUS_TABLET = ITEMS.registerItem(
+            "left_fragment_of_a_mysterious_tablet",
+            properties -> new MysteriousTabletFragmentItem(properties, MysteriousTabletData.FragmentType.LEFT),
+            new Item.Properties().stacksTo(1)
+    );
+    public static final DeferredItem<Item> LOWER_FRAGMENT_OF_A_MYSTERIOUS_TABLET = ITEMS.registerItem(
+            "lower_fragment_of_a_mysterious_tablet",
+            properties -> new MysteriousTabletFragmentItem(properties, MysteriousTabletData.FragmentType.LOWER),
+            new Item.Properties().stacksTo(1)
+    );
+    public static final DeferredItem<Item> MYSTERIOUS_TABLET = ITEMS.registerItem(
+            "mysterious_tablet",
+            MysteriousTabletItem::new,
+            new Item.Properties().stacksTo(1)
+    );
 
     public static final Supplier<Item> MARIONETTE_CONTROLLER = ITEMS.register("marionette_controller",
             () -> new MarionetteControllerItem(new Item.Properties().stacksTo(1)));
@@ -81,6 +109,20 @@ public class ModItems {
     public static final DeferredItem<BlockItem> MYSTICAL_RING = ITEMS.register("mystical_ring",
             () -> new BlockItem(ModBlocks.MYSTICAL_RING.get(), new Item.Properties())
     );
+
+    public static final DeferredItem<Item> DROPS_OF_ETERNAL_DARKNESS_BUCKET = ITEMS.register("drops_of_eternal_darkness_bucket",
+            () -> new BucketItem(ModFluids.DROPS_OF_ETERNAL_DARKNESS_SOURCE.get(), new Item.Properties().stacksTo(1))
+    );
+
+    /** Crafted in an anvil: empty bottle + door characteristic. */
+    public static final DeferredItem<Item> SEALED_BOTTLE = ITEMS.registerItem(
+            "sealed_bottle", SealedBottleItem::new, new Item.Properties().stacksTo(16));
+
+    /** Obtained by right-clicking a Sealed Bottle on Drops of Eternal Darkness fluid. */
+    public static final DeferredItem<Item> ETERNAL_DARKNESS_RIVER_WATER_BOTTLE = ITEMS.registerItem(
+            "eternal_darkness_river_water_bottle",
+            EternalDarknessRiverWaterBottleItem::new,
+            new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
 
     // Uniquenesses (registered, so I can use them in the renderer for the Uniqueness Entity)
     public static final DeferredItem<Item> RED_PRIEST_UNIQUENESS = ITEMS.register("red_priest_uniqueness",

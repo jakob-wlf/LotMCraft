@@ -61,5 +61,13 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('S', Items.STICK)
                 .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
                 .save(recipeOutput);
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.MYSTERIOUS_TABLET.get())
+            .requires(ModItems.UPPER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get())
+            .requires(ModItems.RIGHT_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get())
+            .requires(ModItems.LEFT_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get())
+            .requires(ModItems.LOWER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get())
+            .unlockedBy("has_upper_fragment", has(ModItems.UPPER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get()))
+            .save(recipeOutput);
     }
 }

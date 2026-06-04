@@ -1,10 +1,15 @@
 package de.jakob.lotm.rendering.effectRendering.impl;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.LOTMCraft;
+import net.minecraft.client.renderer.GameRenderer;
+import org.joml.Matrix4f;
 import de.jakob.lotm.network.packets.toClient.AddDirectionalEffectPacket;
 import de.jakob.lotm.network.packets.toClient.AddMovableEffectPacket;
 import de.jakob.lotm.rendering.effectRendering.*;
+import de.jakob.lotm.util.data.EntityLocation;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -14,8 +19,10 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
 
 import java.util.*;
 
@@ -68,12 +75,26 @@ public class VFXRenderer {
                 }
             }
 
+            // Sky pillar — always visible from any distance (placed at camera +
+            // direction * clamped distance so it is never frustum-culled).
+            SefirahSkyBeamEffect skyBeam = getActiveSkyBeamEffect();
+            if (skyBeam != null) {
+                renderSkyBeamPillar(poseStack, camPos, skyBeam);
+            }
 
             poseStack.popPose();
         }
     }
 
     private static final Map<UUID, ActiveMovableEffect> activeMovableEffects = new HashMap<>();
+
+    /**
+     * Entity IDs for ALL entity-tracked movable effects.
+     * Refreshed every client tick: if the entity is currently loaded, the
+     * effect's location is updated to a fresh {@link EntityLocation} so
+     * tracking resumes after the entity re-enters render distance.
+     */
+    private static final Map<UUID, Integer> trackedEntityIds = new HashMap<>();
 
 
     @SubscribeEvent
@@ -89,6 +110,22 @@ public class VFXRenderer {
         activeEffects.forEach(ActiveEffect::tick);
         activeDirectionalEffects.forEach(ActiveDirectionalEffect::tick);
         activeMovableEffects.values().forEach(ActiveMovableEffect::tick);
+
+        // Refresh entity-tracking for all tracked effects every tick.
+        // If the entity is loaded on this client, update the location reference
+        // so the effect follows it live.  If it has unloaded, we simply leave
+        // the last known location intact until it comes back.
+        if (!trackedEntityIds.isEmpty() && mc.level != null) {
+            for (Map.Entry<UUID, Integer> entry : trackedEntityIds.entrySet()) {
+                net.minecraft.world.entity.Entity raw = mc.level.getEntity(entry.getValue());
+                if (raw instanceof LivingEntity le) {
+                    ActiveMovableEffect effect = activeMovableEffects.get(entry.getKey());
+                    if (effect != null) {
+                        effect.setLocation(new EntityLocation(le));
+                    }
+                }
+            }
+        }
     }
 
     public static void addActiveMovableEffect(UUID effectId, int effectIndex,
@@ -126,17 +163,32 @@ public class VFXRenderer {
         // entity may be null here — MovableEffectFactory handles that gracefully
         ActiveMovableEffect effect = MovableEffectFactory.createEffect(effectIndex, location, duration, infinite, entity);
         activeMovableEffects.put(effectId, effect);
+
+        // If entity lookup failed (entity not yet tracked on this client),
+        // queue a deferred retry so the location is upgraded once it loads.
+        if (entityId != AddMovableEffectPacket.NO_ENTITY) {
+            trackedEntityIds.put(effectId, entityId);
+        }
     }
 
     public static void updateMovableEffectPosition(UUID effectId, double x, double y, double z) {
         ActiveMovableEffect effect = activeMovableEffects.get(effectId);
         if (effect != null) {
-            effect.setPosition(x, y, z);
+            // Replace with a plain Location so the update always takes effect.
+            // EntityLocation.setPosition() is a no-op (getPosition() always
+            // returns entity.position() and ignores the stored field).
+            // trackedEntityIds will re-upgrade to EntityLocation next tick if
+            // the entity is currently loaded.
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.level != null) {
+                effect.setLocation(new Location(new Vec3(x, y, z), mc.level));
+            }
         }
     }
 
     public static void removeMovableEffect(UUID effectId) {
         activeMovableEffects.remove(effectId);
+        trackedEntityIds.remove(effectId);
     }
 
     public static void cancelEffectsNear(double x, double y, double z, double radius) {
@@ -169,11 +221,124 @@ public class VFXRenderer {
         }
     }
 
-    // Update clearActiveEffects method to include movable effects
+    /** Clear all client-side VFX state when the player disconnects. */
+    @SubscribeEvent
+    public static void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event) {
+        clearActiveEffects();
+    }
+
     public static void clearActiveEffects() {
         activeEffects.clear();
         activeDirectionalEffects.clear();
-        activeMovableEffects.clear(); // ADD THIS
+        activeMovableEffects.clear();
+        trackedEntityIds.clear();
+    }
+
+    // -------------------------------------------------------------------------
+    // Sky-beam atmospheric tint — visible to all players in the level
+    // regardless of their distance from the ritual player.
+    // Works the same way as ApotheosisRenderer: fires every frame per-player
+    // via ViewportEvent, which is purely client-side and distance-independent.
+    // -------------------------------------------------------------------------
+
+    private static SefirahSkyBeamEffect getActiveSkyBeamEffect() {
+        for (ActiveMovableEffect e : activeMovableEffects.values()) {
+            if (e instanceof SefirahSkyBeamEffect beam) return beam;
+        }
+        return null;
+    }
+
+    /** Blend strength of the ritual color tint applied to the atmosphere. */
+    private static final float BEAM_FOG_BLEND = 0.30f;
+
+    /**
+     * Maximum world-distance at which the sky pillar is "pinned" in front of
+     * the camera. Any player farther than this will still see the pillar at
+     * this fixed virtual distance, keeping it inside the GPU view frustum.
+     */
+    private static final float SKY_PILLAR_MAX_DIST = 600f;
+    /** Half-angle (radians) of the pillar's angular width. ~3.4 degrees. */
+    private static final float SKY_PILLAR_HALF_ANGLE = 0.06f;
+
+    /**
+     * Renders a tall glow pillar in the direction of {@code beam} from the
+     * camera.  The geometry is placed at most {@link #SKY_PILLAR_MAX_DIST}
+     * blocks away, so it is never frustum-culled even at 20 000+ block ranges.
+     * Additive blending means it does not occlude terrain — it just adds light.
+     * <p>The pillar fades in between 30-150 blocks so it does not overlay the
+     * actual cylinder geometry when the player is standing at the ritual.
+     *
+     * @param poseStack already has the {@code translate(-camPos)} applied
+     */
+    private static void renderSkyBeamPillar(PoseStack poseStack, Vec3 camPos, SefirahSkyBeamEffect beam) {
+        double dx = beam.getX() - camPos.x;
+        double dz = beam.getZ() - camPos.z;
+        double dist2D = Math.sqrt(dx * dx + dz * dz);
+        if (dist2D < 30.0) return;
+
+        float nx = (float)(dx / dist2D);
+        float nz = (float)(dz / dist2D);
+
+        float renderDist = (float) Math.min(dist2D, SKY_PILLAR_MAX_DIST);
+        float halfWidth  = renderDist * SKY_PILLAR_HALF_ANGLE;
+
+        // Fade in so the pillar doesn't clash with local geometry.
+        float alpha = (float) Math.min(1.0, Math.max(0.0, (dist2D - 30.0) / 120.0));
+
+        float bx = (float)(camPos.x + nx * renderDist);
+        float by = (float) beam.getY();
+        float bz = (float)(camPos.z + nz * renderDist);
+
+        // Perpendicular direction in XZ for billboard width.
+        float perpX = -nz;
+        float perpZ =  nx;
+
+        float[] color = beam.computeColor();
+        float cr = color[0], cg = color[1], cb = color[2];
+        float height = 400f;
+
+        Matrix4f m = poseStack.last().pose();
+
+        RenderSystem.depthMask(false);
+        RenderSystem.disableCull();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShaderFogStart(Float.MAX_VALUE);
+        RenderSystem.setShaderFogEnd(Float.MAX_VALUE);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+
+        BufferBuilder buf = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
+        // Outer wide glow layer — full pathway color.
+        buf.addVertex(m, bx - perpX * halfWidth * 2, by,          bz - perpZ * halfWidth * 2).setColor(cr, cg, cb, 0f);
+        buf.addVertex(m, bx + perpX * halfWidth * 2, by,          bz + perpZ * halfWidth * 2).setColor(cr, cg, cb, 0f);
+        buf.addVertex(m, bx + perpX * halfWidth,     by + height, bz + perpZ * halfWidth    ).setColor(cr, cg, cb, 0.40f * alpha);
+        buf.addVertex(m, bx - perpX * halfWidth,     by + height, bz - perpZ * halfWidth    ).setColor(cr, cg, cb, 0.40f * alpha);
+
+        // Bright white core streak.
+        buf.addVertex(m, bx - perpX * halfWidth * 0.35f, by,          bz - perpZ * halfWidth * 0.35f).setColor(1f, 1f, 1f, 0f);
+        buf.addVertex(m, bx + perpX * halfWidth * 0.35f, by,          bz + perpZ * halfWidth * 0.35f).setColor(1f, 1f, 1f, 0f);
+        buf.addVertex(m, bx + perpX * halfWidth * 0.25f, by + height, bz + perpZ * halfWidth * 0.25f).setColor(1f, 1f, 1f, 0.85f * alpha);
+        buf.addVertex(m, bx - perpX * halfWidth * 0.25f, by + height, bz - perpZ * halfWidth * 0.25f).setColor(1f, 1f, 1f, 0.85f * alpha);
+
+        BufferUploader.drawWithShader(buf.buildOrThrow());
+
+        RenderSystem.enableCull();
+        RenderSystem.depthMask(true);
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableBlend();
+    }
+
+    @SubscribeEvent
+    public static void onComputeFogColor(ViewportEvent.ComputeFogColor event) {
+        SefirahSkyBeamEffect beam = getActiveSkyBeamEffect();
+        if (beam == null) return;
+
+        float[] color = beam.computeColor();
+        // Lerp fog toward the beam color so distant players see the sky tint.
+        event.setRed((float)  (event.getRed()   + (color[0] - event.getRed())   * BEAM_FOG_BLEND));
+        event.setGreen((float)(event.getGreen() + (color[1] - event.getGreen()) * BEAM_FOG_BLEND));
+        event.setBlue((float) (event.getBlue()  + (color[2] - event.getBlue())  * BEAM_FOG_BLEND));
     }
 
     public static void addActiveEffect(int effectIndex, double x, double y, double z) {

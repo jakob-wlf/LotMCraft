@@ -2,6 +2,7 @@ package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.common.DivinationAbility;
+import de.jakob.lotm.abilities.common.passives.ElevatedConcealmentAbility;
 import de.jakob.lotm.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.darkness.NightDomainAbility;
@@ -268,6 +269,11 @@ public class DivinationUtil {
             addedValue += 99;
         }
         if (ParasitationAbility.isConcealed(serverPlayer.getUUID())) {
+            addedValue += 99;
+        }
+
+        // Elevated Concealment (River of Eternal Darkness sefirot passive) — always concealed
+        if (ElevatedConcealmentAbility.ELEVATED_CONCEALMENT_ACTIVE.contains(serverPlayer.getUUID())) {
             addedValue += 99;
         }
         

@@ -10,6 +10,11 @@
   "item.lotmcraft.paper_figurine_substitute": "Paper Figurine Substitute",
   "item.lotmcraft.mirror": "Mirror",
   "item.lotmcraft.spacer": "",
+  "item.lotmcraft.upper_fragment_of_a_mysterious_tablet": "Upper Fragment of a Mysterious Tablet",
+  "item.lotmcraft.right_fragment_of_a_mysterious_tablet": "Right Fragment of a Mysterious Tablet",
+  "item.lotmcraft.left_fragment_of_a_mysterious_tablet": "Left Fragment of a Mysterious Tablet",
+  "item.lotmcraft.lower_fragment_of_a_mysterious_tablet": "Lower Fragment of a Mysterious Tablet",
+  "item.lotmcraft.mysterious_tablet": "Mysterious Tablet",
 
 
   "creativetab.lotmcraft.lotm_tab": "Lord of the Mysteries",
@@ -154,6 +159,10 @@
   "ability.lotmcraft.divination.anti_divination": "Anti Divination",
   "lotmcraft.angel_authority_ability": "Angel Authority",
   "lotmcraft.angel_authority_ability.description": "Angelic power that allows you to traverse the spirit world and shatter artifacts",
+  "lotmcraft.sefirot_authority_ability": "Sefirot Authority",
+  "lotmcraft.sefirot_authority_ability.description": "The authority granted by holding a Sefirot",
+  "item.lotmcraft.elevated_divination_ability": "Elevated Divination",
+  "item.lotmcraft.elevated_concealment_ability": "Elevated Concealment",
   "ability.lotmcraft.angel_authority.spirit_world_passage": "Spirit World Passage",
   "ability.lotmcraft.angel_authority.artifact_shattering": "Artifact Shattering",
   "ability.lotmcraft.angel_authority.flight": "Flight",
@@ -1305,9 +1314,12 @@
   "entity.minecraft.villager.lotmcraft.beyonder_merchant": "Beyonder Merchant",
   "entity.minecraft.villager.lotmcraft.evernight_clergyman": "Evernight Clergyman",
   "entity.minecraft.villager.lotmcraft.eternal_blazing_sun_clergyman": "Eternal Blazing Sun Clergyman",
+  "entity.minecraft.villager.lotmcraft.ancient_trader": "Ancient Trader",
 
   "_comment006": "Potions-----------------------------------------------------------------------------",
   "item.lotmcraft.empty_bottle": "Empty Bottle",
+  "item.lotmcraft.sealed_bottle": "Sealed Bottle",
+  "item.lotmcraft.eternal_darkness_river_water_bottle": "Bottle of Eternal Darkness River Water",
 
 
   "_comment007": "Damage-----------------------------------------------------------------------------",
@@ -1779,9 +1791,20 @@
   "lotm.calamity.tornado": "Tornado",
   "lotm.calamity.earthquake": "Earthquake",
 
+  "block.lotmcraft.drops_of_eternal_darkness": "Drops of Eternal Darkness",
+  "item.lotmcraft.drops_of_eternal_darkness_bucket": "Drops of Eternal Darkness Bucket",
+
   "lotm.sefirot.no_sefirot": "You don't have a Sefirot",
+  "lotm.sefirot.already_has_sefirot": "You already possess a Sefirot",
   "lotm.sefirot.sefirah_castle_already_occupied": "Sefirah Castle is occupied already",
   "lotm.sefirot.wrong_pathway": "Your Pathway does not align with the Sefirot",
+  "lotm.sefirot.sefirah_castle_started": "%s has begun accommodating Sefirah Castle (5 minutes remain)",
+  "lotm.sefirot.sefirah_castle_spirit_world_locked": "The Spirit World is too unstable right now",
+  "lotm.sefirot.sefirah_castle_claimed": "Sefirah Castle has accepted you",
+  "lotm.sefirot.command_blocked": "Your commands are sealed during accommodation",
+  "lotm.sefirot.river_started": "%s has begun accommodating the River of Eternal Darkness",
+  "lotm.sefirot.river_claimed": "The River of Eternal Darkness has accepted you",
+  "lotm.sefirot.river_already_occupied": "The River of Eternal Darkness is already claimed",
 
   "lotm.ally.no_target": "No valid target found",
   "lotm.ally.added": "Allied with %s",

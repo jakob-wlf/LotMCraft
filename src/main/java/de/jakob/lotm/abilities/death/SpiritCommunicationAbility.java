@@ -117,6 +117,7 @@ public class SpiritCommunicationAbility extends SelectableAbility {
 
         List<PlayerInfo> players = server.getPlayerList().getPlayers().stream()
                 .filter(p -> p != player)
+                .filter(p -> !de.jakob.lotm.sefirah.SefirotAuthorityManager.blocksConcealment(p.getUUID(), player))
                 .map(p -> new PlayerInfo(p.getUUID(), p.getGameProfile().getName()))
                 .toList();
 

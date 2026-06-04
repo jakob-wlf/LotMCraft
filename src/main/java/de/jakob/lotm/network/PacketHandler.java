@@ -97,6 +97,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncSefirotAuthorityDataPacket.TYPE,
+                SyncSefirotAuthorityDataPacket.STREAM_CODEC,
+                SyncSefirotAuthorityDataPacket::handle
+        );
+
+        registrar.playToClient(
                 UseAbilityPacket.TYPE,
                 UseAbilityPacket.STREAM_CODEC,
                 UseAbilityPacket::handle
@@ -163,6 +169,12 @@ public class PacketHandler {
                 SyncSacrificeDurationPacket.TYPE,
                 SyncSacrificeDurationPacket.STREAM_CODEC,
                 SyncSacrificeDurationPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncSefirotAccommodationPacket.TYPE,
+                SyncSefirotAccommodationPacket.STREAM_CODEC,
+                SyncSefirotAccommodationPacket::handle
         );
 
         registrar.playToClient(
@@ -785,15 +797,15 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
-                DiscernmentSelectedPacket.TYPE,
-                DiscernmentSelectedPacket.STREAM_CODEC,
-                DiscernmentSelectedPacket::handle
+                ToggleSefirotAuthorityAbilityPacket.TYPE,
+                ToggleSefirotAuthorityAbilityPacket.STREAM_CODEC,
+                ToggleSefirotAuthorityAbilityPacket::handle
         );
 
         registrar.playToServer(
-                StopDiscernmentPacket.TYPE,
-                StopDiscernmentPacket.STREAM_CODEC,
-                StopDiscernmentPacket::handle
+                RiverAuthorityActionPacket.TYPE,
+                RiverAuthorityActionPacket.STREAM_CODEC,
+                RiverAuthorityActionPacket::handle
         );
     }
 

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lotmcraft:item/bottle_of_eternal_darkness_river_water"
+  }
+}

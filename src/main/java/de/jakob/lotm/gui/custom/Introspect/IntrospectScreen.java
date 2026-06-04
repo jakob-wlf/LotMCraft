@@ -169,6 +169,20 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             }
         }
 
+        // Add sefirot authority unlocked cross-path abilities
+        for (String sefirotId : de.jakob.lotm.util.data.ClientData.getSefirotUnlockedAbilityIds()) {
+            Ability sefirotAbility = LOTMCraft.abilityHandler.getById(sefirotId);
+            if (sefirotAbility != null) {
+                availableAbilities.add(sefirotAbility);
+            }
+        }
+
+        // Add the sefirot_authority_ability itself when the player owns a sefirot
+        if (de.jakob.lotm.util.data.ClientData.isOwningSefirot()) {
+            Ability sefirotAuth = LOTMCraft.abilityHandler.getById("sefirot_authority_ability");
+            if (sefirotAuth != null) availableAbilities.add(sefirotAuth);
+        }
+
         // Deduplicate: abilities like Cogitation/Ally match all pathways and can be added
         // twice when a pathway history entry exists (once for current pathway, once for historical).
         List<Ability> unique = availableAbilities.stream().distinct().toList();
@@ -519,6 +533,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     public void updateKillCount(int killCount) {
         this.killCount = killCount;
+    }
+
+    public void refreshAvailableAbilities() {
+        initializeAbilities();
     }
 
     public void updateMenuData(int sequence, String pathway, float digestionProgress, float sanity) {
