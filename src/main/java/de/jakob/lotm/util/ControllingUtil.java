@@ -10,6 +10,7 @@ import de.jakob.lotm.network.packets.toClient.SyncOriginalBodyOwnerPacket;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
+import de.jakob.lotm.util.playerMap.PlayerMap;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.world.entity.player.Inventory;
@@ -41,6 +42,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.*;
+import java.util.stream.Collector;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ControllingUtil {
@@ -158,6 +160,12 @@ public class ControllingUtil {
                         characteristicListTag.add(characteristic.toNBT(level.registryAccess()));
                     }
                     nfd.put("characteristicList", characteristicListTag);
+                    ArrayList<Characteristic> charList = BeyonderData.getCharList(player);
+                    int charSeq = charList.stream().mapToInt(c -> c.sequence()).max().orElse(-1);
+                    String charPath = charList.stream().filter(c -> c.sequence() == charSeq).findFirst().map(c -> c.pathway()).orElse("");
+                    BeyonderData.setBeyonder(player, charPath, charSeq, false, false, false, false, false, true);
+                    LOTMCraft.LOGGER.info("Patched Beyonder data for target {}: pathway={}, sequence={}, digestionProgress={}, characteristicList={}",
+                            player.getDisplayName().getString(), charPath, charSeq, BeyonderData.getDigestionProgress(player), characteristicListTag);
                 }
             }
         }
@@ -178,6 +186,7 @@ public class ControllingUtil {
             // copy player inventory to the target
             if (targetEntity instanceof LivingEntity target) {
                 copyInventories(player, target);
+                //copyEntities(player, target);
             }
 
             level.addFreshEntity(targetEntity);
@@ -315,8 +324,11 @@ public class ControllingUtil {
         AbilityBarComponent targetBarData = target.getData(ModAttachments.ABILITY_BAR_COMPONENT);
         targetBarData.setAbilities(sourceBarData.getAbilities());
 
-        if (BeyonderData.isBeyonder(source)) {
+        if (BeyonderData.isBeyonder(source) || BeyonderData.isBeyonder(target)) {
             BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source),false, false, false, false, false);
+            for (Characteristic characteristic : BeyonderData.getCharList(source)) {
+                BeyonderData.setCharacteristic(target, characteristic.stack(), characteristic.sequence(), true, characteristic.pathway());
+            }
             if (source instanceof Player sourcePlayer && target instanceof Player targetPlayer) {
                 BeyonderData.digest(targetPlayer, BeyonderData.getDigestionProgress(sourcePlayer), false);
                 BeyonderData.setGriefingEnabled(targetPlayer, BeyonderData.isGriefingEnabled(sourcePlayer));
