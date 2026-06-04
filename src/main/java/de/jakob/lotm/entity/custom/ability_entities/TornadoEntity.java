@@ -52,6 +52,7 @@ public class TornadoEntity extends Entity {
         super(entityType, level);
         this.setSpeed(speed);
         this.setDamage(damage);
+        this.setSize(size * 2);
         if (caster != null) {
             this.setCasterUUID(caster.getUUID());
         }

@@ -90,6 +90,7 @@ public class AbilityHandler {
         abilities.add(new BlessingsOfWIndAbility("blessings_of_wind_ability"));
         abilities.add(new LightningAbility("lightning_ability"));
         abilities.add(new SirenSongAbility("siren_song_ability"));
+        abilities.add(new StrongLightningAbility("strong_lightning_ability"));
         abilities.add(new TsunamiAbility("tsunami_ability"));
         abilities.add(new EarthquakeAbility("earthquake_ability"));
         abilities.add(new HurricaneAbility("hurricane_ability"));
@@ -97,6 +98,7 @@ public class AbilityHandler {
         abilities.add(new WaterMasteryAbility("water_mastery_ability"));
         abilities.add(new TorrentialDownpourAbility("torrential_downpour_ability"));
         abilities.add(new LightningStormAbility("lightning_storm_ability"));
+        abilities.add(new WrathOfTheOceanAbility("wrath_of_the_ocean_ability"));
         abilities.add(new ThunderclapAbility("thunderclap_ability"));
         abilities.add(new LightningBranchAbility("lightning_branch_ability"));
         abilities.add(new CalamityCreationAbility("calamity_creation_ability"));

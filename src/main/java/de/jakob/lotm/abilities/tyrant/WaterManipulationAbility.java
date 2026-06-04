@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class WaterManipulationAbility extends SelectableAbility {
@@ -150,17 +151,25 @@ public class WaterManipulationAbility extends SelectableAbility {
         gettingSuffocated.add(target.getUUID());
 
         AtomicBoolean wasCancelled = new AtomicBoolean(false);
+        AtomicInteger suffocateTime = new AtomicInteger(0);
         ServerScheduler.scheduleForDuration(0, 1, 20 * 8, () -> {
             if(wasCancelled.get()) {
                 return;
             }
 
-            if(InteractionHandler.isInteractionPossible(new Location(target.getEyePosition(), level), "burning", 7, false)) {
+            if(InteractionHandler.isInteractionPossible(new Location(target.getEyePosition(), level), "burning", 7, false) || !target.isAlive()) {
                 wasCancelled.set(true);
                 return;
             }
 
-            target.setAirSupply(0);
+            if(suffocateTime.get() % 30 == 0) {
+                target.setAirSupply(-20);
+                target.hurt(target.damageSources().drown(), 2.5F);
+                suffocateTime.set(0);
+            }
+
+            suffocateTime.getAndIncrement();
+
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.BUBBLE, target.getEyePosition(), 15, 0.2, 0.1);
             ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, target.getEyePosition(), 4, 0.2, 0.1);
 

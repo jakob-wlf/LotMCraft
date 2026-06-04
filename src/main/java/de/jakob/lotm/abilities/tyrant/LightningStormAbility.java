@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.tyrant;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.LightningEntity;
+import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.StrongLightningEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -66,7 +67,7 @@ public class LightningStormAbility extends Ability {
                     if(state.getCollisionShape(level, BlockPos.containing(loc)).isEmpty())
                         loc = loc.subtract(0, 1, 0);
                 }
-                LightningEntity lightning = new LightningEntity(level, entity, loc, 65, 10, DamageLookup.lookupDamage(3, .2) * (int) Math.max(multiplier(entity)/4,1), BeyonderData.isGriefingEnabled(entity), 8, 200, 0x4a23e8);
+                StrongLightningEntity lightning = new StrongLightningEntity(level, entity, loc, 65, 10, DamageLookup.lookupDamage(3, .2) * (int) Math.max(multiplier(entity)/4,1), BeyonderData.isGriefingEnabled(entity), 8, 200, 0x4a23e8);
                 level.addFreshEntity(lightning);
             }
         });

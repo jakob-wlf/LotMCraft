@@ -28,6 +28,7 @@ import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinRenderer;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.return_from_nature.ReturnFromNaturelRenderer;
 import de.jakob.lotm.entity.client.ability_entities.original_body.OriginalBodyRenderer;
+import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.strong_lightning.StrongLightningRenderer;
 import de.jakob.lotm.entity.client.projectiles.paper_dagger.PaperDaggerProjectileRenderer;
 import de.jakob.lotm.entity.client.projectiles.spear_of_destruction.SpearOfDestructionProjectileRenderer;
 import de.jakob.lotm.entity.client.projectiles.spear_of_light.SpearOfLightProjectileRenderer;
@@ -241,6 +242,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.FROST_SPEAR.get(), FrostSpearProjectileRenderer::new);
             EntityRenderers.register(ModEntities.ELECTRIC_SHOCK.get(), ElectricShockRenderer::new);
             EntityRenderers.register(ModEntities.LIGHTNING.get(), LightningRenderer::new);
+            EntityRenderers.register(ModEntities.STRONG_LIGHTNING.get(), StrongLightningRenderer::new);
             EntityRenderers.register(ModEntities.TRAVELERS_DOOR.get(), TravelersDoorRenderer::new);
             EntityRenderers.register(ModEntities.APPRENTICE_BOOK.get(), ApprenticeBookRenderer::new);
             EntityRenderers.register(ModEntities.BEYONDER_NPC.get(), BeyonderNPCRenderer::new);
