@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -24,11 +25,12 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
+import static de.jakob.lotm.abilities.visionary.DreamTraversalAbility.checkAsleep;
+
 public class NightmareSpectatorAbility extends Ability {
 
     public NightmareSpectatorAbility(String id) {
-        super(id, 20f);
-        canBeCopied = false;
+        super(id, 10f);
     }
 
     @Override
@@ -77,10 +79,12 @@ public class NightmareSpectatorAbility extends Ability {
             return;
         }
 
-        if(!target.hasEffect(ModEffects.ASLEEP) && entitySeq >= 4) {
+        if(checkAsleep(entity, target)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.must_be_asleep").withColor(0xFFff124d));
             return;
         }
+
+        VisionaryLoosingControlHandler.applyEffect(entity, target, this);
 
         // Damage target
         target.hurt(new DamageSource(
@@ -93,6 +97,6 @@ public class NightmareSpectatorAbility extends Ability {
         target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, 1));
 
         // Decrease Sanity
-        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.165f* (int) Math.max(multiplier(entity)/4,1)), target, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(target));
+        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.0165f* (int) Math.max(multiplier(entity)/4,1)), target, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(target));
     }
 }

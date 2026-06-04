@@ -5,6 +5,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
@@ -16,6 +17,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class PacketHandler {
@@ -38,6 +40,12 @@ public class PacketHandler {
                 SyncBeyonderDataPacket.TYPE,
                 SyncBeyonderDataPacket.STREAM_CODEC,
                 SyncBeyonderDataPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncWeaknessDetectionTargetsAbilityPacket.TYPE,
+                SyncWeaknessDetectionTargetsAbilityPacket.STREAM_CODEC,
+                SyncWeaknessDetectionTargetsAbilityPacket::handle
         );
 
         registrar.playToClient(
@@ -337,6 +345,18 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncCorrosionFovPacket.TYPE,
+                SyncCorrosionFovPacket.STREAM_CODEC,
+                SyncCorrosionFovPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncAbilitySelectionPacket.TYPE,
+                SyncAbilitySelectionPacket.STREAM_CODEC,
+                SyncAbilitySelectionPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncAllyDataPacket.TYPE,
                 SyncAllyDataPacket.STREAM_CODEC,
                 SyncAllyDataPacket::handle
@@ -476,6 +496,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                ResetClientEffectsPacket.TYPE,
+                ResetClientEffectsPacket.STREAM_CODEC,
+                ResetClientEffectsPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncOriginalBodyOwnerPacket.TYPE,
                 SyncOriginalBodyOwnerPacket.STREAM_CODEC,
                 SyncOriginalBodyOwnerPacket::handle
@@ -504,6 +530,20 @@ public class PacketHandler {
                 SyncControllingDataPacket.STREAM_CODEC,
                 SyncControllingDataPacket::handle
         );
+
+        registrar.playToClient(
+                OpenDiscernmentScreenPacket.TYPE,
+                OpenDiscernmentScreenPacket.STREAM_CODEC,
+                OpenDiscernmentScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncDiscernmentDataPacket.TYPE,
+                SyncDiscernmentDataPacket.STREAM_CODEC,
+                SyncDiscernmentDataPacket::handle
+        );
+
+
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
@@ -783,11 +823,11 @@ public class PacketHandler {
         float spirituality = BeyonderData.getSpirituality(player);
         boolean griefingEnabled = BeyonderData.isGriefingEnabled(player);
         float digestionProgress = BeyonderData.getDigestionProgress(player);
-        int[] charStacks = BeyonderData.getCharStacks(player);
+        ArrayList<Characteristic> charList = BeyonderData.getCharList(player);
 
         String[] history = BeyonderData.getPathwayHistory(player);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charStacks);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charList);
         sendToPlayer(player, packet);
     }
 
@@ -838,9 +878,9 @@ public class PacketHandler {
         float spirituality = BeyonderData.getSpirituality(targetPlayer);
         boolean griefingEnabled = BeyonderData.isGriefingEnabled(targetPlayer);
         float digestionProgress = BeyonderData.getDigestionProgress(targetPlayer);
-        int[] charStacks = BeyonderData.getCharStacks(targetPlayer);
+        ArrayList<Characteristic> charList = BeyonderData.getCharList(targetPlayer);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charStacks);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charList);
 
         targetPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
             sendToPlayer(player, packet);

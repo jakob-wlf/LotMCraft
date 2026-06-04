@@ -19,12 +19,12 @@ public class SequenceSlotsCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("showavalibleseqslots")
-                .requires(source -> source.hasPermission(2))
+                .requires(source -> source.hasPermission(0))
                 .executes(context -> showAvailable(context.getSource()))
         );
 
         dispatcher.register(Commands.literal("showclaimedseqslots")
-                .requires(source -> source.hasPermission(2))
+                .requires(source -> source.hasPermission(0))
                 .executes(context -> showClaimed(context.getSource()))
         );
     }
@@ -62,8 +62,8 @@ public class SequenceSlotsCommand {
             int seq2 = BeyonderData.countTotalSequence(level, pathway, 2);
             int seq3 = BeyonderData.countTotalSequence(level, pathway, 3);
 
-                int open0 = Math.max(0, limit0 - seq0);
-                int open1 = Math.max(0, limit1 - seq1);
+            int open0 = Math.max(0, limit0 - seq0);
+            int open1 = Math.max(0, limit1 - seq1);
             int open2 = Math.max(0, limit2 - (seq2 + seq1));
             int open3 = Math.max(0, limit3 - (seq3 + seq2));
             int open4 = Math.max(0, limit4 - (seq4 + seq3));
@@ -72,12 +72,12 @@ public class SequenceSlotsCommand {
             int open7 = Math.max(0, limit7 - (seq7 + seq6));
             int open8 = Math.max(0, limit8 - (seq8 + seq7));
 
-                    int padding = Math.max(0, nameWidth - displayName.length());
-                    String numbers = String.format(Locale.ROOT,
-                            " | %4d %4d %4d %4d %4d %4d %4d %4d %4d",
-                            open0, open1, open2, open3, open4, open5, open6, open7, open8
-                );
-                    source.sendSystemMessage(coloredPathLine(pathway, displayName, padding, numbers));
+            int padding = Math.max(0, nameWidth - displayName.length());
+            String numbers = String.format(Locale.ROOT,
+                    " | %4d %4d %4d %4d %4d %4d %4d %4d %4d",
+                    open0, open1, open2, open3, open4, open5, open6, open7, open8
+            );
+            source.sendSystemMessage(coloredPathLine(pathway, displayName, padding, numbers));
         }
 
         return 1;
@@ -106,70 +106,70 @@ public class SequenceSlotsCommand {
             int seq7 = BeyonderData.countTotalSequence(level, pathway, 7);
             int seq8 = BeyonderData.countTotalSequence(level, pathway, 8);
 
-                    int padding = Math.max(0, nameWidth - displayName.length());
-                    String numbers = String.format(Locale.ROOT,
-                            " | %4d %4d %4d %4d %4d %4d %4d %4d %4d",
+            int padding = Math.max(0, nameWidth - displayName.length());
+            String numbers = String.format(Locale.ROOT,
+                    " | %4d %4d %4d %4d %4d %4d %4d %4d %4d",
                     seq0, seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8
-                );
-                    source.sendSystemMessage(coloredPathLine(pathway, displayName, padding, numbers));
+            );
+            source.sendSystemMessage(coloredPathLine(pathway, displayName, padding, numbers));
         }
 
         return 1;
     }
 
-                private static MutableComponent coloredPathLine(String pathway, String name, int padding, String numbers) {
-            int color = getPathwayColor(pathway);
-                String pad = " ".repeat(Math.max(0, padding));
-                return Component.literal(name)
-                        .withStyle(style -> style.withColor(TextColor.fromRgb(color)).withFont(MONO_FONT))
-                    .append(Component.literal(pad + numbers).withStyle(style -> style.withFont(MONO_FONT)));
+    private static MutableComponent coloredPathLine(String pathway, String name, int padding, String numbers) {
+        int color = getPathwayColor(pathway);
+        String pad = " ".repeat(Math.max(0, padding));
+        return Component.literal(name)
+                .withStyle(style -> style.withColor(TextColor.fromRgb(color)).withFont(MONO_FONT))
+                .append(Component.literal(pad + numbers).withStyle(style -> style.withFont(MONO_FONT)));
+    }
+
+    private static MutableComponent headerLineAvailable(int nameWidth) {
+        String header = "Pathway";
+        int padding = Math.max(0, nameWidth - header.length());
+        String pad = " ".repeat(padding);
+        String columns = String.format(Locale.ROOT,
+                " | %4s %4s %4s %4s %4s %4s %4s %4s %4s",
+                "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"
+        );
+        return Component.literal(header + pad + columns)
+                .withStyle(style -> style.withFont(MONO_FONT));
+    }
+
+    private static MutableComponent headerLineClaimed(int nameWidth) {
+        String header = "Pathway";
+        int padding = Math.max(0, nameWidth - header.length());
+        String pad = " ".repeat(padding);
+        String columns = String.format(Locale.ROOT,
+                " | %4s %4s %4s %4s %4s %4s %4s %4s %4s",
+                "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"
+        );
+        return Component.literal(header + pad + columns)
+                .withStyle(style -> style.withFont(MONO_FONT));
+    }
+
+    private static int getPathwayColor(String pathway) {
+        PathwayInfos infos = BeyonderData.pathwayInfos.get(pathway);
+        if (infos == null) return 0xFFFFFF;
+        return infos.color() & 0xFFFFFF;
+    }
+
+    private static String getPathwayDisplayName(String pathway) {
+        PathwayInfos infos = BeyonderData.pathwayInfos.get(pathway);
+        if (infos == null) return pathway;
+        String translated = infos.getName();
+        return (translated == null || translated.isEmpty()) ? pathway : translated;
+    }
+
+    private static int getMaxPathwayNameWidth() {
+        int max = "Pathway".length();
+        for (String pathway : BeyonderData.pathways) {
+            String name = getPathwayDisplayName(pathway);
+            if (name.length() > max) {
+                max = name.length();
             }
-
-                    private static MutableComponent headerLineAvailable(int nameWidth) {
-                    String header = "Pathway";
-                    int padding = Math.max(0, nameWidth - header.length());
-                    String pad = " ".repeat(padding);
-                    String columns = String.format(Locale.ROOT,
-                            " | %4s %4s %4s %4s %4s %4s %4s %4s %4s",
-                            "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"
-                    );
-                    return Component.literal(header + pad + columns)
-                        .withStyle(style -> style.withFont(MONO_FONT));
-                    }
-
-                    private static MutableComponent headerLineClaimed(int nameWidth) {
-                    String header = "Pathway";
-                    int padding = Math.max(0, nameWidth - header.length());
-                    String pad = " ".repeat(padding);
-                    String columns = String.format(Locale.ROOT,
-                        " | %4s %4s %4s %4s %4s %4s %4s %4s %4s",
-                        "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"
-                    );
-                    return Component.literal(header + pad + columns)
-                        .withStyle(style -> style.withFont(MONO_FONT));
-                }
-
-            private static int getPathwayColor(String pathway) {
-            PathwayInfos infos = BeyonderData.pathwayInfos.get(pathway);
-            if (infos == null) return 0xFFFFFF;
-            return infos.color() & 0xFFFFFF;
-            }
-
-            private static String getPathwayDisplayName(String pathway) {
-                PathwayInfos infos = BeyonderData.pathwayInfos.get(pathway);
-                if (infos == null) return pathway;
-                String translated = infos.getName();
-                return (translated == null || translated.isEmpty()) ? pathway : translated;
-            }
-
-            private static int getMaxPathwayNameWidth() {
-                int max = "Pathway".length();
-                for (String pathway : BeyonderData.pathways) {
-                    String name = getPathwayDisplayName(pathway);
-                    if (name.length() > max) {
-                        max = name.length();
-                    }
-                }
-                return max;
-            }
+        }
+        return max;
+    }
 }

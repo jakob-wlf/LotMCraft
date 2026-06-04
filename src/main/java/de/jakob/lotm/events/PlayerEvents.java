@@ -15,6 +15,7 @@ import de.jakob.lotm.entity.custom.uniqueness.UniquenessEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.ResetClientEffectsPacket;
 import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
@@ -58,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
@@ -101,6 +103,8 @@ public class PlayerEvents {
                 }
                 revert.clear();
             }
+
+            PacketHandler.sendToPlayer(player, new ResetClientEffectsPacket());
         }
     }
 
@@ -125,6 +129,33 @@ public class PlayerEvents {
             }
 
             PacketHandler.sendToPlayer(player, new SyncGriefingGamerulePacket(player.level().getGameRules().getBoolean(ModGameRules.ALLOW_GRIEFING)));
+
+            // Fallback migration: if component migration produced only a minimal char list, prefer stored PlayerMap chars
+            try {
+                var component = player.getData(ModAttachments.BEYONDER_COMPONENT);
+                Optional<de.jakob.lotm.util.playerMap.StoredData> stored = BeyonderData.playerMap != null ? BeyonderData.playerMap.get(player) : Optional.empty();
+                if (stored.isPresent() && !stored.get().chars().isEmpty()) {
+                    // Decide whether to prefer stored PlayerMap chars over migrated component chars.
+                    int compSum = component.getCharacteristicList().stream().mapToInt(c -> c.stack()).sum();
+                    long compNonDefault = component.getCharacteristicList().stream().filter(c -> c.stack() > 1).count();
+                    int storedSum = stored.get().chars().stream().mapToInt(c -> c.stack()).sum();
+
+                    boolean shouldApply = false;
+                    // If component has no non-default stacks (all stacks == 1), prefer stored data
+                    if (compNonDefault == 0 && storedSum > 0) shouldApply = true;
+                    // Or if totals differ significantly (migration probably wrong)
+                    if (!shouldApply && storedSum != compSum) shouldApply = true;
+
+                    if (shouldApply) {
+                        component.setCharacteristicList(new ArrayList<>(stored.get().chars()));
+                        component.syncHighest();
+                        PacketHandler.syncBeyonderDataToPlayer(player);
+                        de.jakob.lotm.LOTMCraft.LOGGER.info("Applied PlayerMap fallback migration for player {} (compSum={}, storedSum={}, compNonDefault={})", player.getGameProfile().getName(), compSum, storedSum, compNonDefault);
+                    }
+                }
+            } catch (Exception e) {
+                de.jakob.lotm.LOTMCraft.LOGGER.warn("Error during BeyonderComponent fallback migration for {}", player.getGameProfile().getName(), e);
+            }
 
             NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
             if(!component.isHasReceivedNewPlayerPerks() && player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC)) {

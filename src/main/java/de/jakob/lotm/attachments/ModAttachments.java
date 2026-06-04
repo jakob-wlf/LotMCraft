@@ -160,6 +160,14 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<DiscernmentComponent>> DISCERNMENT_DATA =
+            ATTACHMENT_TYPES.register("discernment_data", () ->
+                    AttachmentType.builder(DiscernmentComponent::new)
+                            .serialize(DiscernmentComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<CopiedInventoryComponent>> COPIED_INVENTORY =
             ATTACHMENT_TYPES.register("copied_inventory", () ->
                     AttachmentType.builder(CopiedInventoryComponent::new)

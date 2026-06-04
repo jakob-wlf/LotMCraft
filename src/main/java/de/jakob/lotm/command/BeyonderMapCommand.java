@@ -14,6 +14,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.Comparator;
@@ -122,17 +123,31 @@ Available commands:
 
     private static LiteralArgumentBuilder<CommandSourceStack> get() {
         return Commands.literal("get")
+                .executes(context -> {
+                    CommandSourceStack source = context.getSource();
+                    if (!(source.getEntity() instanceof ServerPlayer player)) {
+                        source.sendFailure(Component.literal("Must be a player!"));
+                        return 0;
+                    }
+                    if (!BeyonderData.playerMap.contains(player.getUUID())) {
+                        source.sendFailure(Component.literal("You are not in the BeyonderMap!"));
+                        return 0;
+                    }
+                    source.sendSystemMessage(Component.literal(
+                            BeyonderData.playerMap.get(player.getUUID()).get().getSelfInfo() + "\n"));
+                    return 1;
+                })
                 .then(Commands.argument("targets", GameProfileArgument.gameProfile())
+                .requires(source -> source.hasPermission(2))
                 .executes(context -> {
                     CommandSourceStack source = context.getSource();
                     var targets = GameProfileArgument.getGameProfiles(context, "targets");
 
-                    for(var obj : targets){
-                        if(!BeyonderData.playerMap.contains(obj.getId())){
+                    for (var obj : targets) {
+                        if (!BeyonderData.playerMap.contains(obj.getId())) {
                             source.sendFailure(Component.literal("BeyonderMap doesn't contain this player!"));
                             continue;
                         }
-
                         source.sendSystemMessage(Component.literal(
                                 BeyonderData.playerMap.get(obj.getId()).get().getAllInfo() + "\n"));
                     }
@@ -192,14 +207,12 @@ Available commands:
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("beyondermap")
-                .requires(source -> source.hasPermission(2))
-                .then(help())
-                .then(all())
-                .then(add())
-                .then(delete())
                 .then(get())
-                .then(edit())
-
+                .then(help().requires(source -> source.hasPermission(2)))
+                .then(all().requires(source -> source.hasPermission(2)))
+                .then(add().requires(source -> source.hasPermission(2)))
+                .then(delete().requires(source -> source.hasPermission(2)))
+                .then(edit().requires(source -> source.hasPermission(2)))
         );
     }
 }

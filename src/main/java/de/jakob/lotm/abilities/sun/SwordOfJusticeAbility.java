@@ -18,7 +18,6 @@ public class SwordOfJusticeAbility extends Ability {
     public SwordOfJusticeAbility(String id) {
         super(id, 6f, "purification", "purification_holy", "light_source", "light_strong", "light_weak");
         postsUsedAbilityEventManually = true;
-        canBeCopied = false;
         canBeShared = false;
     }
 

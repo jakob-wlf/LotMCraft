@@ -29,7 +29,7 @@ public class TheftAbility extends Ability {
 
     @Override
     public float getSpiritualityCost() {
-        return 400f;
+        return 40f;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class TheftAbility extends Ability {
         if(!(level instanceof ServerLevel) || !(entity instanceof ServerPlayer player)) {
             return;
         }
-        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level)) return;
+        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level, AbilityUtil.getSeqWithArt(entity, this))) return;
         LivingEntity target = AbilityUtil.getTargetEntity(player, 8 * (int) (multiplier(entity) * multiplier(entity)), 1.5f);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.theft.no_target").withColor(0x4742c9));

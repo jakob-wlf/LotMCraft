@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class MythicalCreatureFormAbility extends ToggleAbility {
+
     private static final HashMap<UUID, Double> previousScale = new HashMap<>();
 
     public MythicalCreatureFormAbility(String id) {
@@ -112,14 +113,12 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
             scaleAttribute.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mythical_creature_form"));
         }
 
-        // Remove buff
         BeyonderData.removeModifier(entity, "mythical_creature_form");
 
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         if(transformationComponent.isTransformed() && transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.MYTHICAL_CREATURE.getIndex()) {
             transformationComponent.setTransformedAndSync(false, entity);
         }
-
     }
 
     @Override
@@ -147,8 +146,19 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
                 break;
 
             case "visionary":
-                e.getData(ModAttachments.SANITY_COMPONENT.get())
-                        .decreaseSanityWithSequenceDifference(0.09168f, e, BeyonderData.getSequence(entity), BeyonderData.getSequence(e));
+                int seq = BeyonderData.getSequence(entity);
+                int targetSeq = BeyonderData.getSequence(e);
+
+                if(targetSeq > seq) break;
+
+                int diff = targetSeq - seq;
+                int amp = 5 + diff;
+
+                if(amp <= 0) break;
+
+                if(!e.hasEffect(ModEffects.LOOSING_CONTROL))
+                    e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 3, amp));
+
                 break;
 
             default:

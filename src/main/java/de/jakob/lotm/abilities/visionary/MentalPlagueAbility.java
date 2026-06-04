@@ -23,8 +23,6 @@ import java.util.Map;
 public class MentalPlagueAbility extends Ability {
     public MentalPlagueAbility(String id) {
         super(id, 30, "plague");
-        canBeCopied = false;
-        canBeReplicated = false;
     }
 
     @Override

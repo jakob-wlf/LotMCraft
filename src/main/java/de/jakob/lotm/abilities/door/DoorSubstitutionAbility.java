@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.ProhibitionHandler;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -36,6 +37,7 @@ public class DoorSubstitutionAbility extends Ability {
         canBeCopied = false;
         canBeReplicated = false;
         canBeUsedInArtifact = false;
+        canBeShared = false;
     }
 
     @Override
@@ -83,7 +85,7 @@ public class DoorSubstitutionAbility extends Ability {
         }
 
         LivingEntity entity = event.getEntity();
-        if (entity.level() instanceof ServerLevel sl && ProhibitionHandler.isInStandInsZone(entity.position(), sl)) return;
+        if (entity.level() instanceof ServerLevel sl && ProhibitionHandler.isInStandInsZone(entity.position(), sl, BeyonderData.getSequence(entity))) return;
 
         int num = figurineNumbers.get(event.getEntity().getUUID());
 

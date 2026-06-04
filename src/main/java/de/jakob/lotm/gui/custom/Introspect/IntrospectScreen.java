@@ -5,6 +5,8 @@ package de.jakob.lotm.gui.custom.Introspect;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.attachments.ControllingDataComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
@@ -14,6 +16,7 @@ import de.jakob.lotm.util.ClientQuestData;
 import de.jakob.lotm.util.ClientUniquenessCache;
 import de.jakob.lotm.util.data.ClientData;
 import de.jakob.lotm.util.helper.ClientTeamData;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -47,6 +50,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private boolean showQuests = false;
     private Button toggleQuestsButton;
     private Button discardQuestButton;
+
+    // Characteristics section
+    private boolean showCharacteristics = false;
+    private Button toggleCharacteristicsButton;
+    private int characteristicsScrollOffset = 0;
+    private int maxCharacteristicsScroll = 0;
 
     // Tab management for abilities
     private enum Tab {
@@ -119,31 +128,45 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (showAllAbilities) {
             availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesUpToSequenceOrdered(menu.getSequence()));
         } else {
-            String[] pathwayHistoryCheck = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
-            boolean hasSwitched = java.util.Arrays.stream(pathwayHistoryCheck)
-                    .anyMatch(e -> e != null && !e.isEmpty() && !e.equals(menu.getPathway()));
-            int[] stacks = BeyonderData.getCharStacks(minecraft.player);
-            boolean hasCharStack = false;
-            for (int i = 1; i <= 4; i++) {
-                if (stacks[i] > 0) { hasCharStack = true; break; }
-            }
-            java.util.LinkedHashSet<Ability> abilitySet = new java.util.LinkedHashSet<>();
-            if (hasSwitched && !hasCharStack) {
-                LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence())
-                        .stream().filter(a -> a.getRequirements().getOrDefault(menu.getPathway(), -1) <= 4).forEach(abilitySet::add);
-            } else {
-                abilitySet.addAll(LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence()));
-            }
+            // use the old system in case of controlling - will change once worms get added
+            ControllingDataComponent controllingDataComponent = minecraft.player.getData(ModAttachments.CONTROLLING_DATA);
+            if (controllingDataComponent.isControlling()) {
+                ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
 
-            String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
-            for (int seq = menu.getSequence() + 1; seq <= 9; seq++) {
-                String historicalPathway = pathwayHistory[seq];
-                if (historicalPathway != null && !historicalPathway.isEmpty() && !historicalPathway.equals(menu.getPathway())) {
-                    abilitySet.addAll(LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(historicalPathway, seq));
-                    break;
+                availableAbilities.addAll(controllerPathwayAbilities);
+            } else {
+                var discernmentComponent = minecraft.player.getData(ModAttachments.DISCERNMENT_DATA);
+
+                if(discernmentComponent.isDiscerning()){
+                    ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
+                    availableAbilities.addAll(controllerPathwayAbilities);
+                }
+                else {
+                    String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
+                    ArrayList<Characteristic> charList = ClientBeyonderCache.getCharList(minecraft.player.getUUID());
+                    for (int i = menu.getSequence(); i < pathwayHistory.length; i++) {
+                        String pathway = pathwayHistory[i];
+                        if (pathway != null) {
+                            ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
+                            availableAbilities.addAll(pathwayAbilities);
+                        }
+                    }
+
+                    for (Characteristic characteristic : charList) {
+                        if (characteristic.stack() <= 0) {
+                            continue;
+                        }
+
+                        ArrayList<Ability> characteristicAbilities =
+                                LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(
+                                        characteristic.pathway(),
+                                        characteristic.sequence()
+                                );
+
+                        availableAbilities.addAll(characteristicAbilities);
+                    }
                 }
             }
-            availableAbilities.addAll(abilitySet);
         }
 
         // Add sefirot authority unlocked cross-path abilities
@@ -276,7 +299,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         button -> {
                             showAbilities = !showAbilities;
                             if (showAbilities) {
-                                showQuests = false; // Turn off quests when abilities is turned on
+                                showQuests = false;
+                                showCharacteristics = false;
                             }
                             button.setMessage(Component.literal(showAbilities ? "< Hide" : "Abilities >"));
                             updateButtonPositions();
@@ -294,7 +318,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         button -> {
                             showQuests = !showQuests;
                             if (showQuests) {
-                                showAbilities = false; // Turn off abilities when quests is turned on
+                                showAbilities = false;
+                                showCharacteristics = false;
                             }
                             button.setMessage(Component.literal(showQuests ? "< Hide" : "Quests >"));
                             updateButtonPositions();
@@ -304,8 +329,26 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         this.addRenderableWidget(toggleQuestsButton);
 
+        int characteristicsButtonX = baseLeftPos - 65;
+        int characteristicsButtonY = this.topPos + 60;
+
+        toggleCharacteristicsButton = Button.builder(Component.literal(showCharacteristics ? "< Hide" : "Chars >"),
+                        button -> {
+                            showCharacteristics = !showCharacteristics;
+                            if (showCharacteristics) {
+                                showAbilities = false;
+                                showQuests = false;
+                            }
+                            button.setMessage(Component.literal(showCharacteristics ? "< Hide" : "Chars >"));
+                            updateButtonPositions();
+                        })
+                .bounds(characteristicsButtonX, characteristicsButtonY, 60, 20)
+                .build();
+
+        this.addRenderableWidget(toggleCharacteristicsButton);
+
         int messageButtonX = baseLeftPos - 65;
-        int messageButtonY = this.topPos + 60;
+        int messageButtonY = this.topPos + 85;
 
         messageButton = Button.builder(Component.literal("Honorific"),
                 button -> {
@@ -320,17 +363,17 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
 
         // Add Apotheosis button if player has uniqueness and is Sequence 1
-        if (ClientUniquenessCache.hasUniqueness() && menu.getSequence() == 1) {
+        if (ClientUniquenessCache.hasUniqueness()) {
             int apotheosisButtonX = baseLeftPos - 65;
             int apotheosisButtonY = this.topPos + 110;
 
             boolean canApotheosize = false;
             if (this.minecraft != null && this.minecraft.player != null) {
-                int charStack = ClientBeyonderCache.getCharStack(this.minecraft.player.getUUID());
+                int charStack = ClientBeyonderCache.getCharacteristicCount(this.minecraft.player.getUUID(), ClientUniquenessCache.getPathway());
                 canApotheosize = ClientUniquenessCache.getKillCount() >= RequestUniquenessApotheosisPacket.KILLS_REQUIRED_FOR_APOTHEOSIS && charStack >= 2;
             }
             final boolean finalCanApotheosize = canApotheosize;
-
+            LOTMCraft.LOGGER.info("Apotheosis button: canApotheosize={}, killCount={}", finalCanApotheosize, ClientUniquenessCache.getKillCount());
             apotheosisButton = Button.builder(
                             Component.literal("Apotheosis").withStyle(
                                     finalCanApotheosize ? ChatFormatting.GOLD : ChatFormatting.GRAY),
@@ -348,7 +391,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         // Add "All Abilities" toggle button for creative + OP players
         if (isCreativeOp()) {
             int allAbilitiesButtonX = baseLeftPos - 65;
-            int allAbilitiesButtonY = this.topPos + 85;
+            int allAbilitiesButtonY = this.topPos + 135;
 
             toggleAllAbilitiesButton = Button.builder(
                             Component.literal(showAllAbilities ? "All: ON" : "All: OFF")
@@ -516,6 +559,11 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             renderAbilitiesPanel(guiGraphics, mouseX, mouseY);
         }
 
+        // Render characteristics panel if visible
+        if (showCharacteristics) {
+            renderCharacteristicsPanel(guiGraphics, mouseX, mouseY);
+        }
+
         // Render dragged ability on top
         if (draggedAbility != null) {
             renderAbilityIcon(guiGraphics, draggedAbility, mouseX - dragOffsetX, mouseY - dragOffsetY);
@@ -585,6 +633,54 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             int hintWidth = this.font.width(scrollHint);
             guiGraphics.drawString(this.font, scrollHint, panelX + QUESTS_PANEL_WIDTH - hintWidth - 5,
                     panelY + COMPLETED_QUESTS_HEIGHT - 12, 0xFF888888, false);
+        }
+    }
+
+    private void renderCharacteristicsPanel(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        int baseLeftPos = this.leftPos;
+        int panelX = baseLeftPos + this.imageWidth + 5;
+        int panelY = this.topPos;
+        int panelWidth = 140; // Same as quests
+        int panelHeight = this.imageHeight;
+
+        // Render background
+        guiGraphics.fill(panelX, panelY, panelX + panelWidth, panelY + panelHeight, 0xCC000000);
+        guiGraphics.renderOutline(panelX, panelY, panelWidth, panelHeight, 0xFFAAAAAA);
+
+        // Render label
+        Component label = Component.literal("Held Characteristics").withStyle(ChatFormatting.BOLD);
+        guiGraphics.drawString(this.font, label, panelX + 5, panelY + 5, 0xFFFFFFFF, true);
+
+        ArrayList<Characteristic> charList = ClientBeyonderCache.getCharList(this.minecraft.player.getUUID());
+        int listY = panelY + 20;
+        int lineHeight = this.font.lineHeight + 2;
+        int listHeight = panelHeight - 30;
+
+        int startIndex = characteristicsScrollOffset;
+        int visibleCount = listHeight / lineHeight;
+        int endIndex = Math.min(charList.size(), startIndex + visibleCount);
+
+        maxCharacteristicsScroll = Math.max(0, charList.size() - visibleCount);
+
+        for (int i = startIndex; i < endIndex; i++) {
+            Characteristic c = charList.get(i);
+            String pathwayName = BeyonderData.getSequenceName(c.pathway(), c.sequence());
+            int color = BeyonderData.pathwayInfos.get(c.pathway()).color();
+
+            Component text = Component.literal("Seq " + c.sequence() + " ")
+                    .append(Component.literal(pathwayName).withStyle(s -> s.withColor(color)))
+                    .append(" x" + c.stack());
+
+            int textY = listY + (i - startIndex) * lineHeight;
+            guiGraphics.drawString(this.font, text, panelX + 5, textY, 0xFFCCCCCC, false);
+        }
+
+        // Show scroll indicator if needed
+        if (maxCharacteristicsScroll > 0) {
+            Component scrollHint = Component.literal("(Scroll)").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
+            int hintWidth = this.font.width(scrollHint);
+            guiGraphics.drawString(this.font, scrollHint, panelX + panelWidth - hintWidth - 5,
+                    panelY + panelHeight - 12, 0xFF888888, false);
         }
     }
 
@@ -1376,6 +1472,20 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             }
         }
 
+        if (showCharacteristics) {
+            int baseLeftPos = this.leftPos;
+            int panelX = baseLeftPos + this.imageWidth + 5;
+            int panelY = this.topPos;
+
+            if (mouseX >= panelX && mouseX <= panelX + 140 &&
+                    mouseY >= panelY && mouseY <= panelY + this.imageHeight) {
+
+                characteristicsScrollOffset = Math.max(0, Math.min(maxCharacteristicsScroll,
+                        characteristicsScrollOffset - (int) scrollY));
+                return true;
+            }
+        }
+
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
@@ -1605,12 +1715,13 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         Player player = playerInventory.player;
         int charStackCount = 0;
         if(player.level().isClientSide) {
-            charStackCount = ClientBeyonderCache.getCharStack(player.getUUID());
+            charStackCount = ClientBeyonderCache.getCharacteristicCount(player.getUUID(), menu.getPathway());
         }
+        int additionalChars = Math.max(0, charStackCount - 1);
         Component sequenceText = Component.translatable("lotm.sequence")
                 .append(": ")
                 .append(Component.literal(menu.getSequence() + ""))
-                .append(charStackCount > 0 ? " +" + charStackCount : "")
+                .append(additionalChars > 0 ? " +" + additionalChars : "")
                 .withStyle(ChatFormatting.BOLD);
 
         int textX = 7;

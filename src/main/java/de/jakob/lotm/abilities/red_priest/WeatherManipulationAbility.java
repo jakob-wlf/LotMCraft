@@ -36,7 +36,6 @@ public class WeatherManipulationAbility extends SelectableAbility {
     public WeatherManipulationAbility(String id) {
         super(id, 25);
         postsUsedAbilityEventManually = true;
-        canBeCopied = false;
         canBeShared = false;
     }
 

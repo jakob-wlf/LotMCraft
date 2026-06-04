@@ -55,19 +55,37 @@ public class BeyonderCharacteristicItem extends Item {
         int seq = beChar.getSequence();
         String path = beChar.getPathway();
 
-        if(path.equals(BeyonderData.getPathway(player))){
-            if(seq >= BeyonderData.getSequence(player)){
-                var stacks = BeyonderData.getCharStacks(player);
+        var charList = BeyonderData.getCharList(player);
+        int playerSeq = BeyonderData.getSequence(player);
+        String playerPathway = BeyonderData.getPathway(player);
 
-                if(stacks[seq] >= 0 && seq >= 1 && BeyonderData.getDigestionProgress(player) == 1.0){
+        boolean hasPathway = path.equals(playerPathway) || charList.stream().anyMatch(c -> c.pathway().equals(path));
+
+        boolean isNeighbor = false;
+        if (playerSeq == 0) {
+            PathwayInfos infos = BeyonderData.pathwayInfos.get(playerPathway);
+            if (infos != null && infos.neighboringPathways() != null) {
+                for (String neighbor : infos.neighboringPathways()) {
+                    if (neighbor.equals(path)) {
+                        isNeighbor = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(hasPathway || isNeighbor){
+            if(seq >= playerSeq){
+                if((seq >= 1 || playerSeq == 0) && (BeyonderData.getDigestionProgress(player) >= 1.0 || playerSeq == 0)){
                     if (level instanceof ServerLevel serverLevel
-                            && !BeyonderData.hasSequenceSlotAvailableWithAdjustment(serverLevel, path, seq, seq, 1)) {
+                            && !BeyonderData.hasSequenceSlotAvailableWithAdjustment(serverLevel, path, seq, seq, 0)) {
                         player.sendSystemMessage(Component.literal("No sequence slots available for that characteristic")
                                 .withStyle(ChatFormatting.RED));
                         return InteractionResultHolder.fail(stack);
                     }
 
-                    BeyonderData.setCharStack(player, (stacks[seq] + 1), seq, true);
+
+                    BeyonderData.addCharacteristic(player, seq, path);
                     BeyonderData.setDigestionProgress(player, 0);
                     player.setItemInHand(hand, ItemStack.EMPTY);
                     return InteractionResultHolder.success(ItemStack.EMPTY);

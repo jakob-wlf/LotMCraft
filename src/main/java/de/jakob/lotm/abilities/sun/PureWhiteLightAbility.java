@@ -30,7 +30,6 @@ public class PureWhiteLightAbility extends Ability {
         super(id, 6, "purification", "light_source", "light_strong", "light_weak", "purification_holy");
         interactionRadius = 50;
         postsUsedAbilityEventManually = true;
-        canBeCopied = false;
         canBeShared = false;
     }
 

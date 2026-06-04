@@ -32,6 +32,7 @@ public class WanderingAbility extends Ability {
         canBeCopied = false;
         canBeReplicated = false;
         canBeShared = false;
+        cannotBeStolen = true;
     }
 
     @Override

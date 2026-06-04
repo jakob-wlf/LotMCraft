@@ -43,7 +43,6 @@ public class PuppeteeringAbility extends Ability {
     public PuppeteeringAbility(String id) {
         super(id, 1);
 
-        canBeCopied = false;
     }
 
     @Override
@@ -287,8 +286,8 @@ public class PuppeteeringAbility extends Ability {
                 target = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), target.level(), false, pathway, sequence);
             }
             else {
-                target.setHealth(0);
-                target = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), target.level(), false);
+                target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
+                target = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), target.level(), false, "none", 10);
             }
 
             target.setPos(pos);

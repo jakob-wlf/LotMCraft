@@ -28,6 +28,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForgeConfig;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -110,10 +111,11 @@ public class BattleHypnosisAbility extends SelectableAbility {
             }
         }
 
-        switch (random.nextInt(3)) {
+        switch (random.nextInt(4)) {
             case 0 -> freezeTarget((ServerLevel) level, entity, target);
             case 1 -> weakenAndMoveAroundTarget((ServerLevel) level, entity, target);
             case 2 -> stopBeyonderPowersForTarget((ServerLevel) level, entity, target);
+            case 3 -> confuseTarget((ServerLevel) level, entity, target);
         }
     }
 
@@ -149,10 +151,11 @@ public class BattleHypnosisAbility extends SelectableAbility {
                 }
             }
 
-            switch (random.nextInt(3)) {
+            switch (random.nextInt(4)) {
                 case 0 -> freezeTarget((ServerLevel) level, entity, target);
                 case 1 -> weakenAndMoveAroundTarget((ServerLevel) level, entity, target);
                 case 2 -> stopBeyonderPowersForTarget((ServerLevel) level, entity, target);
+                case 3 -> confuseTarget((ServerLevel) level, entity, target);
             }
         }
     }
@@ -217,6 +220,12 @@ public class BattleHypnosisAbility extends SelectableAbility {
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 10, false, false, true));
             target.hurtMarked = true;
         }, level);
+    }
+
+    private void confuseTarget(ServerLevel level, LivingEntity entity, LivingEntity target){
+        AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.confuse").withColor(0xf5c56c));
+
+        AbilityUtil.ignoreAllies.put(target.getUUID(), false);
     }
 
     @Override

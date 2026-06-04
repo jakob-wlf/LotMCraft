@@ -21,8 +21,6 @@ import java.util.Map;
 public class ConqueringAbility extends Ability {
     public ConqueringAbility(String id) {
         super(id, 40, "morale_boost");
-        canBeCopied = false;
-        canBeReplicated = false;
         canBeShared = false;
     }
 

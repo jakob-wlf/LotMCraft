@@ -25,6 +25,7 @@ public class WorldJudgmentAbility extends Ability {
         canBeUsedByNPC = false;
         canBeReplicated = false;
         canBeShared = false;
+        cannotBeStolen = true;
     }
 
     @Override

@@ -53,8 +53,8 @@ public record OpenIntrospectMenuPacket(int sequence, String pathway) implements 
                 if(!BeyonderData.isBeyonder(player))
                     return;
 
-                int sequence = BeyonderData.getSequence(player);
-                String pathway = BeyonderData.getPathway(player);
+                int sequence = BeyonderData.getHighestSequence(player);
+                String pathway = BeyonderData.getHighestPathway(player);
                 float digestionProgress = BeyonderData.getDigestionProgress(player);
 
                 List<ItemStack> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.ITEMS.getEntries().stream().filter(entry -> {

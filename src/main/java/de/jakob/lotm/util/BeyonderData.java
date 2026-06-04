@@ -43,7 +43,7 @@ import java.io.IOException;
 public class BeyonderData {
     private static final int[] spiritualityLookup = {60000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180};
     private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
-    private static final double[] sanityDecreaseMultiplier = {.003, .0125, .025, .05, .1, .65, .75, .88, 1.0, 1.0};
+    private static final double[] sanityDecreaseMultiplier = {.01, .02, .025, .05, .1, .65, .75, .88, 1.0, 1.0};
 
     // Stored soul snapshots count toward global sequence slot limits.
     private static final String INTERNAL_UNDERWORLD_SOULS_TAG = "InternalUnderworldSouls";
@@ -65,6 +65,7 @@ public class BeyonderData {
         implementedRecipes.put("abyss", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("wheel_of_fortune", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("error", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
+        implementedRecipes.put("black_emperor", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("death", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("justiciar", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("twilight_giant", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}));
@@ -111,12 +112,14 @@ public class BeyonderData {
             "wheel_of_fortune",
             "death",
             "justiciar",
-            "twilight_giant"
+            "twilight_giant",
+            "black_emperor"
     );
 
     public static int getHighestImplementedSequence(String pathway) {
         return switch (pathway) {
             case "mother", "darkness", "fool", "wheel_of_fortune", "error", "visionary", "demoness", "red_priest", "sun", "tyrant", "door", "abyss", "death","justiciar","twilight_giant" -> 1;
+            case "black_emperor" -> 7;  
             default -> 9;
         };
     }
@@ -160,43 +163,48 @@ public class BeyonderData {
         pathwayInfos.put("moon", new PathwayInfos("moon", 0xFFf5384b, new String[]{"moon", "beauty_goddess", "life-giver", "high_summoner", "shaman_king", "scarlet_scholar", "potions_professor", "vampire", "beast_tamer", "apothecary"}, new String[]{"mother"}));
         pathwayInfos.put("abyss", new PathwayInfos("abyss", 0xFFa3070c, new String[]{"abyss", "filthy_monarch", "bloody_archduke", "blatherer", "demon", "desire_apostle", "devil", "serial_killer", "unwinged_angel", "criminal"}, new String[]{"chained"}));
         pathwayInfos.put("chained", new PathwayInfos("chained", 0xFFb18fbf, new String[]{"chained", "abomination", "ancient_bane", "disciple_of_silence", "puppet", "wraith", "zombie", "werewolf", "lunatic", "prisoner"}, new String[]{"abyss"}));
-        pathwayInfos.put("black_emperor", new PathwayInfos("black_emperor", 0xFF181040, new String[]{"black_emperor", "prince_of_abolition", "duke_of_entropy", "frenzied_mage", "ear_of_the_fallen", "mentor_of_disorder", "baron_of_corruption", "briber", "barbarian", "lawyer"}, new String[]{"justiciar"}));
+        pathwayInfos.put("black_emperor", new PathwayInfos("black_emperor", 0xFF3D2A9C, new String[]{"black_emperor", "prince_of_abolition", "duke_of_entropy", "frenzied_mage", "earl_of_the_fallen", "mentor_of_disorder", "baron_of_corruption", "briber", "barbarian", "lawyer"}, new String[]{"justiciar"}));
         pathwayInfos.put("justiciar", new PathwayInfos("justiciar", 0xFFfcd99f, new String[]{"justiciar", "hand_of_order", "balancer", "chaos_hunter", "imperative_mage", "disciplinary_paladin", "judge", "interrogator", "sheriff", "arbiter"}, new String[]{"black_emperor"}));
         pathwayInfos.put("placeholder", new PathwayInfos("placeholder", 0xFFfcd99f, new String[]{"", "", "", "", "", "", "", "", "", "",}, new String[]{}));
+        pathwayInfos.put("none", new PathwayInfos( "none", 0xFFFFFFFF, new String[]{"", "", "", "", "", "", "", "", "", "",}, new String[]{}));
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence) {
-        setBeyonder(entity, pathway, sequence, false, false, true, false, true);
+        setBeyonder(entity, pathway, sequence, false, false, true, false, true, true);
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack) {
-        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, true);
+        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, true, true);
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack, boolean resetSpirituality) {
-        if(entity.level() instanceof ServerLevel serverLevel) {
+        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, resetSpirituality, true);
+    }
+
+    public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack, boolean resetSpirituality, boolean putIntoMap) {
+        if (entity.level() instanceof ServerLevel serverLevel) {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
 
-        if(entity instanceof ServerPlayer player) {
-            if(!skipCheck && !hasSequenceSlotAvailable(player.serverLevel(), pathway, sequence)) return;
+        if (entity instanceof ServerPlayer player) {
+            if (!skipCheck && !hasSequenceSlotAvailable(player.serverLevel(), pathway, sequence)) return;
 
-            if(!BeyonderData.getPathway(player).equals(pathway)
+            if (!BeyonderData.getPathway(player).equals(pathway)
                     || BeyonderData.getSequence(player) < sequence)
                 playerMap.removeHonorificName(player);
 
-            if(clearCharStack) playerMap.clearStack(player);
-            else playerMap.setStack(player, sequence, sequence);
+
+            if (clearCharStack) playerMap.clearStack(player);
         }
 
-        if(Objects.equals(sequence, LOTMCraft.NON_BEYONDER_SEQ)
+        if (Objects.equals(sequence, LOTMCraft.NON_BEYONDER_SEQ)
                 || pathway.equals("none")) {
             clearBeyonderData(entity);
             return;
         }
 
         // resetting the miracle of resurrection attempts
-        if (pathway.equals("fool") && sequence <= 2){
+        if (pathway.equals("fool") && sequence <= 2) {
             MiracleOfResurrectionComponent miracleOfResurrectionComponent = entity.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
             miracleOfResurrectionComponent.setResurrectionAttempts(4);
         }
@@ -206,24 +214,38 @@ public class BeyonderData {
         BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
         component.setPathway(pathway);
         component.setSequence(sequence);
-        if(clearCharStack) component.clearCharacteristicStack();
-        else component.setCharacteristicStack(0, sequence);
+        if (clearCharStack) {
+            component.clearCharacteristics();
+            component.setCharacteristic(1, sequence, pathway);
+        } else {
+            int current = component.getCharacteristicList().stream()
+                    .filter(c -> c.sequence() == sequence && c.pathway().equals(pathway))
+                    .mapToInt(Characteristic::stack)
+                    .findFirst().orElse(0);
+            component.setCharacteristic(current + 1, sequence, pathway);
+        }
+
         if (resetSpirituality) component.setSpirituality(getMaxSpirituality(pathway, sequence));
         component.setDigestionProgress(0);
         component.setGriefingEnabled(griefing);
 
         BeyonderDataTickHandler.invalidateCache(entity);
 
-        if(clearPathwayHistory) {
+        recalculateCharStackModifiers(entity);
+
+        if (clearPathwayHistory) {
             component.setPathwayHistory(new String[10]);
+            for (int i = sequence; i < 10; i++) {
+                component.getPathwayHistory()[i] = pathway;
+            }
         }
-        if(addToPathwayHistory) {
+        if (addToPathwayHistory) {
             component.getPathwayHistory()[sequence] = pathway;
         }
         UniquenessComponent uniquenessComponent = entity.getData(ModAttachments.UNIQUENESS_COMPONENT);
         uniquenessComponent.setHasUniqueness(false);
         uniquenessComponent.resetKillCount();
-        if(entity instanceof ServerPlayer serverPlayer) PacketHandler.syncUniquenessToPlayer(serverPlayer);
+        if (entity instanceof ServerPlayer serverPlayer) PacketHandler.syncUniquenessToPlayer(serverPlayer);
 
         LuckComponent luckComponent = entity.getData(ModAttachments.LUCK_COMPONENT);
         luckComponent.setLuck(0);
@@ -233,11 +255,13 @@ public class BeyonderData {
 
             callPassiveEffectsOnAdd(entity, serverLevel);
 
-            if(entity instanceof ServerPlayer serverPlayer) {
+            if (entity instanceof ServerPlayer serverPlayer) {
                 PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
-                playerMap.put(serverPlayer);
 
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicStack());
+                if (putIntoMap)
+                    playerMap.put(serverPlayer);
+
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicList());
                 PacketHandler.sendToAllPlayers(packet);
 
                 // Disband team if the leader is no longer eligible (Red Priest seq <= 3).
@@ -247,13 +271,13 @@ public class BeyonderData {
                 if (teamComp.memberCount() > 0 && !TeamUtils.isEligibleLeader(serverPlayer)) {
                     TeamUtils.disbandTeam(serverPlayer, serverPlayer.getServer());
                 }
-            }
-            else {
+            } else {
                 PacketHandler.syncBeyonderDataToEntity(entity);
             }
         }
-
     }
+
+
 
     public static boolean hasSequenceSlotAvailable(ServerLevel level, String pathway, int sequence) {
         return hasSequenceSlotAvailableWithAdjustment(level, pathway, sequence, -1, 0);
@@ -265,55 +289,35 @@ public class BeyonderData {
         if (sequence < 0 || sequence > 8) return true;
         if (playerMap == null) return true;
 
-        // Global counts include players, stored souls, active summoned souls, and marionettes owned by players.
-        int[] marionetteCounts = countActiveMarionettesBySequence(level, pathway);
-        int seq0 = playerMap.count(pathway, 0) + countStoredSouls(level, pathway, 0) + InternalUnderworldAbility.countActiveSouls(pathway, 0) + marionetteCounts[0];
-        int seq1 = playerMap.count(pathway, 1) + countStoredSouls(level, pathway, 1) + InternalUnderworldAbility.countActiveSouls(pathway, 1) + marionetteCounts[1];
-        int seq2 = playerMap.count(pathway, 2) + countStoredSouls(level, pathway, 2) + InternalUnderworldAbility.countActiveSouls(pathway, 2) + marionetteCounts[2];
-        int seq3 = playerMap.count(pathway, 3) + countStoredSouls(level, pathway, 3) + InternalUnderworldAbility.countActiveSouls(pathway, 3) + marionetteCounts[3];
-        int seq4 = playerMap.count(pathway, 4) + countStoredSouls(level, pathway, 4) + InternalUnderworldAbility.countActiveSouls(pathway, 4) + marionetteCounts[4];
-        int seq5 = playerMap.count(pathway, 5) + countStoredSouls(level, pathway, 5) + InternalUnderworldAbility.countActiveSouls(pathway, 5) + marionetteCounts[5];
-        int seq6 = playerMap.count(pathway, 6) + countStoredSouls(level, pathway, 6) + InternalUnderworldAbility.countActiveSouls(pathway, 6) + marionetteCounts[6];
-        int seq7 = playerMap.count(pathway, 7) + countStoredSouls(level, pathway, 7) + InternalUnderworldAbility.countActiveSouls(pathway, 7) + marionetteCounts[7];
-        int seq8 = playerMap.count(pathway, 8) + countStoredSouls(level, pathway, 8) + InternalUnderworldAbility.countActiveSouls(pathway, 8) + marionetteCounts[8];
-
-        if (adjustAmount != 0) {
-            switch (adjustSequence) {
-                case 0 -> seq0 += adjustAmount;
-                case 1 -> seq1 += adjustAmount;
-                case 2 -> seq2 += adjustAmount;
-                case 3 -> seq3 += adjustAmount;
-                case 4 -> seq4 += adjustAmount;
-                case 5 -> seq5 += adjustAmount;
-                case 6 -> seq6 += adjustAmount;
-                case 7 -> seq7 += adjustAmount;
-                case 8 -> seq8 += adjustAmount;
-            }
+        int count = countTotalSequence(level, pathway, sequence);
+        if (adjustAmount != 0 && adjustSequence == sequence) {
+            count += adjustAmount;
         }
 
-        switch (sequence) {
-            case 0:
-                return seq0 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT);
-            case 1:
-                return seq0 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)
-                        && seq1 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_1_AMOUNT);
-            case 2:
-                return seq2 + seq1 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_2_AMOUNT);
-            case 3:
-                return seq3 + seq2 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_3_AMOUNT);
-            case 4:
-                return seq4 + seq3 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_4_AMOUNT);
-            case 5:
-                return seq5 + seq4 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_5_AMOUNT);
-            case 6:
-                return seq6 + seq5 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_6_AMOUNT);
-            case 7:
-                return seq7 + seq6 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_7_AMOUNT);
-            case 8:
-                return seq8 + seq7 < level.getServer().getGameRules().getInt(ModGameRules.SEQ_8_AMOUNT);
-            default:
-                return true;
+        int limit = switch (sequence) {
+            case 0 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT);
+            case 1 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_1_AMOUNT);
+            case 2 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_2_AMOUNT);
+            case 3 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_3_AMOUNT);
+            case 4 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_4_AMOUNT);
+            case 5 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_5_AMOUNT);
+            case 6 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_6_AMOUNT);
+            case 7 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_7_AMOUNT);
+            case 8 -> level.getServer().getGameRules().getInt(ModGameRules.SEQ_8_AMOUNT);
+            default -> Integer.MAX_VALUE;
+        };
+
+        if (count >= limit) return false;
+
+        // Additional lore-based constraints
+        if (sequence == 1) {
+            // Cannot become Sequence 1 if a Sequence 0 already exists
+            int seq0 = countTotalSequence(level, pathway, 0);
+            if (adjustAmount != 0 && adjustSequence == 0) seq0 += adjustAmount;
+            if (seq0 >= level.getServer().getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)) return false;
         }
+
+        return true;
     }
 
     private static int countStoredSouls(ServerLevel level, String pathway, int sequence) {
@@ -451,6 +455,33 @@ public class BeyonderData {
 
     public static int getSequence(LivingEntity entity) {
         return getSequence(entity, false);
+    }
+
+    public static int getSequence(LivingEntity entity, String pathway) {
+        if (entity == null) return LOTMCraft.NON_BEYONDER_SEQ;
+        if (pathway == null || pathway.equals("none")) return getSequence(entity);
+        
+        return getCharList(entity).stream()
+                .filter(c -> c.pathway().equals(pathway))
+                .mapToInt(Characteristic::sequence)
+                .min()
+                .orElse(LOTMCraft.NON_BEYONDER_SEQ);
+    }
+
+    public static int getHighestSequence(LivingEntity entity) {
+        if (entity.level().isClientSide) {
+            return ClientBeyonderCache.getHighestSequence(entity.getUUID()); // Client cache should already have highest if we sync it correctly
+        }
+        var data = playerMap.get(entity);
+        return data.map(StoredData::getHighestSequence).orElse(10);
+    }
+
+    public static String getHighestPathway(LivingEntity entity) {
+        if (entity.level().isClientSide) {
+            return ClientBeyonderCache.getHighestPathway(entity.getUUID());
+        }
+        var data = playerMap.get(entity);
+        return data.map(StoredData::getHighestPathway).orElse("none");
     }
 
     public static int getSequence(LivingEntity entity, boolean returnTrueMarionetteLvl) {
@@ -647,7 +678,7 @@ public class BeyonderData {
         if (!entity.level().isClientSide()) {
             if(entity instanceof ServerPlayer serverPlayer) {
                 // Send empty data to clear client cache
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", 10, 0.0f, false, 0.0f, new String[10], new int[10]);
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", 10, 0.0f, false, 0.0f, new String[10], new ArrayList<>());
                 PacketHandler.sendToPlayer(serverPlayer, packet);
             }
             else {
@@ -659,18 +690,8 @@ public class BeyonderData {
     }
 
     public static boolean isBeyonder(LivingEntity entity) {
-        if (entity.level().isClientSide) {
-            return ClientBeyonderCache.isBeyonder(entity.getUUID());
-        }
-
-        BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
-        String pathway = component.getPathway();
-        int sequence = component.getSequence();
-
-        return pathway != null                                 &&
-                !pathway.equalsIgnoreCase("none") &&
-                !pathway.isBlank()                             &&
-                sequence != LOTMCraft.NON_BEYONDER_SEQ;
+        if (entity == null) return false;
+        return getHighestSequence(entity) < LOTMCraft.NON_BEYONDER_SEQ;
     }
 
     public static void addModifier(LivingEntity entity, String id, double modifier) {
@@ -718,22 +739,26 @@ public class BeyonderData {
         return player.getData(ModAttachments.BEYONDER_COMPONENT).getDigestionProgress();
     }
 
-    public static int getCharStack(LivingEntity entity, int sequence) {
+    public static int getCharacteristicCount(LivingEntity entity, int sequence) {
         if(entity.level().isClientSide) {
-            return ClientBeyonderCache.getCharStack(entity.getUUID());
+            return ClientBeyonderCache.getCharacteristicCount(entity.getUUID());
         }
 
-        if(sequence > 9 || sequence < 1) return 0;
+        if(sequence > 9 || sequence < 0) return 0;
 
-        return entity.getData(ModAttachments.BEYONDER_COMPONENT).getCharacteristicStack()[sequence];
+        return entity.getData(ModAttachments.BEYONDER_COMPONENT).getCharacteristicList().stream()
+                .filter(c -> c.sequence() == sequence)
+                .mapToInt(Characteristic::stack)
+                .sum();
     }
 
-    public static int[] getCharStacks(LivingEntity entity) {
+
+    public static ArrayList<Characteristic> getCharList(LivingEntity entity) {
         if(entity.level().isClientSide) {
-            return ClientBeyonderCache.getCharStacks(entity.getUUID());
+            return ClientBeyonderCache.getCharList(entity.getUUID());
         }
 
-        return entity.getData(ModAttachments.BEYONDER_COMPONENT).getCharacteristicStack();
+        return entity.getData(ModAttachments.BEYONDER_COMPONENT).getCharacteristicList();
     }
 
     public static void setSpirituality(LivingEntity entity, float spirituality) {
@@ -778,16 +803,14 @@ public class BeyonderData {
         }
     }
 
-    public static int getCurrentCharStack(LivingEntity entity) {
+    public static int getCurrentCharacteristicCount(LivingEntity entity) {
         if(entity.level().isClientSide) {
-            return ClientBeyonderCache.getCharStack(entity.getUUID());
+            return ClientBeyonderCache.getCharacteristicCount(entity.getUUID());
         }
 
         int sequence = getSequence(entity);
 
-        if(sequence > 9 || sequence < 1) return 0;
-
-        return entity.getData(ModAttachments.BEYONDER_COMPONENT).getCharacteristicStack()[sequence];
+        return getCharacteristicCount(entity, sequence);
     }
 
     public static String[] getPathwayHistory(LivingEntity entity) {
@@ -864,24 +887,26 @@ public class BeyonderData {
         }
     }
 
-    public static void addCharStack(LivingEntity player, int sequence) {
-        if (!isBeyonder(player)) return;
-
-        playerMap.addStack(player, 1, sequence);
+    public static void addCharacteristic(LivingEntity player, int sequence, String pathway) {
+        playerMap.addStack(player, 1, sequence, pathway);
         BeyonderComponent component = player.getData(ModAttachments.BEYONDER_COMPONENT);
-        component.setCharacteristicStack(component.getCharacteristicStack()[sequence] + 1, sequence);
+        int currentPathwayStack = component.getCharacteristicList().stream()
+                .filter(c -> c.sequence() == sequence && c.pathway().equals(pathway))
+                .mapToInt(Characteristic::stack)
+                .findFirst().orElse(0);
+        component.setCharacteristic(currentPathwayStack + 1, sequence, pathway);
         component.setDigestionProgress(0);
 
         recalculateCharStackModifiers(player);
         if (player instanceof ServerPlayer sp) PacketHandler.syncBeyonderDataToPlayer(sp);
     }
 
-    public static void setCharStack(LivingEntity player, int value, int sequence, boolean ignoreDigestion) {
+    public static void setCharacteristic(LivingEntity player, int value, int sequence, boolean ignoreDigestion, String pathway) {
         if (!isBeyonder(player)) return;
 
-        playerMap.setStack(player, value, sequence);
+        playerMap.setStack(player, value, sequence, pathway);
         BeyonderComponent component = player.getData(ModAttachments.BEYONDER_COMPONENT);
-        component.setCharacteristicStack(value, sequence);
+        component.setCharacteristic(value, sequence, pathway);
 
         if (!ignoreDigestion)
             component.setDigestionProgress(0);
@@ -890,12 +915,12 @@ public class BeyonderData {
         if (player instanceof ServerPlayer sp) PacketHandler.syncBeyonderDataToPlayer(sp);
     }
 
-    public static void clearCharStack(LivingEntity player) {
+    public static void clearCharacteristics(LivingEntity player) {
         if (!isBeyonder(player)) return;
 
         playerMap.clearStack(player);
         BeyonderComponent component = player.getData(ModAttachments.BEYONDER_COMPONENT);
-        component.clearCharacteristicStack();
+        component.clearCharacteristics();
 
         recalculateCharStackModifiers(player);
         if (player instanceof ServerPlayer sp) PacketHandler.syncBeyonderDataToPlayer(sp);
@@ -909,14 +934,27 @@ public class BeyonderData {
         // Remove any previously applied boost
         removeModifier(player, CHAR_STACK_BOOST_ID);
 
-        int seq    = getSequence(player);
-        int[] stacks = player.getData(ModAttachments.BEYONDER_COMPONENT).getCharacteristicStack();
+        int sequence = getSequence(player);
+        String mainPathway = getPathway(player);
+
+        Map<Integer, Integer> extraStacks = new HashMap<>();
+        for (Characteristic c : getCharList(player)) {
+            int seq = c.sequence();
+            int count = c.stack() - 1;
+
+
+
+            if (count > 0) {
+                extraStacks.put(seq, extraStacks.getOrDefault(seq, 0) + count);
+            }
+        }
 
         for(int i = 0; i <= 9; i++) {
             removeModifier(player, CHAR_STACK_BOOST_ID + "_" + i);
 
-            if(stacks[i] > 0) {
-                addModifier(player, CHAR_STACK_BOOST_ID + "_" + i, getDamageBoostByCharStack(i, stacks[i]));
+            int extras = extraStacks.getOrDefault(i, 0);
+            if(extras > 0) {
+                addModifier(player, CHAR_STACK_BOOST_ID + "_" + i, getDamageBoostByCharStack(i, extras));
             }
         }
     }
@@ -931,7 +969,7 @@ public class BeyonderData {
             case 4 -> 1.03f;
             case 3 -> 1.15f;
             case 2 -> 1.25f;
-            case 1 -> 1.0f + (float) stacks/7 ;
+            case 1 -> (1.0f + (float) stacks/7) ;
             default -> 0.0f;
         };
     }

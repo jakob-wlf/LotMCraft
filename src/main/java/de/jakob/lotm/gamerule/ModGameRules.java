@@ -17,6 +17,9 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_ARTIFACTS_WITH_NO_NEGATIVES;
     public static GameRules.Key<GameRules.IntegerValue> CHARSTACK_REQUIRED_FOR_APOTHEOSIS;
     public static GameRules.Key<GameRules.IntegerValue> UNIQUENESS_SPAWN_LIKELIHOOD;
+    public static GameRules.Key<GameRules.BooleanValue> SEQUENCE_DIMENSION_LOCK;
+    public static GameRules.Key<GameRules.BooleanValue> LOOSE_CHAR_ON_REGRESSION;
+    public static GameRules.Key<GameRules.BooleanValue> ALLOW_TOTEMS;
 
     public static GameRules.Key<GameRules.IntegerValue> MAX_ALLY_COUNT;
 
@@ -31,10 +34,23 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.IntegerValue> SEQ_8_AMOUNT;
 
     public static void register() {
+
+        ALLOW_TOTEMS = GameRules.register(
+          "allowTotems",
+          GameRules.Category.MISC,
+          GameRules.BooleanValue.create(false)
+        );
+
         ALLOW_GRIEFING = GameRules.register(
             "allowAbilityGriefing",
             GameRules.Category.MISC,
             GameRules.BooleanValue.create(true)
+        );
+
+        LOOSE_CHAR_ON_REGRESSION= GameRules.register(
+                "looseCharStackOnRegression",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(false)
         );
 
         DISABLE_FLIGHT_IN_COMBAT = GameRules.register(
@@ -49,6 +65,12 @@ public class ModGameRules {
                 GameRules.BooleanValue.create(true, (server, value) -> {
                     PacketHandler.sendToAllPlayers(new SyncGriefingGamerulePacket(value.get()));
                 })
+        );
+
+        SEQUENCE_DIMENSION_LOCK = GameRules.register(
+                "sequenceDimensionLock",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(false)
         );
 
         CHARSTACK_REQUIRED_FOR_APOTHEOSIS = GameRules.register(

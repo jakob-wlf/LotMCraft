@@ -2,7 +2,6 @@ package de.jakob.lotm.util.helper;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -98,7 +97,7 @@ public class AdvancementUtil {
 
         float digestionProgress = entity instanceof Player p ? BeyonderData.getDigestionProgress(p) : 0f;
         int difference = Math.abs(prevSequence - sequence);
-        double failureChance = calculateFailureChance(difference, digestionProgress, sanity);
+        double failureChance = difference >= 2? 1.0f : calculateFailureChance(difference, digestionProgress, sanity);
         if (BeyonderData.hasSwitchedPathway(entity)) failureChance = Math.min(1.0, failureChance + 0.1);
 
         if(prevSequence == sequence) {
@@ -116,8 +115,8 @@ public class AdvancementUtil {
 
     private static void advancePathwaySwitch(LivingEntity entity, String pathway, int sequence,
                                              String prevPathway, int prevSequence) {
-        boolean isSameDomainSwitch = sequence == 4 && prevSequence == 5 && sameDomain(prevPathway, pathway);
-        double failureChance = isSameDomainSwitch ? 0.0 : 1.0;
+        boolean isSameDomainSwitch = prevSequence <= 5 && sequence == (prevSequence - 1) && sameDomain(prevPathway, pathway);
+        double failureChance = isSameDomainSwitch && !hasSwitchedPathway(entity) ? 0.0 : 1.0;
 
         Runnable onSuccess = isSameDomainSwitch
                 ? () -> playerMap.recordPathwaySwitch(entity, prevSequence, prevPathway)
@@ -145,7 +144,7 @@ public class AdvancementUtil {
         ServerScheduler.scheduleDelayed(finalDuration, () -> {
             if (!activeAdvancements.containsKey(entity.getUUID())) return;
             activeAdvancements.remove(entity.getUUID());
-            BeyonderData.addCharStack(entity, 1);
+            BeyonderData.addCharacteristic(entity, finalSequence, finalPathway);
             sendThirdPersonPacket(entity);
         });
     }

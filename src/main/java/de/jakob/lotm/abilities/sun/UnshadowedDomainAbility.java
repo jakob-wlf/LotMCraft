@@ -31,8 +31,6 @@ public class UnshadowedDomainAbility extends Ability {
         super(id, 50, "purification", "purification_holy", "light_source", "light_strong", "light_weak");
         interactionRadius = 40;
         interactionCacheTicks = 20 * 30;
-        canBeCopied = false;
-        canBeReplicated = false;
     }
 
     @Override

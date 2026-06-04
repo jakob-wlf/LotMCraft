@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.abilities.darkness.NightmareAbility;
+import de.jakob.lotm.util.ClientCorrosionFovCache;
 import de.jakob.lotm.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.fluid.ModFluidTypes;
@@ -212,5 +213,13 @@ public class ClientEvents {
         if (!(event.getScreen() instanceof InventoryScreen)) return;
 
         PacketHandler.sendToServer(new InventoryOpenedPacket());
+    }
+
+    @SubscribeEvent
+    public static void onComputeFov(ViewportEvent.ComputeFov event) {
+        float multiplier = ClientCorrosionFovCache.getFovMultiplier();
+        if (multiplier != 1.0f) {
+            event.setFOV(event.getFOV() * multiplier);
+        }
     }
 }

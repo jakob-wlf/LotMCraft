@@ -33,6 +33,8 @@ public class EnvisionPositionAbility extends SelectableAbility {
         canBeUsedInArtifact = false;
         canBeReplicated = false;
         canBeUsedByNPC = false;
+        cannotBeStolen = true;
+        canBeShared = false;
     }
 
     @Override

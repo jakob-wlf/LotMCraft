@@ -15,8 +15,10 @@ public class DivineKingdomManifestationAbility extends Ability {
     public DivineKingdomManifestationAbility(String id) {
         super(id, 20 * 60*2, "purification", "light_source", "light_strong", "light_weak", "purification_holy");
         canBeCopied = false;
-        canBeUsedByNPC = false;
         canBeReplicated = false;
+        canBeShared = false;
+        cannotBeStolen = true;
+        canBeUsedInArtifact = false;
         canBeShared = false;
     }
 

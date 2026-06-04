@@ -24,7 +24,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MisfortuneGiftingAbility extends Ability {
     public MisfortuneGiftingAbility(String id) {
         super(id, 5);
-        canBeCopied = false;
     }
 
     @Override

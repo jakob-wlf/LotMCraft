@@ -1,11 +1,13 @@
 package de.jakob.lotm.entity.custom.uniqueness;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.UniquenessComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -112,11 +114,15 @@ public class UniquenessEntity extends Entity {
     private void handleEntityContact(LivingEntity entity, String pathway) {
         if (!(level() instanceof ServerLevel serverLevel)) return;
 
-        int seq = BeyonderData.getSequence(entity);
-        String entityPathway = BeyonderData.getPathway(entity);
-
+        int seq = BeyonderData.getCharList(entity).stream()
+                .filter(c -> c.pathway().equalsIgnoreCase(pathway))
+                .mapToInt(Characteristic::sequence)
+                .max()
+                .orElse(-1);
+        boolean hasPathway = BeyonderData.getCharList(entity).stream().anyMatch(c -> c.pathway().equalsIgnoreCase(pathway));
+        LOTMCraft.LOGGER.info("Entity {} matches, {}: {}", hasPathway, pathway, seq);
         // Sequence 1 of the matching pathway picks up the uniqueness
-        if (seq == 1 && entityPathway.equalsIgnoreCase(pathway) && entity instanceof Player player) {
+        if (seq == 1 && hasPathway && entity instanceof Player player) {
             pickUp(player, pathway, serverLevel);
             return;
         }
@@ -225,9 +231,9 @@ public class UniquenessEntity extends Entity {
                 : 0xFFFFFF;
 
         for (ServerPlayer player : level.players()) {
-            String pPathway = BeyonderData.getPathway(player);
+            boolean hasPath = BeyonderData.getCharList(player).stream().anyMatch(c -> c.pathway().equalsIgnoreCase(pathway) && c.sequence() >= 2);
             int pSeq = BeyonderData.getSequence(player);
-            if (pPathway.equalsIgnoreCase(pathway) && pSeq <= 2) {
+            if (hasPath && pSeq <= 2) {
                 player.displayClientMessage(
                         Component.translatable("lotm.uniqueness.spawned").withColor(color),
                         false

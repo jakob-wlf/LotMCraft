@@ -16,8 +16,8 @@ public class NationOfTheDeadEffect extends ActiveEffect {
 
     private static final int WISP_COUNT   = 180;
     private static final int TENDRIL_COUNT = 72;
-    private static final int MOTE_COUNT   = 120;
-    private static final int RING_SEGS    = 128;
+    private static final int MOTE_COUNT   = 600;
+    private static final int RING_SEGS    = 70;
     private static final float RADIUS     = 35f;
 
     private final RandomSource rng = RandomSource.create();
@@ -48,7 +48,7 @@ public class NationOfTheDeadEffect extends ActiveEffect {
     private final int duration;
 
     public NationOfTheDeadEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 101);
+        super(x, y, z, 20 * 106);
         this.duration = 20 * 101;
         bake();
     }
@@ -242,7 +242,7 @@ public class NationOfTheDeadEffect extends ActiveEffect {
     private void renderDomainSurface(Matrix4f m, float age, float fade) {
         int latBands = 18, lonBands = 36;
         float pulse  = 0.5f + 0.5f * Mth.sin(age * 0.04f);
-        float alpha  = fade * (0.045f + pulse * 0.020f);
+        float alpha  = fade * (0.65f + pulse * 0.15f);
 
         BufferBuilder buf = Tesselator.getInstance()
                 .begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);

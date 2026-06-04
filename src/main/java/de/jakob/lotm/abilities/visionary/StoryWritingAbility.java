@@ -36,6 +36,7 @@ public class StoryWritingAbility extends ToggleAbility {
         cannotBeStolen = true;
         autoClear = false;
         canBeShared = false;
+        canBeUsedInArtifact = false;
     }
 
     @Override

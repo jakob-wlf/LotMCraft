@@ -59,7 +59,10 @@ public class ApotheosisTickHandler {
 
         component.setApotheosisTicksLeftAndSync(component.getApotheosisTicksLeft() - 1, (ServerLevel) player.level(), player);
         if(component.getApotheosisTicksLeft() == 0) {
-            BeyonderData.setBeyonder(player, BeyonderData.getPathway(player), 0);
+            if(BeyonderData.getSequence(player) == 1)
+                BeyonderData.setBeyonder(player, BeyonderData.getPathway(player), 0);
+            else
+                BeyonderData.addCharacteristic(player,0,component.getPathway());
 
             UniquenessComponent comp = player.getData(ModAttachments.UNIQUENESS_COMPONENT);
 

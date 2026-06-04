@@ -24,6 +24,7 @@ public class WaypointAbility extends SelectableAbility {
         canBeUsedByNPC = false;
         canBeReplicated = false;
         canBeShared = false;
+        cannotBeStolen = true;
     }
 
     @Override

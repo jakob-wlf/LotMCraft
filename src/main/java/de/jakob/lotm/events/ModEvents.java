@@ -312,7 +312,8 @@ public class ModEvents {
         }
     }
 
-    @SubscribeEvent
+    // --- WTF, why? That is way too op
+/*    @SubscribeEvent
     public static void onServerChat(ServerChatEvent event) {
         if (!event.getMessage().getString().equalsIgnoreCase("LEODERO!")) return;
 
@@ -335,5 +336,5 @@ public class ModEvents {
             }, serverLevel);
 
         }
-    }
+    }*/
 }
