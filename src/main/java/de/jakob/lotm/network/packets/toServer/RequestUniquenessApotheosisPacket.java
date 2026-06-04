@@ -57,7 +57,7 @@ public record RequestUniquenessApotheosisPacket() implements CustomPacketPayload
         }
 
         String pathway = comp.getUniquenessPathway();
-        if (pathway.isEmpty() || !(BeyonderData.getCharList(player).stream().filter(c -> c.pathway().equalsIgnoreCase(pathway)).mapToInt(Characteristic::sequence).max().orElse(-1) ==1)){
+        if (pathway.isEmpty() || !(BeyonderData.getCharList(player).stream().filter(c -> c.pathway().equalsIgnoreCase(pathway)).mapToInt(Characteristic::sequence).min().orElse(-1) ==1)){
             player.displayClientMessage(
                     Component.translatable("lotm.uniqueness.fail"),
                     true
