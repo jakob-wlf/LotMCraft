@@ -780,6 +780,11 @@ public class PacketHandler {
                 ReturnToMainBodyPacket::handle);
 
         registrar.playToServer(
+                StopDiscernmentPacket.TYPE,
+                StopDiscernmentPacket.STREAM_CODEC,
+                StopDiscernmentPacket::handle);
+
+        registrar.playToServer(
                 OpenArtifactWheelPacket.TYPE,
                 OpenArtifactWheelPacket.STREAM_CODEC,
                 OpenArtifactWheelPacket::handle);

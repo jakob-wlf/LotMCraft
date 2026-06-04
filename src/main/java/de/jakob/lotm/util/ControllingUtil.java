@@ -163,9 +163,15 @@ public class ControllingUtil {
                     ArrayList<Characteristic> charList = BeyonderData.getCharList(player);
                     int charSeq = charList.stream().mapToInt(c -> c.sequence()).max().orElse(-1);
                     String charPath = charList.stream().filter(c -> c.sequence() == charSeq).findFirst().map(c -> c.pathway()).orElse("");
-                    BeyonderData.setBeyonder(player, charPath, charSeq, false, false, false, false, false, true);
-                    LOTMCraft.LOGGER.info("Patched Beyonder data for target {}: pathway={}, sequence={}, digestionProgress={}, characteristicList={}",
-                            player.getDisplayName().getString(), charPath, charSeq, BeyonderData.getDigestionProgress(player), characteristicListTag);
+                    LOTMCraft.LOGGER.info("reset: patching saved target tag with player Beyonder state: player={} uuid={} currentPathway={} currentSequence={} charCount={}",
+                            player.getDisplayName().getString(), player.getUUID(), currentPathway, currentSequence, charList.size());
+                    // Normalize values: if no characteristics found, treat as non-beyonder to avoid negative sequence indices
+                    int normalizedSeq = charSeq < 0 ? de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ : charSeq;
+                    String normalizedPath = (charPath == null || charPath.isEmpty()) ? "none" : charPath;
+                    // Avoid mutating the global PlayerMap during this patch operation; putIntoMap=false
+                    BeyonderData.setBeyonder(player, normalizedPath, normalizedSeq, false, false, false, false, false, false);
+                    LOTMCraft.LOGGER.info("Patched Beyonder data for player {}: pathway={}, sequence={}, digestionProgress={}, characteristicListSize={}",
+                            player.getDisplayName().getString(), normalizedPath, normalizedSeq, BeyonderData.getDigestionProgress(player), characteristicListTag.size());
                 }
             }
         }
@@ -200,13 +206,13 @@ public class ControllingUtil {
             // copy wheel abilities
             AbilityWheelComponent sourceWheelData = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
             AbilityWheelComponent targetWheelData = targetEntity.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
-            targetWheelData.setAbilities(sourceWheelData.getAbilities());
+            targetWheelData.setAbilities(new ArrayList<>(sourceWheelData.getAbilities()));
             AbilityWheelHelper.syncToClient(player);
 
             // copy bar abilities
             AbilityBarComponent sourceBarData = player.getData(ModAttachments.ABILITY_BAR_COMPONENT);
             AbilityBarComponent targetBarData = targetEntity.getData(ModAttachments.ABILITY_BAR_COMPONENT);
-            targetBarData.setAbilities(sourceBarData.getAbilities());
+            targetBarData.setAbilities(new ArrayList<>(sourceBarData.getAbilities()));
 
             // preserve the targets health
             if (targetEntity instanceof LivingEntity target) {
@@ -314,7 +320,7 @@ public class ControllingUtil {
         // copy wheel abilities
         AbilityWheelComponent sourceWheelData = source.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
         AbilityWheelComponent targetWheelData = target.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
-        targetWheelData.setAbilities(sourceWheelData.getAbilities());
+        targetWheelData.setAbilities(new ArrayList<>(sourceWheelData.getAbilities()));
         if (target instanceof ServerPlayer player) {
             AbilityWheelHelper.syncToClient(player);
         }
@@ -322,13 +328,24 @@ public class ControllingUtil {
         // copy bar abilities
         AbilityBarComponent sourceBarData = source.getData(ModAttachments.ABILITY_BAR_COMPONENT);
         AbilityBarComponent targetBarData = target.getData(ModAttachments.ABILITY_BAR_COMPONENT);
-        targetBarData.setAbilities(sourceBarData.getAbilities());
+        targetBarData.setAbilities(new ArrayList<>(sourceBarData.getAbilities()));
 
         if (BeyonderData.isBeyonder(source) || BeyonderData.isBeyonder(target)) {
-            BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source),false, false, false, false, false);
+            LOTMCraft.LOGGER.info("copyData: copying Beyonder from {} ({}) to {} ({})", source.getDisplayName().getString(), source.getUUID(), target.getDisplayName().getString(), target.getUUID());
+
+            // Set the pathway/sequence/etc using the standard setter to keep PlayerMap and passive effects consistent
+            // Avoid mutating PlayerMap during transient copies: set putIntoMap=false so the global map is only updated when players are restored
+            BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source), false, false, false, false, false, false);
+
+            // Build a defensive deep-copy of the characteristic list and set it in one operation to avoid
+            // repeated setCharacteristic calls which can cause intermediate PlayerMap or packet sync side-effects.
+            ArrayList<Characteristic> charCopy = new ArrayList<>();
             for (Characteristic characteristic : BeyonderData.getCharList(source)) {
-                BeyonderData.setCharacteristic(target, characteristic.stack(), characteristic.sequence(), true, characteristic.pathway());
+                charCopy.add(new Characteristic(characteristic.pathway(), characteristic.stack(), characteristic.sequence()));
             }
+            target.getData(ModAttachments.BEYONDER_COMPONENT).setCharacteristicList(charCopy);
+
+            // Sync digestion/griefing for players
             if (source instanceof Player sourcePlayer && target instanceof Player targetPlayer) {
                 BeyonderData.digest(targetPlayer, BeyonderData.getDigestionProgress(sourcePlayer), false);
                 BeyonderData.setGriefingEnabled(targetPlayer, BeyonderData.isGriefingEnabled(sourcePlayer));
