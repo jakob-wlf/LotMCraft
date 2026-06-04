@@ -42,7 +42,7 @@ public class ClientBeyonderCache {
         int seq = data.charList().stream()
                 .filter(c -> c.pathway().equalsIgnoreCase(pathway))
                 .mapToInt(Characteristic::sequence)
-                .max()
+                .min()
                 .orElse(-1);
         if (seq < 0 || seq >= 11) return 0;
 

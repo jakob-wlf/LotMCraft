@@ -370,6 +370,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             boolean canApotheosize = false;
             if (this.minecraft != null && this.minecraft.player != null) {
                 int charStack = ClientBeyonderCache.getCharacteristicCount(this.minecraft.player.getUUID(), ClientUniquenessCache.getPathway());
+                LOTMCraft.LOGGER.info("Apotheosis button: charStack={}", charStack);
                 canApotheosize = ClientUniquenessCache.getKillCount() >= RequestUniquenessApotheosisPacket.KILLS_REQUIRED_FOR_APOTHEOSIS && charStack >= 2;
             }
             final boolean finalCanApotheosize = canApotheosize;
