@@ -125,6 +125,11 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
         Map<EnhancementType, Integer> enhancementMap = new HashMap<>();
 
         for (PhysicalEnhancement enhancement : currentEnhancements) {
+            if(enhancement.type.equals(EnhancementType.SPEED)){
+                if(this.getPathwayName() != BeyonderData.getPathway(entity)){
+                    continue;
+                }
+            }
             applyEnhancement(entity, enhancement);
             enhancementMap.put(enhancement.getType(), enhancement.getLevel());
         }
@@ -157,7 +162,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
                     .filter(c -> c.pathway().equals(myPathway) && c.sequence() == s)
                     .mapToInt(c -> Math.max(0, c.stack() - 1))
                     .sum();
-            buff *=  ((stacks*4f)/(stacks+17f) + 1);
+            buff *=  ((stacks*4f)/(stacks+18f) + 1);
             switch (i){
                 case 8 -> result += buff;
                 case 7 -> result += buff * 2;
