@@ -18,6 +18,8 @@ public class ClientData {
     // Sefirot Authority: available and unlocked cross-path ability IDs
     private static List<String> sefirotAvailableAbilityIds = new ArrayList<>();
     private static List<String> sefirotUnlockedAbilityIds  = new ArrayList<>();
+    /** True when the player owns any sefirot (even those with no cross-path neighbours). */
+    private static boolean ownsSefirot = false;
 
     public static List<String> getSefirotAvailableAbilityIds() {
         return Collections.unmodifiableList(sefirotAvailableAbilityIds);
@@ -33,6 +35,14 @@ public class ClientData {
 
     public static void setSefirotUnlockedAbilityIds(List<String> ids) {
         sefirotUnlockedAbilityIds = new ArrayList<>(ids);
+    }
+
+    public static boolean isOwningSefirot() {
+        return ownsSefirot;
+    }
+
+    public static void setOwnsSefirot(boolean owns) {
+        ownsSefirot = owns;
     }
 
     public static List<String> getSharedWheelAbilities() {

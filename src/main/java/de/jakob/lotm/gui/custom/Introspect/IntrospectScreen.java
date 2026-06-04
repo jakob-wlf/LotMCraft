@@ -155,7 +155,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
 
         // Add the sefirot_authority_ability itself when the player owns a sefirot
-        if (!de.jakob.lotm.util.data.ClientData.getSefirotAvailableAbilityIds().isEmpty()) {
+        if (de.jakob.lotm.util.data.ClientData.isOwningSefirot()) {
             Ability sefirotAuth = LOTMCraft.abilityHandler.getById("sefirot_authority_ability");
             if (sefirotAuth != null) availableAbilities.add(sefirotAuth);
         }
@@ -490,6 +490,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     public void updateKillCount(int killCount) {
         this.killCount = killCount;
+    }
+
+    public void refreshAvailableAbilities() {
+        initializeAbilities();
     }
 
     public void updateMenuData(int sequence, String pathway, float digestionProgress, float sanity) {

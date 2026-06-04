@@ -3,6 +3,7 @@ package de.jakob.lotm.artifacts;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.potions.PotionItemHandler;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
@@ -21,6 +22,15 @@ public class SealedArtifactAnvilRecipe {
     public static void onAnvilUpdate(AnvilUpdateEvent event) {
         ItemStack left = event.getLeft();
         ItemStack right = event.getRight();
+
+        // Sealed bottle recipe: empty bottle + any door characteristic → sealed bottle
+        if (left.is(PotionItemHandler.EMPTY_BOTTLE.get())
+                && right.getItem() instanceof BeyonderCharacteristicItem characteristic
+                && "door".equals(characteristic.getPathway())) {
+            event.setOutput(new ItemStack(ModItems.SEALED_BOTTLE.get()));
+            event.setCost(10);
+            return;
+        }
 
         if (!(right.getItem() instanceof BeyonderCharacteristicItem characteristic)) {
             return;

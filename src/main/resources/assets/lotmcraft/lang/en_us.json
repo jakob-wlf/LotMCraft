@@ -160,8 +160,9 @@
   "lotmcraft.angel_authority_ability": "Angel Authority",
   "lotmcraft.angel_authority_ability.description": "Angelic power that allows you to traverse the spirit world and shatter artifacts",
   "lotmcraft.sefirot_authority_ability": "Sefirot Authority",
-  "lotmcraft.sefirot_authority_ability.description": "The authority granted by holding a Sefirot — grants access to abilities from neighbouring pathways",
+  "lotmcraft.sefirot_authority_ability.description": "The authority granted by holding a Sefirot",
   "item.lotmcraft.elevated_divination_ability": "Elevated Divination",
+  "item.lotmcraft.elevated_concealment_ability": "Elevated Concealment",
   "ability.lotmcraft.angel_authority.spirit_world_passage": "Spirit World Passage",
   "ability.lotmcraft.angel_authority.artifact_shattering": "Artifact Shattering",
   "ability.lotmcraft.angel_authority.flight": "Flight",
@@ -1266,6 +1267,8 @@
 
   "_comment006": "Potions-----------------------------------------------------------------------------",
   "item.lotmcraft.empty_bottle": "Empty Bottle",
+  "item.lotmcraft.sealed_bottle": "Sealed Bottle",
+  "item.lotmcraft.eternal_darkness_river_water_bottle": "Bottle of Eternal Darkness River Water",
 
 
   "_comment007": "Damage-----------------------------------------------------------------------------",

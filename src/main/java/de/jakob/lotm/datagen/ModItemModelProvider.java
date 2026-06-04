@@ -2,6 +2,7 @@ package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
+import de.jakob.lotm.abilities.common.passives.ElevatedConcealmentAbility;
 import de.jakob.lotm.abilities.common.passives.ElevatedDivinationAbility;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
@@ -85,6 +86,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         PassiveAbilityHandler.ITEMS.getEntries().forEach(i -> {
             if (i.get() instanceof ElevatedDivinationAbility) {
                 itemWithCustomDisplayAbilityTexture(i.get(), "divination_ability");
+            } else if (i.get() instanceof ElevatedConcealmentAbility) {
+                itemWithCustomDisplayAbilityTexture(i.get(), "concealment_ability");
             } else {
                 itemWithCustomDisplay(i.get());
             }

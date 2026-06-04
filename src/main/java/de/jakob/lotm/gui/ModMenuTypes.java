@@ -8,6 +8,7 @@ import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
 import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelMenu;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
 import de.jakob.lotm.gui.custom.Recipe.RecipeMenu;
+import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityMenu;
 import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
@@ -58,6 +59,11 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<SefirotAuthorityMenu>> SEFIROT_AUTHORITY_MENU = MENU_TYPES.register(
             "sefirot_authority_menu",
             () -> IMenuTypeExtension.create((windowId, inv, data) -> new SefirotAuthorityMenu(windowId, inv, data))
+    );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<RiverAuthorityMenu>> RIVER_AUTHORITY_MENU = MENU_TYPES.register(
+            "river_authority_menu",
+            () -> IMenuTypeExtension.create((windowId, inv, data) -> new RiverAuthorityMenu(windowId, inv, data))
     );
 
     public static void register(IEventBus eventBus) {

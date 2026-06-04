@@ -6,8 +6,7 @@ import de.jakob.lotm.artifacts.SealedArtifactItem;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.fluid.ModFluids;
 import de.jakob.lotm.item.custom.*;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.BlockItem;import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
@@ -114,6 +113,16 @@ public class ModItems {
     public static final DeferredItem<Item> DROPS_OF_ETERNAL_DARKNESS_BUCKET = ITEMS.register("drops_of_eternal_darkness_bucket",
             () -> new BucketItem(ModFluids.DROPS_OF_ETERNAL_DARKNESS_SOURCE.get(), new Item.Properties().stacksTo(1))
     );
+
+    /** Crafted in an anvil: empty bottle + door characteristic. */
+    public static final DeferredItem<Item> SEALED_BOTTLE = ITEMS.registerItem(
+            "sealed_bottle", SealedBottleItem::new, new Item.Properties().stacksTo(16));
+
+    /** Obtained by right-clicking a Sealed Bottle on Drops of Eternal Darkness fluid. */
+    public static final DeferredItem<Item> ETERNAL_DARKNESS_RIVER_WATER_BOTTLE = ITEMS.registerItem(
+            "eternal_darkness_river_water_bottle",
+            EternalDarknessRiverWaterBottleItem::new,
+            new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
 
     // Uniquenesses (registered, so I can use them in the renderer for the Uniqueness Entity)
     public static final DeferredItem<Item> RED_PRIEST_UNIQUENESS = ITEMS.register("red_priest_uniqueness",

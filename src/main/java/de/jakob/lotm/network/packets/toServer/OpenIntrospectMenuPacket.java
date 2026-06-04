@@ -12,6 +12,8 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncIntrospectMenuPacket;
 import de.jakob.lotm.network.packets.toClient.SyncKillCountPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSefirotAuthorityDataPacket;
+import de.jakob.lotm.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import net.minecraft.network.FriendlyByteBuf;
@@ -72,6 +74,7 @@ public record OpenIntrospectMenuPacket(int sequence, String pathway) implements 
                     buf.writeUtf(pathway);
                 });
 
+                SefirotAuthorityManager.syncToClient(player);
                 PacketHandler.sendToPlayer(player, new SyncIntrospectMenuPacket(sequence, pathway, sanity));
                 PacketHandler.sendToPlayer(player, new SyncAbilityWheelDataPacket(abilityWheelComponent.getAbilities()));
                 PacketHandler.sendToPlayer(player, new SyncKillCountPacket(player.getData(ModAttachments.KILL_COUNT_COMPONENT).getKillCount()));

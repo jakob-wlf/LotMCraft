@@ -41,6 +41,7 @@ public class MovableEffectFactory {
             case 3 -> new BeamsOfLightEffect(location, duration);
             case 4 -> new SpaceTearEffect(location, duration, infinite);
             case 5 -> new SefirahSkyBeamEffect(location, duration, infinite);
+            case 6 -> new RiverSkyBeamEffect(location, duration, infinite);
             default -> throw new IllegalArgumentException("Unknown movable effect index: " + effectIndex);
         };
 

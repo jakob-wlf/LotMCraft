@@ -9,6 +9,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -52,9 +53,10 @@ public class MysteriousTabletData extends SavedData {
 
     private boolean lockedByCastle = false;
 
-    private final Set<Long> ancientCityClaimed = new HashSet<>();
-    private final Set<Long> spiritChestChunks = new HashSet<>();
-    private BlockPos spiritChestPos = null;
+    // All ancient city chest positions that have received a LOWER fragment copy.
+    private final Set<BlockPos> ancientCityChestPositions = new HashSet<>();
+    // All spirit world structure chest positions that have received a LEFT fragment copy.
+    private final Set<BlockPos> spiritChestPositions = new HashSet<>();
 
     public static MysteriousTabletData get(MinecraftServer server) {
         DimensionDataStorage storage = server.overworld().getDataStorage();
@@ -180,47 +182,33 @@ public class MysteriousTabletData extends SavedData {
     public void clearFragment(FragmentType type) {
         fragmentIds.remove(type);
         fragmentLastSeen.remove(type);
-        if (type == FragmentType.LEFT) {
-            spiritChestChunks.clear();
-            spiritChestPos = null;
-        } else if (type == FragmentType.LOWER) {
-            ancientCityClaimed.clear();
-        }
+        // Chest positions are intentionally kept — the refiller uses them to re-place chest copies.
         setDirty();
     }
 
     public void clearAllFragments() {
         fragmentIds.clear();
         fragmentLastSeen.clear();
-        spiritChestPos = null;
-        spiritChestChunks.clear();
+        spiritChestPositions.clear();
+        ancientCityChestPositions.clear();
         setDirty();
     }
 
-    public boolean isAncientCityClaimed(long key) {
-        return ancientCityClaimed.contains(key);
+    public Set<BlockPos> getAncientCityChestPositions() {
+        return Collections.unmodifiableSet(ancientCityChestPositions);
     }
 
-    public void markAncientCityClaimed(long key) {
-        ancientCityClaimed.add(key);
+    public void addAncientCityChestPos(BlockPos pos) {
+        ancientCityChestPositions.add(pos);
         setDirty();
     }
 
-    public boolean isSpiritChestChunkUsed(long key) {
-        return spiritChestChunks.contains(key);
+    public Set<BlockPos> getSpiritChestPositions() {
+        return Collections.unmodifiableSet(spiritChestPositions);
     }
 
-    public void markSpiritChestChunkUsed(long key) {
-        spiritChestChunks.add(key);
-        setDirty();
-    }
-
-    public BlockPos getSpiritChestPos() {
-        return spiritChestPos;
-    }
-
-    public void setSpiritChestPos(BlockPos pos) {
-        this.spiritChestPos = pos;
+    public void addSpiritChestPos(BlockPos pos) {
+        spiritChestPositions.add(pos);
         setDirty();
     }
 
@@ -243,11 +231,10 @@ public class MysteriousTabletData extends SavedData {
         }
         tag.put("Fragments", fragmentsList);
 
-        tag.putLongArray("AncientCityClaimed", ancientCityClaimed.stream().mapToLong(Long::longValue).toArray());
-        tag.putLongArray("SpiritChestChunks", spiritChestChunks.stream().mapToLong(Long::longValue).toArray());
-        if (spiritChestPos != null) {
-            tag.putLong("SpiritChestPos", spiritChestPos.asLong());
-        }
+        tag.putLongArray("AncientCityChestPositions",
+                ancientCityChestPositions.stream().mapToLong(BlockPos::asLong).toArray());
+        tag.putLongArray("SpiritChestPositions",
+                spiritChestPositions.stream().mapToLong(BlockPos::asLong).toArray());
 
         return tag;
     }
@@ -272,17 +259,19 @@ public class MysteriousTabletData extends SavedData {
             data.fragmentLastSeen.put(type, entry.getLong("LastSeen"));
         }
 
-        long[] ancientArray = tag.getLongArray("AncientCityClaimed");
-        for (long value : ancientArray) {
-            data.ancientCityClaimed.add(value);
+        // New format: arrays of serialised BlockPos
+        for (long value : tag.getLongArray("AncientCityChestPositions")) {
+            data.ancientCityChestPositions.add(BlockPos.of(value));
         }
-
-        long[] spiritArray = tag.getLongArray("SpiritChestChunks");
-        for (long value : spiritArray) {
-            data.spiritChestChunks.add(value);
+        for (long value : tag.getLongArray("SpiritChestPositions")) {
+            data.spiritChestPositions.add(BlockPos.of(value));
+        }
+        // Migration: old single-position fields from before multi-chest support
+        if (tag.contains("AncientCityChestPos")) {
+            data.ancientCityChestPositions.add(BlockPos.of(tag.getLong("AncientCityChestPos")));
         }
         if (tag.contains("SpiritChestPos")) {
-            data.spiritChestPos = BlockPos.of(tag.getLong("SpiritChestPos"));
+            data.spiritChestPositions.add(BlockPos.of(tag.getLong("SpiritChestPos")));
         }
 
         return data;

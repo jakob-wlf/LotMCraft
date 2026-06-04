@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityBarHelper;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.data.ServerLocation;
 import net.minecraft.core.registries.Registries;
@@ -68,6 +69,7 @@ public class SefirahHandler {
         BeyonderData.playerMap.setSefirot(player.getUUID(), "");
         SefirotData.get(player.server).unclaimSefirot(player.getUUID());
         AbilityWheelHelper.removeAbility(player, "sefirot_authority_ability");
+        AbilityBarHelper.removeAbility(player, "sefirot_authority_ability");
         SefirotAuthorityManager.clearPlayerAuthority(player);
     }
 

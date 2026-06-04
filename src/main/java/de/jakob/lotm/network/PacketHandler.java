@@ -761,6 +761,12 @@ public class PacketHandler {
                 ToggleSefirotAuthorityAbilityPacket.STREAM_CODEC,
                 ToggleSefirotAuthorityAbilityPacket::handle
         );
+
+        registrar.playToServer(
+                RiverAuthorityActionPacket.TYPE,
+                RiverAuthorityActionPacket.STREAM_CODEC,
+                RiverAuthorityActionPacket::handle
+        );
     }
 
     public static void sendToServer(CustomPacketPayload packet) {

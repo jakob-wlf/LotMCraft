@@ -1,7 +1,9 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.util.data.ClientData;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -18,7 +20,8 @@ import java.util.List;
  * the available-abilities panel.
  */
 public record SyncSefirotAuthorityDataPacket(List<String> availableIds,
-                                             List<String> unlockedIds)
+                                             List<String> unlockedIds,
+                                             boolean hasSefirot)
         implements CustomPacketPayload {
 
     public static final Type<SyncSefirotAuthorityDataPacket> TYPE =
@@ -30,6 +33,8 @@ public record SyncSefirotAuthorityDataPacket(List<String> availableIds,
                     SyncSefirotAuthorityDataPacket::availableIds,
                     ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.STRING_UTF8),
                     SyncSefirotAuthorityDataPacket::unlockedIds,
+                    ByteBufCodecs.BOOL,
+                    SyncSefirotAuthorityDataPacket::hasSefirot,
                     SyncSefirotAuthorityDataPacket::new
             );
 
@@ -42,6 +47,10 @@ public record SyncSefirotAuthorityDataPacket(List<String> availableIds,
         context.enqueueWork(() -> {
             ClientData.setSefirotAvailableAbilityIds(packet.availableIds());
             ClientData.setSefirotUnlockedAbilityIds(packet.unlockedIds());
+            ClientData.setOwnsSefirot(packet.hasSefirot());
+            if (Minecraft.getInstance().screen instanceof IntrospectScreen introspectScreen) {
+                introspectScreen.refreshAvailableAbilities();
+            }
         });
     }
 }

@@ -52,6 +52,7 @@ public class TabletProtectionHandler {
                 ItemStack stack = slot.getItem();
                 if (stack.isEmpty() || !isProtected(stack.getItem())) continue;
                 if (slot.container instanceof Inventory) continue; // player's own inventory — allowed
+                if (MysteriousTabletFragmentItem.isChestCopy(stack)) continue; // naturally-spawned chest copy
                 ItemStack copy = stack.copy();
                 slot.set(ItemStack.EMPTY);
                 if (!player.addItem(copy)) {
@@ -80,6 +81,7 @@ public class TabletProtectionHandler {
             ItemStack stack = slot.getItem();
             if (stack.isEmpty() || !isProtected(stack.getItem())) continue;
             if (slot.container instanceof Inventory) continue;
+            if (MysteriousTabletFragmentItem.isChestCopy(stack)) continue; // naturally-spawned chest copy
             ItemStack copy = stack.copy();
             slot.set(ItemStack.EMPTY);
             if (!player.addItem(copy)) {
@@ -120,7 +122,7 @@ public class TabletProtectionHandler {
     }
 
     private static void ejectTabletItemsIfUnwatched(Container container, BlockEntity be, BlockPos pos, ServerLevel level) {
-        // If any player currently has this container open, onPlayerTick handles it with instant return-to-inventory.
+        // If any player currently has this container open, onPlayerTick handles it.
         for (ServerPlayer p : level.players()) {
             AbstractContainerMenu menu = p.containerMenu;
             if (menu == null || menu == p.inventoryMenu) continue;
@@ -133,6 +135,7 @@ public class TabletProtectionHandler {
         for (int i = 0; i < container.getContainerSize(); i++) {
             ItemStack stack = container.getItem(i);
             if (stack.isEmpty() || !isProtected(stack.getItem())) continue;
+            if (MysteriousTabletFragmentItem.isChestCopy(stack)) continue; // naturally-spawned chest copy
             ItemStack ejected = container.removeItem(i, stack.getCount());
             if (!ejected.isEmpty()) {
                 ItemEntity drop = new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, ejected);

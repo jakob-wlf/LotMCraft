@@ -3,6 +3,7 @@ package de.jakob.lotm.dimension;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.MysteriousTabletData;
 import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.item.custom.MysteriousTabletFragmentItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
@@ -23,6 +24,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
+
+import java.util.Set;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class SpiritWorldChestSpawner {
@@ -79,15 +82,14 @@ public class SpiritWorldChestSpawner {
             return;
         }
 
-        // If we already know where the chest is, refill it directly
-        BlockPos knownChestPos = data.getSpiritChestPos();
-        if (knownChestPos != null) {
-            long chestKey = ChunkPos.asLong(knownChestPos.getX() >> 4, knownChestPos.getZ() >> 4);
-            if (!data.isSpiritChestChunkUsed(chestKey) && level.isLoaded(knownChestPos)) {
-                BlockEntity be = level.getBlockEntity(knownChestPos);
-                if (be instanceof ChestBlockEntity chest) {
-                    if (ensureFragmentInChest(level, chest)) {
-                        data.markSpiritChestChunkUsed(chestKey);
+        // If we know of chest positions, ensure copies exist in all loaded ones
+        Set<BlockPos> knownPositions = data.getSpiritChestPositions();
+        if (!knownPositions.isEmpty()) {
+            for (BlockPos knownChestPos : knownPositions) {
+                if (level.isLoaded(knownChestPos)) {
+                    BlockEntity be = level.getBlockEntity(knownChestPos);
+                    if (be instanceof ChestBlockEntity chest) {
+                        ensureFragmentInChest(level, chest);
                     }
                 }
             }
@@ -129,10 +131,6 @@ public class SpiritWorldChestSpawner {
 
     private static boolean tryPopulateStructureChest(ServerLevel level, MysteriousTabletData data, StructureStart start) {
         BoundingBox box = start.getBoundingBox();
-        long structureKey = ChunkPos.asLong(box.minX() >> 4, box.minZ() >> 4);
-        if (data.isSpiritChestChunkUsed(structureKey)) {
-            return false;
-        }
 
         BlockPos chestPos = findChestInStructure(level, box);
         if (chestPos == null) {
@@ -145,11 +143,9 @@ public class SpiritWorldChestSpawner {
 
         BlockEntity blockEntity = level.getBlockEntity(chestPos);
         if (blockEntity instanceof ChestBlockEntity chest) {
-            if (ensureFragmentInChest(level, chest)) {
-                data.markSpiritChestChunkUsed(structureKey);
-                data.setSpiritChestPos(chestPos);
-                return true;
-            }
+            ensureFragmentInChest(level, chest);
+            data.addSpiritChestPos(chestPos);
+            return true;
         }
 
         return false;
@@ -178,16 +174,25 @@ public class SpiritWorldChestSpawner {
     private static boolean ensureFragmentInChest(ServerLevel level, ChestBlockEntity chest) {
         chest.unpackLootTable(null);
 
-        ItemStack fragment = new ItemStack(ModItems.LEFT_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
+        // Scan for an existing chest copy of LEFT type — don't place duplicates
         for (int i = 0; i < chest.getContainerSize(); i++) {
             ItemStack stack = chest.getItem(i);
-            if (ItemStack.isSameItemSameComponents(stack, fragment)) {
+            if (!stack.isEmpty() && stack.getItem() instanceof MysteriousTabletFragmentItem f
+                    && f.getFragmentType() == MysteriousTabletData.FragmentType.LEFT) {
+                // If the item doesn't have the ChestCopy flag (old format), apply it for migration
+                if (!MysteriousTabletFragmentItem.isChestCopy(stack)) {
+                    MysteriousTabletFragmentItem.setChestCopy(stack, true);
+                    chest.setChanged();
+                }
                 return true;
             }
         }
 
+        // No fragment found — place a new chest copy
         for (int i = 0; i < chest.getContainerSize(); i++) {
             if (chest.getItem(i).isEmpty()) {
+                ItemStack fragment = new ItemStack(ModItems.LEFT_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
+                MysteriousTabletFragmentItem.setChestCopy(fragment, true);
                 chest.setItem(i, fragment);
                 chest.setChanged();
                 return true;

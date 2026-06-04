@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import de.jakob.lotm.attachments.MysteriousTabletData;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.item.custom.MysteriousTabletFragmentItem;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
@@ -18,7 +19,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -69,15 +69,12 @@ public class ChestLootModifier extends LootModifier {
     }
 
     private static boolean isAncientCityChest(ResourceLocation lootTableId) {
-        return lootTableId.getPath().contains("chests/ancient_city");
+        String path = lootTableId.getPath();
+        return path.equals("chests/ancient_city") || path.equals("chests/ancient_city_ice_box");
     }
 
     private static void tryAddAncientCityFragment(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         if (!(context.getLevel() instanceof ServerLevel level)) {
-            return;
-        }
-
-        if (!hasGoldenApple(generatedLoot)) {
             return;
         }
 
@@ -94,22 +91,14 @@ public class ChestLootModifier extends LootModifier {
         }
 
         MysteriousTabletData data = MysteriousTabletData.get(level.getServer());
-        if (data.isAncientCityClaimed(structureKey)
-                || !data.canSpawnFragment(MysteriousTabletData.FragmentType.LOWER)) {
+        if (!data.canSpawnFragment(MysteriousTabletData.FragmentType.LOWER)) {
             return;
         }
 
-        generatedLoot.add(new ItemStack(ModItems.LOWER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get()));
-        data.markAncientCityClaimed(structureKey);
-    }
-
-    private static boolean hasGoldenApple(ObjectArrayList<ItemStack> generatedLoot) {
-        for (ItemStack stack : generatedLoot) {
-            if (stack.is(Items.GOLDEN_APPLE) || stack.is(Items.ENCHANTED_GOLDEN_APPLE)) {
-                return true;
-            }
-        }
-        return false;
+        ItemStack lowerFragment = new ItemStack(ModItems.LOWER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
+        MysteriousTabletFragmentItem.setChestCopy(lowerFragment, true);
+        generatedLoot.add(lowerFragment);
+        data.addAncientCityChestPos(origin);
     }
 
     private static Long getAncientCityKey(ServerLevel level, BlockPos origin) {

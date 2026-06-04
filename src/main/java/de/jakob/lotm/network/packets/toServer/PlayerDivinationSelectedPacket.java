@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.common.passives.ElevatedDivinationAbility;
 import de.jakob.lotm.abilities.visionary.DreamTraversalAbility;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
+import de.jakob.lotm.attachments.DeathImprintData;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.sefirah.SefirotAuthorityManager;
@@ -119,6 +120,33 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
             player.sendSystemMessage(Component.literal(
                     "§8Your divination dissolves — the target is shielded by a higher authority."));
             return;
+        }
+
+        // Elevated Concealment: target is hidden from all abilities unless caster owns a sefirot
+        if (SefirotAuthorityManager.blocksConcealment(targetPlayer.getUUID(), player)) {
+            player.sendSystemMessage(Component.literal(
+                    "§8Your senses find nothing — the target is concealed by a higher authority."));
+            return;
+        }
+
+        // River of Eternal Darkness: death imprint tier ≥ 1 → divination always succeeds with full coords
+        if ("river_of_eternal_darkness".equals(SefirahHandler.getClaimedSefirot(player))) {
+            DeathImprintData imprintData = DeathImprintData.get(player.getServer());
+            int tier = imprintData.getImprintCount(targetPlayer.getUUID());
+            if (tier >= 1) {
+                int dist = (int) Math.sqrt(
+                        Math.pow(targetPlayer.blockPosition().getX() - player.blockPosition().getX(), 2) +
+                        Math.pow(targetPlayer.blockPosition().getZ() - player.blockPosition().getZ(), 2));
+                player.sendSystemMessage(Component.literal(String.format(
+                        "§5[Death Imprint] You sense §d%s§5 at §d%d, %d, %d§5, about §d%d blocks §5away...",
+                        targetPlayer.getGameProfile().getName(),
+                        targetPlayer.blockPosition().getX(),
+                        targetPlayer.blockPosition().getY(),
+                        targetPlayer.blockPosition().getZ(),
+                        dist
+                )));
+                return;
+            }
         }
 
         int playerSequence = BeyonderData.getSequence(player);

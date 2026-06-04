@@ -1,23 +1,34 @@
 package de.jakob.lotm.command;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.MysteriousTabletData;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.item.custom.MysteriousTabletFragmentItem;
 import de.jakob.lotm.item.custom.MysteriousTabletItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -59,6 +70,9 @@ public class FragmentCommand {
                                         StringArgumentType.getString(context, "type")))
                         )
                 )
+                .then(Commands.literal("locate")
+                        .executes(context -> locateFragmentChests(context.getSource()))
+                )
         );
     }
 
@@ -68,6 +82,20 @@ public class FragmentCommand {
         MinecraftServer server = source.getServer();
 
         source.sendSuccess(() -> Component.literal("=== Mysterious Tablet Status ===").withStyle(ChatFormatting.GOLD), false);
+
+        boolean castleClaimed = de.jakob.lotm.attachments.SefirotData.get(server).isSefirotClaimed("sefirah_castle");
+        if (castleClaimed) {
+            source.sendSuccess(() -> Component.literal("  Sefirah Castle: ")
+                    .withStyle(ChatFormatting.YELLOW)
+                    .append(Component.literal("CLAIMED").withStyle(ChatFormatting.RED))
+                    .append(Component.literal(" — tablets & fragments cannot exist").withStyle(ChatFormatting.DARK_GRAY)),
+                    false);
+        } else {
+            source.sendSuccess(() -> Component.literal("  Sefirah Castle: ")
+                    .withStyle(ChatFormatting.YELLOW)
+                    .append(Component.literal("Unclaimed").withStyle(ChatFormatting.GREEN)),
+                    false);
+        }
 
         for (MysteriousTabletData.FragmentType type : MysteriousTabletData.FragmentType.values()) {
             String label = capitalize(type.getId()) + " Fragment";
@@ -124,6 +152,86 @@ public class FragmentCommand {
             }
         }
         return null;
+    }
+
+    // ========================= /fragment locate =========================
+
+    private static int locateFragmentChests(CommandSourceStack source) {
+        MysteriousTabletData data = MysteriousTabletData.get(source.getServer());
+
+        source.sendSuccess(() -> Component.literal("=== Fragment Chest Locations ===").withStyle(ChatFormatting.GOLD), false);
+
+        Set<BlockPos> spiritPositions = data.getSpiritChestPositions();
+        source.sendSuccess(() -> {
+            MutableComponent line = Component.literal("  Left Fragment (Spirit World): ").withStyle(ChatFormatting.YELLOW);
+            if (spiritPositions.isEmpty()) {
+                line.append(Component.literal("Not yet generated").withStyle(ChatFormatting.DARK_GRAY));
+            } else {
+                boolean first = true;
+                for (BlockPos pos : spiritPositions) {
+                    if (!first) line.append(Component.literal(", ").withStyle(ChatFormatting.GRAY));
+                    line.append(buildCoordsLink(pos, "spirit_world"));
+                    first = false;
+                }
+            }
+            return line;
+        }, false);
+
+        Set<BlockPos> ancientPositions = data.getAncientCityChestPositions();
+        // If no positions known, find nearest ancient city while still on main thread
+        BlockPos nearestAncient = ancientPositions.isEmpty() ? findNearestAncientCity(source) : null;
+        source.sendSuccess(() -> {
+            MutableComponent line = Component.literal("  Lower Fragment (Ancient City / Overworld): ").withStyle(ChatFormatting.YELLOW);
+            if (!ancientPositions.isEmpty()) {
+                boolean first = true;
+                for (BlockPos pos : ancientPositions) {
+                    if (!first) line.append(Component.literal(", ").withStyle(ChatFormatting.GRAY));
+                    line.append(buildCoordsLink(pos, "overworld"));
+                    first = false;
+                }
+            } else if (nearestAncient != null) {
+                line.append(Component.literal("Chest not yet assigned — nearest ancient city: ").withStyle(ChatFormatting.DARK_GRAY));
+                line.append(buildCoordsLink(nearestAncient, "overworld"));
+                line.append(Component.literal(" (open chests there to spawn it)").withStyle(ChatFormatting.DARK_GRAY));
+            } else {
+                line.append(Component.literal("Not yet generated").withStyle(ChatFormatting.DARK_GRAY));
+            }
+            return line;
+        }, false);
+
+        return 1;
+    }
+
+    private static BlockPos findNearestAncientCity(CommandSourceStack source) {
+        try {
+            ServerLevel overworld = source.getServer().overworld();
+            BlockPos searchPos = BlockPos.containing(source.getPosition());
+            ResourceKey<Structure> cityKey = ResourceKey.create(Registries.STRUCTURE,
+                    ResourceLocation.withDefaultNamespace("ancient_city"));
+            Holder<Structure> holder = overworld.registryAccess()
+                    .registry(Registries.STRUCTURE)
+                    .flatMap(reg -> reg.getHolder(cityKey))
+                    .orElse(null);
+            if (holder == null) return null;
+            Pair<BlockPos, Holder<Structure>> result = overworld.getChunkSource().getGenerator()
+                    .findNearestMapStructure(overworld, HolderSet.direct(holder), searchPos, 100, false);
+            return result != null ? result.getFirst() : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static MutableComponent buildCoordsLink(BlockPos pos, String dimensionLabel) {
+        String coordText = "[" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + "]";
+        String tpCommand = "/tp @s " + pos.getX() + " " + pos.getY() + " " + pos.getZ();
+        return Component.literal(coordText)
+                .withStyle(style -> style
+                        .withColor(ChatFormatting.AQUA)
+                        .withUnderlined(true)
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, tpCommand))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                Component.literal("Click to fill /tp command (" + dimensionLabel + ")")
+                                        .withStyle(ChatFormatting.GRAY))));
     }
 
     // ========================= /fragment remove =========================

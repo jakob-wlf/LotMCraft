@@ -1,5 +1,6 @@
 package de.jakob.lotm.sefirah;
 
+import de.jakob.lotm.abilities.common.passives.ElevatedConcealmentAbility;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -117,7 +118,8 @@ public class SefirotAuthorityManager {
     public static void syncToClient(ServerPlayer player) {
         List<String> available = new ArrayList<>(getAvailableAbilityIds(player));
         List<String> unlocked  = new ArrayList<>(getUnlockedAbilityIds(player));
-        PacketHandler.sendToPlayer(player, new SyncSefirotAuthorityDataPacket(available, unlocked));
+        boolean hasSefirot = SefirahHandler.hasSefirot(player);
+        PacketHandler.sendToPlayer(player, new SyncSefirotAuthorityDataPacket(available, unlocked, hasSefirot));
     }
 
     /**
@@ -127,6 +129,16 @@ public class SefirotAuthorityManager {
      */
     public static boolean blocksDivination(UUID targetUUID, ServerPlayer diviner) {
         return SEFIROT_DIVINATION_IMMUNE.contains(targetUUID) && !SefirahHandler.hasSefirot(diviner);
+    }
+
+    /**
+     * Returns true if a targeting ability on {@code targetUUID} should be blocked because:
+     *   – the target has Elevated Concealment active (River of Eternal Darkness owner), AND
+     *   – the caster does not own any sefirot.
+     */
+    public static boolean blocksConcealment(UUID targetUUID, ServerPlayer caster) {
+        return ElevatedConcealmentAbility.ELEVATED_CONCEALMENT_ACTIVE.contains(targetUUID)
+                && !SefirahHandler.hasSefirot(caster);
     }
 
     /**
@@ -164,7 +176,7 @@ public class SefirotAuthorityManager {
         SEFIROT_DIVINATION_IMMUNE.remove(player.getUUID());
         RIVER_CONCEALMENT_ACTIVE.remove(player.getUUID());
         // Sync empty state to client
-        PacketHandler.sendToPlayer(player, new SyncSefirotAuthorityDataPacket(Collections.emptyList(), Collections.emptyList()));
+        PacketHandler.sendToPlayer(player, new SyncSefirotAuthorityDataPacket(Collections.emptyList(), Collections.emptyList(), false));
     }
 
     // ── Blacklisted ability IDs (never offered as cross-path abilities) ──────
@@ -184,6 +196,13 @@ public class SefirotAuthorityManager {
                                                             String playerPathway,
                                                             int    playerSequence) {
         Set<String> result    = new HashSet<>();
+
+        // Ability sharing to neighbouring paths is exclusive to Sefirah Castle.
+        // River of Eternal Darkness will grant cross-path abilities through a separate mechanism.
+        if (!sefirot.equals("sefirah_castle")) {
+            return result;
+        }
+
         List<String> neighbors = NEIGHBORING_PATHS.getOrDefault(sefirot, Collections.emptyList());
 
         if (playerSequence > 2) {
