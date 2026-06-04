@@ -2,12 +2,15 @@ package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.AvatarEntity;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -53,7 +56,12 @@ public class VirtualPersonaAbility extends SelectableAbility {
 
     @Override
     public String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.virtual_persona.self"};
+        return new String[]{
+                "ability.lotmcraft.virtual_persona.self",
+                "ability.lotmcraft.virtual_persona.move",
+                "ability.lotmcraft.virtual_persona.check",
+                "ability.lotmcraft.virtual_persona.create_avatar"
+        };
     }
 
     @Override
@@ -61,9 +69,127 @@ public class VirtualPersonaAbility extends SelectableAbility {
 
         switch (abilityIndex) {
             case 0 -> virtualSelf(level, entity);
+            case 1 -> move(level, entity);
+            case 2 -> check(level, entity);
+            case 3 -> createAvatar(level, entity);
         }
     }
 
+    private void createAvatar(Level level, LivingEntity entity){
+        if(level.isClientSide) return;
+
+        int seq = BeyonderData.getSequence(entity);
+        if(seq > 3) return;
+
+        var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
+        if(component.createAvatar()){
+            spawnAvatar((ServerLevel) level, entity);
+        }
+    }
+
+    private void check(Level level, LivingEntity entity){
+        if (level.isClientSide) return;
+
+        int seq = BeyonderData.getSequence(entity);
+        var target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.2f);
+
+        if(target == null){
+            var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
+
+            var affects = component.getAffects();
+            String info = component.getGeneralInfo(seq);
+            var affectedBy = component.getAffectedBy(seq);
+
+            StringBuilder affectsResultBuilder = new StringBuilder("Affects:");
+            for(var obj : affects){
+                var data = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(obj)).get();
+
+                String location = "";
+                var targetLoop = level.getPlayerByUUID(BeyonderData.playerMap.getKeyByName(obj));
+                if(targetLoop != null){
+                    var pos = targetLoop.position();
+                    location = " Location: x = " + (int) pos.x + " y = " + (int) pos.y + " z = " + (int) pos.z;
+                }
+
+                affectsResultBuilder.append("\n").append(obj)
+                        .append(" --- Path: ").append(data.pathway())
+                        .append(" Seq: ").append(data.sequence())
+                        .append(location);
+            }
+            var affectsResult = affectsResultBuilder.toString();
+
+            StringBuilder affectedByResultBuilder = new StringBuilder("Affected by:");
+            for(var obj : affectedBy){
+                affectedByResultBuilder.append("\n").append(obj);
+            }
+            var affectedByResult = affectedByResultBuilder.toString();
+
+            entity.sendSystemMessage(Component.literal(info + "\n\n" + affectsResult + "\n\n" + affectedByResult + "\n\n")
+                    .withColor(0xf5c56c));
+
+            return;
+        }
+
+        int targetSeq = BeyonderData.getSequence(target);
+        var component = target.getData(ModAttachments.VIRTUAL_PERSONAS.get());
+
+        var affects = component.getAffects();
+        String info = component.getGeneralInfo(targetSeq);
+        var affectedBy = component.getAffectedBy(seq);
+
+        StringBuilder affectsResultBuilder = new StringBuilder("Affects:");
+        for(var obj : affects){
+            affectsResultBuilder.append("\n").append(obj);
+        }
+        var affectsResult = affectsResultBuilder.toString();
+
+        StringBuilder affectedByResultBuilder = new StringBuilder("Affected by:");
+        for(var obj : affectedBy){
+            affectedByResultBuilder.append("\n").append(obj);
+        }
+        var affectedByResult = affectedByResultBuilder.toString();
+
+        entity.sendSystemMessage(Component.literal(info + "\n\n" + affectsResult + "\n\n" + affectedByResult + "\n\n")
+                .withColor(0xf5c56c));
+    }
+
+    private void move(Level level, LivingEntity entity){
+        if (level.isClientSide) return;
+
+        var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
+        int seq = BeyonderData.getSequence(entity);
+
+        if(!component.hasOnSelf()){
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed")
+                    .withColor(0xFFff124d));
+            return;
+        }
+
+        var target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.2f);
+        if(target == null){
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed")
+                    .withColor(0xFFff124d));
+            return;
+        }
+
+        if(VisionaryHandler.shouldFailAndTrigger(seq, entity, target, this)){
+            return;
+        }
+        else if(VisionaryHandler.shouldStayInvisible(seq, target)){
+            return;
+        }
+
+        if(!(entity instanceof ServerPlayer player)) return;
+        if(!(target instanceof ServerPlayer targetPlayer)) return;
+
+        var personas = target.getData(ModAttachments.VIRTUAL_PERSONAS.get());
+        if(component.affects(target.getName().getString())){
+            component.removeAffects(targetPlayer.getName().getString(), entity.getName().getString(),(ServerLevel) level);
+        }
+        else {
+            personas.placeBy(player, targetPlayer);
+        }
+    }
 
     private void virtualSelf(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
@@ -84,65 +210,54 @@ public class VirtualPersonaAbility extends SelectableAbility {
         component.create(seq);
     }
 
+    @Override
+    public void nextAbility(LivingEntity entity){
+        if(getAbilityNames().length == 0)
+            return;
 
-//    private void virtualOthers(Level level, LivingEntity entity) {
-//        if (level.isClientSide) return;
-//        if (!(level instanceof ServerLevel serverLevel)) return;
-//
-//        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2);
-//
-//        // S3 and below with no target: spawn an avatar instead
-//        if (target == null) {
-//            if (BeyonderData.getSequence(entity) <= 3) {
-//                spawnAvatar(serverLevel, entity);
-//            } else {
-//                AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));
-//            }
-//            return;
-//        }
-//
-//        int targetSeq = BeyonderData.getSequence(target);
-//        if(BeyonderData.getPathway(target).equals("visionary") && BeyonderData.getSequence(target) <
-//                BeyonderData.getSequence(entity)){
-//            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed").withColor(0xFFff124d));
-//
-//            if(targetSeq <= 1 && target instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer entityPlayer){
-//                MetaAwarenessAbility.onDivined(targetPlayer, entityPlayer);
-//            }
-//
-//            return;
-//        }
-//
-//        applyVirtualPersonaStack(level, target);
-//    }
+        if(!selectedAbilities.containsKey(entity.getUUID())) {
+            selectedAbilities.put(entity.getUUID(), 0);
+        }
 
+        int selectedAbility = selectedAbilities.get(entity.getUUID());
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-//    private void applyVirtualPersonaStack(Level level, LivingEntity entity) {
-//        SanityComponent sanity = entity.getData(ModAttachments.SANITY_COMPONENT);
-//        int current = sanity.getVirtualPersonaStacks();
-//
-//        if (current >= getMaxPersonasPerSeq(BeyonderData.getSequence(entity))) {
-//            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.virtual_persona.max_stacks").withColor(0xFFffad33));
-//            return;
-//        }
-//
-//        sanity.addVirtualPersonaStack();
-//
-////        RingEffectManager.createRingForAll(
-////                entity.getEyePosition().subtract(0, .4, 0),
-////                2, 60,
-////                250 / 255f, 201 / 255f, 102 / 255f,
-////                1, .5f, .75f,
-////                (ServerLevel) level
-////        );
-//
-//
-//
-//        AbilityUtil.sendActionBar(entity,
-//                Component.translatable("ability.lotmcraft.virtual_persona.stacks",
-//                        sanity.getVirtualPersonaStacks()).withColor(0xFFe3ffff));
-//    }
+        selectedAbility++;
+        if(selectedAbility >= getAbilityNames().length) {
+            selectedAbility = 0;
+        }
 
+        if(entitySeq > 3 && selectedAbility >= 3){
+            selectedAbility = 0;
+        }
+
+        selectedAbilities.put(entity.getUUID(), selectedAbility);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+    }
+
+    @Override
+    public void previousAbility(LivingEntity entity){
+        if(getAbilityNames().length == 0)
+            return;
+
+        if(!selectedAbilities.containsKey(entity.getUUID())) {
+            selectedAbilities.put(entity.getUUID(), 0);
+        }
+
+        int selectedAbility = selectedAbilities.get(entity.getUUID());
+        selectedAbility--;
+        if(selectedAbility <= -1) {
+            selectedAbility = getAbilityNames().length - 1;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if(entitySeq > 3 && selectedAbility >= 3){
+            selectedAbility = 2;
+        }
+
+        selectedAbilities.put(entity.getUUID(), selectedAbility);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+    }
 
     private void spawnAvatar(ServerLevel serverLevel, LivingEntity entity) {
         if (!BeyonderData.isBeyonder(entity)) return;

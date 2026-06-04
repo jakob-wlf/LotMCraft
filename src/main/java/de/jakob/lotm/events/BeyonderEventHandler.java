@@ -85,7 +85,7 @@ public class BeyonderEventHandler {
             parasitationComponent.setParasiteUUID(null);
 
             VirtualPersonaComponent personaComponent = serverPlayer.getData(ModAttachments.VIRTUAL_PERSONAS);
-            personaComponent.onJoin();
+            personaComponent.onJoin((ServerLevel) serverPlayer.level(), serverPlayer.getName().getString());
 
             serverPlayer.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, 20 * 5, 99));
             BeyonderData.recalculateCharStackModifiers(serverPlayer);
@@ -280,7 +280,7 @@ public class BeyonderEventHandler {
         if (event.getEntity() instanceof ServerPlayer player) {
 
             VirtualPersonaComponent personaComponent = player.getData(ModAttachments.VIRTUAL_PERSONAS);
-            personaComponent.onDeath((ServerLevel) player.level(), player.getUUID());
+            personaComponent.onDeath((ServerLevel) player.level(), player.getName().getString());
 
             var source = event.getSource().getEntity();
             if (source != null) {

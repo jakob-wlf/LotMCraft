@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.VirtualPersonaComponent;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -25,7 +26,7 @@ public class PlacateAbility extends SelectableAbility {
         super(id, 5, "morale_boost");
         interactionRadius = 18;
         interactionCacheTicks = 20 * 5;
-
+        canAlwaysBeUsed = true;
     }
 
     @Override
@@ -229,6 +230,12 @@ public class PlacateAbility extends SelectableAbility {
                     mentalPlague.reset();
                 }
             }
+        }
+
+        if(entity instanceof ServerPlayer targetPlayer){
+            var personas = targetPlayer.getData(ModAttachments.VIRTUAL_PERSONAS.get());
+            personas.damageAffectedBy(VirtualPersonaComponent.getMaxHealthPerSeq(entitySeq),
+                    (ServerLevel) targetPlayer.level(), targetPlayer.getName().getString(), entitySeq);
         }
 
         if(caster instanceof ServerPlayer player)

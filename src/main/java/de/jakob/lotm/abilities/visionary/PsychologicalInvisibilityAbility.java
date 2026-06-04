@@ -13,10 +13,13 @@ import de.jakob.lotm.rendering.SpiritVisionOverlayRenderer;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
@@ -46,7 +49,6 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         canBeCopied = false;
         canBeReplicated = false;
         cannotBeStolen = true;
-        canBeUsedByNPC = false;
     }
 
     @Override
@@ -61,17 +63,33 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
 
     @Override
     public void tick(Level level, LivingEntity entity) {
-        if (level instanceof ServerLevel serverLevel) {
-            if (!invisiblePlayers.containsKey(entity.getUUID()))
-                cancel(serverLevel, entity);
+        if(entity instanceof ServerPlayer) {
+            if (level instanceof ServerLevel serverLevel) {
+                if (!invisiblePlayers.containsKey(entity.getUUID()))
+                    cancel(serverLevel, entity);
+            }
+        }
+        else{
+            entity.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 20 * 5, 50,  false, false, false));
         }
     }
 
     @Override
     public void start(Level level, LivingEntity entity) {
-        if (!invisiblePlayers.containsKey(entity.getUUID())) {
-            add(entity, AbilityUtil.getSeqWithArt(entity, this));
+        if(entity instanceof ServerPlayer) {
+            if (!invisiblePlayers.containsKey(entity.getUUID())) {
+                add(entity, AbilityUtil.getSeqWithArt(entity, this));
+            }
         }
+    }
+
+    @Override
+    public void stop(Level level, LivingEntity entity) {
+        if(entity instanceof ServerPlayer) {
+            remove(entity);
+        }
+
+        clearArtifactScaling(entity);
     }
 
     private static void removeOrAddName(LivingEntity entity){
@@ -106,12 +124,6 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
                 }
             }
         }
-    }
-
-    @Override
-    public void stop(Level level, LivingEntity entity) {
-        remove(entity);
-        clearArtifactScaling(entity);
     }
 
     private static void add(LivingEntity entity, int seq) {

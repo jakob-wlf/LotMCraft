@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class VisionaryLoosingControlHandler {
 
-    private static int getAmplifier(LivingEntity entity, LivingEntity target, Ability skill) {
+    public static int getAmplifier(LivingEntity entity, LivingEntity target, Ability skill) {
         int targetSequence = BeyonderData.getSequence(target);
         int sequence = AbilityUtil.getSeqWithArt(entity, skill);
         int diff = targetSequence - sequence;
@@ -46,7 +46,7 @@ public class VisionaryLoosingControlHandler {
     }
 
 
-    private static int getBasePerSeq(int seq){
+    public static int getBasePerSeq(int seq){
         return switch (seq){
             case 9,8,7 -> 1;
             case 6, 5 -> 2;

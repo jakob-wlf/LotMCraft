@@ -149,9 +149,11 @@ public class MentalPlagueAbility extends SelectableAbility {
         var list = player.server.getPlayerList().getPlayers();
 
         for (var obj : list){
+            if(obj.equals(player)) continue;
+
             var component = obj.getData(ModAttachments.MENTAL_PLAGUE.get());
 
-            if(component.isOwner(player)){
+            if(component.hasMentalPlague() && component.isOwner(player)){
                 player.sendSystemMessage(Component.literal(obj.getName().getString() +
                         " has mental plague of stage " +
                         component.getStage()).withColor(0xFFff124d));

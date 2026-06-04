@@ -3,9 +3,11 @@ package de.jakob.lotm.abilities.visionary;
 import com.ibm.icu.impl.UCaseProps;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.abilities.visionary.prophecy.triggers.TriggerHelper;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
@@ -99,29 +101,34 @@ public class PsychologicalCueAbility extends ToggleAbility {
             return;
         }
 
-        Integer distance = TriggerHelper.getDistanceToTarget(player, trigger.getTarget());
-        if(distance == null){
-            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));
-            return;
-        }
-
-        if(distance > getDistancePerSeq(map.get(player.getUUID()))){
-            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));
-            return;
-        }
-
         var target = player.level().getPlayerByUUID(trigger.getTarget());
         if(target == null){
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));
             return;
         }
 
+        var virtualPersonaCaster = player.getData(ModAttachments.VIRTUAL_PERSONAS.get());
+
+        Integer distance = TriggerHelper.getDistanceToTarget(player, trigger.getTarget());
+        if (distance == null) {
+            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));
+            return;
+        }
+
+        if(!virtualPersonaCaster.affects(target.getName().getString())) {
+            if (distance > getDistancePerSeq(map.get(player.getUUID()))) {
+                AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));
+                return;
+            }
+        }
+
         if(target instanceof ServerPlayer playerTarget)
             MetaAwarenessAbility.sendWithMessage(player, playerTarget, "Tried to use cue");
 
-        if(AbilityUtil.isTargetSignificantlyStronger(map.get(player.getUUID()), BeyonderData.getSequence(target))){
+        int targetSeq = BeyonderData.getSequence(target);
+        if(AbilityUtil.isTargetSignificantlyStronger(map.get(player.getUUID()), targetSeq)){
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));
-            player.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 25, 4, false, false, false));
+            player.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 25, VisionaryLoosingControlHandler.getBasePerSeq(targetSeq), false, false, false));
             return;
         }
 
