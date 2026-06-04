@@ -74,7 +74,8 @@ public class ControllingUtil {
         copyPosition(player, originalBody);
 
         // copy the target and his position to the player
-        copyEntities(target, player);
+        // Force overwriting Beyonder data on the player so the controller temporarily assumes the target's pathway/sequence/characteristics
+        copyEntities(target, player, true);
         copyPosition(target, player);
 
         // save the target to the player
@@ -140,10 +141,33 @@ public class ControllingUtil {
 
         // returning the target before returning to main body
         if (targetTag != null) {
-            // Patch the saved tag with the player's current Beyonder state so sequence regressions persist
-            String currentPathway = BeyonderData.getPathway(player);
-            int currentSequence = BeyonderData.getSequence(player);
-            if (!currentPathway.isEmpty() && currentSequence >= 0) {
+            // Patch the saved tag with the player's original Beyonder state (prefer the saved bodyEntity if available)
+            String currentPathway = null;
+            int currentSequence = -1;
+            float digestionProgress = 0f;
+            ListTag characteristicListTag = null;
+
+            CompoundTag savedBodyTag = data.getBodyEntity();
+            if (savedBodyTag != null && savedBodyTag.contains("neoforge:attachments") && savedBodyTag.getCompound("neoforge:attachments").contains("lotmcraft:beyonder_component")) {
+                CompoundTag nfdBody = savedBodyTag.getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
+                currentPathway = nfdBody.getString("pathway");
+                currentSequence = nfdBody.getInt("sequence");
+                digestionProgress = nfdBody.getFloat("digestionProgress");
+                if (nfdBody.contains("characteristicList")) {
+                    characteristicListTag = nfdBody.getList("characteristicList", 10);
+                }
+            } else {
+                // Fallback: use the player's current BeyonderData (best effort)
+                currentPathway = BeyonderData.getPathway(player);
+                currentSequence = BeyonderData.getSequence(player);
+                digestionProgress = BeyonderData.getDigestionProgress(player);
+                characteristicListTag = new ListTag();
+                for (Characteristic characteristic : BeyonderData.getCharList(player)) {
+                    characteristicListTag.add(characteristic.toNBT(level.registryAccess()));
+                }
+            }
+
+            if (currentPathway != null && !currentPathway.isEmpty() && currentSequence >= 0) {
                 // idk why that is here, "Will" added it and idk why so i'll leave it here anyways
                 targetTag.putString("Pathway", currentPathway);
                 targetTag.putInt("Sequence", currentSequence);
@@ -153,14 +177,22 @@ public class ControllingUtil {
                     CompoundTag nfd = targetTag.getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
                     nfd.putString("pathway", currentPathway);
                     nfd.putInt("sequence", currentSequence);
-                    nfd.putFloat("digestionProgress", BeyonderData.getDigestionProgress(player));
-                    
-                    ListTag characteristicListTag = new ListTag();
-                    for(Characteristic characteristic : BeyonderData.getCharList(player)){
-                        characteristicListTag.add(characteristic.toNBT(level.registryAccess()));
+                    nfd.putFloat("digestionProgress", digestionProgress);
+
+                    if (characteristicListTag != null) {
+                        nfd.put("characteristicList", characteristicListTag);
+                    } else {
+                        nfd.put("characteristicList", new ListTag());
                     }
-                    nfd.put("characteristicList", characteristicListTag);
-                    ArrayList<Characteristic> charList = BeyonderData.getCharList(player);
+
+                    ArrayList<Characteristic> charList = new ArrayList<>();
+                    if (characteristicListTag != null) {
+                        for (int i = 0; i < characteristicListTag.size(); i++) {
+                            CompoundTag ctag = characteristicListTag.getCompound(i);
+                            charList.add(Characteristic.fromNBT(ctag, level.registryAccess()));
+                        }
+                    }
+
                     int charSeq = charList.stream().mapToInt(c -> c.sequence()).max().orElse(-1);
                     String charPath = charList.stream().filter(c -> c.sequence() == charSeq).findFirst().map(c -> c.pathway()).orElse("");
                     LOTMCraft.LOGGER.info("reset: patching saved target tag with player Beyonder state: player={} uuid={} currentPathway={} currentSequence={} charCount={}",
@@ -171,7 +203,7 @@ public class ControllingUtil {
                     // Avoid mutating the global PlayerMap during this patch operation; putIntoMap=false
                     BeyonderData.setBeyonder(player, normalizedPath, normalizedSeq, false, false, false, false, false, false);
                     LOTMCraft.LOGGER.info("Patched Beyonder data for player {}: pathway={}, sequence={}, digestionProgress={}, characteristicListSize={}",
-                            player.getDisplayName().getString(), normalizedPath, normalizedSeq, BeyonderData.getDigestionProgress(player), characteristicListTag.size());
+                            player.getDisplayName().getString(), normalizedPath, normalizedSeq, BeyonderData.getDigestionProgress(player), characteristicListTag == null ? 0 : characteristicListTag.size());
                 }
             }
         }
@@ -238,8 +270,9 @@ public class ControllingUtil {
         // returning to main body
         if (originalBodyEntity != null) {
             if (originalBodyEntity instanceof LivingEntity originalBody) {
-                copyEntities(originalBody, player);
-                copyPosition(originalBody, player);
+            // Restore the player's original Beyonder state from the saved body (force overwrite)
+            copyEntities(originalBody, player, true);
+            copyPosition(originalBody, player);
             }
             originalBodyEntity.discard();
         } else {
@@ -288,6 +321,19 @@ public class ControllingUtil {
         // resetting shape
         ShapeShiftingUtil.resetShape(player);
 
+        // Sync restored Beyonder state into the PlayerMap so saved map reflects entity data immediately
+        try {
+            if (BeyonderData.playerMap != null) {
+                BeyonderData.playerMap.put(player);
+            } else {
+                LOTMCraft.LOGGER.info("PlayerMap not initialized while resetting {}; will initialize.", player.getUUID());
+                if (level != null) BeyonderData.initBeyonderMap(level);
+                if (BeyonderData.playerMap != null) BeyonderData.playerMap.put(player);
+            }
+        } catch (Exception e) {
+            LOTMCraft.LOGGER.warn("Failed to sync PlayerMap for player {}: {}", player.getUUID(), e.toString());
+        }
+
         // clearing data
         data.setBodyEntity(null, player);
         data.setControlling(false, player);
@@ -313,7 +359,7 @@ public class ControllingUtil {
         target.setYBodyRot(source.yBodyRot);
     }
 
-    private static void copyData(LivingEntity source, LivingEntity target) {
+    private static void copyData(LivingEntity source, LivingEntity target, boolean forceBeyonderCopy) {
         // copy togglable abilities
         ToggleAbility.setActiveAbilities(target, new HashSet<>(ToggleAbility.getActiveAbilitiesForEntity(source)));
 
@@ -330,7 +376,10 @@ public class ControllingUtil {
         AbilityBarComponent targetBarData = target.getData(ModAttachments.ABILITY_BAR_COMPONENT);
         targetBarData.setAbilities(new ArrayList<>(sourceBarData.getAbilities()));
 
-        if (BeyonderData.isBeyonder(source) || BeyonderData.isBeyonder(target)) {
+        // Determine whether to copy/overwrite Beyonder data:
+        // - If forced, always copy source's Beyonder state (even if source is non-beyonder)
+        // - Otherwise only copy if source is a Beyonder
+        if (forceBeyonderCopy || BeyonderData.isBeyonder(source)) {
             LOTMCraft.LOGGER.info("copyData: copying Beyonder from {} ({}) to {} ({})", source.getDisplayName().getString(), source.getUUID(), target.getDisplayName().getString(), target.getUUID());
 
             // Set the pathway/sequence/etc using the standard setter to keep PlayerMap and passive effects consistent
@@ -350,15 +399,23 @@ public class ControllingUtil {
                 BeyonderData.digest(targetPlayer, BeyonderData.getDigestionProgress(sourcePlayer), false);
                 BeyonderData.setGriefingEnabled(targetPlayer, BeyonderData.isGriefingEnabled(sourcePlayer));
             }
+        } else if (BeyonderData.isBeyonder(target)) {
+            // Source is not a Beyonder and not forced -> preserve target's existing Beyonder data
+            LOTMCraft.LOGGER.info("copyData: source {} is not Beyonder; preserving existing Beyonder data on target {}", source.getUUID(), target.getUUID());
         } else {
+            // Neither source nor target are Beyonders -> ensure target is cleared
             BeyonderData.clearBeyonderData(target);
         }
     }
 
-    private static void copyEntities (LivingEntity source, LivingEntity target) {
+    private static void copyEntities(LivingEntity source, LivingEntity target) {
+        copyEntities(source, target, false);
+    }
+
+    private static void copyEntities(LivingEntity source, LivingEntity target, boolean forceBeyonderCopy) {
         copyInventories(source, target);
 
-        copyData(source, target);
+        copyData(source, target, forceBeyonderCopy);
 
         AttributeMap sourceMap = source.getAttributes();
         AttributeMap targetMap = target.getAttributes();

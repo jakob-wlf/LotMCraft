@@ -117,7 +117,7 @@ public class UniquenessEntity extends Entity {
         int seq = BeyonderData.getCharList(entity).stream()
                 .filter(c -> c.pathway().equalsIgnoreCase(pathway))
                 .mapToInt(Characteristic::sequence)
-                .max()
+                .min()
                 .orElse(-1);
         boolean hasPathway = BeyonderData.getCharList(entity).stream().anyMatch(c -> c.pathway().equalsIgnoreCase(pathway));
         LOTMCraft.LOGGER.info("Entity {} matches, {}: {}", hasPathway, pathway, seq);
