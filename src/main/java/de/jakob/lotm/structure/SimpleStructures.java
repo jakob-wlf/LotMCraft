@@ -7,8 +7,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.NoiseColumn;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
@@ -100,26 +98,7 @@ public class SimpleStructures extends Structure {
      * it to spawn in specific biomes that aren't in the dimension they don't like if they wish.
      */
     private static boolean extraSpawningChecks(Structure.GenerationContext context) {
-        // Grabs the chunk position we are at
-        ChunkPos chunkpos = context.chunkPos();
-
-        // Get first non-air block.
-        int occupiedYPos = context.chunkGenerator().getFirstOccupiedHeight(
-                chunkpos.getMinBlockX(),
-                chunkpos.getMinBlockZ(),
-                Heightmap.Types.WORLD_SURFACE_WG,
-                context.heightAccessor(),
-                context.randomState());
-
-        // Get column of blocks at corner of the chunk. BEWARE, getBaseColumn is an expensive call. Call this as few times as possible for your checks.
-        // Note, this column of blocks only has the raw terrain of the world which for the Overworld is Stone, Water, and Air.
-        NoiseColumn columnOfBlocks = context.chunkGenerator().getBaseColumn(chunkpos.getBlockX(0), chunkpos.getBlockZ(0), context.heightAccessor(), context.randomState());
-
-        // Grab the block at the specified Y value.
-        BlockState blockState = columnOfBlocks.getBlock(occupiedYPos);
-
-        BlockState above = columnOfBlocks.getBlock(occupiedYPos + 1);
-        return blockState.getFluidState().isEmpty() && above.isAir();
+        return true;
 
     }
 

@@ -74,6 +74,10 @@ public class SefirotData extends SavedData {
         return claimedSefirah.getOrDefault(uuid, "");
     }
 
+    public boolean isSefirotClaimed(String sefirot) {
+        return claimedSefirah.containsValue(sefirot);
+    }
+
     public void setIsInSefirot(UUID uuid, boolean inSefirot) {
         if(!inSefirot) {
             isInSefirot.remove(uuid);

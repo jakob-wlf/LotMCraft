@@ -72,6 +72,8 @@ import de.jakob.lotm.entity.client.spirits.ghost.SpiritGhostRenderer;
 import de.jakob.lotm.entity.client.spirits.malmouth.SpiritMalmouthRenderer;
 import de.jakob.lotm.entity.client.spirits.spirit_bane.SpiritBaneRenderer;
 import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentWizardRenderer;
+import de.jakob.lotm.fluid.ModFluidTypes;
+import de.jakob.lotm.fluid.ModFluids;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
@@ -81,6 +83,8 @@ import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesScreen;
 import de.jakob.lotm.gui.custom.Recipe.RecipeScreen;
+import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityScreen;
+import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityScreen;
 import de.jakob.lotm.item.ModCreativeModTabs;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
@@ -186,6 +190,8 @@ public class LOTMCraft
         ModSounds.register(modEventBus);
         ModLootModifiers.register(modEventBus);
         ModVillagers.register(modEventBus);
+        ModFluidTypes.register(modEventBus);
+        ModFluids.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModStructures.register(modEventBus);
@@ -303,6 +309,8 @@ public class LOTMCraft
 
             event.enqueueWork(() -> {
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.MYSTICAL_RING.get(), RenderType.cutout());
+                ItemBlockRenderTypes.setRenderLayer(ModFluids.DROPS_OF_ETERNAL_DARKNESS_SOURCE.get(), RenderType.translucent());
+                ItemBlockRenderTypes.setRenderLayer(ModFluids.DROPS_OF_ETERNAL_DARKNESS_FLOWING.get(), RenderType.translucent());
 
                 PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(ANIMATION_LAYER_ID, 1000,
                         player -> new PlayerAnimationController(player,
@@ -348,6 +356,8 @@ public class LOTMCraft
             event.register(ModMenuTypes.ABILITY_WHEEL_MENU.get(), AbilityWheelScreen::new);
             event.register(ModMenuTypes.COPIED_ABILITY_WHEEL_MENU.get(), CopiedAbilityWheelScreen::new);
             event.register(ModMenuTypes.ARTIFACT_WHEEL_MENU.get(), ArtifactWheelScreen::new);
+            event.register(ModMenuTypes.SEFIROT_AUTHORITY_MENU.get(), SefirotAuthorityScreen::new);
+            event.register(ModMenuTypes.RIVER_AUTHORITY_MENU.get(), RiverAuthorityScreen::new);
         }
     }
 

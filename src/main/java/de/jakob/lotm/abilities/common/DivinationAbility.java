@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.common;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toClient.*;
@@ -188,6 +189,7 @@ public class DivinationAbility extends SelectableAbility {
                 .stream()
                 .filter(p -> p != player)
                 .filter(p -> !DIVINATION_IMMUNE.contains(p.getUUID()))
+                .filter(p -> !SefirotAuthorityManager.blocksConcealment(p.getUUID(), player))
                 .map(p -> new PlayerInfo(p.getUUID(), p.getGameProfile().getName()))
                 .toList();
 

@@ -117,6 +117,11 @@ public class TravelersDoorEntity extends Entity {
             if (spiritWorldLevel == null) return;
 
             for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(TELEPORT_RANGE), e -> e != this && e.isAlive())) {
+                if (entity instanceof net.minecraft.server.level.ServerPlayer sp
+                        && de.jakob.lotm.sefirah.SefirahCastleEventHandler.isAccommodating(sp)) {
+                    sp.sendSystemMessage(net.minecraft.network.chat.Component.translatable("lotm.sefirot.sefirah_castle_spirit_world_locked"));
+                    continue;
+                }
                 if (!serverLevel.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
 
                     Vec3 coords = SpiritWorldHandler.getCoordinatesInSpiritWorld(entity.position(), spiritWorldLevel);
