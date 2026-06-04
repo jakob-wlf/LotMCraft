@@ -61,6 +61,7 @@ public class AweAbility extends Ability {
         level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 1, 1);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 10 * (int) Math.max(multiplier(entity)/2,1)).forEach(e -> {
             if(!VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, e, this)){
                 if (BeyonderData.isBeyonder(e)) {
@@ -84,6 +85,9 @@ public class AweAbility extends Ability {
                         e.removeEffect(MobEffects.WEAKNESS);
                         return;
                     }
+
+                    if(entitySeq <= 4)
+                        BattleHypnosisAbility.performRandomEffect((ServerLevel) level, entity, e, entitySeq);
 
                     e.setDeltaMovement((new Vec3(random.nextDouble(-1, 1), random.nextDouble(0, .1), random.nextDouble(-1, 1))).normalize().scale(0.3));
                     e.hurtMarked = true;

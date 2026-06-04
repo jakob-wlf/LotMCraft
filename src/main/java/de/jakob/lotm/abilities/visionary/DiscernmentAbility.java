@@ -1,6 +1,8 @@
 package de.jakob.lotm.abilities.visionary;
 
 
+import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityUseTracker;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.network.PacketHandler;
@@ -8,6 +10,7 @@ import de.jakob.lotm.network.packets.toClient.SyncSpectatingAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -33,6 +36,9 @@ public class DiscernmentAbility extends ToggleAbility {
     private final HashMap<UUID, Set<Entity>> glowingEntities = new HashMap<>();
     private static final Map<UUID, String> ENTITY_TEAM_MAP = new HashMap<>();
     private static final Map<UUID, Set<String>> SENT_TEAMS = new HashMap<>();
+
+    private static final int COOLDOWN = 20 * 3;
+    private static final Map<UUID, Integer> cooldown = new HashMap<>();
 
     public DiscernmentAbility(String id) {
         super(id);
@@ -93,6 +99,33 @@ public class DiscernmentAbility extends ToggleAbility {
 
         if(lookedAt != null)
             performTelepaty(player, lookedAt, seq);
+
+
+        AbilityUseTracker.AbilityUseRecord tracker = AbilityUseTracker.getRecentUseInArea(
+                entity.getEyePosition(), level, getRangeForAbilityDetection(seq), entity);
+
+        if(tracker == null) return;
+
+        if(VisionaryHandler.shouldFailAndTrigger(seq, entity, tracker.entity(), this))
+            return;
+
+        Ability usedSkill = tracker.ability();
+        if(usedSkill.getRequirements().containsKey("visionary") && !cooldown.containsKey(entity.getUUID())){
+            String pos = "x=" + (int) tracker.position().x + " y=" + (int) tracker.position().y + " z=" + (int) tracker.position().z;
+
+            entity.sendSystemMessage(Component.literal("You sense the usage of "
+                    + usedSkill.getId() + " at " + pos + " by " + tracker.entity().getName().getString())
+                    .withColor(0xf5c56c));
+
+            cooldown.put(entity.getUUID(), 0);
+        }
+
+        if(cooldown.containsKey(entity.getUUID())) {
+            cooldown.put(entity.getUUID(), cooldown.get(entity.getUUID()) + 1);
+            if (cooldown.get(entity.getUUID()) >= COOLDOWN)
+                cooldown.remove(entity.getUUID());
+        }
+
     }
 
     @Override
@@ -117,6 +150,15 @@ public class DiscernmentAbility extends ToggleAbility {
             case 1 -> 150;
             case 0 -> 200;
             default -> 0;
+        };
+    }
+
+    private static int getRangeForAbilityDetection(int seq){
+        return switch (seq){
+          case 2 -> 500;
+          case 1 -> 2000;
+          case 0 -> 10000;
+          default -> 0;
         };
     }
 
