@@ -79,7 +79,7 @@ public class UnshadowedDomainAbility extends Ability {
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, 40* (int) Math.max(multiplier(entity)/4,1), startPos, new MobEffectInstance(MobEffects.GLOWING, 20 * 2, 1, false, false, false));
             AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 40* (int) Math.max(multiplier(entity)/4,1))
                     .stream()
-                    .filter(e -> (!BeyonderData.isBeyonder(e) || BeyonderData.getSequence(e) > entitySeq) && (e instanceof Mob || e instanceof Player))
+                    .filter(e -> (AbilityUtil.isUndead(e)) && (e instanceof Mob || e instanceof Player))
                     .forEach(e -> e.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION_INDIRECT, entity), (float) (DamageLookup.lookupDps(4, .4, 10, 20) * (int) Math.max(multiplier(entity)/4,1))));
         }, () -> blocks.forEach(b -> {
             BlockState state = level.getBlockState(b);

@@ -44,7 +44,7 @@ public class SpearOfLightAbility extends Ability {
 
         SpearOfLightProjectileEntity spear = new SpearOfLightProjectileEntity(level, entity, DamageLookup.lookupDamage(2, .75) * (int) Math.max(multiplier(entity)/4,1), BeyonderData.isGriefingEnabled(entity), this);
         spear.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
-        spear.shoot(direction.x, direction.y, direction.z, 9f* (int) Math.max(multiplier(entity)/4,1), 0);
+        spear.shoot(direction.x, direction.y, direction.z, 5, 0);
         level.addFreshEntity(spear);
     }
 }

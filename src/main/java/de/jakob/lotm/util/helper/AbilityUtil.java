@@ -22,6 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -1230,6 +1231,13 @@ public class AbilityUtil {
         }
         ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(message);
         player.connection.send(packet);
+    }
+
+    public static boolean isUndead(LivingEntity entity) {
+        return switch (BeyonderData.getPathway(entity)) {
+            case "death", "abyss", "chained", "hanged_man" -> true;
+            default -> entity.getType().is(EntityTypeTags.UNDEAD);
+        };
     }
 
     public static void setArtifactScaling(LivingEntity entity, String path, int seq){

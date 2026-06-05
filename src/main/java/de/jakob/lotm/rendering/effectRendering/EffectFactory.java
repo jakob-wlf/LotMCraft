@@ -82,6 +82,8 @@ public class EffectFactory {
             case 36 -> new ImprisonEffect(x, y, z);
             case 37 -> new AncientCourtEffect(x, y, z);
             case 38 -> new NationOfTheDeadEffect(x, y, z);
+            case 39 -> new HolyImpactEffect(x, y, z);
+            case 40 -> new UniquenessSpawnEffect(x, y, z);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
 

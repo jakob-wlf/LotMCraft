@@ -31,7 +31,7 @@ public class SunRenderer extends EntityRenderer<SunEntity> {
     public void render(SunEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         poseStack.pushPose();
 
-        float radius = 4.65f;
+        float radius = 5.5f;
 
         poseStack.pushPose();
         poseStack.scale(radius, radius, radius);

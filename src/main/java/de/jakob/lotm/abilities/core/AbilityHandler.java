@@ -41,10 +41,12 @@ public class AbilityHandler {
 
         // SUN PATHWAY
         abilities.add(new HolySongAbility("holy_song_ability"));
-        abilities.add(new IlluminateAbility("illuminate_ability"));
+        abilities.add(new EvilDetectionAbility("evil_detection_ability"));
+        abilities.add(new SunSpellsAbility("sun_spells_ability"));
         abilities.add(new HolyLightAbility("holy_light_ability"));
         abilities.add(new FireOfLightAbility("fire_of_light_ability"));
         abilities.add(new CleaveOfPurificationAbility("cleave_of_purification_ability"));
+        abilities.add(new SunHaloAbility("sun_halo_ability"));
         abilities.add(new HolyOathAbility("holy_oath_ability"));
         abilities.add(new HolyLightSummoningAbility("holy_light_summoning_ability"));
         abilities.add(new GodSaysItsEffectiveAbility("notary_buff_ability"));
@@ -52,6 +54,7 @@ public class AbilityHandler {
         abilities.add(new LightOfHolinessAbility("light_of_holiness_ability"));
         abilities.add(new PurificationHaloAbility("purification_halo_ability"));
         abilities.add(new FlaringSunAbility("flaring_sun_ability"));
+        abilities.add(new HolyEyeAbility("holy_eye_ability"));
         abilities.add(new UnshadowedSpearAbility("unshadowed_spear_ability"));
         abilities.add(new UnshadowedDomainAbility("unshadowed_domain_ability"));
         abilities.add(new WallOfLightAbility("wall_of_light_ability"));

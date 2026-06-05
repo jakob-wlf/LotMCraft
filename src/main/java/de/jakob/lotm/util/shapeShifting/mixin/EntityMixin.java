@@ -1,7 +1,6 @@
 package de.jakob.lotm.util.shapeShifting.mixin;
 
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.ShapeShiftComponent;
+import de.jakob.lotm.util.shapeShifting.ShapeShiftAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.*;
@@ -72,9 +71,8 @@ public abstract class EntityMixin {
     private void onRefreshDimensions(CallbackInfo ci) {
         Entity self = (Entity)(Object)this;
         if (self instanceof Player player) {
-            ShapeShiftComponent data = player.getData(ModAttachments.SHAPE_SHIFT);
-            String shape = data.getShape();
-            boolean onlySkin = data.isSkinOnly();
+            String shape = ShapeShiftAccess.getShapeShift(player).getShape();
+            boolean onlySkin = ShapeShiftAccess.getShapeShift(player).isSkinOnly();
             if (!shape.isEmpty()) {
                 Entity entityShape = createShapeEntity(shape, player);
 
