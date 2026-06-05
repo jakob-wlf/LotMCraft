@@ -81,10 +81,12 @@ import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
 import de.jakob.lotm.gui.custom.ArtifactWheel.ArtifactWheelScreen;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronScreen;
 import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelScreen;
+import de.jakob.lotm.gui.custom.Gathering.GatheringScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesScreen;
 import de.jakob.lotm.gui.custom.Recipe.RecipeScreen;
 import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityScreen;
+import de.jakob.lotm.gui.custom.RiverSefirotAuthority.RiverSefirotAuthorityScreen;
 import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityScreen;
 import de.jakob.lotm.item.ModCreativeModTabs;
 import de.jakob.lotm.item.ModIngredients;
@@ -136,6 +138,8 @@ public class LOTMCraft
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public static final Integer NON_BEYONDER_SEQ = 10;
+    /** Sequence value for a Great Old One (above seq 0). */
+    public static final int GREAT_OLD_ONE_SEQ = -1;
 
     public static KeyMapping pathwayInfosKey;
     public static KeyMapping toggleGriefingKey;
@@ -361,6 +365,8 @@ public class LOTMCraft
             event.register(ModMenuTypes.ARTIFACT_WHEEL_MENU.get(), ArtifactWheelScreen::new);
             event.register(ModMenuTypes.SEFIROT_AUTHORITY_MENU.get(), SefirotAuthorityScreen::new);
             event.register(ModMenuTypes.RIVER_AUTHORITY_MENU.get(), RiverAuthorityScreen::new);
+            event.register(ModMenuTypes.RIVER_SEFIROT_AUTHORITY_MENU.get(), RiverSefirotAuthorityScreen::new);
+            event.register(ModMenuTypes.GATHERING_MENU.get(), GatheringScreen::new);
         }
     }
 

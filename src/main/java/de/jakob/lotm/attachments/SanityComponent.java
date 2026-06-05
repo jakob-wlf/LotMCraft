@@ -1,6 +1,7 @@
 package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.GatheringData;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSanityPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -37,6 +38,9 @@ public class SanityComponent {
 
     public void increaseSanityAndSync(float amount, LivingEntity entity) {
         if (amount < 0) {
+            // Gathered players are immune to sanity damage
+            if (GatheringData.isGathered(entity.getUUID())) return;
+
             // Consume one virtual persona stack to fully cancel this sanity reduction
             if (virtualPersonaStacks > 0) {
                 virtualPersonaStacks--;

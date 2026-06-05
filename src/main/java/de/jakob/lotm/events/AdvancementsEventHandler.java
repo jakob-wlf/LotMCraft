@@ -34,12 +34,14 @@ public class AdvancementsEventHandler {
             grantAdvancement(player, "become_beyonder");
 
             if (BeyonderData.pathwayInfos.get(BeyonderData.getPathway(player)) != null) {
-                if (BeyonderData.getSequence(player) >=10) {
+                if (BeyonderData.getSequence(player) == LOTMCraft.GREAT_OLD_ONE_SEQ) {
+                    // GOO state is legitimate — no sequence advancement to grant
+                } else if (BeyonderData.getSequence(player) >= 10) {
                     LOTMCraft.LOGGER.info("Player is somehow both a beyonder of " + BeyonderData.getPathway(player) + " and a sequence 10+: " + player.getName().getString() + "");
-                    int charSeq = BeyonderData.getCharList(player).stream().mapToInt(c -> c.sequence()).max().orElse(de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ);
+                    int charSeq = BeyonderData.getCharList(player).stream().mapToInt(c -> c.sequence()).filter(s -> s != LOTMCraft.GREAT_OLD_ONE_SEQ).max().orElse(de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ);
                     String charPath = BeyonderData.getCharList(player).stream().filter(c -> c.sequence() == charSeq).findFirst().map(c -> c.pathway()).orElse("none");
                     BeyonderData.setBeyonder(player, charPath, charSeq);
-                }else {
+                } else {
                     String sequenceName = BeyonderData.pathwayInfos.get(BeyonderData.getPathway(player)).getRawSequenceName(BeyonderData.getSequence(player));
                     grantAdvancement(player, "become_" + sequenceName.toLowerCase());
                 }

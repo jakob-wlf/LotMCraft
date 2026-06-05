@@ -22,6 +22,7 @@ import de.jakob.lotm.item.custom.SubordinateControllerItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncOnHoldAbilityPacket;
 import de.jakob.lotm.network.packets.toClient.SyncToggleAbilityPacket;
+import de.jakob.lotm.sefirah.GreatOldOneManager;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

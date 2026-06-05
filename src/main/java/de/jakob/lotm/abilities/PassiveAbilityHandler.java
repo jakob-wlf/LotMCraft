@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.common.passives.ElevatedConcealmentAbility;
 import de.jakob.lotm.abilities.common.passives.ElevatedDivinationAbility;
+import de.jakob.lotm.abilities.common.passives.FateResistanceAbility;
 import de.jakob.lotm.abilities.twilight_giant.Passives.PhysicalEnhancementsTwilightGiantAbility;
 import de.jakob.lotm.abilities.twilight_giant.Passives.WeaponMasteryPassiveAbility;
 import de.jakob.lotm.abilities.abyss.passives.FireResistanceAbyssAbility;
@@ -125,6 +126,9 @@ public class PassiveAbilityHandler {
     // Sefirot passives
     public static final DeferredItem<Item> ELEVATED_DIVINATION_PASSIVE = ITEMS.registerItem("elevated_divination_ability", ElevatedDivinationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     public static final DeferredItem<Item> ELEVATED_CONCEALMENT_PASSIVE = ITEMS.registerItem("elevated_concealment_ability", ElevatedConcealmentAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    // General tier passives
+    public static final DeferredItem<Item> FATE_RESISTANCE_PASSIVE = ITEMS.registerItem("fate_resistance_ability", FateResistanceAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
 
 
     public static void registerAbilities(IEventBus eventBus) {

@@ -506,6 +506,22 @@ public class InternalUnderworldAbility extends SelectableAbility {
             soulData.putBoolean("IsBeyonderNPC", true);
             soulData.putString("BeyonderSkin", npc.getSkinName());
             soulData.putBoolean("BeyonderHostile", npc.isHostile());
+            // NPCs store their pathway/sequence on the entity directly, not in playerMap,
+            // so isBeyonder() returns false for them — read the values directly here.
+            String npcPathway = BeyonderData.getPathway(npc);
+            int npcSequence = BeyonderData.getSequence(npc);
+            if (!npcPathway.isEmpty() && !npcPathway.equals("none")) {
+                soulData.putString("Pathway", npcPathway);
+                soulData.putInt("Sequence", npcSequence);
+                // Give the NPC soul a descriptive display name so it isn't anonymous
+                String seqName;
+                if (npcSequence >= 0 && npcSequence < 10 && BeyonderData.pathwayInfos.containsKey(npcPathway)) {
+                    seqName = BeyonderData.pathwayInfos.get(npcPathway).sequenceNames()[npcSequence];
+                } else {
+                    seqName = "Seq " + npcSequence;
+                }
+                soulData.putString("DisplayName", seqName);
+            }
         } else {
             soulData.putBoolean("IsBeyonderNPC", false);
         }
@@ -518,9 +534,15 @@ public class InternalUnderworldAbility extends SelectableAbility {
             soulData.putBoolean("IsPlayerSoul", false);
         }
 
-        if (BeyonderData.isBeyonder(entity)) {
-            soulData.putString("Pathway", BeyonderData.getPathway(entity));
-            soulData.putInt("Sequence", BeyonderData.getSequence(entity));
+        // For players, read pathway/sequence from BeyonderComponent directly
+        // (isBeyonder uses playerMap which may not be populated for all entity types)
+        if (!soulData.contains("Pathway")) {
+            String soulPathway = BeyonderData.getPathway(entity);
+            int soulSequence = BeyonderData.getSequence(entity);
+            if (!soulPathway.isEmpty() && !soulPathway.equals("none")) {
+                soulData.putString("Pathway", soulPathway);
+                soulData.putInt("Sequence", soulSequence);
+            }
         }
 
         return soulData;

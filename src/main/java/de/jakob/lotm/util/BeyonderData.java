@@ -125,6 +125,13 @@ public class BeyonderData {
     }
 
     public static String getSequenceName(String pathway, int sequence) {
+        if (sequence == LOTMCraft.GREAT_OLD_ONE_SEQ) {
+            return switch (pathway) {
+                case "fool", "error", "door"                  -> "Lord of Mysteries";
+                case "darkness", "death", "twilight_giant"    -> "Eternal Darkness";
+                default                                       -> "Great Old One";
+            };
+        }
         if(!pathwayInfos.containsKey(pathway))
             return "Unknown";
 
@@ -239,7 +246,7 @@ public class BeyonderData {
                 component.getPathwayHistory()[i] = pathway;
             }
         }
-        if (addToPathwayHistory) {
+        if (addToPathwayHistory && sequence >= 0 && sequence < component.getPathwayHistory().length) {
             component.getPathwayHistory()[sequence] = pathway;
         }
         UniquenessComponent uniquenessComponent = entity.getData(ModAttachments.UNIQUENESS_COMPONENT);
@@ -565,7 +572,7 @@ public class BeyonderData {
             return 1;
 
         int sequence = getSequence(entity);
-        if (sequence < 0 || sequence >= multiplier.length)
+        if (sequence < 0 || sequence >= multiplier.length || sequence == LOTMCraft.GREAT_OLD_ONE_SEQ)
             return 1.0;
 
         double damageMultiplier = multiplier[sequence];
@@ -591,10 +598,12 @@ public class BeyonderData {
 
 
     public static double getMultiplierForSequence(int sequence) {
+        if (sequence < 0 || sequence >= multiplier.length || sequence == LOTMCraft.GREAT_OLD_ONE_SEQ) return 1.0;
         return multiplier[sequence];
     }
 
     public static double getSanityDecreaseMultiplierForSequence(int sequence) {
+        if (sequence < 0 || sequence >= sanityDecreaseMultiplier.length || sequence == LOTMCraft.GREAT_OLD_ONE_SEQ) return sanityDecreaseMultiplier[0];
         return sanityDecreaseMultiplier[sequence];
     }
 
@@ -635,7 +644,8 @@ public class BeyonderData {
     }
 
     public static float getMaxSpirituality(String path, int seq){
-        if(seq >= LOTMCraft.NON_BEYONDER_SEQ || !(seq < spiritualityLookup.length) || seq <= -1)
+        if (seq == LOTMCraft.GREAT_OLD_ONE_SEQ) return 500000f; // Great Old One has vast spirituality
+        if(seq >= LOTMCraft.NON_BEYONDER_SEQ || !(seq < spiritualityLookup.length) || seq < 0)
             return 0f;
 
         return switch (path){
@@ -737,7 +747,7 @@ public class BeyonderData {
             return ClientBeyonderCache.getCharacteristicCount(entity.getUUID());
         }
 
-        if(sequence > 9 || sequence < 0) return 0;
+        if(sequence > 9 || sequence < 0 || sequence == LOTMCraft.GREAT_OLD_ONE_SEQ) return 0;
 
         return entity.getData(ModAttachments.BEYONDER_COMPONENT).getCharacteristicList().stream()
                 .filter(c -> c.sequence() == sequence)

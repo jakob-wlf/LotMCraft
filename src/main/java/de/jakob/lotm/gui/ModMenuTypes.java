@@ -2,6 +2,7 @@ package de.jakob.lotm.gui;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.ArtifactWheel.ArtifactWheelMenu;
+import de.jakob.lotm.gui.custom.Gathering.GatheringMenu;
 import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesMenu;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelMenu;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
@@ -9,6 +10,7 @@ import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelMenu;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
 import de.jakob.lotm.gui.custom.Recipe.RecipeMenu;
 import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityMenu;
+import de.jakob.lotm.gui.custom.RiverSefirotAuthority.RiverSefirotAuthorityMenu;
 import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
@@ -64,6 +66,16 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<RiverAuthorityMenu>> RIVER_AUTHORITY_MENU = MENU_TYPES.register(
             "river_authority_menu",
             () -> IMenuTypeExtension.create((windowId, inv, data) -> new RiverAuthorityMenu(windowId, inv, data))
+    );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<RiverSefirotAuthorityMenu>> RIVER_SEFIROT_AUTHORITY_MENU = MENU_TYPES.register(
+            "river_sefirot_authority_menu",
+            () -> IMenuTypeExtension.create((windowId, inv, data) -> new RiverSefirotAuthorityMenu(windowId, inv, data))
+    );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<GatheringMenu>> GATHERING_MENU = MENU_TYPES.register(
+            "gathering_menu",
+            () -> IMenuTypeExtension.create((windowId, inv, data) -> new GatheringMenu(windowId, inv, data))
     );
 
     public static void register(IEventBus eventBus) {

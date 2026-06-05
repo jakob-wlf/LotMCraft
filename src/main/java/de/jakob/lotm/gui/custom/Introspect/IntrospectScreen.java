@@ -9,6 +9,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.*;
+import de.jakob.lotm.util.data.ClientData;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.ClientSacrificeCache;
@@ -116,6 +117,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private int sharedPoolScrollOffset = 0;
     private int maxSharedPoolScroll = 0;
 
+    private static final java.util.Set<String> GOO_ELIGIBLE_PATHWAYS = java.util.Set.of(
+            "fool", "error", "door", "darkness", "death", "twilight_giant");
     private record SubAbilityEntry(Ability parent, int subIndex) {}
 
     public IntrospectScreen(IntrospectMenu menu, Inventory playerInventory, Component title) {
@@ -153,7 +156,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 else {
                     String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
                     ArrayList<Characteristic> charList = ClientBeyonderCache.getCharList(minecraft.player.getUUID());
-                    for (int i = menu.getSequence(); i < pathwayHistory.length; i++) {
+                    // GOO (seq -1) owns everything from seq 0 upward; clamp start index to 0
+                    int historyStart = Math.max(0, menu.getSequence());
+                    for (int i = historyStart; i < pathwayHistory.length; i++) {
                         String pathway = pathwayHistory[i];
                         if (pathway != null) {
                             ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
@@ -163,6 +168,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
                     for (Characteristic characteristic : charList) {
                         if (characteristic.stack() <= 0) {
+                            continue;
+                        }
+                        // Skip the GOO marker entry — it has no ability row of its own
+                        if (characteristic.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) {
                             continue;
                         }
 
@@ -344,6 +353,44 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         return keybind;
     }
 
+    /** Mirrors the server-side GreatOldOneManager.meetsConditions() using client-cached data. */
+    private boolean clientMeetsTranscendConditions() {
+        if (this.minecraft == null || this.minecraft.player == null) return false;
+        java.util.UUID uuid = this.minecraft.player.getUUID();
+        String ownPath = menu.getPathway();
+        java.util.List<de.jakob.lotm.util.playerMap.Characteristic> charList = ClientBeyonderCache.getCharList(uuid);
+
+        // 1. Must be seq 0 of own path
+        int ownSeq = charList.stream()
+                .filter(c -> c.pathway().equals(ownPath))
+                .mapToInt(de.jakob.lotm.util.playerMap.Characteristic::sequence)
+                .min().orElse(LOTMCraft.NON_BEYONDER_SEQ);
+        if (ownSeq != 0) return false;
+
+        // 2. Must have ≥3 seq-1 chars of own path
+        int seq1Stack = charList.stream()
+                .filter(c -> c.pathway().equals(ownPath) && c.sequence() == 1)
+                .mapToInt(de.jakob.lotm.util.playerMap.Characteristic::stack)
+                .findFirst().orElse(0);
+        if (seq1Stack < 3) return false;
+
+        // 3. Must be seq 0 of every neighboring path
+        // Infer sefirot from pathway group
+        java.util.List<String> castle = java.util.List.of("fool", "error", "door");
+        String sefirot = castle.contains(ownPath) ? "sefirah_castle" : "river_of_eternal_darkness";
+        java.util.List<String> neighbors = de.jakob.lotm.sefirah.SefirotAuthorityManager.NEIGHBORING_PATHS
+                .getOrDefault(sefirot, java.util.Collections.emptyList());
+        for (String neighborPath : neighbors) {
+            if (neighborPath.equals(ownPath)) continue;
+            int neighborSeq = charList.stream()
+                    .filter(c -> c.pathway().equals(neighborPath))
+                    .mapToInt(de.jakob.lotm.util.playerMap.Characteristic::sequence)
+                    .min().orElse(LOTMCraft.NON_BEYONDER_SEQ);
+            if (neighborSeq != 0) return false;
+        }
+        return true;
+    }
+
     private void updateButtonPositions() {
         // Clear existing widgets
         this.clearWidgets();
@@ -447,6 +494,25 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                     .build();
             apotheosisButton.active = finalCanApotheosize;
             this.addRenderableWidget(apotheosisButton);
+        }
+
+        // Add "Transcend Sequence" button at the bottom of the GUI spanning its full width
+        if (menu.getSequence() == 0
+                && ClientData.isOwningSefirot()
+                && GOO_ELIGIBLE_PATHWAYS.contains(menu.getPathway())) {
+
+            boolean canTranscend = clientMeetsTranscendConditions();
+
+            Button transcendButton = Button.builder(
+                            Component.literal("✦ Transcend the Sequence ✦")
+                                    .withStyle(canTranscend ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.DARK_GRAY),
+                            button -> {
+                                if (canTranscend) PacketHandler.sendToServer(new RequestTranscendencePacket());
+                            })
+                    .bounds(this.leftPos, this.topPos + this.imageHeight - 20, this.imageWidth, 20)
+                    .build();
+            transcendButton.active = canTranscend;
+            this.addRenderableWidget(transcendButton);
         }
 
         // Add "All Abilities" toggle button for creative + OP players
@@ -745,7 +811,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             String pathwayName = BeyonderData.getSequenceName(c.pathway(), c.sequence());
             int color = BeyonderData.pathwayInfos.get(c.pathway()).color();
 
-            Component text = Component.literal("Seq " + c.sequence() + " ")
+            String seqLabel = (c.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ)
+                    ? "Above the Seq" : ("Seq " + c.sequence());
+            Component text = Component.literal(seqLabel + " ")
                     .append(Component.literal(pathwayName).withStyle(s -> s.withColor(color)))
                     .append(" x" + c.stack());
 

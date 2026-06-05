@@ -78,33 +78,34 @@ public class SpiritWorldChestSpawner {
         }
 
         MysteriousTabletData data = MysteriousTabletData.get(level.getServer());
-        if (!data.canSpawnFragment(MysteriousTabletData.FragmentType.LEFT)) {
-            return;
-        }
+        boolean canSpawn = data.canSpawnFragment(MysteriousTabletData.FragmentType.LEFT);
 
-        // If we know of chest positions, ensure copies exist in all loaded ones
-        Set<BlockPos> knownPositions = data.getSpiritChestPositions();
-        if (!knownPositions.isEmpty()) {
-            for (BlockPos knownChestPos : knownPositions) {
-                if (level.isLoaded(knownChestPos)) {
-                    BlockEntity be = level.getBlockEntity(knownChestPos);
-                    if (be instanceof ChestBlockEntity chest) {
+        // Maintain all known chest positions: add fragment copies when spawning is allowed,
+        // remove chest copies when a fragment is claimed or conditions prevent spawning.
+        for (BlockPos knownChestPos : data.getSpiritChestPositions()) {
+            if (level.isLoaded(knownChestPos)) {
+                BlockEntity be = level.getBlockEntity(knownChestPos);
+                if (be instanceof ChestBlockEntity chest) {
+                    if (canSpawn) {
                         ensureFragmentInChest(level, chest);
+                    } else {
+                        removeChestCopyFromChest(chest);
                     }
                 }
             }
+        }
+
+        if (!canSpawn) {
             return;
         }
 
+        // Scan all players near structures to discover and populate newly generated ones.
         for (ServerPlayer player : level.players()) {
             StructureStart start = getFragmentStructureStart(level, player.blockPosition());
             if (start == null || !start.isValid()) {
                 continue;
             }
-
-            if (tryPopulateStructureChest(level, data, start)) {
-                return;
-            }
+            tryPopulateStructureChest(level, data, start);
         }
     }
 
@@ -129,8 +130,32 @@ public class SpiritWorldChestSpawner {
         return new BlockPos(x, y, z);
     }
 
+    private static void removeChestCopyFromChest(ChestBlockEntity chest) {
+        chest.unpackLootTable(null);
+        boolean changed = false;
+        for (int i = 0; i < chest.getContainerSize(); i++) {
+            ItemStack stack = chest.getItem(i);
+            if (!stack.isEmpty() && stack.getItem() instanceof MysteriousTabletFragmentItem f
+                    && f.getFragmentType() == MysteriousTabletData.FragmentType.LEFT
+                    && MysteriousTabletFragmentItem.isChestCopy(stack)) {
+                chest.setItem(i, ItemStack.EMPTY);
+                changed = true;
+            }
+        }
+        if (changed) {
+            chest.setChanged();
+        }
+    }
+
     private static boolean tryPopulateStructureChest(ServerLevel level, MysteriousTabletData data, StructureStart start) {
         BoundingBox box = start.getBoundingBox();
+
+        // Skip structures that already have a registered chest position inside their bounds.
+        for (BlockPos known : data.getSpiritChestPositions()) {
+            if (box.isInside(known)) {
+                return false;
+            }
+        }
 
         BlockPos chestPos = findChestInStructure(level, box);
         if (chestPos == null) {
