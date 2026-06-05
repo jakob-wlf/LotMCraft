@@ -14,12 +14,14 @@ import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.TerrainAdjustment;
 import net.minecraft.world.level.levelgen.structure.pools.DimensionPadding;
 import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasLookup;
 import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -40,7 +42,8 @@ public class SimpleStructures extends Structure {
                     Heightmap.Types.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
                     Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter),
                     DimensionPadding.CODEC.optionalFieldOf("dimension_padding", JigsawStructure.DEFAULT_DIMENSION_PADDING).forGetter(structure -> structure.dimensionPadding),
-                    LiquidSettings.CODEC.optionalFieldOf("liquid_settings", JigsawStructure.DEFAULT_LIQUID_SETTINGS).forGetter(structure -> structure.liquidSettings)
+                    LiquidSettings.CODEC.optionalFieldOf("liquid_settings", JigsawStructure.DEFAULT_LIQUID_SETTINGS).forGetter(structure -> structure.liquidSettings),
+                    TerrainAdjustment.CODEC.optionalFieldOf("terrain_adaptation", TerrainAdjustment.NONE).forGetter(structure -> structure.terrainAdaptation)
             ).apply(instance, SimpleStructures::new));
 
     private final Holder<StructureTemplatePool> startPool;
@@ -51,6 +54,7 @@ public class SimpleStructures extends Structure {
     private final int maxDistanceFromCenter;
     private final DimensionPadding dimensionPadding;
     private final LiquidSettings liquidSettings;
+    private final TerrainAdjustment terrainAdaptation;
 
     public SimpleStructures(StructureSettings config,
                             Holder<StructureTemplatePool> startPool,
@@ -60,7 +64,8 @@ public class SimpleStructures extends Structure {
                             Optional<Heightmap.Types> projectStartToHeightmap,
                             int maxDistanceFromCenter,
                             DimensionPadding dimensionPadding,
-                            LiquidSettings liquidSettings)
+                            LiquidSettings liquidSettings,
+                            TerrainAdjustment terrainAdaptation)  // ← add this
     {
         super(config);
         this.startPool = startPool;
@@ -71,6 +76,7 @@ public class SimpleStructures extends Structure {
         this.maxDistanceFromCenter = maxDistanceFromCenter;
         this.dimensionPadding = dimensionPadding;
         this.liquidSettings = liquidSettings;
+        this.terrainAdaptation = terrainAdaptation;  // ← add this
     }
 
     /*
@@ -121,6 +127,11 @@ public class SimpleStructures extends Structure {
         BlockState above = columnOfBlocks.getBlock(occupiedYPos + 1);
         return blockState.getFluidState().isEmpty() && above.isAir();
 
+    }
+
+    @Override
+    public @NotNull TerrainAdjustment terrainAdaptation() {
+        return this.terrainAdaptation;
     }
 
     @Override
