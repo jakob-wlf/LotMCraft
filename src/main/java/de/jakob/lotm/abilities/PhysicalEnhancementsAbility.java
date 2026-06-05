@@ -154,12 +154,13 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             }
         }
 
-        Map<EnhancementType, Integer> previousEnhancements = entityEnhancements.getOrDefault(entity.getUUID(), Collections.emptyMap());
+        Map<PhysicalEnhancementsAbility, Map<EnhancementType, Integer>> previousMapForEntity = entityEnhancements.getOrDefault(entity.getUUID(), Collections.emptyMap());
+        Map<EnhancementType, Integer> previousEnhancements = previousMapForEntity.getOrDefault(this, Collections.emptyMap());
 
         Map<EnhancementType, Integer> enhancementMap = new HashMap<>();
         for (PhysicalEnhancement enhancement : currentEnhancements) {
-            if(enhancement.type.equals(EnhancementType.SPEED)){
-                if(this.getPathwayName() != BeyonderData.getPathway(entity)){
+            if (enhancement.type.equals(EnhancementType.SPEED)) {
+                if (!Objects.equals(this.getPathwayName(), BeyonderData.getPathway(entity))) {
                     continue;
                 }
             }
@@ -173,7 +174,9 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             }
         }
 
-        entityEnhancements.put(entity.getUUID(), enhancementMap);
+        Map<PhysicalEnhancementsAbility, Map<EnhancementType, Integer>> newMap = new HashMap<>();
+        newMap.put(this, enhancementMap);
+        entityEnhancements.put(entity.getUUID(), newMap);
 
         reapplyTemporaryEnhancements(entity);
         reapplyEnhancementBoosts(entity);
@@ -533,7 +536,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
     }
 
     private void removeAllEnhancements(LivingEntity entity) {
-        Map<EnhancementType, Integer> enhancements = entityEnhancements.get(entity.getUUID());
+        Map<PhysicalEnhancementsAbility, Map<EnhancementType, Integer>> enhancements = entityEnhancements.get(entity.getUUID());
         if (enhancements != null) {
             for (Map.Entry<EnhancementType, Integer> entry : enhancements.entrySet()) {
                 removeEnhancement(entity, entry.getKey());
@@ -560,6 +563,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
         enhancementBoosts.remove(entity.getUUID());
         reducedRegen.remove(entity.getUUID());
         lastKnownSequence.remove(entity.getUUID());
+    }
     private String getPathwayName() {
         if (cachedPathwayName == null) {
             cachedPathwayName = getRequirements().keySet().stream().findFirst().orElse("none");
