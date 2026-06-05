@@ -818,8 +818,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
             String seqLabel = (c.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ)
                     ? "Above the Seq" : ("Seq " + c.sequence());
+            int finalColor = color;
             Component text = Component.literal(seqLabel + " ")
-                    .append(Component.literal(pathwayName).withStyle(s -> s.withColor(color)))
+                    .append(Component.literal(pathwayName).withStyle(s -> s.withColor(finalColor)))
                     .append(" x" + c.stack());
 
             int textY = listY + (i - startIndex) * lineHeight;
