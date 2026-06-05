@@ -1,16 +1,19 @@
 {
   "structures": [
     {
-      "structure": "lotmcraft:beyonder_house_plains",
+      "structure": "lotmcraft:big_evernight_church",
       "weight": 1
     }
   ],
   "placement": {
     "type": "minecraft:random_spread",
 
-    "salt": 67768776,
-    "spacing": 20,
-    "separation": 8,
+    "salt": 65468776,
+
+    "spacing": 50,
+
+    "frequency": 0.7,
+    "separation": 10,
     "heightmap": "WORLD_SURFACE_WG",
     "max_tries": 10
   }

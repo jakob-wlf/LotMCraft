@@ -60,11 +60,16 @@ public enum SpiritWorldBiome {
             new TerrainParams(70, 16, 0.55f, 0.55f, 8, 32, 60, -60, 80, 1.6f,
                     250)
     ),
+    GILDED_RUINS(
+            GenerationMode.PLATEAU,
+            new TerrainParams(60, 6, 0.20f, 0.35f, 80, 260, 280, -4, 14, 0.45f, 250)
+    ),
     GLACIAL_SHELF(
             GenerationMode.CONTINENTAL,
             new TerrainParams(58, 10, 0.80f, 0.38f, 70, 180, 200, -4, 8, 0.60f,
                     250)
     );
+
 
     /** A biome and its normalised blend contribution at a given world position. */
     public record BiomeWeight(SpiritWorldBiome biome, double weight) {}
@@ -116,6 +121,7 @@ public enum SpiritWorldBiome {
             case GLACIAL_SHELF     -> new double[]{ 0.0, 0.02, 0.01, 0.005, 0.02, 0.0, 0.0, 0.005, 0.01, 0.03, 0.005, 0.0, 0.90, 0.0, 0.0, 0.0 };
             // Glowing mushroom blocks, nylium variants, mycelium-toned deepslate
             case FUNGAL_DEPTHS     -> new double[]{ 0.0, 0.03, 0.0, 0.02, 0.0, 0.0, 0.02, 0.01, 0.005, 0.04, 0.005, 0.0, 0.0, 0.88, 0.0, 0.0 };
+            case GILDED_RUINS -> new double[]{ 0.0, 0.02, 0.01, 0.01, 0.02, 0.01, 0.0, 0.05, 0.0, 0.05, 0.01, 0.0, 0.0, 0.0, 0.60, 0.27 };
         };
     }
 
@@ -135,6 +141,12 @@ public enum SpiritWorldBiome {
                         (c1[1]*0.5f + c2[1]*0.3f + c3[1]*0.2f) * p,
                         (c1[2]*0.5f + c2[2]*0.3f + c3[2]*0.2f) * p
                 };
+            }
+            case GILDED_RUINS -> {
+                float h = 0.10f + (float) Math.sin(timeMs / 5000.0) * 0.03f;
+                float[] c = hsb(h, 0.70f, 0.85f);
+                float p = sinPulse(timeMs, 400, 0.08f, 0.92f);
+                yield new float[]{ c[0]*p, c[1]*p, c[2]*p };
             }
             case CRYSTALLINE_PEAKS -> {
                 float h = 0.56f + (float) Math.sin(timeMs / 8000.0) * 0.14f;
