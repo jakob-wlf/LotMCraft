@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.abilities.visionary.prophecy.triggers.TriggerHelper;
@@ -42,6 +43,18 @@ public class StoryWritingAbility extends ToggleAbility {
 
     @Override
     public void tick(Level level, LivingEntity entity) {
+        if(!(level instanceof ServerLevel serverLevel)) return;
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            cancel(serverLevel, entity);
+            return;
+        }
+
         writingMap.put(entity.getUUID(), AbilityUtil.getSeqWithArt(entity, this));
     }
 
@@ -55,6 +68,15 @@ public class StoryWritingAbility extends ToggleAbility {
 
         if(entity.isShiftKeyDown()) {
             cancel((ServerLevel) level, entity);
+            return;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
             return;
         }
 

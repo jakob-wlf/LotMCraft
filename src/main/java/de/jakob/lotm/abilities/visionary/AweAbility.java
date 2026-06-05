@@ -58,9 +58,16 @@ public class AweAbility extends Ability {
             return;
         }
 
-        level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 1, 1);
-
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                    .withColor(0xFFff124d));
+            return;
+        }
+
+        level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 1, 1);
 
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 10 * (int) Math.max(multiplier(entity)/2,1)).forEach(e -> {
             if(!VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, e, this)){

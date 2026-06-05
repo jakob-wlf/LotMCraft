@@ -79,6 +79,15 @@ public class DreamTraversalAbility extends SelectableAbility {
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
+
         switch (abilityIndex) {
             case 0 -> jump(level, entity);
             case 1 -> jumpInRange(level, entity);
@@ -288,6 +297,13 @@ public class DreamTraversalAbility extends SelectableAbility {
 
             cancelHide(serverLevel, entity);
             return;
+        }
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(hideSeqMap.getOrDefault(entity.getUUID(), 9))){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            cancelHide(serverLevel, entity);
         }
 
         Vec3 hostPos = host.position();

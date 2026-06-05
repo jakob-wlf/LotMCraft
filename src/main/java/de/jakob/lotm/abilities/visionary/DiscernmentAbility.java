@@ -126,10 +126,24 @@ public class DiscernmentAbility extends ToggleAbility {
                 cooldown.remove(entity.getUUID());
         }
 
+        int entitySeq = BeyonderData.getSequence(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            stop(level, entity);
+        }
     }
 
     @Override
     public void start(Level level, LivingEntity entity) {
+        int entitySeq = BeyonderData.getSequence(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
     }
 
     @Override

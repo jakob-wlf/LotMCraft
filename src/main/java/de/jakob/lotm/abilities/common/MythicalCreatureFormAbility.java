@@ -50,11 +50,11 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
             sanity.setSanityAndSync(Math.max(0.0f, sanity.getSanity() - (seq == 4 ? 0.01f : 0.005f)), entity);
         }
 
-        int range = 100;
+        int range = 200;
 
         // Make all entities lower than you loose control when seeing you
         AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), range).forEach(e -> {
-                    if (AbilityUtil.getTargetEntity(e, range, 5f, true) != entity) {
+                    if (AbilityUtil.getTargetEntity(e, range, 5f) != entity) {
                         return;
                     }
 
@@ -102,7 +102,7 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
             if(entity instanceof Player player) {
                 player.getAbilities().mayfly = true;
                 player.getAbilities().flying = true;
-                player.getAbilities().setFlyingSpeed(.5f);
+                player.getAbilities().setFlyingSpeed(.25f);
                 player.onUpdateAbilities();
             }
         }
@@ -160,11 +160,6 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
                 }
                 break;
 
-            case "visionary":
-
-
-                break;
-
             default:
                 break;
         }
@@ -173,10 +168,10 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
     private float getAmount(int seq){
         return switch (seq){
           case 4 -> 0.04168f;
-          case 3 -> 0.05168f;
-          case 2 -> 0.07168f;
-          case 1 -> 0.08168f;
-          case 0 -> 0.092f;
+          case 3 -> 0.06168f;
+          case 2 -> 0.09168f;
+          case 1 -> 0.12168f;
+          case 0 -> 0.19f;
           default -> 0f;
         };
     }

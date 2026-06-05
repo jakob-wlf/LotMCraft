@@ -239,6 +239,8 @@ public class AbilityHandler {
         abilities.add(new StoryWritingAbility("story_writing_ability"));
         abilities.add(new EnvisionPositionAbility("envision_position_ability"));
 
+        abilities.add(new MindWorldAuthorityAbility("mind_world_authority_ability"));
+        abilities.add(new MindWorldAuthorityEnvisioningAbility("mind_world_authority_envisioning_ability"));
 
         // WHEEL OF FORTUNE PATHWAY
         abilities.add(new PsycheStormAbility("psyche_storm_ability"));

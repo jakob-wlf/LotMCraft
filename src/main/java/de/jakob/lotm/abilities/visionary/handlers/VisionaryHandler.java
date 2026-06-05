@@ -15,6 +15,20 @@ import javax.annotation.Nullable;
 
 public class VisionaryHandler {
 
+    private static boolean MIND_WORLD_SEAL = false;
+
+    public static boolean isMindWorldSealed(){
+        return MIND_WORLD_SEAL;
+    }
+
+    public static void setMindWorldSeal(boolean value){
+        MIND_WORLD_SEAL = value;
+    }
+
+    public static boolean shouldBeAffectedWithMindWorldSeal(int seq){
+        return isMindWorldSealed() && seq >= 1;
+    }
+
     private static boolean requiresAsleep(LivingEntity entity) {
         return BeyonderData.getSequence(entity) > 3;
     }

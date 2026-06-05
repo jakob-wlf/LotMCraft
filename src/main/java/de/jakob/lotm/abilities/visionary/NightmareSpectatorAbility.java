@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -50,6 +51,14 @@ public class NightmareSpectatorAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
 
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 200, 2);
 
@@ -67,15 +76,7 @@ public class NightmareSpectatorAbility extends Ability {
             return;
         }
 
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        int targetSeq = BeyonderData.getSequence(target);
-        if(BeyonderData.getPathway(target).equals("visionary") && targetSeq < entitySeq){
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed").withColor(0xFFff124d));
-
-            if(targetSeq <= 1 && target instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer entityPlayer){
-                MetaAwarenessAbility.onDivined(entityPlayer, targetPlayer);
-            }
-
+        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
             return;
         }
 

@@ -4,6 +4,7 @@ import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.abilities.tyrant.TorrentialDownpourAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.wheel_of_fortune.calamities.Earthquake;
 import de.jakob.lotm.abilities.wheel_of_fortune.calamities.Meteor;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -21,6 +22,7 @@ import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -77,6 +79,14 @@ public class DisasterFantasiaAbility extends SelectableAbility {
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 150* (int) Math.max(multiplier(entity)/4,1), 3);
         float multiplier = multiplier(entity);
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
 
         switch (abilityIndex) {
             case 0 -> EARTHQUAKE.spawnCalamity(serverLevel, targetPos, multiplier, griefing, 65* (int) Math.max(multiplier(entity)/4,1), (float) DamageLookup.lookupDps(4, .925, 8, 20) * (int) Math.max(multiplier(entity)/4,1), entity, false);

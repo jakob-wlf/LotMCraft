@@ -7,6 +7,7 @@ import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -34,6 +35,14 @@ public class TelepathyAbility extends ToggleAbility {
 
     @Override
     public void start(Level level, LivingEntity entity) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
     }
 
     @Override
@@ -59,6 +68,14 @@ public class TelepathyAbility extends ToggleAbility {
             return;
         }
         else if(AbilityUtil.isTargetSignificantlyStronger(entitySeq, BeyonderData.getSequence(target))){
+            return;
+        }
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            cancel((ServerLevel) level, player);
             return;
         }
 

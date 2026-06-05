@@ -66,6 +66,14 @@ public class VirtualPersonaAbility extends SelectableAbility {
 
     @Override
     public void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
 
         switch (abilityIndex) {
             case 0 -> virtualSelf(level, entity);

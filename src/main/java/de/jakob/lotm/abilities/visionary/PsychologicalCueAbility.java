@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.visionary;
 import com.ibm.icu.impl.UCaseProps;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
@@ -46,7 +47,18 @@ public class PsychologicalCueAbility extends ToggleAbility {
 
     @Override
     public void tick(Level level, LivingEntity entity) {
+        if(level.isClientSide) return;
+
         map.put(entity.getUUID(), AbilityUtil.getSeqWithArt(entity, this));
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            cancel((ServerLevel) level, entity);
+        }
     }
 
     @Override
@@ -54,6 +66,15 @@ public class PsychologicalCueAbility extends ToggleAbility {
         if(level.isClientSide) {
             if(entity.isShiftKeyDown())
                 ClientHandler.openPsychologicalCueExplanation();
+            return;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
             return;
         }
 

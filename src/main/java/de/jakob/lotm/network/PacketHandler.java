@@ -522,6 +522,12 @@ public class PacketHandler {
                 SyncDiscernmentDataPacket.STREAM_CODEC,
                 SyncDiscernmentDataPacket::handle
         );
+
+        registrar.playToClient(
+                SyncEnvisioningPacket.TYPE,
+                SyncEnvisioningPacket.STREAM_CODEC,
+                SyncEnvisioningPacket::handle
+        );
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {

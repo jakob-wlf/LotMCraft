@@ -66,6 +66,16 @@ public class ManipulationAbility extends SelectableAbility {
             AbilityUtil.sendActionBar(entity, Component.translatable("lotm.not_implemented_yet"));
             return;
         }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
+
         switch (abilityIndex) {
             case 0 -> groupIncite(level, entity);
             //case 1 -> control(level, entity);

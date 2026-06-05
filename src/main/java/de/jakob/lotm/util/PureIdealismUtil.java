@@ -1,6 +1,7 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -141,9 +142,13 @@ public class PureIdealismUtil {
 
         float max = player.getMaxHealth();
         float current = player.getHealth();
-        float limit = max * 0.4f;
+        float limit = max * 0.6f;
 
         if(current <= limit){
+            PureIdealismUtil.stopDiscernment(player);
+        }
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(component.getPreviosSeq())){
             PureIdealismUtil.stopDiscernment(player);
         }
     }
