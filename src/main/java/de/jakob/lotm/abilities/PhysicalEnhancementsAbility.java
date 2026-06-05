@@ -584,10 +584,8 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
         if (enhancement.getAttribute() != null) {
             AttributeInstance instance = entity.getAttribute(enhancement.getAttribute());
             if (instance != null) {
-                // FIX 1: Use pre-cached ResourceLocation instead of parsing a string each call
-                ResourceLocation modifierId = PERMANENT_MODIFIER_IDS.get(enhancement.getType());
-
-                instance.removeModifier(modifierId);
+                // Use per-ability/per-pathway modifier id to avoid collisions between abilities
+                ResourceLocation modifierId = getModifierId(enhancement.getType());
 
                 double value = enhancement.calculateValue();
                 AttributeModifier existing = instance.getModifier(modifierId);
@@ -609,7 +607,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
         if (attribute != null) {
             AttributeInstance instance = entity.getAttribute(attribute);
             if (instance != null) {
-                instance.removeModifier(PERMANENT_MODIFIER_IDS.get(type));
+            instance.removeModifier(getModifierId(type));
             }
         }
     }
