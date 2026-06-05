@@ -472,7 +472,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
 
         if (boosts != null) {
             for (EnhancementBoost boost : boosts.values()) {
-                if (boost.enhancement.getType() == EnhancementType.REGENERATION) {
+                if (boost.type == EnhancementType.REGENERATION) {
                     regenLevel += boost.amount;
                 }
             }
