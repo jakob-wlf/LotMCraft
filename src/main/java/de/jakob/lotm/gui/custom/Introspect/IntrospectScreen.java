@@ -809,7 +809,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         for (int i = startIndex; i < endIndex; i++) {
             Characteristic c = charList.get(i);
             String pathwayName = BeyonderData.getSequenceName(c.pathway(), c.sequence());
-            int color = BeyonderData.pathwayInfos.get(c.pathway()).color();
+            int color = 0xFFFFFF;
+            try {
+                color = BeyonderData.pathwayInfos.get(c.pathway()).color();
+            } catch (Exception e) {
+                LOTMCraft.LOGGER.error("Error rendering characteristic: {}", e.getMessage());
+            }
 
             String seqLabel = (c.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ)
                     ? "Above the Seq" : ("Seq " + c.sequence());
