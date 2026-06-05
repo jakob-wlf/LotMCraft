@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ApotheosisComponent;
 import de.jakob.lotm.attachments.BeyonderComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.Characteristic;
@@ -115,13 +116,17 @@ public class GreatOldOneManager {
                 .orElse(LOTMCraft.NON_BEYONDER_SEQ);
         if (ownSeq != 0) missing.add("You must be Sequence 0 of your own path (" + ownPath + "). Current best: " + ownSeq);
 
-        // 2. Must have ≥3 seq-1 characteristics of own path
-        int seq1Stack = charList.stream()
-                .filter(c -> c.pathway().equals(ownPath) && c.sequence() == 1)
-                .mapToInt(Characteristic::stack)
-                .findFirst()
-                .orElse(0);
-        if (seq1Stack < 3) missing.add("You need ≥3 Sequence-1 characteristics of " + ownPath + ". Current: " + seq1Stack + "/3");
+        // 2. Must have ≥3 seq-1 characteristics of all domain pathways
+        int requiredSeq1 = player.serverLevel().getGameRules().getInt(ModGameRules.CHARSTACK_REQUIRED_FOR_APOTHEOSIS);
+        for(String path : SefirotAuthorityManager.NEIGHBORING_PATHS.getOrDefault(sefirot, Collections.emptyList())) {
+            int seq1Stack = charList.stream()
+                    .filter(c -> c.pathway().equals(path) && c.sequence() == 1)
+                    .mapToInt(Characteristic::stack)
+                    .findFirst()
+                    .orElse(0);
+            if (seq1Stack < requiredSeq1)
+                missing.add("You need " + requiredSeq1 + " Sequence-1 characteristics of " + ownPath + ". Current: " + seq1Stack + "/3");
+        }
 
         // 3. Must be seq 0 of every neighboring path
         List<String> neighbors = SefirotAuthorityManager.NEIGHBORING_PATHS

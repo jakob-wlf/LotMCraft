@@ -470,7 +470,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
 
         // Add Apotheosis button if player has uniqueness and is Sequence 1
-        if (ClientUniquenessCache.hasUniqueness() && menu.getSequence() == 1) {
+        if (ClientUniquenessCache.hasUniqueness() && menu.getSequence() <= 1) {
             int apotheosisButtonX = baseLeftPos - 65;
             int apotheosisButtonY = this.topPos + 110;
 
