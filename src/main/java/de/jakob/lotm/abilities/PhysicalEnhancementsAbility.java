@@ -538,8 +538,10 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
     private void removeAllEnhancements(LivingEntity entity) {
         Map<PhysicalEnhancementsAbility, Map<EnhancementType, Integer>> enhancements = entityEnhancements.get(entity.getUUID());
         if (enhancements != null) {
-            for (Map.Entry<EnhancementType, Integer> entry : enhancements.entrySet()) {
-                removeEnhancement(entity, entry.getKey());
+            for (Map<EnhancementType, Integer> map : enhancements.values()) {
+                for (EnhancementType type : map.keySet()) {
+                    removeEnhancement(entity, type);
+                }
             }
         }
 
@@ -686,10 +688,6 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             if (instance != null) {
                 ResourceLocation modifierId = boostModifierId(id);
                 instance.removeModifier(modifierId);
-
-                int effectiveLevel = Math.max(0, enhancement.getLevel() + amount);
-                PhysicalEnhancement boosted = new PhysicalEnhancement(enhancement.getType(), effectiveLevel);
-                double value = boosted.calculateValue() - enhancement.calculateValue();
 
                 double value = amount * type.getValuePerLevel();
                 AttributeModifier modifier = new AttributeModifier(modifierId, value, type.getOperation());
