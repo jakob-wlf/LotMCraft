@@ -221,13 +221,13 @@ public abstract class Ability {
         }
 
         // Check pathway
-        for(int i = sequence; i < BeyonderData.getPathwayHistory(entity).length; i++) {
+        /*for(int i = sequence; i < BeyonderData.getPathwayHistory(entity).length; i++) {
             if(BeyonderData.getPathwayHistory(entity)[i] == null) continue;
             String userPath = BeyonderData.getPathwayHistory(entity)[i];
             if(getRequirements().containsKey(userPath) && getRequirements().get(userPath) == i) {
                 return true;
             }
-        }
+        }*/
         return BeyonderData.getCharList(entity).stream().anyMatch(character -> getRequirements().containsKey(character.pathway()) && getRequirements().get(character.pathway()) >= sequence);
 
         //return false;
