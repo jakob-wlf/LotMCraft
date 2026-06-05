@@ -174,9 +174,11 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             }
         }
 
-        Map<PhysicalEnhancementsAbility, Map<EnhancementType, Integer>> newMap = new HashMap<>();
-        newMap.put(this, enhancementMap);
-        entityEnhancements.put(entity.getUUID(), newMap);
+        entityEnhancements.compute(entity.getUUID(), (k, v) -> {
+            if (v == null) v = new ConcurrentHashMap<>();
+            v.put(this, enhancementMap);
+            return v;
+        });
 
         reapplyTemporaryEnhancements(entity);
         reapplyEnhancementBoosts(entity);
