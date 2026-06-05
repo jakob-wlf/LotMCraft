@@ -126,6 +126,8 @@ public class BeyonderDataTickHandler {
 
             if(entity.tickCount % 200 == 0) {
                 invalidateCache(livingEntity);
+                PhysicalEnhancementsAbility.resetEnhancements(event.getEntity().getUUID(), livingEntity, false);
+                invalidateCache(livingEntity);
             }
 
             // Tick Passive Abilities, and onHold for currently selected Ability and tick luck
@@ -174,7 +176,7 @@ public class BeyonderDataTickHandler {
 
             // Slowly digest potion
             if(player.tickCount % 20 == 0) {
-                BeyonderData.digest(player, 1 / (20 * 60 * 60f), false);
+                BeyonderData.digest(player, 1 / (20 * 60 * 60f), true);
             }
         }
 
@@ -192,6 +194,8 @@ public class BeyonderDataTickHandler {
 
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
+        PhysicalEnhancementsAbility.resetEnhancements(event.getEntity().getUUID(), event.getEntity(), true);
+        invalidateCache(event.getEntity());
         PhysicalEnhancementsAbility.resetEnhancements(event.getEntity());
         invalidateCache(event.getEntity()); // also re-filter applicable abilities
         lastTickedAbilities.remove(event.getEntity().getUUID());

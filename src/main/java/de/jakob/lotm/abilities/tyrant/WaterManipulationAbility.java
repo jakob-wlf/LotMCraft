@@ -161,7 +161,7 @@ public class WaterManipulationAbility extends SelectableAbility {
                 return;
             }
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, .825) * (int) Math.max(multiplier(entity)/4,1), pos, true, false, true, 0)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, .825) * multiplier(entity), pos, true, false, true, 0)) {
                 hasHit.set(true);
                 return;
             }

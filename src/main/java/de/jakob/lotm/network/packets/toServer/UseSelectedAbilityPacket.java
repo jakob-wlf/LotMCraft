@@ -2,6 +2,7 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.FoolingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -54,8 +55,12 @@ public record UseSelectedAbilityPacket() implements CustomPacketPayload {
 
                 int selectedIndex = component.getSelectedAbility();
                 if (selectedIndex >= 0 && selectedIndex < component.getAbilities().size()) {
-                    String abilityId = component.getAbilities().get(selectedIndex);
+                    String abilityId = component.getAbilities().get(selectedIndex).split(":")[0];
                     Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+
+                    if(ability instanceof SelectableAbility && getIndex(component.getAbilities().get(selectedIndex)) != -1) {
+                        ((SelectableAbility) ability).addSubAbilityOverride(serverPlayer, getIndex(component.getAbilities().get(selectedIndex)));
+                    }
 
                     if (ability != null && serverPlayer.level() instanceof ServerLevel serverLevel) {
                         boolean isSharedAbility = isSharedAbility(serverPlayer, abilityId);
@@ -64,6 +69,16 @@ public record UseSelectedAbilityPacket() implements CustomPacketPayload {
                 }
             }
         });
+    }
+
+    private static int getIndex(String s) {
+        String[] parts = s.split(":");
+        if (parts.length < 2) return -1;
+        try {
+            return Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
     private static boolean isSharedAbility(ServerPlayer player, String abilityId) {

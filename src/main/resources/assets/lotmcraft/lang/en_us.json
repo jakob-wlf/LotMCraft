@@ -268,6 +268,10 @@
   "lotmcraft.puppet_soldier_creation_ability": "Puppet Soldier Creation",
   "lotmcraft.puppet_soldier_creation_ability.description": "Create 5 Puppet Soldiers, each equal to Sequence 4 Red Priest Demigod and command them",
 
+  "lotmcraft.illusory_scales_ability": "Illusory Scales",
+  "lotmcraft.illusory_scales_ability.description": "Create illusory scales around you to protect you to increase your resistance",
+  "lotmcraft.wrath_ability": "Wrath",
+  "lotmcraft.wrath_ability.description": "Get enraged and boost your strength and speed in exchange for some of your sanity",
   "lotmcraft.raging_blows_ability": "Raging Blows",
   "lotmcraft.raging_blows_ability.description": "A series of powerful blows that damage your opp",
   "lotmcraft.water_manipulation_ability": "Water Manipulation",
@@ -644,6 +648,8 @@
   "ability.lotmcraft.recording.no_ability": "No ability was recorded",
   "lotmcraft.blink_ability": "Blink",
   "lotmcraft.blink_ability.description": "Rapidly teleport on short distance",
+  "ability.lotmcraft.blink.blink": "Blink",
+  "ability.lotmcraft.blink.barrage": "Blink barrage",
   "lotmcraft.invisible_hand_ability": "Invisible Hand",
   "lotmcraft.invisible_hand_ability.description": "Use your invisible Hand to push and pull entities",
   "ability.lotmcraft.invisible_hand.push": "Push",
@@ -1224,6 +1230,8 @@
   "item.lotmcraft.mirror_revival_ability": "Mirror Revival",
   "item.lotmcraft.mirror_revival_ability.description": "If there is glass near you, you will resurrect after death",
 
+  "item.lotmcraft.lightning_arrow_ability": "Lightning Arrow",
+  "item.lotmcraft.lightning_arrow_ability.description": "Your arrows are infused with lightning, greatly enhancing their strength",
   "item.lotmcraft.riptide_ability": "Riptide",
   "item.lotmcraft.riptide_ability.description": "Your Beyonder Abilities get stronger while you are in water",
 
@@ -1907,6 +1915,9 @@
   "lotm.uniqueness.overworld": "You can only ascend in the overworld",
   "lotm.uniqueness.spawned": "The uniqueness of your pathway has manifested in the world...",
   "lotm.uniqueness.picked_up": " has claimed the uniqueness!",
+
+  "_comment016": "Acting-------------------------------------------------------------------------",
+  "lotm.acting.plant_crop": "Plant Crops",
 
   "lotm.griefing": "Griefing Enabled",
   "lotm.griefing_required": "Griefing must be enabled",

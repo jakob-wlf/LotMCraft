@@ -86,7 +86,7 @@ public class AbilityWheelHelper {
     public static void removeUnusableAbilities(ServerPlayer player) {
         AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
         for(String abilityId : new ArrayList<>(component.getAbilities())) {
-            Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+            Ability ability = LOTMCraft.abilityHandler.getById(abilityId.split(":")[0]);
             if(ability == null || !ability.hasAbility(player)) {
                 component.getAbilities().remove(abilityId);
             }

@@ -193,7 +193,7 @@ public class ControllingUtil {
                         }
                     }
 
-                    int charSeq = charList.stream().mapToInt(c -> c.sequence()).max().orElse(-1);
+                    int charSeq = charList.stream().mapToInt(c -> c.sequence()).min().orElse(-1);
                     String charPath = charList.stream().filter(c -> c.sequence() == charSeq).findFirst().map(c -> c.pathway()).orElse("");
                     LOTMCraft.LOGGER.info("reset: patching saved target tag with player Beyonder state: player={} uuid={} currentPathway={} currentSequence={} charCount={}",
                             player.getDisplayName().getString(), player.getUUID(), currentPathway, currentSequence, charList.size());
@@ -293,7 +293,7 @@ public class ControllingUtil {
                         copyEntities(originalBody, player);
                         copyPosition(originalBody, player);
 
-                        PhysicalEnhancementsAbility.resetEnhancements(player);
+                        PhysicalEnhancementsAbility.resetEnhancements(player.getUUID(), player, true);
 
                         float health = bodyTag.getFloat("Health");
                         ServerScheduler.scheduleDelayed(5, () -> {

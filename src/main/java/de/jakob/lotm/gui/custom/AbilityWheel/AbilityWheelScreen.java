@@ -3,11 +3,15 @@ package de.jakob.lotm.gui.custom.AbilityWheel;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.events.KeyInputHandler;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.UpdateSelectedAbilityPacket;
 import de.jakob.lotm.network.packets.toServer.UseSelectedAbilityPacket;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.ClientData;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -32,9 +36,6 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
     private static final int SLOT_SIZE = 30;
     private static final int SLOT_HOVER_SIZE = 32;
 
-    // FIX: Raised cap to 27 to match the new max ability count.
-    // Previously this was 14, which caused getSlotAtPosition (using full count)
-    // to diverge from renderAbilitySlots (capped at 14), breaking hover alignment.
     private static final int MAX_ABILITIES = 27;
 
     private int hoveredSlot = -1;
@@ -68,8 +69,6 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
             return;
         }
 
-        // FIX: clamp here once and use this clamped count everywhere downstream.
-        // Previously the cap was applied inconsistently across methods.
         int count = Math.min(abilities.size(), MAX_ABILITIES);
         hoveredSlot = getSlotAtPosition(mouseX, mouseY, count);
     }
@@ -86,8 +85,6 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
             return;
         }
 
-        // FIX: apply the cap once here, pass the clamped count to every downstream call
-        // so all rendering methods operate on the same count as the hover detection.
         int count = Math.min(abilities.size(), MAX_ABILITIES);
         List<String> clampedAbilities = abilities.subList(0, count);
 
@@ -119,7 +116,6 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
     }
 
     private void renderSectionLines(GuiGraphics guiGraphics, int centerX, int centerY, List<String> abilities) {
-        // FIX: use abilities.size() directly — the list is already clamped by the caller.
         int abilityCount = abilities.size();
         int lineColor = 0x4Dc4a8e3;
 
@@ -196,9 +192,6 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
     }
 
     private void renderAbilitySlots(GuiGraphics guiGraphics, int centerX, int centerY, List<String> abilities) {
-        // FIX: use abilities.size() directly — the list is already clamped by the caller.
-        // Previously this applied Math.min(abilities.size(), 14) here independently,
-        // which diverged from getSlotAtPosition's count and broke hover alignment.
         int abilityCount = abilities.size();
 
         for (int i = 0; i < abilityCount; i++) {
@@ -232,8 +225,19 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
         guiGraphics.fill(x, y, x + borderWidth, y + size, borderColor);
         guiGraphics.fill(x + size - borderWidth, y, x + size, y + size, borderColor);
 
+        // Parse sub-ability index from abilityId (e.g. "someid:2")
+        int colonIdx = abilityId.lastIndexOf(':');
+        int subIndex = -1;
+        String baseId = abilityId;
+        if (colonIdx >= 0) {
+            try {
+                subIndex = Integer.parseInt(abilityId.substring(colonIdx + 1));
+                baseId = abilityId.substring(0, colonIdx);
+            } catch (NumberFormatException ignored) {}
+        }
+
         try {
-            ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/abilities/" + abilityId + ".png");
+            ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/abilities/" + baseId + ".png");
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, texture);
 
@@ -252,10 +256,30 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
             guiGraphics.fill(x + padding, y + padding, x + size - padding, y + size - padding, 0xFF8B6914);
         }
 
+        // Draw sub-index badge in the bottom-right corner of the slot
+        if (subIndex >= 0) {
+            String badge = String.valueOf(subIndex);
+            int bx = pos.x + size / 2 - net.minecraft.client.Minecraft.getInstance().font.width(badge) - 2;
+            int by = pos.y + size / 2 - net.minecraft.client.Minecraft.getInstance().font.lineHeight + 1;
+            guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, badge, bx, by, 0xFFFFFF, false);
+        }
+
         if (isHovered) {
-            Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+            Ability ability = LOTMCraft.abilityHandler.getById(baseId);
             if (ability != null) {
-                Component name = ability.getNameFormatted();
+                Component name;
+                if (subIndex >= 0 && ability instanceof SelectableAbility sa) {
+                    String[] names = sa.getAbilityNamesCopy();
+                    if (subIndex < names.length) {
+                        String pathway = BeyonderData.getPathway(ClientHandler.getPlayer());
+                        int color = BeyonderData.pathwayInfos.containsKey(pathway) ? BeyonderData.pathwayInfos.get(pathway).color() : 0xFFFFFF;
+                        name = Component.translatable(names[subIndex]).withStyle(ChatFormatting.BOLD).withColor(color);
+                    }
+                    else
+                        name = ability.getNameFormatted(ClientHandler.getPlayer());
+                } else {
+                    name = ability.getNameFormatted(ClientHandler.getPlayer());
+                }
                 int textWidth = net.minecraft.client.Minecraft.getInstance().font.width(name);
                 guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, name,
                         pos.x - textWidth / 2, pos.y - size / 2 - 12, 0xFFFFFF, true);
@@ -264,10 +288,6 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
     }
 
     private SlotPosition getSlotPosition(int index, int totalSlots, int centerX, int centerY) {
-        // FIX: unified radius — previously this used 85 for ≤5 and 95 for >5,
-        // which was fine, but keeping a single value simplifies reasoning.
-        // For 27 slots packed tightly, 75 keeps icons within the wheel background.
-        // Adjust this value if icons clip the wheel edge.
         int radius;
         if (totalSlots <= 5) {
             radius = 85;
@@ -304,11 +324,6 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
 
         double degreesPerSection = 360.0 / totalSlots;
 
-        // This offset must stay consistent with how getSlotPosition places slots.
-        // getSlotPosition uses:  angle = index * (360/n) - 90
-        // So slot 0 is at 270° (straight up). Sections are centered on each slot,
-        // meaning section boundaries are at ±(degreesPerSection/2) from each slot.
-        // The adjustment below rotates the mouse angle into that same coordinate space.
         double adjustedAngle = angleDegrees - 270 + (degreesPerSection / 2.0);
 
         while (adjustedAngle < 0) {

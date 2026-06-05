@@ -257,7 +257,6 @@ public class BeyonderData {
         LuckComponent luckComponent = entity.getData(ModAttachments.LUCK_COMPONENT);
         luckComponent.setLuck(0);
 
-        // Sync to client if this is server-side
         if (entity.level() instanceof ServerLevel serverLevel) {
 
             callPassiveEffectsOnAdd(entity, serverLevel);
@@ -271,9 +270,6 @@ public class BeyonderData {
                 SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicList());
                 PacketHandler.sendToAllPlayers(packet);
 
-                // Disband team if the leader is no longer eligible (Red Priest seq <= 3).
-                // Only applies when this player is actually the leader (has members) — members
-                // advancing their own sequence should never trigger a disband.
                 TeamComponent teamComp = serverPlayer.getData(ModAttachments.TEAM_COMPONENT.get());
                 if (teamComp.memberCount() > 0 && !TeamUtils.isEligibleLeader(serverPlayer)) {
                     TeamUtils.disbandTeam(serverPlayer, serverPlayer.getServer());
@@ -549,7 +545,6 @@ public class BeyonderData {
             return;
         }
 
-        // Sync to client if this is server-side
         if (!entity.level().isClientSide() && entity instanceof ServerPlayer serverPlayer) {
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
         }
@@ -590,7 +585,6 @@ public class BeyonderData {
             }
         }
 
-        // Uniqueness boost: +10% multiplier when holding the uniqueness
         if (!entity.level().isClientSide()) {
             de.jakob.lotm.attachments.UniquenessComponent uniquenessComp =
                     entity.getData(ModAttachments.UNIQUENESS_COMPONENT);
@@ -633,7 +627,6 @@ public class BeyonderData {
 
         player.getData(ModAttachments.BEYONDER_COMPONENT).setDigestionProgress(progress);
 
-        // Sync to client if this is server-side
         if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
         }
@@ -851,10 +844,14 @@ public class BeyonderData {
         return false;
     }
 
-    public static void digest(Player player, float amount, boolean countTowardsCooldown) {
+    public static void digest(Player player, float amount, boolean accountForDigestionRate) {
         if (hasSwitchedPathway(player)) amount /= 2f;
         float current = getDigestionProgress(player);
+        if(accountForDigestionRate) {
+            amount *= (player.level().getGameRules().getInt(ModGameRules.DIGESTION_RATE) / 10f);
+        }
         float newAmount = Math.min(1.0f, current + amount);
+
         if(newAmount == 1.0f && current < 1.0f) {
             AbilityUtil.sendActionBar(player, Component.translatable("lotm.digested").withColor(0xbd64d1));
             if(player.level() instanceof ServerLevel serverLevel) {
