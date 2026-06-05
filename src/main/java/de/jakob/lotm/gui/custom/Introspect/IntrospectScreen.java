@@ -813,7 +813,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             try {
                 color = BeyonderData.pathwayInfos.get(c.pathway()).color();
             } catch (Exception e) {
-                LOTMCraft.LOGGER.error("Error rendering characteristic: {}", e.getMessage());
+                LOTMCraft.LOGGER.error("Error rendering {} characteristic: {}", c.pathway(), e.getMessage());
             }
 
             String seqLabel = (c.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ)
