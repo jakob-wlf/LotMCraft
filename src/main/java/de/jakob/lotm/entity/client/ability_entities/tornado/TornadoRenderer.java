@@ -18,12 +18,10 @@ import net.minecraft.util.Mth;
 public class TornadoRenderer extends EntityRenderer<TornadoEntity> {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/tornado/tornado.png");
     private final TornadoModel<TornadoEntity> model;
-    private final BlockRenderDispatcher blockRenderer;
 
     public TornadoRenderer(EntityRendererProvider.Context context) {
         super(context);
         this.model = new TornadoModel<>(context.bakeLayer(TornadoModel.LAYER_LOCATION));
-        this.blockRenderer = Minecraft.getInstance().getBlockRenderer();
     }
 
     @Override
@@ -34,7 +32,8 @@ public class TornadoRenderer extends EntityRenderer<TornadoEntity> {
 
         float ageInTicks = entity.tickCount + partialTicks;
 
-        poseStack.scale(1.85f, -2.1f, 1.85f);
+        float size = entity.getSize();
+        poseStack.scale(1.85f * size, -2.1f * size, 1.85f * size);
         poseStack.translate(0, -1.5, 0);
 
         RenderType renderType = petrified ? RenderType.entityTranslucent(LOTMCraft.STONE_TEXTURE) :
@@ -47,32 +46,7 @@ public class TornadoRenderer extends EntityRenderer<TornadoEntity> {
         model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, color);
 
         poseStack.popPose();
-
-        renderCirclingBlocks(entity, partialTicks, poseStack, buffer, packedLight);
-
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
-    }
-
-    private void renderCirclingBlocks(TornadoEntity entity, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        for (TornadoEntity.CirclingBlock circlingBlock : entity.getCirclingBlocks()) {
-            poseStack.pushPose();
-
-            float angle = circlingBlock.angle + partialTicks * 5.0f;
-            float radians = (float) Math.toRadians(angle);
-
-            float x = (float) (Math.cos(radians) * circlingBlock.radius);
-            float z = (float) (Math.sin(radians) * circlingBlock.radius);
-            float y = circlingBlock.height + Mth.sin((entity.tickCount + partialTicks) * 0.1f + circlingBlock.height) * 0.5f;
-
-            poseStack.translate(x, y, z);
-            poseStack.mulPose(Axis.YP.rotationDegrees(angle * 2));
-            poseStack.mulPose(Axis.XP.rotationDegrees(angle));
-            poseStack.scale(0.5f, 0.5f, 0.5f);
-
-            blockRenderer.renderSingleBlock(circlingBlock.state, poseStack, buffer, packedLight, OverlayTexture.NO_OVERLAY);
-
-            poseStack.popPose();
-        }
     }
 
     @Override

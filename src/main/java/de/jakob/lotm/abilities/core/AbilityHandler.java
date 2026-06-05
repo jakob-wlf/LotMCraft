@@ -85,6 +85,8 @@ public class AbilityHandler {
         abilities.add(new PuppetSoldierCreationAbility("puppet_soldier_creation_ability"));
 
         // TYRANT PATHWAY
+        abilities.add(new IllusoryScalesAbility("illusory_scales_ability"));
+        abilities.add(new WrathAbility("wrath_ability"));
         abilities.add(new RagingBlowsAbility("raging_blows_ability"));
         abilities.add(new WaterManipulationAbility("water_manipulation_ability"));
         abilities.add(new WindManipulationAbility("wind_manipulation_ability"));

@@ -35,7 +35,7 @@ public class HurricaneAbility extends Ability {
 
         Vec3 pos = AbilityUtil.getTargetLocation(entity, 12, 2);
 
-        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) (DamageLookup.lookupDamage(4, .65)* (int) Math.max(multiplier(entity)/4,1)), entity) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) (DamageLookup.lookupDamage(4, .65)* (int) Math.max(multiplier(entity)/4,1)), entity, target);
+        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) (DamageLookup.lookupDamage(4, .65)* (int) Math.max(multiplier(entity)/4,1)), entity) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) (DamageLookup.lookupDamage(4, .65)* (int) Math.max(multiplier(entity)/4,1)), entity, target, 1.5f);
         tornado.setPos(pos);
         level.addFreshEntity(tornado);
     }
