@@ -144,9 +144,9 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
 
                     if (sequenceLevel < 9) {
                         currentEnhancements = currentEnhancements.stream()
-                                .map(obj -> obj.type.equals(EnhancementType.HEALTH) ?
+                                        .map(obj -> obj.type.equals(EnhancementType.HEALTH) ?
                                         new PhysicalEnhancement(EnhancementType.HEALTH,
-                                                recalculateHealthLevelWithStacks(sequenceLevel, obj.level, charList, data.uniqueness()))
+                                                recalculateHealthLevelWithStacks(sequenceLevel, obj.level, charList, data.uniqueness(), null))
                                         : obj)
                                 .toList();
                     }
@@ -205,9 +205,9 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
         return BeyonderData.getSequence(entity, getPathwayName());
     }
 
-    protected int recalculateHealthLevelWithStacks(int seq, int prevLevel, List<Characteristic> characteristics, String uniqueness){
+    protected int recalculateHealthLevelWithStacks(int seq, int prevLevel, List<Characteristic> characteristics, String uniqueness, String pathwayToConsider){
         int result = prevLevel;
-        String myPathway = getPathwayName();
+        String myPathway = pathwayToConsider; // null means consider all pathways
 
         for(int i = 9; i >= seq; i--){
             final int s = i;
@@ -215,15 +215,15 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
 
             if (i == 1) {
                 buff = (int) characteristics.stream()
-                        .filter(c -> c.pathway().equals(myPathway) && c.sequence() == 1)
+                        .filter(c -> (myPathway == null || c.pathway().equals(myPathway)) && c.sequence() == 1)
                         .count();
             } else {
                 buff = (int) characteristics.stream()
-                        .filter(c -> c.pathway().equals(myPathway) && c.sequence() == s)
+                        .filter(c -> (myPathway == null || c.pathway().equals(myPathway)) && c.sequence() == s)
                         .count();
             }
             int stacks = characteristics.stream()
-                    .filter(c -> c.pathway().equals(myPathway) && c.sequence() == s)
+                    .filter(c -> (myPathway == null || c.pathway().equals(myPathway)) && c.sequence() == s)
                     .mapToInt(c -> Math.max(0, c.stack() - 1))
                     .sum();
             buff *=  ((stacks*4f)/(stacks+18f) + 1);
@@ -241,7 +241,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             }
         }
 
-        if (uniqueness != null && uniqueness.equalsIgnoreCase(myPathway)) {
+        if (myPathway != null && uniqueness != null && uniqueness.equalsIgnoreCase(myPathway)) {
             result += 20;
         }
 
