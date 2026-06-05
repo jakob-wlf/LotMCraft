@@ -136,7 +136,8 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
             regressedPathway = "none";
             sefirot = "";
         } else {
-            String historyEntry = pathwayHistory[newSequence];
+            String historyEntry = (newSequence >= 0 && newSequence < pathwayHistory.length)
+                    ? pathwayHistory[newSequence] : null;
             regressedPathway = (historyEntry != null && !historyEntry.isEmpty()) ? historyEntry : pathway;
         }
 
@@ -146,7 +147,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
             clearedHistory = new String[10];
         } else {
             clearedHistory = Arrays.copyOf(pathwayHistory, 10);
-            for (int i = 0; i <= newSequence; i++) {
+            for (int i = 0; i <= Math.min(newSequence, 9); i++) {
                 clearedHistory[i] = null;
             }
         }

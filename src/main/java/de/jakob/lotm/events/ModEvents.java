@@ -245,6 +245,7 @@ public class ModEvents {
         SequenceSlotsCommand.register(event.getDispatcher());
         AncientTraderCommand.register(event.getDispatcher());
         FragmentCommand.register(event.getDispatcher());
+        GreatOldOneCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

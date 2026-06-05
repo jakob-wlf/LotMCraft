@@ -3,6 +3,7 @@ package de.jakob.lotm.gui.custom.SefirotAuthority;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.RequestGatheringScreenPacket;
 import de.jakob.lotm.network.packets.toServer.ToggleSefirotAuthorityAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.pathways.PathwayInfos;
@@ -105,6 +106,14 @@ public class SefirotAuthorityScreen extends AbstractContainerScreen<SefirotAutho
                 .bounds(leftPos + PANEL_WIDTH - 14, topPos + 30, 12, 12).build());
         addRenderableWidget(Button.builder(Component.literal("▼"), b -> { if (scrollOffset < maxScroll) scrollOffset = Math.min(maxScroll, scrollOffset + 10); })
                 .bounds(leftPos + PANEL_WIDTH - 14, topPos + PANEL_HEIGHT - 22, 12, 12).build());
+
+        // Gatherings button — only shown for sefirah_castle owner
+        if ("sefirah_castle".equals(menu.getSefirotName())) {
+            addRenderableWidget(Button.builder(
+                    Component.literal("Gatherings").withStyle(ChatFormatting.LIGHT_PURPLE),
+                    b -> { PacketHandler.sendToServer(new RequestGatheringScreenPacket()); this.onClose(); }
+            ).bounds(leftPos + 4, topPos + PANEL_HEIGHT - 20, 80, 16).build());
+        }
 
         unlocked.clear();
         unlocked.addAll(menu.getUnlockedIds());

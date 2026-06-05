@@ -329,6 +329,18 @@ public class BeyonderEventHandler {
         if (!BeyonderData.isBeyonder(player)) return;
         if (playerMap.get(player).isEmpty()) return;
 
+        // Great Old One: only a seq-0 beyonder can end their transcendence
+        if (de.jakob.lotm.sefirah.GreatOldOneManager.isGreatOldOne(player)) {
+            Entity killer = event.getSource().getEntity();
+            if (killer instanceof ServerPlayer killerPlayer
+                    && BeyonderData.getSequence(killerPlayer) == 0) {
+                de.jakob.lotm.sefirah.GreatOldOneManager.revert(player);
+                BeyonderData.setDigestionProgress(player, 1.0f);
+            }
+            // All other deaths are ignored for GOO — no regression, no sefirot unclaim
+            return;
+        }
+
         StoredData data = playerMap.get(player).get();
         StoredData regressed;
 

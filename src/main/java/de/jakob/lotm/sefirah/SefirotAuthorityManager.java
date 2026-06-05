@@ -5,6 +5,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SefirotUnlockedAbilitiesComponent;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSefirotAuthorityDataPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -123,12 +124,33 @@ public class SefirotAuthorityManager {
     }
 
     /**
-     * Returns true if the divination attempt on {@code targetUUID} should be blocked because:
-     *   – the target is in SEFIROT_DIVINATION_IMMUNE, AND
-     *   – the diviner does not own any sefirot.
+     * Returns true if the divination attempt on {@code targetUUID} should be blocked.
+     *
+     * Rules for the Sefirah Castle owner (SEFIROT_DIVINATION_IMMUNE):
+     *   – Inside the castle dimension: nobody can divine them (absolute block).
+     *   – Outside the castle: only diviners who are 4+ sequences stronger can pierce the protection.
+     *     Other sefirot owners are NOT exempt — the sequence gap rule applies to everyone.
      */
     public static boolean blocksDivination(UUID targetUUID, ServerPlayer diviner) {
-        return SEFIROT_DIVINATION_IMMUNE.contains(targetUUID) && !SefirahHandler.hasSefirot(diviner);
+        if (!SEFIROT_DIVINATION_IMMUNE.contains(targetUUID)) return false;
+
+        // Check whether the target player is currently in the Sefirah Castle dimension
+        ServerPlayer targetPlayer = diviner.server.getPlayerList().getPlayer(targetUUID);
+        boolean targetInCastle = targetPlayer != null
+                && targetPlayer.level().dimension().equals(ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY);
+
+        // Inside the castle: absolutely no divination succeeds
+        if (targetInCastle) return true;
+
+        // Outside the castle: allow divination only if the diviner is at least 4 sequences
+        // stronger than the owner (lower seq number = more powerful). Everyone else is blocked.
+        // Example: owner is seq 9 → only seq 5 or stronger (seq ≤ 5) can divine them.
+        int divinerSeq = BeyonderData.getSequence(diviner);
+        int targetSeq = BeyonderData.playerMap != null
+                ? BeyonderData.playerMap.get(targetUUID).map(d -> d.sequence()).orElse(LOTMCraft.NON_BEYONDER_SEQ)
+                : LOTMCraft.NON_BEYONDER_SEQ;
+        if (targetSeq != LOTMCraft.NON_BEYONDER_SEQ && divinerSeq <= targetSeq - 4) return false;
+        return true;
     }
 
     /**
@@ -197,16 +219,27 @@ public class SefirotAuthorityManager {
                                                             int    playerSequence) {
         Set<String> result    = new HashSet<>();
 
-        // Ability sharing to neighbouring paths is exclusive to Sefirah Castle.
-        // River of Eternal Darkness will grant cross-path abilities through a separate mechanism.
-        if (!sefirot.equals("sefirah_castle")) {
+        List<String> neighbors = NEIGHBORING_PATHS.getOrDefault(sefirot, Collections.emptyList());
+        if (neighbors.isEmpty()) {
             return result;
         }
 
-        List<String> neighbors = NEIGHBORING_PATHS.getOrDefault(sefirot, Collections.emptyList());
-
         if (playerSequence > 2) {
             return result; // no cross-path bonus above seq 2
+        }
+
+        // Great Old One: access ALL abilities (including seq 0) from neighboring paths
+        if (playerSequence == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) {
+            for (String neighborPath : neighbors) {
+                if (neighborPath.equals(playerPathway)) continue;
+                Set<Ability> toGrant = LOTMCraft.abilityHandler.getByPathwayAndSequence(neighborPath, 0);
+                for (Ability ability : toGrant) {
+                    if (!BLACKLISTED_ABILITY_IDS.contains(ability.getId())) {
+                        result.add(ability.getId());
+                    }
+                }
+            }
+            return result;
         }
 
         // Minimum sequence required on the neighbouring path:

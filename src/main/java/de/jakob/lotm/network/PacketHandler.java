@@ -812,6 +812,36 @@ public class PacketHandler {
                 RiverAuthorityActionPacket.STREAM_CODEC,
                 RiverAuthorityActionPacket::handle
         );
+
+        registrar.playToServer(
+                RequestRiverImprintScreenPacket.TYPE,
+                RequestRiverImprintScreenPacket.STREAM_CODEC,
+                RequestRiverImprintScreenPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestTranscendencePacket.TYPE,
+                RequestTranscendencePacket.STREAM_CODEC,
+                RequestTranscendencePacket::handle
+        );
+
+        registrar.playToServer(
+                RequestGatheringScreenPacket.TYPE,
+                RequestGatheringScreenPacket.STREAM_CODEC,
+                RequestGatheringScreenPacket::handle
+        );
+
+        registrar.playToServer(
+                GatheringActionPacket.TYPE,
+                GatheringActionPacket.STREAM_CODEC,
+                GatheringActionPacket::handle
+        );
+
+        registrar.playToServer(
+                GatheringMessagePacket.TYPE,
+                GatheringMessagePacket.STREAM_CODEC,
+                GatheringMessagePacket::handle
+        );
     }
 
     public static void sendToServer(CustomPacketPayload packet) {

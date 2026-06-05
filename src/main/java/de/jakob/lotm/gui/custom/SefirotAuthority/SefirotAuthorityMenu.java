@@ -16,27 +16,39 @@ public class SefirotAuthorityMenu extends AbstractContainerMenu {
     private final List<String> availableIds;
     private final List<String> unlockedIds;
     private final List<String> neighborPaths;
+    private final String sefirotName;
 
     /** Client-side constructor — reads data written by the server into the extra buf. */
     public SefirotAuthorityMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buf) {
         this(containerId, playerInventory,
                 buf.readCollection(ArrayList::new, b -> b.readUtf()),
                 buf.readCollection(ArrayList::new, b -> b.readUtf()),
-                buf.readCollection(ArrayList::new, b -> b.readUtf()));
+                buf.readCollection(ArrayList::new, b -> b.readUtf()),
+                buf.readUtf());
     }
 
     /** Server-side + direct constructor. */
     public SefirotAuthorityMenu(int containerId, Inventory playerInventory,
-                                List<String> availableIds, List<String> unlockedIds, List<String> neighborPaths) {
+                                List<String> availableIds, List<String> unlockedIds,
+                                List<String> neighborPaths) {
+        this(containerId, playerInventory, availableIds, unlockedIds, neighborPaths, "");
+    }
+
+    /** Server-side constructor with sefirot name. */
+    public SefirotAuthorityMenu(int containerId, Inventory playerInventory,
+                                List<String> availableIds, List<String> unlockedIds,
+                                List<String> neighborPaths, String sefirotName) {
         super(ModMenuTypes.SEFIROT_AUTHORITY_MENU.get(), containerId);
         this.availableIds  = availableIds;
         this.unlockedIds   = unlockedIds;
         this.neighborPaths = neighborPaths;
+        this.sefirotName   = sefirotName;
     }
 
     public List<String> getAvailableIds()  { return availableIds;  }
     public List<String> getUnlockedIds()   { return unlockedIds;   }
     public List<String> getNeighborPaths() { return neighborPaths; }
+    public String       getSefirotName()   { return sefirotName;   }
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {

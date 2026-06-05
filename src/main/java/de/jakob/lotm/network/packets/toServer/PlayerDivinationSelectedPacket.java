@@ -152,8 +152,17 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
         int playerSequence = BeyonderData.getSequence(player);
         int targetSequence = BeyonderData.getSequence(targetPlayer);
 
+        // Elevated bonus (divine anyone except darkness seq 0) only applies while physically
+        // inside the Sefirah Castle dimension
         boolean elevated = ElevatedDivinationAbility.ELEVATED_DIVINATION_ACTIVE.contains(player.getUUID())
+                && ElevatedDivinationAbility.ELEVATED_DIVINATION_IN_CASTLE.contains(player.getUUID())
                 && !SefirahHandler.hasSefirot(targetPlayer);
+
+        // Elevated Divination cannot pierce darkness seq 0 — their fate is beyond sight
+        if (elevated && "darkness".equals(BeyonderData.getPathway(targetPlayer)) && BeyonderData.getSequence(targetPlayer) == 0) {
+            player.sendSystemMessage(Component.literal("§8Your elevated senses find nothing — this being transcends your sight."));
+            return;
+        }
 
             int divinationDifference = 3 + DivinationUtil.getDivinationPower(player) - DivinationUtil.getConcealmentPower(targetPlayer);
             if (!elevated && divinationDifference <= 0){
@@ -191,7 +200,7 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
         // Elevated Divination always shows full coordinates
         if (elevated) {
             player.sendSystemMessage(Component.literal(String.format(
-                    "§5[Elevated] You sense §d%s§5 at §d%d, %d, %d§5, about §d%d blocks §5away...",
+                    "\u00a75[Elevated] You sense \u00a7d%s\u00a75 at \u00a7d%d, %d, %d\u00a75, about \u00a7d%d blocks \u00a75away...",
                     targetPlayer.getGameProfile().getName(),
                     targetPlayer.blockPosition().getX(),
                     targetPlayer.blockPosition().getY(),

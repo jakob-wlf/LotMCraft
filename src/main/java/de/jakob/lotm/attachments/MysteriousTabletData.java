@@ -189,7 +189,8 @@ public class MysteriousTabletData extends SavedData {
     public void clearAllFragments() {
         fragmentIds.clear();
         fragmentLastSeen.clear();
-        spiritChestPositions.clear();
+        // spiritChestPositions is intentionally preserved so SpiritWorldChestSpawner can
+        // remove existing chest copies and re-populate them when conditions change.
         ancientCityChestPositions.clear();
         setDirty();
     }

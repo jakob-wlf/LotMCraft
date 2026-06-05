@@ -1,9 +1,7 @@
 package de.jakob.lotm.abilities.sefirah;
 
 import de.jakob.lotm.abilities.core.Ability;
-import de.jakob.lotm.attachments.DeathImprintData;
-import de.jakob.lotm.gui.ModMenuTypes;
-import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityMenu;
+import de.jakob.lotm.gui.custom.RiverSefirotAuthority.RiverSefirotAuthorityMenu;
 import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityMenu;
 import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.sefirah.SefirotAuthorityManager;
@@ -15,7 +13,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SefirotAuthorityAbility extends Ability {
 
@@ -53,24 +50,20 @@ public class SefirotAuthorityAbility extends Ability {
         String sefirot = SefirahHandler.getClaimedSefirot(player);
 
         if (sefirot.equals("river_of_eternal_darkness")) {
-            // Build imprint entry list from DeathImprintData
-            DeathImprintData imprintData = DeathImprintData.get(player.getServer());
-            Set<UUID> allImprinted = imprintData.getAllImprintedPlayers();
-            List<RiverAuthorityMenu.ImprintEntry> entries = allImprinted.stream()
-                    .map(uuid -> new RiverAuthorityMenu.ImprintEntry(
-                            uuid,
-                            imprintData.getSnapshotName(uuid),
-                            imprintData.getSnapshotPathway(uuid),
-                            imprintData.getSnapshotSequence(uuid),
-                            imprintData.getImprintCount(uuid)
-                    ))
-                    .sorted(Comparator.comparingInt(RiverAuthorityMenu.ImprintEntry::imprintTier).reversed())
-                    .collect(Collectors.toList());
-
+            // Open the river-themed ability selection screen (Death/Darkness/Twilight Giant
+            // cross-path abilities). That screen has a "Death Imprints" tab to navigate to
+            // the imprint list via RequestRiverImprintScreenPacket.
+            List<String> available    = new ArrayList<>(SefirotAuthorityManager.getAvailableAbilityIds(player));
+            List<String> unlocked     = new ArrayList<>(SefirotAuthorityManager.getUnlockedAbilityIds(player));
+            List<String> neighborPaths = new ArrayList<>(SefirotAuthorityManager.getNeighborPaths(player));
             player.openMenu(new SimpleMenuProvider(
-                    (id, inv, p) -> new RiverAuthorityMenu(id, inv, entries),
+                    (id, inv, p) -> new RiverSefirotAuthorityMenu(id, inv, available, unlocked, neighborPaths),
                     Component.literal("River Authority")
-            ), buf -> RiverAuthorityMenu.writeEntries(buf, entries));
+            ), buf -> {
+                buf.writeCollection(available,      FriendlyByteBuf::writeUtf);
+                buf.writeCollection(unlocked,       FriendlyByteBuf::writeUtf);
+                buf.writeCollection(neighborPaths,  FriendlyByteBuf::writeUtf);
+            });
             return;
         }
 
@@ -78,13 +71,15 @@ public class SefirotAuthorityAbility extends Ability {
         List<String> available    = new ArrayList<>(SefirotAuthorityManager.getAvailableAbilityIds(player));
         List<String> unlocked      = new ArrayList<>(SefirotAuthorityManager.getUnlockedAbilityIds(player));
         List<String> neighborPaths = new ArrayList<>(SefirotAuthorityManager.getNeighborPaths(player));
+        String sefirotName = sefirot;
         player.openMenu(new SimpleMenuProvider(
-                (id, inv, p) -> new SefirotAuthorityMenu(id, inv, available, unlocked, neighborPaths),
+                (id, inv, p) -> new SefirotAuthorityMenu(id, inv, available, unlocked, neighborPaths, sefirotName),
                 Component.literal("Sefirot Authority")
         ), buf -> {
             buf.writeCollection(available,     FriendlyByteBuf::writeUtf);
             buf.writeCollection(unlocked,      FriendlyByteBuf::writeUtf);
             buf.writeCollection(neighborPaths, FriendlyByteBuf::writeUtf);
+            buf.writeUtf(sefirotName);
         });
     }
 }

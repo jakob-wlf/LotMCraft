@@ -35,10 +35,15 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
     }
 
     public String[] getPathwayHistory() {
-        for(int i = 0; i < sequence; i++) {
+        // Great Old One: preserve history as-is, no mutation needed
+        if (sequence == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) {
+            return pathwayHistory;
+        }
+        int clampedSeq = Math.max(0, Math.min(sequence, pathwayHistory.length));
+        for(int i = 0; i < clampedSeq; i++) {
             pathwayHistory[i] = null;
         }
-        for(int i = sequence; i < 10; i++) {
+        for(int i = clampedSeq; i < 10; i++) {
             if (pathwayHistory[i] == null || pathwayHistory[i].isEmpty()) {
                 pathwayHistory[i] = pathway;
             }
@@ -61,7 +66,7 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
 
 
     public void setCharacteristic(int stackValue, int sequence, String pathway) {
-        if(sequence <= 9 && sequence >= 0) {
+        if((sequence >= 0 && sequence <= 9) || sequence == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) { // -1 is the Great Old One state
             Characteristic tmp = this.charList.stream()
                     .filter(characteristic -> characteristic.sequence() == sequence && characteristic.pathway().equals(pathway))
                     .findAny()
@@ -86,6 +91,16 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
         if (charList.isEmpty()) {
             this.pathway = "none";
             this.sequence = de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ;
+            return;
+        }
+
+        // Great Old One entry takes priority — it must be the active sequence
+        java.util.Optional<Characteristic> gooEntry = charList.stream()
+                .filter(c -> c.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ)
+                .findFirst();
+        if (gooEntry.isPresent()) {
+            this.sequence = de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ;
+            this.pathway = gooEntry.get().pathway();
             return;
         }
 

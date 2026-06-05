@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.common.passives;
 
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.sefirah.SefirahHandler;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,6 +20,13 @@ public class ElevatedDivinationAbility extends PassiveAbilityItem {
     public static final Set<UUID> ELEVATED_DIVINATION_ACTIVE =
             Collections.newSetFromMap(new ConcurrentHashMap<>());
 
+    /**
+     * Players with elevated divination who are currently inside the Sefirah Castle dimension.
+     * Only while present here does the "can divine anyone except darkness seq 0" bonus apply.
+     */
+    public static final Set<UUID> ELEVATED_DIVINATION_IN_CASTLE =
+            Collections.newSetFromMap(new ConcurrentHashMap<>());
+
     private static final String REQUIRED_SEFIROT = "sefirah_castle";
 
     public ElevatedDivinationAbility(Item.Properties properties) {
@@ -27,7 +35,6 @@ public class ElevatedDivinationAbility extends PassiveAbilityItem {
 
     @Override
     public Map<String, Integer> getRequirements() {
-        // No pathway/sequence requirement — granted purely by sefirot ownership.
         return Map.of();
     }
 
@@ -42,12 +49,18 @@ public class ElevatedDivinationAbility extends PassiveAbilityItem {
     @Override
     public void tick(Level level, LivingEntity entity) {
         if (level.isClientSide()) return;
-        // Refresh presence in the set every 5 ticks (the tick rate for passives)
         ELEVATED_DIVINATION_ACTIVE.add(entity.getUUID());
+        // Track whether the owner is currently inside the sefirah_castle dimension
+        if (entity.level().dimension().equals(ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY)) {
+            ELEVATED_DIVINATION_IN_CASTLE.add(entity.getUUID());
+        } else {
+            ELEVATED_DIVINATION_IN_CASTLE.remove(entity.getUUID());
+        }
     }
 
     @Override
     public void onPassiveAbilityRemoved(LivingEntity entity, net.minecraft.server.level.ServerLevel serverLevel) {
         ELEVATED_DIVINATION_ACTIVE.remove(entity.getUUID());
+        ELEVATED_DIVINATION_IN_CASTLE.remove(entity.getUUID());
     }
 }
