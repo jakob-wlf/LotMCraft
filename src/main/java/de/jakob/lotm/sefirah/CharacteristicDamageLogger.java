@@ -1,4 +1,4 @@
-package de.jakob.lotm.sefirah;
+package de.jakob.lotm.util.debug;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.BeyonderData;
@@ -20,8 +20,11 @@ public class CharacteristicDamageLogger {
         // Only log when there are "extra" characteristics (more than 1)
         if (charCount <= 1) return;
 
-        LOTMCraft.LOGGER.warn("[CharDamageLogger] Damage event for Beyonder with extra characteristics: uuid={}, name={}, charCount={}, amount={}, source={}",
-                entity.getUUID(), entity.getDisplayName().getString(), charCount, event.getAmount(), event.getSource());
+        // Post damage — event doesn't expose amount reliably for this event type, log health after hit instead
+        float healthAfter = entity.getHealth();
+
+        LOTMCraft.LOGGER.warn("[CharDamageLogger] Damage event for Beyonder with extra characteristics: uuid={}, name={}, charCount={}, healthAfter={}, source={}",
+                entity.getUUID(), entity.getDisplayName().getString(), charCount, healthAfter, event.getSource());
 
         // Log a stacktrace to help locate the origin of the damage call
         LOTMCraft.LOGGER.warn("[CharDamageLogger] Stacktrace for damage call:", new Exception("Damage stacktrace"));
