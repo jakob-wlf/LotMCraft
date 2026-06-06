@@ -85,7 +85,7 @@ public class DailySpinScreen extends Screen {
         spinTicks = 0;
 
         int loopSize = reelNames.size();
-        float fullLaps = loopSize * 2.5f;
+        float fullLaps = loopSize * 3f; // must be an integer multiple so (fullLaps + landingIndex) % loopSize == landingIndex
         targetScroll = fullLaps + landingIndex;
         scrollPos = 0f;
     }

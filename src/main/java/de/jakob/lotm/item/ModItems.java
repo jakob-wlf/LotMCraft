@@ -85,6 +85,13 @@ public class ModItems {
             )
     );
 
+    public static final DeferredItem<Item> GARBAGE = ITEMS.registerItem("garbage",
+            GarbageItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
+    public static final DeferredItem<Item> CHARACTERISTICS_EXCHANGE_TABLET = ITEMS.registerItem(
+            "characteristics_exchange_tablet",
+            CharacteristicsExchangeTabletItem::new, new Item.Properties().stacksTo(1));
+
     public static final DeferredHolder<Item, Item> SEALED_ARTIFACT = ITEMS.register("sealed_artifact",
             () -> new SealedArtifactItem(new Item.Properties()
                     .stacksTo(1)

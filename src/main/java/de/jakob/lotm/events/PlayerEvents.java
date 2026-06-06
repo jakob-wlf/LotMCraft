@@ -21,6 +21,7 @@ import de.jakob.lotm.network.packets.toServer.CharSlotRollResultPacket;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.ExplodingFallingBlockHelper;
@@ -160,11 +161,10 @@ public class PlayerEvents {
 
             NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
             if(!component.isHasReceivedNewPlayerPerks() && player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC)) {
-                player.addItem(new ItemStack(ModItems.GUIDING_BOOK.get()));
-
                 // If the slot-roll gamerule is active, open the animated reel screen instead
                 if (player.serverLevel().getGameRules().getBoolean(ModGameRules.DO_CHARACTERISTICS_SLOTS)) {
-                    de.jakob.lotm.network.packets.toServer.CharSlotRollResultPacket.initiateRollForNewPlayer(player);
+                    // Delay by 40 ticks so the client finishes loading terrain before the screen is shown
+                    ServerScheduler.scheduleDelayed(40, () -> de.jakob.lotm.network.packets.toServer.CharSlotRollResultPacket.initiateRollForNewPlayer(player));
                     // Mark perks received is deferred until the player accepts in the GUI
                 } else {
                     String pathway = BeyonderData.implementedPathways.get(random.nextInt(BeyonderData.implementedPathways.size()));
@@ -175,7 +175,7 @@ public class PlayerEvents {
                         player.addItem(new ItemStack(characteristic));
                         player.addItem(new ItemStack(recipe));
                     }
-
+                    player.addItem(new ItemStack(ModItems.GUIDING_BOOK.get()));
                     component.setHasReceivedNewPlayerPerks(true);
                 }
             }
