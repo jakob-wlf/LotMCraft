@@ -11,6 +11,7 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.IntegerValue> DIGESTION_RATE;
     public static GameRules.Key<GameRules.BooleanValue> REDUCE_REGEN_IN_BEYONDER_FIGHT;
     public static GameRules.Key<GameRules.BooleanValue> SPAWN_WITH_STARTING_CHARACTERISTIC;
+    public static GameRules.Key<GameRules.BooleanValue> DO_CHARACTERISTICS_SLOTS;
     public static GameRules.Key<GameRules.BooleanValue> REGRESS_SEQUENCE_ON_DEATH;
     public static GameRules.Key<GameRules.BooleanValue> DISABLE_FLIGHT_IN_COMBAT;
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_ARTIFACTS;
@@ -109,6 +110,12 @@ public class ModGameRules {
 
         SPAWN_WITH_STARTING_CHARACTERISTIC = GameRules.register(
                 "spawnWithCharacteristic",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
+        );
+
+        DO_CHARACTERISTICS_SLOTS = GameRules.register(
+                "doCharacteristicsSlots",
                 GameRules.Category.MISC,
                 GameRules.BooleanValue.create(true)
         );

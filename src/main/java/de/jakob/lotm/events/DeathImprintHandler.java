@@ -70,6 +70,15 @@ public class DeathImprintHandler {
         if (serverLevel.dimension().equals(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_DIMENSION_KEY)) {
             data.addPermanentRiverSoul(dyingPlayer.getUUID());
         }
+
+        // If they died while trapped by River's Call, deliver their soul to any online death-path player
+        if (data.isTrappedInRiver(dyingPlayer.getUUID())) {
+            for (ServerPlayer online : serverLevel.getServer().getPlayerList().getPlayers()) {
+                if (de.jakob.lotm.abilities.death.InternalUnderworldAbility.tryCaptureRiverVictim(online, dyingPlayer)) {
+                    break; // only the first eligible death-path player receives the soul
+                }
+            }
+        }
     }
 
     // ── Logout event: kill if trapped in river ─────────────────────────────────

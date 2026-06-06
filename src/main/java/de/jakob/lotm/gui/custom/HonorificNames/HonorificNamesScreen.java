@@ -56,12 +56,12 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
     private void rebuildButtons() {
         this.clearWidgets();
 
-        // "Set Name" button in the own-name section
-        if (menu.getSequence() < 4) {
+        // "Set Name" button in the own-name section — visible for seq < 4 or sefirot owners
+        if (menu.getSequence() < 4 || menu.isSefirotOwner()) {
             this.addRenderableWidget(
                     Button.builder(Component.literal("Set Name"),
                                     btn -> Minecraft.getInstance().setScreen(
-                                            new SetHonorificNameScreen(menu.getPathway(), menu.getSequence())))
+                                            new SetHonorificNameScreen(menu.getPathway(), menu.getSequence(), menu.isSefirotOwner())))
                             .bounds(leftPos + W - PADDING - 80, topPos + TITLE_H + OWN_NAME_H - 20, 80, 16)
                             .build()
             );

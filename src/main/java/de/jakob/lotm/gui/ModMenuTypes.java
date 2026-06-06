@@ -10,6 +10,7 @@ import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelMenu;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
 import de.jakob.lotm.gui.custom.Recipe.RecipeMenu;
 import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityMenu;
+import de.jakob.lotm.gui.custom.RiverBlessing.RiverBlessingMenu;
 import de.jakob.lotm.gui.custom.RiverSefirotAuthority.RiverSefirotAuthorityMenu;
 import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityMenu;
 import net.minecraft.core.registries.Registries;
@@ -76,6 +77,11 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<GatheringMenu>> GATHERING_MENU = MENU_TYPES.register(
             "gathering_menu",
             () -> IMenuTypeExtension.create((windowId, inv, data) -> new GatheringMenu(windowId, inv, data))
+    );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<RiverBlessingMenu>> RIVER_BLESSING_MENU = MENU_TYPES.register(
+            "river_blessing_menu",
+            () -> IMenuTypeExtension.create((windowId, inv, data) -> new RiverBlessingMenu(windowId, inv, data))
     );
 
     public static void register(IEventBus eventBus) {

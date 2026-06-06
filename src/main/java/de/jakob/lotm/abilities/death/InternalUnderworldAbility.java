@@ -1507,6 +1507,38 @@ public class InternalUnderworldAbility extends SelectableAbility {
         player.getPersistentData().remove(STORED_SOULS_TAG);
     }
 
+    /**
+     * Guaranteed soul capture triggered when a player dies inside River's Call.
+     * Bypasses the normal random roll — the River itself delivers the soul.
+     * If the captor's Internal Underworld is full the lowest-sequence soul is displaced.
+     *
+     * @param captor the death-path player who receives the soul
+     * @param victim the player who died inside River's Call
+     * @return true if the soul was successfully stored
+     */
+    public static boolean tryCaptureRiverVictim(ServerPlayer captor, ServerPlayer victim) {
+        if (!BeyonderData.isBeyonder(captor)) return false;
+        if (!BeyonderData.getPathway(captor).equals("death")) return false;
+        int seq = BeyonderData.getSequence(captor);
+        if (seq > 5) return false;
+
+        if (getStoredSouls(captor).size() >= getMaxSouls(seq)) {
+            removeLowestSequenceSoul(captor);
+        }
+
+        CompoundTag soulData = buildSoulData(victim);
+        if (soulData == null) return false;
+        victim.getPersistentData().putBoolean(INTERNAL_UNDERWORLD_CAPTURED_TAG, true);
+        addStoredSoul(captor, soulData);
+        ServerLevel level = (ServerLevel) victim.level();
+        spawnCaptureSuccessParticles(level, victim);
+        level.playSound(null, victim.blockPosition(), SoundEvents.SOUL_ESCAPE.value(), SoundSource.PLAYERS, 1.0f, 0.7f);
+        captor.sendSystemMessage(Component.literal(
+                "The River delivered " + victim.getName().getString() + "'s soul to your Internal Underworld.")
+                .withStyle(ChatFormatting.DARK_AQUA));
+        return true;
+    }
+
     public static FreedSoulSlots clearStoredSoulsAndCollectFreedPaths(ServerPlayer player) {
         // Used on death to free global seq0/seq1 slots from stored souls.
         CompoundTag data = player.getPersistentData();
