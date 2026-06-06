@@ -1,6 +1,7 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -34,10 +35,7 @@ public record OpenCharSlotRollPacket(List<String> pathways, List<String> charNam
     public static void handle(OpenCharSlotRollPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (!context.flow().getReceptionSide().isClient()) return;
-            net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-            mc.execute(() -> mc.setScreen(
-                    new de.jakob.lotm.gui.custom.CharSlotRoll.CharSlotRollScreen(
-                            packet.pathways(), packet.charNames(), packet.rerollsLeft())));
+            ClientHandler.openCharSlotRollScreen(packet);
         });
     }
 }

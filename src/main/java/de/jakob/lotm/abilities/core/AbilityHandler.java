@@ -335,6 +335,7 @@ public class AbilityHandler {
 
         // Sefirot Abilities
         abilities.add(new SefirotAuthorityAbility("sefirot_authority_ability"));
+        abilities.add(new AboveTheSequenceAuthorityAbility("above_the_sequence_authority_ability"));
 
 
 

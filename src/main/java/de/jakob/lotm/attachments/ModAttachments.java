@@ -293,6 +293,13 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<DailySpinComponent>> DAILY_SPIN_COMPONENT =
+            ATTACHMENT_TYPES.register("daily_spin_component", () ->
+                    AttachmentType.builder(DailySpinComponent::new)
+                            .serialize(DailySpinComponent.SERIALIZER)
+                            .build()
+            );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

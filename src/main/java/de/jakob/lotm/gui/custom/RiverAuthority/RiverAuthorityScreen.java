@@ -2,6 +2,7 @@ package de.jakob.lotm.gui.custom.RiverAuthority;
 
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.RiverAuthorityActionPacket;
+import de.jakob.lotm.network.packets.toServer.RequestAbilitySealScreenPacket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -45,6 +46,7 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
 
     private Button riversCallButton;
     private Button locateButton;
+    private Button sealButton;
 
     public RiverAuthorityScreen(RiverAuthorityMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -66,9 +68,9 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
             headStacks.add(skull);
         }
 
-        // Action buttons (right panel, anchored to bottom)
+        // Action buttons: stack 3 buttons (18px each, 4px gap) with 8px bottom margin
         int bx = leftPos + DETAIL_X;
-        int by = topPos + PANEL_HEIGHT - 44;
+        int by = topPos + PANEL_HEIGHT - 70;  // 3*(18+4)-4+8 = 70px from bottom
 
         locateButton = addRenderableWidget(Button.builder(
                 Component.literal("Locate / Teleport").withStyle(ChatFormatting.AQUA),
@@ -80,7 +82,18 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
                 b -> performAction(0)
         ).bounds(bx, by + 22, DETAIL_W, 18).build());
 
+        sealButton = addRenderableWidget(Button.builder(
+                Component.literal("\u2728 Seal Abilities").withStyle(s -> s.withColor(0xFFAA0000).withBold(true)),
+                b -> openSealScreen()
+        ).bounds(bx, by + 44, DETAIL_W, 18).build());
+
         updateButtonStates();
+    }
+
+    private void openSealScreen() {
+        if (selectedUUID == null) return;
+        PacketHandler.sendToServer(new RequestAbilitySealScreenPacket(selectedUUID.toString()));
+        // The server will respond with OpenAbilitySealScreenPacket which opens the screen
     }
 
     private void performAction(int actionType) {
@@ -90,8 +103,9 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
     }
 
     private void updateButtonStates() {
-        locateButton.active = selectedUUID != null && selectedTier >= 2;
+        locateButton.active     = selectedUUID != null && selectedTier >= 2;
         riversCallButton.active = selectedUUID != null && selectedTier >= 3;
+        sealButton.active       = selectedUUID != null && selectedTier >= 2;
     }
 
     // ── Rendering ─────────────────────────────────────────────────────────────

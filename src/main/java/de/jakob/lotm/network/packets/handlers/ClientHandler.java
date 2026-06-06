@@ -11,6 +11,9 @@ import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
+import de.jakob.lotm.gui.custom.AbilitySeal.AbilitySealScreen;
+import de.jakob.lotm.gui.custom.AboveSeqAuthority.AboveSeqAuthorityScreen;
+import de.jakob.lotm.gui.custom.CharSlotRoll.CharSlotRollScreen;
 import de.jakob.lotm.gui.custom.CoordinateInput.CoordinateInputScreen;
 import de.jakob.lotm.gui.custom.InternalUnderworld.InternalUnderworldAbilityScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
@@ -657,5 +660,41 @@ public class ClientHandler {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
         selectable.setSelectedAbilityClient(player.getUUID(), packet.selectedIndex());
+    }
+
+    public static void openCharSlotRollScreen(OpenCharSlotRollPacket packet) {
+        Minecraft.getInstance().setScreen(
+                new CharSlotRollScreen(packet.pathways(), packet.charNames(), packet.rerollsLeft()));
+    }
+
+    public static void openAbilitySealScreen(OpenAbilitySealScreenPacket packet) {
+        Minecraft.getInstance().setScreen(
+                new AbilitySealScreen(
+                        packet.targetUUIDStr(),
+                        packet.targetName(),
+                        packet.abilityIds(),
+                        packet.abilityNames(),
+                        packet.currentlySealed()));
+    }
+
+    public static void openAboveSeqAuthorityScreen() {
+        Minecraft.getInstance().setScreen(new AboveSeqAuthorityScreen());
+    }
+
+    public static void openDailySpinScreen(de.jakob.lotm.network.packets.toClient.OpenDailySpinScreenPacket packet) {
+        Minecraft.getInstance().setScreen(
+                new de.jakob.lotm.gui.custom.DailySpin.DailySpinScreen(
+                        packet.reelNames(), packet.landingIndex(), packet.canSpin()));
+    }
+
+    public static void openSellYourSoulScreen(de.jakob.lotm.network.packets.toClient.OpenSellYourSoulScreenPacket packet) {
+        Minecraft.getInstance().setScreen(
+                new de.jakob.lotm.gui.custom.SellYourSoul.SellYourSoulScreen(
+                        packet.outcome(), packet.rewardName()));
+    }
+
+    public static void openSellYourSoulGateScreen(de.jakob.lotm.network.packets.toClient.OpenSellYourSoulGatePacket packet) {
+        Minecraft.getInstance().setScreen(
+                new de.jakob.lotm.gui.custom.SellYourSoul.SellYourSoulGateScreen(packet.cooldownEndMillis()));
     }
 }

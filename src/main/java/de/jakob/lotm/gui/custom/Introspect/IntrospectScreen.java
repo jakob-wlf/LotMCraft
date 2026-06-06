@@ -201,6 +201,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             if (sefirotAuth != null) availableAbilities.add(sefirotAuth);
         }
 
+        // Add above_the_sequence_authority_ability for all Great Old Ones
+        if (menu.getSequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) {
+            Ability aboveSeqAuth = LOTMCraft.abilityHandler.getById("above_the_sequence_authority_ability");
+            if (aboveSeqAuth != null) availableAbilities.add(aboveSeqAuth);
+        }
+
         // Deduplicate: abilities like Cogitation/Ally match all pathways and can be added
         // twice when a pathway history entry exists (once for current pathway, once for historical).
         List<Ability> unique = availableAbilities.stream().distinct().toList();
@@ -397,6 +403,23 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         // Calculate base position
         int baseLeftPos = this.leftPos;
+
+        // ── Daily Spin + Sell Soul ── placed above the panel ──────────────────
+        Button dailySpinButton = Button.builder(
+                Component.literal("Daily Spin").withStyle(net.minecraft.ChatFormatting.GOLD),
+                b -> de.jakob.lotm.network.PacketHandler.sendToServer(
+                        new de.jakob.lotm.network.packets.toServer.RequestDailySpinPacket()))
+                .bounds(this.leftPos, this.topPos - 24, 60, 20)
+                .build();
+        this.addRenderableWidget(dailySpinButton);
+
+        Button sellSoulButton = Button.builder(
+                Component.literal("Sell Soul").withStyle(net.minecraft.ChatFormatting.DARK_RED),
+                b -> de.jakob.lotm.network.PacketHandler.sendToServer(
+                        new de.jakob.lotm.network.packets.toServer.RequestSellYourSoulInfoPacket()))
+                .bounds(this.leftPos + 65, this.topPos - 24, 60, 20)
+                .build();
+        this.addRenderableWidget(sellSoulButton);
 
         // Add abilities toggle button to the left of the main screen
         int abilitiesButtonX = baseLeftPos - 65;
