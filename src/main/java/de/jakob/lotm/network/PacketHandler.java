@@ -579,6 +579,12 @@ public class PacketHandler {
                 OpenSellYourSoulGatePacket::handle
         );
 
+        registrar.playToClient(
+                OpenCharExchangeWheelPacket.TYPE,
+                OpenCharExchangeWheelPacket.STREAM_CODEC,
+                OpenCharExchangeWheelPacket::handle
+        );
+
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
@@ -930,6 +936,18 @@ public class PacketHandler {
                 RequestSellYourSoulInfoPacket.TYPE,
                 RequestSellYourSoulInfoPacket.STREAM_CODEC,
                 RequestSellYourSoulInfoPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestCharExchangePacket.TYPE,
+                RequestCharExchangePacket.STREAM_CODEC,
+                RequestCharExchangePacket::handle
+        );
+
+        registrar.playToServer(
+                RequestCharPathExchangePacket.TYPE,
+                RequestCharPathExchangePacket.STREAM_CODEC,
+                RequestCharPathExchangePacket::handle
         );
     }
 

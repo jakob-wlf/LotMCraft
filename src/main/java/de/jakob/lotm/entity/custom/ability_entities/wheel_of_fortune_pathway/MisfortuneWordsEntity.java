@@ -5,6 +5,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.abilities.common.passives.FateResistanceAbility;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -64,6 +65,13 @@ public class MisfortuneWordsEntity extends Entity {
             AbilityUtil.getNearbyEntities(null, serverLevel, this.position(), this.getBoundingBox().getXsize()).forEach(e -> {
                 if(BeyonderData.isBeyonder(e) && BeyonderData.getPathway(e).equalsIgnoreCase("wheel_of_fortune") && BeyonderData.getSequence(e) <= 2)
                     return;
+
+                // Players with Elevated Fate are immune unless the caster is seq 1 or lower
+                if (FateResistanceAbility.FATE_RESISTANCE_ACTIVE.contains(e.getUUID())) {
+                    LivingEntity caster = getCasterEntity();
+                    int casterSeq = caster != null ? BeyonderData.getSequence(caster) : Integer.MAX_VALUE;
+                    if (casterSeq > 1) return;
+                }
 
                 if(getCasterEntity() != null && !AbilityUtil.mayTarget(getCasterEntity(), e))
                     return;

@@ -948,7 +948,7 @@
   "ability.lotmcraft.magnify.execution": "Magnify Execution",
   "lotmcraft.loophole_creation_ability": "Loophole Creation",
   "lotmcraft.loophole_creation_ability.description": "Create an Area, where enemies will be randomly teleported around and their abilities will be stolen",
-  "lotmcraft.fate_resistance_ability": "Elevated Fate",
+  "item.lotmcraft.fate_resistance_ability": "Elevated Fate",
   "lotmcraft.fate_resistance_ability.description": "Elevate your fate, granting resistance to fate-based effects",
   "lotmcraft.fate_siphoning_ability": "Fate Siphoning",
   "lotmcraft.fate_siphoning_ability.description": "Siphon someone's Fate, anything that is going to harm you, will be transferred",
@@ -1970,4 +1970,8 @@
   "lotmcraft.honorific_praying_not_met_req_desc": "You have not met requirements to use this option",
   "lotmcraft.honorific_praying_use_skill_button": "[ USE SKILL ]",
   "lotmcraft.honorific_praying_use_skill_desc": "Will use one of your abilities for/against the prayer"
+,
+
+  "item.lotmcraft.garbage": "Garbage",
+  "item.lotmcraft.characteristics_exchange_tablet": "Characteristics Exchange Tablet"
 }

@@ -404,22 +404,18 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         // Calculate base position
         int baseLeftPos = this.leftPos;
 
-        // ── Daily Spin + Sell Soul ── placed above the panel ──────────────────
-        Button dailySpinButton = Button.builder(
-                Component.literal("Daily Spin").withStyle(net.minecraft.ChatFormatting.GOLD),
-                b -> de.jakob.lotm.network.PacketHandler.sendToServer(
-                        new de.jakob.lotm.network.packets.toServer.RequestDailySpinPacket()))
-                .bounds(this.leftPos, this.topPos - 24, 60, 20)
+        // ── Wheels (Daily Spin / Sell Soul / Char Exchange) ───────────────────
+        Button wheelsButton = Button.builder(
+                Component.literal("✦ Wheels").withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE),
+                b -> {
+                    if (minecraft != null) {
+                        minecraft.setScreen(new de.jakob.lotm.gui.custom.WheelSelection.WheelSelectionScreen(
+                                minecraft.screen));
+                    }
+                })
+                .bounds(this.leftPos, this.topPos - 24, 70, 20)
                 .build();
-        this.addRenderableWidget(dailySpinButton);
-
-        Button sellSoulButton = Button.builder(
-                Component.literal("Sell Soul").withStyle(net.minecraft.ChatFormatting.DARK_RED),
-                b -> de.jakob.lotm.network.PacketHandler.sendToServer(
-                        new de.jakob.lotm.network.packets.toServer.RequestSellYourSoulInfoPacket()))
-                .bounds(this.leftPos + 65, this.topPos - 24, 60, 20)
-                .build();
-        this.addRenderableWidget(sellSoulButton);
+        this.addRenderableWidget(wheelsButton);
 
         // Add abilities toggle button to the left of the main screen
         int abilitiesButtonX = baseLeftPos - 65;

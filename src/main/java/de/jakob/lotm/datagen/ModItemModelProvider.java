@@ -41,6 +41,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.LEFT_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
         basicItem(ModItems.LOWER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
         basicItem(ModItems.MYSTERIOUS_TABLET.get());
+        basicItem(ModItems.GARBAGE.get());
+        basicItem(ModItems.CHARACTERISTICS_EXCHANGE_TABLET.get());
 
         tintableItem(ModItems.SEALED_ARTIFACT.get());
         tintableItem(ModItems.SEALED_ARTIFACT_BELL.get());

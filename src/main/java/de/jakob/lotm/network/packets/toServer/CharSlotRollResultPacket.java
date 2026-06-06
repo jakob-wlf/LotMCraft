@@ -121,7 +121,6 @@ public record CharSlotRollResultPacket(int action, String pathway) implements Cu
 
     /** Called from PlayerEvents when the gamerule is active for a new player. */
     public static void initiateRollForNewPlayer(ServerPlayer player) {
-        player.addItem(new ItemStack(ModItems.GUIDING_BOOK.get()));
         player.getPersistentData().putInt(NBT_REROLLS, MAX_REROLLS);
         de.jakob.lotm.network.PacketHandler.sendToPlayer(player,
                 buildRollPacket(player, MAX_REROLLS));
