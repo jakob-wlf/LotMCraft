@@ -66,8 +66,8 @@ public class CharExchangeHandler {
         ItemStack rewardItem = ItemStack.EMPTY;
         String rewardName;
 
-        if (roll < 0.05f) {
-            // 5% — upgrade (seq - 1 = one rank higher)
+        if (roll < 1.0f) {
+            // 100% TEST — upgrade (seq - 1 = one rank higher)
             outcome = OUTCOME_UPGRADE;
             int targetSeq = Math.max(1, sacrificedSeq - 1);
             rewardItem = getRandomCharacteristicAtSeq(targetSeq, rand);
