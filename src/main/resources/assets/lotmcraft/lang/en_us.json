@@ -909,6 +909,7 @@
   "lotmcraft.host_controlling_ability.description": "Control your Host, either Draining their health to Heal yourself or kill them",
   "ability.lotmcraft.host_controlling.drain_health": "Drain Health",
   "ability.lotmcraft.host_controlling.kill": "Kill Host",
+  "ability.lotmcraft.host_controlling.switch_to_control": "Switch to Control",
   "ability.lotmcraft.host_controlling.control_movement": "Control Movement",
   "ability.lotmcraft.host_controlling.no_host": "You are not parasitizing anyone",
   "lotmcraft.avatar_creation_ability": "Avatar Creation",

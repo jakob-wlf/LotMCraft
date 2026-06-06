@@ -39,6 +39,7 @@ public class HostControllingAbility extends SelectableAbility {
         return new String[]{
                 "ability.lotmcraft.host_controlling.drain_health",
                 "ability.lotmcraft.host_controlling.kill",
+                "ability.lotmcraft.host_controlling.switch_to_control",
                 "ability.lotmcraft.host_controlling.control_movement"
         };
     }
@@ -75,6 +76,11 @@ public class HostControllingAbility extends SelectableAbility {
             case 2 -> {
                 if (entity instanceof ServerPlayer player) {
                     ParasitationAbility.switchToControl(serverLevel, player);
+                }
+            }
+            case 3 -> {
+                if (entity instanceof ServerPlayer player) {
+                    ParasitationAbility.switchToMovementControl(serverLevel, player);
                 }
             }
         }

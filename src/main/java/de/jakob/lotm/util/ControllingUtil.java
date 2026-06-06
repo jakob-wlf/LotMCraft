@@ -48,7 +48,7 @@ import java.util.stream.Collector;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ControllingUtil {
 
-    public static void possess(ServerPlayer player, LivingEntity target, boolean spawnOriginalBody) {
+    public static void possess(ServerPlayer player, LivingEntity target, boolean spawnOriginalBody, boolean swapData) {
         // checks
         if (player == null) return;
         ServerLevel level = (ServerLevel) player.level();
@@ -69,6 +69,7 @@ public class ControllingUtil {
 
         data.setTargetUUID(target.getUUID());
         data.setControlling(true, player);
+        data.setMovementOnly(!swapData);
 
         //copy the player and his position to original body
         copyEntities(player, originalBody);
@@ -76,11 +77,11 @@ public class ControllingUtil {
 
         // copy the target and his position to the player
         // Force overwriting Beyonder data on the player so the controller temporarily assumes the target's pathway/sequence/characteristics
-        copyEntities(target, player, true);
+        copyEntities(target, player, swapData);
         copyPosition(target, player);
 
         // swap the target with the player's original body state if the target is a Beyonder
-        if (BeyonderData.isBeyonder(target) && !isTargetPlayer) {
+        if (swapData && BeyonderData.isBeyonder(target) && !isTargetPlayer) {
             // swap the target with the player's original body state
             copyEntities(originalBody, target, true);
         }
@@ -168,8 +169,8 @@ public class ControllingUtil {
             if (targetEntity instanceof LivingEntity target) {
                 // Restore the target's original body/items/attributes from the player (who currently holds them).
                 // Beyonder data will be overwritten with the swap data later if available.
-                //LOTMCraft.LOGGER.info("171");
-                copyEntities(player, target, false);
+                // If it was movement only, we do NOT want to overwrite the target's original items/Beyonder data with the parasite's state.
+                copyEntities(player, target, !data.isMovementOnly());
             }
 
             level.addFreshEntity(targetEntity);
@@ -214,15 +215,16 @@ public class ControllingUtil {
         if (originalBodyEntity != null) {
             if (originalBodyEntity instanceof LivingEntity originalBody) {
                 // SWAP: Target receives the parasite's original characteristics (completing the swap).
-                if (targetEntity instanceof LivingEntity targetLiving) {
+                if (!data.isMovementOnly() && targetEntity instanceof LivingEntity targetLiving) {
                     LOTMCraft.LOGGER.info("reset: swapping original body Beyonder data to restored target {}", targetEntity.getUUID());
                     copyData(originalBody, targetLiving, true);
                 }
 
                 // SWAP: Player returns to their original body/items, but merges the host's characteristics.
-                //LOTMCraft.LOGGER.info("224");
-                copyEntities(originalBody, player, true);
-                //mergeBeyonderCharacteristics(hostChars, player);
+                copyEntities(originalBody, player, !data.isMovementOnly());
+                if (!data.isMovementOnly()) {
+                    // mergeBeyonderCharacteristics(hostChars, player);
+                }
 
                 // We must move the player back to their original body's position.
                 copyPosition(originalBody, player);
@@ -245,12 +247,12 @@ public class ControllingUtil {
                 });
                 if (bodyEntity != null) {
                     if (bodyEntity instanceof LivingEntity originalBody) {
-                        if (targetEntity instanceof LivingEntity targetLiving) {
+                        if (!data.isMovementOnly() && targetEntity instanceof LivingEntity targetLiving) {
                             //LOTMCraft.LOGGER.info("249 - removed");
                             //copyData(originalBody, targetLiving, true);
                         }
                         //LOTMCraft.LOGGER.info("252");
-                        copyEntities(originalBody, player, true);
+                        copyEntities(originalBody, player, !data.isMovementOnly());
                         //mergeBeyonderCharacteristics(hostChars, player);
                         copyPosition(originalBody, player);
                     }
@@ -291,6 +293,7 @@ public class ControllingUtil {
         // clearing data
         data.setBodyEntity(null, player);
         data.setControlling(false, player);
+        data.setMovementOnly(false);
         if (resetData) {
             data.setOwnerUUID(null);
             data.setBodyUUID(null);
@@ -314,6 +317,8 @@ public class ControllingUtil {
     }
 
     private static void copyData(LivingEntity source, LivingEntity target, boolean forceBeyonderCopy) {
+        if (!forceBeyonderCopy) return;
+
         // copy togglable abilities
         ToggleAbility.setActiveAbilities(target, new HashSet<>(ToggleAbility.getActiveAbilitiesForEntity(source)));
 
@@ -363,11 +368,13 @@ public class ControllingUtil {
     }
 
     private static void copyEntities(LivingEntity source, LivingEntity target) {
-        copyEntities(source, target, false);
+        copyEntities(source, target, true);
     }
 
     private static void copyEntities(LivingEntity source, LivingEntity target, boolean forceBeyonderCopy) {
-        copyInventories(source, target);
+        if (forceBeyonderCopy) {
+            copyInventories(source, target);
+        }
 
         copyData(source, target, forceBeyonderCopy);
 

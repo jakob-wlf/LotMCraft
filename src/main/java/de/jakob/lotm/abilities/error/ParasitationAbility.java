@@ -135,7 +135,7 @@ public class ParasitationAbility extends SelectableAbility {
         pc.setParasited(true);
         pc.setParasiteUUID(player.getUUID());
 
-        ControllingUtil.possess(player, target, false);
+        ControllingUtil.possess(player, target, false, true);
     }
 
     public static void exitControl(ServerLevel serverLevel, ServerPlayer player) {
@@ -359,6 +359,38 @@ public class ParasitationAbility extends SelectableAbility {
             instance.cancelConcealed(serverLevel, player);
             instance.startControl(serverLevel, player, host, lowerSeq);
         }
+    }
+
+    public static void switchToMovementControl(ServerLevel serverLevel, ServerPlayer player) {
+        if (!isConcealed(player.getUUID())) return;
+        UUID hostUUID = concealedMap.get(player.getUUID());
+        Entity hostEntity = serverLevel.getEntity(hostUUID);
+        if (!(hostEntity instanceof LivingEntity host)) return;
+
+        int userSeq = BeyonderData.getSequence(player);
+        int targetSeq = BeyonderData.isBeyonder(host) ? BeyonderData.getSequence(host) : 10;
+        boolean lowerSeq = userSeq < targetSeq;
+
+        ParasitationAbility instance = (ParasitationAbility) LOTMCraft.abilityHandler.getById("parasitation_ability");
+        if (instance != null) {
+            instance.cancelConcealed(serverLevel, player);
+            instance.startMovementControl(serverLevel, player, host, lowerSeq);
+        }
+    }
+
+    public void startMovementControl(ServerLevel serverLevel, ServerPlayer player, LivingEntity target, boolean lowerSeq) {
+        controllingMap.put(player.getUUID(), target.getUUID());
+        controllingLowerSeq.put(player.getUUID(), lowerSeq);
+
+        if (!lowerSeq) {
+            controllingTimer.put(player.getUUID(), 100);
+        }
+
+        ParasitationComponent pc = target.getData(ModAttachments.PARASITE_COMPONENT);
+        pc.setParasited(true);
+        pc.setParasiteUUID(player.getUUID());
+
+        ControllingUtil.possess(player, target, false, false);
     }
 
     private static LivingEntity resolveHost(ServerLevel serverLevel, UUID uuid) {

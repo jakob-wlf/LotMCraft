@@ -311,7 +311,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
             }
         }
         if (target != null) {
-            ControllingUtil.possess(player, target, true);
+            ControllingUtil.possess(player, target, true, true);
         }
     }
 }
