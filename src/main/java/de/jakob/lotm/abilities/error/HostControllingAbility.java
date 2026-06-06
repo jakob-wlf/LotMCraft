@@ -6,6 +6,7 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -35,7 +36,11 @@ public class HostControllingAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.host_controlling.drain_health", "ability.lotmcraft.host_controlling.kill"};
+        return new String[]{
+                "ability.lotmcraft.host_controlling.drain_health",
+                "ability.lotmcraft.host_controlling.kill",
+                "ability.lotmcraft.host_controlling.control_movement"
+        };
     }
 
     @Override
@@ -66,6 +71,11 @@ public class HostControllingAbility extends SelectableAbility {
                 }
                 host.setHealth(0.5f);
                 host.hurt(entity.damageSources().magic(), 1000);
+            }
+            case 2 -> {
+                if (entity instanceof ServerPlayer player) {
+                    ParasitationAbility.switchToControl(serverLevel, player);
+                }
             }
         }
     }
