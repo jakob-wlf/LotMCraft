@@ -38,7 +38,7 @@ public class ActingTaskRegistry {
 
        register("fool", 4, new EventActingTask("use_puppeteering_ability", 0.1f, 20 * 15));
        register("fool", 4, new EventActingTask("drink_invisibility_potion", 0.05f, 20 * 2));
-       register("fool", 4, new EventActingTask("use_enderpearl", 0.02f, 20 * 5));
+       register("fool", 4, new EventActingTask("use_ender_pearl", 0.02f, 20 * 5));
        register("fool", 4, new EventActingTask("place_mob_head", 0.2f, 20 * 5));
 
        register("fool", 3, new EventActingTask("use_lectern", 0.2f, 20 * 20));
@@ -309,6 +309,226 @@ public class ActingTaskRegistry {
         register("sun", 1, new EventActingTask("kill_burning_mob", 0.15f, 20 * 5));
         register("sun", 1, new EventActingTask("kill_strong_mobs", 0.1f, 20 * 5));
         register("sun", 1, new EventActingTask("use_divine_kingdom_manifestation_ability", 0.3f, 20 * 20));
+
+        register("visionary", 9, new EventActingTask("use_spyglass", 0.1f, 20 * 8));
+        register("visionary", 9, new EventActingTask("use_lectern", 0.15f, 20 * 20));
+        register("visionary", 9, new EventActingTask("use_cartography_table", 0.05f, 20 * 10));
+
+        register("visionary", 8, new EventActingTask("use_lectern", 0.1f, 20 * 15));
+        register("visionary", 8, new EventActingTask("use_enchanting_table", 0.1f, 20 * 10));
+        register("visionary", 8, new EventActingTask("craft_map", 0.05f, 20 * 15));
+
+        register("visionary", 7, new EventActingTask("feed_animal", 0.1f, 20 * 10));
+        register("visionary", 7, new EventActingTask("trade_with_villager", 0.15f, 20 * 20));
+        register("visionary", 7, new EventActingTask("breed_animals", 0.05f, 20 * 15));
+
+        register("visionary", 6, new EventActingTask("tame_animal", 0.1f, 20 * 15));
+        register("visionary", 6, new EventActingTask("use_name_tag", 0.05f, 20 * 10));
+        register("visionary", 6, new EventActingTask("use_battle_hypnosis_ability", 0.2f, 20 * 20));
+
+        register("visionary", 5, new EventActingTask("use_spyglass", 0.1f, 20 * 8));
+        register("visionary", 5, new EventActingTask("sneak_kill", 0.05f, 20 * 5));
+        register("visionary", 5, new EventActingTask("kill_untargeted_mob", 0.05f, 20 * 5));
+
+        register("visionary", 4, new EventActingTask("sneak_kill", 0.1f, 20 * 2));
+        register("visionary", 4, new EventActingTask("use_lead", 0.05f, 20 * 10));
+        register("visionary", 4, new EventActingTask("use_manipulation_ability", 0.2f, 20 * 20));
+
+        register("visionary", 3, new EventActingTask("craft_map", 0.1f, 20 * 15));
+        register("visionary", 3, new EventActingTask("use_cartography_table", 0.1f, 20 * 10));
+        register("visionary", 3, new EventActingTask("use_dream_weave_ability", 0.2f, 20 * 20));
+
+        register("visionary", 2, new EventActingTask("use_spyglass", 0.1f, 20 * 8));
+        register("visionary", 2, new EventActingTask("use_anvil", 0.05f, 20 * 10));
+        register("visionary", 2, new EventActingTask("use_discernment_ability", 0.2f, 20 * 20));
+
+        register("visionary", 1, new EventActingTask("use_lectern", 0.2f, 20 * 20));
+        register("visionary", 1, new EventActingTask("trade_with_villager", 0.1f, 20 * 20));
+        register("visionary", 1, new EventActingTask("use_story_writing_ability", 0.3f, 20 * 20));
+
+
+        register("wheel_of_fortune", 9, new EventActingTask("use_environment", 0.1f, 20 * 15));
+        register("wheel_of_fortune", 9, new EventActingTask("use_spyglass", 0.1f, 20 * 8));
+        register("wheel_of_fortune", 9, new EventActingTask("catch_fish", 0.05f, 20 * 10));
+
+        register("wheel_of_fortune", 8, new EventActingTask("smelt_item", 0.1f, 20 * 10));
+        register("wheel_of_fortune", 8, new EventActingTask("mine_ore", 0.1f, 20 * 10));
+        register("wheel_of_fortune", 8, new EventActingTask("craft_iron_tool", 0.05f, 20 * 15));
+
+        register("wheel_of_fortune", 7, new EventActingTask("kill_while_low_health", 0.15f, 20 * 2));
+        register("wheel_of_fortune", 7, new EventActingTask("outnumbered_kill", 0.1f, 20 * 5));
+        register("wheel_of_fortune", 7, new EventActingTask("eat_suspicious_stew", 0.05f, 20 * 5));
+
+        register("wheel_of_fortune", 6, new EventActingTask("attack_stronger_mob", 0.1f, 20 * 5));
+        register("wheel_of_fortune", 6, new EventActingTask("kill_burning_mob", 0.1f, 20 * 5));
+        register("wheel_of_fortune", 6, new EventActingTask("place_tnt", 0.1f, 20 * 10));
+
+        register("wheel_of_fortune", 5, new EventActingTask("catch_fish", 0.1f, 20 * 10));
+        register("wheel_of_fortune", 5, new EventActingTask("harvest_crop", 0.1f, 20 * 10));
+        register("wheel_of_fortune", 5, new EventActingTask("eat_suspicious_stew", 0.05f, 20 * 5));
+
+        register("wheel_of_fortune", 4, new EventActingTask("kill_while_low_health", 0.2f, 20 * 2));
+        register("wheel_of_fortune", 4, new EventActingTask("attack_stronger_mob", 0.1f, 20 * 5));
+        register("wheel_of_fortune", 4, new EventActingTask("use_misfortune_field_ability", 0.2f, 20 * 20));
+
+        register("wheel_of_fortune", 3, new EventActingTask("outnumbered_kill", 0.15f, 20 * 5));
+        register("wheel_of_fortune", 3, new EventActingTask("kill_while_low_health", 0.15f, 20 * 2));
+        register("wheel_of_fortune", 3, new EventActingTask("use_spiritual_baptism_ability", 0.2f, 20 * 20));
+
+        register("wheel_of_fortune", 2, new EventActingTask("use_cartography_table", 0.1f, 20 * 10));
+        register("wheel_of_fortune", 2, new EventActingTask("use_compass", 0.05f, 20 * 8));
+        register("wheel_of_fortune", 2, new EventActingTask("use_prophecy_ability", 0.2f, 20 * 20));
+
+        register("wheel_of_fortune", 1, new EventActingTask("kill_strong_mobs", 0.15f, 20 * 5));
+        register("wheel_of_fortune", 1, new EventActingTask("eat_golden_apple", 0.1f, 20 * 10));
+        register("wheel_of_fortune", 1, new EventActingTask("use_cycle_of_fate_ability", 0.3f, 20 * 20));
+
+        register("abyss", 9, new EventActingTask("eat_golden_apple", 0.1f, 20 * 10));
+        register("abyss", 9, new EventActingTask("eat_suspicious_stew", 0.05f, 20 * 5));
+        register("abyss", 9, new EventActingTask("drink_potion", 0.1f, 20 * 10));
+
+        register("abyss", 8, new EventActingTask("use_note_block", 0.1f, 20 * 10));
+        register("abyss", 8, new EventActingTask("trade_with_villager", 0.1f, 20 * 15));
+        register("abyss", 8, new EventActingTask("use_language_of_foulness_ability", 0.2f, 20 * 15));
+
+        register("abyss", 7, new EventActingTask("feed_animal", 0.1f, 20 * 10));
+        register("abyss", 7, new EventActingTask("tame_animal", 0.1f, 20 * 15));
+        register("abyss", 7, new EventActingTask("trade_with_villager", 0.1f, 20 * 15));
+
+        register("abyss", 6, new EventActingTask("use_enchanting_table", 0.1f, 20 * 10));
+        register("abyss", 6, new EventActingTask("brew_potion", 0.1f, 20 * 15));
+        register("abyss", 6, new EventActingTask("use_defiling_seed_ability", 0.2f, 20 * 20));
+
+        register("abyss", 5, new EventActingTask("kill_strong_mobs", 0.1f, 20 * 5));
+        register("abyss", 5, new EventActingTask("kill_while_full_health", 0.1f, 20 * 2));
+        register("abyss", 5, new EventActingTask("attack_stronger_mob", 0.1f, 20 * 5));
+
+        register("abyss", 4, new EventActingTask("kill_in_darkness", 0.1f, 20 * 2));
+        register("abyss", 4, new EventActingTask("outnumbered_kill", 0.1f, 20 * 5));
+        register("abyss", 4, new EventActingTask("use_mind_fog_ability", 0.2f, 20 * 20));
+
+        register("abyss", 3, new EventActingTask("kill_strong_mobs", 0.15f, 20 * 5));
+        register("abyss", 3, new EventActingTask("place_mob_head", 0.1f, 20 * 10));
+        register("abyss", 3, new EventActingTask("use_fear_aura_ability", 0.2f, 20 * 20));
+
+        register("abyss", 2, new EventActingTask("set_fire", 0.1f, 20 * 5));
+        register("abyss", 2, new EventActingTask("kill_burning_mob", 0.1f, 20 * 5));
+        register("abyss", 2, new EventActingTask("use_flames_of_the_abyss_ability", 0.3f, 20 * 20));
+
+        register("abyss", 1, new EventActingTask("kill_strong_mobs", 0.15f, 20 * 5));
+        register("abyss", 1, new EventActingTask("place_tnt", 0.1f, 20 * 10));
+        register("abyss", 1, new EventActingTask("use_corrupting_voice_ability", 0.3f, 20 * 20));
+
+
+        register("justiciar", 9, new EventActingTask("trade_with_villager", 0.15f, 20 * 20));
+        register("justiciar", 9, new EventActingTask("use_anvil", 0.1f, 20 * 10));
+        register("justiciar", 9, new EventActingTask("kill_untargeted_mob", 0.05f, 20 * 5));
+
+        register("justiciar", 8, new EventActingTask("kill_strong_mobs", 0.1f, 20 * 5));
+        register("justiciar", 8, new EventActingTask("use_cartography_table", 0.1f, 20 * 10));
+        register("justiciar", 8, new EventActingTask("use_recognition_ability", 0.2f, 20 * 15));
+
+        register("justiciar", 7, new EventActingTask("use_lectern", 0.15f, 20 * 15));
+        register("justiciar", 7, new EventActingTask("use_enchanting_table", 0.05f, 20 * 10));
+        register("justiciar", 7, new EventActingTask("use_eye_of_order_ability", 0.2f, 20 * 15));
+
+        register("justiciar", 6, new EventActingTask("use_anvil", 0.1f, 20 * 10));
+        register("justiciar", 6, new EventActingTask("trade_with_villager", 0.1f, 20 * 20));
+        register("justiciar", 6, new EventActingTask("kill_strong_mobs", 0.1f, 20 * 5));
+
+        register("justiciar", 5, new EventActingTask("kill_strong_mobs", 0.15f, 20 * 5));
+        register("justiciar", 5, new EventActingTask("sneak_kill", 0.1f, 20 * 2));
+        register("justiciar", 5, new EventActingTask("kill_while_full_health", 0.1f, 20 * 2));
+
+        register("justiciar", 4, new EventActingTask("use_lectern", 0.15f, 20 * 20));
+        register("justiciar", 4, new EventActingTask("craft_map", 0.05f, 20 * 15));
+        register("justiciar", 4, new EventActingTask("use_prohibition_ability", 0.2f, 20 * 20));
+
+        register("justiciar", 3, new EventActingTask("kill_strong_mobs", 0.15f, 20 * 5));
+        register("justiciar", 3, new EventActingTask("outnumbered_kill", 0.1f, 20 * 5));
+        register("justiciar", 3, new EventActingTask("attack_stronger_mob", 0.1f, 20 * 5));
+        register("justiciar", 3, new EventActingTask("use_balancing_ability", 0.2f, 20 * 20));
+
+        register("justiciar", 2, new EventActingTask("use_anvil", 0.1f, 20 * 10));
+        register("justiciar", 2, new EventActingTask("trade_with_villager", 0.1f, 20 * 20));
+
+        register("justiciar", 1, new EventActingTask("kill_strong_mobs", 0.15f, 20 * 5));
+        register("justiciar", 1, new EventActingTask("kill_while_full_health", 0.1f, 20 * 2));
+        register("justiciar", 1, new EventActingTask("use_order_proxy_ability", 0.3f, 20 * 20));
+
+
+        register("darkness", 9, new EventActingTask("kill_in_darkness", 0.15f, 20 * 2));
+        register("darkness", 9, new EventActingTask("use_spyglass", 0.05f, 20 * 8));
+        register("darkness", 9, new EventActingTask("kill_untargeted_mob", 0.05f, 20 * 5));
+
+        register("darkness", 8, new EventActingTask("use_note_block", 0.15f, 20 * 10));
+        register("darkness", 8, new EventActingTask("use_lectern", 0.15f, 20 * 15));
+        register("darkness", 8, new EventActingTask("use_midnight_poem_ability", 0.2f, 20 * 15));
+
+        register("darkness", 7, new EventActingTask("kill_in_darkness", 0.1f, 20 * 2));
+        register("darkness", 7, new EventActingTask("sneak_kill", 0.1f, 20 * 2));
+        register("darkness", 7, new EventActingTask("use_nightmare_ability", 0.2f, 20 * 20));
+
+        register("darkness", 6, new EventActingTask("feed_animal", 0.1f, 20 * 10));
+        register("darkness", 6, new EventActingTask("tame_animal", 0.1f, 20 * 15));
+        register("darkness", 6, new EventActingTask("use_requiem_ability", 0.2f, 20 * 20));
+
+        register("darkness", 5, new EventActingTask("breed_animals", 0.1f, 20 * 15));
+        register("darkness", 5, new EventActingTask("use_environment", 0.1f, 20 * 15));
+
+        register("darkness", 4, new EventActingTask("kill_in_darkness", 0.15f, 20 * 2));
+        register("darkness", 4, new EventActingTask("kill_strong_mobs", 0.1f, 20 * 5));
+        register("darkness", 4, new EventActingTask("outnumbered_kill", 0.1f, 20 * 5));
+
+        register("darkness", 3, new EventActingTask("kill_strong_mobs", 0.1f, 20 * 5));
+        register("darkness", 3, new EventActingTask("kill_in_darkness", 0.1f, 20 * 2));
+        register("darkness", 3, new EventActingTask("use_horror_aura_ability", 0.2f, 20 * 20));
+
+        register("darkness", 2, new EventActingTask("sneak_kill", 0.1f, 20 * 2));
+        register("darkness", 2, new EventActingTask("kill_in_darkness", 0.1f, 20 * 2));
+        register("darkness", 2, new EventActingTask("use_concealment_ability", 0.2f, 20 * 20));
+
+        register("darkness", 1, new EventActingTask("kill_strong_mobs", 0.15f, 20 * 5));
+        register("darkness", 1, new EventActingTask("kill_while_low_health", 0.15f, 20 * 2));
+        register("darkness", 1, new EventActingTask("use_sword_of_darkness_ability", 0.3f, 20 * 20));
+
+
+        register("death", 9, new EventActingTask("place_mob_head", 0.15f, 20 * 10));
+        register("death", 9, new EventActingTask("mine_ore", 0.05f, 20 * 10));
+        register("death", 9, new EventActingTask("use_eye_of_death_ability", 0.2f, 20 * 15));
+
+        register("death", 8, new EventActingTask("mine_ore", 0.1f, 20 * 10));
+        register("death", 8, new EventActingTask("catch_fish", 0.05f, 20 * 10));
+        register("death", 8, new EventActingTask("use_spirit_communication_ability", 0.2f, 20 * 15));
+
+        register("death", 7, new EventActingTask("use_note_block", 0.1f, 20 * 10));
+        register("death", 7, new EventActingTask("brew_potion", 0.1f, 20 * 15));
+        register("death", 7, new EventActingTask("use_spirit_channeling_ability", 0.2f, 20 * 20));
+
+        register("death", 6, new EventActingTask("use_lead", 0.05f, 20 * 10));
+        register("death", 6, new EventActingTask("trade_with_villager", 0.1f, 20 * 20));
+        register("death", 6, new EventActingTask("use_word_of_spirit_ability", 0.2f, 20 * 20));
+
+        register("death", 5, new EventActingTask("kill_strong_mobs", 0.1f, 20 * 5));
+        register("death", 5, new EventActingTask("kill_while_low_health", 0.1f, 20 * 2));
+        register("death", 5, new EventActingTask("use_door_to_the_underworld_ability", 0.2f, 20 * 20));
+
+        register("death", 4, new EventActingTask("kill_while_low_health", 0.2f, 20 * 2));
+        register("death", 4, new EventActingTask("eat_golden_apple", 0.1f, 20 * 10));
+        register("death", 4, new EventActingTask("attack_stronger_mob", 0.1f, 20 * 5));
+
+        register("death", 3, new EventActingTask("ride_boat", 0.1f, 20 * 10));
+        register("death", 3, new EventActingTask("place_soul_lantern", 0.1f, 20 * 10));
+        register("death", 3, new EventActingTask("use_death_spells_ability", 0.2f, 20 * 20));
+
+        register("death", 2, new EventActingTask("place_mob_head", 0.1f, 20 * 10));
+        register("death", 2, new EventActingTask("kill_strong_mobs", 0.1f, 20 * 5));
+        register("death", 2, new EventActingTask("use_nation_of_the_dead_ability", 0.3f, 20 * 20));
+
+        register("death", 1, new EventActingTask("kill_strong_mobs", 0.15f, 20 * 5));
+        register("death", 1, new EventActingTask("kill_while_low_health", 0.1f, 20 * 2));
+        register("death", 1, new EventActingTask("use_hand_of_death_ability", 0.3f, 20 * 20));
+
     }
     record PathwaySequenceKey(String pathway, int sequence) {}
 }

@@ -614,53 +614,30 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     );
 
     private Component getActingTaskName(String taskId) {
-        String baseId = taskId;
-        List<String> conditions = new ArrayList<>();
-
-        // Strip condition suffixes
-        boolean found;
-        do {
-            found = false;
-
-            for (var entry : SUFFIXES.entrySet()) {
-                String suffix = entry.getKey();
-
-                if (baseId.endsWith(suffix)) {
-                    baseId = baseId.substring(0, baseId.length() - suffix.length());
-                    conditions.add(0, Component.translatable(entry.getValue()).getString());
-                    found = true;
+        if(taskId.startsWith("use_") && taskId.endsWith("_ability")) {
+            String abilityId = taskId.substring(4);
+            String suffixKey = null;
+            for (String suffix : SUFFIXES.keySet()) {
+                if (abilityId.endsWith(suffix)) {
+                    suffixKey = SUFFIXES.get(suffix);
+                    abilityId = abilityId.substring(0, abilityId.length() - suffix.length());
                     break;
                 }
             }
-        } while (found);
 
-        Component baseComponent;
+            return Component.translatable("lotm.acting.ability_use").append(Component.translatable("lotmcraft." + abilityId))
+                    .append(suffixKey != null ? Component.translatable(suffixKey) : Component.empty());
+        }
 
-        // Dynamic ability acting trigger
-        if (baseId.startsWith("lotm.acting.use_")) {
-            String abilityId = baseId.substring("lotm.acting.use_".length());
-
-            String abilityKey = "ability.lotmcraft." + abilityId;
-
-            if (!Component.translatable(abilityKey).getString().equals(abilityKey)) {
-                baseComponent = Component.translatable(
-                        "lotm.acting.use",
-                        Component.translatable(abilityKey)
-                );
-            } else {
-                baseComponent = Component.translatable("lotm.acting." + baseId);
+        String suffixKey = null;
+        for (String suffix : SUFFIXES.keySet()) {
+            if (taskId.endsWith(suffix)) {
+                suffixKey = SUFFIXES.get(suffix);
+                taskId = taskId.substring(0, taskId.length() - suffix.length());
+                break;
             }
-        } else {
-            baseComponent = Component.translatable("lotm.acting." + baseId);
         }
-
-        StringBuilder result = new StringBuilder(baseComponent.getString());
-
-        for (String condition : conditions) {
-            result.append(" ").append(condition);
-        }
-
-        return Component.literal(result.toString());
+        return Component.translatable("lotm.acting." + taskId).append(suffixKey != null ? Component.translatable(suffixKey) : Component.empty());
     }
 
     private void renderQuestPanel(GuiGraphics guiGraphics, int mouseX, int mouseY) {
