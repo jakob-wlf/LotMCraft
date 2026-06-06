@@ -7,6 +7,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +22,7 @@ import java.util.Random;
  * The reel scrolls through all seq-9 characteristic names. When it stops,
  * the player may Accept (sends the result) or Reroll (if rerolls remain).
  */
+@OnlyIn(Dist.CLIENT)
 public class CharSlotRollScreen extends Screen {
 
     // ── Layout ────────────────────────────────────────────────────────────────

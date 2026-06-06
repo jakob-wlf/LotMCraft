@@ -10,6 +10,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 
 import java.util.*;
+import java.util.ArrayList;
 
 /**
  * Server-persistent data for the River of Eternal Darkness Death Imprint system.
@@ -36,6 +37,9 @@ public class DeathImprintData extends SavedData {
 
     /** Position each trapped player is locked to (set when River's Call teleports them). */
     private final Map<UUID, BlockPos> trapPositions = new HashMap<>();
+
+    /** Abilities sealed by the River owner per player (max 2). Maps target UUID → list of ability IDs. */
+    private final Map<UUID, List<String>> sealedAbilities = new HashMap<>();
 
     // ── Static access ──────────────────────────────────────────────────────────
 
@@ -66,10 +70,16 @@ public class DeathImprintData extends SavedData {
     }
 
     public void setImprintCount(UUID uuid, int count) {
+        int previous = imprintCounts.getOrDefault(uuid, 0);
         if (count <= 0) {
             imprintCounts.remove(uuid);
         } else {
             imprintCounts.put(uuid, Math.min(count, 3));
+        }
+        // If the new count drops below 2, clear any ability seals placed on this player
+        int effective = count <= 0 ? 0 : Math.min(count, 3);
+        if (effective < 2 && previous >= 2) {
+            clearSealedAbilities(uuid);
         }
         setDirty();
     }
@@ -157,6 +167,42 @@ public class DeathImprintData extends SavedData {
         return trapPositions.get(uuid);
     }
 
+    // ── Ability seals ──────────────────────────────────────────────────────────
+
+    /** Set (or overwrite) the sealed abilities for a player (up to 2). */
+    public void setSealedAbilities(UUID target, List<String> abilityIds) {
+        if (abilityIds == null || abilityIds.isEmpty()) {
+            sealedAbilities.remove(target);
+        } else {
+            sealedAbilities.put(target, new ArrayList<>(abilityIds.subList(0, Math.min(2, abilityIds.size()))));
+        }
+        setDirty();
+    }
+
+    /** Returns the sealed ability IDs for a player, or an empty list. */
+    public List<String> getSealedAbilities(UUID target) {
+        return sealedAbilities.getOrDefault(target, Collections.emptyList());
+    }
+
+    /** Returns true if the given ability is sealed for the player. */
+    public boolean isAbilitySealed(UUID target, String abilityId) {
+        List<String> seals = sealedAbilities.get(target);
+        return seals != null && seals.contains(abilityId);
+    }
+
+    /** Clear all seals for a player (called when imprints drop below 2 or sefirot is lost). */
+    public void clearSealedAbilities(UUID target) {
+        if (sealedAbilities.remove(target) != null) setDirty();
+    }
+
+    /** Clear seals for ALL players (called when sefirot is unclaimed). */
+    public void clearAllSealedAbilities() {
+        if (!sealedAbilities.isEmpty()) {
+            sealedAbilities.clear();
+            setDirty();
+        }
+    }
+
     // ── Save / Load ────────────────────────────────────────────────────────────
 
     @Override
@@ -200,6 +246,21 @@ public class DeathImprintData extends SavedData {
         }
         tag.put("riverTrapped", trappedList);
 
+        // Sealed abilities
+        ListTag sealedList = new ListTag();
+        for (Map.Entry<UUID, List<String>> entry : sealedAbilities.entrySet()) {
+            CompoundTag e = new CompoundTag();
+            e.putUUID("UUID", entry.getKey());
+            ListTag ids = new ListTag();
+            for (String id : entry.getValue()) {
+                net.minecraft.nbt.StringTag st = net.minecraft.nbt.StringTag.valueOf(id);
+                ids.add(st);
+            }
+            e.put("abilities", ids);
+            sealedList.add(e);
+        }
+        tag.put("sealedAbilities", sealedList);
+
         return tag;
     }
 
@@ -227,6 +288,17 @@ public class DeathImprintData extends SavedData {
         for (Tag t : trappedList) {
             CompoundTag e = (CompoundTag) t;
             data.riverTrapped.put(e.getUUID("UUID"), e.getLong("expiry"));
+        }
+
+        // Sealed abilities
+        ListTag sealedList = tag.getList("sealedAbilities", Tag.TAG_COMPOUND);
+        for (Tag t : sealedList) {
+            CompoundTag e = (CompoundTag) t;
+            UUID uuid = e.getUUID("UUID");
+            ListTag ids = e.getList("abilities", Tag.TAG_STRING);
+            List<String> abilityIds = new ArrayList<>();
+            for (Tag idTag : ids) abilityIds.add(idTag.getAsString());
+            data.sealedAbilities.put(uuid, abilityIds);
         }
 
         return data;

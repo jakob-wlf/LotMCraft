@@ -47,7 +47,9 @@ public record RequestRiverImprintScreenPacket() implements CustomPacketPayload {
 
             DeathImprintData imprintData = DeathImprintData.get(player.getServer());
             Set<UUID> allImprinted = imprintData.getAllImprintedPlayers();
+            final UUID ownerUUID = player.getUUID();
             List<RiverAuthorityMenu.ImprintEntry> entries = allImprinted.stream()
+                    .filter(uuid -> !uuid.equals(ownerUUID))
                     .map(uuid -> new RiverAuthorityMenu.ImprintEntry(
                             uuid,
                             imprintData.getSnapshotName(uuid),

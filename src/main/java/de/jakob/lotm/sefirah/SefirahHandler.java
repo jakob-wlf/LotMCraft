@@ -1,6 +1,7 @@
 package de.jakob.lotm.sefirah;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.DeathImprintData;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -73,6 +74,8 @@ public class SefirahHandler {
         SefirotAuthorityManager.clearPlayerAuthority(player);
         RiverBlessingManager.clearBlessingsForOwner(player.getUUID());
         RiverBlessingManager.clearAudience(player.server);
+        // Clear all ability seals that this sefirot owner had placed
+        DeathImprintData.get(player.server).clearAllSealedAbilities();
     }
 
     public static void teleportToSefirot(ServerPlayer player) {

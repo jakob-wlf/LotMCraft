@@ -507,6 +507,9 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
 
     private void removeMyEnhancements(LivingEntity entity) {
         UUID uuid = entity.getUUID();
+        // Clear the sequence cache so callPassiveEffectsOnAdd will re-apply modifiers
+        // after a remove+add cycle (e.g. double setBeyonder call on NPC spawn).
+        lastKnownSequence.remove(uuid);
         Map<PhysicalEnhancementsAbility, Map<EnhancementType, Integer>> allEnhancements = entityEnhancements.get(uuid);
         if (allEnhancements != null) {
             Map<EnhancementType, Integer> myEnhancements = allEnhancements.remove(this);

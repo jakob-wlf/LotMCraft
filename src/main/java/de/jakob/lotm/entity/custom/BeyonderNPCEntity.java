@@ -143,10 +143,9 @@ public class BeyonderNPCEntity extends PathfinderMob {
             BeyonderData.setBeyonder(this, pathway, sequence);
             this.entityData.set(PATHWAY, pathway);
             this.entityData.set(SEQUENCE, sequence);
-        }
-
-        // Initialize abilities if pathway is valid
-        if (!pathway.isEmpty()) {
+            // Set up goals and abilities now that pathway/sequence are known
+            updateGoalsBasedOnHostility();
+        } else if (!pathway.isEmpty()) {
             initializeAbilities(pathway, sequence);
         }
     }
@@ -218,8 +217,10 @@ public class BeyonderNPCEntity extends PathfinderMob {
         super.onAddedToLevel();
 
         if (!this.level().isClientSide) {
+            boolean freshSpawn = !this.getPersistentData().getBoolean("Initialized");
+
             // Initialize quest data on first spawn
-            if (!this.getPersistentData().getBoolean("Initialized")) {
+            if (freshSpawn) {
                 this.getPersistentData().putBoolean("Initialized", true);
                 boolean underworldSummoned = this.getPersistentData().getBoolean("UnderworldSummonedSoul");
                 if (!underworldSummoned && random.nextFloat() < QUEST_SPAWN_CHANCE) {
@@ -230,10 +231,15 @@ public class BeyonderNPCEntity extends PathfinderMob {
                 }
             }
 
-            // Sync beyonder data
+            // Sync beyonder data and ensure goals/abilities are fully set up
             if (this.sequence != -1 && !this.pathway.equals("none")) {
                 BeyonderData.setBeyonder(this, this.pathway, sequence);
                 syncEntityDataWithBeyonderData();
+                updateGoalsBasedOnHostility();
+                // For fresh spawns, start at full HP after passives have applied their modifiers
+                if (freshSpawn) {
+                    this.setHealth(this.getMaxHealth());
+                }
             }
         }
     }
@@ -322,7 +328,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
             setTargetPlayerUUID(compound.getUUID("TargetPlayerUUID"));
         }
 
-        if (!getPathway().isEmpty()) {
+        if (!getPathway().isEmpty() && !getPathway().equals("none")) {
             initializeAbilities(getPathway(), getSequence());
         }
     }
@@ -340,7 +346,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     private void updateGoalsBasedOnHostility() {
-        if (getPathway().isEmpty()) {
+        if (getPathway().isEmpty() || getPathway().equals("none")) {
             return;
         }
 
@@ -350,12 +356,15 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.goalSelector.removeAllGoals(goal -> goal instanceof MeleeAttackGoal ||
                 goal instanceof WaterAvoidingRandomStrollGoal ||
                 goal instanceof MoveThroughVillageGoal ||
-                goal instanceof RangedCombatGoal);
+                goal instanceof RangedCombatGoal ||
+                goal instanceof AbilityUseGoal);
         this.targetSelector.removeAllGoals(goal -> goal instanceof NearestAttackableTargetGoal ||
                 goal instanceof HurtByTargetGoal);
 
         // Add retaliation behavior
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+
+        this.goalSelector.addGoal(4, new AbilityUseGoal(this));
 
         // Add combat goals based on abilities
         if (hasRangedOption()) {

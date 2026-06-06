@@ -100,9 +100,9 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
         event.registerFluidType(new IClientFluidTypeExtensions() {
-            private static final ResourceLocation STILL = ResourceLocation.fromNamespaceAndPath("minecraft", "block/black_stained_glass");
-            private static final ResourceLocation FLOWING = ResourceLocation.fromNamespaceAndPath("minecraft", "block/black_stained_glass");
-            private static final ResourceLocation OVERLAY = ResourceLocation.fromNamespaceAndPath("minecraft", "block/black_stained_glass");
+            private static final ResourceLocation STILL = ResourceLocation.fromNamespaceAndPath("lotmcraft", "block/river_of_eternal_darkness_water_still");
+            private static final ResourceLocation FLOWING = ResourceLocation.fromNamespaceAndPath("lotmcraft", "block/river_of_eternal_darkness_water_flowing");
+            private static final ResourceLocation OVERLAY = ResourceLocation.fromNamespaceAndPath("lotmcraft", "block/river_of_eternal_darkness_water_still");
             private static final ResourceLocation UNDERWATER_OVERLAY = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/misc/underwater.png");
 
             @Override

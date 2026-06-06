@@ -549,6 +549,35 @@ public class PacketHandler {
                 OpenCharSlotRollPacket::handle
         );
 
+        registrar.playToClient(
+                OpenAbilitySealScreenPacket.TYPE,
+                OpenAbilitySealScreenPacket.STREAM_CODEC,
+                OpenAbilitySealScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenAboveSeqAuthorityScreenPacket.TYPE,
+                OpenAboveSeqAuthorityScreenPacket.STREAM_CODEC,
+                OpenAboveSeqAuthorityScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenDailySpinScreenPacket.TYPE,
+                OpenDailySpinScreenPacket.STREAM_CODEC,
+                OpenDailySpinScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenSellYourSoulScreenPacket.TYPE,
+                OpenSellYourSoulScreenPacket.STREAM_CODEC,
+                OpenSellYourSoulScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenSellYourSoulGatePacket.TYPE,
+                OpenSellYourSoulGatePacket.STREAM_CODEC,
+                OpenSellYourSoulGatePacket::handle
+        );
 
     }
 
@@ -871,6 +900,36 @@ public class PacketHandler {
                 CharSlotRollResultPacket.TYPE,
                 CharSlotRollResultPacket.STREAM_CODEC,
                 CharSlotRollResultPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestAbilitySealScreenPacket.TYPE,
+                RequestAbilitySealScreenPacket.STREAM_CODEC,
+                RequestAbilitySealScreenPacket::handle
+        );
+
+        registrar.playToServer(
+                SetAbilitySealPacket.TYPE,
+                SetAbilitySealPacket.STREAM_CODEC,
+                SetAbilitySealPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestDailySpinPacket.TYPE,
+                RequestDailySpinPacket.STREAM_CODEC,
+                RequestDailySpinPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestSellYourSoulPacket.TYPE,
+                RequestSellYourSoulPacket.STREAM_CODEC,
+                RequestSellYourSoulPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestSellYourSoulInfoPacket.TYPE,
+                RequestSellYourSoulInfoPacket.STREAM_CODEC,
+                RequestSellYourSoulInfoPacket::handle
         );
     }
 
