@@ -29,6 +29,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
@@ -578,7 +579,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         for (int i = startIndex; i < endIndex; i++) {
             String questId = actingRequirements.get(i).getId();
-            Component actingName = Component.translatable("lotm.acting." + questId);
+            Component actingName = getActingTaskName(questId);
             if (actingName.getString().length() > 24) {
                 actingName = Component.literal(actingName.getString().substring(0, 21).strip() + "…");
             }
@@ -603,6 +604,63 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             guiGraphics.drawString(this.font, noReqs, panelX + (ACTING_PANEL_WIDTH - textWidth) / 2,
                     panelY + ACTING_PANEL_HEIGHT / 2 - this.font.lineHeight / 2, 0xFF888888, false);
         }
+    }
+
+    private static final Map<String, String> SUFFIXES = Map.of(
+            "_while_full_health", "lotm.acting.condition.while_full_health",
+            "_while_low_health", "lotm.acting.condition.while_low_health",
+            "_while_hurt", "lotm.acting.condition.while_hurt",
+            "_at_night", "lotm.acting.condition.at_night"
+    );
+
+    private Component getActingTaskName(String taskId) {
+        String baseId = taskId;
+        List<String> conditions = new ArrayList<>();
+
+        // Strip condition suffixes
+        boolean found;
+        do {
+            found = false;
+
+            for (var entry : SUFFIXES.entrySet()) {
+                String suffix = entry.getKey();
+
+                if (baseId.endsWith(suffix)) {
+                    baseId = baseId.substring(0, baseId.length() - suffix.length());
+                    conditions.add(0, Component.translatable(entry.getValue()).getString());
+                    found = true;
+                    break;
+                }
+            }
+        } while (found);
+
+        Component baseComponent;
+
+        // Dynamic ability acting trigger
+        if (baseId.startsWith("lotm.acting.use_")) {
+            String abilityId = baseId.substring("lotm.acting.use_".length());
+
+            String abilityKey = "ability.lotmcraft." + abilityId;
+
+            if (!Component.translatable(abilityKey).getString().equals(abilityKey)) {
+                baseComponent = Component.translatable(
+                        "lotm.acting.use",
+                        Component.translatable(abilityKey)
+                );
+            } else {
+                baseComponent = Component.translatable("lotm.acting." + baseId);
+            }
+        } else {
+            baseComponent = Component.translatable("lotm.acting." + baseId);
+        }
+
+        StringBuilder result = new StringBuilder(baseComponent.getString());
+
+        for (String condition : conditions) {
+            result.append(" ").append(condition);
+        }
+
+        return Component.literal(result.toString());
     }
 
     private void renderQuestPanel(GuiGraphics guiGraphics, int mouseX, int mouseY) {
