@@ -6,6 +6,7 @@ import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
+import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncOriginalBodyOwnerPacket;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.helper.AllyUtil;
@@ -78,6 +79,12 @@ public class ControllingUtil {
         copyEntities(target, player, true);
         copyPosition(target, player);
 
+        // swap the target with the player's original body state if the target is a Beyonder
+        if (BeyonderData.isBeyonder(target) && !isTargetPlayer) {
+            // swap the target with the player's original body state
+            copyEntities(originalBody, target, true);
+        }
+
         // save the target to the player
         if (!isTargetPlayer){
             CompoundTag targetTag = new CompoundTag();
@@ -133,80 +140,18 @@ public class ControllingUtil {
         ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
         CompoundTag targetTag = data.getTargetEntity();
 
+        // Capture the host's characteristics from the player (who is currently the host)
+        // to merge them back into the player's original body later.
+        ArrayList<Characteristic> hostChars = new ArrayList<>();
+        for (Characteristic c : BeyonderData.getCharList(player)) {
+            hostChars.add(new Characteristic(c.pathway(), c.stack(), c.sequence()));
+        }
+
         // remove body from allies (to clean it up)
         AllyUtil.removeAllyOneWay(player, data.getBodyUUID());
 
         // Track the restored target so we can update its controller item after the body is restored
         LivingEntity restoredTarget = null;
-
-        // returning the target before returning to main body
-        if (targetTag != null) {
-            // Patch the saved tag with the player's original Beyonder state (prefer the saved bodyEntity if available)
-            String currentPathway = null;
-            int currentSequence = -1;
-            float digestionProgress = 0f;
-            ListTag characteristicListTag = null;
-
-            CompoundTag savedBodyTag = data.getBodyEntity();
-            if (savedBodyTag != null && savedBodyTag.contains("neoforge:attachments") && savedBodyTag.getCompound("neoforge:attachments").contains("lotmcraft:beyonder_component")) {
-                CompoundTag nfdBody = savedBodyTag.getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
-                currentPathway = nfdBody.getString("pathway");
-                currentSequence = nfdBody.getInt("sequence");
-                digestionProgress = nfdBody.getFloat("digestionProgress");
-                if (nfdBody.contains("characteristicList")) {
-                    characteristicListTag = nfdBody.getList("characteristicList", 10);
-                }
-            } else {
-                // Fallback: use the player's current BeyonderData (best effort)
-                currentPathway = BeyonderData.getPathway(player);
-                currentSequence = BeyonderData.getSequence(player);
-                digestionProgress = BeyonderData.getDigestionProgress(player);
-                characteristicListTag = new ListTag();
-                for (Characteristic characteristic : BeyonderData.getCharList(player)) {
-                    characteristicListTag.add(characteristic.toNBT(level.registryAccess()));
-                }
-            }
-
-            if (currentPathway != null && !currentPathway.isEmpty() && currentSequence >= 0) {
-                // idk why that is here, "Will" added it and idk why so i'll leave it here anyways
-                targetTag.putString("Pathway", currentPathway);
-                targetTag.putInt("Sequence", currentSequence);
-
-                // also patch NeoForgeData persistent data inside the tag
-                if (targetTag.contains("neoforge:attachments")) {
-                    CompoundTag nfd = targetTag.getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
-                    nfd.putString("pathway", currentPathway);
-                    nfd.putInt("sequence", currentSequence);
-                    nfd.putFloat("digestionProgress", digestionProgress);
-
-                    if (characteristicListTag != null) {
-                        nfd.put("characteristicList", characteristicListTag);
-                    } else {
-                        nfd.put("characteristicList", new ListTag());
-                    }
-
-                    ArrayList<Characteristic> charList = new ArrayList<>();
-                    if (characteristicListTag != null) {
-                        for (int i = 0; i < characteristicListTag.size(); i++) {
-                            CompoundTag ctag = characteristicListTag.getCompound(i);
-                            charList.add(Characteristic.fromNBT(ctag, level.registryAccess()));
-                        }
-                    }
-
-                    int charSeq = charList.stream().mapToInt(c -> c.sequence()).min().orElse(-1);
-                    String charPath = charList.stream().filter(c -> c.sequence() == charSeq).findFirst().map(c -> c.pathway()).orElse("");
-                    LOTMCraft.LOGGER.info("reset: patching saved target tag with player Beyonder state: player={} uuid={} currentPathway={} currentSequence={} charCount={}",
-                            player.getDisplayName().getString(), player.getUUID(), currentPathway, currentSequence, charList.size());
-                    // Normalize values: if no characteristics found, treat as non-beyonder to avoid negative sequence indices
-                    int normalizedSeq = charSeq < 0 ? de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ : charSeq;
-                    String normalizedPath = (charPath == null || charPath.isEmpty()) ? "none" : charPath;
-                    // Avoid mutating the global PlayerMap during this patch operation; putIntoMap=false
-                    BeyonderData.setBeyonder(player, normalizedPath, normalizedSeq, false, false, false, false, false, false);
-                    LOTMCraft.LOGGER.info("Patched Beyonder data for player {}: pathway={}, sequence={}, digestionProgress={}, characteristicListSize={}",
-                            player.getDisplayName().getString(), normalizedPath, normalizedSeq, BeyonderData.getDigestionProgress(player), characteristicListTag == null ? 0 : characteristicListTag.size());
-                }
-            }
-        }
 
         Entity targetEntity = null;
         if (targetTag != null) {
@@ -220,18 +165,16 @@ public class ControllingUtil {
 
         // copying some (important) data from the player to the target
         if (targetEntity != null) {
-
-            // copy player inventory to the target
             if (targetEntity instanceof LivingEntity target) {
-                copyInventories(player, target);
-                //copyEntities(player, target);
+                // Restore the target's original body/items/attributes from the player (who currently holds them).
+                // Beyonder data will be overwritten with the swap data later if available.
+                //LOTMCraft.LOGGER.info("171");
+                copyEntities(player, target, false);
             }
 
             level.addFreshEntity(targetEntity);
 
-            // Carry over digestion progress (stored in persistent data, not NPC fields)
             if (targetEntity instanceof LivingEntity targetLiving) {
-                BeyonderData.setDigestionProgress(targetLiving, BeyonderData.getDigestionProgress(player));
                 restoredTarget = targetLiving;
             }
 
@@ -267,18 +210,30 @@ public class ControllingUtil {
 
         Entity originalBodyEntity = level.getEntity(data.getBodyUUID());
 
-        // returning to main body
+        // returning to main body and swapping characteristics
         if (originalBodyEntity != null) {
             if (originalBodyEntity instanceof LivingEntity originalBody) {
-            // Restore the player's original Beyonder state from the saved body (force overwrite)
-            copyEntities(originalBody, player, true);
-            copyPosition(originalBody, player);
+                // SWAP: Target receives the parasite's original characteristics (completing the swap).
+                if (targetEntity instanceof LivingEntity targetLiving) {
+                    LOTMCraft.LOGGER.info("reset: swapping original body Beyonder data to restored target {}", targetEntity.getUUID());
+                    copyData(originalBody, targetLiving, true);
+                }
+
+                // SWAP: Player returns to their original body/items, but merges the host's characteristics.
+                //LOTMCraft.LOGGER.info("224");
+                copyEntities(originalBody, player, true);
+                //mergeBeyonderCharacteristics(hostChars, player);
+
+                // We must move the player back to their original body's position.
+                copyPosition(originalBody, player);
             }
             originalBodyEntity.discard();
         } else {
-            // only a fallback in case the body didn't exist or was unloaded for some reason
+            // fallback if body is missing
             CompoundTag bodyTag = data.getBodyEntity();
             if (bodyTag != null) {
+                // In fallback we don't have the target entity easily to swap to, 
+                // but we can try to restore player from the tag.
                 Entity bodyEntity = EntityType.loadEntityRecursive(bodyTag, level, (entity) -> {
                     ListTag posList = bodyTag.getList("Pos", 6);
                     if (posList.size() >= 3) {
@@ -290,15 +245,14 @@ public class ControllingUtil {
                 });
                 if (bodyEntity != null) {
                     if (bodyEntity instanceof LivingEntity originalBody) {
-                        copyEntities(originalBody, player);
+                        if (targetEntity instanceof LivingEntity targetLiving) {
+                            //LOTMCraft.LOGGER.info("249 - removed");
+                            //copyData(originalBody, targetLiving, true);
+                        }
+                        //LOTMCraft.LOGGER.info("252");
+                        copyEntities(originalBody, player, true);
+                        //mergeBeyonderCharacteristics(hostChars, player);
                         copyPosition(originalBody, player);
-
-                        PhysicalEnhancementsAbility.resetEnhancements(player.getUUID(), player, true);
-
-                        float health = bodyTag.getFloat("Health");
-                        ServerScheduler.scheduleDelayed(5, () -> {
-                            player.setHealth(health);
-                        }, level);
                     }
                 }
             }
