@@ -379,7 +379,12 @@ public class BeyonderData {
                 }
 
                 if (!playerMap.contains(controllerId)) continue;
-                if (!pathway.equals(getPathway(living))) continue;
+
+                // Use the marionette entity's own pathway and sequence so that controlling
+                // e.g. an Error seq-1 player counts against the Error seq-1 slot pool.
+                String marionettePathway = getPathway(living);
+                if (marionettePathway == null || marionettePathway.isEmpty() || marionettePathway.equals("none")) continue;
+                if (!pathway.equals(marionettePathway)) continue;
 
                 int seq = getSequence(living, true);
                 if (seq < 0 || seq > 8) continue;
