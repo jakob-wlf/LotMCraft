@@ -1,6 +1,8 @@
 package de.jakob.lotm.item.custom;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.sefirah.RiverOfEternalDarknessEventHandler;
+import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,6 +42,20 @@ public class EternalDarknessRiverWaterBottleItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (!level.isClientSide && entity instanceof ServerPlayer serverPlayer) {
             String pathway = BeyonderData.getPathway(serverPlayer);
+
+            // River owner: drinking grants +0.5 digestion and full heal at the cost of half their sanity
+            if (SefirahHandler.getClaimedSefirot(serverPlayer).equals("river_of_eternal_darkness")) {
+                float currentDigestion = BeyonderData.getDigestionProgress(serverPlayer);
+                BeyonderData.setDigestionProgress(serverPlayer,
+                        Math.min(1.0f, currentDigestion + 0.5f));
+                serverPlayer.heal(serverPlayer.getMaxHealth());
+                serverPlayer.getData(ModAttachments.SANITY_COMPONENT)
+                        .increaseSanityAndSync(-0.5f, serverPlayer);
+                serverPlayer.sendSystemMessage(Component.literal(
+                        "The River's essence flows through you — your being is renewed, but your mind dims."));
+                stack.shrink(1);
+                return stack;
+            }
 
             if (ALLOWED.contains(pathway)) {
                 RiverOfEternalDarknessEventHandler.beginAccommodationFromBottle(serverPlayer);

@@ -71,6 +71,8 @@ public class SefirahHandler {
         AbilityWheelHelper.removeAbility(player, "sefirot_authority_ability");
         AbilityBarHelper.removeAbility(player, "sefirot_authority_ability");
         SefirotAuthorityManager.clearPlayerAuthority(player);
+        RiverBlessingManager.clearBlessingsForOwner(player.getUUID());
+        RiverBlessingManager.clearAudience(player.server);
     }
 
     public static void teleportToSefirot(ServerPlayer player) {

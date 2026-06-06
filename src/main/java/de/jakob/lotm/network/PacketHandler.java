@@ -543,6 +543,12 @@ public class PacketHandler {
                 SyncDiscernmentDataPacket::handle
         );
 
+        registrar.playToClient(
+                OpenCharSlotRollPacket.TYPE,
+                OpenCharSlotRollPacket.STREAM_CODEC,
+                OpenCharSlotRollPacket::handle
+        );
+
 
     }
 
@@ -841,6 +847,30 @@ public class PacketHandler {
                 GatheringMessagePacket.TYPE,
                 GatheringMessagePacket.STREAM_CODEC,
                 GatheringMessagePacket::handle
+        );
+
+        registrar.playToServer(
+                RequestRiverBlessingScreenPacket.TYPE,
+                RequestRiverBlessingScreenPacket.STREAM_CODEC,
+                RequestRiverBlessingScreenPacket::handle
+        );
+
+        registrar.playToServer(
+                RiverBlessingActionPacket.TYPE,
+                RiverBlessingActionPacket.STREAM_CODEC,
+                RiverBlessingActionPacket::handle
+        );
+
+        registrar.playToServer(
+                RiverAudienceActionPacket.TYPE,
+                RiverAudienceActionPacket.STREAM_CODEC,
+                RiverAudienceActionPacket::handle
+        );
+
+        registrar.playToServer(
+                CharSlotRollResultPacket.TYPE,
+                CharSlotRollResultPacket.STREAM_CODEC,
+                CharSlotRollResultPacket::handle
         );
     }
 

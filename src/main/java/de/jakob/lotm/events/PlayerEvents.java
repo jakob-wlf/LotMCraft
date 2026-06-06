@@ -17,6 +17,7 @@ import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.ResetClientEffectsPacket;
 import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
+import de.jakob.lotm.network.packets.toServer.CharSlotRollResultPacket;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.util.BeyonderData;
@@ -161,16 +162,22 @@ public class PlayerEvents {
             if(!component.isHasReceivedNewPlayerPerks() && player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC)) {
                 player.addItem(new ItemStack(ModItems.GUIDING_BOOK.get()));
 
-                String pathway = BeyonderData.implementedPathways.get(random.nextInt(BeyonderData.implementedPathways.size()));
-                Item characteristic = BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, 9);
-                Item recipe = PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, 9);
+                // If the slot-roll gamerule is active, open the animated reel screen instead
+                if (player.serverLevel().getGameRules().getBoolean(ModGameRules.DO_CHARACTERISTICS_SLOTS)) {
+                    de.jakob.lotm.network.packets.toServer.CharSlotRollResultPacket.initiateRollForNewPlayer(player);
+                    // Mark perks received is deferred until the player accepts in the GUI
+                } else {
+                    String pathway = BeyonderData.implementedPathways.get(random.nextInt(BeyonderData.implementedPathways.size()));
+                    Item characteristic = BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, 9);
+                    Item recipe = PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, 9);
 
-                if(characteristic != null && recipe != null) {
-                    player.addItem(new ItemStack(characteristic));
-                    player.addItem(new ItemStack(recipe));
+                    if(characteristic != null && recipe != null) {
+                        player.addItem(new ItemStack(characteristic));
+                        player.addItem(new ItemStack(recipe));
+                    }
+
+                    component.setHasReceivedNewPlayerPerks(true);
                 }
-
-                component.setHasReceivedNewPlayerPerks(true);
             }
         }
     }
@@ -269,6 +276,13 @@ public class PlayerEvents {
     public static void onDamage(LivingIncomingDamageEvent event) {
         if(event.getEntity().level().isClientSide)
             return;
+
+        // Players in the characteristic slot-roll screen are fully protected from all damage
+        if (event.getEntity() instanceof ServerPlayer rolling
+                && rolling.getPersistentData().contains("charSlotRollsLeft")) {
+            event.setCanceled(true);
+            return;
+        }
 
         if(DivinationAbility.dangerPremonitionActive.contains(event.getEntity().getUUID()) && random.nextFloat() < .1) {
             event.setCanceled(true);

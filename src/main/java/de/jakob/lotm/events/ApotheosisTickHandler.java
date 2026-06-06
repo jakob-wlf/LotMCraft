@@ -187,4 +187,27 @@ public class ApotheosisTickHandler {
         comp.setTranscendence(false);
         comp.setApotheosisTicksLeftAndSync(0, (ServerLevel) player.level(), player);
     }
+
+    /**
+     * Cancels any active apotheosis or transcendence ritual when the player
+     * leaves the Overworld. Both rituals require the Overworld as their foundation.
+     */
+    @SubscribeEvent
+    public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (player.level().isClientSide) return;
+        // No ritual active — nothing to do
+        ApotheosisComponent comp = player.getData(ModAttachments.APOTHEOSIS_COMPONENT);
+        if (comp.getApotheosisTicksLeft() <= 0) return;
+        // Leaving the overworld cancels the ritual
+        if (event.getFrom().equals(net.minecraft.world.level.Level.OVERWORLD)) {
+            boolean wasTranscendence = comp.isTranscendence();
+            comp.setTranscendence(false);
+            comp.setApotheosisTicksLeftAndSync(0, (ServerLevel) player.level(), player);
+            String msg = wasTranscendence
+                    ? "§8Transcendence ritual interrupted — you must remain in the Overworld."
+                    : "§8Apotheosis interrupted — you must remain in the Overworld.";
+            player.sendSystemMessage(net.minecraft.network.chat.Component.literal(msg));
+        }
+    }
 }

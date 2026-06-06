@@ -126,12 +126,19 @@ public class SefirotAuthorityManager {
     /**
      * Returns true if the divination attempt on {@code targetUUID} should be blocked.
      *
+     * Covers two cases:
+     *   1. The target owns a sefirot (SEFIROT_DIVINATION_IMMUNE set).
+     *   2. The target has been blessed by the River of Eternal Darkness
+     *      ({@link RiverBlessingManager#blocksDivination}).
+     *
      * Rules for the Sefirah Castle owner (SEFIROT_DIVINATION_IMMUNE):
      *   – Inside the castle dimension: nobody can divine them (absolute block).
      *   – Outside the castle: only diviners who are 4+ sequences stronger can pierce the protection.
      *     Other sefirot owners are NOT exempt — the sequence gap rule applies to everyone.
      */
     public static boolean blocksDivination(UUID targetUUID, ServerPlayer diviner) {
+        // Check River blessing first (separate rule set)
+        if (RiverBlessingManager.blocksDivination(targetUUID, diviner)) return true;
         if (!SEFIROT_DIVINATION_IMMUNE.contains(targetUUID)) return false;
 
         // Check whether the target player is currently in the Sefirah Castle dimension

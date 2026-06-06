@@ -1,9 +1,11 @@
 package de.jakob.lotm.sefirah;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.DeathImprintData;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.fluid.ModFluids;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSefirotAccommodationPacket;
@@ -34,6 +36,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.joml.Vector3f;
@@ -65,8 +68,54 @@ public class RiverOfEternalDarknessEventHandler {
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        // Clear any blessings this player had granted as River owner
+        RiverBlessingManager.clearBlessingsForOwner(player.getUUID());
+        RiverBlessingManager.clearAudience(player.server);
+        // If this player was in the audience, just unmark them (can't teleport offline player)
+        if (RiverBlessingManager.isInAudience(player.getUUID())) {
+            RiverBlessingManager.unmarkFromAudience(player.getUUID());
+        }
         if (!ritualTicks.containsKey(player.getUUID())) return;
         resetRitual(player, true);
+    }
+
+    /**
+     * Blocks unauthorised players from entering the River of Eternal Darkness dimension.
+     * Authorised entries:
+     *   1. The River sefirot owner (uses U-key teleport or River's Call).
+     *   2. Players trapped by River's Call (already teleported in by executeRiversCall).
+     *   3. Players currently marked as the owner's invited audience.
+     *
+     * Everyone else is immediately returned to overworld spawn with a warning.
+     */
+    @SubscribeEvent
+    public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        // Cancel accommodation ritual if the player leaves the Overworld
+        if (ritualTicks.containsKey(player.getUUID())
+                && !event.getTo().equals(net.minecraft.world.level.Level.OVERWORLD)) {
+            resetRitual(player, true);
+            player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+                    "§8Accommodation ritual interrupted — you must remain in the Overworld."));
+        }
+
+        // Block unauthorised entry into the River dimension
+        if (!event.getTo().equals(de.jakob.lotm.dimension.ModDimensions.RIVER_OF_ETERNAL_DARKNESS_DIMENSION_KEY)) return;
+
+        boolean isOwner    = isRiverOwner(player);
+        boolean isTrapped  = DeathImprintData.get(player.server).isTrappedInRiver(player.getUUID());
+        boolean isAudience = RiverBlessingManager.isInAudience(player.getUUID());
+
+        if (isOwner || isTrapped || isAudience) return;
+
+        // Unauthorised — teleport back to overworld spawn
+        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+                "§4The River of Eternal Darkness rejects your uninvited presence."));
+        net.minecraft.core.BlockPos spawn = player.server.overworld().getSharedSpawnPos();
+        player.teleportTo(player.server.overworld(),
+                spawn.getX() + 0.5, spawn.getY(), spawn.getZ() + 0.5,
+                player.getYRot(), player.getXRot());
     }
 
     @SubscribeEvent
@@ -74,6 +123,19 @@ public class RiverOfEternalDarknessEventHandler {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (!ritualTicks.containsKey(player.getUUID())) return;
         resetRitual(player, true);
+    }
+
+    /**
+     * Blessed players are immune to the ASLEEP mob effect.
+     * Cancels the effect before it is applied.
+     */
+    @SubscribeEvent
+    public static void onMobEffectApplicable(MobEffectEvent.Applicable event) {
+        if (event.getEffectInstance().getEffect() == ModEffects.ASLEEP) {
+            if (RiverBlessingManager.isBlessed(event.getEntity().getUUID())) {
+                event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
+            }
+        }
     }
 
     /**
@@ -259,6 +321,11 @@ public class RiverOfEternalDarknessEventHandler {
         if (!BeyonderData.isBeyonder(player)) {
             player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
                     "§8The liquid dissipates — you have no beyonder power to resonate with it."));
+            return;
+        }
+        if (!player.level().dimension().equals(net.minecraft.world.level.Level.OVERWORLD)) {
+            player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+                    "§8The River's essence requires the foundation of the Overworld. Return to the surface before attempting accommodation."));
             return;
         }
         if (SefirotData.get(player.server).isSefirotClaimed(RIVER_SEFIROT_ID)) {

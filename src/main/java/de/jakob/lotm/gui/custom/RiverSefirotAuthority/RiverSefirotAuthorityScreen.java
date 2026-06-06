@@ -3,6 +3,7 @@ package de.jakob.lotm.gui.custom.RiverSefirotAuthority;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.RequestRiverBlessingScreenPacket;
 import de.jakob.lotm.network.packets.toServer.RequestRiverImprintScreenPacket;
 import de.jakob.lotm.network.packets.toServer.ToggleSefirotAuthorityAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -140,6 +141,12 @@ public class RiverSefirotAuthorityScreen extends AbstractContainerScreen<RiverSe
                 b -> openImprintScreen())
                 .bounds(leftPos + PANEL_WIDTH - 98, topPos + 4, 94, 14).build());
 
+        // "Blessings" button at the bottom-left of the panel
+        addRenderableWidget(Button.builder(
+                Component.literal("✦ Blessings").withStyle(ChatFormatting.AQUA),
+                b -> openBlessingScreen())
+                .bounds(leftPos + 4, topPos + PANEL_HEIGHT - 20, 74, 16).build());
+
         unlocked.clear();
         unlocked.addAll(menu.getUnlockedIds());
     }
@@ -148,6 +155,12 @@ public class RiverSefirotAuthorityScreen extends AbstractContainerScreen<RiverSe
 
     private void openImprintScreen() {
         PacketHandler.sendToServer(new RequestRiverImprintScreenPacket());
+        this.onClose();
+    }
+
+    private void openBlessingScreen() {
+        PacketHandler.sendToServer(new RequestRiverBlessingScreenPacket());
+        this.onClose();
     }
 
     private int computeContentHeight() {

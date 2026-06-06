@@ -156,7 +156,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 .copyFrom(this)
                 .pathway(regressedPathway)
                 .sequence(newSequence)
-                .honorificName((newSequence >= 3) ? HonorificName.EMPTY : honorificName)
+                .honorificName((newSequence >= 3 && (claimedSefirot == null || claimedSefirot.isEmpty())) ? HonorificName.EMPTY : honorificName)
                 .characteristic(0, sequence, pathway)   // reset stack on regression
                 .pathwayHistory(becomesNonBeyonder ? new String[10] : clearedHistory)
                 .uniqueness("none")
