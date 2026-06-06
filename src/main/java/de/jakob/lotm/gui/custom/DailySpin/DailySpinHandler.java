@@ -56,6 +56,8 @@ public class DailySpinHandler {
     public static SpinResult buildDailySpin(ServerPlayer player) {
         String pathway = BeyonderData.getPathway(player);
         int seq        = BeyonderData.getSequence(player);
+        // Clamp to valid Beyonder range; non-Beyonders (seq=10) default to seq 9
+        if (seq < 1 || seq > 9) seq = 9;
         Random rand    = new Random();
 
         // Ensure recipes are initialised

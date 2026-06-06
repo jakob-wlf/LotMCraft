@@ -43,6 +43,7 @@ public class WordsOfMisfortuneAbility extends Ability {
         }
 
         MisfortuneWordsEntity wordsEntity = new MisfortuneWordsEntity(level, entity.position().add(0, 1, 0));
+        wordsEntity.setCasterUUID(entity.getUUID());
         level.addFreshEntity(wordsEntity);
     }
 }

@@ -62,13 +62,13 @@ public class FateResistanceAbility extends PassiveAbilityItem {
 
     /**
      * Returns true if a luck change on {@code targetUUID} should be blocked.
-     * Blocked when the target has Fate Resistance AND the changer is not exactly Sequence 1.
+     * Blocked when the target has Fate Resistance AND the changer is not Sequence 0 or 1.
      *
      * @param targetUUID  UUID of the player whose luck is being changed
      * @param changerSeq  sequence of the player/ability causing the change, or -1 for system/internal
      */
     public static boolean blocksLuckChange(UUID targetUUID, int changerSeq) {
         if (!FATE_RESISTANCE_ACTIVE.contains(targetUUID)) return false;
-        return changerSeq != 1;
+        return changerSeq > 1;
     }
 }

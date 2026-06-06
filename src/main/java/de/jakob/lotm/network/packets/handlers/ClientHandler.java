@@ -697,4 +697,10 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(
                 new de.jakob.lotm.gui.custom.SellYourSoul.SellYourSoulGateScreen(packet.cooldownEndMillis()));
     }
+
+    public static void openCharExchangeWheelScreen(de.jakob.lotm.network.packets.toClient.OpenCharExchangeWheelPacket packet) {
+        Minecraft.getInstance().setScreen(
+                new de.jakob.lotm.gui.custom.CharExchange.CharExchangeWheelScreen(
+                        packet.reelNames(), packet.landingIndex(), packet.outcome(), packet.rewardName()));
+    }
 }
