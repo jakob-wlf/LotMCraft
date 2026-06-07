@@ -246,6 +246,7 @@ public class ModEvents {
         AncientTraderCommand.register(event.getDispatcher());
         FragmentCommand.register(event.getDispatcher());
         GreatOldOneCommand.register(event.getDispatcher());
+        SlotsCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

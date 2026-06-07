@@ -7,6 +7,7 @@ import de.jakob.lotm.potions.PotionRecipeItem;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.potions.PotionRecipes;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -72,13 +73,14 @@ public class DailySpinHandler {
         ItemStack reward;
         String rewardName;
 
+        net.minecraft.server.level.ServerLevel serverLevel = player.serverLevel();
         if (isJackpot) {
             reward     = getRandomUniqueness(rand);
             rewardName = "★ JACKPOT ★";
         } else {
-            // 50/50 between characteristic (any pathway, same seq) and recipe (same seq)
+            // 50/50 between characteristic (slot-filtered, same seq) and recipe (same seq)
             if (rand.nextBoolean()) {
-                ItemStack char_ = getRandomCharacteristicAtSeq(seq, rand);
+                ItemStack char_ = getRandomCharacteristicAtSeq(seq, rand, serverLevel);
                 if (!char_.isEmpty()) {
                     reward     = char_;
                     rewardName = char_.getHoverName().getString();
@@ -93,19 +95,32 @@ public class DailySpinHandler {
                     reward     = recipe;
                     rewardName = recipe.getHoverName().getString();
                 } else {
-                    ItemStack char_ = getRandomCharacteristicAtSeq(seq, rand);
+                    ItemStack char_ = getRandomCharacteristicAtSeq(seq, rand, serverLevel);
                     reward     = char_;
                     rewardName = char_.isEmpty() ? "???" : char_.getHoverName().getString();
                 }
             }
         }
 
-        // 2. Build the visual reel using real item names from ALL pathways at this seq
+        // 2. Build the visual reel using item names from pathways that still have seq slots available.
+        //    This prevents the reel from showing options that are impossible to progress through.
         List<String> allCharNames = new ArrayList<>();
         for (DeferredHolder<Item, ? extends Item> holder : BeyonderCharacteristicItemHandler.ITEMS.getEntries()) {
             Item item = holder.get();
             if (item instanceof BeyonderCharacteristicItem c && c.getSequence() == seq) {
-                allCharNames.add(new ItemStack(item).getHoverName().getString());
+                // Only include if there is a slot available at this sequence for this pathway
+                if (BeyonderData.hasSequenceSlotAvailable(player.serverLevel(), c.getPathway(), seq)) {
+                    allCharNames.add(new ItemStack(item).getHoverName().getString());
+                }
+            }
+        }
+        // Fallback: if all slots are taken, show everything so the reel is never empty
+        if (allCharNames.isEmpty()) {
+            for (DeferredHolder<Item, ? extends Item> holder : BeyonderCharacteristicItemHandler.ITEMS.getEntries()) {
+                Item item = holder.get();
+                if (item instanceof BeyonderCharacteristicItem c && c.getSequence() == seq) {
+                    allCharNames.add(new ItemStack(item).getHoverName().getString());
+                }
             }
         }
         List<String> allRecipeNames = new ArrayList<>();
@@ -113,7 +128,18 @@ public class DailySpinHandler {
             Item item = holder.get();
             if (item instanceof PotionRecipeItem r && r.getRecipe() != null
                     && r.getRecipe().potion().getSequence() == seq) {
-                allRecipeNames.add(new ItemStack(item).getHoverName().getString());
+                if (BeyonderData.hasSequenceSlotAvailable(player.serverLevel(), r.getRecipe().potion().getPathway(), seq)) {
+                    allRecipeNames.add(new ItemStack(item).getHoverName().getString());
+                }
+            }
+        }
+        if (allRecipeNames.isEmpty()) {
+            for (DeferredHolder<Item, ? extends Item> holder : PotionRecipeItemHandler.ITEMS.getEntries()) {
+                Item item = holder.get();
+                if (item instanceof PotionRecipeItem r && r.getRecipe() != null
+                        && r.getRecipe().potion().getSequence() == seq) {
+                    allRecipeNames.add(new ItemStack(item).getHoverName().getString());
+                }
             }
         }
         List<String> reel = new ArrayList<>();
@@ -155,8 +181,8 @@ public class DailySpinHandler {
             // 0.01%: revert to Sequence 9
             return new SoulResult(4, ItemStack.EMPTY, "");
         } else if (roll < 0.0501f) {
-            // 5%: random same-seq characteristic
-            ItemStack item = getRandomCharacteristicAtSeq(seq, rand);
+            // 5%: random same-seq characteristic (slot-filtered)
+            ItemStack item = getRandomCharacteristicAtSeq(seq, rand, player.serverLevel());
             String name = item.isEmpty() ? "???" : item.getHoverName().getString();
             return new SoulResult(3, item, name);
         } else if (roll < 0.3501f) {
@@ -179,11 +205,26 @@ public class DailySpinHandler {
     }
 
     static ItemStack getRandomCharacteristicAtSeq(int seq, Random rand) {
+        return getRandomCharacteristicAtSeq(seq, rand, null);
+    }
+
+    static ItemStack getRandomCharacteristicAtSeq(int seq, Random rand, ServerLevel level) {
         List<ItemStack> options = new ArrayList<>();
         for (DeferredHolder<Item, ? extends Item> holder : BeyonderCharacteristicItemHandler.ITEMS.getEntries()) {
             Item item = holder.get();
             if (item instanceof BeyonderCharacteristicItem c && c.getSequence() == seq) {
-                options.add(new ItemStack(item));
+                if (level == null || BeyonderData.hasSequenceSlotAvailable(level, c.getPathway(), seq)) {
+                    options.add(new ItemStack(item));
+                }
+            }
+        }
+        // Fallback if all slots are full
+        if (options.isEmpty()) {
+            for (DeferredHolder<Item, ? extends Item> holder : BeyonderCharacteristicItemHandler.ITEMS.getEntries()) {
+                Item item = holder.get();
+                if (item instanceof BeyonderCharacteristicItem c && c.getSequence() == seq) {
+                    options.add(new ItemStack(item));
+                }
             }
         }
         if (options.isEmpty()) return ItemStack.EMPTY;

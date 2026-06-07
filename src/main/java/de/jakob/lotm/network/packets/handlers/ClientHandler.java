@@ -663,8 +663,15 @@ public class ClientHandler {
     }
 
     public static void openCharSlotRollScreen(OpenCharSlotRollPacket packet) {
-        Minecraft.getInstance().setScreen(
-                new CharSlotRollScreen(packet.pathways(), packet.charNames(), packet.rerollsLeft()));
+        Minecraft mc = Minecraft.getInstance();
+        // If a CharSlotRollScreen is already open (server responding to a reroll), update
+        // it in-place instead of creating a new one — this preserves Konami bonus rerolls
+        // and the konamiUsed counter which would otherwise reset to 0 on the new screen.
+        if (mc.screen instanceof CharSlotRollScreen existing) {
+            existing.serverAcknowledgedReroll(packet.rerollsLeft());
+        } else {
+            mc.setScreen(new CharSlotRollScreen(packet.pathways(), packet.charNames(), packet.rerollsLeft()));
+        }
     }
 
     public static void openAbilitySealScreen(OpenAbilitySealScreenPacket packet) {

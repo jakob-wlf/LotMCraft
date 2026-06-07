@@ -45,8 +45,8 @@ public class CharPathExchangeHandler {
         ItemStack rewardItem = ItemStack.EMPTY;
         String rewardName;
 
-        if (roll < 1.0f) {
-            // 100% TEST — random characteristic from any pathway, any sequence 1-9
+        if (roll < 0.05f) {
+            // 5% — random characteristic from any pathway, any sequence 1-9
             outcome = CharExchangeHandler.OUTCOME_UPGRADE;
             rewardItem = getRandomCharacteristicAnySeq(rand);
             rewardName = rewardItem.isEmpty() ? "???" : rewardItem.getHoverName().getString();

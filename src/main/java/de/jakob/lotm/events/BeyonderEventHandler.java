@@ -226,7 +226,13 @@ public class BeyonderEventHandler {
     @SubscribeEvent
     public static void onPlayerDrops(LivingDropsEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        if (!BeyonderData.isBeyonder(player)) return;
+
+        // Use the BeyonderComponent (pre-death state) — playerMap was already updated to the
+        // regressed state in onDeath, so calling BeyonderData.isBeyonder() here would check the
+        // post-regression playerMap and incorrectly return false for a regressed-to-non-beyonder player,
+        // preventing any characteristic drops.
+        BeyonderComponent preDeathComp = player.getData(ModAttachments.BEYONDER_COMPONENT);
+        if (preDeathComp.getSequence() >= de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ) return;
 
         // cancel the drop of items completely for summoned entities
         if (event.getEntity().getPersistentData().contains("VoidSummoned")) {
