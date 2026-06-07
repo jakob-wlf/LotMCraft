@@ -115,7 +115,7 @@ public class AdvancementUtil {
 
     private static void advancePathwaySwitch(LivingEntity entity, String pathway, int sequence,
                                              String prevPathway, int prevSequence) {
-        boolean isSameDomainSwitch = prevSequence <= 5 && sequence == (prevSequence - 1) && sameDomain(prevPathway, pathway);
+        boolean isSameDomainSwitch = sequence == (prevSequence - 1) && sameDomain(prevPathway, pathway);
         double failureChance = isSameDomainSwitch ? 0.0 : 1.0;
 
         Runnable onSuccess = isSameDomainSwitch
