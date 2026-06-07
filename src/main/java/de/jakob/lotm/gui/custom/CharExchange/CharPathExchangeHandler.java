@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Server-side logic for the Char Path Exchange.
@@ -38,7 +39,10 @@ public class CharPathExchangeHandler {
         // Remove the sacrificed characteristic
         player.getInventory().setItem(slotIndex, ItemStack.EMPTY);
 
-        Random rand = new Random();
+        // Roll outcome — use ThreadLocalRandom so each call gets a properly seeded
+        // per-thread instance rather than a freshly constructed Random whose seed
+        // entropy can be very low on a busy server tick.
+        Random rand = ThreadLocalRandom.current();
         float roll = rand.nextFloat();
 
         int outcome;
@@ -83,6 +87,9 @@ public class CharPathExchangeHandler {
                 player.drop(garbageStack, false);
             }
         }
+
+        // Sync inventory to client immediately so the reward / garbage appears without needing to re-open inventory.
+        player.containerMenu.broadcastChanges();
 
         PacketHandler.sendToPlayer(player, buildWheelPacket(outcome, rewardName, rand));
     }

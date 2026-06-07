@@ -41,6 +41,12 @@ public class DeathImprintData extends SavedData {
     /** Abilities sealed by the River owner per player (max 2). Maps target UUID → list of ability IDs. */
     private final Map<UUID, List<String>> sealedAbilities = new HashMap<>();
 
+    /** Game tick at which each player's imprint count will decay by 1. Set when an imprint is added. */
+    private final Map<UUID, Long> imprintDecayTick = new HashMap<>();
+
+    /** Ticks between imprint decay events: 40 Minecraft days × 24 000 ticks/day. */
+    public static final long IMPRINT_DECAY_INTERVAL_TICKS = 40L * 24_000L;
+
     // ── Static access ──────────────────────────────────────────────────────────
 
     public static DeathImprintData get(MinecraftServer server) {
@@ -59,20 +65,32 @@ public class DeathImprintData extends SavedData {
 
     /**
      * Adds one imprint to the target, capped at 3.
+     * Resets the decay timer so the countdown always starts from the most recent imprint.
      * @return the new imprint tier (1–3)
      */
     public int addImprint(UUID uuid) {
         int current = imprintCounts.getOrDefault(uuid, 0);
         int next = Math.min(current + 1, 3);
         imprintCounts.put(uuid, next);
+        // Decay timer is managed externally via scheduleDecay once the server is available.
         setDirty();
         return next;
+    }
+
+    /**
+     * (Re-)schedules the decay timer for {@code uuid} to fire {@code IMPRINT_DECAY_INTERVAL_TICKS}
+     * after {@code currentTick}. Call this from the death event, passing the current game time.
+     */
+    public void scheduleDecay(UUID uuid, long currentTick) {
+        imprintDecayTick.put(uuid, currentTick + IMPRINT_DECAY_INTERVAL_TICKS);
+        setDirty();
     }
 
     public void setImprintCount(UUID uuid, int count) {
         int previous = imprintCounts.getOrDefault(uuid, 0);
         if (count <= 0) {
             imprintCounts.remove(uuid);
+            imprintDecayTick.remove(uuid);
         } else {
             imprintCounts.put(uuid, Math.min(count, 3));
         }
@@ -82,6 +100,41 @@ public class DeathImprintData extends SavedData {
             clearSealedAbilities(uuid);
         }
         setDirty();
+    }
+
+    /**
+     * Checks all players whose decay timer has elapsed and decrements their imprint count by 1.
+     * Should be called periodically from the server tick (e.g. every 20 ticks).
+     * Returns the UUIDs whose count was changed so the caller can notify them.
+     */
+    public List<UUID> tickDecay(long currentTick, net.minecraft.server.MinecraftServer server) {
+        List<UUID> decayed = new ArrayList<>();
+        Iterator<Map.Entry<UUID, Long>> it = imprintDecayTick.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<UUID, Long> entry = it.next();
+            if (currentTick >= entry.getValue()) {
+                UUID uuid = entry.getKey();
+                int current = imprintCounts.getOrDefault(uuid, 0);
+                if (current <= 1) {
+                    imprintCounts.remove(uuid);
+                    // Also clear seals if they had tier 2 before decay knocked them below
+                    clearSealedAbilitiesAndUnapply(uuid, server);
+                    it.remove();
+                } else {
+                    int next = current - 1;
+                    imprintCounts.put(uuid, next);
+                    // If dropped below tier 2, remove seals
+                    if (next < 2) {
+                        clearSealedAbilitiesAndUnapply(uuid, server);
+                    }
+                    // Schedule the next decay interval from now
+                    entry.setValue(currentTick + IMPRINT_DECAY_INTERVAL_TICKS);
+                }
+                decayed.add(uuid);
+                setDirty();
+            }
+        }
+        return decayed;
     }
 
     /** @return all UUIDs that have at least one imprint or a permanent soul */
@@ -203,6 +256,70 @@ public class DeathImprintData extends SavedData {
         }
     }
 
+    /**
+     * Clear seals for ALL players and immediately remove the seal enforcement from
+     * every online player. Call this when the sefirot is unclaimed.
+     */
+    public void clearAllSealedAbilitiesAndUnapply(net.minecraft.server.MinecraftServer server) {
+        if (sealedAbilities.isEmpty()) return;
+        // Collect all sealed UUIDs before clearing
+        List<UUID> sealedUUIDs = new ArrayList<>(sealedAbilities.keySet());
+        sealedAbilities.clear();
+        setDirty();
+        for (UUID uuid : sealedUUIDs) {
+            net.minecraft.server.level.ServerPlayer online = server.getPlayerList().getPlayer(uuid);
+            if (online != null) {
+                online.getData(de.jakob.lotm.attachments.ModAttachments.DISABLED_ABILITIES_COMPONENT)
+                        .clearCause(SEAL_CAUSE);
+            }
+        }
+    }
+
+    // ── Live-player enforcement helpers ────────────────────────────────────────
+
+    /**
+     * The cause key used when disabling abilities via death-imprint seals.
+     * Kept as a constant so it can be referenced consistently everywhere.
+     */
+    public static final String SEAL_CAUSE = "death_imprint_seal";
+
+    /**
+     * Re-applies any persisted ability seals for {@code player} into their
+     * {@link de.jakob.lotm.attachments.DisabledAbilitiesComponent}.
+     * Call this on player login so seals survive log-out / log-in cycles.
+     */
+    public void reapplySealedAbilities(net.minecraft.server.level.ServerPlayer player) {
+        de.jakob.lotm.attachments.DisabledAbilitiesComponent comp =
+                player.getData(de.jakob.lotm.attachments.ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        // Clear any stale entries for this cause, then re-apply the current sealed list.
+        comp.clearCause(SEAL_CAUSE);
+        for (String id : getSealedAbilities(player.getUUID())) {
+            comp.disableSpecificAbility(id, SEAL_CAUSE);
+        }
+    }
+
+    /**
+     * Removes the seal enforcement for all abilities that were sealed for {@code uuid}
+     * from the live player (if online) and clears the stored seals.
+     */
+    public void clearSealedAbilitiesAndUnapply(UUID uuid, net.minecraft.server.MinecraftServer server) {
+        List<String> seals = new ArrayList<>(getSealedAbilities(uuid));
+        clearSealedAbilities(uuid);
+        net.minecraft.server.level.ServerPlayer online = server.getPlayerList().getPlayer(uuid);
+        if (online != null && !seals.isEmpty()) {
+            de.jakob.lotm.attachments.DisabledAbilitiesComponent comp =
+                    online.getData(de.jakob.lotm.attachments.ModAttachments.DISABLED_ABILITIES_COMPONENT);
+            for (String id : seals) {
+                comp.enableSpecificAbility(id, SEAL_CAUSE);
+            }
+        }
+    }
+
+    /** Returns all individual ability IDs currently sealed for this player. */
+    private List<String> getAllSealedAbilityIds(UUID uuid) {
+        return new ArrayList<>(getSealedAbilities(uuid));
+    }
+
     // ── Save / Load ────────────────────────────────────────────────────────────
 
     @Override
@@ -261,6 +378,16 @@ public class DeathImprintData extends SavedData {
         }
         tag.put("sealedAbilities", sealedList);
 
+        // Imprint decay timers
+        ListTag decayList = new ListTag();
+        for (Map.Entry<UUID, Long> entry : imprintDecayTick.entrySet()) {
+            CompoundTag e = new CompoundTag();
+            e.putUUID("UUID", entry.getKey());
+            e.putLong("decayTick", entry.getValue());
+            decayList.add(e);
+        }
+        tag.put("imprintDecayTick", decayList);
+
         return tag;
     }
 
@@ -299,6 +426,13 @@ public class DeathImprintData extends SavedData {
             List<String> abilityIds = new ArrayList<>();
             for (Tag idTag : ids) abilityIds.add(idTag.getAsString());
             data.sealedAbilities.put(uuid, abilityIds);
+        }
+
+        // Imprint decay timers
+        ListTag decayList = tag.getList("imprintDecayTick", Tag.TAG_COMPOUND);
+        for (Tag t : decayList) {
+            CompoundTag e = (CompoundTag) t;
+            data.imprintDecayTick.put(e.getUUID("UUID"), e.getLong("decayTick"));
         }
 
         return data;

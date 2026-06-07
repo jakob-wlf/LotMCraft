@@ -81,6 +81,8 @@ public record CharSlotRollResultPacket(int action, String pathway) implements Cu
         comp.setHasReceivedNewPlayerPerks(true);
         // Clear the reroll counter
         player.getPersistentData().remove(NBT_REROLLS);
+        // Sync inventory to client immediately so the items appear without needing to re-open inventory.
+        player.containerMenu.broadcastChanges();
         player.sendSystemMessage(Component.literal("§aYour characteristic has been sealed into your fate."));
     }
 

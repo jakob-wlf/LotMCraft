@@ -66,6 +66,11 @@ public class DisabledAbilitiesComponent implements INBTSerializable<CompoundTag>
         }
     }
 
+    /** Removes all abilities disabled under a given cause key in one call. */
+    public void clearCause(String cause) {
+        disabledAbilities.remove(cause);
+    }
+
     public void disableSpecificAbilityForTime(String ability, String cause, int ticks) {
         disabledAbilities.computeIfAbsent(cause, k -> new ArrayList<>());
 

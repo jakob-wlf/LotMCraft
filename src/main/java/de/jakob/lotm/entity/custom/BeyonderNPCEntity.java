@@ -465,9 +465,12 @@ public class BeyonderNPCEntity extends PathfinderMob {
             return;
         }
 
-        // Get abilities that can be used right now
+        // Get abilities that can be used right now.
+        // Use (false, false) to skip the hasAbility/isBeyonder check — NPCs are not in the
+        // playerMap so isBeyonder() returns false for them. Abilities were already validated by
+        // initializeAbilities. Cooldown and canBeUsedByNPC flag are still enforced.
         List<Ability> availableAbilities = usableAbilities.stream()
-                .filter(a -> a.canUse(this))
+                .filter(a -> a.canUse(this, false, false))
                 .toList();
 
         if (availableAbilities.isEmpty()) {
@@ -503,7 +506,9 @@ public class BeyonderNPCEntity extends PathfinderMob {
         Ability selectedAbility = selectWeightedAbility(toSelect, new Random());
         if(selectedAbility == null) return;
 
-        selectedAbility.useAbility((ServerLevel) level, this);
+        // Skip hasAbility check (abilities were pre-filtered by initializeAbilities — NPCs are not in
+        // playerMap so isBeyonder() returns false for them, but they are valid ability users).
+        selectedAbility.useAbility((ServerLevel) level, this, false, false, true);
     }
 
     /**

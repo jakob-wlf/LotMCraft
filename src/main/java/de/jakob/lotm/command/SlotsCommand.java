@@ -20,6 +20,15 @@ public class SlotsCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("slots")
             .requires(source -> source.hasPermission(2))
+            // /slots — triggers the wheel for the command executor themselves
+            .executes(context -> {
+                CommandSourceStack source = context.getSource();
+                if (!(source.getEntity() instanceof ServerPlayer self)) {
+                    source.sendFailure(Component.literal("You must be a player to use /slots without a target."));
+                    return 0;
+                }
+                return executeSlots(source, self);
+            })
             .then(Commands.argument("player", EntityArgument.player())
                 .executes(context -> {
                     ServerPlayer target = EntityArgument.getPlayer(context, "player");

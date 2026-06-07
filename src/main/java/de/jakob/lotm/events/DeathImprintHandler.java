@@ -63,6 +63,8 @@ public class DeathImprintHandler {
 
         // Add one death imprint (capped at 3)
         int newTier = data.addImprint(dyingPlayer.getUUID());
+        // Reset the 40-day decay timer from the moment of this imprint.
+        data.scheduleDecay(dyingPlayer.getUUID(), serverLevel.getGameTime());
 
         // Notify river owner if online
         for (ServerPlayer online : serverLevel.getServer().getPlayerList().getPlayers()) {
@@ -110,6 +112,35 @@ public class DeathImprintHandler {
         long tick = event.getServer().getTickCount();
 
         DeathImprintData data = DeathImprintData.get(event.getServer());
+
+        // ── Imprint decay: check once per second ────────────────────────────────
+        if (tick % 20 == 0) {
+            List<java.util.UUID> decayed = data.tickDecay(tick, event.getServer());
+            for (java.util.UUID uuid : decayed) {
+                int remaining = data.getImprintCount(uuid);
+                // Notify the affected player if online
+                net.minecraft.server.level.ServerPlayer affected =
+                        event.getServer().getPlayerList().getPlayer(uuid);
+                if (affected != null) {
+                    if (remaining <= 0) {
+                        affected.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+                                "§6The River of Eternal Darkness fades from your soul. Your imprints have been cleansed."));
+                    } else {
+                        affected.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+                                "§6The River's hold on you weakens. Death imprints remaining: §e" + remaining));
+                    }
+                }
+                // Notify the river owner if online
+                for (net.minecraft.server.level.ServerPlayer online :
+                        event.getServer().getPlayerList().getPlayers()) {
+                    if ("river_of_eternal_darkness".equals(SefirahHandler.getClaimedSefirot(online))) {
+                        String name = data.getSnapshotName(uuid);
+                        online.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+                                "§5" + name + "§8's imprint has decayed. Their tier is now §e" + remaining + "§8."));
+                    }
+                }
+            }
+        }
 
         for (ServerLevel level : event.getServer().getAllLevels()) {
             for (ServerPlayer player : List.copyOf(level.players())) {
@@ -241,6 +272,16 @@ public class DeathImprintHandler {
 
         target.sendSystemMessage(Component.literal("§4§lYou have been pulled into the River of Eternal Darkness!"));
         riverOwner.sendSystemMessage(Component.literal("§8River's Call executed on §r" + data.getSnapshotName(targetUUID)));
+
+        // Decrement imprint count by 1 — River's Call consumes one imprint to prevent spam.
+        int newTier = data.getImprintCount(targetUUID) - 1;
+        data.setImprintCount(targetUUID, newTier);
+        if (newTier <= 0) {
+            target.sendSystemMessage(Component.literal("§6The River's grip on your soul has faded. You are no longer imprinted."));
+        } else {
+            target.sendSystemMessage(Component.literal("§6The River has consumed one of its marks upon you. Imprints remaining: §e" + newTier));
+        }
+        riverOwner.sendSystemMessage(Component.literal("§8Imprint consumed. " + data.getSnapshotName(targetUUID) + "§8 now has §e" + newTier + "§8 imprint(s)."));
     }
 
     /**

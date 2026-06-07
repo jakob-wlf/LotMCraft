@@ -225,6 +225,12 @@ public class BeyonderData {
             component.clearCharacteristics();
             component.setCharacteristic(1, sequence, pathway);
         } else {
+            // Remove stale chars at the same sequence slot from a different pathway.
+            // These can accumulate if clearBeyonderData was called via a code path that
+            // didn't go through onPlayerDrops (e.g. join-time recovery after a crash).
+            new java.util.ArrayList<>(component.getCharacteristicList()).stream()
+                    .filter(c -> c.sequence() == sequence && !c.pathway().equals(pathway))
+                    .forEach(c -> component.setCharacteristic(0, c.sequence(), c.pathway()));
             int current = component.getCharacteristicList().stream()
                     .filter(c -> c.sequence() == sequence && c.pathway().equals(pathway))
                     .mapToInt(Characteristic::stack)
@@ -672,6 +678,7 @@ public class BeyonderData {
 
     public static void clearBeyonderData(LivingEntity entity) {
         BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
+        component.clearCharacteristics(); // must clear before setPathway/setSequence so syncHighest() doesn't restore old data
         component.setPathway("none");
         component.setSequence(LOTMCraft.NON_BEYONDER_SEQ);
         component.setSpirituality(0);
