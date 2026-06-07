@@ -87,10 +87,11 @@ public record CharSlotRollResultPacket(int action, String pathway) implements Cu
     private static void handleReroll(ServerPlayer player) {
         int rerollsLeft = player.getPersistentData().getInt(NBT_REROLLS);
         if (rerollsLeft <= 0) {
-            // No rerolls left — force-close by doing nothing; the screen should prevent this,
-            // but as a safety net just give them nothing and mark perks received.
-            player.getData(ModAttachments.BOOK_COMPONENT).setHasReceivedNewPlayerPerks(true);
-            player.getPersistentData().remove(NBT_REROLLS);
+            // No rerolls left — the client button should prevent this, but as a safety net
+            // resend the roll packet so the screen isn't left stuck open. Do NOT mark perks
+            // received here because the player hasn't accepted yet.
+            de.jakob.lotm.network.PacketHandler.sendToPlayer(player,
+                    buildRollPacket(player, 0));
             return;
         }
         rerollsLeft--;
@@ -121,6 +122,16 @@ public record CharSlotRollResultPacket(int action, String pathway) implements Cu
 
     /** Called from PlayerEvents when the gamerule is active for a new player. */
     public static void initiateRollForNewPlayer(ServerPlayer player) {
+        // Guard: if perks were already received (e.g. event fired twice in a modpack,
+        // or a previous session saved the flag), do not re-open the wheel.
+        NewPlayerComponent comp = player.getData(ModAttachments.BOOK_COMPONENT);
+        if (comp.isHasReceivedNewPlayerPerks()) return;
+
+        // Guard: NBT_REROLLS being present means the wheel packet was already sent this
+        // session (e.g. PlayerLoggedInEvent fired again before the player accepted).
+        // Skip the second send; the first screen is still open on the client.
+        if (player.getPersistentData().contains(NBT_REROLLS)) return;
+
         player.getPersistentData().putInt(NBT_REROLLS, MAX_REROLLS);
         de.jakob.lotm.network.PacketHandler.sendToPlayer(player,
                 buildRollPacket(player, MAX_REROLLS));

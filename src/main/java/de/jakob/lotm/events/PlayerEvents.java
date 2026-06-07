@@ -161,23 +161,10 @@ public class PlayerEvents {
 
             NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
             if(!component.isHasReceivedNewPlayerPerks() && player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC)) {
-                // If the slot-roll gamerule is active, open the animated reel screen instead
-                if (player.serverLevel().getGameRules().getBoolean(ModGameRules.DO_CHARACTERISTICS_SLOTS)) {
-                    // Delay by 40 ticks so the client finishes loading terrain before the screen is shown
-                    ServerScheduler.scheduleDelayed(40, () -> de.jakob.lotm.network.packets.toServer.CharSlotRollResultPacket.initiateRollForNewPlayer(player));
-                    // Mark perks received is deferred until the player accepts in the GUI
-                } else {
-                    String pathway = BeyonderData.implementedPathways.get(random.nextInt(BeyonderData.implementedPathways.size()));
-                    Item characteristic = BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, 9);
-                    Item recipe = PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, 9);
-
-                    if(characteristic != null && recipe != null) {
-                        player.addItem(new ItemStack(characteristic));
-                        player.addItem(new ItemStack(recipe));
-                    }
-                    player.addItem(new ItemStack(ModItems.GUIDING_BOOK.get()));
-                    component.setHasReceivedNewPlayerPerks(true);
-                }
+                // Delay by 40 ticks so the client finishes loading terrain before the screen is shown.
+                // initiateRollForNewPlayer has duplicate-send guards so multi-fire of this event is safe.
+                ServerScheduler.scheduleDelayed(40, () -> de.jakob.lotm.network.packets.toServer.CharSlotRollResultPacket.initiateRollForNewPlayer(player));
+                // hasReceivedNewPlayerPerks is set only after the player accepts in the GUI
             }
         }
     }
