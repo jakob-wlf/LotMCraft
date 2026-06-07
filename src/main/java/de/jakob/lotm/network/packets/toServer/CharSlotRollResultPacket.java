@@ -87,11 +87,11 @@ public record CharSlotRollResultPacket(int action, String pathway) implements Cu
     private static void handleReroll(ServerPlayer player) {
         int rerollsLeft = player.getPersistentData().getInt(NBT_REROLLS);
         if (rerollsLeft <= 0) {
-            // No rerolls left — the client button should prevent this, but as a safety net
-            // resend the roll packet so the screen isn't left stuck open. Do NOT mark perks
-            // received here because the player hasn't accepted yet.
-            de.jakob.lotm.network.PacketHandler.sendToPlayer(player,
-                    buildRollPacket(player, 0));
+            // No rerolls left. Do NOT resend the roll screen — doing so would allow
+            // the Konami easter-egg to grant unlimited rerolls by resetting the screen
+            // (and its konamiUsed counter) every time. The client's spinning animation
+            // was already started locally; it will finish and leave the Accept button
+            // active so the player can still accept their roll.
             return;
         }
         rerollsLeft--;
@@ -102,18 +102,35 @@ public record CharSlotRollResultPacket(int action, String pathway) implements Cu
                 buildRollPacket(player, rerollsLeft));
     }
 
-    /** Builds an OpenCharSlotRollPacket with all seq-9 chars and current rerolls remaining. */
+    /** Builds an OpenCharSlotRollPacket with seq-9 chars for pathways that still have seq-8 slots available. */
     public static de.jakob.lotm.network.packets.toClient.OpenCharSlotRollPacket buildRollPacket(
             ServerPlayer player, int rerollsLeft) {
         List<String> pathways  = new ArrayList<>();
         List<String> charNames = new ArrayList<>();
 
         for (String pathway : BeyonderData.implementedPathways) {
+            // Only offer pathways where there is still a seq-8 slot available.
+            // A new player starts at seq 9 and needs to reach seq 8 to advance;
+            // if seq-8 is already full for this pathway, there is no point rolling it.
+            if (!BeyonderData.hasSequenceSlotAvailable(player.serverLevel(), pathway, 8)) continue;
+
             BeyonderCharacteristicItem item =
                     BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, 9);
             if (item == null) continue;
             pathways.add(pathway);
             charNames.add(item.getDefaultInstance().getHoverName().getString());
+        }
+
+        // Fallback: if every pathway is full (extreme edge case) show them all so the
+        // wheel never opens empty.
+        if (pathways.isEmpty()) {
+            for (String pathway : BeyonderData.implementedPathways) {
+                BeyonderCharacteristicItem item =
+                        BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, 9);
+                if (item == null) continue;
+                pathways.add(pathway);
+                charNames.add(item.getDefaultInstance().getHoverName().getString());
+            }
         }
 
         return new de.jakob.lotm.network.packets.toClient.OpenCharSlotRollPacket(
@@ -127,11 +144,22 @@ public record CharSlotRollResultPacket(int action, String pathway) implements Cu
         NewPlayerComponent comp = player.getData(ModAttachments.BOOK_COMPONENT);
         if (comp.isHasReceivedNewPlayerPerks()) return;
 
-        // Guard: NBT_REROLLS being present means the wheel packet was already sent this
-        // session (e.g. PlayerLoggedInEvent fired again before the player accepted).
-        // Skip the second send; the first screen is still open on the client.
-        if (player.getPersistentData().contains(NBT_REROLLS)) return;
+        // Always (re-)send the wheel packet. This covers the case where a player was
+        // kicked mid-roll (e.g. by a login-auth mod) and still has a stale
+        // charSlotRollsLeft key — resending here clears the invincibility state and
+        // shows the screen again on next login.
+        player.getPersistentData().putInt(NBT_REROLLS, MAX_REROLLS);
+        de.jakob.lotm.network.PacketHandler.sendToPlayer(player,
+                buildRollPacket(player, MAX_REROLLS));
+    }
 
+    /**
+     * Called from the /slots command to force-trigger the characteristic wheel for
+     * any player, regardless of whether they already received new-player perks.
+     */
+    public static void forceRollForPlayer(ServerPlayer player) {
+        NewPlayerComponent comp = player.getData(ModAttachments.BOOK_COMPONENT);
+        comp.setHasReceivedNewPlayerPerks(false);
         player.getPersistentData().putInt(NBT_REROLLS, MAX_REROLLS);
         de.jakob.lotm.network.PacketHandler.sendToPlayer(player,
                 buildRollPacket(player, MAX_REROLLS));

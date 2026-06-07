@@ -160,7 +160,23 @@ public class PlayerEvents {
             }
 
             NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
-            if(!component.isHasReceivedNewPlayerPerks() && player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC)) {
+            boolean gameruleOn = player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC);
+
+            // Safety: clear a stale charSlotRollsLeft key that would keep the player permanently
+            // invincible (e.g. kicked by an auth mod mid-roll, or gamerule turned off after the key
+            // was written).  The key must be absent when the wheel is not going to be shown.
+            if (player.getPersistentData().contains("charSlotRollsLeft")) {
+                boolean wheelWillOpen = !component.isHasReceivedNewPlayerPerks() && gameruleOn;
+                if (!wheelWillOpen) {
+                    player.getPersistentData().remove("charSlotRollsLeft");
+                    de.jakob.lotm.LOTMCraft.LOGGER.info(
+                            "Cleared stale charSlotRollsLeft for {} (perksReceived={}, gamerule={})",
+                            player.getGameProfile().getName(),
+                            component.isHasReceivedNewPlayerPerks(), gameruleOn);
+                }
+            }
+
+            if(!component.isHasReceivedNewPlayerPerks() && gameruleOn) {
                 // Delay by 40 ticks so the client finishes loading terrain before the screen is shown.
                 // initiateRollForNewPlayer has duplicate-send guards so multi-fire of this event is safe.
                 ServerScheduler.scheduleDelayed(40, () -> de.jakob.lotm.network.packets.toServer.CharSlotRollResultPacket.initiateRollForNewPlayer(player));

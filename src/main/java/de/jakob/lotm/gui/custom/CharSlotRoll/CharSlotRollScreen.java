@@ -115,6 +115,16 @@ public class CharSlotRollScreen extends Screen {
         buildReelLoop();
     }
 
+    /**
+     * Called when the server acknowledges a reroll (instead of opening a new screen).
+     * Takes the maximum of the server's count and our current count so that Konami
+     * bonus rerolls added client-side are never overwritten by the server response.
+     */
+    public void serverAcknowledgedReroll(int serverRerollsLeft) {
+        rerollsLeft = Math.max(rerollsLeft, serverRerollsLeft);
+        updateButtonState();
+    }
+
     private void buildReelLoop() {
         reelLoop.clear();
         reelPathwayLoop.clear();
