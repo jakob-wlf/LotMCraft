@@ -276,13 +276,15 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.abilityBarSlots.clear();
         this.abilityBarSubIndexes.clear();
         for (String id : abilityIds) {
-            int colonIdx = id.lastIndexOf(':');
+            // Strip the "soul|" prefix used to mark Internal Underworld soul abilities.
+            String stripped = id.startsWith("soul|") ? id.substring(5) : id;
+            int colonIdx = stripped.lastIndexOf(':');
             int subIdx = -1;
-            String baseId = id;
+            String baseId = stripped;
             if (colonIdx >= 0) {
                 try {
-                    subIdx = Integer.parseInt(id.substring(colonIdx + 1));
-                    baseId = id.substring(0, colonIdx);
+                    subIdx = Integer.parseInt(stripped.substring(colonIdx + 1));
+                    baseId = stripped.substring(0, colonIdx);
                 } catch (NumberFormatException ignored) {}
             }
             Ability ability = LOTMCraft.abilityHandler.getById(baseId);

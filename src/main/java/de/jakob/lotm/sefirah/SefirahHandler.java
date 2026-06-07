@@ -75,7 +75,7 @@ public class SefirahHandler {
         RiverBlessingManager.clearBlessingsForOwner(player.getUUID());
         RiverBlessingManager.clearAudience(player.server);
         // Clear all ability seals that this sefirot owner had placed
-        DeathImprintData.get(player.server).clearAllSealedAbilities();
+        DeathImprintData.get(player.server).clearAllSealedAbilitiesAndUnapply(player.server);
     }
 
     public static void teleportToSefirot(ServerPlayer player) {

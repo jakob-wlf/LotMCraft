@@ -11,7 +11,7 @@ import net.neoforged.neoforge.attachment.IAttachmentSerializer;
  */
 public class DailySpinComponent {
 
-    private static final long SOUL_COOLDOWN_MS = 30L * 60L * 1000L; // 30 minutes
+    private static final long SOUL_COOLDOWN_MS = 0L; // no cooldown
 
     private long lastSpinEpochDay  = -1L;
     private long sellSoulReadyTime = 0L;  // epoch millis when sell-soul becomes available again

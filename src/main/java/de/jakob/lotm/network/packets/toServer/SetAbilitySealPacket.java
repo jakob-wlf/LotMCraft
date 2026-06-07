@@ -56,10 +56,23 @@ public record SetAbilitySealPacket(String targetUUIDStr, List<String> abilityIds
 
             // Apply seals (capped at 2)
             List<String> toSeal = packet.abilityIds().subList(0, Math.min(2, packet.abilityIds().size()));
+
+            // Only act if the sealed set actually changed — opening the screen and
+            // closing without making a selection must not send any message.
+            List<String> previouslySealed = data.getSealedAbilities(targetUUID);
+            boolean changed = !new java.util.HashSet<>(toSeal).equals(new java.util.HashSet<>(previouslySealed));
+            if (!changed) return;
+
             data.setSealedAbilities(targetUUID, toSeal);
 
-            // Notify the target if they are online
+            // Immediately apply / remove the seal in the live target's DisabledAbilitiesComponent
+            // (if they are online) so the seal takes effect without requiring a relog.
             ServerPlayer target = owner.server.getPlayerList().getPlayer(targetUUID);
+            if (target != null) {
+                data.reapplySealedAbilities(target);
+            }
+
+            // Notify the target if they are online
             if (target != null) {
                 if (toSeal.isEmpty()) {
                     target.sendSystemMessage(net.minecraft.network.chat.Component.literal(

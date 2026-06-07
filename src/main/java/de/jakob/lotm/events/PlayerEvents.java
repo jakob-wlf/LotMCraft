@@ -107,6 +107,11 @@ public class PlayerEvents {
             }
 
             PacketHandler.sendToPlayer(player, new ResetClientEffectsPacket());
+
+            // Remove the charSlotRollsLeft key on logout so the player is never stuck in
+            // an invincible state between sessions. initiateRollForNewPlayer will re-set
+            // it on their next login if the wheel should re-open.
+            player.getPersistentData().remove("charSlotRollsLeft");
         }
     }
 
@@ -178,10 +183,25 @@ public class PlayerEvents {
 
             if(!component.isHasReceivedNewPlayerPerks() && gameruleOn) {
                 // Delay by 40 ticks so the client finishes loading terrain before the screen is shown.
-                // initiateRollForNewPlayer has duplicate-send guards so multi-fire of this event is safe.
-                ServerScheduler.scheduleDelayed(40, () -> de.jakob.lotm.network.packets.toServer.CharSlotRollResultPacket.initiateRollForNewPlayer(player));
+                // Capture UUID + server reference rather than the player entity so that if the
+                // player is kicked and re-joins before the delay fires we still get the correct
+                // (live) ServerPlayer instance rather than the stale disconnected one.
+                final java.util.UUID playerUUID = player.getUUID();
+                final net.minecraft.server.MinecraftServer mcServer = player.getServer();
+                ServerScheduler.scheduleDelayed(40, () -> {
+                    if (mcServer == null) return;
+                    ServerPlayer online = mcServer.getPlayerList().getPlayer(playerUUID);
+                    if (online != null) {
+                        de.jakob.lotm.network.packets.toServer.CharSlotRollResultPacket.initiateRollForNewPlayer(online);
+                    }
+                });
                 // hasReceivedNewPlayerPerks is set only after the player accepts in the GUI
             }
+
+            // Re-apply any persisted death-imprint ability seals so they survive log-out/log-in.
+            de.jakob.lotm.attachments.DeathImprintData imprintData =
+                    de.jakob.lotm.attachments.DeathImprintData.get(player.getServer());
+            imprintData.reapplySealedAbilities(player);
         }
     }
 

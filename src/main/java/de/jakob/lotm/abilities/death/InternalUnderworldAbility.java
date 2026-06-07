@@ -991,10 +991,14 @@ public class InternalUnderworldAbility extends SelectableAbility {
                             updated = new ArrayList<>(updated.subList(0, maxSlots));
                         }
 
+                        // Prefix with "soul|" so UseKeyboundAbilityPacket knows to bypass
+                        // the hasAbility check (soul abilities belong to a different pathway).
+                        String storedId = "soul|" + abilityId;
+
                         if (bindSlot < updated.size()) {
-                            updated.set(bindSlot, abilityId);
+                            updated.set(bindSlot, storedId);
                         } else if (bindSlot == updated.size() && updated.size() < maxSlots) {
-                            updated.add(abilityId);
+                            updated.add(storedId);
                         } else {
                             player.sendSystemMessage(Component.literal("Cannot skip empty slots").withStyle(ChatFormatting.RED));
                             return;

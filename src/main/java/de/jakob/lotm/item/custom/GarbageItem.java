@@ -1,5 +1,6 @@
 package de.jakob.lotm.item.custom;
 
+import de.jakob.lotm.LOTMCraft;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -9,6 +10,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.core.component.DataComponents;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -20,6 +24,7 @@ import java.util.List;
  * The locked slot is stored in the item's CustomData NBT under "GarbageSlot".
  * A value of -1 means the slot has not yet been assigned.
  */
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class GarbageItem extends Item {
 
     public static final String NBT_SLOT = "GarbageSlot";
@@ -51,7 +56,18 @@ public class GarbageItem extends Item {
 
     @Override
     public boolean onDroppedByPlayer(@NotNull ItemStack stack, @NotNull Player player) {
-        return false; // cannot be dropped
+        return false; // cannot be dropped via Q
+    }
+
+    /**
+     * Belt-and-suspenders: cancel the NeoForge ItemTossEvent so the garbage item
+     * cannot be thrown out by any code path (Q key, cursor drop, etc.).
+     */
+    @SubscribeEvent
+    public static void onItemToss(ItemTossEvent event) {
+        if (!(event.getEntity().getItem().getItem() instanceof GarbageItem)) return;
+        event.getEntity().discard();
+        event.setCanceled(true);
     }
 
     // ── Tooltip ──────────────────────────────────────────────────────────────
