@@ -5,6 +5,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.visionary.prophecy.VisionaryAbilityMenus;
+import de.jakob.lotm.acting.ActingHelper;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -22,13 +23,16 @@ import de.jakob.lotm.rendering.effectRendering.impl.VFXRenderer;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.ClientSacrificeCache;
 import de.jakob.lotm.util.helper.AnimationUtil;
+import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -71,6 +75,15 @@ public class ClientHandler {
                     0.0f
             );
         }
+    }
+
+    public static void handleSyncPlayerData(SyncPlayerActingDataPayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player player = Minecraft.getInstance().player;
+            if (player != null) {
+                player.getPersistentData().put(ActingHelper.NBT_UNLOCKED_KEY, payload.data());
+            }
+        });
     }
 
     public static void reloadChunks(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
@@ -601,5 +614,12 @@ public class ClientHandler {
         }
 
         AnimationUtil.playAnimation(player, AnimationUtil.getResourceLocationById(packet.animId()));
+    }
+
+    public static void playActingEffect() {
+        Player player = Minecraft.getInstance().player;
+        ClientLevel level = Minecraft.getInstance().level;
+        ParticleUtil.spawnParticles(level, ParticleTypes.END_ROD, player.getEyePosition(), 60, .7, .1);
+        player.level().playSound(player, BlockPos.containing(player.getEyePosition()), SoundEvents.ENCHANTMENT_TABLE_USE, player.getSoundSource(), .5f, 1);
     }
 }

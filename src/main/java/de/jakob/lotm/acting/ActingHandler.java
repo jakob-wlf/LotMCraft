@@ -1,7 +1,9 @@
 package de.jakob.lotm.acting;
 
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayActingEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -16,13 +18,19 @@ public class ActingHandler {
 
         tasks.stream()
                 .filter(task -> task.getId().equals(taskId))
-                .filter(task -> !ActingCooldownHelper.isOnCooldown(player, task.getId()))
+                .filter(task -> !ActingHelper.isOnCooldown(player, task.getId()))
                 .findFirst()
                 .ifPresent(task -> {
                     float amount = task.getScaledAmount(sequence);
                     BeyonderData.digest(player, amount, true);
-                    player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, .025f, 1);
-                    ActingCooldownHelper.setCooldown(player, task.getId(), task.getCooldownTicks());
+                    ActingHelper.setCooldown(player, task.getId(), task.getCooldownTicks());
+
+                    if(!ActingHelper.isTriggerUnlocked(pathway, sequence, player, task.getId())) {
+                        if(!player.level().isClientSide) {
+                            ActingHelper.unlockTrigger(pathway, sequence, player, task.getId());
+                            PacketHandler.sendToPlayer((ServerPlayer) player, new PlayActingEffectPacket());
+                        }
+                    }
                 });
     }
 }

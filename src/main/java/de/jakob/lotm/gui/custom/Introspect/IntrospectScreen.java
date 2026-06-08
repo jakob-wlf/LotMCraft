@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.acting.ActingHandler;
+import de.jakob.lotm.acting.ActingHelper;
 import de.jakob.lotm.acting.ActingTask;
 import de.jakob.lotm.acting.ActingTaskRegistry;
 import de.jakob.lotm.network.PacketHandler;
@@ -21,6 +23,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -579,7 +582,11 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         for (int i = startIndex; i < endIndex; i++) {
             String questId = actingRequirements.get(i).getId();
-            Component actingName = getActingTaskName(questId);
+            MutableComponent actingName = getActingTaskName(questId);
+            if(!ActingHelper.isTriggerUnlocked(menu.getPathway(), menu.getSequence(), minecraft.player, questId)) {
+                actingName = actingName.withStyle(ChatFormatting.OBFUSCATED);
+            }
+
             if (actingName.getString().length() > 24) {
                 actingName = Component.literal(actingName.getString().substring(0, 21).strip() + "…");
             }
@@ -613,7 +620,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             "_at_night", "lotm.acting.condition.at_night"
     );
 
-    private Component getActingTaskName(String taskId) {
+    private MutableComponent getActingTaskName(String taskId) {
         if(taskId.startsWith("use_") && taskId.endsWith("_ability")) {
             String abilityId = taskId.substring(4);
             String suffixKey = null;
