@@ -10,7 +10,10 @@ public enum TriggerEnum {
     HEALTH,
     SANITY,
     PLAYER,
-    SEALED
+    SEALED,
+    HUNGER,
+    RIDING,
+    IS_ATTACKED
     ;
 
     public static TriggerEnum  fromNBT(CompoundTag tag, String key) {

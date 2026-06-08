@@ -26,7 +26,7 @@ public abstract class  TriggerBase {
 
     protected final ActionBase action;
     protected final TriggerContextBase context;
-    protected final boolean isGeneralLoop = true;
+    protected boolean isGeneralLoop = true;
 
     public TriggerBase(ActionBase action, TriggerContextBase context){
         this.action = action;
@@ -62,7 +62,10 @@ public abstract class  TriggerBase {
 
     public abstract int getRequiredSeq();
 
-    public abstract boolean checkTrigger(Level level, LivingEntity entity, UUID casterId);
+    // -1 - error, delete the trigger
+    // 0 - false, keep it and check later
+    // 1 - true, perform action and delete trigger
+    public abstract int checkTrigger(Level level, LivingEntity entity, UUID casterId);
 
     public static TriggerBase load(TriggerEnum type, CompoundTag tag, HolderLookup.Provider provider) {
         ActionsEnum actionType = ActionsEnum.fromNBT(tag, ACTION_TYPE);
@@ -76,6 +79,9 @@ public abstract class  TriggerBase {
             case SANITY -> SanityTrigger.load(tag, actionType, contextType, provider);
             case PLAYER -> PlayerTrigger.load(tag, actionType, contextType, provider);
             case SEALED -> SealedTrigger.load(tag, actionType, contextType, provider);
+            case HUNGER -> HungerTrigger.load(tag, actionType, contextType, provider);
+            case RIDING -> RidingTrigger.load(tag, actionType, contextType, provider);
+            case IS_ATTACKED -> IsAttackedTrigger.load(tag, actionType, contextType, provider);
         };
     }
 
@@ -88,6 +94,9 @@ public abstract class  TriggerBase {
             case SANITY -> new SanityTrigger(action, context);
             case PLAYER -> new PlayerTrigger(action, context);
             case SEALED -> new SealedTrigger(action, context);
+            case HUNGER -> new HungerTrigger(action, context);
+            case RIDING -> new RidingTrigger(action, context);
+            case IS_ATTACKED -> new IsAttackedTrigger(action, context);
         };
     }
 }

@@ -51,6 +51,7 @@ public abstract class ActionBase {
             case TIME -> TimeAction.load(tag, provider);
             case WHISPERS -> WhispersAction.load(tag, provider);
             case SUICIDE -> SuicideAction.load(tag, provider);
+            case PLAGUE -> PlagueAction.load(tag, provider);
         };
     }
 
@@ -73,6 +74,7 @@ public abstract class ActionBase {
             case TIME -> new TimeAction(context);
             case WHISPERS -> new WhispersAction(context);
             case SUICIDE -> new SuicideAction(context);
+            case PLAGUE -> new PlagueAction(context);
         };
     }
 }

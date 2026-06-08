@@ -310,6 +310,14 @@ public class ModAttachments {
                     .build()
     );
 
+    public static final Supplier<AttachmentType<EnvisionSplitComponent>> ENVISION_SPLIT = ATTACHMENT_TYPES.register(
+            "envision_split",
+            () -> AttachmentType.builder(EnvisionSplitComponent::new)
+                    .serialize(EnvisionSplitComponent.SERIALIZER)
+                    .copyOnDeath()
+                    .build()
+    );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

@@ -144,6 +144,11 @@ public class PacketHandler {
                 SyncDecryptionLookedAtEntitiesAbilityPacket::handle
         );
 
+        registrar.playToClient(
+                StartStopDiscernmentPacket.TYPE,
+                StartStopDiscernmentPacket.STREAM_CODEC,
+                StartStopDiscernmentPacket::handle
+        );
 
         registrar.playToClient(
                 SyncIntrospectMenuPacket.TYPE,

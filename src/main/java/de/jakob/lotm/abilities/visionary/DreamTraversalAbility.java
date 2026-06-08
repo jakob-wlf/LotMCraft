@@ -49,8 +49,6 @@ import static de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler.checkA
 public class DreamTraversalAbility extends SelectableAbility {
     private static final HashMap<UUID, UUID> hideMap = new HashMap<>();
     private static final HashMap<UUID, Integer> hideSeqMap = new HashMap<>();
-    //this is for artifact stuff
-    //tbh wonkiest ability for atifact cuz it uses selectable (even though hide is a toggle style - cuz i didnt wanna make a whole other ability for it tbh
 
     public DreamTraversalAbility(String id) {
         super(id, 1f);

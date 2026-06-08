@@ -28,19 +28,25 @@ public class TriggerHelper {
             case "sanity" -> TriggerEnum.SANITY;
             case "player" -> TriggerEnum.PLAYER;
             case "sealed" -> TriggerEnum.SEALED;
+            case "hunger" -> TriggerEnum.HUNGER;
+            case "riding" -> TriggerEnum.RIDING;
+            //case "attacked" -> TriggerEnum.IS_ATTACKED;
             default -> null;
         };
     }
 
     private static TriggerContextEnum getContextType(TriggerEnum value){
         return switch (value){
-            case TriggerEnum.POSITION -> TriggerContextEnum.POSITION;
-            case TriggerEnum.PICK_UP -> TriggerContextEnum.ITEM;
-            case TriggerEnum.INSTANT -> TriggerContextEnum.EMPTY;
-            case TriggerEnum.HEALTH -> TriggerContextEnum.NUMBER;
-            case TriggerEnum.SANITY -> TriggerContextEnum.NUMBER;
-            case TriggerEnum.PLAYER -> TriggerContextEnum.PLAYER;
-            case TriggerEnum.SEALED -> TriggerContextEnum.EMPTY;
+            case POSITION -> TriggerContextEnum.POSITION;
+            case PICK_UP -> TriggerContextEnum.ITEM;
+            case INSTANT -> TriggerContextEnum.EMPTY;
+            case HEALTH -> TriggerContextEnum.NUMBER;
+            case SANITY -> TriggerContextEnum.NUMBER;
+            case PLAYER -> TriggerContextEnum.PLAYER;
+            case SEALED -> TriggerContextEnum.EMPTY;
+            case HUNGER -> TriggerContextEnum.NUMBER;
+            case RIDING -> TriggerContextEnum.EMPTY;
+            case IS_ATTACKED -> TriggerContextEnum.STRING;
         };
     }
 

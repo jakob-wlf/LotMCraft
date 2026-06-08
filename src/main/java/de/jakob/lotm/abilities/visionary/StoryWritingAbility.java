@@ -6,18 +6,22 @@ import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.abilities.visionary.prophecy.triggers.TriggerHelper;
+import de.jakob.lotm.abilities.visionary.prophecy.triggers.implementations.IsAttackedTrigger;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.ServerChatEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.*;
@@ -43,11 +47,11 @@ public class StoryWritingAbility extends ToggleAbility {
 
     @Override
     public void tick(Level level, LivingEntity entity) {
-        if(!(level instanceof ServerLevel serverLevel)) return;
+        if (!(level instanceof ServerLevel serverLevel)) return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -60,27 +64,27 @@ public class StoryWritingAbility extends ToggleAbility {
 
     @Override
     public void start(Level level, LivingEntity entity) {
-        if(level.isClientSide) {
-            if(entity.isShiftKeyDown())
+        if (level.isClientSide) {
+            if (entity.isShiftKeyDown())
                 ClientHandler.openStoryWritingExplanation();
             return;
         }
 
-        if(entity.isShiftKeyDown()) {
+        if (entity.isShiftKeyDown()) {
             cancel((ServerLevel) level, entity);
             return;
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
             return;
         }
 
-        if(PsychologicalCueAbility.map.containsKey(entity.getUUID())){
+        if (PsychologicalCueAbility.map.containsKey(entity.getUUID())) {
             cancel((ServerLevel) level, entity);
         }
 
@@ -89,7 +93,7 @@ public class StoryWritingAbility extends ToggleAbility {
 
     @Override
     public void stop(Level level, LivingEntity entity) {
-        if(level.isClientSide) return;
+        if (level.isClientSide) return;
 
         writingMap.remove(entity.getUUID());
         clearArtifactScaling(entity);
@@ -116,14 +120,14 @@ public class StoryWritingAbility extends ToggleAbility {
         String rawMessage = event.getRawText();
 
         var trigger = TriggerHelper.deduceWithContext(rawMessage, writingMap.get(player.getUUID()), player);
-        if(trigger == null){
+        if (trigger == null) {
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));
             return;
         }
 
         var target = player.level().getPlayerByUUID(trigger.getTarget());
-        if(target != null){
-            if(target instanceof ServerPlayer playerTarget)
+        if (target != null) {
+            if (target instanceof ServerPlayer playerTarget)
                 MetaAwarenessAbility.sendWithMessage(player, playerTarget, "Tried to use story writing");
         }
 
@@ -132,21 +136,22 @@ public class StoryWritingAbility extends ToggleAbility {
 
     @SubscribeEvent
     public static void onEntityTickPre(EntityTickEvent.Post event) {
-        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
         if (player.level().isClientSide()) return;
 
         var op = BeyonderData.playerMap.get(player);
-        if(op.isPresent()){
+        if (op.isPresent()) {
             var prophecies = op.get().prophecies();
 
             LinkedList<Prophecy> buff1 = new LinkedList<>();
             LinkedList<Prophecy> buff2 = new LinkedList<>(prophecies);
 
-            for(var obj : buff2){
-                if(!obj.trigger().isGeneralLoop()) continue;
+            for (var obj : buff2) {
+                if (!obj.trigger().isGeneralLoop()) continue;
 
-                if (obj.checkAndPerform(player.level(), player)){
+                int result = obj.checkAndPerform(player.level(), player);
+                if (result == 1 || result == -1) {
                     buff1.add(obj);
                 }
             }

@@ -43,6 +43,7 @@ public class PureIdealismAbility extends SelectableAbility {
         canBeReplicated = false;
         canBeUsedInArtifact = false;
         canBeShared = false;
+        canAlwaysBeUsed = true;
     }
 
     @Override
@@ -109,23 +110,25 @@ public class PureIdealismAbility extends SelectableAbility {
             return;
         }
 
-
         preMeditation.put(entity.getUUID(), Pair.of(path, seq));
 
-        var pair = preMeditation.get(entity.getUUID());
-        LOTMCraft.LOGGER.info("SAVED: path: {}, seq: {}", pair.getFirst(), pair.getSecond());
-
-        player.sendSystemMessage(Component.literal("Discerned role: sequence " + seq + " of " + path + " pathway").withColor(0xf5c56c));
+        player.sendSystemMessage(
+                Component.literal(
+                        "Gathered role: sequence " + seq + " of " + path + " pathway" +
+                                "\nMeditation will take: " + getMeditationDuration(BeyonderData.getSequence(entity), seq) + " sec")
+                        .withColor(0xf5c56c));
     }
 
     private void meditate(Level level, LivingEntity entity){
         if (!(level instanceof ServerLevel serverLevel)) return;
         if (!(entity instanceof ServerPlayer player)) return;
-        if(meditating.contains(entity.getUUID())) return;
+        if(meditating.contains(entity.getUUID())){
+            meditating.remove(entity.getUUID());
+            return;
+        }
 
         var pair1 = preMeditation.get(entity.getUUID());
 
-        LOTMCraft.LOGGER.info("MEDITATE: is null: {}", pair1 == null);
         if(pair1 == null){
             preMeditation.remove(entity.getUUID());
             meditating.remove(entity.getUUID());
@@ -134,13 +137,11 @@ public class PureIdealismAbility extends SelectableAbility {
 
         meditating.add(entity.getUUID());
 
-        LOTMCraft.LOGGER.info("MEDITATE: path: {}, seq: {}", pair1.getFirst(), pair1.getSecond());
-
         AtomicReference<UUID> taskIdRef = new AtomicReference<>();
         var taskId = ServerScheduler.scheduleForDuration(0, 2, 20 *
                 getMeditationDuration(BeyonderData.getSequence(entity), pair1.getSecond()),
                 ()-> {
-                    if(!entity.isAlive() || entity.isRemoved()) {
+                    if(!entity.isAlive() || entity.isRemoved() || !meditating.contains(entity.getUUID())) {
                         preMeditation.remove(entity.getUUID());
                         meditating.remove(entity.getUUID());
                         ServerScheduler.cancel(taskIdRef.get());

@@ -816,7 +816,15 @@
   "lotmcraft.envision_position_ability.description": "Envision your location",
   "ability.lotmcraft.envision_position_ability.on_sight": "On Sight",
   "ability.lotmcraft.envision_position_ability.coordinates": "Coordinates",
-
+  "lotmcraft.mind_world_authority_ability": "Mind World Authority",
+  "lotmcraft.mind_world_authority_ability.description": "Control Mind World at your will",
+  "ability.lotmcraft.mind_world_authority_ability.envisioning": "Envisioning",
+  "ability.lotmcraft.mind_world_authority_ability.seal_mind_world": "Seal Mind World",
+  "ability.lotmcraft.mind_world_authority_ability.split_characteristics": "Split Characteristics",
+  "ability.lotmcraft.mind_world_authority_ability.is_sealed": "Mind World is sealed",
+  "ability.lotmcraft.mind_world_authority_ability.is_unsealed": "Mind World is unsealed",
+  "ability.lotmcraft.mind_world_authority_ability.out_of_slots": "Out of slots",
+  "ability.lotmcraft.mind_world_authority_ability.unworthy_candidate": "Unworthy candidate",
 
   "lotmcraft.psyche_storm_ability": "Psyche Storm",
   "lotmcraft.psyche_storm_ability.description": " Create an area of effect that cause your enemies to loose control",

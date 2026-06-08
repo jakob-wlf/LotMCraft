@@ -305,6 +305,15 @@ public class ClientHandler {
         }
     }
 
+    public static void syncDiscernmentAbility(StartStopDiscernmentPacket packet, Player player) {
+        if(packet.active()) {
+           DiscernmentRenderer.activeDiscernment.put(player.getUUID(), packet.range());
+        }
+        else {
+            DiscernmentRenderer.activeDiscernment.remove(player.getUUID());
+        }
+    }
+
     public static void handleSanityPacket(SyncSanityPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;

@@ -56,10 +56,12 @@ public class VisionaryHandler {
         if(!pathTarget.equals("visionary")) return false;
 
         if(target instanceof ServerPlayer targetPlayer && caster instanceof ServerPlayer entityPlayer){
-            if(skill != null)
-                MetaAwarenessAbility.sendWithMessage(entityPlayer, targetPlayer, "Tried to use: " + skill.getId());
-            else
-                MetaAwarenessAbility.onDivined(entityPlayer, targetPlayer);
+            if(!(BeyonderData.getPathway(entityPlayer).equals("visionary") && seq < seqTarget)) {
+                if (skill != null)
+                    MetaAwarenessAbility.sendWithMessage(entityPlayer, targetPlayer, "Tried to use: " + skill.getId());
+                else
+                    MetaAwarenessAbility.onDivined(entityPlayer, targetPlayer);
+            }
         }
 
         if(seqTarget < seq){

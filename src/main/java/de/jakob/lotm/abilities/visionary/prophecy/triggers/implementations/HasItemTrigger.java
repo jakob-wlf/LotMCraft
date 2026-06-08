@@ -33,19 +33,19 @@ public class HasItemTrigger extends TriggerBase {
     }
 
     @Override
-    public boolean checkTrigger(Level level, LivingEntity entity, UUID casterId) {
-        if(!(entity instanceof ServerPlayer player)) return false;
+    public int checkTrigger(Level level, LivingEntity entity, UUID casterId) {
+        if(!(entity instanceof ServerPlayer player)) return -1;
 
         if(context instanceof TriggerItemsContext items){
             for(var obj : items.stacksList){
                 if(player.getInventory().contains(obj)){
                     action.action(level, entity, casterId);
-                    return true;
+                    return 1;
                 }
             }
         }
 
-        return false;
+        return 0;
     }
 
     public static HasItemTrigger load(CompoundTag tag,

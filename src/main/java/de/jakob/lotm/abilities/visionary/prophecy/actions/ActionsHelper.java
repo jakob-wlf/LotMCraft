@@ -34,6 +34,7 @@ public class ActionsHelper {
             case "time" -> ActionsEnum.TIME;
             case  "whispers" -> ActionsEnum.WHISPERS;
             case "suicide" -> ActionsEnum.SUICIDE;
+            case "plague" -> ActionsEnum.PLAGUE;
             default -> null;
         };
     }
@@ -57,6 +58,7 @@ public class ActionsHelper {
             case ActionsEnum.TIME -> ActionContextEnum.STRING;
             case ActionsEnum.WHISPERS -> ActionContextEnum.STRING;
             case ActionsEnum.SUICIDE -> ActionContextEnum.EMPTY;
+            case PLAGUE -> ActionContextEnum.STRING;
         };
     }
 

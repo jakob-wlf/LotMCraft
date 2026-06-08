@@ -34,7 +34,9 @@ public class SuicideAction extends ActionBase {
         int seq = data.sequence();
         int targetSeq = BeyonderData.getSequence(entity);
 
-        if(AbilityUtil.isTargetSignificantlyWeaker(seq, targetSeq))
+        int diff = targetSeq - seq;
+
+        if(diff >= 2)
             entity.kill();
     }
 

@@ -30,14 +30,14 @@ public class SealedTrigger extends TriggerBase {
     }
 
     @Override
-    public boolean checkTrigger(Level level, LivingEntity entity, UUID casterId) {
+    public int checkTrigger(Level level, LivingEntity entity, UUID casterId) {
 
         if(entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).isAbilityUsageDisabled()){
             action.action(level, entity, casterId);
-            return true;
+            return 1;
         }
 
-        return false;
+        return 0;
     }
 
     public static SealedTrigger load(CompoundTag tag,

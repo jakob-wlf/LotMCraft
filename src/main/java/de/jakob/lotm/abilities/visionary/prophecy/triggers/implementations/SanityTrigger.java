@@ -32,8 +32,8 @@ public class SanityTrigger extends TriggerBase {
     }
 
     @Override
-    public boolean checkTrigger(Level level, LivingEntity entity, UUID casterId) {
-        if(!(context instanceof TriggerNumbersContext numbers)) return true;
+    public int checkTrigger(Level level, LivingEntity entity, UUID casterId) {
+        if(!(context instanceof TriggerNumbersContext numbers)) return -1;
 
         float value = -1;
 
@@ -44,7 +44,7 @@ public class SanityTrigger extends TriggerBase {
             value = numbers.doubleValue < 0.0 ? 0.0f : numbers.doubleValue > 1 ? 1.0f : (float) numbers.doubleValue;
         }
 
-        if(value == -1) return true;
+        if(value == -1) return -1;
 
         float sanity = entity.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity();
 
@@ -52,10 +52,10 @@ public class SanityTrigger extends TriggerBase {
 
         if(checkOperation(value, sanity, operation)){
             action.action(level, entity, casterId);
-            return true;
+            return 1;
         }
 
-        return false;
+        return 0;
     }
 
     public static SanityTrigger load(CompoundTag tag,

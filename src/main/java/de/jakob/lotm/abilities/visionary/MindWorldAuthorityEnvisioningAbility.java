@@ -2,27 +2,17 @@ package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.ToggleAbility;
-import de.jakob.lotm.gui.custom.Envisioning.EnvisioningScreen;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncEnvisioningPacket;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.*;
@@ -103,7 +93,7 @@ public class MindWorldAuthorityEnvisioningAbility extends ToggleAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 10;
+        return 100;
     }
 
     @SubscribeEvent
@@ -116,31 +106,6 @@ public class MindWorldAuthorityEnvisioningAbility extends ToggleAbility {
 
             level.destroyBlock(pos, true);
             event.setCanceled(true);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onKey(InputEvent.Key event) {
-        Minecraft mc = Minecraft.getInstance();
-
-        if (mc.player == null || !canEnvisionClient) {
-            return;
-        }
-
-        while (mc.options.keyInventory.consumeClick()) {
-            mc.gameMode.setLocalMode(GameType.CREATIVE);
-
-            mc.setScreen(new EnvisioningScreen(mc.player));
-        }
-    }
-
-    @SubscribeEvent
-    public static void onScreenClose(ScreenEvent.Closing event) {
-        Screen screen = event.getScreen();
-
-        if(screen instanceof EnvisioningScreen){
-            Minecraft.getInstance().gameMode.setLocalMode(GameType.SURVIVAL);
-
         }
     }
 }

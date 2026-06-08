@@ -250,6 +250,8 @@ public class BeyonderEventHandler {
 
         if (playerMap.get(player).isEmpty()) return;
 
+        var envisionedSplitComponent = player.getData(ModAttachments.ENVISION_SPLIT.get());
+
         var data = playerMap.get(player).get();
 
         BeyonderCharacteristicItem charItem = BeyonderCharacteristicItemHandler
@@ -260,6 +262,10 @@ public class BeyonderEventHandler {
         if (charItem == null) return;
 
         if(PureIdealismUtil.died.containsKey(player.getUUID())){
+            return;
+        }
+        else if(envisionedSplitComponent.isEnvisioned()){
+            envisionedSplitComponent.setEnvisioned(false);
             return;
         }
         else {
@@ -291,12 +297,14 @@ public class BeyonderEventHandler {
 
             if (!BeyonderData.isBeyonder(player)) return;
             if (playerMap.get(player).isEmpty()) return;
-            if (!player.level().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)) {
+            if (!player.level().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)
+            && !player.getData(ModAttachments.ENVISION_SPLIT.get()).isEnvisioned()) {
                 BeyonderData.recalculateCharStackModifiers(player);
                 return;
             }
 
             StoredData data = playerMap.get(player).get();
+
             StoredData regressed = data.regressSeq(false);
 
             SacrificeRevertComponent revert = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);

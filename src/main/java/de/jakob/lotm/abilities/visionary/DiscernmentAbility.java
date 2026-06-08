@@ -6,6 +6,8 @@ import de.jakob.lotm.abilities.core.AbilityUseTracker;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.StartStopDiscernmentPacket;
+import de.jakob.lotm.network.packets.toClient.SyncDecryptionLookedAtEntitiesAbilityPacket;
 import de.jakob.lotm.network.packets.toClient.SyncSpectatingAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -68,19 +70,6 @@ public class DiscernmentAbility extends ToggleAbility {
 
         int seq = BeyonderData.getSequence(entity);
         int range = getRange(seq);
-        List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), range)
-                .stream()
-                .filter(nearbyEntity -> {
-                    return !VisionaryHandler.shouldStayInvisible(seq, nearbyEntity) || VisionaryHandler.shouldFailAndTrigger(seq, entity, nearbyEntity, this);
-                })
-                .toList();
-
-        for (LivingEntity nearbyEntity : nearbyEntities) {
-            setGlowingForPlayer(nearbyEntity, player, true);
-        }
-
-        glowingEntities.putIfAbsent(entity.getUUID(), new HashSet<>(Set.of()));
-        glowingEntities.get(entity.getUUID()).addAll(nearbyEntities);
 
         LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, range, 1.2f, false, true);
         if(lookedAt != null) {
@@ -144,6 +133,9 @@ public class DiscernmentAbility extends ToggleAbility {
                             .withColor(0xFFff124d));
             return;
         }
+
+        if(entity instanceof ServerPlayer player)
+            PacketHandler.sendToPlayer(player, new StartStopDiscernmentPacket(true, getRange(BeyonderData.getSequence(entity))));
     }
 
     @Override
@@ -153,16 +145,16 @@ public class DiscernmentAbility extends ToggleAbility {
         }
         if(!(entity instanceof ServerPlayer player)) return;
 
-        if(glowingEntities.containsKey(entity.getUUID()))
-            glowingEntities.get(entity.getUUID()).forEach(e -> setGlowingForPlayer(e, player, false));
-        glowingEntities.remove(entity.getUUID());
+        PacketHandler.sendToPlayer(player, new StartStopDiscernmentPacket(false, getRange(BeyonderData.getSequence(entity))));
+        PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(false, -1));
+        AbilityUtil.sendActionBar(entity, Component.literal(""));
     }
 
     private static int getRange(int seq){
         return switch (seq){
             case 2 -> 100;
-            case 1 -> 150;
-            case 0 -> 200;
+            case 1 -> 400;
+            case 0 -> 1000;
             default -> 0;
         };
     }
@@ -174,104 +166,5 @@ public class DiscernmentAbility extends ToggleAbility {
           case 0 -> 10000;
           default -> 0;
         };
-    }
-
-    private static final EntityDataAccessor<Byte> DATA_SHARED_FLAGS =
-            new EntityDataAccessor<>(0, EntityDataSerializers.BYTE);
-
-    public static void setGlowingForPlayer(Entity entity, ServerPlayer player, boolean glowing) {
-
-        ChatFormatting color = ChatFormatting.WHITE;
-        if (entity instanceof Mob mob) {
-            if (BeyonderData.isBeyonder(mob))
-                color = ChatFormatting.GOLD;
-            else if (mob instanceof Enemy)
-                color = ChatFormatting.RED;
-            else
-                color = ChatFormatting.GREEN;
-        }
-
-        String teamName = "glow_" + color.getName();
-
-        byte flags = entity.getEntityData().get(DATA_SHARED_FLAGS);
-
-        // glowing bit
-        if (glowing) {
-            flags |= 0x40;
-        } else {
-            flags &= ~0x40;
-        }
-
-        ClientboundSetEntityDataPacket metadataPacket =
-                new ClientboundSetEntityDataPacket(
-                        entity.getId(),
-                        List.of(
-                                SynchedEntityData.DataValue.create(
-                                        DATA_SHARED_FLAGS,
-                                        flags
-                                )
-                        )
-                );
-
-        player.connection.send(metadataPacket);
-
-        UUID uuid = entity.getUUID();
-        String entityId = entity.getStringUUID();
-
-        if (glowing) {
-
-            PlayerTeam team = new PlayerTeam(
-                    player.server.getScoreboard(),
-                    teamName
-            );
-
-            team.setColor(color);
-            team.setNameTagVisibility(Team.Visibility.NEVER);
-            team.setSeeFriendlyInvisibles(true);
-
-            Set<String> sentTeams =
-                    SENT_TEAMS.computeIfAbsent(
-                            player.getUUID(),
-                            k -> new HashSet<>()
-                    );
-
-            if (!sentTeams.contains(teamName)) {
-                player.connection.send(
-                        ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true)
-                );
-
-                sentTeams.add(teamName);
-            }
-
-            player.connection.send(
-                    ClientboundSetPlayerTeamPacket.createPlayerPacket(
-                            team,
-                            entityId,
-                            ClientboundSetPlayerTeamPacket.Action.ADD
-                    )
-            );
-
-            ENTITY_TEAM_MAP.put(uuid, teamName);
-
-        } else {
-
-            String previousTeam = ENTITY_TEAM_MAP.remove(uuid);
-
-            if (previousTeam != null) {
-
-                PlayerTeam removeTeam = new PlayerTeam(
-                        player.server.getScoreboard(),
-                        previousTeam
-                );
-
-                player.connection.send(
-                        ClientboundSetPlayerTeamPacket.createPlayerPacket(
-                                removeTeam,
-                                entityId,
-                                ClientboundSetPlayerTeamPacket.Action.REMOVE
-                        )
-                );
-            }
-        }
     }
 }

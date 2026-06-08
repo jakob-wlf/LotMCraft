@@ -105,6 +105,14 @@ public class MentalPlagueComponent {
         return id.equals(entity.getUUID());
     }
 
+    public boolean isOwner(UUID targetId){
+        UUID id = BeyonderData.playerMap.getKeyByName(ownerName);
+        if(id == null) return true;
+
+        return id.equals(targetId);
+    }
+
+
     public static final IAttachmentSerializer<CompoundTag, MentalPlagueComponent> SERIALIZER =
             new IAttachmentSerializer<>() {
                 @Override
