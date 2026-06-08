@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
@@ -99,70 +100,23 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
             }
             var result = resultBuilder.toString();
 
-            entity.sendSystemMessage(Component.literal("\n\n" + result)
+            entity.sendSystemMessage(Component.literal("\n\n" + result + "\nAmount of granted avatars: "
+                            + component.avatars.size())
                     .withColor(0xf5c56c));
 
             return;
         }
 
-        if(!(target instanceof ServerPlayer targetPlayer)){
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));
-            return;
+        if(target instanceof AvatarEntity avatar){
+            if(avatar.getOriginalOwner().equals(entity.getUUID())){
+                grantSeq(serverLevel, entity, target);
+            }
         }
-
-        int seq1Amount = serverLevel.getGameRules().getInt(ModGameRules.SEQ_1_AMOUNT);
-
-        String targetName = targetPlayer.getName().getString();
-        var targetComponent = targetPlayer.getData(ModAttachments.ENVISION_SPLIT.get());
-
-        ParticleUtil.spawnCircleParticles(serverLevel, dust, target.getEyePosition(), 2, 20);
-        ParticleUtil.spawnCircleParticles(serverLevel, dust, target.getEyePosition(), new Vec3(0, 0, 1), 2, 20);
-        ParticleUtil.spawnCircleParticles(serverLevel, dust, target.getEyePosition(), new Vec3(1, 0, 0), 2, 20);
-        ParticleUtil.createParticleSpirals(serverLevel, dust, target.position(), entity.getBbWidth() + .25, entity.getBbWidth() + .25, entity.getEyeHeight(), 1, 5, 30, 150, 1);
-        ParticleUtil.createParticleSpirals(serverLevel, dust, target.position(), 5, entity.getBbWidth() + .25, 5, 1, 5, 20, 150, 1);
-        serverLevel.playSound(
-                null,
-                target.blockPosition(),
-                SoundEvents.DRAGON_FIREBALL_EXPLODE,
-                SoundSource.MASTER,
-                1.0F,
-                1.5F
-        );
-        serverLevel.playSound(
-                null,
-                target.blockPosition(),
-                SoundEvents.ENDER_DRAGON_GROWL,
-                SoundSource.MASTER,
-                1.0F,
-                1.2F
-        );
-
-        if(!component.contains(targetName)) {
-            if (component.names.size() + 1 >= seq1Amount) {
-                AbilityUtil.sendActionBar(entity,
-                        Component.translatable("ability.lotmcraft.mind_world_authority_ability.out_of_slots")
-                                .withColor(0xFFff124d));
-                return;
-            }
-
-            if(BeyonderData.getSequence(targetPlayer) != 2
-                    || !BeyonderData.getPathway(targetPlayer).equals("visionary")
-                    || BeyonderData.getDigestionProgress(targetPlayer) != 1.0f){
-
-                    AbilityUtil.sendActionBar(entity,
-                            Component.translatable("ability.lotmcraft.mind_world_authority_ability.unworthy_candidate")
-                                    .withColor(0xFFff124d));
-                    return;
-            }
-
-            component.add(targetName);
-            targetComponent.setEnvisioned(true);
-
-            BeyonderData.setBeyonder(targetPlayer, "visionary", 1, true, false, true, false);
+        else if(target instanceof ServerPlayer){
+            grantSeq(serverLevel, entity, target);
         }
         else{
-            component.remove(targetName);
-            target.kill();
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.frenzy.failed").withColor(0xFFff124d));
         }
     }
 
@@ -235,13 +189,119 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
         });
     }
 
+    public void grantSeq(ServerLevel serverLevel, LivingEntity entity, LivingEntity target){
+        int seq1Amount = serverLevel.getGameRules().getInt(ModGameRules.SEQ_1_AMOUNT);
+        var component = entity.getData(ModAttachments.ENVISION_SPLIT.get());
+
+        var targetComponent = target.getData(ModAttachments.ENVISION_SPLIT.get());
+
+        ParticleUtil.spawnCircleParticles(serverLevel, dust, target.getEyePosition(), 2, 20);
+        ParticleUtil.spawnCircleParticles(serverLevel, dust, target.getEyePosition(), new Vec3(0, 0, 1), 2, 20);
+        ParticleUtil.spawnCircleParticles(serverLevel, dust, target.getEyePosition(), new Vec3(1, 0, 0), 2, 20);
+        ParticleUtil.createParticleSpirals(serverLevel, dust, target.position(), entity.getBbWidth() + .25, entity.getBbWidth() + .25, entity.getEyeHeight(), 1, 5, 30, 150, 1);
+        ParticleUtil.createParticleSpirals(serverLevel, dust, target.position(), 5, entity.getBbWidth() + .25, 5, 1, 5, 20, 150, 1);
+        serverLevel.playSound(
+                null,
+                target.blockPosition(),
+                SoundEvents.DRAGON_FIREBALL_EXPLODE,
+                SoundSource.MASTER,
+                1.0F,
+                1.5F
+        );
+        serverLevel.playSound(
+                null,
+                target.blockPosition(),
+                SoundEvents.ENDER_DRAGON_GROWL,
+                SoundSource.MASTER,
+                1.0F,
+                1.2F
+        );
+
+        boolean isFailed;
+        if(target instanceof ServerPlayer targetPlayer)
+            isFailed = BeyonderData.getSequence(target) != 2
+                    || !BeyonderData.getPathway(target).equals("visionary")
+                    || BeyonderData.getDigestionProgress(targetPlayer) != 1.0f;
+        else
+            isFailed = BeyonderData.getSequence(target) != 2
+                    || !BeyonderData.getPathway(target).equals("visionary");
+
+        if(!component.contains(target)) {
+            if (component.willBeOutOfSlots(seq1Amount)) {
+                AbilityUtil.sendActionBar(entity,
+                        Component.translatable("ability.lotmcraft.mind_world_authority_ability.out_of_slots")
+                                .withColor(0xFFff124d));
+                return;
+            }
+
+            if(isFailed){
+                AbilityUtil.sendActionBar(entity,
+                        Component.translatable("ability.lotmcraft.mind_world_authority_ability.unworthy_candidate")
+                                .withColor(0xFFff124d));
+                return;
+            }
+
+            if(target instanceof ServerPlayer targetPlayer) {
+                String targetName = targetPlayer.getName().getString();
+                component.add(targetName);
+            }
+            else{
+                component.addAsAvatar(target.getUUID());
+            }
+
+            targetComponent.setEnvisioned(true);
+
+            BeyonderData.setBeyonder(target, "visionary", 1, true, false, true, false);
+        }
+        else{
+            if(target instanceof ServerPlayer targetPlayer) {
+                String targetName = targetPlayer.getName().getString();
+                component.remove(targetName);
+            }
+            else{
+                component.removeAsAvatar(target.getUUID());
+            }
+
+            target.kill();
+        }
+    }
+
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             if(!(player.level() instanceof ServerLevel serverLevel)) return;
 
             var component = player.getData(ModAttachments.ENVISION_SPLIT.get());
-            if(component.isEnvisioned())return;
+            if(component.isEnvisioned()) return;
+
+            LOTMCraft.LOGGER.info("in event");
+
+            if(!component.avatars.isEmpty()) {
+                var id = component.avatars.removeFirst();
+                var target = serverLevel.getEntity(id);
+
+                LOTMCraft.LOGGER.info("in event, id:{}", id);
+
+                while (target == null && !component.avatars.isEmpty()) {
+                    id = component.avatars.removeFirst();
+                    target = serverLevel.getEntity(id);
+                }
+
+                LOTMCraft.LOGGER.info("after loop");
+
+                if (target == null && component.avatars.isEmpty()) return;
+
+                if (!(target.level() instanceof ServerLevel targetLevel)) return;
+
+                Vec3 pos = target.position();
+                player.teleportTo(targetLevel, pos.x, pos.y, pos.z, target.getYRot(), target.getXRot());
+                target.kill();
+
+                player.setHealth(player.getMaxHealth());
+                event.setCanceled(true);
+
+                return;
+            }
 
             if(component.names.isEmpty()) return;
 

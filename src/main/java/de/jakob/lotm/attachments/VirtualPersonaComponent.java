@@ -16,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +25,7 @@ import java.util.logging.Logger;
 public class VirtualPersonaComponent {
     private List<VirtualPersona> affectedBy = new LinkedList<>();
     private List<String> affects = new LinkedList<>();
+    private List<UUID> avatars = new LinkedList<>();
 
     private int ownPersonasOnSelf = 0;
     private float maxHealth = 0;
@@ -38,7 +40,7 @@ public class VirtualPersonaComponent {
     }
 
     public int getUsedSlots(){
-        return affects.size() + ownPersonasOnSelf;
+        return affects.size() + ownPersonasOnSelf + avatars.size();
     }
 
     public boolean affects(String id){
@@ -49,11 +51,15 @@ public class VirtualPersonaComponent {
         return !affectedBy.stream().filter(obj -> obj.owner.equals(name)).toList().isEmpty();
     }
 
-    public boolean createAvatar(){
-        if(!hasOnSelf()) return false;
+    public void createAvatar(UUID id){
+        if(!hasOnSelf()) return;
 
         ownPersonasOnSelf--;
-        return true;
+        avatars.add(id);
+    }
+
+    public void removeAvatar(UUID id){
+        avatars.remove(id);
     }
 
     public void placeBy(ServerPlayer player, ServerPlayer victim){
@@ -137,6 +143,12 @@ public class VirtualPersonaComponent {
             }
         }
 
+        for(var obj : avatars){
+            var target = level.getEntity(obj);
+            if(target == null)
+                removeAvatar(obj);
+        }
+
         affectedBy.removeAll(buff);
     }
 
@@ -150,6 +162,14 @@ public class VirtualPersonaComponent {
                 + "\nOn self: " + ownPersonasOnSelf
                 + "\nHealth: " + health + "/" + maxHealth
         );
+    }
+
+    public List<UUID> getAvatars(){
+        return avatars;
+    }
+
+    public int getAvatarsSive(){
+        return avatars.size();
     }
 
     public List<String> getAffectedBy(int seq){
@@ -255,6 +275,15 @@ public class VirtualPersonaComponent {
                     component.health = tag.getFloat("health");
                     component.maxHealth = tag.getFloat("max_health");
 
+                    var listTag = tag.getList("avatars", Tag.TAG_STRING);
+                    List<UUID> uuids = new ArrayList<>();
+
+                    for (int i = 0; i < listTag.size(); i++) {
+                        uuids.add(UUID.fromString(listTag.getString(i)));
+                    }
+
+                    component.avatars = uuids;
+
                     return component;
                 }
 
@@ -277,6 +306,13 @@ public class VirtualPersonaComponent {
                     tag.putInt("own", component.ownPersonasOnSelf);
                     tag.putFloat("health", component.health);
                     tag.putFloat("max_health", component.maxHealth);
+
+                    ListTag listTag = new ListTag();
+
+                    for (UUID uuid : component.avatars) {
+                        listTag.add(StringTag.valueOf(uuid.toString()));
+                    }
+                    tag.put("avatars", listTag);
 
                     return tag;
                 }

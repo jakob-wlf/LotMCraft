@@ -66,6 +66,13 @@ public class ImprisonAbility extends Ability {
         LivingEntity target = AbilityUtil.getTargetEntity(caster, 15 * (int) Math.max(multiplier(caster) / 4, 1), 1.4f);
         if (target == null) return;
 
+        int entitySeq = AbilityUtil.getSeqWithArt(caster, this);
+        int targetSeq = BeyonderData.getSequence(target);
+
+        if(AbilityUtil.isTargetSignificantlyStronger(entitySeq, targetSeq)) return;
+
+        int duration = 20 * getDuration(entitySeq);
+
         final UUID targetId = target.getUUID();
         IMPRISONED.add(targetId);
 
@@ -76,7 +83,7 @@ public class ImprisonAbility extends Ability {
         serverLevel.playSound(null, target.blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 0.8f, 0.4f);
         AbilityUtil.sendActionBar(caster, Component.literal("§6⚖ §e" + target.getType().getDescription().getString() + " §fimprisoned §6⚖"));
 
-        UUID velTaskId = ServerScheduler.scheduleRepeating(0, 5, -1, () -> {
+        UUID velTaskId = ServerScheduler.scheduleRepeating(0, 5, duration, () -> {
             Entity e = serverLevel.getEntity(targetId);
             if (!(e instanceof LivingEntity t) || !t.isAlive()) return;
             t.setDeltaMovement(Vec3.ZERO);
@@ -87,7 +94,7 @@ public class ImprisonAbility extends Ability {
             t.teleportTo(pos.x, pos.y, pos.z);
         }, serverLevel, () -> IMPRISONED.contains(targetId));
 
-        UUID vfxTaskId = ServerScheduler.scheduleRepeating(0, 8, -1, () -> {
+        UUID vfxTaskId = ServerScheduler.scheduleRepeating(0, 8, duration, () -> {
             Entity e = serverLevel.getEntity(targetId);
             if (!(e instanceof LivingEntity t) || !t.isAlive()) return;
             Vec3 pos = t.position().add(0, 1, 0);
@@ -99,13 +106,13 @@ public class ImprisonAbility extends Ability {
             }
         }, serverLevel, () -> IMPRISONED.contains(targetId));
 
-        UUID effectTaskId = ServerScheduler.scheduleRepeating(0, 100, -1, () -> {
+        UUID effectTaskId = ServerScheduler.scheduleRepeating(0, 100, duration, () -> {
             Entity e = serverLevel.getEntity(targetId);
             if (!(e instanceof LivingEntity t) || !t.isAlive()) return;
             EffectManager.playEffect(EffectManager.Effect.IMPRISON, t.getX(), t.getY() + .3, t.getZ(), serverLevel);
         }, serverLevel, () -> IMPRISONED.contains(targetId));
 
-        UUID drainTaskId = ServerScheduler.scheduleRepeating(80, 80, -1, () -> {
+        UUID drainTaskId = ServerScheduler.scheduleRepeating(80, 80, duration, () -> {
             if (!IMPRISONED.contains(targetId) || !caster.isAlive()) {
                 cancelImprisonment(caster.getUUID());
                 return;
@@ -158,4 +165,18 @@ public class ImprisonAbility extends Ability {
             if (data[i] != null) ServerScheduler.cancel(data[i]);
         }
     }
+
+    private static int getDuration(int seq){
+        return switch (seq){
+          case 6 -> 60;
+          case 5 -> 70;
+          case 4 -> 100;
+          case 3 -> 120;
+          case 2 -> 240;
+          case 1 -> 300;
+          case 0 -> 600;
+          default -> 0;
+        };
+    }
+
 }

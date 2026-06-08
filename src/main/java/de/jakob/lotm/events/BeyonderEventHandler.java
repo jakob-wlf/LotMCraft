@@ -87,6 +87,9 @@ public class BeyonderEventHandler {
             VirtualPersonaComponent personaComponent = serverPlayer.getData(ModAttachments.VIRTUAL_PERSONAS);
             personaComponent.onJoin((ServerLevel) serverPlayer.level(), serverPlayer.getName().getString());
 
+            var splitComponent = serverPlayer.getData(ModAttachments.ENVISION_SPLIT.get());
+            splitComponent.onJoin((ServerLevel) serverPlayer.level());
+
             serverPlayer.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, 20 * 5, 99));
             BeyonderData.recalculateCharStackModifiers(serverPlayer);
             serverPlayer.getData(ModAttachments.LUCK_COMPONENT.get()).setLuck(0);

@@ -98,5 +98,14 @@ public class TriggerNumbersContext extends TriggerContextBase {
         return context;
     }
 
-
+    public boolean checkOperation(float value, float value2){
+        return switch (operation) {
+            case -2 -> value2 < value;
+            case -1 -> value2 <= value;
+            case 0 -> value2 == value;
+            case 1 -> value2 >= value;
+            case 2 -> value2 > value;
+            default -> false;
+        };
+    }
 }

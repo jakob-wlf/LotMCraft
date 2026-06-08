@@ -28,4 +28,14 @@ public class TokenStream {
 
     public int getTotalSize() { return tokens.length; }
 
+    @Override
+    public String toString(){
+        var resultBuilder = new StringBuilder();
+        for(var obj : tokens){
+            resultBuilder.append(obj).append(" ");
+        }
+
+        return resultBuilder.toString();
+    }
+
 }

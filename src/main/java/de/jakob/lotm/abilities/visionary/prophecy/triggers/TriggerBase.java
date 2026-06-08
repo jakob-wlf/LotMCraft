@@ -81,8 +81,8 @@ public abstract class  TriggerBase {
             case SEALED -> SealedTrigger.load(tag, actionType, contextType, provider);
             case HUNGER -> HungerTrigger.load(tag, actionType, contextType, provider);
             case RIDING -> RidingTrigger.load(tag, actionType, contextType, provider);
-            case IS_ATTACKED -> IsAttackedTrigger.load(tag, actionType, contextType, provider);
-        };
+            case SPIRITUALITY -> SpiritualityTrigger.load(tag, actionType, contextType, provider);
+            };
     }
 
     public static TriggerBase create(TriggerEnum type, ActionBase action, TriggerContextBase context){
@@ -96,7 +96,7 @@ public abstract class  TriggerBase {
             case SEALED -> new SealedTrigger(action, context);
             case HUNGER -> new HungerTrigger(action, context);
             case RIDING -> new RidingTrigger(action, context);
-            case IS_ATTACKED -> new IsAttackedTrigger(action, context);
+            case SPIRITUALITY -> new SpiritualityTrigger(action, context);
         };
     }
 }

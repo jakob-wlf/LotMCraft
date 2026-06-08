@@ -24,7 +24,7 @@ public class MentalPlagueComponent {
     private int infected = 0;
 
     public static final int MAX_STAGE = 10;
-    public static final int MAX_INFECTED = 150;
+    public static final int MAX_INFECTED = 15000;
 
     public static final String NBT_HAS_PLAGUE = "has_plague";
     public static final String NBT_SEQ = "plague_seq";

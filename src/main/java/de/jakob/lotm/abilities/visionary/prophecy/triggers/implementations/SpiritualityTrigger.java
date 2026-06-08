@@ -7,42 +7,50 @@ import de.jakob.lotm.abilities.visionary.prophecy.triggers.TriggerEnum;
 import de.jakob.lotm.abilities.visionary.prophecy.triggers.context.TriggerContextBase;
 import de.jakob.lotm.abilities.visionary.prophecy.triggers.context.TriggerContextEnum;
 import de.jakob.lotm.abilities.visionary.prophecy.triggers.context.implementations.TriggerNumbersContext;
-import de.jakob.lotm.abilities.visionary.prophecy.triggers.context.implementations.TriggerStringContext;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.behavior.declarative.Trigger;
 import net.minecraft.world.level.Level;
 
 import java.util.UUID;
 
-public class IsAttackedTrigger extends TriggerBase {
-    public IsAttackedTrigger(ActionBase action, TriggerContextBase context) {
+public class SpiritualityTrigger extends TriggerBase {
+    public SpiritualityTrigger(ActionBase action, TriggerContextBase context) {
         super(action, context);
     }
 
     @Override
     public TriggerEnum getType() {
-        return TriggerEnum.IS_ATTACKED;
+        return TriggerEnum.SPIRITUALITY;
     }
 
     @Override
     public int getRequiredSeq() {
-        return 6;
+        return 4;
     }
 
     @Override
     public int checkTrigger(Level level, LivingEntity entity, UUID casterId) {
-        action.action(level, entity, casterId);
-        return 1;
+        if(!(context instanceof TriggerNumbersContext numbers)) return -1;
+
+        float value = numbers.isInt ? numbers.intValue : (float) numbers.doubleValue;
+        float sp = BeyonderData.getSpirituality(entity);
+
+        if(numbers.checkOperation(value, sp)){
+            action.action(level, entity, casterId);
+            return 1;
+        }
+
+        return 0;
     }
 
-    public static IsAttackedTrigger load(CompoundTag tag,
+    public static SpiritualityTrigger load(CompoundTag tag,
                                      ActionsEnum actionType,
                                      TriggerContextEnum contextType,
-                                     HolderLookup.Provider provider) {
-        return new IsAttackedTrigger(ActionBase.load(actionType, tag, provider),
+                                     HolderLookup.Provider provider){
+        return new SpiritualityTrigger(ActionBase.load(actionType, tag, provider),
                 TriggerContextBase.load(contextType, tag, provider));
     }
 }

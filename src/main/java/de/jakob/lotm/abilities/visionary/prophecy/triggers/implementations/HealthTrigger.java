@@ -27,7 +27,7 @@ public class HealthTrigger extends TriggerBase {
 
     @Override
     public int getRequiredSeq() {
-        return 4;
+        return 6;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class HealthTrigger extends TriggerBase {
         float value = numbers.isInt ? numbers.intValue : (float) numbers.doubleValue;
         float health = entity.getHealth();
 
-        if(checkOperation(value, health, numbers.operation)){
+        if(numbers.checkOperation(value, health)){
             action.action(level, entity, casterId);
             return 1;
         }
@@ -53,14 +53,5 @@ public class HealthTrigger extends TriggerBase {
                 TriggerContextBase.load(contextType, tag, provider));
     }
 
-    private boolean checkOperation(float value, float value2, int operation){
-        return switch (operation) {
-            case -2 -> value2 < value;
-            case -1 -> value2 <= value;
-            case 0 -> value2 == value;
-            case 1 -> value2 >= value;
-            case 2 -> value2 > value;
-            default -> false;
-        };
-    }
+
 }

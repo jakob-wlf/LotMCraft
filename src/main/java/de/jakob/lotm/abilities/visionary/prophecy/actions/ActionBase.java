@@ -52,6 +52,10 @@ public abstract class ActionBase {
             case WHISPERS -> WhispersAction.load(tag, provider);
             case SUICIDE -> SuicideAction.load(tag, provider);
             case PLAGUE -> PlagueAction.load(tag, provider);
+            case SLEEP -> SleepAction.load(tag, provider);
+            case DOUBLE -> DoubleAction.load(tag, provider);
+            case SPIRITUALITY -> SpiritualityAction.load(tag, provider);
+            case PLAYER -> PlayerAction.load(tag,provider);
         };
     }
 
@@ -75,6 +79,10 @@ public abstract class ActionBase {
             case WHISPERS -> new WhispersAction(context);
             case SUICIDE -> new SuicideAction(context);
             case PLAGUE -> new PlagueAction(context);
+            case SLEEP -> new SleepAction(context);
+            case DOUBLE -> new DoubleAction(context);
+            case SPIRITUALITY -> new SpiritualityAction(context);
+            case PLAYER -> new PlayerAction(context);
         };
     }
 }

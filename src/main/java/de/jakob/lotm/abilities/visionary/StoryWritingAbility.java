@@ -6,7 +6,6 @@ import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.abilities.visionary.prophecy.triggers.TriggerHelper;
-import de.jakob.lotm.abilities.visionary.prophecy.triggers.implementations.IsAttackedTrigger;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;

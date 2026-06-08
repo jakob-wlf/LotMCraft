@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncEnvisioningPacket;
 import net.minecraft.core.BlockPos;
@@ -14,6 +15,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.*;
 
@@ -21,7 +23,6 @@ import java.util.*;
 public class MindWorldAuthorityEnvisioningAbility extends ToggleAbility {
     public static Set<UUID> active = new HashSet<>();
     public static boolean canEnvisionClient = false;
-    private static Vec3 pos;
 
     public MindWorldAuthorityEnvisioningAbility(String id) {
         super(id);
@@ -93,7 +94,7 @@ public class MindWorldAuthorityEnvisioningAbility extends ToggleAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 100;
+        return 1;
     }
 
     @SubscribeEvent
@@ -107,5 +108,14 @@ public class MindWorldAuthorityEnvisioningAbility extends ToggleAbility {
             level.destroyBlock(pos, true);
             event.setCanceled(true);
         }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTick(PlayerTickEvent.Post event) {
+        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        if(!active.contains(player.getUUID())) return;
+
+        player.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityAndSync(0.1f,player);
     }
 }

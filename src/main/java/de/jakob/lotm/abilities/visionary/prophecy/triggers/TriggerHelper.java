@@ -30,7 +30,7 @@ public class TriggerHelper {
             case "sealed" -> TriggerEnum.SEALED;
             case "hunger" -> TriggerEnum.HUNGER;
             case "riding" -> TriggerEnum.RIDING;
-            //case "attacked" -> TriggerEnum.IS_ATTACKED;
+            case "spirituality" -> TriggerEnum.SPIRITUALITY;
             default -> null;
         };
     }
@@ -46,7 +46,7 @@ public class TriggerHelper {
             case SEALED -> TriggerContextEnum.EMPTY;
             case HUNGER -> TriggerContextEnum.NUMBER;
             case RIDING -> TriggerContextEnum.EMPTY;
-            case IS_ATTACKED -> TriggerContextEnum.STRING;
+            case SPIRITUALITY -> TriggerContextEnum.NUMBER;
         };
     }
 

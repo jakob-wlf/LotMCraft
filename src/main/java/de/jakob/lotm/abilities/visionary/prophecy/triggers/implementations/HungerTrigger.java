@@ -41,7 +41,7 @@ public class HungerTrigger extends TriggerBase {
         int value = numbers.isInt ? numbers.intValue : (int) numbers.doubleValue;
         int food = player.getFoodData().getFoodLevel();
 
-        if(checkOperation(value, food, numbers.operation)){
+        if(numbers.checkOperation(value, food)){
             action.action(level, entity, casterId);
             return 1;
         }
@@ -57,14 +57,4 @@ public class HungerTrigger extends TriggerBase {
                 TriggerContextBase.load(contextType, tag, provider));
     }
 
-    private boolean checkOperation(float value, float value2, int operation){
-        return switch (operation) {
-            case -2 -> value2 < value;
-            case -1 -> value2 <= value;
-            case 0 -> value2 == value;
-            case 1 -> value2 >= value;
-            case 2 -> value2 > value;
-            default -> false;
-        };
-    }
 }

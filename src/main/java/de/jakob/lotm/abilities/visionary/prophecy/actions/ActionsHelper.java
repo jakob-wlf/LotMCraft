@@ -32,9 +32,13 @@ public class ActionsHelper {
             case "say" -> ActionsEnum.SAY;
             case "weather" -> ActionsEnum.WEATHER;
             case "time" -> ActionsEnum.TIME;
-            case  "whispers" -> ActionsEnum.WHISPERS;
+            case "whispers" -> ActionsEnum.WHISPERS;
             case "suicide" -> ActionsEnum.SUICIDE;
             case "plague" -> ActionsEnum.PLAGUE;
+            case "sleep" -> ActionsEnum.SLEEP;
+            case "double" -> ActionsEnum.DOUBLE;
+            case "spirituality" -> ActionsEnum.SPIRITUALITY;
+            case "player" -> ActionsEnum.PLAYER;
             default -> null;
         };
     }
@@ -59,6 +63,10 @@ public class ActionsHelper {
             case ActionsEnum.WHISPERS -> ActionContextEnum.STRING;
             case ActionsEnum.SUICIDE -> ActionContextEnum.EMPTY;
             case PLAGUE -> ActionContextEnum.STRING;
+            case SLEEP -> ActionContextEnum.EMPTY;
+            case DOUBLE -> ActionContextEnum.STRING;
+            case SPIRITUALITY -> ActionContextEnum.NUMBER;
+            case PLAYER -> ActionContextEnum.STRING;
         };
     }
 
@@ -94,7 +102,7 @@ public class ActionsHelper {
         return action;
     }
 
-    private static TokenStream moveToThenOrAnd(TokenStream stream){
+    public static TokenStream moveToThenOrAnd(TokenStream stream){
         if(stream.match("then") || stream.match("and")) return stream;
         else if (stream.isEmpty()) return null;
         else {

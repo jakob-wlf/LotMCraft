@@ -60,9 +60,12 @@ public class OrderLawHandler {
                 .anyMatch(z -> z.type() == OrderProxyAbility.OrderProhibitionType.DYING && z.isInZone(pos, serverLevel));
         if (!inDyingZone) return;
 
+        if(event.getNewDamage() == Float.MAX_VALUE) return;
+
         float currentHealth = entity.getHealth();
         if (event.getNewDamage() >= currentHealth) {
             event.setNewDamage(currentHealth - 1f);
+
             if (entity instanceof ServerPlayer sp) {
                 sp.sendSystemMessage(Component.translatable("lotmcraft.order_law.dying_prohibited")
                         .withStyle(ChatFormatting.GOLD));

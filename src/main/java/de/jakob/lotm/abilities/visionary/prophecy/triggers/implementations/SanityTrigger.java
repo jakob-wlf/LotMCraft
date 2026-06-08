@@ -48,9 +48,7 @@ public class SanityTrigger extends TriggerBase {
 
         float sanity = entity.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity();
 
-        var operation = numbers.operation;
-
-        if(checkOperation(value, sanity, operation)){
+        if(numbers.checkOperation(value, sanity)){
             action.action(level, entity, casterId);
             return 1;
         }
@@ -66,14 +64,4 @@ public class SanityTrigger extends TriggerBase {
                 TriggerContextBase.load(contextType, tag, provider));
     }
 
-    private boolean checkOperation(float value, float value2, int operation){
-        return switch (operation) {
-            case -2 -> value2 < value;
-            case -1 -> value2 <= value;
-            case 0 -> value2 == value;
-            case 1 -> value2 >= value;
-            case 2 -> value2 > value;
-            default -> false;
-        };
-    }
 }

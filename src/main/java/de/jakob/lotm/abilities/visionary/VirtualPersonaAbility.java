@@ -26,6 +26,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.HashMap;
@@ -90,13 +91,13 @@ public class VirtualPersonaAbility extends SelectableAbility {
         if(seq > 3) return;
 
         var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
-        if(component.createAvatar()){
+        if(component.hasOnSelf()){
             spawnAvatar((ServerLevel) level, entity);
         }
     }
 
     private void check(Level level, LivingEntity entity){
-        if (level.isClientSide) return;
+        if (!(level instanceof ServerLevel serverLevel)) return;
 
         int seq = BeyonderData.getSequence(entity);
         var target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.2f);
@@ -107,6 +108,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
             var affects = component.getAffects();
             String info = component.getGeneralInfo(seq);
             var affectedBy = component.getAffectedBy(seq);
+            var avatars = component.getAvatars();
 
             StringBuilder affectsResultBuilder = new StringBuilder("Affects:");
             for(var obj : affects){
@@ -132,7 +134,26 @@ public class VirtualPersonaAbility extends SelectableAbility {
             }
             var affectedByResult = affectedByResultBuilder.toString();
 
-            entity.sendSystemMessage(Component.literal(info + "\n\n" + affectsResult + "\n\n" + affectedByResult + "\n\n")
+
+            String avatarsResult = "";
+            if(BeyonderData.getSequence(entity) <= 3) {
+                StringBuilder avatarsBuilder = new StringBuilder("Amount of avatars: " + component.getAvatarsSive() + "\nAvatars:");
+                for (var obj : avatars) {
+                    AvatarEntity avatar = (AvatarEntity) serverLevel.getEntity(obj);
+
+                    var pos1 = avatar.position();
+                    String pos = "x= " + (int) pos1.x + " y= " + (int) pos1.y + " z= " + (int) pos1.z;
+
+                    avatarsBuilder.append("\n").append("Seq: " + avatar.getSequence() + " --- " + pos);
+                }
+                avatarsResult = avatarsBuilder.toString() + "\n\n";
+            }
+
+            entity.sendSystemMessage(Component.literal(
+                       "\n\n" + info +
+                            "\n\n" + affectsResult +
+                            "\n\n" + affectedByResult +
+                            "\n\n" + avatarsResult)
                     .withColor(0xf5c56c));
 
             return;
@@ -144,6 +165,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
         var affects = component.getAffects();
         String info = component.getGeneralInfo(targetSeq);
         var affectedBy = component.getAffectedBy(seq);
+        var avatars = component.getAvatars();
 
         StringBuilder affectsResultBuilder = new StringBuilder("Affects:");
         for(var obj : affects){
@@ -157,7 +179,25 @@ public class VirtualPersonaAbility extends SelectableAbility {
         }
         var affectedByResult = affectedByResultBuilder.toString();
 
-        entity.sendSystemMessage(Component.literal(info + "\n\n" + affectsResult + "\n\n" + affectedByResult + "\n\n")
+        String avatarsResult = "";
+        if(BeyonderData.getSequence(entity) <= 3) {
+            StringBuilder avatarsBuilder = new StringBuilder("Amount of avatars: " + component.getAvatarsSive() + "\nAvatars:");
+            for (var obj : avatars) {
+                AvatarEntity avatar = (AvatarEntity) serverLevel.getEntity(obj);
+
+                var pos1 = avatar.position();
+                String pos = "x= " + (int) pos1.x + " y= " + (int) pos1.y + " z= " + (int) pos1.z;
+
+                avatarsBuilder.append("\n").append("Seq: " + avatar.getSequence() + " --- " + pos);
+            }
+            avatarsResult = avatarsBuilder.toString() + "\n\n";
+        }
+
+        entity.sendSystemMessage(Component.literal(
+                        "\n\n" + info +
+                                "\n\n" + affectsResult +
+                                "\n\n" + affectedByResult +
+                                "\n\n" + avatarsResult)
                 .withColor(0xf5c56c));
     }
 
@@ -281,7 +321,10 @@ public class VirtualPersonaAbility extends SelectableAbility {
                 avatarSequence
         );
         avatar.setPos(entity.getX(), entity.getY(), entity.getZ());
+        avatar.setPersistenceRequired();
         serverLevel.addFreshEntity(avatar);
+
+        entity.getData(ModAttachments.VIRTUAL_PERSONAS.get()).createAvatar(avatar.getUUID());
 
         AbilityUtil.sendActionBar(entity,
                 Component.translatable("ability.lotmcraft.virtual_persona.avatar_spawned").withColor(0xFFe3ffff));
@@ -304,6 +347,23 @@ public class VirtualPersonaAbility extends SelectableAbility {
 
             if(amount <= 0)
                 event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onAvatarDeath(LivingDeathEvent event) {
+        if(!(event.getEntity() instanceof AvatarEntity avatar)) return;
+        if(!(avatar.level() instanceof ServerLevel level)) return;
+        if(!avatar.getPathway().equals("visionary")) return;
+
+        var owner = level.getPlayerByUUID(avatar.getOriginalOwner());
+        if(owner != null){
+            owner.getData(ModAttachments.VIRTUAL_PERSONAS.get()).removeAvatar(avatar.getUUID());
+
+            var component = owner.getData(ModAttachments.ENVISION_SPLIT.get());
+            if(component.contains(avatar)){
+                component.removeAsAvatar(avatar.getUUID());
+            }
         }
     }
 }
