@@ -913,7 +913,7 @@ public class BeyonderData {
                 .filter(c -> c.sequence() == sequence && c.pathway().equals(pathway))
                 .mapToInt(Characteristic::stack)
                 .findFirst().orElse(0);
-        //component.setCharacteristic(currentPathwayStack + 1, sequence, pathway);
+        component.setCharacteristic(currentPathwayStack + 1, sequence, pathway);
         component.setDigestionProgress(0);
 
         recalculateCharStackModifiers(player);

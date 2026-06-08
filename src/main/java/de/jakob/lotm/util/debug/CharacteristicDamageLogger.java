@@ -13,7 +13,7 @@ public class CharacteristicDamageLogger {
 
     @SubscribeEvent
     public static void onLivingDamagePost(LivingDamageEvent.Post event) {
-        LivingEntity entity = event.getEntity();
+        /*LivingEntity entity = event.getEntity();
         if (!(entity instanceof Player)) return;
 
         int charCount = BeyonderData.getCurrentCharacteristicCount(entity);
@@ -28,5 +28,7 @@ public class CharacteristicDamageLogger {
 
         // Log a stacktrace to help locate the origin of the damage call
         LOTMCraft.LOGGER.warn("[CharDamageLogger] Stacktrace for damage call:", new Exception("Damage stacktrace"));
+
+         */
     }
 }
