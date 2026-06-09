@@ -410,12 +410,9 @@ public class BeyonderData {
     }
 
     public static void setDigestionProgress(LivingEntity entity, float progress) {
-        if(!(entity instanceof Player player))
-            return;
+        entity.getData(ModAttachments.BEYONDER_COMPONENT).setDigestionProgress(progress);
 
-        player.getData(ModAttachments.BEYONDER_COMPONENT).setDigestionProgress(progress);
-
-        if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
+        if (!entity.level().isClientSide() && entity instanceof ServerPlayer serverPlayer) {
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
         }
     }
@@ -557,13 +554,10 @@ public class BeyonderData {
     }
 
     public static void setSpirituality(LivingEntity entity, float spirituality) {
-        if(!(entity instanceof Player player))
-            return;
-
-        player.getData(ModAttachments.BEYONDER_COMPONENT).setSpirituality(spirituality);
+        entity.getData(ModAttachments.BEYONDER_COMPONENT).setSpirituality(spirituality);
 
         // Sync to client if this is server-side
-        if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
+        if (!entity.level().isClientSide() && entity instanceof ServerPlayer serverPlayer) {
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
         }
     }

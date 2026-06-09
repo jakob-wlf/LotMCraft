@@ -1158,17 +1158,11 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         }
 
         // Remove all summoned entities
-        HistoricalVoidComponent data = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
-        for(HistoricalVoidComponent.SummonInfo info : data.activeSummonTimes.values()) {
-            if(info.type() == SummonType.ENTITY && info.entityUUID() != null) {
-                if (info.summonTime() < player.serverLevel().getGameTime()) {
-                    Entity entity = level.getEntity(info.entityUUID());
-                    if(entity != null && entity.getPersistentData().getBoolean("VoidSummoned")) {
-                        entity.remove(Entity.RemovalReason.DISCARDED);
-                    }
-                    decrementSummonedCount(player, info.summonTime());
-                }
-
+        for(Entity entity : level.getAllEntities()) {
+            if(entity == null) continue;
+            if(entity.getPersistentData().getBoolean("VoidSummoned") &&
+                    entity.getPersistentData().getUUID("VoidSummonOwner").equals(playerUUID)) {
+                entity.remove(Entity.RemovalReason.DISCARDED);
             }
         }
 
@@ -1183,6 +1177,22 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         blocksToRemove.forEach(placedBlocks::remove);
 
         player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT).reset();
+    }
+
+    @SubscribeEvent
+    public static void onChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        ServerLevel level = (ServerLevel) player.level();
+        UUID playerUUID = player.getUUID();
+
+        // Remove all summoned entities
+        for(Entity entity : level.getAllEntities()) {
+            if(entity.getPersistentData().getBoolean("VoidSummoned") &&
+                    entity.getPersistentData().getUUID("VoidSummonOwner").equals(playerUUID)) {
+                entity.remove(Entity.RemovalReason.DISCARDED);
+            }
+        }
     }
 
     // scale max summoned items
