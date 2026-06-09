@@ -73,7 +73,7 @@ public class AweAbility extends Ability {
 
                 e.addEffect(new MobEffectInstance(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 10, 11, false, false, false)));
                 e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20 * 10, 6, false, false, false));
-                e.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), (float) DamageLookup.lookupDamage(7, .675) * (int) Math.max(multiplier(entity)/4,1));
+                e.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), (float) DamageLookup.lookupDamage(7, .675) * multiplier(entity));
 
                 ServerScheduler.scheduleForDuration(0, 8, 20 * 10, () -> {
                     Location eLoc = new Location(e.position(), e.level());

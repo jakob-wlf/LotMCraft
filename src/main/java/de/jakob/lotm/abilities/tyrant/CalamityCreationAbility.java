@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.tyrant;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
+import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ActiveShaderComponent;
@@ -72,9 +73,9 @@ public class CalamityCreationAbility extends SelectableAbility {
     }
 
     private void createVolcano(ServerLevel serverLevel, LivingEntity entity) {
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 60* (int) Math.max(multiplier(entity)/4,1), 2);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (60* multiplier(entity)), 2);
 
-        VolcanoEntity volcano = new VolcanoEntity(serverLevel, targetPos, (float) DamageLookup.lookupDamage(2, .5) * (int) Math.max(multiplier(entity)/4,1), entity);
+        VolcanoEntity volcano = new VolcanoEntity(serverLevel, targetPos, (float) DamageLookup.lookupDamage(2, .5) * multiplier(entity), entity);
         serverLevel.addFreshEntity(volcano);
 
     }
@@ -86,7 +87,7 @@ public class CalamityCreationAbility extends SelectableAbility {
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
 
         List<BlockPos> snowSphereBlocks = griefing
-                ? AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, 60* (int) Math.max(multiplier(entity)/4,1), true, false, false)
+                ? AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, 60* multiplier(entity), true, false, false)
                 : Collections.emptyList();
 
         List<BlockPos> snowLayerPositions = snowSphereBlocks.stream()
@@ -100,10 +101,10 @@ public class CalamityCreationAbility extends SelectableAbility {
                 .toList();
 
 
-        ServerScheduler.scheduleForDuration(0, 4, 20 * 30* (int) Math.max(multiplier(entity)/4,1), () -> {
+        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30* multiplier(entity)), () -> {
             // Damage and Effects
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* (int) Math.max(multiplier(entity)/4,1), DamageLookup.lookupDps(2, .8, 4, 30) * (int) Math.max(multiplier(entity)/4,1), startPos, true, false);
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 60* (int) Math.max(multiplier(entity)/4,1), startPos,
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier(entity), DamageLookup.lookupDps(2, .8, 4, 30) * multiplier(entity), startPos, true, false);
+            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 60* multiplier(entity), startPos,
                     new MobEffectInstance(MobEffects.WEAKNESS, 20 * 5, 1, false, false, false),
                     new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 7, false, false, false));
 
@@ -158,10 +159,10 @@ public class CalamityCreationAbility extends SelectableAbility {
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
 
         // Post drought interaction event
-        NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, startPos, entity, this, new String[]{"drought"}, 90, 20 * 30* (int) Math.max(multiplier(entity)/4,1)));
+        NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, startPos, entity, (Ability) this, new String[]{"drought"}, 90.0, (int) (20 * 30* multiplier(entity))));
 
         List<BlockPos> sphereBlocks = griefing
-                ? AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, 65* (int) Math.max(multiplier(entity)/4,1), true, false, false)
+                ? AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, 65* multiplier(entity), true, false, false)
                 : Collections.emptyList();
 
         List<BlockPos> firePositions = sphereBlocks.stream()
@@ -175,10 +176,10 @@ public class CalamityCreationAbility extends SelectableAbility {
                 .toList();
 
         double multiplier = multiplier(entity)/5;
-        ServerScheduler.scheduleForDuration(0, 4, 20 * 30* (int) Math.max(multiplier(entity)/4,1), () -> {
+        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30* multiplier(entity)), () -> {
             // Damage and Effects
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 90* (int) Math.max(multiplier(entity)/4,1), DamageLookup.lookupDps(2, .8, 4, 30) * (int) Math.max(multiplier(entity)/4,1), startPos, true, false, 20 * 10);
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 90* (int) Math.max(multiplier(entity)/4,1), startPos,
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 90* multiplier(entity), DamageLookup.lookupDps(2, .8, 4, 30) * multiplier(entity), startPos, true, false, 20 * 10);
+            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 90* multiplier(entity), startPos,
                     new MobEffectInstance(MobEffects.WEAKNESS, 20 * 5, 1, false, false, false),
                     new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 4, false, false, false));
 
@@ -234,11 +235,11 @@ public class CalamityCreationAbility extends SelectableAbility {
     }
 
     private void createTornados(ServerLevel serverLevel, LivingEntity entity) {
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 12* (int) Math.max(multiplier(entity)/4,1), 3);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (12* multiplier(entity)), 3);
 
-        Vec3 pos = AbilityUtil.getTargetLocation(entity, 12* (int) Math.max(multiplier(entity)/4,1), 2);
+        Vec3 pos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 2);
 
-        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .775) * (int) Math.max(multiplier(entity)/4,1), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .775) * (int) Math.max(multiplier(entity)/4,1), entity, target, 3);
+        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .775) * multiplier(entity), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .775) * multiplier(entity), entity, target, 3);
         tornado.setPos(pos);
         serverLevel.addFreshEntity(tornado);
 

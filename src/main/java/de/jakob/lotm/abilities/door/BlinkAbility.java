@@ -123,7 +123,7 @@ public class BlinkAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
-        Vec3 targetLocBuff = AbilityUtil.getTargetBlock(entity, 8*(int) Math.max(multiplier(entity)/4,1), true).getCenter().add(0, 1, 0);
+        Vec3 targetLocBuff = AbilityUtil.getTargetBlock(entity, 8*multiplier(entity), true).getCenter().add(0, 1, 0);
         var targetLoc = TeleportationUtil.clampToBorder((ServerLevel) level, targetLocBuff);
 
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);

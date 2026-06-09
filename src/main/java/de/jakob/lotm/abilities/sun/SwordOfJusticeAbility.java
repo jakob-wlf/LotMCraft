@@ -38,12 +38,12 @@ public class SwordOfJusticeAbility extends Ability {
             return;
         }
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 20 * (int) Math.max(multiplier(entity)/4,1), 2).add(0, 15, 0);
-        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 20 * (int) Math.max(multiplier(entity)/4,1), 2);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 20 * (int) multiplier(entity), 2).add(0, 15, 0);
+        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 20 * (int) multiplier(entity), 2);
         if(targetEntity != null) {
             targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 80, 4, false, false, false));
         }
-        JusticeSwordEntity swordEntity = new JusticeSwordEntity(level, targetLoc, (float) (DamageLookup.lookupDamage(3, 1)  * (int) Math.max(multiplier(entity)/4,1)), entity, this);
+        JusticeSwordEntity swordEntity = new JusticeSwordEntity(level, targetLoc, (float) (DamageLookup.lookupDamage(3, 1) * multiplier(entity)), entity, this);
         level.addFreshEntity(swordEntity);
     }
 }

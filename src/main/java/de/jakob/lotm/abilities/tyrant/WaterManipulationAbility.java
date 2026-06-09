@@ -184,7 +184,7 @@ public class WaterManipulationAbility extends SelectableAbility {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.PLAYER_SPLASH_HIGH_SPEED, entity.getSoundSource(), 1.0f, 1.0f);
 
-        ServerScheduler.scheduleDelayed(18, () -> AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, DamageLookup.lookupDamage(7, .875) * (int) Math.max(multiplier(entity)/4,1), entity.position().add(0, .2, 0), true, false, true, 0));
+        ServerScheduler.scheduleDelayed(18, () -> AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, DamageLookup.lookupDamage(7, .875) * multiplier(entity), entity.position().add(0, .2, 0), true, false, true, 0));
 
         AtomicDouble i = new AtomicDouble(0.6);
         ServerScheduler.scheduleForDuration(0, 1, 24, () -> {
@@ -219,7 +219,7 @@ public class WaterManipulationAbility extends SelectableAbility {
 
         double multiplier = multiplier(entity);
         ServerScheduler.scheduleForDuration(0, 10, 20 * 15, () -> {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5, DamageLookup.lookupDps(7, .775, 10, 20* (int) Math.max(multiplier(entity)/6,1)) * (int) Math.max(multiplier(entity)/4,1), startPos, true, false, true, 0);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5, DamageLookup.lookupDps(7, .775, 10, 20* (int) Math.max(multiplier(entity)/6,1)) * multiplier(entity), startPos, true, false, true, 0);
         }, (ServerLevel) level);
     }
 
@@ -289,13 +289,13 @@ public class WaterManipulationAbility extends SelectableAbility {
             ParticleUtil.spawnCircleParticlesForDuration((ServerLevel) level, ParticleTypes.END_ROD, targetBlock.getCenter(), eastFacing, .75, 20 * 20, 15, 7);
             ParticleUtil.spawnParticlesForDuration((ServerLevel) level, dustOptions2, targetBlock.getCenter(), 20 * 20, 10, 3, .9);
 
-            ServerScheduler.scheduleForDuration(0, 10, 20 * 20 * (int) Math.max(multiplier(entity)/4,1), () -> {
+            ServerScheduler.scheduleForDuration(0, 10, (int) (20 * 20 * multiplier(entity)), () -> {
                 AbilityUtil.getNearbyEntities(null, (ServerLevel) level, targetBlock.getCenter(), 3).forEach(e -> {
                     e.heal(.5f * multiplier(entity));
                 });
             }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
 
-            ServerScheduler.scheduleDelayed(20 * 20 * (int) Math.max(multiplier(entity)/4,1), () -> {
+            ServerScheduler.scheduleDelayed((int) (20 * 20 * multiplier(entity)), () -> {
                 if (level.getBlockState(targetBlock).is(Blocks.LIGHT)) {
                     level.setBlock(targetBlock, Blocks.AIR.defaultBlockState(), 3);
                 }

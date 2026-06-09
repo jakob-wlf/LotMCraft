@@ -41,7 +41,7 @@ public class ThunderclapAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 50* (int) Math.max(multiplier(entity)/4,1), 2);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, (int) (50* multiplier(entity)), 2);
         Vec3 entityLoc = entity.position();
         Vec3 dir = targetLoc.subtract(entityLoc.add(0, 1, 0)).normalize();
         entity.teleportTo(entityLoc.x, entityLoc.y + 1, entityLoc.z);
@@ -61,7 +61,7 @@ public class ThunderclapAbility extends Ability {
             ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.LIGHTNING.get(), entity.position(), 80, 1, 0.1);
             level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 2, 1);
 
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8, DamageLookup.lookupDamage(3, .85) * (int) Math.max(multiplier(entity)/4,1), entity.position(), true, false, ModDamageTypes.source(level, ModDamageTypes.SAILOR_LIGHTNING, entity));
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8, DamageLookup.lookupDamage(3, .85) * multiplier(entity), entity.position(), true, false, ModDamageTypes.source(level, ModDamageTypes.SAILOR_LIGHTNING, entity));
 
             entity.setDeltaMovement(new Vec3(dir.x, dir.y * .1, dir.z).scale(7));
             entity.hurtMarked = true;

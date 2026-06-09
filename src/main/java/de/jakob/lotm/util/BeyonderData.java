@@ -365,7 +365,7 @@ public class BeyonderData {
         if (sequence < 0 || sequence >= multiplier.length)
             return 1.0;
 
-        double damageMultiplier = multiplier[sequence];
+        double damageMultiplier = Math.max(1, multiplier[sequence] / 4);
 
         MultiplierModifierComponent modifierComponent = entity.getData(ModAttachments.MULTIPLIER_MODIFIER_COMPONENT);
 

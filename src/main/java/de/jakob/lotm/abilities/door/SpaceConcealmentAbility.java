@@ -122,7 +122,7 @@ public class SpaceConcealmentAbility extends SelectableAbility {
 
         // Schedule periodic barrier checking (every 5 ticks)
         UUID checkTaskId = ServerScheduler.scheduleForDuration(
-                5, 5, 400* Math.round(Math.max(multiplier(entity)/4,1)), // Start after 5 ticks, check every 5 ticks, for 30 seconds (600 ticks)
+                5, 5, 400* Math.round(multiplier(entity)), // Start after 5 ticks, check every 5 ticks, for 30 seconds (600 ticks)
                 space::repairBarriers,
                 () -> {
                     // On finish, remove the space
@@ -137,7 +137,7 @@ public class SpaceConcealmentAbility extends SelectableAbility {
         // If entity is a player, schedule particle display
         if(entity instanceof ServerPlayer player) {
             UUID particleTaskId = ServerScheduler.scheduleForDuration(
-                    0, 10, 400* Math.round(Math.max(multiplier(entity)/4,1)), // Every 10 ticks for 30 seconds
+                    0, 10, 400* Math.round(multiplier(entity)), // Every 10 ticks for 30 seconds
                     () -> space.showParticlesToPlayer(player),
                     level
             );
@@ -463,7 +463,7 @@ public class SpaceConcealmentAbility extends SelectableAbility {
 
                 // Deal damage to living entities
                 if(entity instanceof LivingEntity && AbilityUtil.mayDamage(source, (LivingEntity) entity)) {
-                    entity.hurt(ModDamageTypes.source(level, ModDamageTypes.DOOR_SPACE), (float) (DamageLookup.lookupDamage(4, 1.5) * (int) Math.max(multiplier/4,1)));
+                    entity.hurt(ModDamageTypes.source(level, ModDamageTypes.DOOR_SPACE), (float) (DamageLookup.lookupDamage(4, 1.5) * multiplier));
                 }
             }
         }

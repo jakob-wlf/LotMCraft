@@ -42,7 +42,7 @@ public class RoarOfTheThunderGodAbility extends Ability {
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) {
-            ClientHandler.applyCameraShakeToPlayersInRadius(2, 30* (int) Math.max(multiplier(entity)/4,1), (ClientLevel) level, entity.position(), 60);
+            ClientHandler.applyCameraShakeToPlayersInRadius(2F, (int) (30* multiplier(entity)), (ClientLevel) level, entity.position(), 60);
             return;
         }
 
@@ -54,8 +54,8 @@ public class RoarOfTheThunderGodAbility extends Ability {
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);
 
-        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 50* (int) Math.max(multiplier(entity)/4,1)).forEach(e -> {
-            e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(1, 0.4) * (int) Math.max(multiplier(entity)/4,1)));
+        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 50* multiplier(entity)).forEach(e -> {
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(1, 0.4) * multiplier(entity)));
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(2.75);
             e.setDeltaMovement(knockBack);
         });

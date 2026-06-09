@@ -134,7 +134,7 @@ public class JusticeLanguageAbility extends SelectableAbility {
             Vec3 startPos = caster.getEyePosition().subtract(0, .2, 0).add(caster.getLookAngle().normalize());
             serverLevel.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, caster.getSoundSource(), 2.0f, .5f);
             target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, caster),
-                    (float) DamageLookup.lookupDamage(5, 1.2) * (int )Math.max (multiplier(caster)/4,1));
+                    (float) DamageLookup.lookupDamage(5, 1.2) * multiplier(caster));
             target.hurtMarked = true;
             String targetName = target.getDisplayName().getString();
             spawnWordBeam(serverLevel, caster, target, DUST_DARK);
@@ -190,7 +190,7 @@ public class JusticeLanguageAbility extends SelectableAbility {
 
     private void spawnDeathImpact(ServerLevel serverLevel, LivingEntity caster, LivingEntity target, Vec3 dir) {
         target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, caster),
-                (float) DamageLookup.lookupDamage(6, 0.9) * (int )Math.max (multiplier(caster)/4,1));
+                (float) DamageLookup.lookupDamage(6, 0.9) * multiplier(caster));
         target.setDeltaMovement(dir.x * 2.2, 0.45, dir.z * 2.2);
         target.hurtMarked = true;
 

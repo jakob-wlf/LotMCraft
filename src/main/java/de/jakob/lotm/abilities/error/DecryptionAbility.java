@@ -44,7 +44,7 @@ public class DecryptionAbility extends ToggleAbility {
         if(!(entity instanceof ServerPlayer player) || level.isClientSide)
             return;
 
-        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40*(int) Math.max(multiplier(entity)/4,1), 1.2f);
+        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40* (int) multiplier(entity), 1.2f);
 
         if(lookedAt != null) {
             if (PsychologicalInvisibilityAbility.invisiblePlayers.containsKey(lookedAt.getUUID())) {

@@ -51,15 +51,15 @@ public class ConqueringAbility extends Ability {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        double radius = 4*(int) Math.max(multiplier(entity)/4,1);
+        double radius = 4*multiplier(entity);
 
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), radius, false).forEach(e -> {
             if(entitySeq < BeyonderData.getSequence(e)) {
-                e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, 20 * 30 *(int) Math.max(multiplier(entity)/4,1), 18));
+                e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, (int) (20 * 30 *multiplier(entity)), 18));
             }else if (entitySeq > BeyonderData.getSequence(e)){
                 e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, 20, 1));
             }else{
-                e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, 35*(int) Math.max(multiplier(entity)/4,1)/(int) Math.max(multiplier(e)/4,1), 2));
+                e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, (int) (35*multiplier(entity)/multiplier(e)), 2));
             };
         });
     }

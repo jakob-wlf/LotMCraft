@@ -96,7 +96,7 @@ public class CurseAbility extends Ability {
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.curse.cursed_target").withColor(0x6d32a8));
         offHandItem.consume(1, player);
 
-        int curseDuration = 20 * 10* (int) Math.max(multiplier(entity)/4,2) ;
+        int curseDuration = 20 * 10* (int) Math.max(multiplier(entity),2) ;
 
         AtomicReference<UUID> taskIdRef = new AtomicReference<>(null);
         UUID taskId = ServerScheduler.scheduleForDuration(0, 8, curseDuration, () -> {

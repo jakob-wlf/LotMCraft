@@ -86,7 +86,7 @@ public class DisasterManifestationAbility extends SelectableAbility {
                 }
             });
 
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), radius.get(), (float) DamageLookup.lookupDamage(2, .6) * (int)Math.max(multiplier(entity)/4,1), startPos, true, false, false, 20, ModDamageTypes.source(serverLevel, ModDamageTypes.DEMONESS_GENERIC, entity));
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), radius.get(), (float) DamageLookup.lookupDamage(2, .6) * multiplier(entity), startPos, true, false, false, 20, ModDamageTypes.source(serverLevel, ModDamageTypes.DEMONESS_GENERIC, entity));
 
             // Particles and shader
             for(Player player : AbilityUtil.getNearbyEntities(null, serverLevel, startPos, radius.get(), true)
@@ -112,28 +112,28 @@ public class DisasterManifestationAbility extends SelectableAbility {
     }
 
     private void spawnMeteor(ServerLevel serverLevel, LivingEntity entity) {
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 55 * (int)Math.max(multiplier(entity)/4,1), 3);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, (int) (55 * multiplier(entity)), 3);
 
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, targetLoc, entity, this, new String[]{"burning", "explosion"}, 18, 20 * 10));
 
-        MeteorEntity meteor = new MeteorEntity(serverLevel, 3.25f,  (float) DamageLookup.lookupDamage(2, 1)  * (int)Math.max(multiplier(entity)/4,1), 4, entity, BeyonderData.isGriefingEnabled(entity), 18, 30);
+        MeteorEntity meteor = new MeteorEntity(serverLevel, 3.25f,  (float) DamageLookup.lookupDamage(2, 1)  * multiplier(entity), 4, entity, BeyonderData.isGriefingEnabled(entity), 18, 30);
         meteor.setPosition(targetLoc);
         serverLevel.addFreshEntity(meteor);
     }
 
     private void createTornados(ServerLevel serverLevel, LivingEntity entity) {
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 12 * (int)Math.max(multiplier(entity)/4,1), 3);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (12 * multiplier(entity)), 3);
 
-        Vec3 pos = AbilityUtil.getTargetLocation(entity, 12 * (int)Math.max(multiplier(entity)/4,1), 2);
+        Vec3 pos = AbilityUtil.getTargetLocation(entity, (int) (12 * multiplier(entity)), 2);
 
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, pos, entity, this, new String[]{"explosion"}, 60, 20 * 15));
 
-        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f,(float) DamageLookup.lookupDamage(2, .35)  * (int)Math.max(multiplier(entity)/4,1), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35) *  (int)Math.max(multiplier(entity)/4,1), entity, target, 3);
+        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f,(float) DamageLookup.lookupDamage(2, .35)  * multiplier(entity), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35) *  multiplier(entity), entity, target, 3);
         tornado.setPos(pos);
         serverLevel.addFreshEntity(tornado);
 
         for(int i = 0; i < 25; i++) {
-            TornadoEntity additionalTornado = target == null || random.nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35)  * (int)Math.max(multiplier(entity)/4,1), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35) *  (int)Math.max(multiplier(entity)/4,1), entity, target, 2.5f);
+            TornadoEntity additionalTornado = target == null || random.nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35)  * multiplier(entity), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35) *  multiplier(entity), entity, target, 2.5f);
             Vec3 randomOffset = new Vec3((serverLevel.random.nextDouble() - 0.5) * 120, 3, (serverLevel.random.nextDouble() - 0.5) * 120);
             additionalTornado.setPos(pos.add(randomOffset));
             serverLevel.addFreshEntity(additionalTornado);

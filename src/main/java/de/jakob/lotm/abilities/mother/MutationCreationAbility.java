@@ -74,11 +74,11 @@ public class MutationCreationAbility extends Ability {
 
     private int getDuration(LivingEntity entity, LivingEntity target) {
         if( AbilityUtil.isTargetSignificantlyWeaker(entity, target)) {
-            return 20 * 60 *(int) Math.max(multiplier(entity)/4,1);
+            return (int) (20 * 60 *multiplier(entity));
         }
         if(AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
-            return 35 *(int) Math.max(multiplier(entity)/4,1);
+            return (int) (35 *multiplier(entity));
         }
-        return 20 * 30*(int) Math.max(multiplier(entity)/4,1)/  (int) Math.max(multiplier(target)/4,1);
+        return (int) (20 * 30*multiplier(entity)/ multiplier(entity));
     }
 }

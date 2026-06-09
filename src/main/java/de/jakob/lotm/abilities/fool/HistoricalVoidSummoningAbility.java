@@ -201,6 +201,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         CompoundTag customTag = new CompoundTag();
         customTag.putLong("VoidSummonTime", summonTime);
         customTag.putUUID("VoidSummonOwner", player.getUUID());
+        customTag.putUUID("UniqueSummonID", UUID.randomUUID());
 
         item.set(DataComponents.CUSTOM_DATA,
                 CustomData.of(customTag)
@@ -221,7 +222,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         }, level);
     }
 
-    private void removeTemporaryItem(ServerLevel level, ServerPlayer player, long summonTime) {
+    private static void removeTemporaryItem(ServerLevel level, ServerPlayer player, long summonTime) {
         // Find and remove the temporary item from player's inventory
         boolean foundAndRemoved = false;
         for(int i = 0; i < player.getInventory().getContainerSize(); i++) {
@@ -255,12 +256,12 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         }
     }
 
-    private boolean hasPlacedBlocksForSummon(UUID playerUUID, long summonTime) {
+    private static boolean hasPlacedBlocksForSummon(UUID playerUUID, long summonTime) {
         return placedBlocks.values().stream()
                 .anyMatch(data -> data.playerUUID.equals(playerUUID) && data.summonTime == summonTime);
     }
 
-    private void removeTemporaryBlocks(ServerLevel level, ServerPlayer player, long summonTime) {
+    private static void removeTemporaryBlocks(ServerLevel level, ServerPlayer player, long summonTime) {
         List<BlockPos> toRemove = new ArrayList<>();
 
         for(Map.Entry<BlockPos, PlacedBlockData> entry : placedBlocks.entrySet()) {
@@ -314,7 +315,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                 CompoundTag entityNBT = entityData.getCompound("EntityNBT");
                 CompoundTag nfd = entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
 
-                if (nfd.contains("pathway")) {
+                if (nfd.contains("pathway") && BeyonderData.pathwayInfos.get(nfd.get("pathway")) != null) {
                     boolean isMarionette = Optional.of(entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:marionette_component")).map(c -> c.getBoolean("isMarionette")).orElse(false);
                     displayItem.set(
                             DataComponents.LORE,
@@ -523,6 +524,8 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                 incrementSummonedCount(player, summonTime, SummonType.ENTITY, entityUUID);
 
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.summoned_entity", entity.getName().getString()).withStyle(ChatFormatting.GREEN));
+                if(entity instanceof LivingEntity living)
+                    AllyUtil.makeAllies(player, living);
 
                 // Schedule removal after duration
                 ServerScheduler.scheduleDelayed(getSummonDurationTicks(player), () -> {
@@ -738,6 +741,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         data.summonedCount = Math.max(0, data.summonedCount - 1);
         data.activeSummonTimes.remove(summonTime);
     }
+
 
 
     private static int getHistoricalBorrowingCount(ServerPlayer player) {
@@ -1110,6 +1114,8 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
     // Event handler for item toss
     @SubscribeEvent
     public static void onItemToss(ItemTossEvent event) {
+        if(event.getPlayer().level().isClientSide) return;
+
         ItemStack tossedItem = event.getEntity().getItem();
 
         CustomData customData = tossedItem.get(DataComponents.CUSTOM_DATA);
@@ -1120,16 +1126,10 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                 // only make it disappear if the player is crouching, good qol to force items to disappear
                 if (event.getPlayer().isCrouching()) {
                     long summonTime = tag.getLong("VoidSummonTime");
-                    UUID ownerId = tag.getUUID("VoidSummonOwner");
 
+                    removeTemporaryItem((ServerLevel) event.getPlayer().level(), (ServerPlayer) event.getPlayer(), summonTime);
                     event.getEntity().discard();
                     event.setCanceled(true);
-
-                    // Notify player and decrement count
-                    if(event.getPlayer() instanceof ServerPlayer player && player.getUUID().equals(ownerId)) {
-                        decrementSummonedCount(player, summonTime);
-                        player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.item_returned").withStyle(ChatFormatting.GRAY));
-                    }
                 }
             }
         }
@@ -1181,6 +1181,8 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
             }
         }
         blocksToRemove.forEach(placedBlocks::remove);
+
+        player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT).reset();
     }
 
     // scale max summoned items
