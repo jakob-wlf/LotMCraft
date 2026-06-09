@@ -87,6 +87,9 @@ public class DiscernmentRenderer {
                     entity.getZ() - cam.z
             );
 
+            boolean invisible = entity.isInvisible();
+            entity.setInvisible(false);
+
             renderer.render(
                     entity,
                     entity.getYRot(),
@@ -95,6 +98,8 @@ public class DiscernmentRenderer {
                     buffer,
                     LightTexture.FULL_BRIGHT
             );
+
+            entity.setInvisible(invisible);
 
             poseStack.popPose();
         }

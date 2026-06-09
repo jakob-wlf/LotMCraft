@@ -82,6 +82,10 @@ public abstract class  TriggerBase {
             case HUNGER -> HungerTrigger.load(tag, actionType, contextType, provider);
             case RIDING -> RidingTrigger.load(tag, actionType, contextType, provider);
             case SPIRITUALITY -> SpiritualityTrigger.load(tag, actionType, contextType, provider);
+            case SEQUENCE -> SeqTrigger.load(tag, actionType, contextType, provider);
+            case PATHWAY -> PathTrigger.load(tag, actionType, contextType, provider);
+            case LIGHT -> LightTrigger.load(tag, actionType, contextType, provider);
+            case ASLEEP -> AsleepTrigger.load(tag, actionType, contextType, provider);
             };
     }
 
@@ -97,6 +101,10 @@ public abstract class  TriggerBase {
             case HUNGER -> new HungerTrigger(action, context);
             case RIDING -> new RidingTrigger(action, context);
             case SPIRITUALITY -> new SpiritualityTrigger(action, context);
+            case SEQUENCE -> new SeqTrigger(action, context);
+            case PATHWAY -> new PathTrigger(action, context);
+            case LIGHT -> new LightTrigger(action, context);
+            case ASLEEP -> new AsleepTrigger(action, context);
         };
     }
 }

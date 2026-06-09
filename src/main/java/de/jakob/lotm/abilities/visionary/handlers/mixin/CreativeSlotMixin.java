@@ -2,6 +2,8 @@ package de.jakob.lotm.abilities.visionary.handlers.mixin;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.visionary.MindWorldAuthorityEnvisioningAbility;
+import de.jakob.lotm.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.potions.BeyonderPotion;
 import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -30,6 +32,13 @@ public class CreativeSlotMixin {
 
         int slot = packet.slotNum();
         ItemStack stack = packet.itemStack();
+
+        if(stack.getItem() instanceof BeyonderCharacteristicItem bchar){
+            if(bchar.getSequence() <= 2) return;
+        }
+        else if(stack.getItem() instanceof BeyonderPotion potion){
+            if(potion.getSequence() <= 2) return;
+        }
 
         if (slot < 0) {
             player.containerMenu.setCarried(stack.copy());

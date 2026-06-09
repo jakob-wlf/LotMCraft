@@ -25,7 +25,7 @@ public class DoubleAction extends ActionBase {
 
     @Override
     public ActionsEnum getType() {
-        return null;
+        return ActionsEnum.DOUBLE;
     }
 
     @Override

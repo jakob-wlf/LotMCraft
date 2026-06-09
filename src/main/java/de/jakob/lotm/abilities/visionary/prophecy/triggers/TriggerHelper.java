@@ -31,6 +31,10 @@ public class TriggerHelper {
             case "hunger" -> TriggerEnum.HUNGER;
             case "riding" -> TriggerEnum.RIDING;
             case "spirituality" -> TriggerEnum.SPIRITUALITY;
+            case "sequence" -> TriggerEnum.SEQUENCE;
+            case "pathway" -> TriggerEnum.PATHWAY;
+            case "light" -> TriggerEnum.LIGHT;
+            case "asleep" -> TriggerEnum.ASLEEP;
             default -> null;
         };
     }
@@ -47,6 +51,10 @@ public class TriggerHelper {
             case HUNGER -> TriggerContextEnum.NUMBER;
             case RIDING -> TriggerContextEnum.EMPTY;
             case SPIRITUALITY -> TriggerContextEnum.NUMBER;
+            case SEQUENCE -> TriggerContextEnum.NUMBER;
+            case PATHWAY -> TriggerContextEnum.STRING;
+            case LIGHT -> TriggerContextEnum.NUMBER;
+            case ASLEEP -> TriggerContextEnum.EMPTY;
         };
     }
 

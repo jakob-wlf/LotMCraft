@@ -195,28 +195,6 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
 
         var targetComponent = target.getData(ModAttachments.ENVISION_SPLIT.get());
 
-        ParticleUtil.spawnCircleParticles(serverLevel, dust, target.getEyePosition(), 2, 20);
-        ParticleUtil.spawnCircleParticles(serverLevel, dust, target.getEyePosition(), new Vec3(0, 0, 1), 2, 20);
-        ParticleUtil.spawnCircleParticles(serverLevel, dust, target.getEyePosition(), new Vec3(1, 0, 0), 2, 20);
-        ParticleUtil.createParticleSpirals(serverLevel, dust, target.position(), entity.getBbWidth() + .25, entity.getBbWidth() + .25, entity.getEyeHeight(), 1, 5, 30, 150, 1);
-        ParticleUtil.createParticleSpirals(serverLevel, dust, target.position(), 5, entity.getBbWidth() + .25, 5, 1, 5, 20, 150, 1);
-        serverLevel.playSound(
-                null,
-                target.blockPosition(),
-                SoundEvents.DRAGON_FIREBALL_EXPLODE,
-                SoundSource.MASTER,
-                1.0F,
-                1.5F
-        );
-        serverLevel.playSound(
-                null,
-                target.blockPosition(),
-                SoundEvents.ENDER_DRAGON_GROWL,
-                SoundSource.MASTER,
-                1.0F,
-                1.2F
-        );
-
         boolean isFailed;
         if(target instanceof ServerPlayer targetPlayer)
             isFailed = BeyonderData.getSequence(target) != 2
@@ -264,6 +242,28 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
 
             target.kill();
         }
+
+        ParticleUtil.spawnCircleParticles(serverLevel, dust, target.getEyePosition(), 2, 20);
+        ParticleUtil.spawnCircleParticles(serverLevel, dust, target.getEyePosition(), new Vec3(0, 0, 1), 2, 20);
+        ParticleUtil.spawnCircleParticles(serverLevel, dust, target.getEyePosition(), new Vec3(1, 0, 0), 2, 20);
+        ParticleUtil.createParticleSpirals(serverLevel, dust, target.position(), entity.getBbWidth() + .25, entity.getBbWidth() + .25, entity.getEyeHeight(), 1, 5, 30, 150, 1);
+        ParticleUtil.createParticleSpirals(serverLevel, dust, target.position(), 5, entity.getBbWidth() + .25, 5, 1, 5, 20, 150, 1);
+        serverLevel.playSound(
+                null,
+                target.blockPosition(),
+                SoundEvents.DRAGON_FIREBALL_EXPLODE,
+                SoundSource.MASTER,
+                1.0F,
+                1.5F
+        );
+        serverLevel.playSound(
+                null,
+                target.blockPosition(),
+                SoundEvents.ENDER_DRAGON_GROWL,
+                SoundSource.MASTER,
+                1.0F,
+                1.2F
+        );
     }
 
     @SubscribeEvent

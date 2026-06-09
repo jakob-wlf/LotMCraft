@@ -45,7 +45,7 @@ public class AvatarEntity extends PathfinderMob {
     private static final String DEFAULT_SKIN = "amon";
     private static final String DEFAULT_PATHWAY = "error";
     private static final int DEFAULT_SEQUENCE = 5;
-    private static final int MAX_LIFETIME_TICKS = 20 * 60 * 2; // 1 hour
+    private static final int MAX_LIFETIME_TICKS = 20 * 60 * 2; // 2 mins
     private static final int RECIPE_DROP_CHANCE = 4;
     private static final UUID NULL_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
@@ -103,16 +103,16 @@ public class AvatarEntity extends PathfinderMob {
 
         if (!this.level().isClientSide) {
             // Validate owner exists
-            Entity owner = ((ServerLevel) level()).getEntity(getOriginalOwner());
-            if (!(owner instanceof LivingEntity livingOwner)) {
-                this.discard();
-                return;
-            }
+//            Entity owner = ((ServerLevel) level()).getEntity(getOriginalOwner());
+//            if (!(owner instanceof LivingEntity livingOwner)) {
+//                this.discard();
+//                return;
+//            }
 
-            this.ownerEntity = livingOwner;
+            //this.ownerEntity = livingOwner;
 
             // Sync beyonder data
-            if (this.sequence != -1 && !this.pathway.equals("none")) {
+            if (this.sequence != LOTMCraft.NON_BEYONDER_SEQ && !this.pathway.equals("none")) {
                 BeyonderData.setBeyonder(this, this.pathway, sequence);
                 syncEntityDataWithBeyonderData();
             }
@@ -239,16 +239,16 @@ public class AvatarEntity extends PathfinderMob {
         }
 
         // Handle lifetime limit
-        if (tickCount > MAX_LIFETIME_TICKS) {
-            this.discard();
-            return;
-        }
+//        if (tickCount > MAX_LIFETIME_TICKS) {
+//            this.discard();
+//            return;
+//        }
 
         // Validate owner is still alive
-        if (ownerEntity == null || !ownerEntity.isAlive()) {
-            this.discard();
-            return;
-        }
+//        if (ownerEntity == null || !ownerEntity.isAlive()) {
+//            this.discard();
+//            return;
+//        }
 
         // Validate targets
         validateTarget(getTarget());

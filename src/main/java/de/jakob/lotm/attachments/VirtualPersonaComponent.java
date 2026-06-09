@@ -143,11 +143,13 @@ public class VirtualPersonaComponent {
             }
         }
 
+        var buff2 = new LinkedList<UUID>();
         for(var obj : avatars){
             var target = level.getEntity(obj);
             if(target == null)
-                removeAvatar(obj);
+                buff2.add(obj);
         }
+        avatars.removeAll(buff2);
 
         affectedBy.removeAll(buff);
     }
@@ -227,6 +229,31 @@ public class VirtualPersonaComponent {
 
             affects.clear();
         }
+    }
+
+    public void clean(ServerLevel level, String owner){
+        for(var obj : affects){
+            var target = level.getPlayerByUUID(BeyonderData.playerMap.getKeyByName(obj));
+            if(target != null){
+                var component = target.getData(ModAttachments.VIRTUAL_PERSONAS.get());
+                component.removeAffectedBy(owner);
+            }
+        }
+
+        affects.clear();
+
+        List<UUID> toKill = new ArrayList<>(avatars);
+
+        for (UUID id : toKill) {
+            var entity = level.getEntity(id);
+            if (entity != null)
+                entity.kill();
+        }
+
+        avatars.clear();
+
+        ownPersonasOnSelf = 0;
+        health = 0;
     }
 
     public static int getMaxPerSeq(int seq){

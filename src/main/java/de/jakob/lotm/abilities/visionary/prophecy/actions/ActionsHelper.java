@@ -32,7 +32,7 @@ public class ActionsHelper {
             case "say" -> ActionsEnum.SAY;
             case "weather" -> ActionsEnum.WEATHER;
             case "time" -> ActionsEnum.TIME;
-            case "whispers" -> ActionsEnum.WHISPERS;
+            case "whisper" -> ActionsEnum.WHISPERS;
             case "suicide" -> ActionsEnum.SUICIDE;
             case "plague" -> ActionsEnum.PLAGUE;
             case "sleep" -> ActionsEnum.SLEEP;
@@ -67,6 +67,7 @@ public class ActionsHelper {
             case DOUBLE -> ActionContextEnum.STRING;
             case SPIRITUALITY -> ActionContextEnum.NUMBER;
             case PLAYER -> ActionContextEnum.STRING;
+            case EMPTY -> ActionContextEnum.EMPTY;
         };
     }
 

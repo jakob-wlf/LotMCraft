@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.effect.ModEffects;
@@ -12,6 +13,7 @@ import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -61,9 +63,11 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
                     if (!entity.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(e.getUUID())) {
                         int entitySeq = BeyonderData.getSequence(entity);
 
-                        e.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityWithSequenceDifference(
-                                getAmount(entitySeq), e,
-                                BeyonderData.getSequence(e), entitySeq);
+                        if(!VisionaryHandler.isInvisible(entity) && ! entity.hasEffect(MobEffects.INVISIBILITY)) {
+                            e.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityWithSequenceDifference(
+                                    getAmount(entitySeq), e,
+                                    BeyonderData.getSequence(e), entitySeq);
+                        }
 
                         doPathRelatedEffect(BeyonderData.getPathway(entity), level, entity, e);
                     }

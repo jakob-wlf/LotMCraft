@@ -3,9 +3,7 @@ package de.jakob.lotm.abilities.visionary;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.AvatarEntity;
@@ -14,20 +12,21 @@ import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
-import de.jakob.lotm.util.helper.RingEffectManager;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +44,11 @@ public class VirtualPersonaAbility extends SelectableAbility {
         canBeShared = false;
     }
 
+    private final DustParticleOptions dust = new DustParticleOptions(
+            new Vector3f(250 / 255f, 201 / 255f, 102 / 255f),
+            1.5f
+    );
+
     @Override
     public Map<String, Integer> getRequirements() {
         return new HashMap<>(Map.of("visionary", 4));
@@ -61,6 +65,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
                 "ability.lotmcraft.virtual_persona.self",
                 "ability.lotmcraft.virtual_persona.move",
                 "ability.lotmcraft.virtual_persona.check",
+                "ability.lotmcraft.virtual_persona.clear_all",
                 "ability.lotmcraft.virtual_persona.create_avatar"
         };
     }
@@ -80,8 +85,22 @@ public class VirtualPersonaAbility extends SelectableAbility {
             case 0 -> virtualSelf(level, entity);
             case 1 -> move(level, entity);
             case 2 -> check(level, entity);
-            case 3 -> createAvatar(level, entity);
+            case 3 -> clearAll(level, entity);
+            case 4 -> createAvatar(level, entity);
         }
+    }
+
+    private void clearAll(Level level, LivingEntity entity){
+        if (level instanceof ClientLevel clientLevel){
+            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), 2, 20);
+            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(0, 0, 1), 2.0, 20);
+            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(1, 0, 0), 2.0, 20);
+        }
+
+        if(!(level instanceof ServerLevel serverLevel)) return;
+
+        var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
+        component.clean(serverLevel, entity.getName().getString());
     }
 
     private void createAvatar(Level level, LivingEntity entity){
@@ -100,7 +119,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         int seq = BeyonderData.getSequence(entity);
-        var target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.2f);
+        var target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.2f, true);
 
         if(target == null){
             var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
@@ -134,12 +153,13 @@ public class VirtualPersonaAbility extends SelectableAbility {
             }
             var affectedByResult = affectedByResultBuilder.toString();
 
-
             String avatarsResult = "";
             if(BeyonderData.getSequence(entity) <= 3) {
                 StringBuilder avatarsBuilder = new StringBuilder("Amount of avatars: " + component.getAvatarsSive() + "\nAvatars:");
                 for (var obj : avatars) {
                     AvatarEntity avatar = (AvatarEntity) serverLevel.getEntity(obj);
+
+                    if(avatar == null) continue;
 
                     var pos1 = avatar.position();
                     String pos = "x= " + (int) pos1.x + " y= " + (int) pos1.y + " z= " + (int) pos1.z;
@@ -184,6 +204,8 @@ public class VirtualPersonaAbility extends SelectableAbility {
             StringBuilder avatarsBuilder = new StringBuilder("Amount of avatars: " + component.getAvatarsSive() + "\nAvatars:");
             for (var obj : avatars) {
                 AvatarEntity avatar = (AvatarEntity) serverLevel.getEntity(obj);
+
+                if(avatar == null) continue;
 
                 var pos1 = avatar.position();
                 String pos = "x= " + (int) pos1.x + " y= " + (int) pos1.y + " z= " + (int) pos1.z;
@@ -240,7 +262,11 @@ public class VirtualPersonaAbility extends SelectableAbility {
     }
 
     private void virtualSelf(Level level, LivingEntity entity) {
-        if (level.isClientSide) return;
+        if (level instanceof ClientLevel clientLevel){
+            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), 2, 20);
+            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(0, 0, 1), 2.0, 20);
+            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(1, 0, 0), 2.0, 20);
+        }
 
         var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
         int seq = BeyonderData.getSequence(entity);
@@ -256,6 +282,8 @@ public class VirtualPersonaAbility extends SelectableAbility {
                 SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
 
         component.create(seq);
+
+
     }
 
     @Override
@@ -275,7 +303,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
             selectedAbility = 0;
         }
 
-        if(entitySeq > 3 && selectedAbility >= 3){
+        if(entitySeq > 3 && selectedAbility >= 4){
             selectedAbility = 0;
         }
 
@@ -299,8 +327,8 @@ public class VirtualPersonaAbility extends SelectableAbility {
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        if(entitySeq > 3 && selectedAbility >= 3){
-            selectedAbility = 2;
+        if(entitySeq > 3 && selectedAbility >= 4){
+            selectedAbility = 3;
         }
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
@@ -311,10 +339,10 @@ public class VirtualPersonaAbility extends SelectableAbility {
         if (!BeyonderData.isBeyonder(entity)) return;
 
         int casterSequence = BeyonderData.getSequence(entity);
-        int avatarSequence = casterSequence + 2; // 2 sequences weaker
+        int avatarSequence = casterSequence + 2;
 
         AvatarEntity avatar = new AvatarEntity(
-                ModEntities.ERROR_AVATAR.get(),
+                ModEntities.AVATAR.get(),
                 serverLevel,
                 entity.getUUID(),
                 "visionary",
@@ -322,9 +350,13 @@ public class VirtualPersonaAbility extends SelectableAbility {
         );
         avatar.setPos(entity.getX(), entity.getY(), entity.getZ());
         avatar.setPersistenceRequired();
+
+        avatar.setCustomName(Component.literal("Avatar"));
+
         serverLevel.addFreshEntity(avatar);
 
-        entity.getData(ModAttachments.VIRTUAL_PERSONAS.get()).createAvatar(avatar.getUUID());
+        var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
+        component.createAvatar(avatar.getUUID());
 
         AbilityUtil.sendActionBar(entity,
                 Component.translatable("ability.lotmcraft.virtual_persona.avatar_spawned").withColor(0xFFe3ffff));

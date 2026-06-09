@@ -116,6 +116,6 @@ public class MindWorldAuthorityEnvisioningAbility extends ToggleAbility {
 
         if(!active.contains(player.getUUID())) return;
 
-        player.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityAndSync(0.1f,player);
+        player.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityAndSync(0.3f,player);
     }
 }

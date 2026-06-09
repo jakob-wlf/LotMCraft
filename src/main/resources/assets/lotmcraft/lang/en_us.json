@@ -763,6 +763,7 @@
   "ability.lotmcraft.virtual_persona.self": "Create Persona",
   "ability.lotmcraft.virtual_persona.move": "Move Persona to",
   "ability.lotmcraft.virtual_persona.check": "Check",
+  "ability.lotmcraft.virtual_persona.clear_all": "Clean Everything",
   "ability.lotmcraft.virtual_persona.create_avatar": "Create Avatar",
   "ability.lotmcraft.virtual_persona.avatar_spawned": "Weaved an avatar from a Virtual Persona",
   "lotmcraft.manipulation_ability": "Manipulation",

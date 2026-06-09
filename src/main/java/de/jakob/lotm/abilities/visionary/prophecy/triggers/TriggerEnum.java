@@ -13,7 +13,11 @@ public enum TriggerEnum {
     SEALED,
     HUNGER,
     RIDING,
-    SPIRITUALITY
+    SPIRITUALITY,
+    SEQUENCE,
+    PATHWAY,
+    LIGHT,
+    ASLEEP
     ;
 
     public static TriggerEnum  fromNBT(CompoundTag tag, String key) {

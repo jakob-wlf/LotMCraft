@@ -113,18 +113,21 @@ public class EnvisionSplitComponent {
     }
 
     public void onJoin(ServerLevel level){
-        for (var obj : avatars){
+        var buff2 = new LinkedList<UUID>();
+        for(var obj : avatars){
             var target = level.getEntity(obj);
-            if(target == null){
-                avatars.remove(obj);
-            }
+            if(target == null)
+                buff2.add(obj);
         }
+        avatars.removeAll(buff2);
 
+        var buff = new LinkedList<String>();
         for(var obj : names){
             var data = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(obj)).get();
             if(data.sequence() != 1){
-                names.remove(obj);
+                buff.add(obj);
             }
         }
+        names.removeAll(buff);
     }
 }
