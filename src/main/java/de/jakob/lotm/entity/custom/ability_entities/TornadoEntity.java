@@ -26,6 +26,7 @@ import java.util.*;
 public class TornadoEntity extends Entity {
     private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(TornadoEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> DAMAGE = SynchedEntityData.defineId(TornadoEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(TornadoEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Optional<UUID>> CASTER_UUID = SynchedEntityData.defineId(TornadoEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Optional<UUID>> TARGET_UUID = SynchedEntityData.defineId(TornadoEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     
@@ -40,17 +41,18 @@ public class TornadoEntity extends Entity {
 
     private static final float TARGET_HEIGHT_ABOVE_GROUND = 0.5f;
     public TornadoEntity(EntityType<?> entityType, Level level) {
-        this(entityType, level, 1.0f, 4.0f, null, null);
+        this(entityType, level, 1.0f, 4.0f, null, null, 1);
     }
     
     public TornadoEntity(EntityType<?> entityType, Level level, float speed, float damage, @Nullable Entity caster) {
-        this(entityType, level, speed, damage, caster, null);
+        this(entityType, level, speed, damage, caster, null, 1);
     }
     
-    public TornadoEntity(EntityType<?> entityType, Level level, float speed, float damage, @Nullable Entity caster, @Nullable Entity target) {
+    public TornadoEntity(EntityType<?> entityType, Level level, float speed, float damage, @Nullable Entity caster, @Nullable Entity target, float size) {
         super(entityType, level);
         this.setSpeed(speed);
         this.setDamage(damage);
+        this.setSize(size * 2);
         if (caster != null) {
             this.setCasterUUID(caster.getUUID());
         }
@@ -68,6 +70,7 @@ public class TornadoEntity extends Entity {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(SPEED, 1.0f);
+        builder.define(SIZE, 1.0f);
         builder.define(DAMAGE, 4.0f);
         builder.define(CASTER_UUID, Optional.empty());
         builder.define(TARGET_UUID, Optional.empty());
@@ -91,6 +94,14 @@ public class TornadoEntity extends Entity {
     
     public void setCasterUUID(@Nullable UUID uuid) {
         this.entityData.set(CASTER_UUID, Optional.ofNullable(uuid));
+    }
+
+    public void setSize(float size) {
+        this.entityData.set(SIZE, size);
+    }
+
+    public float getSize() {
+        return this.entityData.get(SIZE);
     }
     
     @Nullable
@@ -198,15 +209,6 @@ public class TornadoEntity extends Entity {
 
         damageNearbyEntities();
 
-//        if (blockPickupCooldown <= 0 && !this.level().isClientSide) {
-//            pickupBlocks();
-//            blockPickupCooldown = 20;
-//        } else {
-//            blockPickupCooldown--;
-//        }
-//
-//        updateCirclingBlocks();
-
         spawnParticles();
 
         if (this.tickCount % 20 == 0) {
@@ -216,7 +218,7 @@ public class TornadoEntity extends Entity {
     }
     
     private void damageNearbyEntities() {
-        AABB boundingBox = this.getBoundingBox().inflate(5.0);
+        AABB boundingBox = this.getBoundingBox().inflate(5.0 * this.getSize());
         List<Entity> entities = this.level().getEntities(this, boundingBox);
         Entity caster = getCaster();
 
@@ -238,55 +240,6 @@ public class TornadoEntity extends Entity {
         }
     }
     
-    private void pickupBlocks() {
-        if (circlingBlocks.size() >= 12) return;
-        
-        BlockPos centerPos = this.blockPosition();
-        int radius = 3;
-        
-        for (int i = 0; i < 3; i++) {
-            BlockPos targetPos = centerPos.offset(
-                this.random.nextInt(radius * 2) - radius,
-                this.random.nextInt(3) - 1,
-                this.random.nextInt(radius * 2) - radius
-            );
-            
-            BlockState state = this.level().getBlockState(targetPos);
-            if (!state.isAir() && state.getDestroySpeed(this.level(), targetPos) >= 0 && 
-                state.getDestroySpeed(this.level(), targetPos) < 50.0f) {
-                
-                Block block = state.getBlock();
-                if (block != Blocks.BEDROCK && block != Blocks.END_PORTAL_FRAME && 
-                    block != Blocks.END_PORTAL && block != Blocks.BARRIER) {
-                    
-                    this.level().destroyBlock(targetPos, false);
-                    
-                    CirclingBlock circlingBlock = new CirclingBlock(
-                        state,
-                        this.random.nextFloat() * 360,
-                        2.0f + this.random.nextFloat() * 2.0f,
-                        this.random.nextFloat() * 10.0f
-                    );
-                    circlingBlocks.add(circlingBlock);
-                    break;
-                }
-            }
-        }
-    }
-    
-    private void updateCirclingBlocks() {
-        Iterator<CirclingBlock> iterator = circlingBlocks.iterator();
-        while (iterator.hasNext()) {
-            CirclingBlock block = iterator.next();
-            block.lifetime++;
-            block.angle += 5.0f;
-            
-            if (block.lifetime > 100) {
-                iterator.remove();
-            }
-        }
-    }
-    
     private void spawnParticles() {
         if (this.level().isClientSide) {
             for (int i = 0; i < 5; i++) {
@@ -304,14 +257,11 @@ public class TornadoEntity extends Entity {
         }
     }
     
-    public List<CirclingBlock> getCirclingBlocks() {
-        return circlingBlocks;
-    }
-    
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
         this.setSpeed(tag.getFloat("Speed"));
         this.setDamage(tag.getFloat("Damage"));
+        this.setSize(tag.getFloat("Size"));
         this.lifeTicks = tag.getInt("LifeTicks");
         this.maxLifeTicks = tag.getInt("MaxLifeTicks");
         
@@ -327,6 +277,7 @@ public class TornadoEntity extends Entity {
     protected void addAdditionalSaveData(CompoundTag tag) {
         tag.putFloat("Speed", this.getSpeed());
         tag.putFloat("Damage", this.getDamage());
+        tag.putFloat("Size", this.getSize());
         tag.putInt("LifeTicks", this.lifeTicks);
         tag.putInt("MaxLifeTicks", this.maxLifeTicks);
         

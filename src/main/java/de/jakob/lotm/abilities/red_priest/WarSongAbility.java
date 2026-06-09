@@ -51,10 +51,10 @@ public class WarSongAbility extends Ability {
 
         int strengthLevel = strength == null ? 1 : strength.getAmplifier() + 2;
         int speedLevel = speed == null ? 1 : speed.getAmplifier() + 2;
-        BeyonderData.addModifierWithTimeLimit(entity, "war_song", 1.05f, 20L *30*(int) Math.max(multiplier(entity)/4,1));
+        BeyonderData.addModifierWithTimeLimit(entity, "war_song", 1.05, (long) (20L *30*multiplier(entity)));
 
-        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 30*(int) Math.max(multiplier(entity)/4,1), strengthLevel, false, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 30*(int) Math.max(multiplier(entity)/4,1), speedLevel, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, (int) (20 * 30*multiplier(entity)), strengthLevel, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, (int) (20 * 30*multiplier(entity)), speedLevel, false, false, false));
 
         ServerScheduler.scheduleForDuration(0,  2, 20 * 30, () -> {
             if(entity.level().isClientSide)

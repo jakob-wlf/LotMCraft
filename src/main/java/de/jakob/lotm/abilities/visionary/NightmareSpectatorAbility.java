@@ -92,7 +92,7 @@ public class NightmareSpectatorAbility extends Ability {
                 serverLevel.registryAccess()
                         .registryOrThrow(Registries.DAMAGE_TYPE)
                         .getHolderOrThrow(ModDamageTypes.LOOSING_CONTROL)
-        ), (float) DamageLookup.lookupDamage(5, 1.1) * (int) Math.max(multiplier(entity)/4,1));
+        ), (float) DamageLookup.lookupDamage(5, 1.1) * multiplier(entity));
 
         // Add effect
         target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, 1));

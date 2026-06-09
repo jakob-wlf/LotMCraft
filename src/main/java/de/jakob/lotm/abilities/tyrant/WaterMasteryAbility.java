@@ -109,19 +109,19 @@ public class WaterMasteryAbility extends SelectableAbility {
     }
 
     private void waterWall(ServerLevel level, LivingEntity entity) {
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 12* (int) Math.max(multiplier(entity)/4,1), 1.4f);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 1.4f);
 
         Vec3 perpendicular = VectorUtil.getPerpendicularVector(entity.getLookAngle()).normalize();
 
         AtomicBoolean isFrozen = new AtomicBoolean(false);
 
         UUID wallId = UUID.randomUUID();
-        ActiveWaterWall wallData = new ActiveWaterWall(targetPos, perpendicular, wallId, 30* (int) Math.max(multiplier(entity)/4,1), -2* (int) Math.max(multiplier(entity)/4,1), 17* (int) Math.max(multiplier(entity)/4,1));
+        ActiveWaterWall wallData = new ActiveWaterWall(targetPos, perpendicular, wallId, (int) (30* multiplier(entity)), (int) (-2* multiplier(entity)), (int) (17* multiplier(entity)));
         activeWaterWalls.add(wallData);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        ServerScheduler.scheduleForDuration(0, 7, 20 * 30* (int) Math.max(multiplier(entity)/4,1), () -> {
+        ServerScheduler.scheduleForDuration(0, 7, (int) (20 * 30* multiplier(entity)), () -> {
             if(random.nextInt(10) == 0)
                 level.playSound(null, targetPos.x, targetPos.y, targetPos.z, SoundEvents.GENERIC_SPLASH, entity.getSoundSource(), 2.0f, 1.0f);
 
@@ -143,7 +143,7 @@ public class WaterMasteryAbility extends SelectableAbility {
                     if(random.nextBoolean())
                         ParticleUtil.spawnParticles(level, !isFrozen.get() ? dust : ParticleTypes.SNOWFLAKE, pos, 1, 0.5, 0.02);
 
-                    AbilityUtil.damageNearbyEntities(level, isFrozen.get() ? null : entity, 1.2f, DamageLookup.lookupDamage(4, .35) * (int) Math.max(multiplier(entity)/4,1), pos, true, false, false, 15);
+                    AbilityUtil.damageNearbyEntities(level, isFrozen.get() ? null : entity, 1.2f, DamageLookup.lookupDamage(4, .35) * multiplier(entity), pos, true, false, false, 15);
 
                     for(LivingEntity target : AbilityUtil.getNearbyEntities(isFrozen.get() ? null : entity, level, pos, 1f)) {
                         Vec3 knockback = target.position().subtract(pos).normalize().add(0, .2, 0).scale(1.4f);

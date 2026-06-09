@@ -63,7 +63,7 @@ public class ImprisonAbility extends Ability {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(caster, 15 * (int) Math.max(multiplier(caster) / 4, 1), 1.4f);
+        LivingEntity target = AbilityUtil.getTargetEntity(caster, (int) (15 * multiplier(caster)), 1.4f);
         if (target == null) return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(caster, this);

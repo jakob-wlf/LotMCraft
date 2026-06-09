@@ -238,7 +238,7 @@ public class ControllingUtil {
                         copyEntities(originalBody, player);
                         copyPosition(originalBody, player);
 
-                        PhysicalEnhancementsAbility.resetEnhancements(player.getUUID());
+                        PhysicalEnhancementsAbility.resetEnhancements(player.getUUID(), player, true);
 
                         float health = bodyTag.getFloat("Health");
                         ServerScheduler.scheduleDelayed(5, () -> {
@@ -309,10 +309,23 @@ public class ControllingUtil {
         targetBarData.setAbilities(sourceBarData.getAbilities());
 
         if (BeyonderData.isBeyonder(source)) {
-            BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source),false, false, false, false, false);
-            if (source instanceof Player sourcePlayer && target instanceof Player targetPlayer) {
-                BeyonderData.digest(targetPlayer, BeyonderData.getDigestionProgress(sourcePlayer), false);
-                BeyonderData.setGriefingEnabled(targetPlayer, BeyonderData.isGriefingEnabled(sourcePlayer));
+            // Preserve source's spirituality and digestion before setBeyonder resets them
+            float sourceSpirituality = BeyonderData.getSpirituality(source);
+            float sourceDigestion = source instanceof Player sp
+                    ? BeyonderData.getDigestionProgress(sp)
+                    : source.getData(ModAttachments.BEYONDER_COMPONENT).getDigestionProgress();
+            int sourceLuck = source.getData(ModAttachments.LUCK_COMPONENT).getLuck();
+
+            BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source),
+                    false, false, false, false, false);
+
+            // Restore spirituality, digestion, and luck that setBeyonder wiped
+            BeyonderData.setSpirituality(target, sourceSpirituality);
+            target.getData(ModAttachments.BEYONDER_COMPONENT).setDigestionProgress(sourceDigestion);
+            target.getData(ModAttachments.LUCK_COMPONENT).setLuck(sourceLuck);
+
+            if (target instanceof Player targetPlayer) {
+                BeyonderData.setGriefingEnabled(targetPlayer, BeyonderData.isGriefingEnabled(source instanceof Player sp ? sp : targetPlayer));
             }
         } else {
             BeyonderData.clearBeyonderData(target);

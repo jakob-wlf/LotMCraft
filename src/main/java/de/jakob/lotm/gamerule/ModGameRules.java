@@ -16,7 +16,6 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_ARTIFACTS;
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_ARTIFACTS_WITH_NO_NEGATIVES;
     public static GameRules.Key<GameRules.IntegerValue> CHARSTACK_REQUIRED_FOR_APOTHEOSIS;
-    public static GameRules.Key<GameRules.IntegerValue> UNIQUENESS_SPAWN_LIKELIHOOD;
     public static GameRules.Key<GameRules.BooleanValue> SEQUENCE_DIMENSION_LOCK;
 
     public static GameRules.Key<GameRules.IntegerValue> MAX_ALLY_COUNT;
@@ -62,22 +61,6 @@ public class ModGameRules {
                 "charStackRequiredForApotheosis",
                 GameRules.Category.MISC,
                 GameRules.IntegerValue.create(2)
-        );
-
-        UNIQUENESS_SPAWN_LIKELIHOOD = GameRules.register(
-                "uniquenessSpawnLikelihood",
-                GameRules.Category.MISC,
-                GameRules.IntegerValue.create(1,
-                        (server, value) -> {
-                            int v = value.get();
-
-                            if (v <= 0) {
-                                value.set(1, server);
-                            }
-                            else if (v > 100) {
-                                value.set(99, server);
-                            }
-                        })
         );
 
         DIGESTION_RATE = GameRules.register(

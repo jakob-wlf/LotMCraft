@@ -41,8 +41,8 @@ public class FoolingAbility extends Ability {
         if (level.isClientSide) return;
 
         ServerLevel serverLevel = (ServerLevel) level;
-        int EFFECT_DURATION_TICKS = 20 * 60 *(int) Math.max(multiplier(entity)/4,1); // 5 minutes
-        double AOE_RADIUS = 50.0*(int) Math.max(multiplier(entity)/4,1);
+        int EFFECT_DURATION_TICKS = (int) (20 * 60 *multiplier(entity)); // 5 minutes
+        double AOE_RADIUS = 50.0*multiplier(entity);
         serverLevel.playSound(null,
                 entity.getX(), entity.getY(), entity.getZ(),
                 SoundEvents.AMETHYST_CLUSTER_BREAK,

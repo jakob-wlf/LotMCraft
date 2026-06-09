@@ -106,7 +106,9 @@ public class EffectManager {
         PROHIBITION(35),
         IMPRISON(36),
         ANCIENT_COURT(37),
-        NATION_OF_THE_DEAD(38);
+        NATION_OF_THE_DEAD(38),
+        HOLY_IMPACT(39),
+        UNIQUENESS_SPAWN(40);
 
         private final int index;
 

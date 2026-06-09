@@ -41,9 +41,9 @@ public class InvisibleHandAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 15*(int) Math.max(multiplier(entity)/4,1), 3);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15*multiplier(entity)), 3);
         if(target == null) {
-            Vec3 failureParticleLoc = AbilityUtil.getTargetLocation(entity, 12*(int) Math.max(multiplier(entity)/4,1), 3);
+            Vec3 failureParticleLoc = AbilityUtil.getTargetLocation(entity, (int) (12*multiplier(entity)), 3);
             spawnFailureParticles((ServerLevel) level, failureParticleLoc);
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.invisible_hand.no_target").withColor(BeyonderData.pathwayInfos.get("door").color()));
             return;

@@ -1,17 +1,15 @@
 {
   "structures": [
     {
-      "structure": "lotmcraft:beyonder_house",
+      "structure": "lotmcraft:beyonder_house_plains",
       "weight": 1
     }
   ],
   "placement": {
     "type": "minecraft:random_spread",
 
-    "salt": 4367768776,
-
+    "salt": 67768776,
     "spacing": 20,
-
     "separation": 8,
     "heightmap": "WORLD_SURFACE_WG",
     "max_tries": 10

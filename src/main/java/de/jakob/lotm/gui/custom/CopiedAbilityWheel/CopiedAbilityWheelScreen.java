@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.UseCopiedAbilityPacket;
 import de.jakob.lotm.util.data.ClientData;
 import net.minecraft.client.gui.GuiGraphics;
@@ -240,7 +241,7 @@ public class CopiedAbilityWheelScreen extends AbstractContainerScreen<CopiedAbil
         if (isHovered) {
             Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
             if (ability != null) {
-                Component name = ability.getNameFormatted();
+                Component name = ability.getNameFormatted(ClientHandler.getPlayer());
                 int textWidth = net.minecraft.client.Minecraft.getInstance().font.width(name);
                 guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, name,
                         pos.x - textWidth / 2, pos.y - size / 2 - 12, 0xFFFFFF, true);

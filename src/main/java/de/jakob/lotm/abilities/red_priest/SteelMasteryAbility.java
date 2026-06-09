@@ -75,7 +75,7 @@ public class SteelMasteryAbility extends SelectableAbility {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        UUID taskId = ServerScheduler.scheduleForDuration(0, 5, 20 * 8*(int) Math.max(multiplier(entity)/4,1), () -> {
+        UUID taskId = ServerScheduler.scheduleForDuration(0, 5, (int) (20 * 8*multiplier(entity)), () -> {
             if(entity.isDeadOrDying())
                 return;
 

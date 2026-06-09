@@ -1,13 +1,15 @@
-// FILE 1: IntrospectScreen.java (updated with proper JEI support indicator)
-// Modified IntrospectScreen.java with Quest UI integration
 package de.jakob.lotm.gui.custom.Introspect;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
-import de.jakob.lotm.attachments.ControllingDataComponent;
-import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.acting.ActingHandler;
+import de.jakob.lotm.acting.ActingHelper;
+import de.jakob.lotm.acting.ActingTask;
+import de.jakob.lotm.acting.ActingTaskRegistry;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
@@ -21,6 +23,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -29,29 +32,32 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private ResourceLocation containerBackground;
     private Inventory playerInventory;
 
-    // Abilities section
     private boolean showAbilities = false;
     private boolean showAllAbilities = false;
+    private boolean showSubAbilities = false;
     private Button toggleAbilitiesButton;
     private Button toggleAllAbilitiesButton;
+    private Button toggleSubAbilitiesButton;
     private Button clearWheelButton;
     private Button messageButton;
     private Button clearBarButton;
 
     private Button apotheosisButton = null;
 
-    // Quest section
     private boolean showQuests = false;
     private Button toggleQuestsButton;
     private Button discardQuestButton;
 
-    // Tab management for abilities
+    private boolean showActing = false;
+    private Button toggleActingButton;
+
     private enum Tab {
         ABILITY_WHEEL,
         ABILITY_BAR,
@@ -62,22 +68,23 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private Button wheelTabButton;
     private Button barTabButton;
 
-    // Ability management
     private final List<Ability> availableAbilities = new ArrayList<>();
+    private final List<SubAbilityEntry> subAbilityEntries = new ArrayList<>();
     private final List<Ability> abilityWheelSlots = new ArrayList<>();
+    private final List<Integer> abilityWheelSubIndexes = new ArrayList<>();
     private final List<Ability> abilityBarSlots = new ArrayList<>();
-    // Client-side personal shared wheel ordering
+    private final List<Integer> abilityBarSubIndexes = new ArrayList<>();
     private final List<String> sharedWheelSlots = new ArrayList<>();
     private int draggedFromSharedWheelIndex = -1;
     private int draggedFromSharedPoolIndex = -1;
     private Ability draggedAbility = null;
+    private int draggedSubIndex = -1;
     private int draggedFromWheelIndex = -1;
     private int draggedFromBarIndex = -1;
     private boolean draggedFromAvailable = false;
     private int dragOffsetX = 0;
     private int dragOffsetY = 0;
 
-    // UI dimensions for abilities panel
     private static final int ABILITIES_PANEL_WIDTH = 120;
     private static final int ABILITIES_PANEL_HEIGHT = 115;
     private static final int ABILITY_WHEEL_HEIGHT = 100;
@@ -85,16 +92,17 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private static final int ABILITY_ICON_SIZE = 16;
     private static final int ABILITY_WHEEL_MAX = 24;
     private static final int ABILITY_BAR_MAX = 6;
-    private static final int SHARED_POOL_HEIGHT = 50;   // top: all shared abilities + add/remove
-    private static final int SHARED_WHEEL_HEIGHT = 60;  // bottom: personal shared wheel slots
+    private static final int SHARED_POOL_HEIGHT = 50;
+    private static final int SHARED_WHEEL_HEIGHT = 60;
 
-    // UI dimensions for quests panel
     private static final int QUESTS_PANEL_WIDTH = 140;
     private static final int COMPLETED_QUESTS_HEIGHT = 80;
     private static final int ACTIVE_QUEST_HEIGHT = 120;
     private static final int QUEST_ITEM_SIZE = 16;
 
-    // Placeholder keybinds - easy to change later
+    private static final int ACTING_PANEL_WIDTH = 140;
+    private static final int ACTING_PANEL_HEIGHT = 120;
+
     private static final String[] KEYBIND_LABELS = {"1", "2", "3", "4", "5", "6"};
 
     private int abilitiesScrollOffset = 0;
@@ -104,19 +112,19 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private int sharedPoolScrollOffset = 0;
     private int maxSharedPoolScroll = 0;
 
+    private record SubAbilityEntry(Ability parent, int subIndex) {}
+
     public IntrospectScreen(IntrospectMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
         this.playerInventory = playerInventory;
-
         this.containerBackground = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/introspect.png");
-
         this.imageHeight = 231;
-
         this.imageWidth = 192;
     }
 
     private void initializeAbilities() {
         availableAbilities.clear();
+        subAbilityEntries.clear();
         abilitiesScrollOffset = 0;
 
         if (showAllAbilities) {
@@ -147,15 +155,34 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             }
         }
 
-        // Deduplicate: abilities like Cogitation/Ally match all pathways and can be added
-        // twice when a pathway history entry exists (once for current pathway, once for historical).
         List<Ability> unique = availableAbilities.stream().distinct().toList();
         availableAbilities.clear();
         availableAbilities.addAll(unique);
-
         availableAbilities.removeIf(Ability::getShouldBeHidden);
 
-        // Calculate max scroll
+        if (showSubAbilities) {
+            List<Ability> expanded = new ArrayList<>();
+            for (Ability ability : availableAbilities) {
+                expanded.add(ability);
+                subAbilityEntries.add(null);
+                if (ability instanceof SelectableAbility sa) {
+                    String[] names = sa.getAbilityNamesCopy();
+                    if (names.length > 1) {
+                        for (int si = 0; si < names.length; si++) {
+                            expanded.add(ability);
+                            subAbilityEntries.add(new SubAbilityEntry(ability, si));
+                        }
+                    }
+                }
+            }
+            availableAbilities.clear();
+            availableAbilities.addAll(expanded);
+        } else {
+            for (int i = 0; i < availableAbilities.size(); i++) {
+                subAbilityEntries.add(null);
+            }
+        }
+
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
         int rows = (int) Math.ceil((double) availableAbilities.size() / iconsPerRow);
         int visibleRows = (ABILITIES_PANEL_HEIGHT - 20) / (ABILITY_ICON_SIZE + 2);
@@ -171,42 +198,79 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     public void setAbilityWheelSlots(ArrayList<String> abilityIds) {
         this.abilityWheelSlots.clear();
+        this.abilityWheelSubIndexes.clear();
         for (String id : abilityIds) {
-            Ability ability = LOTMCraft.abilityHandler.getById(id);
+            int colonIdx = id.lastIndexOf(':');
+            int subIdx = -1;
+            String baseId = id;
+            if (colonIdx >= 0) {
+                try {
+                    subIdx = Integer.parseInt(id.substring(colonIdx + 1));
+                    baseId = id.substring(0, colonIdx);
+                } catch (NumberFormatException ignored) {}
+            }
+            Ability ability = LOTMCraft.abilityHandler.getById(baseId);
             if (ability != null) {
                 this.abilityWheelSlots.add(ability);
+                this.abilityWheelSubIndexes.add(subIdx);
             }
         }
     }
 
     public void setAbilityBarSlots(ArrayList<String> abilityIds) {
         this.abilityBarSlots.clear();
+        this.abilityBarSubIndexes.clear();
         for (String id : abilityIds) {
-            Ability ability = LOTMCraft.abilityHandler.getById(id);
+            int colonIdx = id.lastIndexOf(':');
+            int subIdx = -1;
+            String baseId = id;
+            if (colonIdx >= 0) {
+                try {
+                    subIdx = Integer.parseInt(id.substring(colonIdx + 1));
+                    baseId = id.substring(0, colonIdx);
+                } catch (NumberFormatException ignored) {}
+            }
+            Ability ability = LOTMCraft.abilityHandler.getById(baseId);
             if (ability != null) {
                 this.abilityBarSlots.add(ability);
+                this.abilityBarSubIndexes.add(subIdx);
             }
         }
+    }
+
+    private String buildEffectiveId(Ability ability, int subIndex) {
+        if (subIndex >= 0) return ability.getId() + ":" + subIndex;
+        return ability.getId();
+    }
+
+    private ArrayList<String> wheelSlotsToIdList() {
+        ArrayList<String> ids = new ArrayList<>();
+        for (int i = 0; i < abilityWheelSlots.size(); i++) {
+            ids.add(buildEffectiveId(abilityWheelSlots.get(i), abilityWheelSubIndexes.get(i)));
+        }
+        return ids;
+    }
+
+    private ArrayList<String> barSlotsToIdList() {
+        ArrayList<String> ids = new ArrayList<>();
+        for (int i = 0; i < abilityBarSlots.size(); i++) {
+            ids.add(buildEffectiveId(abilityBarSlots.get(i), abilityBarSubIndexes.get(i)));
+        }
+        return ids;
     }
 
     @Override
     protected void init() {
         super.init();
 
-        if(this.minecraft == null) return;
+        if (this.minecraft == null) return;
 
         this.killCount = ClientSacrificeCache.getKillCount();
 
-        // Request ability bar data from server
         PacketHandler.sendToServer(new RequestAbilityBarPacket());
-
-        // Request quest data from server
         PacketHandler.sendToServer(new RequestQuestDataPacket());
-
-        // Request team/shared abilities data from server
         PacketHandler.sendToServer(new RequestSharedAbilitiesPacket());
 
-        // Restore shared wheel from ClientData so it persists across screen opens
         sharedWheelSlots.clear();
         sharedWheelSlots.addAll(ClientData.getSharedWheelAbilities());
 
@@ -217,45 +281,25 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         KEYBIND_LABELS[4] = LOTMCraft.useAbilityBarAbility5.getKey().getDisplayName().getString();
         KEYBIND_LABELS[5] = LOTMCraft.useAbilityBarAbility6.getKey().getDisplayName().getString();
 
-        // Update scroll for quests
         updateCompletedQuestsScroll();
-
-        // Update positions when buttons are created
         updateButtonPositions();
     }
 
     private String abbreviateKeybind(String keybind) {
-        // Handle common long keybind names
-        if (keybind.startsWith("Button ")) {
-            return "B" + keybind.substring(7); // "Button 5" -> "B5"
-        }
-        if (keybind.equalsIgnoreCase("Not Bound") || keybind.equalsIgnoreCase("Unbound")) {
-            return "-";
-        }
-        if (keybind.equalsIgnoreCase("Middle Mouse Button")) {
-            return "MMB";
-        }
-        if (keybind.equalsIgnoreCase("Left Mouse Button")) {
-            return "LMB";
-        }
-        if (keybind.equalsIgnoreCase("Right Mouse Button")) {
-            return "RMB";
-        }
-        // Truncate if still too long
-        if (keybind.length() > 5) {
-            return keybind.substring(0, 4) + "…";
-        }
+        if (keybind.startsWith("Button ")) return "B" + keybind.substring(7);
+        if (keybind.equalsIgnoreCase("Not Bound") || keybind.equalsIgnoreCase("Unbound")) return "-";
+        if (keybind.equalsIgnoreCase("Middle Mouse Button")) return "MMB";
+        if (keybind.equalsIgnoreCase("Left Mouse Button")) return "LMB";
+        if (keybind.equalsIgnoreCase("Right Mouse Button")) return "RMB";
+        if (keybind.length() > 5) return keybind.substring(0, 4) + "…";
         return keybind;
     }
 
     private void updateButtonPositions() {
-        // Clear existing widgets
         this.clearWidgets();
 
-        // Calculate base position
         int baseLeftPos = this.leftPos;
 
-        // Add abilities toggle button to the left of the main screen
         int abilitiesButtonX = baseLeftPos - 65;
         int abilitiesButtonY = this.topPos + 10;
 
@@ -263,17 +307,16 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         button -> {
                             showAbilities = !showAbilities;
                             if (showAbilities) {
-                                showQuests = false; // Turn off quests when abilities is turned on
+                                showQuests = false;
+                                showActing = false;
                             }
                             button.setMessage(Component.literal(showAbilities ? "< Hide" : "Abilities >"));
                             updateButtonPositions();
                         })
                 .bounds(abilitiesButtonX, abilitiesButtonY, 60, 20)
                 .build();
-
         this.addRenderableWidget(toggleAbilitiesButton);
 
-        // Add quests toggle button to the left, below abilities button
         int questsButtonX = baseLeftPos - 65;
         int questsButtonY = this.topPos + 35;
 
@@ -281,32 +324,45 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         button -> {
                             showQuests = !showQuests;
                             if (showQuests) {
-                                showAbilities = false; // Turn off abilities when quests is turned on
+                                showAbilities = false;
+                                showActing = false;
                             }
                             button.setMessage(Component.literal(showQuests ? "< Hide" : "Quests >"));
                             updateButtonPositions();
                         })
                 .bounds(questsButtonX, questsButtonY, 60, 20)
                 .build();
-
         this.addRenderableWidget(toggleQuestsButton);
 
+        int actingButtonX = baseLeftPos - 65;
+        int actingButtonY = this.topPos + 60;
+
+        toggleActingButton = Button.builder(Component.literal(showActing ? "< Hide" : "Acting >"),
+                        button -> {
+                            showActing = !showActing;
+                            if (showActing) {
+                                showAbilities = false;
+                                showQuests = false;
+                            }
+                            button.setMessage(Component.literal(showActing ? "< Hide" : "Acting >"));
+                            updateButtonPositions();
+                        })
+                .bounds(actingButtonX, actingButtonY, 60, 20)
+                .build();
+        this.addRenderableWidget(toggleActingButton);
+
         int messageButtonX = baseLeftPos - 65;
-        int messageButtonY = this.topPos + 60;
+        int messageButtonY = this.topPos + 85;
 
         messageButton = Button.builder(Component.literal("Honorific"),
-                button -> {
-                    openHonorificNamesMenu();
-                 })
+                        button -> openHonorificNamesMenu())
                 .bounds(messageButtonX, messageButtonY, 60, 20)
                 .build();
 
-
-        if(menu.getSequence() < 4) {
+        if (menu.getSequence() < 4) {
             this.addRenderableWidget(messageButton);
         }
 
-        // Add Apotheosis button if player has uniqueness and is Sequence 1
         if (ClientUniquenessCache.hasUniqueness() && menu.getSequence() == 1) {
             int apotheosisButtonX = baseLeftPos - 65;
             int apotheosisButtonY = this.topPos + 110;
@@ -319,12 +375,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             final boolean finalCanApotheosize = canApotheosize;
 
             apotheosisButton = Button.builder(
-                            Component.literal("Apotheosis").withStyle(
-                                    finalCanApotheosize ? ChatFormatting.GOLD : ChatFormatting.GRAY),
+                            Component.literal("Apotheosis").withStyle(finalCanApotheosize ? ChatFormatting.GOLD : ChatFormatting.GRAY),
                             button -> {
-                                if (finalCanApotheosize) {
-                                    PacketHandler.sendToServer(new RequestUniquenessApotheosisPacket());
-                                }
+                                if (finalCanApotheosize) PacketHandler.sendToServer(new RequestUniquenessApotheosisPacket());
                             })
                     .bounds(apotheosisButtonX, apotheosisButtonY, 60, 20)
                     .build();
@@ -332,10 +385,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             this.addRenderableWidget(apotheosisButton);
         }
 
-        // Add "All Abilities" toggle button for creative + OP players
         if (isCreativeOp()) {
             int allAbilitiesButtonX = baseLeftPos - 65;
-            int allAbilitiesButtonY = this.topPos + 85;
+            int allAbilitiesButtonY = this.topPos + 135;
 
             toggleAllAbilitiesButton = Button.builder(
                             Component.literal(showAllAbilities ? "All: ON" : "All: OFF")
@@ -348,28 +400,27 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             })
                     .bounds(allAbilitiesButtonX, allAbilitiesButtonY, 60, 20)
                     .build();
-
             this.addRenderableWidget(toggleAllAbilitiesButton);
         }
 
-        // Add abilities panel buttons if shown
         if (showAbilities) {
             addAbilityButtons(baseLeftPos);
         }
 
-        // Add quest panel buttons if shown
         if (showQuests) {
             addQuestButtons(baseLeftPos);
         }
     }
 
     private void addAbilityButtons(int baseLeftPos) {
-        // Add tab buttons
-        int tabButtonY = this.topPos;
         int panelX = baseLeftPos + this.imageWidth + 5;
+        int tabButtonY = this.topPos;
 
         boolean showSharedTab = ClientTeamData.hasTeam();
-        int tabButtonWidth = showSharedTab ? ABILITIES_PANEL_WIDTH / 3 : ABILITIES_PANEL_WIDTH / 2;
+        int tabCount = showSharedTab ? 3 : 2;
+        int subButtonWidth = 50;
+        int remainingWidth = ABILITIES_PANEL_WIDTH - subButtonWidth;
+        int tabButtonWidth = remainingWidth / tabCount;
 
         wheelTabButton = Button.builder(Component.literal("Wheel"),
                         button -> {
@@ -405,14 +456,25 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             currentTab = Tab.ABILITY_WHEEL;
         }
 
-        // Highlight active tab
         if (currentTab == Tab.ABILITY_WHEEL) {
             wheelTabButton.active = false;
         } else if (currentTab == Tab.ABILITY_BAR) {
             barTabButton.active = false;
         }
 
-        // Add clear button based on current tab
+        toggleSubAbilitiesButton = Button.builder(
+                        Component.literal(showSubAbilities ? "Sub: ON" : "Sub: OFF")
+                                .withStyle(showSubAbilities ? ChatFormatting.AQUA : ChatFormatting.GRAY),
+                        button -> {
+                            showSubAbilities = !showSubAbilities;
+                            initializeAbilities();
+                            button.setMessage(Component.literal(showSubAbilities ? "Sub: ON" : "Sub: OFF")
+                                    .withStyle(showSubAbilities ? ChatFormatting.AQUA : ChatFormatting.GRAY));
+                        })
+                .bounds(panelX + ABILITIES_PANEL_WIDTH - subButtonWidth, tabButtonY, subButtonWidth, 15)
+                .build();
+        this.addRenderableWidget(toggleSubAbilitiesButton);
+
         int clearButtonX = baseLeftPos + this.imageWidth + 5;
         int clearButtonY;
 
@@ -421,6 +483,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             clearWheelButton = Button.builder(Component.literal("Clear Wheel").withStyle(ChatFormatting.RED),
                             button -> {
                                 abilityWheelSlots.clear();
+                                abilityWheelSubIndexes.clear();
                                 PacketHandler.sendToServer(new SyncAbilityWheelAbilitiesPacket(new ArrayList<>()));
                             })
                     .bounds(clearButtonX, clearButtonY, ABILITIES_PANEL_WIDTH, 20)
@@ -431,6 +494,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             clearBarButton = Button.builder(Component.literal("Clear Bar").withStyle(ChatFormatting.RED),
                             button -> {
                                 abilityBarSlots.clear();
+                                abilityBarSubIndexes.clear();
                                 PacketHandler.sendToServer(new SyncAbilityBarAbilitiesPacket(new ArrayList<>()));
                             })
                     .bounds(clearButtonX, clearButtonY, ABILITIES_PANEL_WIDTH, 20)
@@ -440,30 +504,24 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private void addQuestButtons(int baseLeftPos) {
-        // Calculate position - quests panel goes to the right of main screen (same as abilities)
         int panelX = baseLeftPos + this.imageWidth + 5;
 
-        // Add discard quest button if there's an active quest
         if (ClientQuestData.hasActiveQuest()) {
             int discardButtonY = this.topPos + COMPLETED_QUESTS_HEIGHT + 5 + ACTIVE_QUEST_HEIGHT + 5;
 
             discardQuestButton = Button.builder(Component.literal("Discard Quest").withStyle(ChatFormatting.RED),
                             button -> {
                                 PacketHandler.sendToServer(new DiscardQuestPacket());
-                                // Refresh quest data
                                 PacketHandler.sendToServer(new RequestQuestDataPacket());
                             })
                     .bounds(panelX, discardButtonY, QUESTS_PANEL_WIDTH, 20)
                     .build();
-
             this.addRenderableWidget(discardQuestButton);
         }
     }
 
     private void openHonorificNamesMenu() {
-        if(menu.getSequence() >= 4) {
-            return;
-        }
+        if (menu.getSequence() >= 4) return;
         PacketHandler.sendToServer(new OpenHonorificNamesMenuPacket());
     }
 
@@ -489,58 +547,139 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
-        // Render quest panel if visible
         if (showQuests) {
             renderQuestPanel(guiGraphics, mouseX, mouseY);
         }
 
-        // Render abilities panel if visible
         if (showAbilities) {
             renderAbilitiesPanel(guiGraphics, mouseX, mouseY);
         }
 
-        // Render dragged ability on top
         if (draggedAbility != null) {
-            renderAbilityIcon(guiGraphics, draggedAbility, mouseX - dragOffsetX, mouseY - dragOffsetY);
+            renderAbilityIcon(guiGraphics, draggedAbility, mouseX - dragOffsetX, mouseY - dragOffsetY, draggedSubIndex);
         }
 
         this.renderTooltip(guiGraphics, mouseX, mouseY);
 
-        // Render ability tooltips if hovering and not dragging
         if (showAbilities && draggedAbility == null) {
             renderAbilityTooltips(guiGraphics, mouseX, mouseY);
         }
 
-        // Render quest item tooltips
         if (showQuests) {
             renderQuestItemTooltips(guiGraphics, mouseX, mouseY);
         }
+
+        if(showActing) {
+            renderActingPanel(guiGraphics);
+        }
+    }
+
+    private void renderActingPanel(GuiGraphics guiGraphics) {
+        int baseLeftPos = this.leftPos;
+        int panelX = baseLeftPos + this.imageWidth + 5;
+        int panelY = this.topPos;
+
+        guiGraphics.fill(panelX, panelY, panelX + ACTING_PANEL_WIDTH, panelY + ACTING_PANEL_HEIGHT, 0xCC000000);
+        guiGraphics.renderOutline(panelX, panelY, ACTING_PANEL_WIDTH, ACTING_PANEL_HEIGHT, 0xFFAAAAAA);
+
+        Component label = Component.literal("Acting").withStyle(ChatFormatting.BOLD);
+        guiGraphics.drawString(this.font, label, panelX + 5, panelY + 5, 0xFFFFFFFF, true);
+
+        int listY = panelY + 15;
+        int listHeight = COMPLETED_QUESTS_HEIGHT - 20;
+
+        List<ActingTask> actingRequirements = new ArrayList<>(ActingTaskRegistry.getTasksFor(menu.getPathway(), menu.getSequence()));
+        int skipLineAmount = 0;
+        int lineHeight = this.font.lineHeight + 2;
+
+        int startIndex = 0;
+        int endIndex = Math.min(actingRequirements.size(), startIndex + (listHeight / lineHeight));
+
+        for (int i = startIndex; i < endIndex; i++) {
+            String questId = actingRequirements.get(i).getId();
+            MutableComponent actingName = getActingTaskName(questId);
+            if(!ActingHelper.isTriggerUnlocked(menu.getPathway(), menu.getSequence(), minecraft.player, questId)) {
+                actingName = actingName.withStyle(ChatFormatting.OBFUSCATED);
+            }
+
+            if (actingName.getString().length() > 24) {
+                actingName = Component.literal(actingName.getString().substring(0, 21).strip() + "…");
+            }
+            int textY = listY + (i - startIndex) * lineHeight + 5 + skipLineAmount * lineHeight;
+            guiGraphics.drawString(this.font, "- ", panelX + 5, textY, BeyonderData.pathwayInfos.get(menu.getPathway()).color(), false);
+            guiGraphics.drawString(this.font, actingName, panelX + 15, textY, 0xFFCCCCCC, false);
+
+            if(!Component.translatable("lotm.acting." + questId + ".description").getString().equals("lotm.acting." + questId + ".description")) {
+                Component description = Component.translatable("lotm.acting." + questId + ".description");
+                List<String> wrappedDesc = wrapText(description.getString(), ACTING_PANEL_WIDTH - 20);
+                for (String line : wrappedDesc) {
+                    textY += this.font.lineHeight;
+                    guiGraphics.drawString(this.font, line, panelX + 15, textY, 0xFF888888, false);
+                }
+                skipLineAmount += wrappedDesc.size();
+            }
+        }
+
+        if(actingRequirements.isEmpty()) {
+            Component noReqs = Component.literal("No acting requirements yet").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
+            int textWidth = this.font.width(noReqs);
+            guiGraphics.drawString(this.font, noReqs, panelX + (ACTING_PANEL_WIDTH - textWidth) / 2,
+                    panelY + ACTING_PANEL_HEIGHT / 2 - this.font.lineHeight / 2, 0xFF888888, false);
+        }
+    }
+
+    private static final Map<String, String> SUFFIXES = Map.of(
+            "_while_full_health", "lotm.acting.condition.while_full_health",
+            "_while_low_health", "lotm.acting.condition.while_low_health",
+            "_while_hurt", "lotm.acting.condition.while_hurt",
+            "_at_night", "lotm.acting.condition.at_night"
+    );
+
+    private MutableComponent getActingTaskName(String taskId) {
+        if(taskId.startsWith("use_") && taskId.endsWith("_ability")) {
+            String abilityId = taskId.substring(4);
+            String suffixKey = null;
+            for (String suffix : SUFFIXES.keySet()) {
+                if (abilityId.endsWith(suffix)) {
+                    suffixKey = SUFFIXES.get(suffix);
+                    abilityId = abilityId.substring(0, abilityId.length() - suffix.length());
+                    break;
+                }
+            }
+
+            return Component.translatable("lotm.acting.ability_use").append(Component.translatable("lotmcraft." + abilityId))
+                    .append(suffixKey != null ? Component.translatable(suffixKey) : Component.empty());
+        }
+
+        String suffixKey = null;
+        for (String suffix : SUFFIXES.keySet()) {
+            if (taskId.endsWith(suffix)) {
+                suffixKey = SUFFIXES.get(suffix);
+                taskId = taskId.substring(0, taskId.length() - suffix.length());
+                break;
+            }
+        }
+        return Component.translatable("lotm.acting." + taskId).append(suffixKey != null ? Component.translatable(suffixKey) : Component.empty());
     }
 
     private void renderQuestPanel(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         int baseLeftPos = this.leftPos;
-        // Quest panel now on the right side (same position as abilities)
         int panelX = baseLeftPos + this.imageWidth + 5;
         int panelY = this.topPos;
 
-        // Render completed quests section
         renderCompletedQuestsSection(guiGraphics, panelX, panelY, mouseX, mouseY);
 
-        // Render active quest section
         int activeQuestY = panelY + COMPLETED_QUESTS_HEIGHT + 5;
         renderActiveQuestSection(guiGraphics, panelX, activeQuestY, mouseX, mouseY);
     }
 
     private void renderCompletedQuestsSection(GuiGraphics guiGraphics, int panelX, int panelY, int mouseX, int mouseY) {
-        // Render background
         guiGraphics.fill(panelX, panelY, panelX + QUESTS_PANEL_WIDTH, panelY + COMPLETED_QUESTS_HEIGHT, 0xCC000000);
         guiGraphics.renderOutline(panelX, panelY, QUESTS_PANEL_WIDTH, COMPLETED_QUESTS_HEIGHT, 0xFFAAAAAA);
 
-        // Render label
         Component label = Component.literal("Completed Quests").withStyle(ChatFormatting.BOLD);
         guiGraphics.drawString(this.font, label, panelX + 5, panelY + 5, 0xFFFFFFFF, true);
 
-        // Render completed quests list (scrollable)
         int listY = panelY + 15;
         int listHeight = COMPLETED_QUESTS_HEIGHT - 20;
 
@@ -553,16 +692,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         for (int i = startIndex; i < endIndex; i++) {
             String questId = completedQuests.get(i);
             Component questName = Component.translatable("lotm.quest.impl." + questId);
-            if(questName.getString().length() > 24) {
+            if (questName.getString().length() > 24) {
                 questName = Component.literal(questName.getString().substring(0, 21).strip() + "…");
             }
-
             int textY = listY + (i - startIndex) * lineHeight;
-            guiGraphics.drawString(this.font, "✓", panelX + 5, textY, 0xFF4CAF50, false);
+            guiGraphics.drawString(this.font, "✓ ", panelX + 5, textY, 0xFF4CAF50, false);
             guiGraphics.drawString(this.font, questName, panelX + 15, textY, 0xFFCCCCCC, false);
         }
 
-        // Show scroll indicator if needed
         if (maxCompletedQuestsScroll > 0) {
             Component scrollHint = Component.literal("(Scroll)").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
             int hintWidth = this.font.width(scrollHint);
@@ -572,16 +709,13 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private void renderActiveQuestSection(GuiGraphics guiGraphics, int panelX, int panelY, int mouseX, int mouseY) {
-        // Render background
         guiGraphics.fill(panelX, panelY, panelX + QUESTS_PANEL_WIDTH, panelY + ACTIVE_QUEST_HEIGHT, 0xCC000000);
         guiGraphics.renderOutline(panelX, panelY, QUESTS_PANEL_WIDTH, ACTIVE_QUEST_HEIGHT, 0xFFAAAAAA);
 
-        // Render label
         Component label = Component.literal("Active Quest").withStyle(ChatFormatting.BOLD);
         guiGraphics.drawString(this.font, label, panelX + 5, panelY + 5, 0xFFFFFFFF, true);
 
         if (!ClientQuestData.hasActiveQuest()) {
-            // No active quest
             Component noQuest = Component.literal("No active quest").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
             int textWidth = this.font.width(noQuest);
             guiGraphics.drawString(this.font, noQuest, panelX + (QUESTS_PANEL_WIDTH - textWidth) / 2,
@@ -591,12 +725,11 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         int contentY = panelY + 15;
 
-        // Render quest name
         Component questName = Component.literal(ClientQuestData.getActiveQuestName())
                 .withStyle(ChatFormatting.BOLD)
                 .withColor(BeyonderData.pathwayInfos.get(menu.getPathway()).color());
 
-        if(questName.getString().length() > 24) {
+        if (questName.getString().length() > 24) {
             questName = Component.literal(questName.getString().substring(0, 21).strip() + "…")
                     .withStyle(ChatFormatting.BOLD)
                     .withColor(BeyonderData.pathwayInfos.get(menu.getPathway()).color());
@@ -605,7 +738,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         guiGraphics.drawString(this.font, questName, panelX + 5, contentY, 0xFFFFFFFF, false);
         contentY += this.font.lineHeight + 3;
 
-        // Render quest description (wrapped)
         String description = ClientQuestData.getActiveQuestDescription();
         List<String> wrappedDesc = wrapText(description, QUESTS_PANEL_WIDTH - 10);
         for (String line : wrappedDesc) {
@@ -614,34 +746,27 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
         contentY += 3;
 
-        // Render progress bar
         float progress = ClientQuestData.getActiveQuestProgress();
         int barWidth = QUESTS_PANEL_WIDTH - 10;
         int barHeight = 10;
 
-        // Background
         guiGraphics.fill(panelX + 5, contentY, panelX + 5 + barWidth, contentY + barHeight, 0xFF333333);
-        // Progress
         int progressWidth = (int) (barWidth * progress);
         guiGraphics.fillGradient(panelX + 5, contentY, panelX + 5 + progressWidth, contentY + barHeight,
                 0xFF2196F3, 0xFF1976D2);
-        // Border
         guiGraphics.renderOutline(panelX + 5, contentY, barWidth, barHeight, 0xFF666666);
 
-        // Progress text
-        Component progressText = Component.literal((int)(progress * 100) + "%");
+        Component progressText = Component.literal((int) (progress * 100) + "%");
         int progressTextWidth = this.font.width(progressText);
         guiGraphics.drawString(this.font, progressText,
                 panelX + 5 + (barWidth - progressTextWidth) / 2, contentY + 1, 0xFFFFFFFF, true);
 
         contentY += barHeight + 5;
 
-        // Render rewards label
         Component rewardsLabel = Component.literal("Rewards:").withStyle(ChatFormatting.BOLD);
         guiGraphics.drawString(this.font, rewardsLabel, panelX + 5, contentY, 0xFFFFFFFF, false);
         contentY += this.font.lineHeight + 2;
 
-        // Render reward items
         List<ItemStack> rewards = ClientQuestData.getActiveQuestRewards();
         int rewardX = panelX + 5;
         int rewardY = contentY;
@@ -650,15 +775,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             ItemStack reward = rewards.get(i);
             int x = rewardX + (i % 4) * (QUEST_ITEM_SIZE + 6);
             int y = rewardY + (i / 4) * (QUEST_ITEM_SIZE + 6);
-
-            // Render item
             guiGraphics.renderItem(reward, x, y);
             guiGraphics.renderItemDecorations(this.font, reward, x, y);
         }
 
         contentY += (((rewards.size() - 1) / 4) + 1) * (QUEST_ITEM_SIZE + 6) + 2;
 
-        // Render digestion reward
         int digestion = ClientQuestData.getActiveQuestDigestionReward();
         if (digestion > 0) {
             Component digestionText = Component.literal("+" + digestion + " Digestion").withStyle(ChatFormatting.GOLD);
@@ -670,29 +792,24 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (!ClientQuestData.hasActiveQuest()) return;
 
         int baseLeftPos = this.leftPos;
-        // Quest panel
         int panelX = baseLeftPos + this.imageWidth + 5;
         int panelY = this.topPos + COMPLETED_QUESTS_HEIGHT + 5;
 
-        // Calculate rewards position (simplified - adjust based on actual layout)
         List<ItemStack> rewards = ClientQuestData.getActiveQuestRewards();
         int rewardX = panelX + 5;
-        int rewardY = panelY + 80; // Approximate position
+        int rewardY = panelY + 80;
 
         for (int i = 0; i < rewards.size() && i < 8; i++) {
             ItemStack reward = rewards.get(i);
             int x = rewardX + (i % 4) * (QUEST_ITEM_SIZE + 6);
             int y = rewardY + (i / 4) * (QUEST_ITEM_SIZE + 6);
 
-            if (mouseX >= x && mouseX < x + QUEST_ITEM_SIZE &&
-                    mouseY >= y && mouseY < y + QUEST_ITEM_SIZE) {
+            if (mouseX >= x && mouseX < x + QUEST_ITEM_SIZE && mouseY >= y && mouseY < y + QUEST_ITEM_SIZE) {
                 guiGraphics.renderTooltip(this.font, reward, mouseX, mouseY);
                 return;
             }
         }
     }
-
-    // ===== ABILITY RENDERING METHODS (from original) =====
 
     private void renderAbilityTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         int baseLeftPos = this.leftPos;
@@ -700,19 +817,25 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int panelY = this.topPos + 15;
         int slotY = panelY + ABILITIES_PANEL_HEIGHT + 5;
 
-        // Check for hover over available abilities
-        Ability hoveredAbility = getAbilityAt(mouseX, mouseY, panelX, panelY, availableAbilities, true);
+        Ability hoveredAbility = null;
+        int hoveredSubIndex = -1;
 
-        // If not hovering over available abilities, check current tab's slots
+        int availIdx = getAbilityIndexAt(mouseX, mouseY, panelX, panelY, true);
+        if (availIdx >= 0) {
+            hoveredAbility = availableAbilities.get(availIdx);
+            hoveredSubIndex = (subAbilityEntries.size() > availIdx && subAbilityEntries.get(availIdx) != null)
+                    ? subAbilityEntries.get(availIdx).subIndex() : -1;
+        }
+
         if (hoveredAbility == null) {
             if (currentTab == Tab.ABILITY_WHEEL) {
-                int wheelSlot = getAbilityWheelSlot((int) mouseX, (int) mouseY, panelX, slotY);
+                int wheelSlot = getAbilityWheelSlot(mouseX, mouseY, panelX, slotY);
                 if (wheelSlot >= 0 && wheelSlot < abilityWheelSlots.size()) {
                     hoveredAbility = abilityWheelSlots.get(wheelSlot);
+                    hoveredSubIndex = abilityWheelSubIndexes.get(wheelSlot);
                 }
             } else if (currentTab == Tab.SHARED_ABILITIES && ClientTeamData.hasTeam()) {
                 int iconsPerRow2 = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
-                // Tooltip over sharing pool
                 List<String> allPooledTooltip = getAllPooledAbilities();
                 for (int s = 0; s < allPooledTooltip.size(); s++) {
                     int sRow = s / iconsPerRow2 - sharedPoolScrollOffset;
@@ -724,7 +847,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         break;
                     }
                 }
-                // Tooltip over shared wheel
                 if (hoveredAbility == null) {
                     int wheelY2 = slotY + SHARED_POOL_HEIGHT + 5;
                     int iconsPerRowW2 = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
@@ -737,10 +859,11 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         }
                     }
                 }
-            } else {
-                int barSlot = getAbilityBarSlot((int) mouseX, (int) mouseY, panelX, slotY);
+            } else if (currentTab == Tab.ABILITY_BAR) {
+                int barSlot = getAbilityBarSlot(mouseX, mouseY, panelX, slotY);
                 if (barSlot >= 0 && barSlot < abilityBarSlots.size()) {
                     hoveredAbility = abilityBarSlots.get(barSlot);
+                    hoveredSubIndex = abilityBarSubIndexes.get(barSlot);
                 }
             }
         }
@@ -748,8 +871,17 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (hoveredAbility != null) {
             List<Component> tooltipLines = new ArrayList<>();
 
-            if (showAllAbilities) {
-                tooltipLines.add(hoveredAbility.getNameFormatted());
+            if (hoveredSubIndex >= 0 && hoveredAbility instanceof SelectableAbility sa) {
+                String[] names = sa.getAbilityNamesCopy();
+                if (hoveredSubIndex < names.length) {
+                    int color = showAllAbilities ? 0xFFFFFF : BeyonderData.pathwayInfos.get(menu.getPathway()).color();
+                    tooltipLines.add(Component.translatable(names[hoveredSubIndex]).withStyle(ChatFormatting.BOLD).withColor(color));
+                    tooltipLines.add(Component.literal("(" + hoveredAbility.getNameFormatted(ClientHandler.getPlayer()).getString() + ")").withStyle(ChatFormatting.DARK_GRAY));
+                } else {
+                    tooltipLines.add(hoveredAbility.getNameFormatted(ClientHandler.getPlayer()));
+                }
+            } else if (showAllAbilities) {
+                tooltipLines.add(hoveredAbility.getNameFormatted(ClientHandler.getPlayer()));
             } else {
                 int color = BeyonderData.pathwayInfos.get(menu.getPathway()).color();
                 tooltipLines.add(hoveredAbility.getName().withStyle(ChatFormatting.BOLD).withColor(color));
@@ -758,9 +890,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             Component description = hoveredAbility.getDescription();
             if (description != null) {
                 String descText = description.getString();
-                int maxWidth = 100;
-
-                List<String> wrappedLines = wrapText(descText, maxWidth);
+                List<String> wrappedLines = wrapText(descText, 100);
                 for (String line : wrappedLines) {
                     tooltipLines.add(Component.literal(line).withStyle(ChatFormatting.DARK_GRAY));
                 }
@@ -769,12 +899,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
             int cooldown = hoveredAbility.getCooldown();
             if (cooldown > 0) {
-                tooltipLines.add(Component.literal("Cooldown: ").withStyle(ChatFormatting.DARK_GRAY).append(Component.literal(cooldown / 20 + "s").withStyle(ChatFormatting.BLUE)));
+                tooltipLines.add(Component.literal("Cooldown: ").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.literal(cooldown / 20 + "s").withStyle(ChatFormatting.BLUE)));
             }
 
             float spiritualityCost = hoveredAbility.spiritualityCost();
             if (spiritualityCost > 0) {
-                tooltipLines.add(Component.literal("Spirituality Cost: ").withStyle(ChatFormatting.DARK_GRAY).append(Component.literal(spiritualityCost + "").withStyle(ChatFormatting.DARK_PURPLE)));
+                tooltipLines.add(Component.literal("Spirituality Cost: ").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.literal(spiritualityCost + "").withStyle(ChatFormatting.DARK_PURPLE)));
             }
 
             guiGraphics.renderTooltip(this.font, tooltipLines, java.util.Optional.empty(), mouseX, mouseY);
@@ -794,17 +926,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 lines.add(currentLine.toString());
                 currentLine = new StringBuilder(word);
             } else {
-                if (currentLine.length() > 0) {
-                    currentLine.append(" ");
-                }
+                if (currentLine.length() > 0) currentLine.append(" ");
                 currentLine.append(word);
             }
         }
 
-        if (currentLine.length() > 0) {
-            lines.add(currentLine.toString());
-        }
-
+        if (currentLine.length() > 0) lines.add(currentLine.toString());
         return lines;
     }
 
@@ -837,8 +964,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int startY = panelY - abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2);
 
         List<Ability> displayedAbilities = currentTab == Tab.SHARED_ABILITIES
-                ? availableAbilities.stream().filter(a -> a.canBeShared).toList()
+                ? buildDisplayedSharedAbilities()
                 : availableAbilities;
+
+        List<SubAbilityEntry> displayedEntries = currentTab == Tab.SHARED_ABILITIES
+                ? buildDisplayedSharedEntries()
+                : subAbilityEntries;
 
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
 
@@ -851,9 +982,31 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
             if (y >= panelY && y + ABILITY_ICON_SIZE <= panelY + ABILITIES_PANEL_HEIGHT - 15) {
                 Ability ability = displayedAbilities.get(i);
-                renderAbilityIcon(guiGraphics, ability, x, y);
+                int si = (displayedEntries.size() > i && displayedEntries.get(i) != null)
+                        ? displayedEntries.get(i).subIndex() : -1;
+                renderAbilityIcon(guiGraphics, ability, x, y, si);
             }
         }
+    }
+
+    private List<Ability> buildDisplayedSharedAbilities() {
+        List<Ability> result = new ArrayList<>();
+        for (int i = 0; i < availableAbilities.size(); i++) {
+            Ability a = availableAbilities.get(i);
+            SubAbilityEntry e = subAbilityEntries.size() > i ? subAbilityEntries.get(i) : null;
+            if (e != null || a.canBeShared) result.add(a);
+        }
+        return result;
+    }
+
+    private List<SubAbilityEntry> buildDisplayedSharedEntries() {
+        List<SubAbilityEntry> result = new ArrayList<>();
+        for (int i = 0; i < availableAbilities.size(); i++) {
+            Ability a = availableAbilities.get(i);
+            SubAbilityEntry e = subAbilityEntries.size() > i ? subAbilityEntries.get(i) : null;
+            if (e != null || a.canBeShared) result.add(e);
+        }
+        return result;
     }
 
     private void renderAbilityWheelSection(GuiGraphics guiGraphics, int panelX, int wheelY, int mouseX, int mouseY) {
@@ -879,24 +1032,20 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private void renderAbilityWheel(GuiGraphics guiGraphics, int panelX, int panelY, int mouseX, int mouseY) {
         int startX = panelX + 5;
         int startY = panelY;
-
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
 
         for (int i = 0; i < ABILITY_WHEEL_MAX; i++) {
             int row = i / iconsPerRow;
             int col = i % iconsPerRow;
-
             int x = startX + col * (ABILITY_ICON_SIZE + 2);
             int y = startY + row * (ABILITY_ICON_SIZE + 2);
 
             guiGraphics.fill(x, y, x + ABILITY_ICON_SIZE, y + ABILITY_ICON_SIZE, 0xFF333333);
             guiGraphics.renderOutline(x, y, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, 0xFF666666);
 
-            if (i < abilityWheelSlots.size()) {
-                Ability ability = abilityWheelSlots.get(i);
-                if (draggedFromWheelIndex != i) {
-                    renderAbilityIcon(guiGraphics, ability, x, y);
-                }
+            if (i < abilityWheelSlots.size() && draggedFromWheelIndex != i) {
+                int si = abilityWheelSubIndexes.get(i);
+                renderAbilityIcon(guiGraphics, abilityWheelSlots.get(i), x, y, si);
             }
         }
     }
@@ -904,7 +1053,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private void renderAbilityBar(GuiGraphics guiGraphics, int panelX, int panelY, int mouseX, int mouseY) {
         int startX = panelX + 5;
         int startY = panelY;
-
         int slotWidth = (ABILITIES_PANEL_WIDTH - 10) / ABILITY_BAR_MAX;
         int iconX = (slotWidth - ABILITY_ICON_SIZE) / 2;
 
@@ -915,11 +1063,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             guiGraphics.fill(x, y, x + ABILITY_ICON_SIZE, y + ABILITY_ICON_SIZE, 0xFF333333);
             guiGraphics.renderOutline(x, y, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, 0xFF666666);
 
-            if (i < abilityBarSlots.size()) {
-                Ability ability = abilityBarSlots.get(i);
-                if (draggedFromBarIndex != i) {
-                    renderAbilityIcon(guiGraphics, ability, x, y);
-                }
+            if (i < abilityBarSlots.size() && draggedFromBarIndex != i) {
+                int si = abilityBarSubIndexes.get(i);
+                renderAbilityIcon(guiGraphics, abilityBarSlots.get(i), x, y, si);
             }
 
             String keybind = abbreviateKeybind(KEYBIND_LABELS[i]);
@@ -967,7 +1113,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
             Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
             if (ability != null && draggedFromSharedPoolIndex != i) {
-                renderAbilityIcon(guiGraphics, ability, ix, iy);
+                renderAbilityIcon(guiGraphics, ability, ix, iy, -1);
             }
         }
 
@@ -1002,10 +1148,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 int wy = startY + (i / iconsPerRowW) * (ABILITY_ICON_SIZE + 2);
                 guiGraphics.fill(wx, wy, wx + ABILITY_ICON_SIZE, wy + ABILITY_ICON_SIZE, 0xFF333333);
                 guiGraphics.renderOutline(wx, wy, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, 0xFF666666);
-                if (i < sharedWheelSlots.size()) {
+                if (i < sharedWheelSlots.size() && draggedFromSharedWheelIndex != i) {
                     Ability ability = LOTMCraft.abilityHandler.getById(sharedWheelSlots.get(i));
-                    if (ability != null && draggedFromSharedWheelIndex != i) {
-                        renderAbilityIcon(guiGraphics, ability, wx, wy);
+                    if (ability != null) {
+                        renderAbilityIcon(guiGraphics, ability, wx, wy, -1);
                     }
                 }
             }
@@ -1033,11 +1179,22 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private void renderAbilityIcon(GuiGraphics guiGraphics, Ability ability, int x, int y) {
+        renderAbilityIcon(guiGraphics, ability, x, y, -1);
+    }
+
+    private void renderAbilityIcon(GuiGraphics guiGraphics, Ability ability, int x, int y, int subIndex) {
         if (ability.getTextureLocation() != null) {
             guiGraphics.blit(ability.getTextureLocation(), x, y, 0, 0, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE);
         } else {
             guiGraphics.fill(x, y, x + ABILITY_ICON_SIZE, y + ABILITY_ICON_SIZE, 0xFFFFFFFF);
             guiGraphics.renderOutline(x, y, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, 0xFF000000);
+        }
+        if (subIndex >= 0) {
+            String badge = String.valueOf(subIndex);
+            int bx = x + ABILITY_ICON_SIZE - font.width(badge) - 1;
+            int by = y + ABILITY_ICON_SIZE - font.lineHeight + 1;
+            guiGraphics.fill(bx - 1, by - 1, x + ABILITY_ICON_SIZE, y + ABILITY_ICON_SIZE, 0x99000000);
+            guiGraphics.drawString(font, badge, bx, by, 0xFFFFFF, false);
         }
     }
 
@@ -1046,7 +1203,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         String myUUID = this.minecraft.player.getStringUUID();
         List<String> myContributions = new ArrayList<>(ClientTeamData.getContributionsFor(myUUID));
-        int maxSlots = ClientTeamData.getSlotsPerMember();
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
 
         List<String> allPooled = getAllPooledAbilities();
@@ -1059,6 +1215,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 Ability ability = LOTMCraft.abilityHandler.getById(allPooled.get(i));
                 if (ability == null) return false;
                 draggedAbility = ability;
+                draggedSubIndex = -1;
                 draggedFromSharedPoolIndex = myContributions.contains(allPooled.get(i)) ? i : -1;
                 draggedFromSharedWheelIndex = -1;
                 draggedFromWheelIndex = -1;
@@ -1082,6 +1239,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             if (mouseX >= wx && mouseX <= wx + ABILITY_ICON_SIZE && mouseY >= wy && mouseY <= wy + ABILITY_ICON_SIZE) {
                 if (i < sharedWheelSlots.size()) {
                     draggedAbility = LOTMCraft.abilityHandler.getById(sharedWheelSlots.get(i));
+                    draggedSubIndex = -1;
                     draggedFromSharedWheelIndex = i;
                     draggedFromSharedPoolIndex = -1;
                     draggedFromWheelIndex = -1;
@@ -1098,8 +1256,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         return false;
     }
 
-    // ----- MOUSE INPUT HANDLING -----
-
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && showAbilities) {
@@ -1109,15 +1265,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             int slotY = panelY + ABILITIES_PANEL_HEIGHT + 5;
 
             if (currentTab == Tab.SHARED_ABILITIES) {
-                if (handleSharedTabClick((int) mouseX, (int) mouseY, panelX, slotY)) {
-                    return true;
-                }
+                if (handleSharedTabClick((int) mouseX, (int) mouseY, panelX, slotY)) return true;
             }
 
             if (currentTab == Tab.ABILITY_WHEEL) {
                 int wheelSlot = getAbilityWheelSlot((int) mouseX, (int) mouseY, panelX, slotY);
                 if (wheelSlot >= 0 && wheelSlot < abilityWheelSlots.size()) {
                     draggedAbility = abilityWheelSlots.get(wheelSlot);
+                    draggedSubIndex = abilityWheelSubIndexes.get(wheelSlot);
                     draggedFromWheelIndex = wheelSlot;
                     draggedFromBarIndex = -1;
                     draggedFromAvailable = false;
@@ -1129,6 +1284,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 int barSlot = getAbilityBarSlot((int) mouseX, (int) mouseY, panelX, slotY);
                 if (barSlot >= 0 && barSlot < abilityBarSlots.size()) {
                     draggedAbility = abilityBarSlots.get(barSlot);
+                    draggedSubIndex = abilityBarSubIndexes.get(barSlot);
                     draggedFromBarIndex = barSlot;
                     draggedFromWheelIndex = -1;
                     draggedFromAvailable = false;
@@ -1138,17 +1294,21 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 }
             }
 
-            List<Ability> clickableAbilities = currentTab == Tab.SHARED_ABILITIES
-                    ? availableAbilities.stream().filter(a -> a.canBeShared).toList()
-                    : availableAbilities;
-            Ability clicked = getAbilityAt((int) mouseX, (int) mouseY, panelX, panelY, clickableAbilities, true);
-            if (clicked != null) {
-                draggedAbility = clicked;
+            int availIdx = getAbilityIndexAt((int) mouseX, (int) mouseY, panelX, panelY, true);
+            if (availIdx >= 0) {
+                List<Ability> clickableAbilities = currentTab == Tab.SHARED_ABILITIES
+                        ? buildDisplayedSharedAbilities() : availableAbilities;
+                List<SubAbilityEntry> clickableEntries = currentTab == Tab.SHARED_ABILITIES
+                        ? buildDisplayedSharedEntries() : subAbilityEntries;
+
+                draggedAbility = clickableAbilities.get(availIdx);
+                draggedSubIndex = (clickableEntries.size() > availIdx && clickableEntries.get(availIdx) != null)
+                        ? clickableEntries.get(availIdx).subIndex() : -1;
                 draggedFromWheelIndex = -1;
                 draggedFromBarIndex = -1;
                 draggedFromAvailable = true;
-                dragOffsetX = (int) mouseX - getAbilityX(clicked, panelX, panelY, clickableAbilities, true);
-                dragOffsetY = (int) mouseY - getAbilityY(clicked, panelX, panelY, clickableAbilities, true);
+                dragOffsetX = (int) mouseX - getAbilityXByIndex(availIdx, panelX, panelY, clickableAbilities);
+                dragOffsetY = (int) mouseY - getAbilityYByIndex(availIdx, panelX, panelY);
                 return true;
             }
         }
@@ -1172,29 +1332,39 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         if (draggedFromAvailable) {
                             if (targetSlot < abilityWheelSlots.size()) {
                                 abilityWheelSlots.set(targetSlot, draggedAbility);
+                                abilityWheelSubIndexes.set(targetSlot, draggedSubIndex);
                             } else {
-                                abilityWheelSlots.add(draggedAbility);
-                            }
-                        } else {
-                            if (draggedFromWheelIndex >= 0) {
-                                if (targetSlot < abilityWheelSlots.size() && targetSlot != draggedFromWheelIndex) {
-                                    Ability temp = abilityWheelSlots.get(targetSlot);
-                                    abilityWheelSlots.set(targetSlot, draggedAbility);
-                                    abilityWheelSlots.set(draggedFromWheelIndex, temp);
-                                } else if (targetSlot >= abilityWheelSlots.size()) {
-                                    abilityWheelSlots.remove(draggedFromWheelIndex);
+                                while (abilityWheelSlots.size() < targetSlot) {
                                     abilityWheelSlots.add(draggedAbility);
+                                    abilityWheelSubIndexes.add(-1);
                                 }
+                                abilityWheelSlots.add(draggedAbility);
+                                abilityWheelSubIndexes.add(draggedSubIndex);
+                            }
+                        } else if (draggedFromWheelIndex >= 0) {
+                            if (targetSlot < abilityWheelSlots.size() && targetSlot != draggedFromWheelIndex) {
+                                Ability temp = abilityWheelSlots.get(targetSlot);
+                                int tempSi = abilityWheelSubIndexes.get(targetSlot);
+                                abilityWheelSlots.set(targetSlot, draggedAbility);
+                                abilityWheelSubIndexes.set(targetSlot, draggedSubIndex);
+                                abilityWheelSlots.set(draggedFromWheelIndex, temp);
+                                abilityWheelSubIndexes.set(draggedFromWheelIndex, tempSi);
+                            } else if (targetSlot >= abilityWheelSlots.size()) {
+                                abilityWheelSlots.remove(draggedFromWheelIndex);
+                                abilityWheelSubIndexes.remove(draggedFromWheelIndex);
+                                abilityWheelSlots.add(draggedAbility);
+                                abilityWheelSubIndexes.add(draggedSubIndex);
                             }
                         }
                     }
                 } else {
                     if (!draggedFromAvailable && draggedFromWheelIndex >= 0) {
                         abilityWheelSlots.remove(draggedFromWheelIndex);
+                        abilityWheelSubIndexes.remove(draggedFromWheelIndex);
                     }
                 }
 
-                PacketHandler.sendToServer(new SyncAbilityWheelAbilitiesPacket(abilityWheelSlots.stream().map(Ability::getId).collect(Collectors.toCollection(ArrayList::new))));
+                PacketHandler.sendToServer(new SyncAbilityWheelAbilitiesPacket(wheelSlotsToIdList()));
 
             } else if (currentTab == Tab.ABILITY_BAR) {
                 if (isInAbilityBarArea((int) mouseX, (int) mouseY, panelX, slotY)) {
@@ -1204,35 +1374,41 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         if (draggedFromAvailable) {
                             if (targetSlot < abilityBarSlots.size()) {
                                 abilityBarSlots.set(targetSlot, draggedAbility);
+                                abilityBarSubIndexes.set(targetSlot, draggedSubIndex);
                             } else {
                                 abilityBarSlots.add(draggedAbility);
+                                abilityBarSubIndexes.add(draggedSubIndex);
                             }
-                        } else {
-                            if (draggedFromBarIndex >= 0) {
-                                if (targetSlot < abilityBarSlots.size() && targetSlot != draggedFromBarIndex) {
-                                    Ability temp = abilityBarSlots.get(targetSlot);
-                                    abilityBarSlots.set(targetSlot, draggedAbility);
-                                    abilityBarSlots.set(draggedFromBarIndex, temp);
-                                } else if (targetSlot >= abilityBarSlots.size()) {
-                                    abilityBarSlots.remove(draggedFromBarIndex);
-                                    abilityBarSlots.add(draggedAbility);
-                                }
+                        } else if (draggedFromBarIndex >= 0) {
+                            if (targetSlot < abilityBarSlots.size() && targetSlot != draggedFromBarIndex) {
+                                Ability temp = abilityBarSlots.get(targetSlot);
+                                int tempSi = abilityBarSubIndexes.get(targetSlot);
+                                abilityBarSlots.set(targetSlot, draggedAbility);
+                                abilityBarSubIndexes.set(targetSlot, draggedSubIndex);
+                                abilityBarSlots.set(draggedFromBarIndex, temp);
+                                abilityBarSubIndexes.set(draggedFromBarIndex, tempSi);
+                            } else if (targetSlot >= abilityBarSlots.size()) {
+                                abilityBarSlots.remove(draggedFromBarIndex);
+                                abilityBarSubIndexes.remove(draggedFromBarIndex);
+                                abilityBarSlots.add(draggedAbility);
+                                abilityBarSubIndexes.add(draggedSubIndex);
                             }
                         }
                     }
                 } else {
                     if (!draggedFromAvailable && draggedFromBarIndex >= 0) {
                         abilityBarSlots.remove(draggedFromBarIndex);
+                        abilityBarSubIndexes.remove(draggedFromBarIndex);
                     }
                 }
 
-                PacketHandler.sendToServer(new SyncAbilityBarAbilitiesPacket(abilityBarSlots.stream().map(Ability::getId).collect(Collectors.toCollection(ArrayList::new))));
+                PacketHandler.sendToServer(new SyncAbilityBarAbilitiesPacket(barSlotsToIdList()));
+
             } else if (currentTab == Tab.SHARED_ABILITIES && draggedAbility != null) {
                 int sectionY = panelY + ABILITIES_PANEL_HEIGHT + 5;
                 String myUUID = this.minecraft.player.getStringUUID();
                 List<String> myContributions = new ArrayList<>(ClientTeamData.getContributionsFor(myUUID));
                 String draggedId = draggedAbility.getId();
-                int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
 
                 boolean inPoolArea = (int) mouseX >= panelX && (int) mouseX <= panelX + ABILITIES_PANEL_WIDTH
                         && (int) mouseY >= sectionY && (int) mouseY <= sectionY + SHARED_POOL_HEIGHT;
@@ -1267,8 +1443,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         sharedWheelSlots.remove(draggedFromSharedWheelIndex);
                     }
                 } else if (draggedFromSharedPoolIndex >= 0) {
-                    if (inPoolArea) {
-                    } else if (targetWheelSlot >= 0) {
+                    if (targetWheelSlot >= 0) {
                         List<String> allPooled = getAllPooledAbilities();
                         if (allPooled.contains(draggedId) && !sharedWheelSlots.contains(draggedId)) {
                             if (targetWheelSlot < sharedWheelSlots.size()) {
@@ -1277,7 +1452,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                                 sharedWheelSlots.add(draggedId);
                             }
                         }
-                    } else {
+                    } else if (!inPoolArea) {
                         myContributions.remove(draggedId);
                         sharedWheelSlots.remove(draggedId);
                         ClientData.setSharedWheelAbilities(sharedWheelSlots);
@@ -1307,6 +1482,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             ClientData.setSharedWheelAbilities(sharedWheelSlots);
 
             draggedAbility = null;
+            draggedSubIndex = -1;
             draggedFromWheelIndex = -1;
             draggedFromBarIndex = -1;
             draggedFromSharedWheelIndex = -1;
@@ -1327,9 +1503,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
             if (mouseX >= panelX && mouseX <= panelX + ABILITIES_PANEL_WIDTH &&
                     mouseY >= panelY && mouseY <= panelY + ABILITIES_PANEL_HEIGHT - 15) {
-
-                abilitiesScrollOffset = Math.max(0, Math.min(maxAbilitiesScroll,
-                        abilitiesScrollOffset - (int) scrollY));
+                abilitiesScrollOffset = Math.max(0, Math.min(maxAbilitiesScroll, abilitiesScrollOffset - (int) scrollY));
                 return true;
             }
 
@@ -1337,8 +1511,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 int slotY = this.topPos + 15 + ABILITIES_PANEL_HEIGHT + 5;
                 if (mouseX >= panelX && mouseX <= panelX + ABILITIES_PANEL_WIDTH &&
                         mouseY >= slotY && mouseY <= slotY + SHARED_POOL_HEIGHT) {
-                    sharedPoolScrollOffset = Math.max(0, Math.min(maxSharedPoolScroll,
-                            sharedPoolScrollOffset - (int) scrollY));
+                    sharedPoolScrollOffset = Math.max(0, Math.min(maxSharedPoolScroll, sharedPoolScrollOffset - (int) scrollY));
                     return true;
                 }
             }
@@ -1351,9 +1524,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
             if (mouseX >= panelX && mouseX <= panelX + QUESTS_PANEL_WIDTH &&
                     mouseY >= panelY && mouseY <= panelY + COMPLETED_QUESTS_HEIGHT) {
-
-                completedQuestsScrollOffset = Math.max(0, Math.min(maxCompletedQuestsScroll,
-                        completedQuestsScrollOffset - (int) scrollY));
+                completedQuestsScrollOffset = Math.max(0, Math.min(maxCompletedQuestsScroll, completedQuestsScrollOffset - (int) scrollY));
                 updateCompletedQuestsScroll();
                 return true;
             }
@@ -1362,10 +1533,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
-    // ----- HELPER METHODS FOR ABILITIES -----
-
-    private Ability getAbilityAt(int mouseX, int mouseY, int panelX, int panelY, List<Ability> abilities, boolean useScroll) {
-        mouseY -= 15;
+    private int getAbilityIndexAt(int mouseX, int mouseY, int panelX, int panelY, boolean useScroll) {
+        int adjustedMouseY = mouseY - 15;
         int startX = panelX + 5;
         int startY = panelY - (useScroll ? abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2) : 0);
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
@@ -1373,42 +1542,36 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int clipTop = panelY;
         int clipBottom = panelY + ABILITIES_PANEL_HEIGHT - 15;
 
-        for (int i = 0; i < abilities.size(); i++) {
+        List<Ability> displayedAbilities = currentTab == Tab.SHARED_ABILITIES
+                ? buildDisplayedSharedAbilities() : availableAbilities;
+
+        for (int i = 0; i < displayedAbilities.size(); i++) {
             int row = i / iconsPerRow;
             int col = i % iconsPerRow;
-
             int x = startX + col * (ABILITY_ICON_SIZE + 2);
             int y = startY + row * (ABILITY_ICON_SIZE + 2);
 
             if (y < clipTop || y + ABILITY_ICON_SIZE > clipBottom) continue;
 
             if (mouseX >= x && mouseX <= x + ABILITY_ICON_SIZE &&
-                    mouseY >= y && mouseY <= y + ABILITY_ICON_SIZE) {
-                return abilities.get(i);
+                    adjustedMouseY >= y && adjustedMouseY <= y + ABILITY_ICON_SIZE) {
+                return i;
             }
         }
 
-        return null;
+        return -1;
     }
 
-    private int getAbilityX(Ability ability, int panelX, int panelY, List<Ability> abilities, boolean useScroll) {
-        int index = abilities.indexOf(ability);
-        if (index < 0) return 0;
-
+    private int getAbilityXByIndex(int index, int panelX, int panelY, List<Ability> abilities) {
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
         int col = index % iconsPerRow;
-
         return panelX + 5 + col * (ABILITY_ICON_SIZE + 2);
     }
 
-    private int getAbilityY(Ability ability, int panelX, int panelY, List<Ability> abilities, boolean useScroll) {
-        int index = abilities.indexOf(ability);
-        if (index < 0) return 0;
-
+    private int getAbilityYByIndex(int index, int panelX, int panelY) {
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
         int row = index / iconsPerRow;
-
-        return panelY - (useScroll ? abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2) : 0) + row * (ABILITY_ICON_SIZE + 2) + 15;
+        return panelY - abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2) + row * (ABILITY_ICON_SIZE + 2) + 15;
     }
 
     private boolean isInAbilityWheelArea(int mouseX, int mouseY, int panelX, int wheelY) {
@@ -1429,7 +1592,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         for (int i = 0; i < ABILITY_WHEEL_MAX; i++) {
             int row = i / iconsPerRow;
             int col = i % iconsPerRow;
-
             int x = startX + col * (ABILITY_ICON_SIZE + 2);
             int y = startY + row * (ABILITY_ICON_SIZE + 2);
 
@@ -1438,7 +1600,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 return i;
             }
         }
-
         return -1;
     }
 
@@ -1457,7 +1618,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 return i;
             }
         }
-
         return -1;
     }
 
@@ -1483,12 +1643,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         return barY + 15;
     }
 
-    // ----- BACKGROUND RENDERING -----
-
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
 
@@ -1522,8 +1679,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (pathway.isEmpty()) return;
 
         ResourceLocation textureLocation = ResourceLocation.fromNamespaceAndPath(
-                LOTMCraft.MOD_ID, "textures/item/" + pathway + "_uniqueness.png"
-        );
+                LOTMCraft.MOD_ID, "textures/item/" + pathway + "_uniqueness.png");
 
         int iconSize = 16;
         int iconX = x + 7;
@@ -1542,52 +1698,33 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int color = 0xDDDDDD;
         boolean showKillCount = menu.getPathway().equals("red_priest") && menu.getSequence() <= 3;
         int textY = showKillCount ? 171 : 162;
-        int textX = 7;
-        guiGraphics.drawString(this.font, passiveAbilitiesText, x + textX, y + textY, color, true);
+        guiGraphics.drawString(this.font, passiveAbilitiesText, x + 7, y + textY, color, true);
     }
 
     private void renderSanityLabel(GuiGraphics guiGraphics, int x, int y) {
         Component digestionText = Component.translatable("lotm.sanity").withStyle(ChatFormatting.BOLD);
-        int color = 0xDDDDDD;
-        int textY = 115;
-        int textX = 7;
-        guiGraphics.drawString(this.font, digestionText, x + textX, y + textY, color, true);
+        guiGraphics.drawString(this.font, digestionText, x + 7, y + 115, 0xDDDDDD, true);
     }
 
     private void renderSanityProgress(GuiGraphics guiGraphics, int x, int y) {
-        int barStartY = 132;
-        int barEndY = 143;
-        int barStartX = 3;
-        int barEndX = (int) (115 * menu.getSanity()) + barStartX;
-        int color = 0xFFe8bb68;
-        int color2 = 0xFFF5ad2a;
-        guiGraphics.fillGradient(barStartX + x, barStartY + y, barEndX + x, barEndY + y, color, color2);
+        int barEndX = (int) (115 * menu.getSanity()) + 3;
+        guiGraphics.fillGradient(3 + x, 132 + y, barEndX + x, 143 + y, 0xFFe8bb68, 0xFFF5ad2a);
     }
 
     private void renderDigestionLabel(GuiGraphics guiGraphics, int x, int y) {
         Component digestionText = Component.translatable("lotm.digestion").withStyle(ChatFormatting.BOLD);
-        int color = 0xDDDDDD;
-        int textY = 76;
-        int textX = 7;
-        guiGraphics.drawString(this.font, digestionText, x + textX, y + textY, color, true);
+        guiGraphics.drawString(this.font, digestionText, x + 7, y + 76, 0xDDDDDD, true);
     }
 
     private void renderDigestionProgress(GuiGraphics guiGraphics, int x, int y) {
-        int barStartY = 93;
-        int barEndY = 104;
-        int barStartX = 3;
-        int barEndX = (int) (115 * menu.getDigestionProgress()) + barStartX;
-        int color = 0xFFe36c54;
-        int color2 = 0xFFa8422d;
-        guiGraphics.fillGradient(barStartX + x, barStartY + y, barEndX + x, barEndY + y, color, color2);
-
+        int barEndX = (int) (115 * menu.getDigestionProgress()) + 3;
+        guiGraphics.fillGradient(3 + x, 93 + y, barEndX + x, 104 + y, 0xFFe36c54, 0xFFa8422d);
     }
 
     private void renderSequenceNumber(GuiGraphics guiGraphics, int x, int y) {
-        int color = 0xDDDDDD;
         Player player = playerInventory.player;
         int charStackCount = 0;
-        if(player.level().isClientSide) {
+        if (player.level().isClientSide) {
             charStackCount = ClientBeyonderCache.getCharStack(player.getUUID());
         }
         Component sequenceText = Component.translatable("lotm.sequence")
@@ -1595,31 +1732,19 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 .append(Component.literal(menu.getSequence() + ""))
                 .append(charStackCount > 0 ? " +" + charStackCount : "")
                 .withStyle(ChatFormatting.BOLD);
-
-        int textX = 7;
-        int textY = 7;
-        guiGraphics.drawString(this.font, sequenceText, x + textX, y + textY, color, true);
+        guiGraphics.drawString(this.font, sequenceText, x + 7, y + 7, 0xDDDDDD, true);
     }
 
     private void renderSequenceName(GuiGraphics guiGraphics, int x, int y) {
         int color = BeyonderData.pathwayInfos.get(menu.getPathway()).color();
         Component sequenceNameText = Component.literal(BeyonderData.getSequenceName(menu.getPathway(), menu.getSequence()));
-        int textX = 7;
-        int textY = 28;
-        guiGraphics.drawString(this.font, sequenceNameText, x + textX, y + textY, color, true);
+        guiGraphics.drawString(this.font, sequenceNameText, x + 7, y + 28, color, true);
     }
 
     private void renderPathwaySymbol(GuiGraphics guiGraphics, int x, int y) {
         ResourceLocation iconTexture = ResourceLocation.fromNamespaceAndPath(
-                LOTMCraft.MOD_ID, "textures/gui/icons/" + menu.getPathway() + "_icon.png"
-        );
-        int iconX = 126;
-        int iconY = 3;
-        int iconWidth = 62;
-        int iconHeight = 62;
-        int screenX = x + iconX;
-        int screenY = y + iconY;
-        guiGraphics.blit(iconTexture, screenX, screenY, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
+                LOTMCraft.MOD_ID, "textures/gui/icons/" + menu.getPathway() + "_icon.png");
+        guiGraphics.blit(iconTexture, x + 126, y + 3, 0, 0, 62, 62, 62, 62);
     }
 
     @Override

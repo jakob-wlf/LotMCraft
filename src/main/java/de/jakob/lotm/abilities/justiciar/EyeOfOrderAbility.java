@@ -73,7 +73,7 @@ public class EyeOfOrderAbility extends ToggleAbility {
         if (level.isClientSide) return;
 
         int sequence = BeyonderData.getSequence(entity);
-        int radius = getRadiusForSequence(sequence) *(int) Math.max(multiplier(entity)/4,1);
+        int radius = (int) (getRadiusForSequence(sequence) *multiplier(entity));
 
         BeyonderData.reduceSpirituality(entity, 36);
 

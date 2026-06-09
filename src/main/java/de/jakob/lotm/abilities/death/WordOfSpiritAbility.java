@@ -41,7 +41,7 @@ public class WordOfSpiritAbility extends Ability {
 
         if (InteractionHandler.isInteractionPossibleStrictlyHigher(new Location(entity.position(), level), "purification", BeyonderData.getSequence(entity), -1)) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 25*(int) Math.max(multiplier(entity)/4,1), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (25*multiplier(entity)), 1.5f);
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.word_of_spirit.no_target").withColor(0xFF334f23));
             return;

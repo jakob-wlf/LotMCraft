@@ -70,15 +70,15 @@ public class UnshadowedDomainAbility extends Ability {
         double multiplier = multiplier(entity);
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        ServerScheduler.scheduleForDuration(0, 10, 20 * 20* (int) Math.max(multiplier(entity)/4,1), () -> {
+        ServerScheduler.scheduleForDuration(0, 10, 20 * 20* (int) multiplier(entity), () -> {
             ParticleUtil.spawnParticles((ServerLevel) level, dust, startPos, 120, 25, 5, 25, 0);
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.END_ROD, startPos, 120, 25, 5, 25, 0);
 
-            AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, 40* (int) Math.max(multiplier(entity)/4,1), startPos, new MobEffectInstance(MobEffects.GLOWING, 20 * 2, 1, false, false, false));
-            AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 40* (int) Math.max(multiplier(entity)/4,1))
+            AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, 40* multiplier(entity), startPos, new MobEffectInstance(MobEffects.GLOWING, 20 * 2, 1, false, false, false));
+            AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 40* multiplier(entity))
                     .stream()
-                    .filter(e -> (!BeyonderData.isBeyonder(e) || BeyonderData.getSequence(e) > entitySeq) && (e instanceof Mob || e instanceof Player))
-                    .forEach(e -> e.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION_INDIRECT, entity), (float) (DamageLookup.lookupDps(4, .4, 10, 20) * (int) Math.max(multiplier(entity)/4,1))));
+                    .filter(e -> (AbilityUtil.isUndead(e)) && (e instanceof Mob || e instanceof Player))
+                    .forEach(e -> e.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION_INDIRECT, entity), (float) (DamageLookup.lookupDps(4, .4, 10, 20) * multiplier(entity))));
         }, () -> blocks.forEach(b -> {
             BlockState state = level.getBlockState(b);
             if(state.is(Blocks.LIGHT))

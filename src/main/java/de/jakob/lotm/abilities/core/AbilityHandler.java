@@ -42,10 +42,12 @@ public class AbilityHandler {
 
         // SUN PATHWAY
         abilities.add(new HolySongAbility("holy_song_ability"));
-        abilities.add(new IlluminateAbility("illuminate_ability"));
+        abilities.add(new EvilDetectionAbility("evil_detection_ability"));
+        abilities.add(new SunSpellsAbility("sun_spells_ability"));
         abilities.add(new HolyLightAbility("holy_light_ability"));
         abilities.add(new FireOfLightAbility("fire_of_light_ability"));
         abilities.add(new CleaveOfPurificationAbility("cleave_of_purification_ability"));
+        abilities.add(new SunHaloAbility("sun_halo_ability"));
         abilities.add(new HolyOathAbility("holy_oath_ability"));
         abilities.add(new HolyLightSummoningAbility("holy_light_summoning_ability"));
         abilities.add(new GodSaysItsEffectiveAbility("notary_buff_ability"));
@@ -53,6 +55,7 @@ public class AbilityHandler {
         abilities.add(new LightOfHolinessAbility("light_of_holiness_ability"));
         abilities.add(new PurificationHaloAbility("purification_halo_ability"));
         abilities.add(new FlaringSunAbility("flaring_sun_ability"));
+        abilities.add(new HolyEyeAbility("holy_eye_ability"));
         abilities.add(new UnshadowedSpearAbility("unshadowed_spear_ability"));
         abilities.add(new UnshadowedDomainAbility("unshadowed_domain_ability"));
         abilities.add(new WallOfLightAbility("wall_of_light_ability"));
@@ -83,11 +86,15 @@ public class AbilityHandler {
         abilities.add(new PuppetSoldierCreationAbility("puppet_soldier_creation_ability"));
 
         // TYRANT PATHWAY
+        abilities.add(new IllusoryScalesAbility("illusory_scales_ability"));
+        abilities.add(new WrathAbility("wrath_ability"));
         abilities.add(new RagingBlowsAbility("raging_blows_ability"));
         abilities.add(new WaterManipulationAbility("water_manipulation_ability"));
         abilities.add(new WindManipulationAbility("wind_manipulation_ability"));
+        abilities.add(new BlessingsOfWIndAbility("blessings_of_wind_ability"));
         abilities.add(new LightningAbility("lightning_ability"));
         abilities.add(new SirenSongAbility("siren_song_ability"));
+        abilities.add(new StrongLightningAbility("strong_lightning_ability"));
         abilities.add(new TsunamiAbility("tsunami_ability"));
         abilities.add(new EarthquakeAbility("earthquake_ability"));
         abilities.add(new HurricaneAbility("hurricane_ability"));
@@ -95,6 +102,7 @@ public class AbilityHandler {
         abilities.add(new WaterMasteryAbility("water_mastery_ability"));
         abilities.add(new TorrentialDownpourAbility("torrential_downpour_ability"));
         abilities.add(new LightningStormAbility("lightning_storm_ability"));
+        abilities.add(new WrathOfTheOceanAbility("wrath_of_the_ocean_ability"));
         abilities.add(new ThunderclapAbility("thunderclap_ability"));
         abilities.add(new LightningBranchAbility("lightning_branch_ability"));
         abilities.add(new CalamityCreationAbility("calamity_creation_ability"));

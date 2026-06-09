@@ -62,7 +62,7 @@ public class WorldJudgmentAbility extends Ability {
         }
 
         // First cast: designate target
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 30*(int) Math.max(multiplier(entity)/4,1), 5);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (30*multiplier(entity)), 5);
         if (target == null || target == entity) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.world_judgment.no_target").withColor(color));
             return;

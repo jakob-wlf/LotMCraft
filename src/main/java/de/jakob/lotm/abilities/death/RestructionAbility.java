@@ -89,8 +89,8 @@ public class RestructionAbility extends SelectableAbility {
         serverLevel.playSound(null, entity.blockPosition(), SoundEvents.WITHER_SPAWN, SoundSource.BLOCKS, 1, 1);
 
         List<Mob> mobs = summonedMobs.computeIfAbsent(entity.getUUID(), k -> new ArrayList<>());
-        int SKELETON_COUNT = Math.round(8* Math.max(multiplier(entity)/4,1));
-        int ZOMBIE_COUNT = Math.round(8* Math.max(multiplier(entity)/4,1));
+        int SKELETON_COUNT = Math.round(8* multiplier(entity));
+        int ZOMBIE_COUNT = Math.round(8* multiplier(entity));
         for (int i = 0; i < SKELETON_COUNT; i++) {
             Vec3 spawnPos = findSpawnPos(entity, serverLevel);
 

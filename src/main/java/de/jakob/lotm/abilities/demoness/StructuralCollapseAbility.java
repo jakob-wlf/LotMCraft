@@ -53,7 +53,7 @@ public class StructuralCollapseAbility extends Ability {
         }
 
         // Damage entities
-        AbilityUtil.damageNearbyEntities(serverLevel, entity, 35*(int) Math.max(multiplier(entity)/4,1), DamageLookup.lookupDamage(2, .8) *(int) Math.max(multiplier(entity)/4,1), targetLoc, true, true, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
+        AbilityUtil.damageNearbyEntities(serverLevel, entity, 35*multiplier(entity), DamageLookup.lookupDamage(2, .8) *multiplier(entity), targetLoc, true, true, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
 
         // Play Effect
         EffectManager.playEffect(EffectManager.Effect.COLLAPSE, targetLoc.x, targetLoc.y - 1.5, targetLoc.z, serverLevel, entity);

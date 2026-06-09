@@ -43,7 +43,7 @@ public class ExecutionAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity caster) {
         if (level.isClientSide) return;
         ServerLevel serverLevel = (ServerLevel) level;
-        LivingEntity target = AbilityUtil.getTargetEntity(caster, 20 * (int) Math.max(multiplier(caster) / 4, 1), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(caster, (int) (20 * multiplier(caster)), 1.5f);
 
         int targetSeq = BeyonderData.getSequence(target);
         int seq = BeyonderData.getSequence(caster);

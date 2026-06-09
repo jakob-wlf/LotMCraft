@@ -177,7 +177,7 @@ public class WindManipulationAbility extends SelectableAbility {
         Location loc = new Location(targetPos, level);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 13* (int) Math.max(multiplier(entity)/4,1), () -> {
+        ServerScheduler.scheduleForDuration(0, 1, (int) (20 * 13* multiplier(entity)), () -> {
             for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, targetPos, 2.5)) {
                 // Blink Escape - only the bound entity can free itself
                 if(InteractionHandler.isInteractionPossibleForEntity(loc, "blink_escape", entitySeq, e)) {
@@ -206,7 +206,7 @@ public class WindManipulationAbility extends SelectableAbility {
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, entity.position(), 45, .5, .25);
 
         Vec3 dir = entity.getLookAngle().normalize();
-        dir = dir.multiply(2* (int) Math.max(multiplier(entity)/4,1), 3* (int) Math.max(multiplier(entity)/4,1), 2* (int) Math.max(multiplier(entity)/4,1));
+        dir = dir.multiply(2* multiplier(entity), 3* multiplier(entity), 2* multiplier(entity));
         entity.setDeltaMovement(dir);
 
         entity.hurtMarked = true;
@@ -223,9 +223,9 @@ public class WindManipulationAbility extends SelectableAbility {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BREEZE_WIND_CHARGE_BURST, entity.getSoundSource(), 1.0f, 1.0f);
 
-        WindBladeEntity blade = new WindBladeEntity(level, entity, DamageLookup.lookupDamage(6, .75) * (int) Math.max(multiplier(entity)/4,1), BeyonderData.isGriefingEnabled(entity));
+        WindBladeEntity blade = new WindBladeEntity(level, entity, DamageLookup.lookupDamage(6, .75) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
         blade.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
-        blade.shoot(direction.x, direction.y, direction.z, 2.4f* (int) Math.max(multiplier(entity)/4,1), 0);
+        blade.shoot(direction.x, direction.y, direction.z, 2.4f* multiplier(entity), 0);
         level.addFreshEntity(blade);
     }
 }

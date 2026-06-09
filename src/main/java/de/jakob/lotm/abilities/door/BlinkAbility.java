@@ -1,13 +1,19 @@
 package de.jakob.lotm.abilities.door;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.demoness.CharmAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.TeleportationUtil;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -18,9 +24,15 @@ import org.apache.logging.log4j.core.jmx.Server;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class BlinkAbility extends Ability {
+public class BlinkAbility extends SelectableAbility {
+
+    private final HashSet<UUID> performingBlinkBarrage = new HashSet<>();
+
     public BlinkAbility(String id) {
         super(id, .1f, "blink_escape", "escape");
         interactionRadius = 3;
@@ -34,7 +46,7 @@ public class BlinkAbility extends Ability {
 
     @Override
     public float getSpiritualityCost() {
-        return 250;
+        return 210;
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(
@@ -48,11 +60,70 @@ public class BlinkAbility extends Ability {
     );
 
     @Override
-    public void onAbilityUse(Level level, LivingEntity entity) {
+    protected String[] getAbilityNames() {
+        return new String[]{"ability.lotmcraft.blink.blink", "ability.lotmcraft.blink.barrage"};
+    }
+
+    @Override
+    protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
+        switch (selectedAbility) {
+            case 0 -> performBlink(level, entity);
+            case 1 -> blinkBarrage(level, entity);
+        }
+    }
+
+    private void blinkBarrage(Level level, LivingEntity entity) {
+        if(level.isClientSide) return;
+
+        if(performingBlinkBarrage.contains(entity.getUUID())) return;
+
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 10, 1f);
+        if(target == null) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("lotmcraft.no_target").withColor(0x00AAFF));
+            return;
+        }
+
+        if(BeyonderData.getSpirituality(entity) < 950) return;
+
+        BeyonderData.reduceSpirituality(entity, 950);
+
+        Vec3 originalPos = entity.position();
+
+        performingBlinkBarrage.add(entity.getUUID());
+        AtomicBoolean isAtTarget = new AtomicBoolean(false);
+        ServerScheduler.scheduleForDuration(0, 2, 20 * 3, () -> {
+            Vec3 targetPos = target.position();
+            if(!isAtTarget.get()) {
+                target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) DamageLookup.lookupDamage(5, .1f) * multiplier(entity) * .45f);
+                isAtTarget.set(true);
+            }
+            else {
+                targetPos = target.position().add((random.nextDouble() - .5) * 12, random.nextDouble() * 4, (random.nextDouble() - .5) * 12);
+                isAtTarget.set(false);
+            }
+
+            level.playSound(null, targetPos.x, targetPos.y, targetPos.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
+
+            entity.teleportTo(targetPos.x, targetPos.y, targetPos.z);
+
+            if (BeyonderData.getSequence(entity) <= 5) {
+                CharmAbility.removeCharm(entity.getUUID());
+            }
+
+            ParticleUtil.spawnParticles((ServerLevel) level, dust, targetPos.add(0, .5, 0), 30, .4, 1, .4, 0);
+            ParticleUtil.spawnParticles((ServerLevel) level, dust2, targetPos.add(0, .5, 0), 30, .4, 1, .4, 0);
+            ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.END_ROD, targetPos.add(0, .5, 0), 30, .4, 1, .4, 0);
+        }, () -> {
+            entity.teleportTo(originalPos.x, originalPos.y, originalPos.z);
+            performingBlinkBarrage.remove(entity.getUUID());
+        }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
+    }
+
+    private void performBlink(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 
-        Vec3 targetLocBuff = AbilityUtil.getTargetBlock(entity, 8*(int) Math.max(multiplier(entity)/4,1), true).getCenter().add(0, 1, 0);
+        Vec3 targetLocBuff = AbilityUtil.getTargetBlock(entity, 8*multiplier(entity), true).getCenter().add(0, 1, 0);
         var targetLoc = TeleportationUtil.clampToBorder((ServerLevel) level, targetLocBuff);
 
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);

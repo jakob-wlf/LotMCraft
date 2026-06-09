@@ -368,7 +368,7 @@ public class ConcealmentAbility extends SelectableAbility {
                 duration = 80*(int) Math.max(multiplier/2,1);
             };
         }else{
-            duration = 20 * 10*(int) Math.max(multiplier/2,1)/  (int) Math.max(multiplier_target/4,1);
+            duration = 20 * 10*(int) Math.max(multiplier/2,1)/  (int) multiplier_target;
         };
 
         if(!BeyonderData.isBeyonder(targetEntity) || targetEntitySeq > entitySeq-1 ) {

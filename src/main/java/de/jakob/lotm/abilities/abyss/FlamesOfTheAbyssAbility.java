@@ -65,7 +65,7 @@ public class FlamesOfTheAbyssAbility extends SelectableAbility {
 
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 80, 1.5f);
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
-        float damage = (float) (DamageLookup.lookupDamage(1, 0.85) * (int) Math.max(multiplier(entity)/4,1));
+        float damage = (float) (DamageLookup.lookupDamage(1, 0.85) * multiplier(entity));
 
         level.playSound(null, BlockPos.containing(entity.position()),
                 SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 3f, 0.6f);
@@ -102,7 +102,7 @@ public class FlamesOfTheAbyssAbility extends SelectableAbility {
         level.playSound(null, BlockPos.containing(entity.position()),
                 SoundEvents.BLAZE_SHOOT, SoundSource.BLOCKS, 3f, 0.5f);
 
-        float damage = (float) (DamageLookup.lookupDamage(1, 0.4) * (int) Math.max(multiplier(entity)/4,1));
+        float damage = (float) (DamageLookup.lookupDamage(1, 0.4) * multiplier(entity));
 
         List<Vec3> pillarPositions = new ArrayList<>();
 

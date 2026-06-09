@@ -44,7 +44,7 @@ public class RecognitionAbility extends ToggleAbility {
         if (level.isClientSide) return;
         if (entity.tickCount % 10 != 0) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 40 * (int) Math.max(multiplier(entity) / 4, 1), 1.5f, true);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (40 * multiplier(entity)), 1.5f, true);
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.literal("§6⚖ §7No target in sight §6⚖"));

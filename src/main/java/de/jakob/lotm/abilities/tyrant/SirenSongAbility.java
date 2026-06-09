@@ -11,6 +11,7 @@ import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
@@ -59,21 +60,21 @@ public class SirenSongAbility extends SelectableAbility {
 
     private void dazingSong(ServerLevel level, LivingEntity entity) {
         Location supplier = new Location(entity.getEyePosition().add(0, .1, 0), level);
-        ParticleUtil.createExpandingParticleSpirals(ParticleTypes.NOTE, supplier, 1, 10, 2, .5, 5, 20 * 20* (int) Math.max(multiplier(entity)/4,1), 20, 5);
+        ParticleUtil.createExpandingParticleSpirals((ParticleOptions) ParticleTypes.NOTE, supplier, 1.0, 10.0, 2.0, .5, 5.0, (int) (20 * 20* multiplier(entity)), 20, 5);
 
         level.playSound(null, BlockPos.containing(entity.position()), ModSounds.DAZING_SONG.get(), SoundSource.BLOCKS, 1, 1);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
         final UUID[] posTrackerHolder = new UUID[1];
-        posTrackerHolder[0] = ServerScheduler.scheduleForDuration(0,  2, 20 * 20* (int) Math.max(multiplier(entity)/4,1), () -> {
+        posTrackerHolder[0] = ServerScheduler.scheduleForDuration(0,  2, (int) (20 * 20* multiplier(entity)), () -> {
             if(entity.level().isClientSide)
                 return;
             supplier.setPosition(entity.position());
             supplier.setLevel(entity.level());
         }, level);
         final UUID[] effectHolder = new UUID[1];
-        effectHolder[0] = ServerScheduler.scheduleForDuration(0,  18, 20 * 20* (int) Math.max(multiplier(entity)/4,1), () -> {
+        effectHolder[0] = ServerScheduler.scheduleForDuration(0,  18, (int) (20 * 20* multiplier(entity)), () -> {
             if(entity.level().isClientSide)
                 return;
 
@@ -89,7 +90,7 @@ public class SirenSongAbility extends SelectableAbility {
 
     private void buffSong(ServerLevel level, LivingEntity entity) {
         Location loc = new Location(entity.getEyePosition().add(0, .1, 0), level);
-        ParticleUtil.createParticleSpirals(ModParticles.GOLDEN_NOTE.get(), loc, 3, 3, 4, .35, 5, 20 * 20* (int) Math.max(multiplier(entity)/4,1), 15, 8);
+        ParticleUtil.createParticleSpirals((ParticleOptions) ModParticles.GOLDEN_NOTE.get(), loc, 3.0, 3, 4, .35, 5, 20 * 20* (int) multiplier(entity), 15, 8);
 
         BeyonderData.addModifier(entity, "buff_song", 1.5);
 
@@ -101,34 +102,34 @@ public class SirenSongAbility extends SelectableAbility {
         int strengthLevel = strength == null ? 1 : strength.getAmplifier() + 1;
         int speedLevel = speed == null ? 1 : speed.getAmplifier() + 1;
 
-        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 20* (int) Math.max(multiplier(entity)/4,1), strengthLevel, false, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 20* (int) Math.max(multiplier(entity)/4,1), speedLevel, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, (int) (20 * 20* multiplier(entity)), strengthLevel, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, (int) (20 * 20* multiplier(entity)), speedLevel, false, false, false));
 
-        ServerScheduler.scheduleForDuration(0,  2, 20 * 20* (int) Math.max(multiplier(entity)/4,1), () -> {
+        ServerScheduler.scheduleForDuration(0,  2, (int) (20 * 20* multiplier(entity)), () -> {
             if(entity.level().isClientSide)
                 return;
             loc.setPosition(entity.position());
             loc.setLevel(entity.level());
         }, level);
-        ServerScheduler.scheduleDelayed(20 * 20* (int) Math.max(multiplier(entity)/4,1), () -> BeyonderData.removeModifier(entity, "buff_song"));
+        ServerScheduler.scheduleDelayed((int) (20 * 20* multiplier(entity)), () -> BeyonderData.removeModifier(entity, "buff_song"));
     }
 
     private void deathMelody(ServerLevel level, LivingEntity entity) {
         Location supplier = new Location(entity.position(), level);
-        ParticleUtil.createExpandingParticleSpirals(ModParticles.BLACK_NOTE.get(), supplier, 1, 11, 4, .35, 5, 20 * 20* (int) Math.max(multiplier(entity)/4,1), 40, 10);
+        ParticleUtil.createExpandingParticleSpirals((ParticleOptions) ModParticles.BLACK_NOTE.get(), supplier, 1, 11, 4, .35, 5, 20 * 20* (int) multiplier(entity), 40, 10);
 
         level.playSound(null, BlockPos.containing(entity.position()), ModSounds.DEATH_MELODY.get(), SoundSource.BLOCKS, 1, 1);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         final UUID[] posTrackerHolder = new UUID[1];
-        posTrackerHolder[0] = ServerScheduler.scheduleForDuration(0,  2, 20 * 20* (int) Math.max(multiplier(entity)/4,1), () -> {
+        posTrackerHolder[0] = ServerScheduler.scheduleForDuration(0,  2, (int) (20 * 20* multiplier(entity)), () -> {
             if(entity.level().isClientSide)
                 return;
             supplier.setPosition(entity.position());
             supplier.setLevel(entity.level());
         }, level);
         final UUID[] effectHolder = new UUID[1];
-        effectHolder[0] = ServerScheduler.scheduleForDuration(0,  18, 20 * 20* (int) Math.max(multiplier(entity)/4,1), () -> {
+        effectHolder[0] = ServerScheduler.scheduleForDuration(0,  18, (int) (20 * 20* multiplier(entity)), () -> {
             if(entity.level().isClientSide)
                 return;
 
@@ -138,7 +139,7 @@ public class SirenSongAbility extends SelectableAbility {
                 return;
             }
 
-            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 25, DamageLookup.lookupDps(5,  .65, 18, 20) * (int) Math.max(multiplier(entity)/4,1), entity.position(), true, false, true, 0);
+            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 25, DamageLookup.lookupDps(5,  .65, 18, 20) * multiplier(entity), entity.position(), true, false, true, 0);
         }, level);
     }
 }

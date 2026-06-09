@@ -4,6 +4,11 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.abilities.error.ParasitationAbility;
 import de.jakob.lotm.attachments.*;
+import de.jakob.lotm.acting.ActingTaskRegistry;
+import de.jakob.lotm.attachments.AbilityCooldownComponent;
+import de.jakob.lotm.attachments.ControllingDataComponent;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
@@ -101,7 +106,8 @@ public abstract class Ability {
 
         // Digest potion
         if(!doesNotIncreaseDigestion && newUser instanceof Player player) {
-            BeyonderData.digest(player, getDigestionProgressForUse(newUser), true);
+            if(ActingTaskRegistry.getTasksFor(BeyonderData.getPathway(player), BeyonderData.getSequence(player)).isEmpty())
+                BeyonderData.digest(player, getDigestionProgressForUse(newUser), true);
         }
 
         // Handle Cooldown
@@ -277,10 +283,7 @@ public abstract class Ability {
 
         float cooldownMultiplier = Math.clamp(((float) cooldown) / (20 * 7), .2f, 2.25f);
 
-        float rawDigestion = (1f / (80f * Math.max(.5f, ((10 - requiredSequence) * .5f)))) * cooldownMultiplier;
-        float digestion = rawDigestion * (entity.level().getGameRules().getInt(ModGameRules.DIGESTION_RATE) / 10f);
-
-        return digestion;
+        return (1f / (80f * Math.max(.5f, ((10 - requiredSequence) * .5f)))) * cooldownMultiplier;
     }
 
     public ResourceLocation getTextureLocation() {
@@ -305,6 +308,18 @@ public abstract class Ability {
         int color = BeyonderData.pathwayInfos.get(pathway).color();
         return getName().withStyle(ChatFormatting.BOLD).withColor(color);
     }
+
+    public Component getNameFormatted(LivingEntity entity) {
+        if(getRequirements().isEmpty()) {
+            return Component.translatable("lotmcraft." + getId()).withStyle(ChatFormatting.BOLD);
+        }
+
+        String pathway = BeyonderData.getPathway(entity);
+
+        int color = BeyonderData.pathwayInfos.containsKey(pathway) ? BeyonderData.pathwayInfos.get(pathway).color() : 0xFFFFFF;
+        return getName().withStyle(ChatFormatting.BOLD).withColor(color);
+    }
+
 
     @Nullable
     public Component getDescription() {

@@ -87,7 +87,7 @@ public class MentalPlagueAbility extends SelectableAbility {
     private void place(LivingEntity entity, Level level){
         if(level.isClientSide) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 30* (int) Math.max(multiplier(entity)/4,1), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (30* multiplier(entity)), 2);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mental_plague.no_target").withColor(0xf5ca7f));
             return;

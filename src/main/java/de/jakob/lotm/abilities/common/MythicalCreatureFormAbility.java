@@ -159,7 +159,7 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
         switch (pathway){
             case "tyrant":
                 if(random.nextInt(6) == 0) {
-                    LightningEntity lightning = new LightningEntity(level, entity, e.position(), 50, 6, DamageLookup.lookupDamage(4, .7) * (int) Math.max(multiplier(entity)/4,1), false, 4, 200, 0x11A8DD);
+                    LightningEntity lightning = new LightningEntity(level, entity, e.position(), 50, 6, DamageLookup.lookupDamage(4, .7) * multiplier(entity), false, 4, 200, 0x11A8DD);
                     level.addFreshEntity(lightning);
                 }
                 break;

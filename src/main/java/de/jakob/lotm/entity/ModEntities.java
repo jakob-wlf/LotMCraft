@@ -309,6 +309,13 @@ public class ModEntities {
                     .updateInterval(1)
                     .build("lightning"));
 
+    public static final Supplier<EntityType<StrongLightningEntity>> STRONG_LIGHTNING =
+            ENTITY_TYPES.register("strong_lightning", () -> EntityType.Builder.<StrongLightningEntity>of(StrongLightningEntity::new, MobCategory.MISC)
+                    .sized(0.1f, 0.1f)
+                    .clientTrackingRange(64)
+                    .updateInterval(1)
+                    .build("strong_lightning"));
+
     public static final Supplier<EntityType<GiantLightningEntity>> GIANT_LIGHTNING =
             ENTITY_TYPES.register("giant_lightning", () -> EntityType.Builder.<GiantLightningEntity>of(GiantLightningEntity::new, MobCategory.MISC)
                     .sized(0.1f, 0.1f)
