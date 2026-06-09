@@ -5,6 +5,7 @@ import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.RequestRiverBlessingScreenPacket;
 import de.jakob.lotm.network.packets.toServer.RequestRiverImprintScreenPacket;
+import de.jakob.lotm.network.packets.toServer.RequestRiverVaultScreenPacket;
 import de.jakob.lotm.network.packets.toServer.ToggleSefirotAuthorityAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.pathways.PathwayInfos;
@@ -147,6 +148,12 @@ public class RiverSefirotAuthorityScreen extends AbstractContainerScreen<RiverSe
                 b -> openBlessingScreen())
                 .bounds(leftPos + 4, topPos + PANEL_HEIGHT - 20, 74, 16).build());
 
+        // "Soul Vault" button to the right of Blessings
+        addRenderableWidget(Button.builder(
+                Component.literal("\u26B1 Soul Vault").withStyle(ChatFormatting.DARK_PURPLE),
+                b -> openVaultScreen())
+                .bounds(leftPos + 82, topPos + PANEL_HEIGHT - 20, 74, 16).build());
+
         unlocked.clear();
         unlocked.addAll(menu.getUnlockedIds());
     }
@@ -160,6 +167,11 @@ public class RiverSefirotAuthorityScreen extends AbstractContainerScreen<RiverSe
 
     private void openBlessingScreen() {
         PacketHandler.sendToServer(new RequestRiverBlessingScreenPacket());
+        this.onClose();
+    }
+
+    private void openVaultScreen() {
+        PacketHandler.sendToServer(new RequestRiverVaultScreenPacket());
         this.onClose();
     }
 

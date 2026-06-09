@@ -21,7 +21,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 public class WheelSelectionScreen extends Screen {
 
     private static final int PANEL_W = 200;
-    private static final int PANEL_H = 134;
+    private static final int PANEL_H = 182;
 
     private static final int COL_BG      = 0xF0060010;
     private static final int COL_OUTLINE = 0xFF440088;
@@ -85,6 +85,30 @@ public class WheelSelectionScreen extends Screen {
                                     de.jakob.lotm.gui.custom.CharExchange.CharExchangeSelectScreen.Mode.PATH_EXCHANGE));
                 })
                 .bounds(btnX, cy + 94, btnW, 20)
+                .build());
+
+        // Recipe Exchange
+        addRenderableWidget(Button.builder(
+                Component.literal("\u2318 Recipe Exchange").withStyle(ChatFormatting.YELLOW),
+                b -> {
+                    onClose();
+                    Minecraft.getInstance().setScreen(
+                            new de.jakob.lotm.gui.custom.CharExchange.RecipeExchangeSelectScreen(
+                                    de.jakob.lotm.gui.custom.CharExchange.RecipeExchangeSelectScreen.Mode.EXCHANGE));
+                })
+                .bounds(btnX, cy + 118, btnW, 20)
+                .build());
+
+        // Recipe Path Exchange
+        addRenderableWidget(Button.builder(
+                Component.literal("\u2318 Recipe Path Exchange").withStyle(ChatFormatting.GREEN),
+                b -> {
+                    onClose();
+                    Minecraft.getInstance().setScreen(
+                            new de.jakob.lotm.gui.custom.CharExchange.RecipeExchangeSelectScreen(
+                                    de.jakob.lotm.gui.custom.CharExchange.RecipeExchangeSelectScreen.Mode.PATH_EXCHANGE));
+                })
+                .bounds(btnX, cy + 142, btnW, 20)
                 .build());    }
 
     @Override

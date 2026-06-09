@@ -79,8 +79,11 @@ public class DeathImprintHandler {
             data.addPermanentRiverSoul(dyingPlayer.getUUID());
         }
 
-        // If they died while trapped by River's Call, deliver their soul to any online death-path player
+        // If they died while trapped by River's Call, release the trap and deliver their soul
         if (data.isTrappedInRiver(dyingPlayer.getUUID())) {
+            data.releaseFromRiver(dyingPlayer.getUUID());
+            trapReturnLevel.remove(dyingPlayer.getUUID());
+            trapReturnCoords.remove(dyingPlayer.getUUID());
             for (ServerPlayer online : serverLevel.getServer().getPlayerList().getPlayers()) {
                 if (de.jakob.lotm.abilities.death.InternalUnderworldAbility.tryCaptureRiverVictim(online, dyingPlayer)) {
                     break; // only the first eligible death-path player receives the soul
@@ -177,8 +180,11 @@ public class DeathImprintHandler {
                     } else if (!inRiverDim) {
                         // Allow a grace period for the cross-dimensional teleport to commit
                         if (expiry - tick <= RIVERS_CALL_DURATION_TICKS - RIVERS_CALL_GRACE_TICKS) {
-                            player.hurt(player.level().damageSources().fellOutOfWorld(), Float.MAX_VALUE);
+                            // Release BEFORE hurting so anti-death abilities cannot loop the enforcement kill
                             data.releaseFromRiver(uuid);
+                            trapReturnLevel.remove(uuid);
+                            trapReturnCoords.remove(uuid);
+                            player.hurt(player.level().damageSources().fellOutOfWorld(), Float.MAX_VALUE);
                         }
                     } else {
                         // Strip Regeneration effect every tick so it cannot outheal the river damage

@@ -486,7 +486,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 .build();
 
 
-        if(menu.getSequence() < 4) {
+        if(menu.getSequence() < 4 || menu.isSefirotOwner()) {
             this.addRenderableWidget(messageButton);
         }
 
@@ -682,7 +682,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private void openHonorificNamesMenu() {
-        if(menu.getSequence() >= 4) {
+        if(menu.getSequence() >= 4 && !menu.isSefirotOwner()) {
             return;
         }
         PacketHandler.sendToServer(new OpenHonorificNamesMenuPacket());

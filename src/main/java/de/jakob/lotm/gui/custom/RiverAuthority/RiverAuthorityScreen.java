@@ -3,6 +3,7 @@ package de.jakob.lotm.gui.custom.RiverAuthority;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.RiverAuthorityActionPacket;
 import de.jakob.lotm.network.packets.toServer.RequestAbilitySealScreenPacket;
+import de.jakob.lotm.LOTMCraft;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -17,7 +18,9 @@ import net.minecraft.core.component.DataComponents;
 import com.mojang.authlib.GameProfile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthorityMenu> {
@@ -26,11 +29,12 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
     private static final int PANEL_HEIGHT = 220;
 
     // Left panel: imprint list
-    private static final int LIST_X      = 8;
-    private static final int LIST_Y      = 30;
-    private static final int HEAD_SIZE   = 16;
-    private static final int HEAD_GAP    = 4;
-    private static final int HEAD_STEP   = HEAD_SIZE + HEAD_GAP;
+    private static final int LIST_X         = 8;
+    private static final int LIST_Y         = 30;
+    private static final int HEAD_SIZE      = 16;
+    private static final int HEAD_GAP       = 4;
+    private static final int HEAD_STEP      = HEAD_SIZE + HEAD_GAP;
+    private static final int SECTION_HEADER_H = 10;
 
     // Right panel: action area
     private static final int DETAIL_X    = 154;
@@ -41,8 +45,8 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
     private int  selectedTier   = 0;
     private String selectedName = "";
 
-    /** Pre-computed skull items per entry index. */
-    private final List<ItemStack> headStacks = new ArrayList<>();
+    /** Pre-computed skull items keyed by player UUID. */
+    private final Map<UUID, ItemStack> headStacks = new HashMap<>();
 
     private Button riversCallButton;
     private Button locateButton;
@@ -65,7 +69,7 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
             ItemStack skull = new ItemStack(Items.PLAYER_HEAD);
             GameProfile profile = new GameProfile(e.uuid(), e.name());
             skull.set(DataComponents.PROFILE, new ResolvableProfile(profile));
-            headStacks.add(skull);
+            headStacks.put(e.uuid(), skull);
         }
 
         // Action buttons: stack 3 buttons (18px each, 4px gap) with 8px bottom margin
@@ -136,22 +140,44 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
 
     private void renderImprintList(GuiGraphics g, int mouseX, int mouseY) {
         List<RiverAuthorityMenu.ImprintEntry> entries = menu.getEntries();
-        int maxCols = (DETAIL_X - LIST_X - 8) / HEAD_STEP;
-        int idx = 0;
+        if (entries.isEmpty()) {
+            g.drawString(font, Component.literal("No imprints yet.").withStyle(ChatFormatting.DARK_GRAY),
+                    leftPos + LIST_X, topPos + LIST_Y, 0xFF555555, false);
+            return;
+        }
 
-        for (RiverAuthorityMenu.ImprintEntry entry : entries) {
-            int col = idx % maxCols;
-            int row = idx / maxCols;
-            int x = leftPos + LIST_X + col * HEAD_STEP;
-            int y = topPos + LIST_Y + row * HEAD_STEP;
+        int maxCols = Math.max(1, (DETAIL_X - LIST_X - 8) / HEAD_STEP);
+        int[][] positions = getHeadPositions();
+        long onlineCount = entries.stream().filter(RiverAuthorityMenu.ImprintEntry::online).count();
+        boolean hasOffline = entries.stream().anyMatch(e -> !e.online());
 
-            if (idx < headStacks.size()) {
-                g.renderFakeItem(headStacks.get(idx), x, y);
+        // "Online" section header
+        g.drawString(font, Component.literal("\u25cf Online").withStyle(ChatFormatting.GREEN),
+                leftPos + LIST_X, topPos + LIST_Y, 0xFF55FF55, false);
+
+        // "Offline" section header (below the online block)
+        if (hasOffline) {
+            int onlineRows = onlineCount == 0 ? 0 : (int)((onlineCount - 1) / maxCols + 1);
+            int offlineHeaderY = topPos + LIST_Y + SECTION_HEADER_H + onlineRows * HEAD_STEP + 4;
+            g.drawString(font, Component.literal("\u25cf Offline").withStyle(ChatFormatting.DARK_GRAY),
+                    leftPos + LIST_X, offlineHeaderY, 0xFF888888, false);
+        }
+
+        for (int idx = 0; idx < entries.size(); idx++) {
+            RiverAuthorityMenu.ImprintEntry entry = entries.get(idx);
+            int x = positions[idx][0];
+            int y = positions[idx][1];
+
+            ItemStack skull = headStacks.get(entry.uuid());
+            if (skull != null) g.renderFakeItem(skull, x, y);
+
+            // Tier indicator dot (top-right corner)
+            g.fill(x + HEAD_SIZE - 4, y, x + HEAD_SIZE, y + 4, tierColor(entry.imprintTier()));
+
+            // Online indicator dot (bottom-left corner)
+            if (entry.online()) {
+                g.fill(x, y + HEAD_SIZE - 4, x + 4, y + HEAD_SIZE, 0xFF55FF55);
             }
-
-            // Tier indicator dot
-            int dotColor = tierColor(entry.imprintTier());
-            g.fill(x + HEAD_SIZE - 4, y, x + HEAD_SIZE, y + 4, dotColor);
 
             // Selection highlight
             if (entry.uuid().equals(selectedUUID)) {
@@ -162,18 +188,22 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
             if (mouseX >= x && mouseX < x + HEAD_SIZE && mouseY >= y && mouseY < y + HEAD_SIZE) {
                 List<Component> tooltip = new ArrayList<>();
                 tooltip.add(Component.literal(entry.name()).withStyle(ChatFormatting.WHITE, ChatFormatting.BOLD));
+                tooltip.add(Component.literal(entry.online() ? "\u00a7aOnline" : "\u00a78Offline"));
                 tooltip.add(Component.literal("Path: " + capitalize(entry.pathway())).withStyle(ChatFormatting.GRAY));
                 tooltip.add(Component.literal("Sequence: " + entry.sequence()).withStyle(ChatFormatting.GRAY));
                 tooltip.add(Component.literal("Imprint Tier: " + entry.imprintTier()).withStyle(tierFormatting(entry.imprintTier())));
+                if (!entry.sealedAbilityIds().isEmpty()) {
+                    tooltip.add(Component.literal("Sealed:").withStyle(ChatFormatting.DARK_RED));
+                    for (String abilityId : entry.sealedAbilityIds()) {
+                        de.jakob.lotm.abilities.core.Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+                        String abilityName = ability != null
+                                ? ability.getName().getString()
+                                : capitalize(abilityId.replace("_ability", ""));
+                        tooltip.add(Component.literal("  \u2746 " + abilityName).withStyle(ChatFormatting.RED));
+                    }
+                }
                 g.renderTooltip(font, tooltip, java.util.Optional.empty(), mouseX, mouseY);
             }
-
-            idx++;
-        }
-
-        if (entries.isEmpty()) {
-            g.drawString(font, Component.literal("No imprints yet.").withStyle(ChatFormatting.DARK_GRAY),
-                    leftPos + LIST_X, topPos + LIST_Y, 0xFF555555, false);
         }
     }
 
@@ -220,14 +250,11 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        // Check head clicks
         List<RiverAuthorityMenu.ImprintEntry> entries = menu.getEntries();
-        int maxCols = (DETAIL_X - LIST_X - 8) / HEAD_STEP;
+        int[][] positions = getHeadPositions();
         for (int idx = 0; idx < entries.size(); idx++) {
-            int col = idx % maxCols;
-            int row = idx / maxCols;
-            int x = leftPos + LIST_X + col * HEAD_STEP;
-            int y = topPos + LIST_Y + row * HEAD_STEP;
+            int x = positions[idx][0];
+            int y = positions[idx][1];
             if (mouseX >= x && mouseX < x + HEAD_SIZE && mouseY >= y && mouseY < y + HEAD_SIZE) {
                 RiverAuthorityMenu.ImprintEntry e = entries.get(idx);
                 selectedUUID = e.uuid();
@@ -241,6 +268,37 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────
+
+    /**
+     * Computes absolute screen {x, y} for each entry in menu.getEntries() order.
+     * Online entries are grouped first, offline second, each block preceded by a section header.
+     */
+    private int[][] getHeadPositions() {
+        List<RiverAuthorityMenu.ImprintEntry> entries = menu.getEntries();
+        int maxCols = Math.max(1, (DETAIL_X - LIST_X - 8) / HEAD_STEP);
+        int[][] result = new int[entries.size()][2];
+
+        List<Integer> onlineIdxs  = new ArrayList<>();
+        List<Integer> offlineIdxs = new ArrayList<>();
+        for (int i = 0; i < entries.size(); i++) {
+            (entries.get(i).online() ? onlineIdxs : offlineIdxs).add(i);
+        }
+
+        int currentY = topPos + LIST_Y + SECTION_HEADER_H;
+        for (int pos = 0; pos < onlineIdxs.size(); pos++) {
+            int idx = onlineIdxs.get(pos);
+            result[idx][0] = leftPos + LIST_X + (pos % maxCols) * HEAD_STEP;
+            result[idx][1] = currentY + (pos / maxCols) * HEAD_STEP;
+        }
+        int onlineRows = onlineIdxs.isEmpty() ? 0 : (onlineIdxs.size() - 1) / maxCols + 1;
+        currentY += onlineRows * HEAD_STEP + 4 + SECTION_HEADER_H;
+        for (int pos = 0; pos < offlineIdxs.size(); pos++) {
+            int idx = offlineIdxs.get(pos);
+            result[idx][0] = leftPos + LIST_X + (pos % maxCols) * HEAD_STEP;
+            result[idx][1] = currentY + (pos / maxCols) * HEAD_STEP;
+        }
+        return result;
+    }
 
     private static int tierColor(int tier) {
         return switch (tier) {

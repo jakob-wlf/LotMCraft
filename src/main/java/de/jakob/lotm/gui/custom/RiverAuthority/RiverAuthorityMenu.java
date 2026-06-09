@@ -18,7 +18,7 @@ public class RiverAuthorityMenu extends AbstractContainerMenu {
     private final List<ImprintEntry> entries;
 
     /** Represents one imprint entry in the GUI. */
-    public record ImprintEntry(UUID uuid, String name, String pathway, int sequence, int imprintTier) {}
+    public record ImprintEntry(UUID uuid, String name, String pathway, int sequence, int imprintTier, boolean online, List<String> sealedAbilityIds) {}
 
     /** Client-side constructor — reads serialized entries from buffer. */
     public RiverAuthorityMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buf) {
@@ -44,7 +44,11 @@ public class RiverAuthorityMenu extends AbstractContainerMenu {
             String pathway = buf.readUtf(64);
             int sequence = buf.readVarInt();
             int tier = buf.readVarInt();
-            list.add(new ImprintEntry(uuid, name, pathway, sequence, tier));
+            boolean online = buf.readBoolean();
+            int sealCount = buf.readVarInt();
+            List<String> sealed = new ArrayList<>(sealCount);
+            for (int j = 0; j < sealCount; j++) sealed.add(buf.readUtf(64));
+            list.add(new ImprintEntry(uuid, name, pathway, sequence, tier, online, sealed));
         }
         return list;
     }
@@ -57,6 +61,9 @@ public class RiverAuthorityMenu extends AbstractContainerMenu {
             buf.writeUtf(e.pathway(), 64);
             buf.writeVarInt(e.sequence());
             buf.writeVarInt(e.imprintTier());
+            buf.writeBoolean(e.online());
+            buf.writeVarInt(e.sealedAbilityIds().size());
+            for (String id : e.sealedAbilityIds()) buf.writeUtf(id, 64);
         }
     }
 

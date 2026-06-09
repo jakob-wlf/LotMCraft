@@ -70,6 +70,7 @@ public class CharExchangeWheelScreen extends Screen {
     private final List<String> reel;
     private final int landingIndex;
     private final String gcMessage;
+    private final String screenTitle;
 
     private float scrollPos    = 0f;
     private float targetScroll = 0f;
@@ -78,12 +79,13 @@ public class CharExchangeWheelScreen extends Screen {
 
     private Button closeButton;
 
-    public CharExchangeWheelScreen(List<String> reel, int landingIndex, int outcome, String rewardName) {
-        super(Component.literal("Characteristics Exchange"));
+    public CharExchangeWheelScreen(List<String> reel, int landingIndex, int outcome, String rewardName, String title) {
+        super(Component.literal(title));
         this.reel         = reel;
         this.landingIndex = landingIndex;
         this.outcome      = outcome;
         this.rewardName   = rewardName;
+        this.screenTitle  = title;
 
         // Pick a random funny message for garbage collector outcome
         this.gcMessage = GC_MESSAGES[(int)(System.currentTimeMillis() % GC_MESSAGES.length)];
@@ -154,7 +156,7 @@ public class CharExchangeWheelScreen extends Screen {
 
         // Title
         g.drawCenteredString(font,
-                Component.literal("✦ CHARACTERISTICS EXCHANGE ✦").withStyle(ChatFormatting.BOLD),
+                Component.literal("\u2746 " + screenTitle.toUpperCase() + " \u2746").withStyle(ChatFormatting.BOLD),
                 cx + PANEL_W / 2, cy + 10, COL_TITLE);
         g.drawCenteredString(font,
                 Component.literal("A price is always exacted for what fate bestows, isn't it.").withStyle(ChatFormatting.ITALIC),

@@ -71,6 +71,12 @@ public record RequestSellYourSoulPacket() implements CustomPacketPayload {
                     BeyonderData.setBeyonder(player, pathway, 9,
                             true, false, false, true);
                 }
+                case 5 -> {
+                    // Give potion
+                    if (!result.rewardItem().isEmpty()) {
+                        player.getInventory().add(result.rewardItem().copy());
+                    }
+                }
             }
 
             spinComp.markSellSoulUsed();

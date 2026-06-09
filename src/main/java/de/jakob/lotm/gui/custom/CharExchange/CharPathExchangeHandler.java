@@ -1,7 +1,5 @@
 package de.jakob.lotm.gui.custom.CharExchange;
 
-import de.jakob.lotm.item.ModItems;
-import de.jakob.lotm.item.custom.GarbageItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenCharExchangeWheelPacket;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
@@ -34,106 +32,56 @@ public class CharPathExchangeHandler {
     public static void processExchange(ServerPlayer player, int slotIndex) {
         if (slotIndex < 0 || slotIndex >= player.getInventory().getContainerSize()) return;
         ItemStack sacrificed = player.getInventory().getItem(slotIndex);
-        if (sacrificed.isEmpty() || !(sacrificed.getItem() instanceof BeyonderCharacteristicItem)) return;
+        if (sacrificed.isEmpty() || !(sacrificed.getItem() instanceof BeyonderCharacteristicItem charItem)) return;
+
+        int sacrificedSeq = charItem.getSequence();
+        String sacrificedPathway = charItem.getPathway();
 
         // Remove the sacrificed characteristic
         player.getInventory().setItem(slotIndex, ItemStack.EMPTY);
 
-        // Roll outcome — use ThreadLocalRandom so each call gets a properly seeded
-        // per-thread instance rather than a freshly constructed Random whose seed
-        // entropy can be very low on a busy server tick.
         Random rand = ThreadLocalRandom.current();
-        float roll = rand.nextFloat();
 
-        int outcome;
-        ItemStack rewardItem = ItemStack.EMPTY;
-        String rewardName;
+        // Always give a characteristic at the same sequence from a different pathway
+        List<ItemStack> pool = buildCharPoolAtSeq(sacrificedSeq, sacrificedPathway);
+        ItemStack rewardItem = pool.isEmpty() ? ItemStack.EMPTY : pool.get(rand.nextInt(pool.size())).copy();
+        String rewardName = rewardItem.isEmpty() ? "???" : rewardItem.getHoverName().getString();
+        List<String> candidates = pool.stream()
+                .map(s -> s.getHoverName().getString()).distinct()
+                .collect(java.util.stream.Collectors.toList());
 
-        if (roll < 0.05f) {
-            // 5% — random characteristic from any pathway, any sequence 1-9
-            outcome = CharExchangeHandler.OUTCOME_UPGRADE;
-            rewardItem = getRandomCharacteristicAnySeq(rand);
-            rewardName = rewardItem.isEmpty() ? "???" : rewardItem.getHoverName().getString();
-        } else if (roll < 0.15f) {
-            // 10% — garbage collector
-            outcome = CharExchangeHandler.OUTCOME_GARBAGE_COLLECT;
-            CharExchangeHandler.removeAllGarbageFromInventory(player);
-            rewardName = "Inventory Cleansed";
-        } else {
-            // 85% — garbage
-            outcome = CharExchangeHandler.OUTCOME_GARBAGE;
-            rewardName = "Garbage";
-        }
-
-        // Give reward
-        if (outcome == CharExchangeHandler.OUTCOME_UPGRADE && !rewardItem.isEmpty()) {
+        if (!rewardItem.isEmpty()) {
             player.getInventory().add(rewardItem.copy());
         }
 
-        if (outcome == CharExchangeHandler.OUTCOME_GARBAGE) {
-            ItemStack garbageStack = new ItemStack(ModItems.GARBAGE.get());
-            boolean added = player.getInventory().add(garbageStack);
-            if (added) {
-                for (int i = 0; i < 36; i++) {
-                    ItemStack s = player.getInventory().getItem(i);
-                    if (!s.isEmpty() && s.getItem() instanceof GarbageItem
-                            && GarbageItem.getLockedSlot(s) < 0) {
-                        GarbageItem.lockToSlot(s, i);
-                        player.getInventory().setItem(i, s);
-                        break;
-                    }
-                }
-            } else {
-                player.drop(garbageStack, false);
-            }
-        }
-
-        // Sync inventory to client immediately so the reward / garbage appears without needing to re-open inventory.
+        // Sync inventory to client immediately
         player.containerMenu.broadcastChanges();
 
-        PacketHandler.sendToPlayer(player, buildWheelPacket(outcome, rewardName, rand));
+        PacketHandler.sendToPlayer(player, buildWheelPacket("Char Path Exchange", rewardName, candidates, rand));
     }
 
     // ── Reel builder ─────────────────────────────────────────────────────────
 
-    private static final String[] OUTCOME_LABELS = {
-            "\uD83D\uDDD1 Garbage",
-            "\uD83E\uDDF9 Garbage Collector",
-            "\u2605 Fate's Favour"
-    };
-
-    private static OpenCharExchangeWheelPacket buildWheelPacket(int outcome, String rewardName, Random rand) {
+    private static OpenCharExchangeWheelPacket buildWheelPacket(String title, String rewardName, List<String> candidates, Random rand) {
         List<String> reel = new ArrayList<>();
-        for (int i = 0; i < 17; i++) reel.add(OUTCOME_LABELS[CharExchangeHandler.OUTCOME_GARBAGE]);
-        for (int i = 0; i < 2;  i++) reel.add(OUTCOME_LABELS[CharExchangeHandler.OUTCOME_GARBAGE_COLLECT]);
-        reel.add(OUTCOME_LABELS[CharExchangeHandler.OUTCOME_UPGRADE]);
+        for (int i = 0; i < 20; i++) reel.add(candidates.isEmpty() ? "???" : candidates.get(rand.nextInt(candidates.size())));
         Collections.shuffle(reel, rand);
-
-        int landingIndex = 0;
-        String targetLabel = OUTCOME_LABELS[outcome];
-        for (int i = 0; i < reel.size(); i++) {
-            if (reel.get(i).equals(targetLabel)) { landingIndex = i; break; }
-        }
-
-        reel.set(landingIndex, outcome == CharExchangeHandler.OUTCOME_GARBAGE ? "\uD83D\uDDD1 " + rewardName
-                : outcome == CharExchangeHandler.OUTCOME_GARBAGE_COLLECT     ? "\uD83E\uDDF9 " + rewardName
-                : "\u2605 " + rewardName);
-
-        return new OpenCharExchangeWheelPacket(reel, landingIndex, outcome, rewardName);
+        int landingIndex = rand.nextInt(reel.size());
+        reel.set(landingIndex, rewardName);
+        return new OpenCharExchangeWheelPacket(reel, landingIndex, CharExchangeHandler.OUTCOME_UPGRADE, rewardName, title);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    /** Picks a random characteristic from the entire pool (any pathway, any seq 1-9). */
-    private static ItemStack getRandomCharacteristicAnySeq(Random rand) {
+    private static List<ItemStack> buildCharPoolAtSeq(int seq, String excludePathway) {
         List<ItemStack> options = new ArrayList<>();
         for (DeferredHolder<Item, ? extends Item> holder : BeyonderCharacteristicItemHandler.ITEMS.getEntries()) {
             Item item = holder.get();
-            if (item instanceof BeyonderCharacteristicItem c && c.getSequence() >= 1 && c.getSequence() <= 9) {
+            if (item instanceof BeyonderCharacteristicItem c && c.getSequence() == seq
+                    && !c.getPathway().equals(excludePathway)) {
                 options.add(new ItemStack(item));
             }
         }
-        if (options.isEmpty()) return ItemStack.EMPTY;
-        return options.get(rand.nextInt(options.size())).copy();
+        return options;
     }
 }

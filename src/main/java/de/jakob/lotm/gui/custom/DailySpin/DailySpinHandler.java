@@ -3,6 +3,8 @@ package de.jakob.lotm.gui.custom.DailySpin;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.potions.BeyonderPotion;
+import de.jakob.lotm.potions.PotionItemHandler;
 import de.jakob.lotm.potions.PotionRecipeItem;
 import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.potions.PotionRecipes;
@@ -51,109 +53,50 @@ public class DailySpinHandler {
      * Builds the reel display data and determines the actual reward for the player.
      * Loot pool:
      *   0.01%  — random Uniqueness (any pathway)
-     *   ~50%   — random characteristic of the player's current seq (any pathway)
-     *   ~50%   — random recipe of the player's current seq (any pathway)
+     *   ~100%  — random potion one sequence higher (seq-1), slot-filtered;
+     *            falls back to same seq if seq-1 is unavailable or below 1
      */
     public static SpinResult buildDailySpin(ServerPlayer player) {
-        String pathway = BeyonderData.getPathway(player);
-        int seq        = BeyonderData.getSequence(player);
-        // Clamp to valid Beyonder range; non-Beyonders (seq=10) default to seq 9
+        int seq = BeyonderData.getSequence(player);
         if (seq < 1 || seq > 9) seq = 9;
-        Random rand    = new Random();
+        Random rand = new Random();
 
-        // Ensure recipes are initialised
-        if (!PotionRecipes.initialized) {
-            PotionRecipes.initPotionRecipes();
-            PotionRecipeItemHandler.initializeRecipes();
-        }
-
-        // 1. Determine actual reward
         boolean isJackpot = rand.nextFloat() < JACKPOT_CHANCE;
-
         ItemStack reward;
         String rewardName;
+        int rewardSeq;
 
-        net.minecraft.server.level.ServerLevel serverLevel = player.serverLevel();
         if (isJackpot) {
             reward     = getRandomUniqueness(rand);
-            rewardName = "★ JACKPOT ★";
+            rewardName = "\u2605 JACKPOT \u2605";
+            rewardSeq  = seq;
         } else {
-            // 50/50 between characteristic (slot-filtered, same seq) and recipe (same seq)
-            if (rand.nextBoolean()) {
-                ItemStack char_ = getRandomCharacteristicAtSeq(seq, rand, serverLevel);
-                if (!char_.isEmpty()) {
-                    reward     = char_;
-                    rewardName = char_.getHoverName().getString();
-                } else {
-                    ItemStack recipe = getRandomRecipeAtSeq(seq, rand);
-                    reward     = recipe;
-                    rewardName = recipe.isEmpty() ? "???" : recipe.getHoverName().getString();
-                }
-            } else {
-                ItemStack recipe = getRandomRecipeAtSeq(seq, rand);
-                if (!recipe.isEmpty()) {
-                    reward     = recipe;
-                    rewardName = recipe.getHoverName().getString();
-                } else {
-                    ItemStack char_ = getRandomCharacteristicAtSeq(seq, rand, serverLevel);
-                    reward     = char_;
-                    rewardName = char_.isEmpty() ? "???" : char_.getHoverName().getString();
-                }
+            // Try one seq higher (lower number), strictly slot-filtered only.
+            // If no slots exist at seq-1, fall back to same seq.
+            int higherSeq = seq - 1;
+            ItemStack potion = ItemStack.EMPTY;
+            rewardSeq = seq;
+            if (higherSeq >= 1) {
+                potion = getRandomPotionAtSeqStrict(higherSeq, rand, player.serverLevel());
+                if (!potion.isEmpty()) rewardSeq = higherSeq;
             }
+            if (potion.isEmpty()) {
+                potion = getRandomPotionAtSeq(seq, rand);
+            }
+            reward     = potion;
+            rewardName = potion.isEmpty() ? "???" : potion.getHoverName().getString();
         }
 
-        // 2. Build the visual reel using item names from pathways that still have seq slots available.
-        //    This prevents the reel from showing options that are impossible to progress through.
-        List<String> allCharNames = new ArrayList<>();
-        for (DeferredHolder<Item, ? extends Item> holder : BeyonderCharacteristicItemHandler.ITEMS.getEntries()) {
-            Item item = holder.get();
-            if (item instanceof BeyonderCharacteristicItem c && c.getSequence() == seq) {
-                // Only include if there is a slot available at this sequence for this pathway
-                if (BeyonderData.hasSequenceSlotAvailable(player.serverLevel(), c.getPathway(), seq)) {
-                    allCharNames.add(new ItemStack(item).getHoverName().getString());
-                }
-            }
-        }
-        // Fallback: if all slots are taken, show everything so the reel is never empty
-        if (allCharNames.isEmpty()) {
-            for (DeferredHolder<Item, ? extends Item> holder : BeyonderCharacteristicItemHandler.ITEMS.getEntries()) {
-                Item item = holder.get();
-                if (item instanceof BeyonderCharacteristicItem c && c.getSequence() == seq) {
-                    allCharNames.add(new ItemStack(item).getHoverName().getString());
-                }
-            }
-        }
-        List<String> allRecipeNames = new ArrayList<>();
-        for (DeferredHolder<Item, ? extends Item> holder : PotionRecipeItemHandler.ITEMS.getEntries()) {
-            Item item = holder.get();
-            if (item instanceof PotionRecipeItem r && r.getRecipe() != null
-                    && r.getRecipe().potion().getSequence() == seq) {
-                if (BeyonderData.hasSequenceSlotAvailable(player.serverLevel(), r.getRecipe().potion().getPathway(), seq)) {
-                    allRecipeNames.add(new ItemStack(item).getHoverName().getString());
-                }
-            }
-        }
-        if (allRecipeNames.isEmpty()) {
-            for (DeferredHolder<Item, ? extends Item> holder : PotionRecipeItemHandler.ITEMS.getEntries()) {
-                Item item = holder.get();
-                if (item instanceof PotionRecipeItem r && r.getRecipe() != null
-                        && r.getRecipe().potion().getSequence() == seq) {
-                    allRecipeNames.add(new ItemStack(item).getHoverName().getString());
-                }
-            }
-        }
+        // Build reel from potion names at the reward sequence (same strict filter)
+        List<String> potionNames = getPotionNamesAtSeqStrict(rewardSeq, player.serverLevel());
+        if (potionNames.isEmpty()) potionNames = getPotionNamesAtSeq(rewardSeq);
         List<String> reel = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            reel.add(allCharNames.isEmpty() ? "???" : allCharNames.get(rand.nextInt(allCharNames.size())));
+        for (int i = 0; i < 20; i++) {
+            reel.add(potionNames.isEmpty() ? "???" : potionNames.get(rand.nextInt(potionNames.size())));
         }
-        for (int i = 0; i < 10; i++) {
-            reel.add(allRecipeNames.isEmpty() ? "???" : allRecipeNames.get(rand.nextInt(allRecipeNames.size())));
-        }
-        reel.add("★ JACKPOT ★");
-        if (reel.size() < 5) { reel.add("???"); reel.add("???"); }
+        reel.add("\u2605 JACKPOT \u2605");
         Collections.shuffle(reel, rand);
 
-        // 3. Replace one slot with the real reward name
         int landingIndex = rand.nextInt(reel.size());
         reel.set(landingIndex, rewardName);
 
@@ -169,6 +112,7 @@ public class DailySpinHandler {
      *   2 = ad overlay (client-side only)
      *   3 = random same-seq characteristic from any pathway (5%)
      *   4 = reverted to Sequence 9 of current pathway (0.01%)
+     *   5 = random same-seq potion from any pathway (10%)
      */
     public record SoulResult(int outcome, ItemStack rewardItem, String rewardName) {}
 
@@ -180,28 +124,59 @@ public class DailySpinHandler {
         if (roll < 0.0001f) {
             // 0.01%: revert to Sequence 9
             return new SoulResult(4, ItemStack.EMPTY, "");
-        } else if (roll < 0.0501f) {
-            // 5%: random same-seq characteristic (slot-filtered)
+        } else if (roll < 0.1001f) {
+            // 10%: random same-seq characteristic (slot-filtered)
             ItemStack item = getRandomCharacteristicAtSeq(seq, rand, player.serverLevel());
             String name = item.isEmpty() ? "???" : item.getHoverName().getString();
             return new SoulResult(3, item, name);
-        } else if (roll < 0.3501f) {
-            // 30%: sanity drain
+        } else if (roll < 0.2001f) {
+            // 10%: random same-seq potion from any pathway
+            ItemStack item = getRandomPotionAtSeq(seq, rand);
+            String name = item.isEmpty() ? "???" : item.getHoverName().getString();
+            return new SoulResult(5, item, name);
+        } else if (roll < 0.4001f) {
+            // 10%: sanity drain
             return new SoulResult(0, ItemStack.EMPTY, "");
-        } else if (roll < 0.6501f) {
-            // 30%: digestion wipe
+        } else if (roll < 0.5001f) {
+            // 10%: digestion wipe
             return new SoulResult(1, ItemStack.EMPTY, "");
         } else {
-            // ~35%: watch an ad
+            // ~60%: watch an ad
             return new SoulResult(2, ItemStack.EMPTY, "");
         }
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────
 
-    private static ItemStack getRandomRecipeAtSeq(int seq, Random rand) {
-        PotionRecipeItem item = PotionRecipeItemHandler.selectRandomRecipeOfSequence(rand, seq);
-        return item == null ? ItemStack.EMPTY : new ItemStack(item);
+    /** Strictly slot-filtered: returns empty if no slots are available at this seq. */
+    private static ItemStack getRandomPotionAtSeqStrict(int seq, Random rand, ServerLevel level) {
+        List<ItemStack> options = new ArrayList<>();
+        for (String pathway : BeyonderData.pathwayInfos.keySet()) {
+            if (!BeyonderData.hasSequenceSlotAvailable(level, pathway, seq)) continue;
+            BeyonderPotion potion = PotionItemHandler.selectPotionOfPathwayAndSequence(rand, pathway, seq);
+            if (potion != null) options.add(potion.getDefaultInstance());
+        }
+        if (options.isEmpty()) return ItemStack.EMPTY;
+        return options.get(rand.nextInt(options.size())).copy();
+    }
+
+    private static List<String> getPotionNamesAtSeqStrict(int seq, ServerLevel level) {
+        List<String> names = new ArrayList<>();
+        for (String pathway : BeyonderData.pathwayInfos.keySet()) {
+            if (!BeyonderData.hasSequenceSlotAvailable(level, pathway, seq)) continue;
+            BeyonderPotion potion = PotionItemHandler.selectPotionOfPathwayAndSequence(null, pathway, seq);
+            if (potion != null) names.add(potion.getDefaultInstance().getHoverName().getString());
+        }
+        return names;
+    }
+
+    private static List<String> getPotionNamesAtSeq(int seq) {
+        List<String> names = new ArrayList<>();
+        for (String pathway : BeyonderData.pathwayInfos.keySet()) {
+            BeyonderPotion potion = PotionItemHandler.selectPotionOfPathwayAndSequence(null, pathway, seq);
+            if (potion != null) names.add(potion.getDefaultInstance().getHoverName().getString());
+        }
+        return names;
     }
 
     static ItemStack getRandomCharacteristicAtSeq(int seq, Random rand) {
@@ -226,6 +201,16 @@ public class DailySpinHandler {
                     options.add(new ItemStack(item));
                 }
             }
+        }
+        if (options.isEmpty()) return ItemStack.EMPTY;
+        return options.get(rand.nextInt(options.size())).copy();
+    }
+
+    private static ItemStack getRandomPotionAtSeq(int seq, Random rand) {
+        List<ItemStack> options = new ArrayList<>();
+        for (String pathway : BeyonderData.pathwayInfos.keySet()) {
+            BeyonderPotion potion = PotionItemHandler.selectPotionOfPathwayAndSequence(rand, pathway, seq);
+            if (potion != null) options.add(potion.getDefaultInstance());
         }
         if (options.isEmpty()) return ItemStack.EMPTY;
         return options.get(rand.nextInt(options.size())).copy();

@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DeathImprintData;
 import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityMenu;
 import de.jakob.lotm.sefirah.SefirahHandler;
+import de.jakob.lotm.util.BeyonderData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -50,13 +51,21 @@ public record RequestRiverImprintScreenPacket() implements CustomPacketPayload {
             final UUID ownerUUID = player.getUUID();
             List<RiverAuthorityMenu.ImprintEntry> entries = allImprinted.stream()
                     .filter(uuid -> !uuid.equals(ownerUUID))
-                    .map(uuid -> new RiverAuthorityMenu.ImprintEntry(
-                            uuid,
-                            imprintData.getSnapshotName(uuid),
-                            imprintData.getSnapshotPathway(uuid),
-                            imprintData.getSnapshotSequence(uuid),
-                            imprintData.getImprintCount(uuid)
-                    ))
+                    .map(uuid -> {
+                        ServerPlayer onlineTarget = player.getServer().getPlayerList().getPlayer(uuid);
+                        boolean isOnline = onlineTarget != null;
+                        String entryPathway = isOnline ? BeyonderData.getPathway(onlineTarget) : imprintData.getSnapshotPathway(uuid);
+                        int entrySequence = isOnline ? BeyonderData.getSequence(onlineTarget) : imprintData.getSnapshotSequence(uuid);
+                        return new RiverAuthorityMenu.ImprintEntry(
+                                uuid,
+                                imprintData.getSnapshotName(uuid),
+                                entryPathway,
+                                entrySequence,
+                                imprintData.getImprintCount(uuid),
+                                isOnline,
+                                imprintData.getSealedAbilities(uuid)
+                        );
+                    })
                     .sorted(Comparator.comparingInt(RiverAuthorityMenu.ImprintEntry::imprintTier).reversed())
                     .collect(Collectors.toList());
 

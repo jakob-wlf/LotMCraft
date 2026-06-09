@@ -44,14 +44,23 @@ public class InternalUnderworldAbilityScreen extends AbstractContainerScreen<Che
 
     private final int containerRows;
     private final int chestSlotCount;
+    private final boolean isRiverOwner;
+    private final boolean isVaultScreen;
 
     public InternalUnderworldAbilityScreen(ChestMenu menu, Inventory playerInventory, Component title) {
+        this(menu, playerInventory, title, false);
+    }
+
+    public InternalUnderworldAbilityScreen(ChestMenu menu, Inventory playerInventory, Component title, boolean isRiverOwner) {
         super(menu, playerInventory, title);
         this.containerRows = menu.getRowCount();
         this.chestSlotCount = this.containerRows * 9;
         this.imageWidth = 176;
         this.imageHeight = this.containerRows * 18 + 28;
         this.inventoryLabelY = this.imageHeight - 94;
+        this.isRiverOwner = isRiverOwner;
+        String cleanTitle = title.getString().replaceAll("§.", "");
+        this.isVaultScreen = cleanTitle.equals("River Soul Vault");
     }
 
     @Override
@@ -71,6 +80,19 @@ public class InternalUnderworldAbilityScreen extends AbstractContainerScreen<Che
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        // For the vault screen, intercept left-clicks on chest slots before vanilla
+        // processing runs. Vanilla would pick up the item into the cursor (turning the
+        // whole UI blue / enabling drag). Instead: send the click to the server, then
+        // immediately clear the client-side cursor so no item appears to be held.
+        if (isVaultScreen && button == 0) {
+            Slot slot = getChestSlotAt(mouseX, mouseY);
+            if (slot != null) {
+                this.slotClicked(slot, slot.index, 0, ClickType.PICKUP);
+                this.menu.setCarried(net.minecraft.world.item.ItemStack.EMPTY);
+                return true;
+            }
+        }
+
         if (button == 2) {
             Slot slot = getChestSlotAt(mouseX, mouseY);
             if (slot != null) {
@@ -122,12 +144,13 @@ public class InternalUnderworldAbilityScreen extends AbstractContainerScreen<Che
         int titleColor = isSoulPickingMenu() ? SOUL_TEXT_COLOR : 0xBFD7FF;
         guiGraphics.drawString(this.font, displayText, titleX, this.titleLabelY, titleColor, false);
 
-        if (isSoulPickingMenu()) {
+        if (isSoulPickingMenu() && !isVaultScreen) {
             int currentSouls = countDisplayedSouls();
             int playerSeq = this.minecraft != null && this.minecraft.player != null
                     ? BeyonderData.getSequence(this.minecraft.player)
                     : 0;
-            int maxSouls = getMaxSoulsForSequence(playerSeq);
+            boolean riverOwner = "river_of_eternal_darkness".equals(de.jakob.lotm.util.data.ClientData.getClaimedSefirot());
+            int maxSouls = getMaxSoulsForSequence(playerSeq) + (riverOwner ? 15 : 0);
             String soulText = "Souls: " + currentSouls + "/" + maxSouls;
             int soulTextX = Math.max(4, (this.imageWidth - this.font.width(soulText)) / 2);
             int soulTextY = this.imageHeight - 12;

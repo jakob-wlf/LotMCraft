@@ -129,26 +129,6 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
             return;
         }
 
-        // River of Eternal Darkness: death imprint tier ≥ 1 → divination always succeeds with full coords
-        if ("river_of_eternal_darkness".equals(SefirahHandler.getClaimedSefirot(player))) {
-            DeathImprintData imprintData = DeathImprintData.get(player.getServer());
-            int tier = imprintData.getImprintCount(targetPlayer.getUUID());
-            if (tier >= 1) {
-                int dist = (int) Math.sqrt(
-                        Math.pow(targetPlayer.blockPosition().getX() - player.blockPosition().getX(), 2) +
-                        Math.pow(targetPlayer.blockPosition().getZ() - player.blockPosition().getZ(), 2));
-                player.sendSystemMessage(Component.literal(String.format(
-                        "§5[Death Imprint] You sense §d%s§5 at §d%d, %d, %d§5, about §d%d blocks §5away...",
-                        targetPlayer.getGameProfile().getName(),
-                        targetPlayer.blockPosition().getX(),
-                        targetPlayer.blockPosition().getY(),
-                        targetPlayer.blockPosition().getZ(),
-                        dist
-                )));
-                return;
-            }
-        }
-
         int playerSequence = BeyonderData.getSequence(player);
         int targetSequence = BeyonderData.getSequence(targetPlayer);
 
@@ -164,22 +144,14 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
             return;
         }
 
-            int divinationDifference = 3 + DivinationUtil.getDivinationPower(player) - DivinationUtil.getConcealmentPower(targetPlayer);
-            if (!elevated && divinationDifference <= 0){
-                player.sendSystemMessage(Component.literal("§cDivination failed"));
-                if(playerSequence < 4 && targetSequence > 3){
-                    player.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 200, 2));
-                }
-                return;
-            }
-
         BlockPos playerPos = player.blockPosition();
         BlockPos targetPos = targetPlayer.blockPosition();
 
         int dx = targetPos.getX() - playerPos.getX();
+        int dy = targetPos.getY() - playerPos.getY();
         int dz = targetPos.getZ() - playerPos.getZ();
 
-        int distance = (int) Math.sqrt(dx * dx + dz * dz);
+        int distance = (int) Math.sqrt(dx * dx + dy * dy + dz * dz);
 
             // distance still isn't balanced
             int maxDistance = switch (playerSequence) {
@@ -188,9 +160,26 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
                 case 3             -> 5000;
                 case 2             -> ((int) (player.level().getWorldBorder().getSize() * 0.001) > 5000) ? (int) (player.level().getWorldBorder().getSize() * 0.001) : 7500;
                 case 1             -> ((int) (player.level().getWorldBorder().getSize() * 0.01) > 7500) ? (int) (player.level().getWorldBorder().getSize() * 0.01) : 15000;
-                case 0             -> ((int) (player.level().getWorldBorder().getSize() * 0.1) > 15000) ? (int) (player.level().getWorldBorder().getSize() * 0.01) : 100000;
+                case 0             -> ((int) (player.level().getWorldBorder().getSize() * 0.1) > 15000) ? (int) (player.level().getWorldBorder().getSize() * 0.1) : 100000;
                 default            -> 100;
             };
+
+        // River of Eternal Darkness: death imprint tier ≥ 1 → divination always succeeds with full coords regardless of distance
+        if ("river_of_eternal_darkness".equals(SefirahHandler.getClaimedSefirot(player))) {
+            DeathImprintData imprintData = DeathImprintData.get(player.getServer());
+            int tier = imprintData.getImprintCount(targetPlayer.getUUID());
+            if (tier >= 1) {
+                player.sendSystemMessage(Component.literal(String.format(
+                        "§5[Death Imprint] You sense §d%s§5 at §d%d, %d, %d§5, about §d%d blocks §5away...",
+                        targetPlayer.getGameProfile().getName(),
+                        targetPlayer.blockPosition().getX(),
+                        targetPlayer.blockPosition().getY(),
+                        targetPlayer.blockPosition().getZ(),
+                        distance
+                )));
+                return;
+            }
+        }
 
         if (!elevated && distance >= maxDistance) {
             player.sendSystemMessage(Component.literal("§cPlayer is very far from you"));
@@ -209,6 +198,15 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
             )));
             return;
         }
+
+            int divinationDifference = 3 + DivinationUtil.getDivinationPower(player) - DivinationUtil.getConcealmentPower(targetPlayer);
+            if (!elevated && divinationDifference <= 0){
+                player.sendSystemMessage(Component.literal("§cDivination failed"));
+                if(playerSequence < 4 && targetSequence > 3){
+                    player.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 200, 2));
+                }
+                return;
+            }
 
         if (divinationDifference < 4){
             if(playerSequence < 4 && targetSequence > 3){

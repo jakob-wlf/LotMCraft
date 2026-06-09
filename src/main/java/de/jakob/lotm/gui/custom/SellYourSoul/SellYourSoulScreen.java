@@ -49,10 +49,11 @@ public class SellYourSoulScreen extends Screen {
             "\u2620 Digestion Wipe",
             "\uD83D\uDCFA Watch an Ad",
             "\u2726 Mysterious Gift",
-            "\u26A0 SEQUENCE REVERSION"
+            "\u26A0 SEQUENCE REVERSION",
+            "\u2728 Potion Reward"
     };
     private static final int[] OUTCOME_COLORS = {
-            0xFFFF6688, 0xFFFF6688, 0xFFFF9900, 0xFFFFD700, 0xFFFF2222
+            0xFFFF6688, 0xFFFF6688, 0xFFFF9900, 0xFFFFD700, 0xFFFF2222, 0xFF44FFAA
     };
 
     // ── Spin parameters ───────────────────────────────────────────────────────
@@ -77,13 +78,14 @@ public class SellYourSoulScreen extends Screen {
         this.outcome    = outcome;
         this.rewardName = rewardName;
 
-        // Build reel: 6 sanity, 6 digestion, 7 ad, 1 gift entries, 1 reversion (very rare slot always present)
+        // Build reel: 5 sanity, 5 digestion, 7 ad, 1 gift, 1 reversion, 2 potion
         List<String> raw = new ArrayList<>();
-        for (int i = 0; i < 6; i++) raw.add(OUTCOME_LABELS[0]);
-        for (int i = 0; i < 6; i++) raw.add(OUTCOME_LABELS[1]);
+        for (int i = 0; i < 5; i++) raw.add(OUTCOME_LABELS[0]);
+        for (int i = 0; i < 5; i++) raw.add(OUTCOME_LABELS[1]);
         for (int i = 0; i < 7; i++) raw.add(OUTCOME_LABELS[2]);
         raw.add(OUTCOME_LABELS[3]);
         raw.add(OUTCOME_LABELS[4]); // reversion — visually present but astronomically rare
+        for (int i = 0; i < 2; i++) raw.add(OUTCOME_LABELS[5]);
         Collections.shuffle(raw, new Random());
         this.reel = raw;
 
@@ -193,6 +195,7 @@ public class SellYourSoulScreen extends Screen {
                 case 2 -> "Fate demands your attention...";
                 case 3 -> "You received: " + rewardName;
                 case 4 -> "You have been reverted to Sequence 9.";
+                case 5 -> "You received: " + rewardName;
                 default -> "";
             };
             g.drawCenteredString(font,

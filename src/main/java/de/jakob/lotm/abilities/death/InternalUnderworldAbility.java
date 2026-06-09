@@ -10,6 +10,8 @@ import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.entity.custom.spirits.*;
+import de.jakob.lotm.sefirah.SefirahHandler;
+import de.jakob.lotm.attachments.DeathImprintData;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
@@ -53,6 +55,7 @@ import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -131,6 +134,13 @@ public class InternalUnderworldAbility extends SelectableAbility {
             case 0 -> 53;
             default -> 5;
         };
+    }
+
+    /** Returns the effective max souls for a player, adding 15 bonus slots if they own the River sefirot. */
+    private static int getMaxSoulsForPlayer(ServerPlayer player) {
+        int base = getMaxSouls(BeyonderData.getSequence(player));
+        if ("river_of_eternal_darkness".equals(SefirahHandler.getClaimedSefirot(player))) base += 15;
+        return base;
     }
 
     public InternalUnderworldAbility(String id) {
@@ -213,7 +223,22 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
         int playerSeq = BeyonderData.getSequence(player);
 
-        if (getStoredSouls(player).size() >= getMaxSouls(playerSeq)) {
+        if (getStoredSouls(player).size() >= getMaxSoulsForPlayer(player)) {
+            // River owner: try vaulting the incoming soul instead of refusing
+            if ("river_of_eternal_darkness".equals(SefirahHandler.getClaimedSefirot(player))
+                    && serverLevel.getServer() != null) {
+                DeathImprintData vd = DeathImprintData.get(serverLevel.getServer());
+                if (!vd.isRiverVaultFull()) {
+                    CompoundTag sd = buildSoulData(target);
+                    if (sd != null && vd.addToRiverVault(sd)) {
+                        spawnCaptureSuccessParticles(serverLevel, target);
+                        serverLevel.playSound(null, target.blockPosition(), SoundEvents.SOUL_ESCAPE.value(), SoundSource.PLAYERS, 1.0f, 0.7f);
+                        target.discard();
+                        player.sendSystemMessage(Component.literal("IU full — soul stored in River Vault instead.").withStyle(ChatFormatting.DARK_AQUA));
+                    }
+                    return;
+                }
+            }
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.full")
                     .withStyle(ChatFormatting.RED));
             return;
@@ -272,10 +297,24 @@ public class InternalUnderworldAbility extends SelectableAbility {
             return;
         }
 
-        if (getStoredSouls(player).size() >= getMaxSouls(playerSeq)) {
+        if (getStoredSouls(player).size() >= getMaxSoulsForPlayer(player)) {
             if (isBeyonderPlayer) {
                 removeLowestSequenceSoul(player);
             } else {
+                // River owner: try vaulting overflow
+                if ("river_of_eternal_darkness".equals(SefirahHandler.getClaimedSefirot(player))) {
+                    DeathImprintData vd = DeathImprintData.get(serverLevel.getServer());
+                    CompoundTag sd = buildSoulData(victim);
+                    if (sd != null && vd.addToRiverVault(sd)) {
+                        victim.getPersistentData().putBoolean(INTERNAL_UNDERWORLD_CAPTURED_TAG, true);
+                        spawnCaptureSuccessParticles(serverLevel, victim);
+                        serverLevel.playSound(null, victim.blockPosition(), SoundEvents.SOUL_ESCAPE.value(), SoundSource.PLAYERS, 1.0f, 0.7f);
+                        player.sendSystemMessage(Component.literal("IU full — soul stored in River Vault instead.").withStyle(ChatFormatting.DARK_AQUA));
+                    } else {
+                        player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.full").withStyle(ChatFormatting.RED));
+                    }
+                    return;
+                }
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.full")
                         .withStyle(ChatFormatting.RED));
                 return;
@@ -657,7 +696,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
                 Component.translatable("ability.lotmcraft.internal_underworld.select_soul")
         ));
             // Swap the vanilla chest screen for the custom underworld UI.
-            PacketHandler.sendToPlayer(player, new OpenInternalUnderworldAbilityScreenPacket());
+            PacketHandler.sendToPlayer(player, new OpenInternalUnderworldAbilityScreenPacket("river_of_eternal_darkness".equals(SefirahHandler.getClaimedSefirot(player))));
     }
 
     private static void openSoulAbilityGui(ServerLevel level, ServerPlayer player, CompoundTag soulData) {
@@ -820,7 +859,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
                 Component.literal("Internal Underworld - Soul Abilities")
         ));
             // Swap the vanilla chest screen for the custom underworld UI.
-            PacketHandler.sendToPlayer(player, new OpenInternalUnderworldAbilityScreenPacket());
+            PacketHandler.sendToPlayer(player, new OpenInternalUnderworldAbilityScreenPacket("river_of_eternal_darkness".equals(SefirahHandler.getClaimedSefirot(player))));
     }
 
     private static void openSoulSubAbilityGui(ServerLevel level, ServerPlayer player, String abilityId, CompoundTag soulData, boolean bindOnSelect) {
@@ -929,7 +968,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
                 title
         ));
             // Swap the vanilla chest screen for the custom underworld UI.
-            PacketHandler.sendToPlayer(player, new OpenInternalUnderworldAbilityScreenPacket());
+            PacketHandler.sendToPlayer(player, new OpenInternalUnderworldAbilityScreenPacket("river_of_eternal_darkness".equals(SefirahHandler.getClaimedSefirot(player))));
     }
 
     private static void openSoulBindSlotGui(ServerLevel level, ServerPlayer player, String abilityId) {
@@ -1014,7 +1053,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
                 title
         ));
 
-        PacketHandler.sendToPlayer(player, new OpenInternalUnderworldAbilityScreenPacket());
+        PacketHandler.sendToPlayer(player, new OpenInternalUnderworldAbilityScreenPacket("river_of_eternal_darkness".equals(SefirahHandler.getClaimedSefirot(player))));
     }
 
     private static ItemStack createAbilityDisplayItem(Ability ability) {
@@ -1526,7 +1565,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
         int seq = BeyonderData.getSequence(captor);
         if (seq > 5) return false;
 
-        if (getStoredSouls(captor).size() >= getMaxSouls(seq)) {
+        if (getStoredSouls(captor).size() >= getMaxSoulsForPlayer(captor)) {
             removeLowestSequenceSoul(captor);
         }
 
@@ -1873,6 +1912,83 @@ public class InternalUnderworldAbility extends SelectableAbility {
         return infos != null ? infos.color() : fallback;
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // River Vault GUI — opened from the River Authority screen
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public static void openRiverVaultGui(ServerLevel level, ServerPlayer player) {
+        if (!"river_of_eternal_darkness".equals(SefirahHandler.getClaimedSefirot(player))) {
+            player.sendSystemMessage(Component.literal("You do not own the River sefirot.").withStyle(ChatFormatting.RED));
+            return;
+        }
+        DeathImprintData vaultData = DeathImprintData.get(level.getServer());
+        List<CompoundTag> vault   = new ArrayList<>(vaultData.getRiverVault());
+        List<CompoundTag> iuSouls = getStoredSouls(player);
+        int maxIU = getMaxSoulsForPlayer(player);
+
+        // Build display ItemStacks for vault souls
+        List<ItemStack> vaultItems = new ArrayList<>();
+        for (CompoundTag soul : vault) {
+            vaultItems.add(createSoulDisplayItem(soul));
+        }
+
+        // Build display ItemStacks for IU souls
+        List<ItemStack> iuItems = new ArrayList<>();
+        for (CompoundTag soul : iuSouls) {
+            iuItems.add(createSoulDisplayItem(soul));
+        }
+
+        PacketHandler.sendToPlayer(player, new de.jakob.lotm.network.packets.toClient.OpenRiverVaultScreenPacket(
+                vaultItems, iuItems, maxIU, DeathImprintData.RIVER_VAULT_CAPACITY));
+    }
+
+    /**
+     * Handles a vault transfer action sent by the client.
+     * fromVault=true  → vault → IU
+     * fromVault=false → IU → vault
+     * After the transfer the vault screen is refreshed.
+     */
+    public static void handleVaultAction(ServerLevel level, ServerPlayer player, String soulKey, boolean fromVault) {
+        DeathImprintData vd = DeathImprintData.get(level.getServer());
+
+        if (fromVault) {
+            // Vault → IU
+            if (getStoredSouls(player).size() >= getMaxSoulsForPlayer(player)) {
+                player.sendSystemMessage(Component.literal("Your Internal Underworld is full.").withStyle(ChatFormatting.RED));
+            } else {
+                CompoundTag removed = vd.removeFromRiverVaultByKey(soulKey);
+                if (removed != null) {
+                    addStoredSoul(player, removed);
+                }
+            }
+        } else {
+            // IU → Vault
+            if (vd.isRiverVaultFull()) {
+                player.sendSystemMessage(Component.literal(
+                        "The River Vault is full (" + DeathImprintData.RIVER_VAULT_CAPACITY + " max).")
+                        .withStyle(ChatFormatting.RED));
+            } else {
+                CompoundTag pdata = player.getPersistentData();
+                if (pdata.contains(STORED_SOULS_TAG, Tag.TAG_LIST)) {
+                    ListTag list = pdata.getList(STORED_SOULS_TAG, Tag.TAG_COMPOUND);
+                    for (int i = 0; i < list.size(); i++) {
+                        CompoundTag stored = list.getCompound(i);
+                        if (soulKey.equals(stored.getString(SOUL_KEY_TAG))) {
+                            CompoundTag found = stored.copy();
+                            list.remove(i);
+                            pdata.put(STORED_SOULS_TAG, list);
+                            vd.addToRiverVault(found);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Refresh the vault screen on the client
+        openRiverVaultGui(level, player);
+    }
+
     private static List<CompoundTag> getStoredSouls(ServerPlayer player) {
         CompoundTag data = player.getPersistentData();
         List<CompoundTag> souls = new ArrayList<>();
@@ -1893,8 +2009,18 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
         list.add(soulData);
 
-        int maxSouls = getMaxSouls(BeyonderData.getSequence(player));
-        while (list.size() > maxSouls) list.remove(0);
+        int maxSouls = getMaxSoulsForPlayer(player);
+        // If over capacity and the player owns the River, overflow into the vault instead of discarding.
+        if (list.size() > maxSouls && "river_of_eternal_darkness".equals(SefirahHandler.getClaimedSefirot(player))
+                && player.level() instanceof ServerLevel sl) {
+            DeathImprintData vd = DeathImprintData.get(sl.getServer());
+            while (list.size() > maxSouls) {
+                CompoundTag overflow = list.getCompound(0);
+                if (!vd.addToRiverVault(overflow)) break; // vault also full — stop
+                list.remove(0);
+            }
+        }
+        while (list.size() > maxSouls) list.remove(0); // fallback discard if vault also full
 
         data.put(STORED_SOULS_TAG, list);
     }
