@@ -41,7 +41,7 @@ public class UnshadowedSpearAbility extends Ability {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 1.0f, 1.0f);
 
-        UnshadowedSpearProjectileEntity spear = new UnshadowedSpearProjectileEntity(level, entity, DamageLookup.lookupDamage(4, .8) * (int) Math.max(multiplier(entity)/4,1), BeyonderData.isGriefingEnabled(entity), this);
+        UnshadowedSpearProjectileEntity spear = new UnshadowedSpearProjectileEntity(level, entity, DamageLookup.lookupDamage(4, .8) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), this);
         spear.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
         spear.shoot(direction.x, direction.y, direction.z, 5, 0);
         level.addFreshEntity(spear);

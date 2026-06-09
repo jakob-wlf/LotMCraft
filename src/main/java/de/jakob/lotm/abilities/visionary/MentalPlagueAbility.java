@@ -46,7 +46,7 @@ public class MentalPlagueAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 30* (int) Math.max(multiplier(entity)/4,1), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (30* multiplier(entity)), 2);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mental_plague.no_target").withColor(0xf5ca7f));
             return;
@@ -74,7 +74,7 @@ public class MentalPlagueAbility extends Ability {
         int seq = AbilityUtil.getSeqWithArt(entity, this);
         int duration = InteractionHandler.isInteractionPossible(targetLoc, "purification", seq) ? 20 * 60 * 2 : 20 * 60 * 10;
 
-        target.addEffect(new MobEffectInstance(ModEffects.MENTAL_PLAGUE, duration, 1+ (int) Math.max(multiplier(entity)/4,1), false, false, false));
+        target.addEffect(new MobEffectInstance(ModEffects.MENTAL_PLAGUE, duration, (int) (1+ multiplier(entity)), false, false, false));
         // ParticleUtil.spawnParticles((ServerLevel) target.level(), dust, target.getEyePosition(), 200, .4);
     }
 }

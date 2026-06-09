@@ -59,7 +59,7 @@ public class FateSiphoningAbility extends Ability {
             return;
         }
         if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level, AbilityUtil.getSeqWithArt(entity, this))) return;
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 30*(int) Math.max(multiplier(entity)/4,1), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (30*multiplier(entity)), 2);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.fate_siphoning.no_target").withColor(0x6d32a8));
             return;
@@ -92,7 +92,7 @@ public class FateSiphoningAbility extends Ability {
                 entity);
 
         linkedEntities.put(entity.getUUID(), target.getUUID());
-        ServerScheduler.scheduleDelayed(20 * 7*(int) Math.max(multiplier(entity)/4,1), () -> linkedEntities.remove(entity.getUUID()));
+        ServerScheduler.scheduleDelayed((int) (20 * 7*multiplier(entity)), () -> linkedEntities.remove(entity.getUUID()));
     }
 
     @SubscribeEvent

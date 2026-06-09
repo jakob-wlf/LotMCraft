@@ -55,7 +55,7 @@ public class LifeDeprivationAbility extends SelectableAbility {
         ArrayList<BlockPos> blocks = new ArrayList<>(AbilityUtil.getBlocksInEllipsoid(serverLevel, entity.position(), 55, 10, true, true, true));
         Collections.shuffle(blocks);
 
-        int totalDuration = 20 * 3*(int)Math.max(multiplier(entity)/4,1);
+        int totalDuration = 20 * 3*(int)multiplier(entity);
         int iterationsPerTick = (int) (blocks.size() / ((float) totalDuration));
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
         ServerScheduler.scheduleForDuration(0, 1, totalDuration, () -> {

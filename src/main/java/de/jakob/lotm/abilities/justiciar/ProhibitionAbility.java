@@ -77,8 +77,8 @@ public class ProhibitionAbility extends SelectableAbility {
         ServerLevel serverLevel = (ServerLevel) level;
 
         int casterSeq = BeyonderData.getSequence(entity);
-        int zoneDuration = 3600 * (int) Math.max(multiplier(entity) / 4, 1);
-        int maxZonesPerType = 3 * (int) Math.max(multiplier(entity) / 4, 1);
+        int zoneDuration = 3600 * multiplier(entity);
+        int maxZonesPerType = 3 * multiplier(entity);
         double failChance = casterSeq <= 4 ? 0.15 : 0.4;
 
         Optional<LivingEntity> resistor = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), (int) ZONE_RADIUS)

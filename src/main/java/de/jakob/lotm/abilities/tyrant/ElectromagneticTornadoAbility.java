@@ -33,13 +33,13 @@ public class ElectromagneticTornadoAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide()) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 12* (int) Math.max(multiplier(entity)/4,1), 3);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (12* multiplier(entity)), 3);
 
-        Vec3 pos = AbilityUtil.getTargetLocation(entity, 12* (int) Math.max(multiplier(entity)/4,1), 2);
+        Vec3 pos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 2);
 
         ElectromagneticTornadoEntity tornado = target == null ?
-                new ElectromagneticTornadoEntity(ModEntities.ELECTROMAGNETIC_TORNADO.get(), level, .4f, (float) DamageLookup.lookupDamage(1, .6) * (int) Math.max(multiplier(entity)/4,1), entity) :
-                new ElectromagneticTornadoEntity(ModEntities.ELECTROMAGNETIC_TORNADO.get(), level, .4f, (float) DamageLookup.lookupDamage(1, .6) * (int) Math.max(multiplier(entity)/4,1), target);
+                new ElectromagneticTornadoEntity(ModEntities.ELECTROMAGNETIC_TORNADO.get(), level, .4f, (float) DamageLookup.lookupDamage(1, .6) * multiplier(entity), entity) :
+                new ElectromagneticTornadoEntity(ModEntities.ELECTROMAGNETIC_TORNADO.get(), level, .4f, (float) DamageLookup.lookupDamage(1, .6) * multiplier(entity), target);
         tornado.setPos(pos);
         level.addFreshEntity(tornado);
     }

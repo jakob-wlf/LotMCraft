@@ -46,9 +46,9 @@ public class ProvokingAbility extends Ability {
                 if(e instanceof Mob mob)
                     mob.setTarget(entity);
 
-                e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 6* (int) Math.max(multiplier(entity)/4,1), 1, false, false, false));
-                e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20 * 6* (int) Math.max(multiplier(entity)/4,1), 1, false, false, false));
-                e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) DamageLookup.lookupDamage(8, .65) * (int) Math.max(multiplier(entity)/4,1));
+                e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, (int) (20 * 6* multiplier(entity)), 1, false, false, false));
+                e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, (int) (20 * 6* multiplier(entity)), 1, false, false, false));
+                e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) DamageLookup.lookupDamage(8, .65) * multiplier(entity));
             });
         }
         else {

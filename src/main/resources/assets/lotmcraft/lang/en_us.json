@@ -1965,6 +1965,7 @@
   "lotm.acting.pickup_undead_drop": "Pick Up Undead Drop",
   "lotm.acting.pickup_ocean_treasure": "Pick Up Ocean Treasure",
 
+  "lotm.acting.kill": "Kill",
   "lotm.acting.kill_undead": "Kill Undead",
   "lotm.acting.kill_passive_mob": "Kill Passive Mob",
   "lotm.acting.kill_monster": "Kill Monster",

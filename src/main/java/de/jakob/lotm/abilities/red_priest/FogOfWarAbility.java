@@ -65,8 +65,8 @@ public class FogOfWarAbility extends ToggleAbility {
         int seq = AbilityUtil.getSeqWithArt(entity, this);
         boolean lightNearby = InteractionHandler.isInteractionPossible(fogLoc, "light_source", seq);
 
-        ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.FOG_OF_WAR.get(), entity.getEyePosition(), 20, 15*(int) Math.max(multiplier(entity)/4,1), 5*(int) Math.max(multiplier(entity)/4,1), 15*(int) Math.max(multiplier(entity)/4,1), 0);
-        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 20*(int) Math.max(multiplier(entity)/4,1)).forEach(e -> {
+        ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.FOG_OF_WAR.get(), entity.getEyePosition(), 20, 15*multiplier(entity), 5*multiplier(entity), 15*multiplier(entity), 0);
+        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 20*multiplier(entity)).forEach(e -> {
             if (!AllyUtil.isAlly(entity, e.getUUID())) {
                 if (!lightNearby) {
                     e.addEffect(new MobEffectInstance(net.minecraft.world.effect.MobEffects.BLINDNESS, 40, 0, false, false, true));

@@ -62,7 +62,7 @@ public class SolarEnvoyAbility extends ToggleAbility {
         if (BeyonderData.isGriefingEnabled(entity)) {
             // Get all blocks once
             List<BlockPos> sphereBlocks = AbilityUtil.getBlocksInSphereRadius(
-                    serverLevel, entity.position(), 25* (int) Math.max(multiplier(entity)/4,1), true, true, false
+                    serverLevel, entity.position(), 25* multiplier(entity), true, true, false
             );
 
             for (BlockPos pos : sphereBlocks) {
@@ -98,7 +98,7 @@ public class SolarEnvoyAbility extends ToggleAbility {
         }
 
         // Damage entities
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 37* (int) Math.max(multiplier(entity)/4,1), DamageLookup.lookupDps(2, 1.1, 5, 20) * (int) Math.max(multiplier(entity)/4,1), entity.position(), true, true, 20 * 5, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION_INDIRECT, entity));
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 37* multiplier(entity), DamageLookup.lookupDps(2, 1.1, 5, 20) * multiplier(entity), entity.position(), true, true, 20 * 5, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION_INDIRECT, entity));
 
         // Particles
         ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, entity.position(), 2.6, 60);

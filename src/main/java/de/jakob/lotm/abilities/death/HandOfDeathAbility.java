@@ -70,7 +70,7 @@ public class HandOfDeathAbility extends SelectableAbility {
     }
 
     private void leftHand(ServerLevel level, LivingEntity caster) {
-        LivingEntity target = AbilityUtil.getTargetEntity(caster, 30 * (int) Math.max(multiplier(caster) / 4, 1), 1.5f, true);
+        LivingEntity target = AbilityUtil.getTargetEntity(caster, (int) (30 * multiplier(caster)), 1.5f, true);
         if (target == null) {
             AbilityUtil.sendActionBar(caster, Component.translatable("ability.lotmcraft.hand_of_death.no_target").withColor(0xFF334f23));
             return;
@@ -190,7 +190,7 @@ public class HandOfDeathAbility extends SelectableAbility {
     }
 
     private void rightHandOthers(ServerLevel level, LivingEntity caster) {
-        LivingEntity target = AbilityUtil.getTargetEntity(caster, 30 * (int) Math.max(multiplier(caster) / 4, 1), 1.5f, true);
+        LivingEntity target = AbilityUtil.getTargetEntity(caster, (int) (30 * multiplier(caster)), 1.5f, true);
         if (target == null) {
             AbilityUtil.sendActionBar(caster, Component.translatable("ability.lotmcraft.hand_of_death.no_target").withColor(0xFF334f23));
             return;

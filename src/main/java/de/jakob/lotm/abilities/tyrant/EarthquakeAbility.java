@@ -59,11 +59,11 @@ public class EarthquakeAbility extends Ability {
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
 
         double multiplier = multiplier(entity);
-        ServerScheduler.scheduleForDuration(0, 8, 20 * 25* (int) Math.max(multiplier(entity)/4,1), () -> {
-            AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 90* (int) Math.max(multiplier(entity)/4,1)).forEach(e -> {
+        ServerScheduler.scheduleForDuration(0, 8, (int) (20 * 25* multiplier(entity)), () -> {
+            AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 90* multiplier(entity)).forEach(e -> {
                 if(AbilityUtil.distanceToGround(level, e) < 1.5) {
                     if(random.nextBoolean())
-                        e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) DamageLookup.lookupDps(4, .925, 8, 20) * (int) Math.max(multiplier(entity)/4,1));
+                        e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) DamageLookup.lookupDps(4, .925, 8, 20) * multiplier(entity));
                     if(random.nextInt(12) == 0)
                         e.setDeltaMovement(new Vec3((0.5 - random.nextDouble()) * 0.5, 0.25 + random.nextDouble() * .75, (0.5 - random.nextDouble()) * 0.25));
                 }

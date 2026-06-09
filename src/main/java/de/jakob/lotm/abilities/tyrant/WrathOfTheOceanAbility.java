@@ -79,7 +79,7 @@ public class WrathOfTheOceanAbility extends SelectableAbility {
             AbilityUtil.getNearbyEntities(caster, level, origin, 100, false).stream()
                     .filter(t -> !isAquatic(t) && t.isInWater())
                     .forEach(t -> {
-                        t.hurt(level.damageSources().genericKill(), (float) DamageLookup.lookupDamage(3, .05f) * Math.max(multiplier(caster) / 4, 1));
+                        t.hurt(level.damageSources().genericKill(), (float) DamageLookup.lookupDamage(3, .05f) * multiplier(caster));
                         level.playSound(null, t.blockPosition(), SoundEvents.GENERIC_BURN, SoundSource.PLAYERS, 0.6f, 0.8f + level.random.nextFloat() * 0.4f);
                         ParticleUtil.spawnParticles(level, ParticleTypes.BUBBLE_POP,
                                 t.position().add(0, 0.5, 0), 12, 0.3, 0.3, 0.3, 0.1);

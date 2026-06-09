@@ -87,7 +87,7 @@ public class LawAbility extends SelectableAbility {
     }
 
     private void weakenMysticism(ServerLevel serverLevel, LivingEntity entity) {
-        int duration = 20 * 30 * (int) Math.max(multiplier(entity) / 4, 1);
+        int duration = (int) (20 * 30 * multiplier(entity));
         List<LivingEntity> nearby = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 40);
 
         nearby.stream()
@@ -120,7 +120,7 @@ public class LawAbility extends SelectableAbility {
     }
 
     private void enhanceMysticism(ServerLevel serverLevel, LivingEntity entity) {
-        int duration = 20 * 60 * (int) Math.max(multiplier(entity) / 4, 1);
+        int duration = 20 * 60 * multiplier(entity);
         List<LivingEntity> nearby = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 40);
 
         nearby.stream()
@@ -166,7 +166,7 @@ public class LawAbility extends SelectableAbility {
         ParticleUtil.spawnCircleParticles(serverLevel, HOLY_DUST,  caster.position().add(0, 0.05, 0), 2.5, 32);
         serverLevel.sendParticles(ParticleTypes.ENCHANT, casterCenter.x, casterCenter.y, casterCenter.z, 60, 1.0, 0.8, 1.0, 0.18);
 
-        List<LivingEntity> nearby = AbilityUtil.getNearbyEntities(caster, serverLevel, caster.position(), 40 * (int) Math.max(multiplier(caster) / 4, 1));
+        List<LivingEntity> nearby = AbilityUtil.getNearbyEntities(caster, serverLevel, caster.position(), 40 * multiplier(caster));
         for (LivingEntity e : nearby) {
             if (!e.getType().is(EntityTypeTags.UNDEAD)) continue;
 
@@ -189,7 +189,7 @@ public class LawAbility extends SelectableAbility {
     }
 
     private void lawOfSealing(ServerLevel serverLevel, LivingEntity caster) {
-        LivingEntity target = AbilityUtil.getTargetEntity(caster, 20 * (int) Math.max(multiplier(caster) / 4, 1), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(caster, (int) (20 * multiplier(caster)), 1.5f);
         if (target == null) {
             if (caster instanceof ServerPlayer player) {
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.law.sealing_no_target").withStyle(ChatFormatting.RED));
@@ -206,7 +206,7 @@ public class LawAbility extends SelectableAbility {
         }
 
         target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT)
-                .disableSpecificAbilityForTime(abilityId, "law_of_sealing", 20 * 60 * 2 * (int) Math.max(multiplier(caster) / 4, 1));
+                .disableSpecificAbilityForTime(abilityId, "law_of_sealing", (int) (20 * 60 * 2 * multiplier(caster)));
 
         serverLevel.playSound(null, caster.blockPosition(),  SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.3f, 0.5f);
         serverLevel.playSound(null, caster.blockPosition(),  SoundEvents.BEACON_ACTIVATE,      SoundSource.PLAYERS, 0.7f, 0.6f);

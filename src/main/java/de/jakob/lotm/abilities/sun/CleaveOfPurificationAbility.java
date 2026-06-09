@@ -76,7 +76,7 @@ public class CleaveOfPurificationAbility extends Ability {
                 .5, 12, .4
         );
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75* (int) Math.max(multiplier(entity)/4,1), DamageLookup.lookupDamage(7, .9) * (int) Math.max(multiplier(entity)/4,1), startPos, true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75* (int) multiplier(entity), DamageLookup.lookupDamage(7, .9) * multiplier(entity), startPos, true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
 
         BlockState block = level.getBlockState(BlockPos.containing(startPos));
         if(block.isAir()) {

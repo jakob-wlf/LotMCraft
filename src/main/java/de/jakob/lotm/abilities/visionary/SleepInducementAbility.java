@@ -67,7 +67,7 @@ public class SleepInducementAbility extends SelectableAbility {
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 10 * (int) Math.max(multiplier(entity)/4,1)).forEach(e -> {
+        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 10 * multiplier(entity)).forEach(e -> {
             if(BeyonderData.getPathway(e).equals("visionary") && BeyonderData.getSequence(e) < entitySeq){
                 AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.frenzy.failed").withColor(0xFFff124d));
 
@@ -76,7 +76,7 @@ public class SleepInducementAbility extends SelectableAbility {
                 }
             }
             else{
-               e.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 20 * 6* (int) Math.max(multiplier(entity)/4,1), 1, false, false, false));
+               e.addEffect(new MobEffectInstance(ModEffects.ASLEEP, (int) (20 * 6* multiplier(entity)), 1, false, false, false));
             }
         });
     }

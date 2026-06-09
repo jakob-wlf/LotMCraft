@@ -170,7 +170,7 @@ public class OrderProxyAbility extends SelectableAbility {
             return;
         }
 
-        int MAX_PROHIBITION_ZONES = 3 * (int) Math.max(multiplier(entity) / 4, 1);
+        int MAX_PROHIBITION_ZONES = 3 * multiplier(entity);
         if (PERMANENT_PROHIBITION_ZONES.size() >= MAX_PROHIBITION_ZONES) {
             if (entity instanceof ServerPlayer sp) {
                 sp.sendSystemMessage(Component.translatable("ability.lotmcraft.order_proxy.prohibition_limit")
@@ -234,7 +234,7 @@ public class OrderProxyAbility extends SelectableAbility {
             return;
         }
 
-        int MAX_LAW_ZONES = 2 * (int) Math.max(multiplier(entity) / 4, 1);
+        int MAX_LAW_ZONES = 2 * multiplier(entity);
         if (PERMANENT_LAW_ZONES.size() >= MAX_LAW_ZONES) {
             if (entity instanceof ServerPlayer sp) {
                 sp.sendSystemMessage(Component.translatable("ability.lotmcraft.order_proxy.law_limit")

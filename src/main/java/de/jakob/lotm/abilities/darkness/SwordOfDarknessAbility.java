@@ -81,11 +81,11 @@ public class SwordOfDarknessAbility extends Ability {
                     //Additional effects
                     AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20*Math.max(multiplier/2, 1)).forEach(e -> {
                         SanityComponent sanityComponent = e.getData(ModAttachments.SANITY_COMPONENT);
-                        sanityComponent.increaseSanityAndSync(-0.000163f*(int) Math.max(multiplier/4,1), e);
+                        sanityComponent.increaseSanityAndSync(-0.000163f*(int) multiplier, e);
                         if (seq <= 1)
                         {
                             //Eternal rest part
-                            int actualDuration = 20*5*(int) Math.max(multiplier/4, 1);
+                            int actualDuration = 20*5* (int) multiplier;
                             e.addEffect(new MobEffectInstance(ModEffects.ASLEEP, actualDuration, 1, false, false, true));
                             e.addEffect(new MobEffectInstance(MobEffects.DARKNESS, actualDuration, 5, false, false, false));
                             e.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, actualDuration, 4, false, false, false));

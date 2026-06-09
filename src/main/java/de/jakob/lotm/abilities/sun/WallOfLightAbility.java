@@ -48,7 +48,7 @@ public class WallOfLightAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 12* (int) Math.max(multiplier(entity)/4,1), 1.4f);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 12* (int) multiplier(entity), 1.4f);
 
         Vec3 perpendicular = VectorUtil.getPerpendicularVector(entity.getLookAngle()).normalize();
 
@@ -67,12 +67,12 @@ public class WallOfLightAbility extends Ability {
             }
         }
 
-        ServerScheduler.scheduleForDuration(0, 7, 20 * 15* (int) Math.max(multiplier(entity)/4,1), () -> {
+        ServerScheduler.scheduleForDuration(0, 7, 20 * 15* (int) multiplier(entity), () -> {
             for(BlockPos pos : blocks) {
                 if(random.nextBoolean())
                     ParticleUtil.spawnParticles((ServerLevel) level, random.nextBoolean() ? dust : ParticleTypes.END_ROD, pos.getCenter(), 1, 0.5, 0.02);
 
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1.2f, DamageLookup.lookupDamage(3, .35) * (int) Math.max(multiplier(entity)/4,1), pos.getCenter(), true, false, false, 15);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1.2f, DamageLookup.lookupDamage(3, .35) * multiplier(entity), pos.getCenter(), true, false, false, 15);
 
                 for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, pos.getCenter(), 1f)) {
                     Vec3 knockback = target.position().subtract(pos.getCenter()).normalize().add(0, .2, 0).scale(1.4f);
