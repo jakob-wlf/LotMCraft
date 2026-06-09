@@ -44,10 +44,13 @@ public class LoosingControlEffect extends MobEffect {
 
             livingEntity.yBodyRot = yaw;
             livingEntity.yHeadRot = yaw;
+            livingEntity.hurtMarked = true;
         }
 
-        var sanity = livingEntity.getData(ModAttachments.SANITY_COMPONENT.get());
-        sanity.decreaseSanityAndSync((float) (0.0025 * amplifier), livingEntity);
+        if(amplifier >= 1) {
+            var sanity = livingEntity.getData(ModAttachments.SANITY_COMPONENT.get());
+            sanity.decreaseSanityAndSync((float) (0.0025 * amplifier), livingEntity);
+        }
 
         return true;
     }

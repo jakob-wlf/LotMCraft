@@ -119,6 +119,13 @@ public class ClientHandler {
         }
     }
 
+    public static void playActingEffect() {
+        Player player = Minecraft.getInstance().player;
+        ClientLevel level = Minecraft.getInstance().level;
+        ParticleUtil.spawnParticles(level, ParticleTypes.END_ROD, player.getEyePosition(), 60, .7, .1);
+        player.level().playSound(player, BlockPos.containing(player.getEyePosition()), SoundEvents.ENCHANTMENT_TABLE_USE, player.getSoundSource(), .5f, 1);
+    }
+
     public static void syncEyeOfDeathAbility(SyncEyeOfDeathAbilityPacket packet, Player player) {
         if (packet.active()) {
             Level level = Minecraft.getInstance().level;
@@ -163,6 +170,13 @@ public class ClientHandler {
 
         if (player.position().distanceTo(new Vec3(center.x(), center.y(), center.z())) <= radius && level == Minecraft.getInstance().level) {
             applyCameraShake(intensity, duration);
+        }
+    }
+
+    public static void applyCameraShakeToPlayer(float intensity, int duration, Player player) {
+        if(Minecraft.getInstance().player == null) return;
+        if(player.getUUID().equals(Minecraft.getInstance().player.getUUID())) {
+             applyCameraShake(intensity, duration);
         }
     }
 

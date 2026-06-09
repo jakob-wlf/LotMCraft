@@ -8,6 +8,8 @@ import de.jakob.lotm.acting.ActingHandler;
 import de.jakob.lotm.acting.ActingHelper;
 import de.jakob.lotm.acting.ActingTask;
 import de.jakob.lotm.acting.ActingTaskRegistry;
+import de.jakob.lotm.attachments.ControllingDataComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.*;

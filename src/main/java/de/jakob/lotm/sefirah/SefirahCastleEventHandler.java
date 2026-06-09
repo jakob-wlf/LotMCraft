@@ -29,7 +29,7 @@ public class SefirahCastleEventHandler {
 
 
     // Check for ritual -------------------------------------------------------------------------------
-    /*@SubscribeEvent
+    @SubscribeEvent
     public static void onChatMessageSent(ServerChatEvent event) {
         UUID playerUUID = event.getPlayer().getUUID();
 
@@ -97,7 +97,6 @@ public class SefirahCastleEventHandler {
     }
 
 
-*/
     // Disable abilities inside the castle and disable griefing inside completely --------------------
     @SubscribeEvent
     public static void onEntityTick(EntityTickEvent.Post event) {

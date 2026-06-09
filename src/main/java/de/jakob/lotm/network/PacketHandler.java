@@ -357,6 +357,19 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncPlayerActingDataPayload.TYPE,
+                SyncPlayerActingDataPayload.STREAM_CODEC,
+                SyncPlayerActingDataPayload::handle
+        );
+
+        registrar.playToClient(
+                PlayActingEffectPacket.TYPE,
+                PlayActingEffectPacket.STREAM_CODEC,
+                PlayActingEffectPacket::handle
+        );
+
+
+        registrar.playToClient(
                 SyncSharedAbilitiesDataPacket.TYPE,
                 SyncSharedAbilitiesDataPacket.STREAM_CODEC,
                 SyncSharedAbilitiesDataPacket::handle
