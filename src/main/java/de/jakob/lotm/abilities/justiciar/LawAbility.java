@@ -120,7 +120,7 @@ public class LawAbility extends SelectableAbility {
     }
 
     private void enhanceMysticism(ServerLevel serverLevel, LivingEntity entity) {
-        int duration = 20 * 60 * multiplier(entity);
+        int duration = (int) (20 * 60 * multiplier(entity));
         List<LivingEntity> nearby = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 40);
 
         nearby.stream()

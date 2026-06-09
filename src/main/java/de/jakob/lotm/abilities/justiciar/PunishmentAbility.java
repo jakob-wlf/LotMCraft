@@ -83,7 +83,7 @@ public class PunishmentAbility extends Ability {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20 * multiplier(entity), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.5f);
         if (target == null) {
             if (entity instanceof ServerPlayer player) {
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.punishment.no_target")
