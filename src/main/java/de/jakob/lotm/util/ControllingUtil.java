@@ -76,24 +76,49 @@ public class ControllingUtil {
         copyPosition(player, originalBody);
 
         // copy the target and his position to the player
+        // Capture target data BEFORE we start overwriting things, 
+        // to ensure we have a clean copy if we need to swap it into the originalBody.
+        ArrayList<Characteristic> targetChars = new ArrayList<>();
+        String targetPathway = BeyonderData.getPathway(target);
+        int targetSequence = BeyonderData.getSequence(target);
+        if (swapData && BeyonderData.isBeyonder(target)) {
+            for (Characteristic c : BeyonderData.getCharList(target)) {
+                targetChars.add(new Characteristic(c.pathway(), c.stack(), c.sequence()));
+            }
+        }
+
         // Force overwriting Beyonder data on the player so the controller temporarily assumes the target's pathway/sequence/characteristics
         copyEntities(target, player, swapData);
         copyPosition(target, player);
 
         // swap the target with the player's original body state if the target is a Beyonder
-        if (swapData && BeyonderData.isBeyonder(target) && !isTargetPlayer) {
-            // swap the target with the player's original body state
+        if (swapData && !targetChars.isEmpty() && !isTargetPlayer) {
+            // Restore the player's original data to the target entity (completing the swap)
             copyEntities(originalBody, target, true);
         }
 
         // save the target to the player
         if (!isTargetPlayer){
             CompoundTag targetTag = new CompoundTag();
+            // Temporarily restore target's true Beyonder state for saving to NBT
+            // so when the player stops controlling, the target is restored with its own data
+            // instead of the player's data (which it currently has due to the swap).
+            if (swapData && !targetChars.isEmpty()) {
+                BeyonderData.setBeyonder(target, targetPathway, targetSequence, false, false, false, false, false, false);
+                target.getData(ModAttachments.BEYONDER_COMPONENT).setCharacteristicList(targetChars);
+            }
+
             target.saveWithoutId(targetTag);
 
             ResourceLocation targetId = BuiltInRegistries.ENTITY_TYPE.getKey(target.getType());
             targetTag.putString("id", targetId.toString());
             data.setTargetEntity(targetTag);
+            
+            // Re-apply the swap if it was active, so the discarded/controlled entity stays in swapped state 
+            // (though for non-player targets it's about to be discarded anyway, it's cleaner)
+            if (swapData && !targetChars.isEmpty()) {
+                copyEntities(originalBody, target, true);
+            }
         }
 
         // save the main body to the player
@@ -196,6 +221,14 @@ public class ControllingUtil {
             }
 
             if (targetEntity instanceof ServerPlayer serverTarget) {
+                if (!data.isMovementOnly()) {
+                    // If it's a player, they were swapped. We need to restore them from the originalBody
+                    // because we don't have a NBT tag for them.
+                    Entity originalBodyForPlayer = level.getEntity(data.getBodyUUID());
+                    if (originalBodyForPlayer instanceof LivingEntity ob) {
+                         copyData(ob, serverTarget, true);
+                    }
+                }
                 ControllingDataComponent targetData = serverTarget.getData(ModAttachments.CONTROLLING_DATA);
                 targetData.setIsControlled(false);
                 targetData.setOwnerUUID(null);
@@ -214,10 +247,12 @@ public class ControllingUtil {
         // returning to main body and swapping characteristics
         if (originalBodyEntity != null) {
             if (originalBodyEntity instanceof LivingEntity originalBody) {
-                // SWAP: Target receives the parasite's original characteristics (completing the swap).
+                // SWAP: Target receives its original characteristics back if we had a swap
                 if (!data.isMovementOnly() && targetEntity instanceof LivingEntity targetLiving) {
-                    LOTMCraft.LOGGER.info("reset: swapping original body Beyonder data to restored target {}", targetEntity.getUUID());
-                    copyData(originalBody, targetLiving, true);
+                    LOTMCraft.LOGGER.info("reset: restoring original target Beyonder data to restored target {}", targetEntity.getUUID());
+                    // We don't need to copy from originalBody here because the targetTag 
+                    // should already contain the correct original target data if we saved it correctly in possess()
+                    // or if it's a player, they already have their data (wait, no, players are also swapped).
                 }
 
                 // SWAP: Player returns to their original body/items, but merges the host's characteristics.
@@ -341,16 +376,18 @@ public class ControllingUtil {
         if (forceBeyonderCopy || BeyonderData.isBeyonder(source)) {
             LOTMCraft.LOGGER.info("copyData: copying Beyonder from {} ({}) to {} ({})", source.getDisplayName().getString(), source.getUUID(), target.getDisplayName().getString(), target.getUUID());
 
-            // Set the pathway/sequence/etc using the standard setter to keep PlayerMap and passive effects consistent
-            // Avoid mutating PlayerMap during transient copies: set putIntoMap=false so the global map is only updated when players are restored
-            BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source), false, false, false, false, false, false);
-
-            // Build a defensive deep-copy of the characteristic list and set it in one operation to avoid
-            // repeated setCharacteristic calls which can cause intermediate PlayerMap or packet sync side-effects.
+            // Build a defensive deep-copy of the characteristic list.
             ArrayList<Characteristic> charCopy = new ArrayList<>();
             for (Characteristic characteristic : BeyonderData.getCharList(source)) {
                 charCopy.add(new Characteristic(characteristic.pathway(), characteristic.stack(), characteristic.sequence()));
             }
+
+            // Set the pathway/sequence/etc using the standard setter to keep PlayerMap and passive effects consistent
+            // Avoid mutating PlayerMap during transient copies: set putIntoMap=false so the global map is only updated when players are restored
+            // Use clearCharStack=false and resetSpirituality=false because we're about to set them manually
+            BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source), false, false, false, false, false, false);
+
+            // Overwrite the characteristic list with the exact copy from source
             target.getData(ModAttachments.BEYONDER_COMPONENT).setCharacteristicList(charCopy);
 
             // Sync digestion/griefing for players
