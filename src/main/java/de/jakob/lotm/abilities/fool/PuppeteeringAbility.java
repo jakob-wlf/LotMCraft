@@ -158,12 +158,13 @@ public class PuppeteeringAbility extends Ability {
 
 
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, getManipulationDistance(sequence), 3);
+        LivingEntity targetRaw = AbilityUtil.getTargetEntity(entity, getManipulationDistance(sequence), 3);
         // Validate range: TargetEntityEvent handlers (e.g. Grafting Mode 3) can override the target
         // to an entity beyond the actual manipulation distance.  Reject it if it is out of range.
-        if (target != null && target.distanceTo(entity) > getManipulationDistance(sequence)) {
-            target = null;
+        if (targetRaw != null && targetRaw.distanceTo(entity) > getManipulationDistance(sequence)) {
+            targetRaw = null;
         }
+        final LivingEntity target = targetRaw;
         if(target == null || target == entity || target instanceof Phantom) {
             if(entity instanceof ServerPlayer player) {
                 ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("ability.lotmcraft.puppeteering.no_entity_found").withColor(0xFFff124d));
