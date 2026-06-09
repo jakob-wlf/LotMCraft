@@ -19,6 +19,7 @@ public class EnergyTransformationAbility extends ToggleAbility {
         canBeReplicated = false;
         canBeUsedInArtifact = false;
         canBeShared = false;
+        cannotBeStolen = true;
     }
 
     @Override

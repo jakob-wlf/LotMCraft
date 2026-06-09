@@ -33,7 +33,6 @@ public class IndividualBalanceAbility extends Ability {
         hasOptimalDistance = true;
         optimalDistance = 10f;
         postsUsedAbilityEventManually = true;
-        canBeCopied = false;
         canBeShared = false;
     }
 

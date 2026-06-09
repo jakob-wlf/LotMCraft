@@ -35,11 +35,12 @@ public class DragonScalesAbility extends ToggleAbility {
         canBeReplicated =false;
         canBeUsedInArtifact = false;
         cannotBeStolen = true;
+        canBeShared = false;
     }
 
     @Override
     public float getSpiritualityCost() {
-        return 15;
+        return 3;
     }
 
     @Override

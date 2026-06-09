@@ -42,10 +42,7 @@ public class IllusionaryTortureDevicesAbility extends SelectableAbility {
 
     public IllusionaryTortureDevicesAbility(String id) {
         super(id, 1.5f);
-        canBeCopied = true;
         canBeUsedByNPC = true;
-        cannotBeStolen = false;
-        canBeReplicated = true;
     }
 
     @Override
@@ -193,7 +190,7 @@ public class IllusionaryTortureDevicesAbility extends SelectableAbility {
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 120, 1));
         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 120, 1));
         target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 0));
-        applySanity(entity, target, 0.20f);
+        applySanity(entity, target, 0.1f);
 
         serverLevel.playSound(null, entity.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.5f, 0.6f);
         serverLevel.playSound(null, target.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.0f, 1.4f);
@@ -231,7 +228,7 @@ public class IllusionaryTortureDevicesAbility extends SelectableAbility {
         double damage = DamageLookup.lookupDamage(7, 0.8) * multiplier(entity);
         target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) damage);
         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 80, 0));
-        applySanity(entity, target, 0.15f);
+        applySanity(entity, target, 0.05f);
 
         serverLevel.playSound(null, entity.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.2f, 0.5f);
         serverLevel.playSound(null, target.blockPosition(), SoundEvents.PLAYER_HURT, SoundSource.PLAYERS, 1.0f, 0.6f);

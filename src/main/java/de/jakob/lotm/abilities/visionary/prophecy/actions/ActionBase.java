@@ -9,6 +9,7 @@ import net.minecraft.world.entity.Saddleable;
 import net.minecraft.world.level.Level;
 
 import java.sql.Time;
+import java.util.UUID;
 
 public abstract class ActionBase {
     public static final String CONTEXT = "action_contex";
@@ -29,7 +30,7 @@ public abstract class ActionBase {
 
     public abstract int getRequiredSeq();
 
-    abstract public void action(Level level, LivingEntity entity);
+    abstract public void action(Level level, LivingEntity entity, UUID casterId);
 
     public static ActionBase load(ActionsEnum type, CompoundTag tag, HolderLookup.Provider provider) {
         return switch (type) {
@@ -49,6 +50,13 @@ public abstract class ActionBase {
             case WEATHER -> WeatherAction.load(tag, provider);
             case TIME -> TimeAction.load(tag, provider);
             case WHISPERS -> WhispersAction.load(tag, provider);
+            case SUICIDE -> SuicideAction.load(tag, provider);
+            case PLAGUE -> PlagueAction.load(tag, provider);
+            case SLEEP -> SleepAction.load(tag, provider);
+            case DOUBLE -> DoubleAction.load(tag, provider);
+            case SPIRITUALITY -> SpiritualityAction.load(tag, provider);
+            case PLAYER -> PlayerAction.load(tag,provider);
+            case EMPTY -> EmptyAction.load(tag, provider);
         };
     }
 
@@ -70,6 +78,13 @@ public abstract class ActionBase {
             case WEATHER -> new WeatherAction(context);
             case TIME -> new TimeAction(context);
             case WHISPERS -> new WhispersAction(context);
+            case SUICIDE -> new SuicideAction(context);
+            case PLAGUE -> new PlagueAction(context);
+            case SLEEP -> new SleepAction(context);
+            case DOUBLE -> new DoubleAction(context);
+            case SPIRITUALITY -> new SpiritualityAction(context);
+            case PLAYER -> new PlayerAction(context);
+            case EMPTY -> new EmptyAction(context);
         };
     }
 }

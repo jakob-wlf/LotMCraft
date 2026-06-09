@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.visionary;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.item.ModItems;
@@ -65,6 +66,16 @@ public class ManipulationAbility extends SelectableAbility {
             AbilityUtil.sendActionBar(entity, Component.translatable("lotm.not_implemented_yet"));
             return;
         }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
+
         switch (abilityIndex) {
             case 0 -> groupIncite(level, entity);
             //case 1 -> control(level, entity);
@@ -97,6 +108,10 @@ public class ManipulationAbility extends SelectableAbility {
         List<LivingEntity> nearby = AbilityUtil.getNearbyEntities(
                 entity, serverLevel, entity.position(), 20, false, true);
 
+        if(VisionaryHandler.shouldFailAndTrigger(casterSeq, entity, target, this)){
+            return;
+        }
+
         for (LivingEntity nearby_entity : nearby) {
             if (nearby_entity.getUUID().equals(entity.getUUID())) continue;
             if (nearby_entity.getUUID().equals(target.getUUID())) continue;
@@ -105,23 +120,15 @@ public class ManipulationAbility extends SelectableAbility {
                 // Force beyonder players of lower sequence to use abilities
                 if (!BeyonderData.isBeyonder(nearbyPlayer)) continue;
 
-                int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-                int targetSeq = BeyonderData.getSequence(target);
-                if(BeyonderData.getPathway(target).equals("visionary") && targetSeq < entitySeq){
-                    AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed").withColor(0xFFff124d));
-
-                    if(targetSeq <= 1 && target instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer entityPlayer){
-                        MetaAwarenessAbility.onDivined(entityPlayer, targetPlayer);
-                    }
-
-                    return;
+                if(VisionaryHandler.shouldFailAndTrigger(casterSeq, entity, nearby_entity, this)){
+                   continue;
                 }
 
-                if (BeyonderData.getSequence(nearbyPlayer) <= casterSeq) continue;
+                if (BeyonderData.getSequence(nearbyPlayer) < casterSeq) continue;
                 forcePlayerAbilities(nearbyPlayer, target, serverLevel);
             } else if (nearby_entity instanceof Mob mob) {
                 // For beyonder mobs, check sequence. For non-beyonder mobs, always incite.
-                if (BeyonderData.isBeyonder(mob) && BeyonderData.getSequence(mob) <= casterSeq) continue;
+                if (BeyonderData.isBeyonder(mob) && BeyonderData.getSequence(mob) < casterSeq) continue;
 
                 LivingEntity originalTarget = mob.getTarget();
                 mob.setTarget(target);

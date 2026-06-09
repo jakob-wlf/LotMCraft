@@ -37,8 +37,6 @@ import java.util.Random;
 public class ProphecyAbility extends SelectableAbility {
     public ProphecyAbility(String id) {
         super(id, 4);
-        canBeCopied = false;
-        canBeReplicated = false;
         canBeShared = false;
     }
 

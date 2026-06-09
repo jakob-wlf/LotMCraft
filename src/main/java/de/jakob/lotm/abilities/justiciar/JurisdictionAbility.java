@@ -2,6 +2,9 @@ package de.jakob.lotm.abilities.justiciar;
 
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -12,6 +15,7 @@ import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -36,7 +40,8 @@ public class JurisdictionAbility extends Ability {
     public JurisdictionAbility(String id) {
         super(id, 0f, "jurisdiction");
         hasOptimalDistance = false;
-        this.doesNotIncreaseDigestion = false;
+        this.doesNotIncreaseDigestion = true;
+        canBeUsedInArtifact = false;
     }
 
     @Override
@@ -153,9 +158,14 @@ public class JurisdictionAbility extends Ability {
 
                     Set<UUID> seen = new HashSet<>();
                     for (Player e : nearby) {
+                        if(VisionaryHandler.shouldStayInvisible(BeyonderData.getSequence(owner), e))
+                            continue;
+
                         boolean inside = zone.contains(e);
                         UUID id = e.getUUID();
                         seen.add(id);
+
+
 
                         if (inside && !zone.inside.contains(id)) {
                             zone.inside.add(id);
@@ -163,6 +173,9 @@ public class JurisdictionAbility extends Ability {
                                     "§6⚖ §e" + e.getName().getString() + " §fhas entered your §eJurisdiction §6⚖"
                             ));
                             zone.level.playSound(null, owner.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.4f, 1.5f);
+
+                            if(owner instanceof ServerPlayer ownerServer && e instanceof ServerPlayer eServer)
+                                MetaAwarenessAbility.sendWithMessage(ownerServer, eServer, "You are under effect of " + this.getId());
                         }
 
                         if (!inside && zone.inside.contains(id)) {
@@ -171,6 +184,9 @@ public class JurisdictionAbility extends Ability {
                                     "§6⚖ §e" + e.getName().getString() + " §fhas left your §eJurisdiction §6⚖"
                             ));
                             zone.level.playSound(null, owner.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.4f, 0.8f);
+
+                            if(owner instanceof ServerPlayer ownerServer && e instanceof ServerPlayer eServer)
+                                MetaAwarenessAbility.sendWithMessage(ownerServer, eServer, "You are no longer under effect of " + this.getId());
                         }
                     }
 

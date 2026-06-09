@@ -24,7 +24,6 @@ import java.util.Map;
 public class FogOfWarAbility extends ToggleAbility {
     public FogOfWarAbility(String id) {
         super(id, "fog");
-        canBeCopied = false;
         interactionRadius = 20;
         canBeShared = false;
     }

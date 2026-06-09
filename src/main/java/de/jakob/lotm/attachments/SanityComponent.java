@@ -1,5 +1,6 @@
 package de.jakob.lotm.attachments;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSanityPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -13,7 +14,6 @@ import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 public class SanityComponent {
 
     private float sanity = 1.0f;
-    private int virtualPersonaStacks = 0;
 
     public SanityComponent() {
     }
@@ -36,14 +36,12 @@ public class SanityComponent {
 
     public void increaseSanityAndSync(float amount, LivingEntity entity) {
         if (amount < 0) {
-            // Consume one virtual persona stack to fully cancel this sanity reduction
-            if (virtualPersonaStacks > 0) {
-                virtualPersonaStacks--;
-                return;
-            }
 
-            if (entity instanceof ServerPlayer player && BeyonderData.isBeyonder(player)) {
-                amount *= (float) BeyonderData.getSanityDecreaseMultiplierForSequence(BeyonderData.getSequence(player));
+            var virtualPersonas = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
+            amount = virtualPersonas.block(amount);
+
+            if (BeyonderData.isBeyonder(entity)) {
+                amount *= (float) BeyonderData.getSanityDecreaseMultiplierForSequence(BeyonderData.getSequence(entity));
             }
         }
 
@@ -63,11 +61,9 @@ public class SanityComponent {
 
     public void increaseSanityWithSequenceDifference(float amount, LivingEntity entity, int casterSequence, int targetSequence) {
         if (amount < 0) {
-            // Consume one virtual persona stack to fully cancel this sanity reduction
-            if (virtualPersonaStacks > 0) {
-                virtualPersonaStacks--;
-                return;
-            }
+
+            var virtualPersonas = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
+            amount = virtualPersonas.block(amount );
 
             if (entity instanceof ServerPlayer player && BeyonderData.isBeyonder(player)) {
                 amount *= (float) BeyonderData.getSanityDecreaseMultiplierForSequence(BeyonderData.getSequence(player));
@@ -102,25 +98,12 @@ public class SanityComponent {
         }
     }
 
-    public int getVirtualPersonaStacks() {
-        return virtualPersonaStacks;
-    }
-
-    public void addVirtualPersonaStack() {
-        virtualPersonaStacks++;
-    }
-
-    public void setVirtualPersonaStacks(int stacks) {
-        this.virtualPersonaStacks = Math.clamp(stacks, 0, 10);
-    }
-
     public static final IAttachmentSerializer<CompoundTag, SanityComponent> SERIALIZER =
             new IAttachmentSerializer<>() {
                 @Override
                 public SanityComponent read(IAttachmentHolder holder, CompoundTag tag, HolderLookup.Provider lookup) {
                     SanityComponent component = new SanityComponent();
                     component.sanity = tag.getFloat("sanity");
-                    component.virtualPersonaStacks = tag.getInt("virtualPersonaStacks");
                     return component;
                 }
 
@@ -128,7 +111,6 @@ public class SanityComponent {
                 public CompoundTag write(SanityComponent component, HolderLookup.Provider lookup) {
                     CompoundTag tag = new CompoundTag();
                     tag.putFloat("sanity", component.sanity);
-                    tag.putInt("virtualPersonaStacks", component.virtualPersonaStacks);
                     return tag;
                 }
             };

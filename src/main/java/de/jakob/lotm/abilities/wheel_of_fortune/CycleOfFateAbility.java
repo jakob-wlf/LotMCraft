@@ -20,6 +20,7 @@ public class CycleOfFateAbility extends SelectableAbility {
         cannotBeStolen = true;
         canBeReplicated = false;
         canBeShared = false;
+        canBeUsedInArtifact = false;
     }
 
     @Override

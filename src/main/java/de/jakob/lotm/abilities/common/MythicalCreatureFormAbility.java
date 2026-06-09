@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.common;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.effect.ModEffects;
@@ -12,10 +13,12 @@ import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
@@ -23,6 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class MythicalCreatureFormAbility extends ToggleAbility {
+
     private static final HashMap<UUID, Double> previousScale = new HashMap<>();
 
     public MythicalCreatureFormAbility(String id) {
@@ -48,24 +52,22 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
             sanity.setSanityAndSync(Math.max(0.0f, sanity.getSanity() - (seq == 4 ? 0.01f : 0.005f)), entity);
         }
 
-        //Buff user
-        int amplifier = (seq > 2 ? 3 : 6);
+        int range = 200;
 
         // Make all entities lower than you loose control when seeing you
-        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 30).forEach(e -> {
-                    if (!AbilityUtil.isTargetSignificantlyWeaker(entity, e)) {
-                        return;
-                    }
-
-                    if (AbilityUtil.getTargetEntity(e, 30, 5f) != entity) {
+        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), range).forEach(e -> {
+                    if (AbilityUtil.getTargetEntity(e, range, 5f) != entity) {
                         return;
                     }
 
                     if (!entity.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(e.getUUID())) {
+                        int entitySeq = BeyonderData.getSequence(entity);
 
-                        e.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityWithSequenceDifference(
-                                0.04168f, e,
-                                BeyonderData.getSequence(e), BeyonderData.getSequence(entity));
+                        if(!VisionaryHandler.isInvisible(entity) && ! entity.hasEffect(MobEffects.INVISIBILITY)) {
+                            e.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityWithSequenceDifference(
+                                    getAmount(entitySeq), e,
+                                    BeyonderData.getSequence(e), entitySeq);
+                        }
 
                         doPathRelatedEffect(BeyonderData.getPathway(entity), level, entity, e);
                     }
@@ -89,7 +91,7 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
             scaleAttribute.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mythical_creature_form"), 1.9, AttributeModifier.Operation.ADD_VALUE));
         }
 
-        BeyonderData.addModifier(entity, "mythical_creature_form", (BeyonderData.getSequence(entity) > 2 ? 1.1 : 1.25));
+        BeyonderData.addModifier(entity, "mythical_creature_form", getAmplifier(BeyonderData.getSequence(entity)));
 
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         transformationComponent.setTransformedAndSync(true, entity);
@@ -99,6 +101,15 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
             additionalData = "door_high";
         }
         transformationComponent.setAdditionalDataAndSync(additionalData, entity);
+
+        if(additionalData.equals("visionary")){
+            if(entity instanceof Player player) {
+                player.getAbilities().mayfly = true;
+                player.getAbilities().flying = true;
+                player.getAbilities().setFlyingSpeed(.25f);
+                player.onUpdateAbilities();
+            }
+        }
     }
 
     @Override
@@ -112,7 +123,6 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
             scaleAttribute.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mythical_creature_form"));
         }
 
-        // Remove buff
         BeyonderData.removeModifier(entity, "mythical_creature_form");
 
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
@@ -120,6 +130,14 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
             transformationComponent.setTransformedAndSync(false, entity);
         }
 
+        if(BeyonderData.getPathway(entity).equals("visionary")){
+            if(entity instanceof Player player) {
+                player.getAbilities().mayfly = false;
+                player.getAbilities().flying = false;
+                player.getAbilities().setFlyingSpeed(.05f);
+                player.onUpdateAbilities();
+            }
+        }
     }
 
     @Override
@@ -146,13 +164,30 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
                 }
                 break;
 
-            case "visionary":
-                e.getData(ModAttachments.SANITY_COMPONENT.get())
-                        .decreaseSanityWithSequenceDifference(0.09168f, e, BeyonderData.getSequence(entity), BeyonderData.getSequence(e));
-                break;
-
             default:
                 break;
         }
+    }
+
+    private float getAmount(int seq){
+        return switch (seq){
+          case 4 -> 0.04168f;
+          case 3 -> 0.06168f;
+          case 2 -> 0.09168f;
+          case 1 -> 0.12168f;
+          case 0 -> 0.19f;
+          default -> 0f;
+        };
+    }
+
+    private float getAmplifier(int seq){
+        return switch (seq){
+            case 4 -> 1.1f;
+            case 3 -> 1.15f;
+            case 2 -> 1.2f;
+            case 1 -> 1.25f;
+            case 0 -> 1.35f;
+            default -> 1f;
+        };
     }
 }

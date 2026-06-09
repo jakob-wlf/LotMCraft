@@ -18,7 +18,6 @@ public class SpearOfLightAbility extends Ability {
     public SpearOfLightAbility(String id) {
         super(id, 2.5f, "purification", "light_source", "light_strong", "light_weak");
         postsUsedAbilityEventManually = true;
-        canBeCopied = false;
         canBeShared = false;
     }
 

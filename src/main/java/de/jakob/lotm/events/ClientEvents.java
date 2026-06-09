@@ -2,6 +2,7 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.darkness.NightmareAbility;
+import de.jakob.lotm.util.ClientCorrosionFovCache;
 import de.jakob.lotm.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.item.ModItems;
@@ -125,4 +126,11 @@ public class ClientEvents {
         PacketHandler.sendToServer(new InventoryOpenedPacket());
     }
 
+    @SubscribeEvent
+    public static void onComputeFov(ViewportEvent.ComputeFov event) {
+        float multiplier = ClientCorrosionFovCache.getFovMultiplier();
+        if (multiplier != 1.0f) {
+            event.setFOV(event.getFOV() * multiplier);
+        }
+    }
 }

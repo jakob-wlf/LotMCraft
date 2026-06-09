@@ -1,66 +1,53 @@
 package de.jakob.lotm.abilities.visionary;
 
-import de.jakob.lotm.LOTMCraft;
+
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.AbilityUseTracker;
-import de.jakob.lotm.abilities.core.SelectableAbility;
-import de.jakob.lotm.abilities.door.ReplicatingAbility;
-import de.jakob.lotm.attachments.CopiedAbilityComponent;
-import de.jakob.lotm.damage.ModDamageTypes;
-import de.jakob.lotm.entity.custom.ability_entities.door_pathway.ApprenticeBookEntity;
-import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.StartStopDiscernmentPacket;
+import de.jakob.lotm.network.packets.toClient.SyncDecryptionLookedAtEntitiesAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSpectatingAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.CopiedAbilityHelper;
-import de.jakob.lotm.util.helper.ParticleUtil;
-import de.jakob.lotm.util.helper.VectorUtil;
-import de.jakob.lotm.util.scheduling.ServerScheduler;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.Team;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.*;
 
-public class DiscernmentAbility extends SelectableAbility {
+import static de.jakob.lotm.abilities.visionary.TelepathyAbility.performTelepaty;
+
+public class DiscernmentAbility extends ToggleAbility {
+    private final HashMap<UUID, Set<Entity>> glowingEntities = new HashMap<>();
+    private static final Map<UUID, String> ENTITY_TEAM_MAP = new HashMap<>();
+    private static final Map<UUID, Set<String>> SENT_TEAMS = new HashMap<>();
+
+    private static final int COOLDOWN = 20 * 3;
+    private static final Map<UUID, Integer> cooldown = new HashMap<>();
+
     public DiscernmentAbility(String id) {
-        super(id, 3f);
+        super(id);
 
-        canBeCopied = false;
-        canBeUsedByNPC = false;
-        cannotBeStolen = true;
-        canBeReplicated = false;
-        canBeUsedInArtifact = false;
         canBeShared = false;
-    }
-
-    @Override
-    protected String[] getAbilityNames() {
-        return new String[]{
-                "ability.lotmcraft.discernment_ability.believe_self",
-                "ability.lotmcraft.discernment_ability.spectate_ability_usage",
-                "ability.lotmcraft.discernment_ability.envision_skill"
-        };
-    }
-
-    @Override
-    protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
-        switch (selectedAbility){
-            case 0 -> buff(level, entity);
-            case 1 -> performSpectate(level, entity);
-            case 2 -> openCopiedAbilityWheel(level, entity);
-        }
+        canBeUsedInArtifact = false;
+        canBeUsedByNPC = false;
     }
 
     @Override
@@ -70,94 +57,114 @@ public class DiscernmentAbility extends SelectableAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 200;
+        return 10;
     }
 
-    private void openCopiedAbilityWheel(Level level, LivingEntity entity) {
-        if (!(level instanceof ServerLevel) || !(entity instanceof ServerPlayer player)) return;
-        CopiedAbilityHelper.openCopiedAbilityWheel(player);
-    }
+    @Override
+    public void tick(Level level, LivingEntity entity) {
+        if(level.isClientSide){
+            return;
+        }
 
-    private void performSpectate(Level level, LivingEntity entity) {
-        if (!(level instanceof ServerLevel serverLevel))
+        if(!(entity instanceof ServerPlayer player)) return;
+
+        int seq = BeyonderData.getSequence(entity);
+        int range = getRange(seq);
+
+        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, range, 1.2f, false, true);
+        if(lookedAt != null) {
+            if (VisionaryHandler.shouldStayInvisible(seq, lookedAt)){
+                return;
+            }
+            else if(VisionaryHandler.shouldFailAndTrigger(seq, entity, lookedAt, this, false)){
+                return;
+            }
+            else if(AbilityUtil.isTargetSignificantlyStronger(seq, BeyonderData.getSequence(lookedAt))){
+                return;
+            }
+        }
+
+        PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
+
+        if(lookedAt != null)
+            performTelepaty(player, lookedAt, seq);
+
+
+        AbilityUseTracker.AbilityUseRecord tracker = AbilityUseTracker.getRecentUseInArea(
+                entity.getEyePosition(), level, getRangeForAbilityDetection(seq), entity);
+
+        if(tracker == null) return;
+
+        if(VisionaryHandler.shouldFailAndTrigger(seq, entity, tracker.entity(), this))
             return;
 
-        AtomicBoolean hasReplicatedAbility = new AtomicBoolean(false);
+        Ability usedSkill = tracker.ability();
+        if(usedSkill.getRequirements().containsKey("visionary") && !cooldown.containsKey(entity.getUUID())){
+            String pos = "x=" + (int) tracker.position().x + " y=" + (int) tracker.position().y + " z=" + (int) tracker.position().z;
 
-        level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1, 1);
+            entity.sendSystemMessage(Component.literal("You sense the usage of "
+                    + usedSkill.getId() + " at " + pos + " by " + tracker.entity().getName().getString())
+                    .withColor(0xf5c56c));
 
-        HashSet<Ability> entityAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequence(
-                BeyonderData.getPathway(entity), BeyonderData.getSequence(entity));
+            cooldown.put(entity.getUUID(), 0);
+        }
+
+        if(cooldown.containsKey(entity.getUUID())) {
+            cooldown.put(entity.getUUID(), cooldown.get(entity.getUUID()) + 1);
+            if (cooldown.get(entity.getUUID()) >= COOLDOWN)
+                cooldown.remove(entity.getUUID());
+        }
 
         int entitySeq = BeyonderData.getSequence(entity);
-
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 10, () -> {
-            if (hasReplicatedAbility.get())
-                return;
-
-            AbilityUseTracker.AbilityUseRecord record = AbilityUseTracker.getRecentUseInArea(
-                    entity.getEyePosition(), level, 40, entity);
-            if (record == null || entityAbilities.contains(record.ability()))
-                return;
-
-            Ability usedAbility = record.ability();
-            hasReplicatedAbility.set(true);
-
-            if (!usedAbility.canBeReplicated) {
-                AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.discernment_ability.cannot_copy"));
-                level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 1, 1);
-                return;
-            }
-
-            if (usedAbility.lowestSequenceUsable() + 2 < entitySeq) {
-                entity.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), entity.getHealth() - .5f);
-                AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.discernment_ability.too_high_sequence"));
-                level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 1, 1);
-                return;
-            }
-
-            // 1 in 8 chance to succeed (harder than recording and replication)
-            if (random.nextInt(8) != 0) {
-                AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.discernment_ability.failed"));
-                level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 1, 1);
-                return;
-            }
-
-            level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1, 1);
-
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.discernment_ability.start_meditating"));
-
-            ServerScheduler.scheduleDelayed(20 * 120, () -> {
-                if (entity instanceof ServerPlayer player) {
-                    CopiedAbilityHelper.addAbility(player,
-                            new CopiedAbilityComponent.CopiedAbilityData(
-                                    usedAbility.getId(),
-                                    "envisioned",
-                                    -1,
-                                    null
-                            ));
-                    AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.discernment_ability.success"));
-                }
-            });
-
-        }, () -> {
-            if (hasReplicatedAbility.get())
-                return;
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.discernment_ability.no_ability"));
-            level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 1, 1);
-        }, serverLevel);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            stop(level, entity);
+        }
     }
 
-    private void buff(Level level, LivingEntity entity){
-        if(level.isClientSide) return;
-
-        EffectManager.playEffect(EffectManager.Effect.DISCERNMENT, entity.getX(), entity.getEyePosition().y, entity.getZ(), (ServerLevel) level);
-
-        switch (random.nextInt(4)){
-            case 0 -> entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 60, 3, false, false, false));
-            case 1 -> entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20 * 60, 4, false, false, false));
-            case 2 -> entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 60, 2, false, false, false));
-            case 3 -> entity.addEffect(new MobEffectInstance(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 60, 3, false, false, false)));
+    @Override
+    public void start(Level level, LivingEntity entity) {
+        int entitySeq = BeyonderData.getSequence(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
         }
+
+        if(entity instanceof ServerPlayer player)
+            PacketHandler.sendToPlayer(player, new StartStopDiscernmentPacket(true, getRange(BeyonderData.getSequence(entity))));
+    }
+
+    @Override
+    public void stop(Level level, LivingEntity entity) {
+        if(level.isClientSide){
+            return;
+        }
+        if(!(entity instanceof ServerPlayer player)) return;
+
+        PacketHandler.sendToPlayer(player, new StartStopDiscernmentPacket(false, getRange(BeyonderData.getSequence(entity))));
+        PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(false, -1));
+        AbilityUtil.sendActionBar(entity, Component.literal(""));
+    }
+
+    private static int getRange(int seq){
+        return switch (seq){
+            case 2 -> 100;
+            case 1 -> 400;
+            case 0 -> 1000;
+            default -> 0;
+        };
+    }
+
+    private static int getRangeForAbilityDetection(int seq){
+        return switch (seq){
+          case 2 -> 500;
+          case 1 -> 2000;
+          case 0 -> 10000;
+          default -> 0;
+        };
     }
 }

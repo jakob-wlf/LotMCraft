@@ -5,6 +5,7 @@ import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.abilities.demoness.CharmAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -28,10 +29,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForgeConfig;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 public class BattleHypnosisAbility extends SelectableAbility {
@@ -64,6 +67,15 @@ public class BattleHypnosisAbility extends SelectableAbility {
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
+
         switch (selectedAbility){
             case 0 -> single(level, entity);
             case 1 -> aoe(level, entity);
@@ -91,14 +103,7 @@ public class BattleHypnosisAbility extends SelectableAbility {
         UUID charmCasterUUID = CharmAbility.getCharmed().get(target.getUUID());
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        int targetSeq = BeyonderData.getSequence(target);
-        if(BeyonderData.getPathway(target).equals("visionary") && targetSeq < entitySeq){
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed").withColor(0xFFff124d));
-
-            if(targetSeq <= 1 && target instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer entityPlayer){
-                MetaAwarenessAbility.onDivined(entityPlayer, targetPlayer);
-            }
-
+        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
             return;
         }
 
@@ -110,11 +115,7 @@ public class BattleHypnosisAbility extends SelectableAbility {
             }
         }
 
-        switch (random.nextInt(3)) {
-            case 0 -> freezeTarget((ServerLevel) level, entity, target);
-            case 1 -> weakenAndMoveAroundTarget((ServerLevel) level, entity, target);
-            case 2 -> stopBeyonderPowersForTarget((ServerLevel) level, entity, target);
-        }
+        performRandomEffect((ServerLevel) level, entity, target, entitySeq);
     }
 
     private void aoe(Level level, LivingEntity entity){
@@ -149,36 +150,45 @@ public class BattleHypnosisAbility extends SelectableAbility {
                 }
             }
 
-            switch (random.nextInt(3)) {
-                case 0 -> freezeTarget((ServerLevel) level, entity, target);
-                case 1 -> weakenAndMoveAroundTarget((ServerLevel) level, entity, target);
-                case 2 -> stopBeyonderPowersForTarget((ServerLevel) level, entity, target);
-            }
+            performRandomEffect((ServerLevel) level, entity, target, entitySeq);
         }
     }
 
-    private void stopBeyonderPowersForTarget(ServerLevel level, LivingEntity entity, LivingEntity target) {
+    public static void performRandomEffect(ServerLevel level, LivingEntity entity, LivingEntity target, int entitySeq){
+        Random random = new Random();
+
+        switch (random.nextInt(4)) {
+            case 0 -> freezeTarget((ServerLevel) level, entity, target, entitySeq);
+            case 1 -> weakenAndMoveAroundTarget((ServerLevel) level, entity, target, entitySeq);
+            case 2 -> stopBeyonderPowersForTarget((ServerLevel) level, entity, target, entitySeq);
+            case 3 -> confuseTarget((ServerLevel) level, entity, target);
+        }
+    }
+
+    static private void stopBeyonderPowersForTarget(ServerLevel level, LivingEntity entity, LivingEntity target, int entitySeq) {
+        Random random = new Random();
+
         if(!BeyonderData.isBeyonder(target)) {
             switch (random.nextInt(2)) {
-                case 0 -> weakenAndMoveAroundTarget(level, entity, target);
-                case 1 -> freezeTarget(level, entity, target);
+                case 0 -> weakenAndMoveAroundTarget(level, entity, target, entitySeq);
+                case 1 -> freezeTarget(level, entity, target, entitySeq);
             }
             return;
         }
 
-        AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.stop_beyonder_powers").withColor(0xf5c56c));
+        //AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.stop_beyonder_powers").withColor(0xf5c56c));
 
         DisabledAbilitiesComponent component = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
         component.disableAbilityUsageForTime("battle_hypnosis_disable_beyonder_powers", 20 * 9, target);
     }
 
-    private void weakenAndMoveAroundTarget(ServerLevel level, LivingEntity entity, LivingEntity target) {
-        AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.weaken").withColor(0xf5c56c));
+    static private void weakenAndMoveAroundTarget(ServerLevel level, LivingEntity entity, LivingEntity target, int entitySeq) {
+        Random random = new Random();
+
+        //AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.weaken").withColor(0xf5c56c));
 
         BeyonderData.addModifier(target, "battle_hypnosis_weaken", .4);
         ServerScheduler.scheduleDelayed(20 * 12, () -> BeyonderData.removeModifier(target, "battle_hypnosis_weaken"));
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
         final UUID[] taskIdHolder = new UUID[1];
         taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 5, 20 * 8, () -> {
@@ -196,13 +206,11 @@ public class BattleHypnosisAbility extends SelectableAbility {
         }, level);
     }
 
-    private void freezeTarget(ServerLevel level, LivingEntity entity, LivingEntity target) {
-        AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.stop").withColor(0xf5c56c));
+    static private void freezeTarget(ServerLevel level, LivingEntity entity, LivingEntity target, int entitySeq) {
+        //AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.stop").withColor(0xf5c56c));
 
         DisabledAbilitiesComponent component = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
         component.disableAbilityUsageForTime("battle_hypnosis_freeze", 20 * 3, target);
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
         final UUID[] taskIdHolder = new UUID[1];
         taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 1, 20 * 5, () -> {
@@ -217,6 +225,12 @@ public class BattleHypnosisAbility extends SelectableAbility {
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 10, false, false, true));
             target.hurtMarked = true;
         }, level);
+    }
+
+    static private void confuseTarget(ServerLevel level, LivingEntity entity, LivingEntity target){
+        //AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.confuse").withColor(0xf5c56c));
+
+        AbilityUtil.ignoreAllies.put(target.getUUID(), false);
     }
 
     @Override

@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.common;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.visionary.PsychologicalInvisibilityAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
@@ -54,10 +55,11 @@ public class SpiritVisionAbility extends ToggleAbility {
                         "mother", 8,
                         "wheel_of_fortune", 9,
                         "darkness", 7,
-                        "abyss",9
+                        "abyss", 9,
+                        "red_priest", 8
                 ));
 
-        for(String pathway : BeyonderData.pathways) {
+        for (String pathway : BeyonderData.pathways) {
             if (!reqs.containsKey(pathway))
                 reqs.put(pathway, 5);
         }
@@ -66,9 +68,9 @@ public class SpiritVisionAbility extends ToggleAbility {
 
     @Override
     public void start(Level level, LivingEntity entity) {
-        if(!level.isClientSide) {
-            if(entity instanceof ServerPlayer player) {
-                PacketHandler.sendToPlayer(player,  new SyncSpiritVisionAbilityPacket(true, -1));
+        if (!level.isClientSide) {
+            if (entity instanceof ServerPlayer player) {
+                PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityPacket(true, -1));
             }
             return;
         }
@@ -82,88 +84,56 @@ public class SpiritVisionAbility extends ToggleAbility {
 
     @Override
     public void tick(Level level, LivingEntity entity) {
-        if(level.isClientSide()) {
-            List<LivingEntity> nearbyEntities = AbilityUtilClient.getNearbyEntities(entity, (ClientLevel) level, entity.getEyePosition(), 30)
-                    .stream()
-                    .filter(nearbyEntity -> {
-                        if (PsychologicalInvisibilityAbility.invisiblePlayersClient.containsKey(nearbyEntity.getUUID())) {
-
-                            int targetSeq = PsychologicalInvisibilityAbility.invisiblePlayersClient.get(nearbyEntity.getUUID());
-                            int selfSeq = AbilityUtil.getSeqWithArt(entity, this);
-
-                            if (selfSeq >= targetSeq) {
-                                return false;
-                            }
-                        }
-
-                        return true;
-                    })
-                    .toList();
-
-            for (LivingEntity nearbyEntity : nearbyEntities) {
-                ParticleUtil.spawnParticles((ClientLevel) level, dust, nearbyEntity.getEyePosition().subtract(0, nearbyEntity.getEyeHeight() / 2, 0), 3, .6, .95, .6, 0);
-            }
+        if (level.isClientSide()) {
+            return;
         }
-        else {
-            if(!(entity instanceof ServerPlayer player))
+
+        if (!(entity instanceof ServerPlayer player))
+            return;
+
+        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
+
+        if (lookedAt != null) {
+            if (VisionaryHandler.shouldStayInvisible(BeyonderData.getSequence(entity), lookedAt))
                 return;
-
-            LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
-
-            if(lookedAt != null) {
-                if (PsychologicalInvisibilityAbility.invisiblePlayers.containsKey(lookedAt.getUUID())) {
-                    if (AbilityUtil.getSeqWithArt(entity, this) >=
-                            PsychologicalInvisibilityAbility.invisiblePlayers.get(lookedAt.getUUID()))
-                        return;
-                }
-            }
-
-            PacketHandler.sendToPlayer(player,  new SyncSpiritVisionAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
-
-            if(lookedAt != null){
-                if(shouldLooseControl(entity, lookedAt)){
-                    if(!entity.hasEffect(ModEffects.LOOSING_CONTROL))
-                        entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 25, 4, false, false, false));
-
-                    return;
-                }
-            }
-
-            entity.addEffect(new MobEffectInstance(
-                    MobEffects.NIGHT_VISION, 20 * 25, 1, false, false, false));
-
-            List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 30)
-                    .stream()
-                    .filter(nearbyEntity -> {
-                        if (PsychologicalInvisibilityAbility.invisiblePlayers.containsKey(nearbyEntity.getUUID())) {
-
-                            int targetSeq = PsychologicalInvisibilityAbility.invisiblePlayers.get(nearbyEntity.getUUID());
-                            int selfSeq = AbilityUtil.getSeqWithArt(entity, this);
-
-                            if (selfSeq >= targetSeq) {
-                                return false;
-                            }
-                        }
-
-                        return true;
-                    })
-                    .toList();
-
-
-            for (LivingEntity nearbyEntity : nearbyEntities) {
-                setGlowingForPlayer(nearbyEntity, (ServerPlayer) entity, true);
-            }
-
-            glowingEntities.putIfAbsent(entity.getUUID(), new HashSet<>(Set.of()));
-            glowingEntities.get(entity.getUUID()).addAll(nearbyEntities);
         }
+
+        PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
+
+        if (lookedAt != null) {
+            if (shouldLooseControl(entity, lookedAt)) {
+                if (!entity.hasEffect(ModEffects.LOOSING_CONTROL))
+                    entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 25, 4, false, false, false));
+
+                return;
+            }
+        }
+
+        entity.addEffect(new MobEffectInstance(
+                MobEffects.NIGHT_VISION, 20 * 25, 1, false, false, false));
+
+        List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 30)
+                .stream()
+                .filter(nearbyEntity -> {
+                    return !VisionaryHandler.shouldStayInvisible(BeyonderData.getSequence(entity), nearbyEntity);
+                })
+                .toList();
+
+
+        for (LivingEntity nearbyEntity : nearbyEntities) {
+            setGlowingForPlayer(nearbyEntity, (ServerPlayer) entity, true);
+        }
+
+        glowingEntities.putIfAbsent(entity.getUUID(), new HashSet<>(Set.of()));
+        glowingEntities.get(entity.getUUID()).addAll(nearbyEntities);
+
     }
 
-    public static boolean shouldLooseControl(LivingEntity player, LivingEntity target){
+    public static boolean shouldLooseControl(LivingEntity player, LivingEntity target) {
         int playerSeq = BeyonderData.getSequence(player);
         int targetSeq = BeyonderData.getSequence(target);
 
-        if(player.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(target.getUUID()))
+        if (player.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(target.getUUID()))
             return false;
 
         return AbilityUtil.isTargetSignificantlyStronger(player, target);
@@ -194,20 +164,19 @@ public class SpiritVisionAbility extends ToggleAbility {
 
     @Override
     public void stop(Level level, LivingEntity entity) {
-        if(level.isClientSide) {
+        if (level.isClientSide) {
             entity.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
-        }
-        else {
-            if(!(entity instanceof ServerPlayer player))
+        } else {
+            if (!(entity instanceof ServerPlayer player))
                 return;
 
             player.removeEffect(MobEffects.NIGHT_VISION);
 
-            if(glowingEntities.containsKey(entity.getUUID()))
+            if (glowingEntities.containsKey(entity.getUUID()))
                 glowingEntities.get(entity.getUUID()).forEach(e -> setGlowingForPlayer(e, player, false));
             glowingEntities.remove(entity.getUUID());
 
-            PacketHandler.sendToPlayer(player,  new SyncSpiritVisionAbilityPacket(false, -1));
+            PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityPacket(false, -1));
 
             clearArtifactScaling(entity);
         }

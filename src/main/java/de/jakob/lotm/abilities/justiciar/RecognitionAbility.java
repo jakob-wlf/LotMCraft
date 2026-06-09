@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.justiciar;
 
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
@@ -16,12 +17,9 @@ public class RecognitionAbility extends ToggleAbility {
 
     public RecognitionAbility(String id) {
         super(id);
-        canBeCopied = true;
         canBeUsedByNPC = false;
-        canBeReplicated = true;
-        cannotBeStolen = false;
         doesNotIncreaseDigestion = true;
-        canBeUsedInArtifact = true;
+        canBeUsedInArtifact = false;
     }
 
     @Override
@@ -56,6 +54,11 @@ public class RecognitionAbility extends ToggleAbility {
         int seq = AbilityUtil.getSeqWithArt(entity, this);
         int targetSeq = BeyonderData.getSequence(target);
         String path = BeyonderData.getPathway(target);
+
+        if(VisionaryHandler.shouldStayInvisible(seq, target)){
+            AbilityUtil.sendActionBar(entity, Component.literal("§6⚖ §7No target in sight §6⚖"));
+            return;
+        }
 
         if ((path.equalsIgnoreCase("justiciar") && targetSeq < seq) || seq > targetSeq) {
             AbilityUtil.sendActionBar(entity, Component.literal("§6⚖ §7No target in sight §6⚖"));

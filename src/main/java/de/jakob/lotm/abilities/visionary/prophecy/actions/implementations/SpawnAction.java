@@ -16,6 +16,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.UUID;
+
 public class SpawnAction extends ActionBase {
     public SpawnAction(ActionContextBase context) {
         super(context);
@@ -32,7 +34,7 @@ public class SpawnAction extends ActionBase {
     }
 
     @Override
-    public void action(Level level, LivingEntity entity) {
+    public void action(Level level, LivingEntity entity, UUID casterId) {
         if(!(context instanceof ActionStringContext string)) return;
 
         TokenStream stream = new TokenStream(string.string);

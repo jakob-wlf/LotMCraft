@@ -1,10 +1,13 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSpectatingAbilityPacket;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -20,8 +23,7 @@ public class SpectatingAbility extends ToggleAbility {
         super(id);
 
         canBeUsedByNPC = false;
-        canBeReplicated = false;
-        canBeCopied = false;
+        autoClear = false;
     }
 
     @Override
@@ -36,6 +38,15 @@ public class SpectatingAbility extends ToggleAbility {
 
     @Override
     public void start(Level level, LivingEntity entity) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
+
         if(!level.isClientSide) {
             if(entity instanceof ServerPlayer player) {
                 PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(true, -1));
@@ -51,14 +62,27 @@ public class SpectatingAbility extends ToggleAbility {
         if(!(entity instanceof ServerPlayer player) || level.isClientSide)
             return;
 
-        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
+        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f, true, true);
 
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
         if(lookedAt != null) {
-            if (PsychologicalInvisibilityAbility.invisiblePlayers.containsKey(lookedAt.getUUID())) {
-                if (AbilityUtil.getSeqWithArt(entity, this) >=
-                        PsychologicalInvisibilityAbility.invisiblePlayers.get(lookedAt.getUUID()))
-                    return;
+            if (VisionaryHandler.shouldStayInvisible(seq, lookedAt)){
+                return;
             }
+            else if(VisionaryHandler.shouldFailAndTrigger(seq, entity, lookedAt, this, false)){
+                return;
+            }
+            else if(AbilityUtil.isTargetSignificantlyStronger(seq, BeyonderData.getSequence(lookedAt))){
+                return;
+            }
+        }
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(seq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            cancel((ServerLevel) level, player);
+            return;
         }
 
         PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
@@ -72,7 +96,8 @@ public class SpectatingAbility extends ToggleAbility {
             if(entity instanceof ServerPlayer player) {
                 PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(false, -1));
             }
-            return;
+
+            clearArtifactScaling(entity);
         }
 
     }

@@ -52,6 +52,8 @@ public class OrderProxyAbility extends SelectableAbility {
         canBeShared = false;
         canBeCopied = false;
         canBeReplicated = false;
+        cannotBeStolen = true;
+        canBeUsedInArtifact = false;
     }
 
     @Override

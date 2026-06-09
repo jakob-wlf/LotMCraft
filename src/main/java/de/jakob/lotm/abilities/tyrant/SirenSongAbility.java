@@ -27,7 +27,6 @@ import java.util.UUID;
 public class SirenSongAbility extends SelectableAbility {
     public SirenSongAbility(String id) {
         super(id, 45);
-        canBeCopied = false;
     }
 
     @Override

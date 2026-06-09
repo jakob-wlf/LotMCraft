@@ -1,6 +1,8 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -24,11 +26,12 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
+import static de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler.checkAsleep;
+
 public class NightmareSpectatorAbility extends Ability {
 
     public NightmareSpectatorAbility(String id) {
-        super(id, 20f);
-        canBeCopied = false;
+        super(id, 10f);
     }
 
     @Override
@@ -48,6 +51,14 @@ public class NightmareSpectatorAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
 
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 200, 2);
 
@@ -65,22 +76,16 @@ public class NightmareSpectatorAbility extends Ability {
             return;
         }
 
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        int targetSeq = BeyonderData.getSequence(target);
-        if(BeyonderData.getPathway(target).equals("visionary") && targetSeq < entitySeq){
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed").withColor(0xFFff124d));
-
-            if(targetSeq <= 1 && target instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer entityPlayer){
-                MetaAwarenessAbility.onDivined(entityPlayer, targetPlayer);
-            }
-
+        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
             return;
         }
 
-        if(!target.hasEffect(ModEffects.ASLEEP) && entitySeq >= 4) {
+        if(checkAsleep(entity, target)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.must_be_asleep").withColor(0xFFff124d));
             return;
         }
+
+        VisionaryLoosingControlHandler.applyEffect(entity, target, this);
 
         // Damage target
         target.hurt(new DamageSource(
@@ -93,6 +98,6 @@ public class NightmareSpectatorAbility extends Ability {
         target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, 1));
 
         // Decrease Sanity
-        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.165f* multiplier(entity)), target, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(target));
+        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.0165f* (int) Math.max(multiplier(entity)/4,1)), target, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(target));
     }
 }

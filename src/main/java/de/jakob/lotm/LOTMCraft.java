@@ -119,6 +119,7 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -126,6 +127,7 @@ import org.apache.logging.log4j.Logger;
 @Mod(LOTMCraft.MOD_ID)
 public class LOTMCraft
 {
+
     public static final String MOD_ID = "lotmcraft";
 
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
@@ -154,7 +156,6 @@ public class LOTMCraft
     public static KeyMapping useAbilityBarAbility4;
     public static KeyMapping useAbilityBarAbility5;
     public static KeyMapping useAbilityBarAbility6;
-
 
     public static AbilityHandler abilityHandler;
 
@@ -228,6 +229,11 @@ public class LOTMCraft
     public void onServerStarting(ServerStartingEvent event) {
     }
 
+    @SubscribeEvent
+    public void onServerStarted(ServerStartedEvent event) {
+        de.jakob.lotm.abilities.black_emperor.MausoleumDomainAbility.prePlaceStructure(event.getServer());
+    }
+
     @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
     public static class ClientModEvents {
         @SubscribeEvent
@@ -267,7 +273,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.DISTORTION_FIELD.get(), DistortionFieldRenderer::new);
             EntityRenderers.register(ModEntities.SPEAR_OF_DESTRUCTION.get(), SpearOfDestructionProjectileRenderer::new);
             EntityRenderers.register(ModEntities.RETURN_PORTAL.get(), ReturnPortalRenderer::new);
-            EntityRenderers.register(ModEntities.ERROR_AVATAR.get(), ErrorAvatarRenderer::new);
+            EntityRenderers.register(ModEntities.AVATAR.get(), ErrorAvatarRenderer::new);
             EntityRenderers.register(ModEntities.BIG_SUN.get(), BigSunRenderer::new);
             EntityRenderers.register(ModEntities.BIG_MOON.get(), BigMoonRenderer::new);
             EntityRenderers.register(ModEntities.COFFIN.get(), CoffinRenderer::new);

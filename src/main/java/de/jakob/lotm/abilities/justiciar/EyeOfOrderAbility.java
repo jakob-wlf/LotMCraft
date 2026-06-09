@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.justiciar;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.abilities.visionary.PsychologicalInvisibilityAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -110,7 +111,6 @@ public class EyeOfOrderAbility extends ToggleAbility {
                 ));
             }
 
-
             cancel((ServerLevel) level, entity);
             return;
         }
@@ -174,17 +174,7 @@ public class EyeOfOrderAbility extends ToggleAbility {
                 e -> {
                     if (e == owner) return false;
 
-                    if (PsychologicalInvisibilityAbility.invisiblePlayersClient.containsKey(e.getUUID())) {
-
-                        int targetSeq = PsychologicalInvisibilityAbility.invisiblePlayersClient.get(e.getUUID());
-                        int selfSeq = BeyonderData.getSequence(owner);
-
-                        if (selfSeq >= targetSeq) {
-                            return false;
-                        }
-                    }
-
-                    return true;
+                    return !VisionaryHandler.shouldStayInvisible(BeyonderData.getSequence(owner), e);
                 }
         );
 

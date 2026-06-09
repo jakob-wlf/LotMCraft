@@ -26,9 +26,11 @@ import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -84,6 +86,12 @@ public class BeyonderDataTickHandler {
         AbilityCooldownComponent component = livingEntity.getData(ModAttachments.COOLDOWN_COMPONENT);
         component.tick();
 
+        //Virtual Personas heal
+        if(livingEntity instanceof ServerPlayer player) {
+            VirtualPersonaComponent virtualPersonaComponent = player.getData(ModAttachments.VIRTUAL_PERSONAS);
+            virtualPersonaComponent.heal(player);
+        }
+
         // Tick flight cooldown
         DisabledFlightComponent disabledFlightComponent = livingEntity.getData(ModAttachments.FLIGHT_DISABLE_COMPONENT);
         if(disabledFlightComponent.getCooldownTicks() > 0) {
@@ -113,6 +121,10 @@ public class BeyonderDataTickHandler {
         if(BeyonderData.isBeyonder(livingEntity)) {
             if(entity.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity() == 0.0f){
                 entity.kill();
+            }
+
+            if(entity.tickCount % 20 == 0){
+                entity.getData(ModAttachments.REGEN_DISABLER.get()).incrementCount();
             }
 
             if(entity.tickCount % 200 == 0) {
@@ -208,6 +220,18 @@ public class BeyonderDataTickHandler {
                 ability.onHold(player.serverLevel(), player);
                 PacketHandler.sendToTrackingAndSelf(player, new SyncOnHoldAbilityPacket(player.getId(), abilityId));
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void disableRegen(LivingIncomingDamageEvent event) {
+        var entity = event.getEntity();
+        if(!BeyonderData.isBeyonder(entity)) return;
+
+        entity.getData(ModAttachments.REGEN_DISABLER.get()).disableFor(10);
+
+        if (entity.hasEffect(MobEffects.REGENERATION)){
+            entity.removeEffect(MobEffects.REGENERATION);
         }
     }
 }

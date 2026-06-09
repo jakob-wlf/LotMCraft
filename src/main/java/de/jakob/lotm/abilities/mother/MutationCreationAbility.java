@@ -23,7 +23,6 @@ import java.util.Map;
 public class MutationCreationAbility extends Ability {
     public MutationCreationAbility(String id) {
         super(id, 4);
-        canBeCopied = false;
     }
 
     @Override

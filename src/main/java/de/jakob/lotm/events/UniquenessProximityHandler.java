@@ -80,7 +80,7 @@ public class UniquenessProximityHandler {
             message = "You vaguely sense your uniqueness exists somewhere in this realm...";
         }
 
-        player.displayClientMessage(
+        player.sendSystemMessage(
                 Component.literal(message).withColor(color),
                 true
         );

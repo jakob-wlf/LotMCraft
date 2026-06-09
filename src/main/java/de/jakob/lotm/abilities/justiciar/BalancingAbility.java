@@ -31,7 +31,6 @@ public class BalancingAbility extends Ability {
         interactionRadius = 1;
         hasOptimalDistance = false;
         postsUsedAbilityEventManually = true;
-        canBeCopied = false;
         canBeShared = false;
     }
 

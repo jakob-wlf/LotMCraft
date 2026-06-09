@@ -20,7 +20,6 @@ public class WingsOfLightAbility extends ToggleAbility {
 
     public WingsOfLightAbility(String id) {
         super(id);
-        canBeCopied = false;
         canBeShared = false;
     }
 

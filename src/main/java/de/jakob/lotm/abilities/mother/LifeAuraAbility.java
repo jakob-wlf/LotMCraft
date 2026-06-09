@@ -31,7 +31,6 @@ public class LifeAuraAbility extends ToggleAbility {
         super(id, "blooming");
 
         canBeUsedByNPC = false;
-        canBeCopied = false;
     }
 
     @Override

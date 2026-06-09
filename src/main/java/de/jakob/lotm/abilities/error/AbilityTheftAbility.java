@@ -23,6 +23,7 @@ public class AbilityTheftAbility extends SelectableAbility {
         super(id, 3f);
         canBeCopied = false;
         canBeReplicated = false;
+        canBeShared = false;
     }
 
     @Override

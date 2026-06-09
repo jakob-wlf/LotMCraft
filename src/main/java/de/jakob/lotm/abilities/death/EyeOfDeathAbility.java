@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.common.SpiritVisionAbility;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.entity.custom.spirits.SpiritBaneEntity;
@@ -51,6 +52,12 @@ public class EyeOfDeathAbility extends ToggleAbility {
 
     public EyeOfDeathAbility(String id) {
         super(id);
+
+        canBeCopied = false;
+        canBeShared = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
+        canBeUsedInArtifact = false;
     }
 
     @Override
@@ -83,6 +90,12 @@ public class EyeOfDeathAbility extends ToggleAbility {
         if (!(entity instanceof ServerPlayer player)) return;
 
         LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
+
+        if(lookedAt != null){
+            if(VisionaryHandler.shouldStayInvisible(BeyonderData.getSequence(entity), lookedAt))
+                return;
+        }
+
         PacketHandler.sendToPlayer(player, new SyncEyeOfDeathAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
 
         entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 25, 1, false, false, false));

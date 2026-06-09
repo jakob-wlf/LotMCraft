@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
@@ -17,9 +18,7 @@ public class LuckPerceptionAbility extends ToggleAbility {
         super(id);
 
         canBeUsedByNPC = false;
-        canBeCopied = false;
         autoClear = false;
-        canBeShared = false;
     }
 
     @Override
@@ -43,6 +42,11 @@ public class LuckPerceptionAbility extends ToggleAbility {
         int seq = AbilityUtil.getSeqWithArt(entity, this);
         int targetSeq = BeyonderData.getSequence(target);
         String path = BeyonderData.getPathway(target);
+
+        if(VisionaryHandler.shouldStayInvisible(seq, target)){
+            AbilityUtil.sendActionBar(entity, Component.literal(""));
+            return;
+        }
 
         if(path.equals("wheel_of_fortune") && targetSeq < seq){
             AbilityUtil.sendActionBar(entity, Component.literal(""));

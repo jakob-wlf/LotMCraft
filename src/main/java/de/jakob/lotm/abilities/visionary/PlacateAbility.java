@@ -1,8 +1,10 @@
 package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.VirtualPersonaComponent;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -24,9 +26,7 @@ public class PlacateAbility extends SelectableAbility {
         super(id, 5, "morale_boost");
         interactionRadius = 18;
         interactionCacheTicks = 20 * 5;
-
-        canBeCopied = false;
-        canBeReplicated = false;
+        canAlwaysBeUsed = true;
     }
 
     @Override
@@ -53,6 +53,16 @@ public class PlacateAbility extends SelectableAbility {
     public void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(entity instanceof Player))
             abilityIndex = 0;
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
+
         switch (abilityIndex) {
             case 0 -> placateYourself(level, entity);
             case 1 -> placateOthers(level, entity);
@@ -73,6 +83,10 @@ public class PlacateAbility extends SelectableAbility {
                 entity :  AbilityUtil.getTargetEntity(
                         entity, 40, 1f, true, true);
         if(!(targetPlayer instanceof ServerPlayer)) targetPlayer = entity;
+
+        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, targetPlayer, this)){
+            return;
+        }
 
         List<Prophecy> all = new LinkedList<>(
                 BeyonderData.playerMap.get(targetPlayer).get().prophecies()
@@ -103,7 +117,6 @@ public class PlacateAbility extends SelectableAbility {
         }
 
         BeyonderData.playerMap.setProphecies(targetPlayer.getUUID(), all);
-
     }
 
     private static int getCuesRemovedPerSeq(int seq){
@@ -204,9 +217,36 @@ public class PlacateAbility extends SelectableAbility {
 
     private void placateEntity(LivingEntity caster, LivingEntity entity) {
         int entitySeq = AbilityUtil.getSeqWithArt(caster, this);
-        entity.getData(ModAttachments.SANITY_COMPONENT).increaseSanityWithSequenceDifference(getSanityPerSeq(entitySeq), entity, AbilityUtil.getSeqWithArt(caster, this), BeyonderData.getSequence(entity));
+
+        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, caster, entity, this)){
+            return;
+        }
+
+        entity.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(getSanityPerSeq(entitySeq), entity);
         entity.removeEffect(ModEffects.LOOSING_CONTROL);
-        entity.removeEffect(ModEffects.MENTAL_PLAGUE);
+
+        var mentalPlague = entity.getData(ModAttachments.MENTAL_PLAGUE.get());
+        if(mentalPlague.hasMentalPlague()){
+            if(!AbilityUtil.isTargetSignificantlyStronger(entitySeq, mentalPlague.getSequence())){
+                if(entitySeq > mentalPlague.getSequence()){
+                    int stage = mentalPlague.getStage();
+
+                    mentalPlague.setStage(--stage);
+                    if(stage <= 0){
+                        mentalPlague.reset();
+                    }
+                }
+                else{
+                    mentalPlague.reset();
+                }
+            }
+        }
+
+        if(entity instanceof ServerPlayer targetPlayer){
+            var personas = targetPlayer.getData(ModAttachments.VIRTUAL_PERSONAS.get());
+            personas.damageAffectedBy(VirtualPersonaComponent.getMaxHealthPerSeq(entitySeq),
+                    (ServerLevel) targetPlayer.level(), targetPlayer.getName().getString(), entitySeq);
+        }
 
         if(caster instanceof ServerPlayer player)
             RingEffectManager.createRingForPlayer(entity.getEyePosition().subtract(0, .4, 0), 2, 60, 255 / 255f, 211 / 255f, 92 / 255f, 1, .5f, .75f, (ServerLevel) caster.level(), player);

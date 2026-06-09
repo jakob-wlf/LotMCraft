@@ -35,7 +35,6 @@ public class DeathEnvoyAbility extends Ability {
 
     public DeathEnvoyAbility(String id) {
         super(id, 10);
-        canBeCopied = false;
         cannotBeStolen = true;
         canBeUsedInArtifact = false;
         canBeShared = false;

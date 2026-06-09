@@ -34,6 +34,7 @@ public class RecordingAbility extends SelectableAbility {
         canBeCopied = false;
         canBeReplicated = false;
         autoClear = false;
+        canBeShared = false;
     }
 
     @Override

@@ -2,6 +2,7 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.visionary.DreamTraversalAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
@@ -20,6 +21,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
+
+import static de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler.checkAsleep;
 
 public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSelectionWorkType types) implements CustomPacketPayload {
     public static final Type<PlayerDivinationSelectedPacket> TYPE =
@@ -75,15 +78,11 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
         int targetSeq = BeyonderData.getSequence(targetPlayer);
         String targetPath = BeyonderData.getPathway(targetPlayer);
 
-        if(targetPath.equals("visionary") && targetSeq < playerSeq){
-            if(targetSeq <= 1)
-                MetaAwarenessAbility.onDivined(player, targetPlayer);
-
-            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.dream_traversal.failed").withColor(0xFFff124d));
+        if(VisionaryHandler.shouldFailAndTrigger(playerSeq, player, targetPlayer, null)){
             return;
         }
 
-        if (DreamTraversalAbility.requiresAsleep(player) && !targetPlayer.hasEffect(ModEffects.ASLEEP)) {
+        if (checkAsleep(player, targetPlayer)) {
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.dream_traversal.must_be_asleep").withColor(0xFFff124d));
             return;
         }

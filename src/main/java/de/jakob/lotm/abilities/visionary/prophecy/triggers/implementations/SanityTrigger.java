@@ -14,6 +14,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.UUID;
+
 public class SanityTrigger extends TriggerBase {
     public SanityTrigger(ActionBase action, TriggerContextBase context) {
         super(action, context);
@@ -30,8 +32,8 @@ public class SanityTrigger extends TriggerBase {
     }
 
     @Override
-    public boolean checkTrigger(Level level, LivingEntity entity) {
-        if(!(context instanceof TriggerNumbersContext numbers)) return true;
+    public int checkTrigger(Level level, LivingEntity entity, UUID casterId) {
+        if(!(context instanceof TriggerNumbersContext numbers)) return -1;
 
         float value = -1;
 
@@ -42,18 +44,16 @@ public class SanityTrigger extends TriggerBase {
             value = numbers.doubleValue < 0.0 ? 0.0f : numbers.doubleValue > 1 ? 1.0f : (float) numbers.doubleValue;
         }
 
-        if(value == -1) return true;
+        if(value == -1) return -1;
 
         float sanity = entity.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity();
 
-        var operation = numbers.operation;
-
-        if(checkOperation(value, sanity, operation)){
-            action.action(level, entity);
-            return true;
+        if(numbers.checkOperation(value, sanity)){
+            action.action(level, entity, casterId);
+            return 1;
         }
 
-        return false;
+        return 0;
     }
 
     public static SanityTrigger load(CompoundTag tag,
@@ -64,14 +64,4 @@ public class SanityTrigger extends TriggerBase {
                 TriggerContextBase.load(contextType, tag, provider));
     }
 
-    private boolean checkOperation(float value, float value2, int operation){
-        return switch (operation) {
-            case -2 -> value2 < value;
-            case -1 -> value2 <= value;
-            case 0 -> value2 == value;
-            case 1 -> value2 >= value;
-            case 2 -> value2 > value;
-            default -> false;
-        };
-    }
 }

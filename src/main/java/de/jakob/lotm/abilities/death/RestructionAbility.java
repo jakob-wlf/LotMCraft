@@ -42,8 +42,6 @@ public class RestructionAbility extends SelectableAbility {
 
     public RestructionAbility(String id) {
         super(id, 20f);
-        canBeCopied = false;
-        cannotBeStolen = true;
     }
 
     @Override

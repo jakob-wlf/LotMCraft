@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.visionary;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
@@ -13,10 +14,14 @@ import de.jakob.lotm.rendering.SpiritVisionOverlayRenderer;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
@@ -44,6 +49,8 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
     public PsychologicalInvisibilityAbility(String id) {
         super(id);
         canBeCopied = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
     }
 
     @Override
@@ -53,26 +60,60 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
 
     @Override
     public float getSpiritualityCost() {
-        return 13;
+        return 6;
     }
 
     @Override
     public void tick(Level level, LivingEntity entity) {
-        if (level instanceof ServerLevel serverLevel) {
+        if (!(level instanceof ServerLevel serverLevel)) return;
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            cancel(serverLevel, entity);
+        }
+
+        if (entity instanceof ServerPlayer) {
             if (!invisiblePlayers.containsKey(entity.getUUID()))
                 cancel(serverLevel, entity);
+
+        } else {
+            entity.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 20 * 5, 50, false, false, false));
         }
     }
 
     @Override
     public void start(Level level, LivingEntity entity) {
-        if (!invisiblePlayers.containsKey(entity.getUUID())) {
-            add(entity, AbilityUtil.getSeqWithArt(entity, this));
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
+
+        if (entity instanceof ServerPlayer) {
+            if (!invisiblePlayers.containsKey(entity.getUUID())) {
+                add(entity, AbilityUtil.getSeqWithArt(entity, this));
+            }
         }
     }
 
-    private static void removeOrAddName(LivingEntity entity){
-        if(entity instanceof ServerPlayer targetPlayer) {
+    @Override
+    public void stop(Level level, LivingEntity entity) {
+        if (entity instanceof ServerPlayer) {
+            remove(entity);
+        }
+
+        clearArtifactScaling(entity);
+    }
+
+    private static void removeOrAddName(LivingEntity entity) {
+        if (entity instanceof ServerPlayer targetPlayer) {
             AttributeInstance attribute = targetPlayer.getAttribute(NeoForgeMod.NAMETAG_DISTANCE);
             if (attribute != null) {
                 if (attribute.getValue() == 0) {
@@ -105,12 +146,6 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         }
     }
 
-    @Override
-    public void stop(Level level, LivingEntity entity) {
-        remove(entity);
-        clearArtifactScaling(entity);
-    }
-
     private static void add(LivingEntity entity, int seq) {
         invisiblePlayers.put(entity.getUUID(), seq);
         hits.put(entity.getUUID(), 0);
@@ -135,8 +170,8 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         entity.setInvisible(false);
     }
 
-    public static void addInvisFromOtherSkills(LivingEntity entity, int seq){
-        if(!invisiblePlayers.containsKey(entity.getUUID())) {
+    public static void addInvisFromOtherSkills(LivingEntity entity, int seq) {
+        if (!invisiblePlayers.containsKey(entity.getUUID())) {
             finalInvisiblePlayers.put(entity.getUUID(), seq);
 
             PacketHandler.sendToAllPlayers(new SyncPsychologicalInvisibilityPacket(finalInvisiblePlayers));
@@ -144,8 +179,8 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         }
     }
 
-    public static void removeInvisFromOtherSkills(LivingEntity entity){
-        if(!invisiblePlayers.containsKey(entity.getUUID())) {
+    public static void removeInvisFromOtherSkills(LivingEntity entity) {
+        if (!invisiblePlayers.containsKey(entity.getUUID())) {
             finalInvisiblePlayers.remove(entity.getUUID());
 
             PacketHandler.sendToAllPlayers(new SyncPsychologicalInvisibilityPacket(finalInvisiblePlayers));
@@ -184,12 +219,12 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
 
     @SubscribeEvent
     public static void onEntityTickPre(EntityTickEvent.Post event) {
-        if(event.getEntity() instanceof LivingEntity entity) {
+        if (event.getEntity() instanceof LivingEntity entity) {
             int tickCount = entity.tickCount;
 
-            if (invisiblePlayers.containsKey(entity.getUUID())){
-                if(tickCount % 200 == 0){
-                    if(hits.get(entity.getUUID()) != 0)
+            if (invisiblePlayers.containsKey(entity.getUUID())) {
+                if (tickCount % 200 == 0) {
+                    if (hits.get(entity.getUUID()) != 0)
                         hits.put(entity.getUUID(), hits.get(entity.getUUID()) - 1);
                 }
             }

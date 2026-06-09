@@ -29,7 +29,6 @@ import java.util.*;
 public class TorrentialDownpourAbility extends Ability {
     public TorrentialDownpourAbility(String id) {
         super(id, 25, "water", "water_strong");
-        canBeCopied = false;
         postsUsedAbilityEventManually = true;
         interactionRadius = 25;
         interactionCacheTicks = 20 * 30;

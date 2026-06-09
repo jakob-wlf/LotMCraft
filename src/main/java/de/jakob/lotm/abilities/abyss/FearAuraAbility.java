@@ -29,7 +29,6 @@ public class FearAuraAbility extends Ability {
 
     public FearAuraAbility(String id) {
         super(id, 30, "darkness");
-        this.canBeCopied = false;
         autoClear = false;
         postsUsedAbilityEventManually = true;
         interactionRadius = 20;

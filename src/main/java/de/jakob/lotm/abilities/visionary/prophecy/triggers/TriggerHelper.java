@@ -28,19 +28,33 @@ public class TriggerHelper {
             case "sanity" -> TriggerEnum.SANITY;
             case "player" -> TriggerEnum.PLAYER;
             case "sealed" -> TriggerEnum.SEALED;
+            case "hunger" -> TriggerEnum.HUNGER;
+            case "riding" -> TriggerEnum.RIDING;
+            case "spirituality" -> TriggerEnum.SPIRITUALITY;
+            case "sequence" -> TriggerEnum.SEQUENCE;
+            case "pathway" -> TriggerEnum.PATHWAY;
+            case "light" -> TriggerEnum.LIGHT;
+            case "asleep" -> TriggerEnum.ASLEEP;
             default -> null;
         };
     }
 
     private static TriggerContextEnum getContextType(TriggerEnum value){
         return switch (value){
-            case TriggerEnum.POSITION -> TriggerContextEnum.POSITION;
-            case TriggerEnum.PICK_UP -> TriggerContextEnum.ITEM;
-            case TriggerEnum.INSTANT -> TriggerContextEnum.EMPTY;
-            case TriggerEnum.HEALTH -> TriggerContextEnum.NUMBER;
-            case TriggerEnum.SANITY -> TriggerContextEnum.NUMBER;
-            case TriggerEnum.PLAYER -> TriggerContextEnum.PLAYER;
-            case TriggerEnum.SEALED -> TriggerContextEnum.EMPTY;
+            case POSITION -> TriggerContextEnum.POSITION;
+            case PICK_UP -> TriggerContextEnum.ITEM;
+            case INSTANT -> TriggerContextEnum.EMPTY;
+            case HEALTH -> TriggerContextEnum.NUMBER;
+            case SANITY -> TriggerContextEnum.NUMBER;
+            case PLAYER -> TriggerContextEnum.PLAYER;
+            case SEALED -> TriggerContextEnum.EMPTY;
+            case HUNGER -> TriggerContextEnum.NUMBER;
+            case RIDING -> TriggerContextEnum.EMPTY;
+            case SPIRITUALITY -> TriggerContextEnum.NUMBER;
+            case SEQUENCE -> TriggerContextEnum.NUMBER;
+            case PATHWAY -> TriggerContextEnum.STRING;
+            case LIGHT -> TriggerContextEnum.NUMBER;
+            case ASLEEP -> TriggerContextEnum.EMPTY;
         };
     }
 
@@ -106,6 +120,12 @@ public class TriggerHelper {
 
         if(amount + 1 > amountPerSeq) return null;
 
+        int count = data.prophecies().stream().filter(obj ->
+                obj.trigger().getType().equals(trigger.getType())
+                        && obj.trigger().getActionType().equals(action.getType())).toList().size();
+
+        if(count + 1 > getCountPerSeq(casterSeq)) return null;
+
         return trigger;
     }
 
@@ -117,7 +137,21 @@ public class TriggerHelper {
             case 2 -> 25;
             case 1 -> 40;
             case 0 -> 80;
+            case -1 -> 9999999;
             default -> 1;
+        };
+    }
+
+    public static int getCountPerSeq(int seq){
+        return switch (seq){
+            case 7 -> 1;
+            case 6,5 -> 2;
+            case 4,3 -> 4;
+            case 2 -> 5;
+            case 1 -> 7;
+            case 0 -> 9;
+            case -1 -> 99999999;
+            default -> 0;
         };
     }
 

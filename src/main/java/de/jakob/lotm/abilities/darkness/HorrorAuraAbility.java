@@ -31,7 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class HorrorAuraAbility extends Ability {
     public HorrorAuraAbility(String id) {
         super(id, 30, "darkness");
-        this.canBeCopied = false;
         autoClear = false;
         postsUsedAbilityEventManually = true;
         interactionRadius = 20;

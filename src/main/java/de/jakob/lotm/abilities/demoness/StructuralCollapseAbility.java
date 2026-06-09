@@ -24,7 +24,6 @@ import java.util.Map;
 public class StructuralCollapseAbility extends Ability {
     public StructuralCollapseAbility(String id) {
         super(id, 15, "destruction");
-        canBeCopied = false;
         interactionRadius = 35;
         canBeShared = false;
     }

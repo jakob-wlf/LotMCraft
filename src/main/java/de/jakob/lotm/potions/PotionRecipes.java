@@ -750,6 +750,70 @@ public class PotionRecipes {
                 new ItemStack(Items.WITHER_ROSE, 1),
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 1)))
         ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.LAWYER_POTION.get(),
+                new ItemStack(Items.BOOKSHELF, 1),
+                new ItemStack(Items.WRITABLE_BOOK, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("black_emperor", 9)))
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.BARBARIAN_POTION.get(),
+                new ItemStack(Items.BEEF, 1),
+                new ItemStack(Items.PORKCHOP, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("black_emperor", 8)))
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.BRIBER_POTION.get(),
+                new ItemStack(Items.DIAMOND, 1),
+                new ItemStack(Items.GOLD_INGOT, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("black_emperor", 7)))
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.BARON_OF_CORRUPTION_POTION.get(),
+                new ItemStack(Items.CRYING_OBSIDIAN, 1),
+                new ItemStack(Items.NETHERRACK, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("black_emperor", 6)))
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.MENTOR_OF_DISORDER_POTION.get(),
+                new ItemStack(Items.BELL, 1),
+                new ItemStack(Items.ENCHANTED_BOOK, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("black_emperor", 5)))
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.EARL_OF_THE_FALLEN_POTION.get(),
+                new ItemStack(Items.SOUL_SOIL, 1),
+                new ItemStack(Items.WITHER_SKELETON_SKULL, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("black_emperor", 4)))
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.FRENZIED_MAGE_POTION.get(),
+                new ItemStack(Items.END_CRYSTAL, 1),
+                new ItemStack(Items.FERMENTED_SPIDER_EYE, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("black_emperor", 3)))
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DUKE_OF_ENTROPY_POTION.get(),
+                new ItemStack(Items.DRAGON_BREATH, 1),
+                new ItemStack(Items.TNT, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("black_emperor", 2)))
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.PRINCE_OF_ABOLITION_POTION.get(),
+                new ItemStack(Items.WITHER_ROSE, 1),
+                new ItemStack(Items.NETHERITE_SCRAP, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("black_emperor", 1)))
+        ));
+
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.CORPSE_COLLECTOR_POTION.get(),
                 new ItemStack(Items.ROTTEN_FLESH, 1),

@@ -21,7 +21,6 @@ import java.util.Map;
 public class LightningStormAbility extends Ability {
     public LightningStormAbility(String id) {
         super(id, 20, "explosion");
-        canBeCopied = false;
         interactionRadius = 35;
         interactionCacheTicks = 20 * 17;
         canBeShared = false;

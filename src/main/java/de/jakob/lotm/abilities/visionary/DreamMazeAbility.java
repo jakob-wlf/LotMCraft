@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.attachments.DreamMazeData;
 import de.jakob.lotm.dimension.DreamMazeEventHandler;
@@ -48,6 +49,9 @@ public class DreamMazeAbility extends SelectableAbility {
         this.canBeCopied = false;
         this.canBeUsedByNPC = false;
         canBeShared = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
+        canBeUsedInArtifact = false;
     }
 
     @Override
@@ -79,6 +83,15 @@ public class DreamMazeAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
         if (!(entity instanceof ServerPlayer player)) return;
 
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
+
         ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, entity.position(),1000, 1, .5, 1, .05);
 
         DreamMazeData data = DreamMazeData.get(serverLevel.getServer());
@@ -100,6 +113,15 @@ public class DreamMazeAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
         if (!(entity instanceof ServerPlayer caster)) return;
 
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(seq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
+
         ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, entity.position(),500, SURROUNDING_RADIUS, .5, SURROUNDING_RADIUS, .05);
 
         // Cannot use from inside the maze
@@ -115,15 +137,7 @@ public class DreamMazeAbility extends SelectableAbility {
             if (target.getUUID().equals(caster.getUUID())) continue;
             if (data.isOccupant(target.getUUID())) continue;
 
-            int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-            int targetSeq = BeyonderData.getSequence(target);
-            if(BeyonderData.getPathway(target).equals("visionary") && targetSeq < entitySeq){
-                AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed").withColor(0xFFff124d));
-
-                if(targetSeq <= 1 && target instanceof ServerPlayer targetPlayer){
-                    MetaAwarenessAbility.onDivined(caster, targetPlayer);
-                }
-
+            if(VisionaryHandler.shouldFailAndTrigger(seq, entity, target, this)){
                 return;
             }
 

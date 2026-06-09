@@ -51,7 +51,7 @@ public class ControllingUtil {
 
         if (target == null || !target.isAlive()) return;
 
-        ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
+        ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA.get());
 
         if (data.isControlling()) return ;
 

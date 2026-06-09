@@ -19,6 +19,7 @@ import de.jakob.lotm.potions.BeyonderPotion;
 import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.PureIdealismUtil;
 import de.jakob.lotm.util.playerMap.StoredData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
@@ -46,9 +47,9 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.Objects;
 import java.util.Random;
+import java.util.UUID;
 
-import static de.jakob.lotm.util.BeyonderData.playerMap;
-import static de.jakob.lotm.util.BeyonderData.getSequence;
+import static de.jakob.lotm.util.BeyonderData.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderEventHandler {
@@ -82,6 +83,12 @@ public class BeyonderEventHandler {
             ParasitationComponent parasitationComponent = serverPlayer.getData(ModAttachments.PARASITE_COMPONENT);
             parasitationComponent.setParasited(false);
             parasitationComponent.setParasiteUUID(null);
+
+            VirtualPersonaComponent personaComponent = serverPlayer.getData(ModAttachments.VIRTUAL_PERSONAS);
+            personaComponent.onJoin((ServerLevel) serverPlayer.level(), serverPlayer.getName().getString());
+
+            var splitComponent = serverPlayer.getData(ModAttachments.ENVISION_SPLIT.get());
+            splitComponent.onJoin((ServerLevel) serverPlayer.level());
 
             serverPlayer.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, 20 * 5, 99));
             BeyonderData.recalculateCharStackModifiers(serverPlayer);
@@ -246,6 +253,8 @@ public class BeyonderEventHandler {
 
         if (playerMap.get(player).isEmpty()) return;
 
+        var envisionedSplitComponent = player.getData(ModAttachments.ENVISION_SPLIT.get());
+
         var data = playerMap.get(player).get();
 
         BeyonderCharacteristicItem charItem = BeyonderCharacteristicItemHandler
@@ -255,20 +264,32 @@ public class BeyonderEventHandler {
 
         if (charItem == null) return;
 
-        ItemEntity itemEntity = new ItemEntity(
-                player.level(),
-                player.getX(),
-                player.getY(),
-                player.getZ(),
-                new ItemStack(charItem.asItem())
-        );
+        if(PureIdealismUtil.died.containsKey(player.getUUID())){
+            return;
+        }
+        else if(envisionedSplitComponent.isEnvisioned()){
+            envisionedSplitComponent.setEnvisioned(false);
+            return;
+        }
+        else {
+            ItemEntity itemEntity = new ItemEntity(
+                    player.level(),
+                    player.getX(),
+                    player.getY(),
+                    player.getZ(),
+                    new ItemStack(charItem.asItem())
+            );
 
-        event.getDrops().add(itemEntity);
+            event.getDrops().add(itemEntity);
+        }
     }
 
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
+
+            VirtualPersonaComponent personaComponent = player.getData(ModAttachments.VIRTUAL_PERSONAS);
+            personaComponent.onDeath((ServerLevel) player.level(), player.getName().getString());
 
             var source = event.getSource().getEntity();
             if (source != null) {
@@ -279,12 +300,14 @@ public class BeyonderEventHandler {
 
             if (!BeyonderData.isBeyonder(player)) return;
             if (playerMap.get(player).isEmpty()) return;
-            if (!player.level().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)) {
+            if (!player.level().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)
+            && !player.getData(ModAttachments.ENVISION_SPLIT.get()).isEnvisioned()) {
                 BeyonderData.recalculateCharStackModifiers(player);
                 return;
             }
 
             StoredData data = playerMap.get(player).get();
+
             StoredData regressed = data.regressSeq(false);
 
             SacrificeRevertComponent revert = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);
@@ -583,7 +606,7 @@ public class BeyonderEventHandler {
         String path =  BeyonderData.getPathway(entity);
 
 
-        if (target == Level.NETHER && seq > 5){
+        if (target == Level.NETHER && seq > 7){
             event.setCanceled(true);
         }
         else if (target == Level.END){

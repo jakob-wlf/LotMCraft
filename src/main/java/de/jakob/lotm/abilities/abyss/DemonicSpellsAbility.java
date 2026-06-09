@@ -116,7 +116,7 @@ public class DemonicSpellsAbility extends SelectableAbility {
         String pathway = BeyonderData.getPathway(entity);
         int sequence = AbilityUtil.getSeqWithArt(entity, this);
 
-        AvatarEntity clone = new AvatarEntity(ModEntities.ERROR_AVATAR.get(), level,
+        AvatarEntity clone = new AvatarEntity(ModEntities.AVATAR.get(), level,
                 entity.getUUID(), pathway, sequence);
         clone.setPos(clonePos.x, clonePos.y, clonePos.z);
         level.addFreshEntity(clone);

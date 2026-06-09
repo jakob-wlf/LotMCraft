@@ -2,8 +2,11 @@ package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -55,18 +58,19 @@ public class AweAbility extends Ability {
             return;
         }
 
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                    .withColor(0xFFff124d));
+            return;
+        }
+
         level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 1, 1);
 
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 10 * (int) Math.max(multiplier(entity)/2,1)).forEach(e -> {
-            if(BeyonderData.getPathway(e).equals("visionary") && BeyonderData.getSequence(e) < entitySeq){
-                AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.frenzy.failed").withColor(0xFFff124d));
-
-                if(BeyonderData.getSequence(e) <= 1 && e instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer entityPlayer){
-                    MetaAwarenessAbility.onDivined(entityPlayer, targetPlayer);
-                }
-            }
-            else {
+            if(!VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, e, this)){
                 if (BeyonderData.isBeyonder(e)) {
                     BeyonderData.addModifier(e, "awe", .625);
                 }
@@ -74,6 +78,8 @@ public class AweAbility extends Ability {
                 e.addEffect(new MobEffectInstance(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 10, 11, false, false, false)));
                 e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20 * 10, 6, false, false, false));
                 e.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), (float) DamageLookup.lookupDamage(7, .675) * multiplier(entity));
+
+                VisionaryLoosingControlHandler.applyEffect(entity, e, this);
 
                 ServerScheduler.scheduleForDuration(0, 8, 20 * 10, () -> {
                     Location eLoc = new Location(e.position(), e.level());
@@ -86,6 +92,9 @@ public class AweAbility extends Ability {
                         e.removeEffect(MobEffects.WEAKNESS);
                         return;
                     }
+
+                    if(entitySeq <= 4)
+                        BattleHypnosisAbility.performRandomEffect((ServerLevel) level, entity, e, entitySeq);
 
                     e.setDeltaMovement((new Vec3(random.nextDouble(-1, 1), random.nextDouble(0, .1), random.nextDouble(-1, 1))).normalize().scale(0.3));
                     e.hurtMarked = true;

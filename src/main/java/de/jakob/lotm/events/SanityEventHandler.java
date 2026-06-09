@@ -168,8 +168,8 @@ public class SanityEventHandler {
             entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0, false, false));
 
             // Apply losing control effect at lower amplifiers
-            int amplifier = (int)((20 - sanityValue) / 3.0); // 0-4 amplifier range
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 100, amplifier, false, true));
+//            int amplifier = (int)((20 - sanityValue) / 3.0); // 0-4 amplifier range
+//            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 100, amplifier, false, true));
 
             // Frequent damage
             if(random.nextInt(10) == 0) {
@@ -200,8 +200,8 @@ public class SanityEventHandler {
             entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200, 0, false, false));
 
             // High amplifier losing control - almost certain death
-            int amplifier = 5 + (5 - sanityValue); // 5-9 amplifier range
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 100, amplifier, false, true));
+//            int amplifier = 5 + (5 - sanityValue); // 5-9 amplifier range
+//            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 100, amplifier, false, true));
 
             // Wither effect (mind deteriorating)
             entity.addEffect(new MobEffectInstance(MobEffects.WITHER, 25, 1, false, true));
@@ -223,12 +223,12 @@ public class SanityEventHandler {
             }
 
             // Very high chance of death
-            if(random.nextInt(100) < 15) { // 15% chance per second at sanity < 5
-                MobEffectInstance controlEffect = entity.getEffect(ModEffects.LOOSING_CONTROL);
-                if(controlEffect != null && controlEffect.getAmplifier() >= 8) {
-                    // Let the LoosingControlEffect handle the final death
-                }
-            }
+//            if(random.nextInt(100) < 15) { // 15% chance per second at sanity < 5
+//                MobEffectInstance controlEffect = entity.getEffect(ModEffects.LOOSING_CONTROL);
+//                if(controlEffect != null && controlEffect.getAmplifier() >= 8) {
+//                    // Let the LoosingControlEffect handle the final death
+//                }
+//            }
         }
     }
 

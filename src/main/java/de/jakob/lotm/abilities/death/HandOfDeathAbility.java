@@ -33,7 +33,6 @@ public class HandOfDeathAbility extends SelectableAbility {
 
     public HandOfDeathAbility(String id) {
         super(id, 60f);
-        canBeCopied = false;
         canBeShared = false;
     }
 
@@ -162,7 +161,9 @@ public class HandOfDeathAbility extends SelectableAbility {
 
     private void rightHandSelf(ServerLevel level, LivingEntity caster) {
         float heal = caster.getMaxHealth() * 0.25f;
-        caster.heal(heal);
+        float newHealth = Math.min(caster.getHealth() + heal, caster.getMaxHealth());
+        caster.setHealth(newHealth);
+
 
         Vec3 center = caster.position().add(0, 1, 0);
         Vec3 feet   = caster.position();
@@ -197,7 +198,8 @@ public class HandOfDeathAbility extends SelectableAbility {
         }
 
         float heal = target.getMaxHealth() * 0.25f;
-        target.heal(heal);
+        float newHealth = Math.min(target.getHealth() + heal, target.getMaxHealth());
+        target.setHealth(newHealth);
 
         Vec3 targetCenter = target.position().add(0, 1, 0);
         Vec3 targetFeet   = target.position();

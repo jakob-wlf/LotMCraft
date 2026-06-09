@@ -38,15 +38,9 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                SyncPlayerActingDataPayload.TYPE,
-                SyncPlayerActingDataPayload.STREAM_CODEC,
-                SyncPlayerActingDataPayload::handle
-        );
-
-        registrar.playToClient(
-                PlayActingEffectPacket.TYPE,
-                PlayActingEffectPacket.STREAM_CODEC,
-                PlayActingEffectPacket::handle
+                SyncWeaknessDetectionTargetsAbilityPacket.TYPE,
+                SyncWeaknessDetectionTargetsAbilityPacket.STREAM_CODEC,
+                SyncWeaknessDetectionTargetsAbilityPacket::handle
         );
 
         registrar.playToClient(
@@ -147,6 +141,11 @@ public class PacketHandler {
                 SyncDecryptionLookedAtEntitiesAbilityPacket::handle
         );
 
+        registrar.playToClient(
+                StartStopDiscernmentPacket.TYPE,
+                StartStopDiscernmentPacket.STREAM_CODEC,
+                StartStopDiscernmentPacket::handle
+        );
 
         registrar.playToClient(
                 SyncIntrospectMenuPacket.TYPE,
@@ -328,6 +327,18 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncCorrosionFovPacket.TYPE,
+                SyncCorrosionFovPacket.STREAM_CODEC,
+                SyncCorrosionFovPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncAbilitySelectionPacket.TYPE,
+                SyncAbilitySelectionPacket.STREAM_CODEC,
+                SyncAbilitySelectionPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncAllyDataPacket.TYPE,
                 SyncAllyDataPacket.STREAM_CODEC,
                 SyncAllyDataPacket::handle
@@ -500,6 +511,24 @@ public class PacketHandler {
                 SyncControllingDataPacket.TYPE,
                 SyncControllingDataPacket.STREAM_CODEC,
                 SyncControllingDataPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenDiscernmentScreenPacket.TYPE,
+                OpenDiscernmentScreenPacket.STREAM_CODEC,
+                OpenDiscernmentScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncDiscernmentDataPacket.TYPE,
+                SyncDiscernmentDataPacket.STREAM_CODEC,
+                SyncDiscernmentDataPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncEnvisioningPacket.TYPE,
+                SyncEnvisioningPacket.STREAM_CODEC,
+                SyncEnvisioningPacket::handle
         );
     }
 
@@ -745,6 +774,18 @@ public class PacketHandler {
                 RequestUniquenessApotheosisPacket.TYPE,
                 RequestUniquenessApotheosisPacket.STREAM_CODEC,
                 RequestUniquenessApotheosisPacket::handle
+        );
+
+        registrar.playToServer(
+                DiscernmentSelectedPacket.TYPE,
+                DiscernmentSelectedPacket.STREAM_CODEC,
+                DiscernmentSelectedPacket::handle
+        );
+
+        registrar.playToServer(
+                StopDiscernmentPacket.TYPE,
+                StopDiscernmentPacket.STREAM_CODEC,
+                StopDiscernmentPacket::handle
         );
     }
 

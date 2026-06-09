@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
@@ -44,9 +45,6 @@ public class CharmAbility extends Ability {
 
     public CharmAbility(String id) {
         super(id, 2, "charm");
-
-        this.canBeCopied = false;
-        this.canBeReplicated = false;
     }
 
     @Override
@@ -80,6 +78,9 @@ public class CharmAbility extends Ability {
             }
             return;
         }
+
+        if(VisionaryHandler.shouldStayInvisible(BeyonderData.getSequence(entity), target))
+            return;
 
         if(charmed.containsKey(target.getUUID()) || onCharmedCooldown.contains(target.getUUID())) {
             if(entity instanceof ServerPlayer player) {
