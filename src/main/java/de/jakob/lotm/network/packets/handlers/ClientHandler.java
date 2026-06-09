@@ -641,6 +641,38 @@ public class ClientHandler {
             screen.refreshAvailableAbilities();
         }
     }
+
+    public static void handleSyncBeyonderData(SyncBeyonderDataPacket packet, IPayloadContext context) {
+        ClientBeyonderCache.updateData(
+                context.player().getUUID(),
+                packet.pathway(),
+                packet.sequence(),
+                packet.spirituality(),
+                packet.griefingEnabled(),
+                true,
+                packet.digestionProgress(),
+                packet.pathwayHistory(),
+                packet.charList()
+        );
+
+        if (Minecraft.getInstance().screen instanceof IntrospectScreen screen) {
+            screen.refreshAvailableAbilities();
+        }
+    }
+
+    public static void handleSyncLivingEntityBeyonderData(SyncLivingEntityBeyonderDataPacket packet, IPayloadContext context) {
+        if (!context.flow().isClientbound()) return;
+        syncLivingEntityBeyonderData(packet);
+
+        if (Minecraft.getInstance().screen instanceof IntrospectScreen screen) {
+            screen.refreshAvailableAbilities();
+        }
+    }
+
+    public static void handleSyncIntrospectMenu(SyncIntrospectMenuPacket packet, IPayloadContext context) {
+        handleSyncIntrospectMenuPacket(packet, context.player().getUUID());
+    }
+
     public static void handleApotheosisPacket(SyncApotheosisPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
@@ -718,5 +750,14 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(
                 new de.jakob.lotm.gui.custom.CharExchange.CharExchangeWheelScreen(
                         packet.reelNames(), packet.landingIndex(), packet.outcome(), packet.rewardName(), packet.title()));
+    }
+
+    public static void handleOpenRiverVaultScreen(de.jakob.lotm.network.packets.toClient.OpenRiverVaultScreenPacket packet) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null) {
+            mc.setScreen(new de.jakob.lotm.gui.custom.RiverVault.RiverVaultScreen(
+                    packet.vaultItems(), packet.iuItems(),
+                    packet.maxIU(), packet.vaultCapacity()));
+        }
     }
 }

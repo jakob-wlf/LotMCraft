@@ -27,8 +27,7 @@ public record SyncIntrospectMenuPacket(int sequence, String pathway, float sanit
     
     public static void handle(SyncIntrospectMenuPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-                    ClientHandler.handleSyncIntrospectMenuPacket(packet, context.player().getUUID());
-                }
-        );
+            ClientHandler.handleSyncIntrospectMenu(packet, context);
+        });
     }
 }

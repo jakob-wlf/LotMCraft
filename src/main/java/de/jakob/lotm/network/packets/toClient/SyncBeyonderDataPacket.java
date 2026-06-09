@@ -2,7 +2,7 @@ package de.jakob.lotm.network.packets.toClient;
 
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -88,21 +88,7 @@ public record SyncBeyonderDataPacket(String pathway, int sequence, float spiritu
 
     public static void handle(SyncBeyonderDataPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            ClientBeyonderCache.updateData(
-                    context.player().getUUID(),
-                    packet.pathway(),
-                    packet.sequence(),
-                    packet.spirituality(),
-                    packet.griefingEnabled(),
-                    true,
-                    packet.digestionProgress(),
-                    packet.pathwayHistory(),
-                    packet.charList()
-            );
-
-            if (net.minecraft.client.Minecraft.getInstance().screen instanceof de.jakob.lotm.gui.custom.Introspect.IntrospectScreen screen) {
-                screen.refreshAvailableAbilities();
-            }
+            ClientHandler.handleSyncBeyonderData(packet, context);
         });
     }
 }

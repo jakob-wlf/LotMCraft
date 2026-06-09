@@ -1,8 +1,7 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.gui.custom.RiverVault.RiverVaultScreen;
-import net.minecraft.client.Minecraft;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -63,14 +62,7 @@ public record OpenRiverVaultScreenPacket(
 
     public static void handle(OpenRiverVaultScreenPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            if (context.flow().getReceptionSide().isClient()) {
-                Minecraft mc = Minecraft.getInstance();
-                if (mc.player != null) {
-                    mc.setScreen(new RiverVaultScreen(
-                            packet.vaultItems(), packet.iuItems(),
-                            packet.maxIU(), packet.vaultCapacity()));
-                }
-            }
+            ClientHandler.handleOpenRiverVaultScreen(packet);
         });
     }
 }
