@@ -3,6 +3,7 @@ package de.jakob.lotm.network.packets.toServer;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DailySpinComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.entity.custom.uniqueness.UniquenessEntity;
 import de.jakob.lotm.gui.custom.DailySpin.DailySpinHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenDailySpinScreenPacket;
@@ -14,6 +15,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.List;
+
+import static de.jakob.lotm.gui.custom.DailySpin.DailySpinHandler.UNIQUENESS_ITEMS;
 
 /** Client → Server: player requests their daily spin. */
 public record RequestDailySpinPacket() implements CustomPacketPayload {
@@ -51,7 +54,16 @@ public record RequestDailySpinPacket() implements CustomPacketPayload {
             // Roll reward, give immediately, mark as spun
             DailySpinHandler.SpinResult result = DailySpinHandler.buildDailySpin(player);
             if (!result.reward().isEmpty()) {
-                player.getInventory().add(result.reward().copy());
+                if (UNIQUENESS_ITEMS.contains(result.reward().getItem())){
+                    UniquenessEntity uniquenessEntity = new UniquenessEntity(player.level(), player.position(), result.reward().getItem().getDescriptionId());
+                    player.level().addFreshEntity(uniquenessEntity);
+                    component.markSpun();
+
+                    PacketHandler.sendToPlayer(player, new OpenDailySpinScreenPacket(
+                            result.reelNames(), result.landingIndex(), true));
+                    return;
+                }
+                    player.getInventory().add(result.reward().copy());
             }
             component.markSpun();
 
