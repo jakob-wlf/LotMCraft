@@ -1,11 +1,12 @@
 package de.jakob.lotm.gui.custom.CharExchange;
 
-import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.custom.GarbageItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenCharExchangeWheelPacket;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -55,110 +56,62 @@ public class CharExchangeHandler {
         if (sacrificed.isEmpty() || !(sacrificed.getItem() instanceof BeyonderCharacteristicItem charItem)) return;
 
         int sacrificedSeq = charItem.getSequence();
+        String sacrificedPathway = charItem.getPathway();
 
         // Remove the sacrificed characteristic
         player.getInventory().setItem(slotIndex, ItemStack.EMPTY);
 
-        // Roll outcome — use ThreadLocalRandom so each call gets a properly seeded
-        // per-thread instance rather than a freshly constructed Random whose seed
-        // entropy can be very low on a busy server tick.
         Random rand = ThreadLocalRandom.current();
-        float roll = rand.nextFloat();
 
-        int outcome;
-        ItemStack rewardItem = ItemStack.EMPTY;
-        String rewardName;
+        // Per-pathway pool: use seq-1 for pathways that have a slot there,
+        // fall back to same seq for pathways that don't.
+        int higherSeq = sacrificedSeq - 1;
+        List<ItemStack> pool = buildCharPool(sacrificedSeq, higherSeq, sacrificedPathway, player.serverLevel());
+        ItemStack rewardItem = pool.isEmpty() ? ItemStack.EMPTY : pool.get(rand.nextInt(pool.size())).copy();
+        String rewardName = rewardItem.isEmpty() ? "???" : rewardItem.getHoverName().getString();
+        List<String> candidates = pool.stream()
+                .map(s -> s.getHoverName().getString()).distinct()
+                .collect(java.util.stream.Collectors.toList());
 
-        if (roll < 0.05f) {
-            // 5% — upgrade (seq - 1 = one rank higher)
-            outcome = OUTCOME_UPGRADE;
-            int targetSeq = Math.max(1, sacrificedSeq - 1);
-            rewardItem = getRandomCharacteristicAtSeq(targetSeq, rand);
-            rewardName = rewardItem.isEmpty() ? "???" : rewardItem.getHoverName().getString();
-        } else if (roll < 0.15f) {
-            // 10% — garbage collector
-            outcome = OUTCOME_GARBAGE_COLLECT;
-            removeAllGarbageFromInventory(player);
-            rewardName = "Inventory Cleansed";
-        } else {
-            // 85% — garbage
-            outcome = OUTCOME_GARBAGE;
-            rewardName = "Garbage";
-        }
-
-        // Give reward item (upgrade only — garbage is given after slot assignment)
-        if (outcome == OUTCOME_UPGRADE && !rewardItem.isEmpty()) {
+        if (!rewardItem.isEmpty()) {
             player.getInventory().add(rewardItem.copy());
         }
 
-        // Give garbage item — use add() so the server properly syncs the slot to the client,
-        // then immediately scan inventory to find it and lock it to that slot.
-        if (outcome == OUTCOME_GARBAGE) {
-            ItemStack garbageStack = new ItemStack(ModItems.GARBAGE.get());
-            boolean added = player.getInventory().add(garbageStack);
-            if (added) {
-                // Find the newly added garbage item (no locked slot yet) and lock it
-                for (int i = 0; i < 36; i++) {
-                    ItemStack s = player.getInventory().getItem(i);
-                    if (!s.isEmpty() && s.getItem() instanceof GarbageItem
-                            && GarbageItem.getLockedSlot(s) < 0) {
-                        GarbageItem.lockToSlot(s, i);
-                        player.getInventory().setItem(i, s);
-                        break;
-                    }
-                }
-            } else {
-                // Inventory full — drop at feet
-                player.drop(garbageStack, false);
-            }
-        }
-
-        // Sync inventory to client immediately so the reward / garbage appears without needing to re-open inventory.
+        // Sync inventory to client immediately
         player.containerMenu.broadcastChanges();
 
-        // Build visual reel
-        OpenCharExchangeWheelPacket packet = buildWheelPacket(outcome, rewardName, sacrificedSeq, rand);
-        PacketHandler.sendToPlayer(player, packet);
+        PacketHandler.sendToPlayer(player, buildWheelPacket("Characteristics Exchange", rewardName, candidates, rand));
     }
 
     // ── Reel builder ─────────────────────────────────────────────────────────
 
-    private static OpenCharExchangeWheelPacket buildWheelPacket(
-            int outcome, String rewardName, int sacrificedSeq, Random rand) {
-
-        // Build a reel weighted to match odds: 17 garbage, 2 gc, 1 upgrade
+    private static OpenCharExchangeWheelPacket buildWheelPacket(String title, String rewardName, List<String> candidates, Random rand) {
         List<String> reel = new ArrayList<>();
-        for (int i = 0; i < 17; i++) reel.add(OUTCOME_LABELS[OUTCOME_GARBAGE]);
-        for (int i = 0; i < 2;  i++) reel.add(OUTCOME_LABELS[OUTCOME_GARBAGE_COLLECT]);
-        reel.add(OUTCOME_LABELS[OUTCOME_UPGRADE]);
+        for (int i = 0; i < 20; i++) reel.add(candidates.isEmpty() ? "???" : candidates.get(rand.nextInt(candidates.size())));
         Collections.shuffle(reel, rand);
-
-        // Find first slot that matches the actual outcome, use it as landing index
-        int landingIndex = 0;
-        String targetLabel = OUTCOME_LABELS[outcome];
-        for (int i = 0; i < reel.size(); i++) {
-            if (reel.get(i).equals(targetLabel)) { landingIndex = i; break; }
-        }
-        // Replace landing slot with the specific reward name for the winning label
-        reel.set(landingIndex, outcome == OUTCOME_GARBAGE ? "\uD83D\uDDD1 " + rewardName
-                : outcome == OUTCOME_GARBAGE_COLLECT     ? "\uD83E\uDDF9 " + rewardName
-                : "\u2605 " + rewardName);
-
-        return new OpenCharExchangeWheelPacket(reel, landingIndex, outcome, rewardName);
+        int landingIndex = rand.nextInt(reel.size());
+        reel.set(landingIndex, rewardName);
+        return new OpenCharExchangeWheelPacket(reel, landingIndex, OUTCOME_UPGRADE, rewardName, title);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private static ItemStack getRandomCharacteristicAtSeq(int seq, Random rand) {
+    /** Builds the full candidate pool across all pathways (excluding excludePathway).
+     * For each pathway: use higherSeq if a slot is available there, otherwise use sameSeq. */
+    private static List<ItemStack> buildCharPool(int sameSeq, int higherSeq, String excludePathway, ServerLevel level) {
         List<ItemStack> options = new ArrayList<>();
         for (DeferredHolder<Item, ? extends Item> holder : BeyonderCharacteristicItemHandler.ITEMS.getEntries()) {
             Item item = holder.get();
-            if (item instanceof BeyonderCharacteristicItem c && c.getSequence() == seq) {
+            if (!(item instanceof BeyonderCharacteristicItem c)) continue;
+            if (c.getPathway().equals(excludePathway)) continue;
+            boolean useHigher = higherSeq >= 1
+                    && BeyonderData.hasSequenceSlotAvailable(level, c.getPathway(), higherSeq);
+            int targetSeq = useHigher ? higherSeq : sameSeq;
+            if (c.getSequence() == targetSeq) {
                 options.add(new ItemStack(item));
             }
         }
-        if (options.isEmpty()) return ItemStack.EMPTY;
-        return options.get(rand.nextInt(options.size())).copy();
+        return options;
     }
 
     /** Removes every GarbageItem stack from the player's main inventory (slots 0-35). */

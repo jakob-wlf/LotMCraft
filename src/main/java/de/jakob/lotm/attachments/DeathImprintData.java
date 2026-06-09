@@ -41,6 +41,10 @@ public class DeathImprintData extends SavedData {
     /** Abilities sealed by the River owner per player (max 2). Maps target UUID → list of ability IDs. */
     private final Map<UUID, List<String>> sealedAbilities = new HashMap<>();
 
+    /** Souls stored in the River vault — persistent even through owner death. Max 27 slots. */
+    private final List<CompoundTag> riverVault = new ArrayList<>();
+    public static final int RIVER_VAULT_CAPACITY = 30;
+
     /** Game tick at which each player's imprint count will decay by 1. Set when an imprint is added. */
     private final Map<UUID, Long> imprintDecayTick = new HashMap<>();
 
@@ -275,6 +279,41 @@ public class DeathImprintData extends SavedData {
         }
     }
 
+    // ── River Soul Vault ───────────────────────────────────────────────────────
+
+    public List<CompoundTag> getRiverVault() {
+        return Collections.unmodifiableList(riverVault);
+    }
+
+    public int getRiverVaultSize() {
+        return riverVault.size();
+    }
+
+    public boolean isRiverVaultFull() {
+        return riverVault.size() >= RIVER_VAULT_CAPACITY;
+    }
+
+    public boolean addToRiverVault(CompoundTag soul) {
+        if (soul == null || isRiverVaultFull()) return false;
+        riverVault.add(soul.copy());
+        setDirty();
+        return true;
+    }
+
+    /** Removes and returns the vault soul with the given SoulKey, or null if not found. */
+    public CompoundTag removeFromRiverVaultByKey(String soulKey) {
+        if (soulKey == null || soulKey.isEmpty()) return null;
+        for (java.util.Iterator<CompoundTag> it = riverVault.iterator(); it.hasNext();) {
+            CompoundTag soul = it.next();
+            if (soulKey.equals(soul.getString("SoulKey"))) {
+                it.remove();
+                setDirty();
+                return soul;
+            }
+        }
+        return null;
+    }
+
     // ── Live-player enforcement helpers ────────────────────────────────────────
 
     /**
@@ -388,6 +427,11 @@ public class DeathImprintData extends SavedData {
         }
         tag.put("imprintDecayTick", decayList);
 
+        // River vault
+        ListTag vaultList = new ListTag();
+        for (CompoundTag soul : riverVault) vaultList.add(soul.copy());
+        tag.put("riverVault", vaultList);
+
         return tag;
     }
 
@@ -433,6 +477,12 @@ public class DeathImprintData extends SavedData {
         for (Tag t : decayList) {
             CompoundTag e = (CompoundTag) t;
             data.imprintDecayTick.put(e.getUUID("UUID"), e.getLong("decayTick"));
+        }
+
+        // River vault
+        if (tag.contains("riverVault", Tag.TAG_LIST)) {
+            ListTag vaultList = tag.getList("riverVault", Tag.TAG_COMPOUND);
+            for (Tag t : vaultList) data.riverVault.add(((CompoundTag) t).copy());
         }
 
         return data;

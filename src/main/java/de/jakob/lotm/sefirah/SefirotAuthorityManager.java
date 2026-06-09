@@ -120,7 +120,8 @@ public class SefirotAuthorityManager {
         List<String> available = new ArrayList<>(getAvailableAbilityIds(player));
         List<String> unlocked  = new ArrayList<>(getUnlockedAbilityIds(player));
         boolean hasSefirot = SefirahHandler.hasSefirot(player);
-        PacketHandler.sendToPlayer(player, new SyncSefirotAuthorityDataPacket(available, unlocked, hasSefirot));
+        String claimedSefirot = SefirahHandler.getClaimedSefirot(player);
+        PacketHandler.sendToPlayer(player, new SyncSefirotAuthorityDataPacket(available, unlocked, hasSefirot, claimedSefirot));
     }
 
     /**
@@ -205,7 +206,7 @@ public class SefirotAuthorityManager {
         SEFIROT_DIVINATION_IMMUNE.remove(player.getUUID());
         RIVER_CONCEALMENT_ACTIVE.remove(player.getUUID());
         // Sync empty state to client
-        PacketHandler.sendToPlayer(player, new SyncSefirotAuthorityDataPacket(Collections.emptyList(), Collections.emptyList(), false));
+        PacketHandler.sendToPlayer(player, new SyncSefirotAuthorityDataPacket(Collections.emptyList(), Collections.emptyList(), false, ""));
     }
 
     // ── Blacklisted ability IDs (never offered as cross-path abilities) ──────

@@ -63,7 +63,7 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(new CoordinateInputScreen(player, use));
     }
 
-    public static void handleOpenInternalUnderworldAbilityScreenPacket() {
+    public static void handleOpenInternalUnderworldAbilityScreenPacket(boolean isRiverOwner) {
         // Swap generic chest UI with the custom Internal Underworld screen.
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
@@ -72,11 +72,15 @@ public class ClientHandler {
         if (!(containerScreen.getMenu() instanceof ChestMenu chestMenu)) return;
 
         String title = containerScreen.getTitle().getString();
+        // Strip Minecraft formatting codes for comparison (§ followed by any char).
+        String cleanTitle = title.replaceAll("§.", "");
         String selectSoulTitle = Component.translatable("ability.lotmcraft.internal_underworld.select_soul").getString();
-        boolean isUnderworldTitle = title.startsWith("Internal Underworld - ") || title.equals(selectSoulTitle);
+        boolean isUnderworldTitle = title.startsWith("Internal Underworld - ")
+                || title.equals(selectSoulTitle)
+                || cleanTitle.equals("River Soul Vault");
         if (!isUnderworldTitle) return;
 
-        mc.setScreen(new InternalUnderworldAbilityScreen(chestMenu, mc.player.getInventory(), containerScreen.getTitle()));
+        mc.setScreen(new InternalUnderworldAbilityScreen(chestMenu, mc.player.getInventory(), containerScreen.getTitle(), isRiverOwner));
     }
 
     public static void syncLivingEntityBeyonderData(SyncLivingEntityBeyonderDataPacket packet) {
@@ -708,6 +712,6 @@ public class ClientHandler {
     public static void openCharExchangeWheelScreen(de.jakob.lotm.network.packets.toClient.OpenCharExchangeWheelPacket packet) {
         Minecraft.getInstance().setScreen(
                 new de.jakob.lotm.gui.custom.CharExchange.CharExchangeWheelScreen(
-                        packet.reelNames(), packet.landingIndex(), packet.outcome(), packet.rewardName()));
+                        packet.reelNames(), packet.landingIndex(), packet.outcome(), packet.rewardName(), packet.title()));
     }
 }

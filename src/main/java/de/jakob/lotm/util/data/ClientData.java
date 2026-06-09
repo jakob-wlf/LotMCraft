@@ -20,6 +20,8 @@ public class ClientData {
     private static List<String> sefirotUnlockedAbilityIds  = new ArrayList<>();
     /** True when the player owns any sefirot (even those with no cross-path neighbours). */
     private static boolean ownsSefirot = false;
+    /** The sefirot ID this player owns, or empty string if none. */
+    private static String claimedSefirot = "";
 
     public static List<String> getSefirotAvailableAbilityIds() {
         return Collections.unmodifiableList(sefirotAvailableAbilityIds);
@@ -43,6 +45,14 @@ public class ClientData {
 
     public static void setOwnsSefirot(boolean owns) {
         ownsSefirot = owns;
+    }
+
+    public static String getClaimedSefirot() {
+        return claimedSefirot;
+    }
+
+    public static void setClaimedSefirot(String sefirot) {
+        claimedSefirot = sefirot == null ? "" : sefirot;
     }
 
     public static List<String> getSharedWheelAbilities() {

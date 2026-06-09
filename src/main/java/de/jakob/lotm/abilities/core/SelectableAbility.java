@@ -32,7 +32,11 @@ public abstract class SelectableAbility extends Ability {
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(entity instanceof Player)) {
-            castSelectedAbility(level, entity, random.nextInt(getAbilityNames().length));
+            int[] allowed = java.util.stream.IntStream.range(0, getAbilityNames().length)
+                    .filter(i -> isSubAbilityAllowed(entity, i))
+                    .toArray();
+            int index = allowed.length > 0 ? allowed[random.nextInt(allowed.length)] : 0;
+            castSelectedAbility(level, entity, index);
             return;
         }
 

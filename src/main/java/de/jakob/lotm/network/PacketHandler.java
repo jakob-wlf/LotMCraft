@@ -585,6 +585,12 @@ public class PacketHandler {
                 OpenCharExchangeWheelPacket::handle
         );
 
+        registrar.playToClient(
+                de.jakob.lotm.network.packets.toClient.OpenRiverVaultScreenPacket.TYPE,
+                de.jakob.lotm.network.packets.toClient.OpenRiverVaultScreenPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toClient.OpenRiverVaultScreenPacket::handle
+        );
+
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
@@ -915,6 +921,18 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                RequestRiverVaultScreenPacket.TYPE,
+                RequestRiverVaultScreenPacket.STREAM_CODEC,
+                RequestRiverVaultScreenPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RiverVaultActionPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RiverVaultActionPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RiverVaultActionPacket::handle
+        );
+
+        registrar.playToServer(
                 SetAbilitySealPacket.TYPE,
                 SetAbilitySealPacket.STREAM_CODEC,
                 SetAbilitySealPacket::handle
@@ -948,6 +966,18 @@ public class PacketHandler {
                 RequestCharPathExchangePacket.TYPE,
                 RequestCharPathExchangePacket.STREAM_CODEC,
                 RequestCharPathExchangePacket::handle
+        );
+
+        registrar.playToServer(
+                RequestRecipeExchangePacket.TYPE,
+                RequestRecipeExchangePacket.STREAM_CODEC,
+                RequestRecipeExchangePacket::handle
+        );
+
+        registrar.playToServer(
+                RequestRecipePathExchangePacket.TYPE,
+                RequestRecipePathExchangePacket.STREAM_CODEC,
+                RequestRecipePathExchangePacket::handle
         );
     }
 

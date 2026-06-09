@@ -24,7 +24,8 @@ public record OpenCharExchangeWheelPacket(
         List<String> reelNames,
         int landingIndex,
         int outcome,
-        String rewardName
+        String rewardName,
+        String title
 ) implements CustomPacketPayload {
 
     public static final Type<OpenCharExchangeWheelPacket> TYPE =
@@ -35,6 +36,7 @@ public record OpenCharExchangeWheelPacket(
             ByteBufCodecs.VAR_INT,                                  OpenCharExchangeWheelPacket::landingIndex,
             ByteBufCodecs.VAR_INT,                                  OpenCharExchangeWheelPacket::outcome,
             ByteBufCodecs.STRING_UTF8,                              OpenCharExchangeWheelPacket::rewardName,
+            ByteBufCodecs.STRING_UTF8,                              OpenCharExchangeWheelPacket::title,
             OpenCharExchangeWheelPacket::new
     );
 

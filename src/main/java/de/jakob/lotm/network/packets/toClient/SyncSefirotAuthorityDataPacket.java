@@ -21,7 +21,8 @@ import java.util.List;
  */
 public record SyncSefirotAuthorityDataPacket(List<String> availableIds,
                                              List<String> unlockedIds,
-                                             boolean hasSefirot)
+                                             boolean hasSefirot,
+                                             String claimedSefirot)
         implements CustomPacketPayload {
 
     public static final Type<SyncSefirotAuthorityDataPacket> TYPE =
@@ -35,6 +36,8 @@ public record SyncSefirotAuthorityDataPacket(List<String> availableIds,
                     SyncSefirotAuthorityDataPacket::unlockedIds,
                     ByteBufCodecs.BOOL,
                     SyncSefirotAuthorityDataPacket::hasSefirot,
+                    ByteBufCodecs.STRING_UTF8,
+                    SyncSefirotAuthorityDataPacket::claimedSefirot,
                     SyncSefirotAuthorityDataPacket::new
             );
 
@@ -48,6 +51,7 @@ public record SyncSefirotAuthorityDataPacket(List<String> availableIds,
             ClientData.setSefirotAvailableAbilityIds(packet.availableIds());
             ClientData.setSefirotUnlockedAbilityIds(packet.unlockedIds());
             ClientData.setOwnsSefirot(packet.hasSefirot());
+            ClientData.setClaimedSefirot(packet.claimedSefirot());
             if (Minecraft.getInstance().screen instanceof IntrospectScreen introspectScreen) {
                 introspectScreen.refreshAvailableAbilities();
             }

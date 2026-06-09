@@ -13,6 +13,7 @@ import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncIntrospectMenuPacket;
 import de.jakob.lotm.network.packets.toClient.SyncKillCountPacket;
 import de.jakob.lotm.network.packets.toClient.SyncSefirotAuthorityDataPacket;
+import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
@@ -66,12 +67,15 @@ public record OpenIntrospectMenuPacket(int sequence, String pathway) implements 
                 SanityComponent sanityComponent = player.getData(ModAttachments.SANITY_COMPONENT);
                 float sanity = sanityComponent.getSanity();
 
+                boolean isSefirotOwner = SefirahHandler.hasSefirot(player);
+
                 AbilityWheelHelper.removeUnusableAbilities(player);
                 AbilityWheelComponent abilityWheelComponent = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
 
-                player.openMenu(new IntrospectMenuProvider(passiveAbilities, sequence, pathway, digestionProgress, sanity), buf -> {
+                player.openMenu(new IntrospectMenuProvider(passiveAbilities, sequence, pathway, digestionProgress, sanity, isSefirotOwner), buf -> {
                     buf.writeInt(sequence);
                     buf.writeUtf(pathway);
+                    buf.writeBoolean(isSefirotOwner);
                 });
 
                 SefirotAuthorityManager.syncToClient(player);

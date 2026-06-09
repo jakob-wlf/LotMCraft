@@ -323,6 +323,7 @@ public class BeyonderEventHandler {
 
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
+        if (event.isCanceled()) return;
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
         var source = event.getSource().getEntity();

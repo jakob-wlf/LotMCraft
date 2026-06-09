@@ -57,7 +57,7 @@ public class ReincarnationAbility extends PassiveAbilityItem {
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("death", 3));
+        return new HashMap<>(Map.of("death", 4));
     }
 
     @Override
