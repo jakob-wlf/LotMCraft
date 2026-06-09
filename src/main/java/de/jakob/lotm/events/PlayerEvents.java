@@ -71,8 +71,21 @@ public class PlayerEvents {
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
+            // Update the death-imprint snapshot with the player's latest pathway/seq so the
+            // river owner always sees current data even when the target is offline.
+            if (BeyonderData.isBeyonder(player)) {
+                de.jakob.lotm.attachments.DeathImprintData imprintDataLogout =
+                        de.jakob.lotm.attachments.DeathImprintData.get(player.getServer());
+                imprintDataLogout.saveSnapshot(player.getUUID(),
+                        player.getGameProfile().getName(),
+                        BeyonderData.getPathway(player),
+                        BeyonderData.getSequence(player));
+            }
+
             DisabledAbilitiesComponent disabledAbilitiesComponent = player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-            disabledAbilitiesComponent.enableAllAbilities();
+            // Clear temporary disables but preserve permanent death-imprint seals so they
+            // survive in player NBT across log-out/log-in and server restarts.
+            disabledAbilitiesComponent.clearAllAbilitiesExceptCause(de.jakob.lotm.attachments.DeathImprintData.SEAL_CAUSE);
 
             AbilityCooldownComponent abilityCooldownComponent = player.getData(ModAttachments.COOLDOWN_COMPONENT);
             abilityCooldownComponent.removeAllCooldowns();
@@ -202,6 +215,15 @@ public class PlayerEvents {
             de.jakob.lotm.attachments.DeathImprintData imprintData =
                     de.jakob.lotm.attachments.DeathImprintData.get(player.getServer());
             imprintData.reapplySealedAbilities(player);
+
+            // Refresh the death-imprint snapshot so the river owner always sees current
+            // pathway/seq data even for players who haven't died recently.
+            if (BeyonderData.isBeyonder(player)) {
+                imprintData.saveSnapshot(player.getUUID(),
+                        player.getGameProfile().getName(),
+                        BeyonderData.getPathway(player),
+                        BeyonderData.getSequence(player));
+            }
         }
     }
 

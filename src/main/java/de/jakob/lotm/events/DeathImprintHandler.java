@@ -63,8 +63,8 @@ public class DeathImprintHandler {
 
         // Add one death imprint (capped at 3)
         int newTier = data.addImprint(dyingPlayer.getUUID());
-        // Reset the 40-day decay timer from the moment of this imprint.
-        data.scheduleDecay(dyingPlayer.getUUID(), serverLevel.getGameTime());
+        // Reset the 12-hour real-time decay timer from the moment of this imprint.
+        data.scheduleDecay(dyingPlayer.getUUID());
 
         // Notify river owner if online
         for (ServerPlayer online : serverLevel.getServer().getPlayerList().getPlayers()) {
@@ -116,9 +116,9 @@ public class DeathImprintHandler {
 
         DeathImprintData data = DeathImprintData.get(event.getServer());
 
-        // ── Imprint decay: check once per second ────────────────────────────────
+        // ── Imprint decay: check once per second (uses real-time 12hr timer) ───
         if (tick % 20 == 0) {
-            List<java.util.UUID> decayed = data.tickDecay(tick, event.getServer());
+            List<java.util.UUID> decayed = data.tickDecay(event.getServer());
             for (java.util.UUID uuid : decayed) {
                 int remaining = data.getImprintCount(uuid);
                 // Notify the affected player if online

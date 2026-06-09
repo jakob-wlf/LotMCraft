@@ -110,6 +110,15 @@ public class DisabledAbilitiesComponent implements INBTSerializable<CompoundTag>
         disabledAbilities.clear();
     }
 
+    /**
+     * Clears all temporary disabled states while preserving entries under {@code preservedCause}.
+     * Use this on player logout so permanent seals (e.g. death-imprint seals) survive in NBT.
+     */
+    public void clearAllAbilitiesExceptCause(String preservedCause) {
+        hasAllAbilitiesDisabled.clear();
+        disabledAbilities.entrySet().removeIf(e -> !e.getKey().equals(preservedCause));
+    }
+
     @Override
     public @UnknownNullability CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
