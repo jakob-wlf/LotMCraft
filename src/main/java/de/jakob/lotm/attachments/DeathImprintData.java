@@ -45,11 +45,11 @@ public class DeathImprintData extends SavedData {
     private final List<CompoundTag> riverVault = new ArrayList<>();
     public static final int RIVER_VAULT_CAPACITY = 30;
 
-    /** Game tick at which each player's imprint count will decay by 1. Set when an imprint is added. */
+    /** Real-time epoch (ms) at which each player's imprint count will decay by 1. */
     private final Map<UUID, Long> imprintDecayTick = new HashMap<>();
 
-    /** Ticks between imprint decay events: 40 Minecraft days × 24 000 ticks/day. */
-    public static final long IMPRINT_DECAY_INTERVAL_TICKS = 40L * 24_000L;
+    /** Real-time milliseconds between imprint decay events: 12 hours. */
+    public static final long IMPRINT_DECAY_INTERVAL_MS = 12L * 60L * 60L * 1_000L;
 
     // ── Static access ──────────────────────────────────────────────────────────
 
@@ -82,11 +82,11 @@ public class DeathImprintData extends SavedData {
     }
 
     /**
-     * (Re-)schedules the decay timer for {@code uuid} to fire {@code IMPRINT_DECAY_INTERVAL_TICKS}
-     * after {@code currentTick}. Call this from the death event, passing the current game time.
+     * (Re-)schedules the decay timer for {@code uuid} to fire {@link #IMPRINT_DECAY_INTERVAL_MS}
+     * after the current wall-clock time. Call this from the death event.
      */
-    public void scheduleDecay(UUID uuid, long currentTick) {
-        imprintDecayTick.put(uuid, currentTick + IMPRINT_DECAY_INTERVAL_TICKS);
+    public void scheduleDecay(UUID uuid) {
+        imprintDecayTick.put(uuid, System.currentTimeMillis() + IMPRINT_DECAY_INTERVAL_MS);
         setDirty();
     }
 
@@ -107,16 +107,17 @@ public class DeathImprintData extends SavedData {
     }
 
     /**
-     * Checks all players whose decay timer has elapsed and decrements their imprint count by 1.
-     * Should be called periodically from the server tick (e.g. every 20 ticks).
+     * Checks all players whose 12-hour real-time decay timer has elapsed and decrements their
+     * imprint count by 1. Should be called periodically from the server tick.
      * Returns the UUIDs whose count was changed so the caller can notify them.
      */
-    public List<UUID> tickDecay(long currentTick, net.minecraft.server.MinecraftServer server) {
+    public List<UUID> tickDecay(net.minecraft.server.MinecraftServer server) {
+        long now = System.currentTimeMillis();
         List<UUID> decayed = new ArrayList<>();
         Iterator<Map.Entry<UUID, Long>> it = imprintDecayTick.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<UUID, Long> entry = it.next();
-            if (currentTick >= entry.getValue()) {
+            if (now >= entry.getValue()) {
                 UUID uuid = entry.getKey();
                 int current = imprintCounts.getOrDefault(uuid, 0);
                 if (current <= 1) {
@@ -131,8 +132,8 @@ public class DeathImprintData extends SavedData {
                     if (next < 2) {
                         clearSealedAbilitiesAndUnapply(uuid, server);
                     }
-                    // Schedule the next decay interval from now
-                    entry.setValue(currentTick + IMPRINT_DECAY_INTERVAL_TICKS);
+                    // Schedule the next 12-hour decay from now
+                    entry.setValue(now + IMPRINT_DECAY_INTERVAL_MS);
                 }
                 decayed.add(uuid);
                 setDirty();
@@ -417,12 +418,12 @@ public class DeathImprintData extends SavedData {
         }
         tag.put("sealedAbilities", sealedList);
 
-        // Imprint decay timers
+        // Imprint decay timers (real-time epoch ms)
         ListTag decayList = new ListTag();
         for (Map.Entry<UUID, Long> entry : imprintDecayTick.entrySet()) {
             CompoundTag e = new CompoundTag();
             e.putUUID("UUID", entry.getKey());
-            e.putLong("decayTick", entry.getValue());
+            e.putLong("decayTimeMs", entry.getValue());
             decayList.add(e);
         }
         tag.put("imprintDecayTick", decayList);
@@ -472,11 +473,14 @@ public class DeathImprintData extends SavedData {
             data.sealedAbilities.put(uuid, abilityIds);
         }
 
-        // Imprint decay timers
+        // Imprint decay timers (real-time epoch ms)
         ListTag decayList = tag.getList("imprintDecayTick", Tag.TAG_COMPOUND);
         for (Tag t : decayList) {
             CompoundTag e = (CompoundTag) t;
-            data.imprintDecayTick.put(e.getUUID("UUID"), e.getLong("decayTick"));
+            // "decayTimeMs" is the new real-time key; skip legacy game-tick entries ("decayTick")
+            if (e.contains("decayTimeMs")) {
+                data.imprintDecayTick.put(e.getUUID("UUID"), e.getLong("decayTimeMs"));
+            }
         }
 
         // River vault
