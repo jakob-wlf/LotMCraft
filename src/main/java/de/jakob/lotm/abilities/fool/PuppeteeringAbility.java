@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
@@ -138,6 +139,13 @@ public class PuppeteeringAbility extends Ability {
         if(level.isClientSide)
             return;
 
+        // Block Puppeteering during dream divination — the caster's body is a ghost observer
+        TransformationComponent transformation = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
+        if (transformation.isTransformed() &&
+                transformation.getTransformationIndex() == TransformationComponent.TransformationType.DREAM_DIVINATION.getIndex()) {
+            return;
+        }
+
         if(entitiesBeingManipulated.containsKey(entity.getUUID())) {
             entitiesBeingManipulated.remove(entity.getUUID());
             return;
@@ -151,6 +159,11 @@ public class PuppeteeringAbility extends Ability {
 
 
         LivingEntity target = AbilityUtil.getTargetEntity(entity, getManipulationDistance(sequence), 3);
+        // Validate range: TargetEntityEvent handlers (e.g. Grafting Mode 3) can override the target
+        // to an entity beyond the actual manipulation distance.  Reject it if it is out of range.
+        if (target != null && target.distanceTo(entity) > getManipulationDistance(sequence)) {
+            target = null;
+        }
         if(target == null || target == entity || target instanceof Phantom) {
             if(entity instanceof ServerPlayer player) {
                 ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("ability.lotmcraft.puppeteering.no_entity_found").withColor(0xFFff124d));
