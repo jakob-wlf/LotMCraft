@@ -6,14 +6,17 @@ import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
+import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncOriginalBodyOwnerPacket;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
+import de.jakob.lotm.network.packets.toClient.UpdateAbilityBarPacket;
 import de.jakob.lotm.util.playerMap.PlayerMap;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.util.playerMap.Characteristic;
+import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -81,6 +84,7 @@ public class ControllingUtil {
         ArrayList<Characteristic> targetChars = new ArrayList<>();
         String targetPathway = BeyonderData.getPathway(target);
         int targetSequence = BeyonderData.getSequence(target);
+        String[] targetHistory = BeyonderData.getPathwayHistory(target).clone();
         if (swapData && BeyonderData.isBeyonder(target)) {
             for (Characteristic c : BeyonderData.getCharList(target)) {
                 targetChars.add(new Characteristic(c.pathway(), c.stack(), c.sequence()));
@@ -104,7 +108,10 @@ public class ControllingUtil {
             // so when the player stops controlling, the target is restored with its own data
             // instead of the player's data (which it currently has due to the swap).
             if (swapData && !targetChars.isEmpty()) {
-                BeyonderData.setBeyonder(target, targetPathway, targetSequence, false, false, false, false, false, false);
+                // Use skipCheck=true, putIntoMap=false, and updateCharacteristics=false to avoid side effects during temporary restoration.
+                // Also copy back target's pathway history.
+                BeyonderData.setBeyonder(target, targetPathway, targetSequence, true, false, false, true, false, false, false);
+                target.getData(ModAttachments.BEYONDER_COMPONENT).setPathwayHistory(targetHistory);
                 target.getData(ModAttachments.BEYONDER_COMPONENT).setCharacteristicList(targetChars);
             }
 
@@ -159,6 +166,8 @@ public class ControllingUtil {
             serverTarget.setGameMode(GameType.SPECTATOR);
             serverTarget.setCamera(player);
         }
+
+        syncIntrospectData(player);
     }
 
     public static void reset(ServerPlayer player, ServerLevel level, boolean resetData){
@@ -312,6 +321,8 @@ public class ControllingUtil {
         // resetting shape
         ShapeShiftingUtil.resetShape(player);
 
+        syncIntrospectData(player);
+
         // Sync restored Beyonder state into the PlayerMap so saved map reflects entity data immediately
         try {
             if (BeyonderData.playerMap != null) {
@@ -334,6 +345,18 @@ public class ControllingUtil {
             data.setBodyUUID(null);
             data.setTargetUUID(null);
         }
+
+
+        if(targetEntity instanceof LivingEntity){
+            LivingEntity target = (LivingEntity) targetEntity;
+            BeyonderData.getCharList((LivingEntity) targetEntity).forEach(c -> {
+                if (Objects.equals(c.pathway(), BeyonderData.getPathway(target)) && c.sequence() == BeyonderData.getSequence(target)) {
+                    c.setStack(c.stack() - 1);
+                    BeyonderData.setCharacteristic(target,c.stack(),c.sequence(),true,c.pathway());
+                }
+            });
+        }
+
     }
 
     private static void copyPosition(LivingEntity source, LivingEntity target) {
@@ -382,18 +405,29 @@ public class ControllingUtil {
                 charCopy.add(new Characteristic(characteristic.pathway(), characteristic.stack(), characteristic.sequence()));
             }
 
-            // Set the pathway/sequence/etc using the standard setter to keep PlayerMap and passive effects consistent
-            // Avoid mutating PlayerMap during transient copies: set putIntoMap=false so the global map is only updated when players are restored
-            // Use clearCharStack=false and resetSpirituality=false because we're about to set them manually
-            BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source), false, false, false, false, false, false);
+            // Set the pathway/sequence/etc using the standard setter to keep PlayerMap and passive effects consistent.
+            // Use skipCheck=true to allow copying even if slots are "full" (it's a copy, not a new acquisition).
+            // Use updateCharacteristics=false because we're about to set the characteristic list manually via setCharacteristicList.
+            // Use putIntoMap=false so the global map is only updated when players are restored.
+            BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source), true, false, false, true, false, false, false);
+
+            // Copy pathway history to ensure client-side UI (like Introspect screen) works correctly
+            target.getData(ModAttachments.BEYONDER_COMPONENT).setPathwayHistory(source.getData(ModAttachments.BEYONDER_COMPONENT).getPathwayHistory().clone());
 
             // Overwrite the characteristic list with the exact copy from source
             target.getData(ModAttachments.BEYONDER_COMPONENT).setCharacteristicList(charCopy);
 
             // Sync digestion/griefing for players
             if (source instanceof Player sourcePlayer && target instanceof Player targetPlayer) {
-                BeyonderData.digest(targetPlayer, BeyonderData.getDigestionProgress(sourcePlayer), false);
+                //BeyonderData.digest(targetPlayer, BeyonderData.getDigestionProgress(sourcePlayer), false);
                 BeyonderData.setGriefingEnabled(targetPlayer, BeyonderData.isGriefingEnabled(sourcePlayer));
+            }
+            BeyonderData.setDigestionProgress(target, BeyonderData.getDigestionProgress(source));
+            target.getData(ModAttachments.BEYONDER_COMPONENT).setDigestionProgress(BeyonderData.getDigestionProgress(source));
+
+            if (target instanceof ServerPlayer serverPlayer) {
+                syncIntrospectData(serverPlayer);
+                LOTMCraft.LOGGER.info("copyData: synced Beyonder data for player {}", serverPlayer.getUUID());
             }
         } else if (BeyonderData.isBeyonder(target)) {
             // Source is not a Beyonder and not forced -> preserve target's existing Beyonder data
@@ -523,6 +557,42 @@ public class ControllingUtil {
                 targetInst.getModifiers().forEach(mod -> targetInst.removeModifier(mod.id()));
             }
         }
+    }
+
+    /**
+     * Consolidates multiple sync packets to ensure the client-side UI and caches
+     * are fully updated with the latest Beyonder state.
+     */
+    public static void syncIntrospectData(ServerPlayer player) {
+        if (player == null) return;
+
+        // Refresh client-side Beyonder cache (pathway, sequence, characteristics, etc.)
+        PacketHandler.syncBeyonderDataToPlayer(player);
+
+        // Refresh Uniqueness data
+        PacketHandler.syncUniquenessToPlayer(player);
+
+        // Refresh Ability Wheel
+        AbilityWheelHelper.syncToClient(player);
+
+        // Refresh Ability Bar
+        ArrayList<String> barAbilities = player.getData(ModAttachments.ABILITY_BAR_COMPONENT).getAbilities();
+        PacketHandler.sendToPlayer(player, new UpdateAbilityBarPacket(barAbilities));
+
+        // Refresh Kill Count
+        int killCount = player.getData(ModAttachments.KILL_COUNT_COMPONENT).getKillCount();
+        PacketHandler.sendToPlayer(player, new de.jakob.lotm.network.packets.toClient.SyncKillCountPacket(killCount));
+
+        // Refresh Sefirot Authority
+        de.jakob.lotm.sefirah.SefirotAuthorityManager.syncToClient(player);
+
+        // Refresh Sanity
+        float sanity = player.getData(ModAttachments.SANITY_COMPONENT).getSanity();
+        PacketHandler.sendToPlayer(player, new de.jakob.lotm.network.packets.toClient.SyncIntrospectMenuPacket(
+                BeyonderData.getHighestSequence(player),
+                BeyonderData.getHighestPathway(player),
+                sanity
+        ));
     }
 
     private static void copyInventories(LivingEntity source, LivingEntity target) {

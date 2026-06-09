@@ -99,6 +99,10 @@ public record SyncBeyonderDataPacket(String pathway, int sequence, float spiritu
                     packet.pathwayHistory(),
                     packet.charList()
             );
+
+            if (net.minecraft.client.Minecraft.getInstance().screen instanceof de.jakob.lotm.gui.custom.Introspect.IntrospectScreen screen) {
+                screen.refreshAvailableAbilities();
+            }
         });
     }
 }

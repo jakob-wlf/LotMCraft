@@ -37,6 +37,10 @@ public record SyncLivingEntityBeyonderDataPacket(
         context.enqueueWork(() -> {
             if (context.flow().getReceptionSide().isClient()) {
                 ClientHandler.syncLivingEntityBeyonderData(packet);
+
+                if (net.minecraft.client.Minecraft.getInstance().screen instanceof de.jakob.lotm.gui.custom.Introspect.IntrospectScreen screen) {
+                    screen.refreshAvailableAbilities();
+                }
             }
         });
     }

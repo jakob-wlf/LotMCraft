@@ -587,6 +587,10 @@ public class ClientHandler {
         }
         entity.getData(ModAttachments.CONTROLLING_DATA.get()).setControlling(packet.isControlling());
         entity.getData(ModAttachments.CONTROLLING_DATA.get()).setBodyEntity(packet.bodyEntity());
+
+        if (Minecraft.getInstance().screen instanceof IntrospectScreen screen) {
+            screen.refreshAvailableAbilities();
+        }
     }
 
     public static void handleDiscernmentDataPacket(SyncDiscernmentDataPacket packet) {
@@ -634,6 +638,7 @@ public class ClientHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof IntrospectScreen screen) {
             screen.updateMenuData(packet.sequence(), packet.pathway(), ClientBeyonderCache.getDigestionProgress(playerUUID), packet.sanity());
+            screen.refreshAvailableAbilities();
         }
     }
     public static void handleApotheosisPacket(SyncApotheosisPacket packet) {

@@ -49,7 +49,7 @@ public class DiscernmentUtil {
         component.setSeq(sequence);
         component.setPathway(path);
 
-        BeyonderData.setBeyonder(entity, path, sequence,true, false, false, false, true, false);
+        BeyonderData.setBeyonder(entity, path, sequence, true, false, false, false, true, false, false);
         component.setDiscerning(true);
 
         wheelData.setAbilities(savedWheelData.getAbilities());
@@ -78,7 +78,7 @@ public class DiscernmentUtil {
         component.setSeq(LOTMCraft.NON_BEYONDER_SEQ);
         component.setPathway("none");
 
-        BeyonderData.setBeyonder(entity, "visionary", component.getPreviosSeq(),true, false, false, false, true, false);
+        BeyonderData.setBeyonder(entity, "visionary", component.getPreviosSeq(), true, false, false, false, true, false, false);
         component.setDiscerning(false);
 
         wheelData.setAbilities(component.getPreviousWheel().getAbilities());

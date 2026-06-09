@@ -176,18 +176,22 @@ public class BeyonderData {
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence) {
-        setBeyonder(entity, pathway, sequence, false, false, true, false, true, true);
+        setBeyonder(entity, pathway, sequence, false, false, true, false, true, true, true);
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack) {
-        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, true, true);
+        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, true, true, true);
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack, boolean resetSpirituality) {
-        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, resetSpirituality, true);
+        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, resetSpirituality, true, true);
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack, boolean resetSpirituality, boolean putIntoMap) {
+        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, resetSpirituality, putIntoMap, true);
+    }
+
+    public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack, boolean resetSpirituality, boolean putIntoMap, boolean updateCharacteristics) {
         if (entity.level() instanceof ServerLevel serverLevel) {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
@@ -200,7 +204,7 @@ public class BeyonderData {
                 playerMap.removeHonorificName(player);
 
 
-            if (clearCharStack) playerMap.clearStack(player);
+            if (clearCharStack && updateCharacteristics) playerMap.clearStack(player);
         }
 
         if (Objects.equals(sequence, LOTMCraft.NON_BEYONDER_SEQ)
@@ -220,21 +224,23 @@ public class BeyonderData {
         BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
         component.setPathway(pathway);
         component.setSequence(sequence);
-        if (clearCharStack) {
-            component.clearCharacteristics();
-            component.setCharacteristic(1, sequence, pathway);
-        } else {
-            // Remove stale chars at the same sequence slot from a different pathway.
-            // These can accumulate if clearBeyonderData was called via a code path that
-            // didn't go through onPlayerDrops (e.g. join-time recovery after a crash).
-            new java.util.ArrayList<>(component.getCharacteristicList()).stream()
-                    .filter(c -> c.sequence() == sequence && !c.pathway().equals(pathway))
-                    .forEach(c -> component.setCharacteristic(0, c.sequence(), c.pathway()));
-            int current = component.getCharacteristicList().stream()
-                    .filter(c -> c.sequence() == sequence && c.pathway().equals(pathway))
-                    .mapToInt(Characteristic::stack)
-                    .findFirst().orElse(0);
-            component.setCharacteristic(current + 1, sequence, pathway);
+        if (updateCharacteristics) {
+            if (clearCharStack) {
+                component.clearCharacteristics();
+                component.setCharacteristic(1, sequence, pathway);
+            } else {
+                // Remove stale chars at the same sequence slot from a different pathway.
+                // These can accumulate if clearBeyonderData was called via a code path that
+                // didn't go through onPlayerDrops (e.g. join-time recovery after a crash).
+                new java.util.ArrayList<>(component.getCharacteristicList()).stream()
+                        .filter(c -> c.sequence() == sequence && !c.pathway().equals(pathway))
+                        .forEach(c -> component.setCharacteristic(0, c.sequence(), c.pathway()));
+                int current = component.getCharacteristicList().stream()
+                        .filter(c -> c.sequence() == sequence && c.pathway().equals(pathway))
+                        .mapToInt(Characteristic::stack)
+                        .findFirst().orElse(0);
+                component.setCharacteristic(current + 1, sequence, pathway);
+            }
         }
 
         if (resetSpirituality) component.setSpirituality(getMaxSpirituality(pathway, sequence));
@@ -745,12 +751,12 @@ public class BeyonderData {
         return player.getData(ModAttachments.BEYONDER_COMPONENT).isGriefingEnabled();
     }
 
-    public static float getDigestionProgress(Player player) {
-        if(player.level().isClientSide) {
-            return ClientBeyonderCache.getDigestionProgress(player.getUUID());
+    public static float getDigestionProgress(LivingEntity entity) {
+        if(entity.level().isClientSide) {
+            return ClientBeyonderCache.getDigestionProgress(entity.getUUID());
         }
 
-        return player.getData(ModAttachments.BEYONDER_COMPONENT).getDigestionProgress();
+        return entity.getData(ModAttachments.BEYONDER_COMPONENT).getDigestionProgress();
     }
 
     public static int getCharacteristicCount(LivingEntity entity, int sequence) {
