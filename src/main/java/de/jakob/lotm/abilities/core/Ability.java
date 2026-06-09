@@ -279,7 +279,7 @@ public abstract class Ability {
         int sequence = BeyonderData.getSequence(entity);
 
         if (!getRequirements().containsKey(BeyonderData.getPathway(entity))) {
-            return 0f;
+           // return 0f;
         }
 
         int requiredSequence = getRequirements().get(BeyonderData.getPathway(entity));
