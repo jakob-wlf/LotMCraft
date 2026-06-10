@@ -21,14 +21,11 @@ import de.jakob.lotm.abilities.door.passives.SpiritWorldAwarenessAbility;
 import de.jakob.lotm.abilities.door.passives.VoidImmunityAbility;
 import de.jakob.lotm.abilities.error.passives.PassiveTheftAbility;
 import de.jakob.lotm.abilities.error.passives.PhysicalEnhancementsErrorAbility;
-import de.jakob.lotm.abilities.fool.passives.MiracleOfResurrectionAbility;
+import de.jakob.lotm.abilities.fool.passives.*;
 import de.jakob.lotm.abilities.justiciar.passives.ChaosHuntingAbility;
 import de.jakob.lotm.abilities.justiciar.passives.EnhancedMentalAttributesAbility;
 import de.jakob.lotm.abilities.justiciar.passives.OrderJusticiarAbility;
 import de.jakob.lotm.abilities.justiciar.passives.PhysicalEnhancementsJusticiarAbility;
-import de.jakob.lotm.abilities.fool.passives.PaperDaggersAbility;
-import de.jakob.lotm.abilities.fool.passives.PhysicalEnhancementsFoolAbility;
-import de.jakob.lotm.abilities.fool.passives.PuppeteeringEnhancementsAbility;
 import de.jakob.lotm.abilities.mother.passives.PhysicalEnhancementsMotherAbility;
 import de.jakob.lotm.abilities.red_priest.passive.FireResistanceAbility;
 import de.jakob.lotm.abilities.red_priest.passive.FlamingHitAbility;
@@ -89,6 +86,7 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> PASSIVE_LUCK_ACCUMULATION = ITEMS.registerItem("passive_luck_accumulation_ability", PassiveLuckAccumulationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     public static final DeferredItem<Item> PAPER_DAGGERS = ITEMS.registerItem("paper_dagger_ability", PaperDaggersAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> ACROBATICS = ITEMS.registerItem("acrobatics_ability", AcrobaticsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PUPPETEERING_ENHANCEMENTS = ITEMS.registerItem("puppeteering_enhancements_ability", PuppeteeringEnhancementsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> MIRACLE_OF_RESURRECTION = ITEMS.registerItem("miracle_of_resurrection_ability", MiracleOfResurrectionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 

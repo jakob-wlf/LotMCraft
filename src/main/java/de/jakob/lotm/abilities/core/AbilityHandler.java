@@ -129,8 +129,9 @@ public class AbilityHandler {
 
 
         // FOOL PATHWAY
-        abilities.add(new FoolingAbility("fooling_ability"));
         abilities.add(new AirBulletAbility("air_bullet_ability"));
+        abilities.add(new PaperEquipmentAbility("paper_equipment_ability"));
+        abilities.add(new DamageTransferAbility("damage_transfer_ability"));
         abilities.add(new FlameControllingAbility("flame_controlling_ability"));
         abilities.add(new PaperFigurineSubstituteAbility("paper_figurine_substitute_ability"));
         abilities.add(new FlamingJumpAbility("flaming_jump_ability"));
@@ -142,6 +143,7 @@ public class AbilityHandler {
         abilities.add(new HistoricalVoidHidingAbility("historical_void_hiding_ability"));
         abilities.add(new MiracleCreationAbility("miracle_creation_ability"));
         abilities.add(new GraftingAbility("grafting_ability"));
+        abilities.add(new FoolingAbility("fooling_ability"));
 
         // DARKNESS PATHWAY
         abilities.add(new MidnightPoemAbility("midnight_poem_ability"));

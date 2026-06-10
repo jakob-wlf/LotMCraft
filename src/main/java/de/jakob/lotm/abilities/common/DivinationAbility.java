@@ -205,6 +205,7 @@ public class DivinationAbility extends SelectableAbility {
 
         List<String> structureIds = registry.holders()
                 .map(holder -> holder.key().location().toString())
+                .filter(id -> !id.contains("uniqueness"))
                 .sorted()
                 .toList();
 

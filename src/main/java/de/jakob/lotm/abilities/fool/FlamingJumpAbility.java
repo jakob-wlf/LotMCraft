@@ -18,6 +18,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
 import java.util.Comparator;
@@ -78,6 +79,20 @@ public class FlamingJumpAbility extends Ability {
         ParticleUtil.spawnParticles((ClientLevel) level, ParticleTypes.FLASH, selectedFire.getCenter(), 20, .1, 0);
     }
 
+    private final Block[] fireBlocks = new Block[]{
+            Blocks.FIRE,
+            Blocks.SOUL_FIRE,
+            Blocks.CAMPFIRE,
+            Blocks.SOUL_CAMPFIRE,
+            Blocks.LAVA,
+            Blocks.LAVA_CAULDRON,
+            Blocks.TORCH,
+            Blocks.SOUL_TORCH,
+            Blocks.WALL_TORCH,
+            Blocks.SOUL_WALL_TORCH,
+            Blocks.SPAWNER
+    };
+
     public BlockPos getSelectedFire(Level level, LivingEntity entity, boolean checkNearestIfNoneSelected) {
         BlockPos block = AbilityUtil.getTargetBlock(entity, 50, false, true);
 
@@ -99,7 +114,15 @@ public class FlamingJumpAbility extends Ability {
 
         return AbilityUtil.getBlocksInSphereRadius(level, entity.position(), 20, true, false, false)
                 .stream()
-                .filter(b -> level.getBlockState(b).is(Blocks.FIRE))
+                .filter(b -> {
+                    Block blockAtPos = level.getBlockState(b).getBlock();
+                    for (Block fireBlock : fireBlocks) {
+                        if (blockAtPos == fireBlock) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
                 .min(Comparator.comparing(b -> b.distToCenterSqr(entity.position()))).orElse(null);
     }
 }

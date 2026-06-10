@@ -35,6 +35,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.CRYSTAL_BALL.get());
         basicItem(ModItems.CANE.get());
 
+        handheldItem(ModItems.PAPER_SWORD.get());
+        handheldItem(ModItems.PAPER_PICKAXE.get());
+        handheldItem(ModItems.PAPER_AXE.get());
+        handheldItem(ModItems.PAPER_SHOVEL.get());
+
         tintableItem(ModItems.SEALED_ARTIFACT.get());
         tintableItem(ModItems.SEALED_ARTIFACT_BELL.get());
         tintableItem(ModItems.SEALED_ARTIFACT_CHAIN.get());

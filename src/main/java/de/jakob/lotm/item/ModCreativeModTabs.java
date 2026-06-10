@@ -34,6 +34,10 @@ public class ModCreativeModTabs {
                         output.accept(ModBlocks.BREWING_CAULDRON.get());
                         output.accept(ModBlocks.VOID);
                         output.accept(ModBlocks.SOLID_VOID);
+                        output.accept(ModItems.PAPER_SWORD);
+                        output.accept(ModItems.PAPER_PICKAXE);
+                        output.accept(ModItems.PAPER_AXE);
+                        output.accept(ModItems.PAPER_SHOVEL);
                     })
                     .build());
 

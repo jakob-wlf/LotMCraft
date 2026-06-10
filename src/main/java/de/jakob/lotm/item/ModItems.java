@@ -4,13 +4,19 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.artifacts.SealedArtifactItem;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.item.custom.*;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.SimpleTier;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +25,12 @@ import java.util.Random;
 import java.util.function.Supplier;
 
 public class ModItems {
+    private static final Tier PAPER_TOOL_TIER = new SimpleTier(
+            BlockTags.INCORRECT_FOR_IRON_TOOL, 15, 6.0F, 2.0F, 14, () -> {
+        return Ingredient.of(Items.PAPER);
+    }
+    );
+
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(LOTMCraft.MOD_ID);
 
     public static final DeferredItem<Item> FOOL_Card = ITEMS.registerItem("fool_card", Item::new, new Item.Properties());
@@ -29,6 +41,11 @@ public class ModItems {
     public static final DeferredItem<Item> MIRROR = ITEMS.registerItem("mirror", Item::new, new Item.Properties().stacksTo(1));
     public static final DeferredItem<Item> BLOOD = ITEMS.registerItem("blood", Item::new, new Item.Properties().stacksTo(1));
     public static final DeferredItem<Item> STORY_BOOK = ITEMS.registerItem("story_book", StoryBookItem::new, new Item.Properties().stacksTo(1));
+
+    public static final DeferredItem<Item> PAPER_SWORD = ITEMS.registerItem("paper_sword", props -> new SwordItem(PAPER_TOOL_TIER, props.attributes(SwordItem.createAttributes(PAPER_TOOL_TIER, 3, -2.4f))), new Item.Properties().durability(15));
+    public static final DeferredItem<Item> PAPER_PICKAXE = ITEMS.registerItem("paper_pickaxe", props -> new PickaxeItem(PAPER_TOOL_TIER, props.attributes(PickaxeItem.createAttributes(PAPER_TOOL_TIER, 1, -2.8f))), new Item.Properties().durability(15));
+    public static final DeferredItem<Item> PAPER_AXE = ITEMS.registerItem("paper_axe", props -> new AxeItem(PAPER_TOOL_TIER, props.attributes(AxeItem.createAttributes(PAPER_TOOL_TIER, 63, -3.1f))), new Item.Properties().durability(15));
+    public static final DeferredItem<Item> PAPER_SHOVEL = ITEMS.registerItem("paper_shovel", props -> new ShovelItem(PAPER_TOOL_TIER, props.attributes(ShovelItem.createAttributes(PAPER_TOOL_TIER, 1.5f, -3))), new Item.Properties().durability(15));
 
     public static final Supplier<Item> MARIONETTE_CONTROLLER = ITEMS.register("marionette_controller",
             () -> new MarionetteControllerItem(new Item.Properties().stacksTo(1)));

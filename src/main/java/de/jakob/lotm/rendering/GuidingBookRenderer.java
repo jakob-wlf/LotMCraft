@@ -32,7 +32,7 @@ public class GuidingBookRenderer {
 
         pages.clear();
 
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= 4; i++) {
             pages.add(ResourceLocation.fromNamespaceAndPath(modId, "textures/guiding_book/page_" + i + ".png"));
         }
 

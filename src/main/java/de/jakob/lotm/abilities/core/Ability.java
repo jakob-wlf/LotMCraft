@@ -77,6 +77,10 @@ public abstract class Ability {
         this.artifactScalingMap = new HashMap<>(60);
     }
 
+    protected int getColorForPathway(String pathway) {
+        return BeyonderData.pathwayInfos.containsKey(pathway) ? BeyonderData.pathwayInfos.get(pathway).color() : 0xFFFFFF;
+    }
+
     public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements) {
         if(LOTMCraft.abilityHandler.isDisabled(this)) {
             return;
