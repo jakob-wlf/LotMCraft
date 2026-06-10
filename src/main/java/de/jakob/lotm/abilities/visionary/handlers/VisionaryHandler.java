@@ -6,6 +6,7 @@ import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.playerMap.StoredData;
 import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -68,6 +69,21 @@ public class VisionaryHandler {
             if(shouldSendFailMessage && !isInvisible(target))
                 AbilityUtil.sendActionBar(caster, Component.translatable("ability.lotmcraft.frenzy.failed").withColor(0xFFff124d));
 
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean shouldFailAndTriggerOfflineTarget(int seq, LivingEntity caster, StoredData targetData){
+        int seqTarget = targetData.sequence();
+        String pathTarget = targetData.pathway();
+
+        if(caster.getName().getString().equals(targetData.trueName())) return false;
+
+        if(!pathTarget.equals("visionary")) return false;
+
+        if(seqTarget < seq){
             return true;
         }
 

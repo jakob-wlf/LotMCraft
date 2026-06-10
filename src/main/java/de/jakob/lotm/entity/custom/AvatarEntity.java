@@ -226,7 +226,22 @@ public class AvatarEntity extends PathfinderMob {
 
         // Add movement and targeting goals
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Monster.class, true));
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Monster.class, true));
+
+        this.targetSelector.addGoal(
+                3,
+                new NearestAttackableTargetGoal<>(
+                        this,
+                        Player.class,
+                        10,
+                        true,
+                        false,
+                        player -> {
+                            UUID owner = getOriginalOwner();
+                            return !player.getUUID().equals(owner) && !player.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(owner);
+                        }
+                )
+        );
     }
 
     // ========================= Tick Logic =========================

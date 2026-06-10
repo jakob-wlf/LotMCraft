@@ -5,6 +5,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -75,6 +77,9 @@ public class DiscernmentRenderer {
             if (!(e instanceof LivingEntity entity)) continue;
             if (entity == mc.player) continue;
             if (entity.distanceTo(mc.player) > activeDiscernment.get(mc.player.getUUID())) continue;
+
+            if(VisionaryHandler.shouldStayInvisible(ClientBeyonderCache.getSequence(mc.player.getUUID()), entity))
+                continue;
 
             EntityRenderer<? super LivingEntity> renderer =
                     mc.getEntityRenderDispatcher().getRenderer(entity);

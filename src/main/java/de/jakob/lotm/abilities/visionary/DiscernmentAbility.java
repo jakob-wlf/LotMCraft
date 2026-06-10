@@ -39,7 +39,7 @@ public class DiscernmentAbility extends ToggleAbility {
     private static final Map<UUID, String> ENTITY_TEAM_MAP = new HashMap<>();
     private static final Map<UUID, Set<String>> SENT_TEAMS = new HashMap<>();
 
-    private static final int COOLDOWN = 20 * 3;
+    private static final int COOLDOWN = 20 * 2;
     private static final Map<UUID, Integer> cooldown = new HashMap<>();
 
     public DiscernmentAbility(String id) {
@@ -70,6 +70,14 @@ public class DiscernmentAbility extends ToggleAbility {
 
         int seq = BeyonderData.getSequence(entity);
         int range = getRange(seq);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(seq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            cancel((ServerLevel) level, player);
+            return;
+        }
 
         LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, range, 1.2f, false, true);
         if(lookedAt != null) {
@@ -126,6 +134,8 @@ public class DiscernmentAbility extends ToggleAbility {
 
     @Override
     public void start(Level level, LivingEntity entity) {
+        if(!(level instanceof ServerLevel serverLevel)) return;
+
         int entitySeq = BeyonderData.getSequence(entity);
         if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
             AbilityUtil.sendActionBar(entity,
