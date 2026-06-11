@@ -763,6 +763,22 @@ public class BeyonderData {
         return entity.getData(ModAttachments.BEYONDER_COMPONENT).getDigestionProgress();
     }
 
+    public static float getCorruption(LivingEntity entity) {
+        return entity.getData(ModAttachments.CORRUPTION_COMPONENT.get()).getCorruption();
+    }
+
+    public static void setCorruption(LivingEntity entity, float corruption) {
+        entity.getData(ModAttachments.CORRUPTION_COMPONENT.get()).setCorruptionAndSync(corruption, entity);
+    }
+
+    public static void increaseCorruption(LivingEntity entity, float amount) {
+        entity.getData(ModAttachments.CORRUPTION_COMPONENT.get()).increaseCorruptionAndSync(amount, entity);
+    }
+
+    public static void decreaseCorruption(LivingEntity entity, float amount) {
+        entity.getData(ModAttachments.CORRUPTION_COMPONENT.get()).decreaseCorruptionAndSync(amount, entity);
+    }
+
     public static int getCharacteristicCount(LivingEntity entity, int sequence) {
         if(entity.level().isClientSide) {
             return ClientBeyonderCache.getCharacteristicCount(entity.getUUID());

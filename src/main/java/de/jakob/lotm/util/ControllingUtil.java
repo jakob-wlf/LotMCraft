@@ -588,10 +588,13 @@ public class ControllingUtil {
 
         // Refresh Sanity
         float sanity = player.getData(ModAttachments.SANITY_COMPONENT).getSanity();
+
+        float corruption = player.getData(ModAttachments.CORRUPTION_COMPONENT).getCorruption();
         PacketHandler.sendToPlayer(player, new de.jakob.lotm.network.packets.toClient.SyncIntrospectMenuPacket(
                 BeyonderData.getHighestSequence(player),
                 BeyonderData.getHighestPathway(player),
-                sanity
+                sanity,
+                corruption
         ));
     }
 

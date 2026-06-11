@@ -108,6 +108,13 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<CorruptionComponent>> CORRUPTION_COMPONENT =
+            ATTACHMENT_TYPES.register("corruption_component", () ->
+                    AttachmentType.builder(CorruptionComponent::new)
+                            .serialize(CorruptionComponent.SERIALIZER)
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<SubordinateComponent>> SUBORDINATE_COMPONENT =
             ATTACHMENT_TYPES.register("subordinate_component", () ->
                     AttachmentType.builder(SubordinateComponent::new)

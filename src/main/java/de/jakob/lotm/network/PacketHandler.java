@@ -139,6 +139,12 @@ public class PacketHandler {
                 SyncSanityPacket::handle
         );
 
+        registrar.playToClient(
+                SyncCorruptionPacket.TYPE,
+                SyncCorruptionPacket.STREAM_CODEC,
+                SyncCorruptionPacket::handle
+        );
+
 
         registrar.playToClient(
                 SendPassiveTheftEffectPacket.TYPE,

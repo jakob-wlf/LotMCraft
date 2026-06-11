@@ -695,8 +695,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         initializeAbilities();
     }
 
-    public void updateMenuData(int sequence, String pathway, float digestionProgress, float sanity) {
-        this.menu.updateData(sequence, pathway, digestionProgress, sanity);
+    public void updateMenuData(int sequence, String pathway, float digestionProgress, float sanity, float corruption) {
+        this.menu.updateData(sequence, pathway, digestionProgress, sanity, corruption);
         initializeAbilities();
     }
 
@@ -1864,6 +1864,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         renderDigestionProgress(guiGraphics, x, y);
         renderSanityLabel(guiGraphics, x, y);
         renderSanityProgress(guiGraphics, x, y);
+        renderCorruptionLabel(guiGraphics, x, y);
+        renderCorruptionProgress(guiGraphics, x, y);
         renderPassiveAbilitiesText(guiGraphics, x, y);
         renderKillCount(guiGraphics, x, y);
         renderUniquenessIcon(guiGraphics, x, y);
@@ -1873,7 +1875,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private void renderKillCount(GuiGraphics guiGraphics, int x, int y) {
         if (!menu.getPathway().equals("red_priest") || menu.getSequence() > 3) return;
         Component text = Component.literal("Kills: " + killCount).withStyle(ChatFormatting.BOLD);
-        guiGraphics.drawString(this.font, text, x + 7, y + 154, 0xDDDDDD, true);
+        guiGraphics.drawString(this.font, text, x + 7, y + 174, 0xDDDDDD, true);
     }
 
     private void renderUniquenessIcon(GuiGraphics guiGraphics, int x, int y) {
@@ -1909,14 +1911,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private void renderSanityLabel(GuiGraphics guiGraphics, int x, int y) {
         Component digestionText = Component.translatable("lotm.sanity").withStyle(ChatFormatting.BOLD);
         int color = 0xDDDDDD;
-        int textY = 115;
+        int textY = 102;
         int textX = 7;
         guiGraphics.drawString(this.font, digestionText, x + textX, y + textY, color, true);
     }
 
     private void renderSanityProgress(GuiGraphics guiGraphics, int x, int y) {
-        int barStartY = 132;
-        int barEndY = 143;
+        int barStartY = 110;
+        int barEndY = 120;
         int barStartX = 3;
         int barEndX = (int) (115 * menu.getSanity()) + barStartX;
         int color = 0xFFe8bb68;
@@ -1924,17 +1926,35 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         guiGraphics.fillGradient(barStartX + x, barStartY + y, barEndX + x, barEndY + y, color, color2);
     }
 
+    private void renderCorruptionLabel(GuiGraphics guiGraphics, int x, int y) {
+        Component corruptionText = Component.translatable("lotm.corruption").withStyle(ChatFormatting.BOLD);
+        int color = 0xDDDDDD;
+        int textY = 130;
+        int textX = 7;
+        guiGraphics.drawString(this.font, corruptionText, x + textX, y + textY, color, true);
+    }
+
+    private void renderCorruptionProgress(GuiGraphics guiGraphics, int x, int y) {
+        int barStartY = 139;
+        int barEndY = 150;
+        int barStartX = 3;
+        int barEndX = (int) (115 * menu.getCorruption()) + barStartX;
+        int color = 0xFF5e1212;
+        int color2 = 0xFF360a0a;
+        guiGraphics.fillGradient(barStartX + x, barStartY + y, barEndX + x, barEndY + y, color, color2);
+    }
+
     private void renderDigestionLabel(GuiGraphics guiGraphics, int x, int y) {
         Component digestionText = Component.translatable("lotm.digestion").withStyle(ChatFormatting.BOLD);
         int color = 0xDDDDDD;
-        int textY = 76;
+        int textY = 73;
         int textX = 7;
         guiGraphics.drawString(this.font, digestionText, x + textX, y + textY, color, true);
     }
 
     private void renderDigestionProgress(GuiGraphics guiGraphics, int x, int y) {
-        int barStartY = 93;
-        int barEndY = 104;
+        int barStartY = 82;
+        int barEndY = 93;
         int barStartX = 3;
         int barEndX = (int) (115 * menu.getDigestionProgress()) + barStartX;
         int color = 0xFFe36c54;

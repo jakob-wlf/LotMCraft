@@ -343,6 +343,17 @@ public class ClientHandler {
         entity.getData(ModAttachments.SANITY_COMPONENT.get()).setSanity(packet.sanity());
     }
 
+    public static void handleCorruptionPacket(SyncCorruptionPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if(entity == null) {
+            return;
+        }
+        entity.getData(ModAttachments.CORRUPTION_COMPONENT.get()).setCorruption(packet.corruption());
+    }
+
     public static void handleSkillScalingPacket(SyncSkillScalingPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
@@ -637,7 +648,7 @@ public class ClientHandler {
     public static void handleSyncIntrospectMenuPacket(SyncIntrospectMenuPacket packet, UUID playerUUID) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof IntrospectScreen screen) {
-            screen.updateMenuData(packet.sequence(), packet.pathway(), ClientBeyonderCache.getDigestionProgress(playerUUID), packet.sanity());
+            screen.updateMenuData(packet.sequence(), packet.pathway(), ClientBeyonderCache.getDigestionProgress(playerUUID), packet.sanity(), packet.corruption());
             screen.refreshAvailableAbilities();
         }
     }
