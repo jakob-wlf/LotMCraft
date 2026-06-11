@@ -228,7 +228,7 @@ public class BeyonderData {
             if (clearCharStack) {
                 component.clearCharacteristics();
                 component.setCharacteristic(1, sequence, pathway);
-            } else {
+            } /*else {
                 // Remove stale chars at the same sequence slot from a different pathway.
                 // These can accumulate if clearBeyonderData was called via a code path that
                 // didn't go through onPlayerDrops (e.g. join-time recovery after a crash).
@@ -240,7 +240,7 @@ public class BeyonderData {
                         .mapToInt(Characteristic::stack)
                         .findFirst().orElse(0);
                 component.setCharacteristic(current + 1, sequence, pathway);
-            }
+            }*/
         }
 
         if (resetSpirituality) component.setSpirituality(getMaxSpirituality(pathway, sequence));
@@ -439,7 +439,7 @@ public class BeyonderData {
         }
     }
 
-    private static void callPassiveEffectsOnRemoved(LivingEntity entity, ServerLevel serverLevel) {
+    public static void callPassiveEffectsOnRemoved(LivingEntity entity, ServerLevel serverLevel) {
         List<PassiveAbilityItem> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.ITEMS.getEntries().stream().filter(entry -> {
             if (!(entry.get() instanceof PassiveAbilityItem abilityItem))
                 return false;
@@ -451,7 +451,7 @@ public class BeyonderData {
         }
     }
 
-    private static void callPassiveEffectsOnAdd(LivingEntity entity, ServerLevel serverLevel) {
+    public static void callPassiveEffectsOnAdd(LivingEntity entity, ServerLevel serverLevel) {
         List<PassiveAbilityItem> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.ITEMS.getEntries().stream().filter(entry -> {
             if (!(entry.get() instanceof PassiveAbilityItem abilityItem))
                 return false;
@@ -651,10 +651,14 @@ public class BeyonderData {
     // for getting the spirituality of the main body instead, works on both client and server side
     public static float getMaxSpirituality(String path, int seq, Player player){
         ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
+        float sp = 0;
         if (data.isControlling()) {
             CompoundTag bodyData = data.getBodyEntity().getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
-            float sp = getMaxSpirituality(bodyData.getString("pathway"), bodyData.getInt("sequence"));
+            sp = getMaxSpirituality(bodyData.getString("pathway"), bodyData.getInt("sequence"));
             return sp;
+        }
+        for(int i = 0; i < BeyonderData.pathways.size(); i++){
+            sp += getMaxSpirituality(path, BeyonderData.getCharList(player).parallelStream().filter(c -> c.pathway().equals(path)).mapToInt(Characteristic::sequence).max().orElse(0));
         }
         return getMaxSpirituality(path, seq);
     }
