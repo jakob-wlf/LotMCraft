@@ -306,11 +306,13 @@ public class PuppeteeringAbility extends Ability {
 
             target.setPos(pos);
             target.level().addFreshEntity(target);
+            ((BeyonderNPCEntity) target).setPersistenceRequired();
         }
         target.setHealth(target.getMaxHealth());
         if(target instanceof Mob mob) {
             mob.setTarget(null);
             mob.getNavigation().stop();
+            mob.setPersistenceRequired();
         }
         if (MarionetteUtils.turnEntityIntoMarionette(target, player)) {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned").withColor(0xa26fc9));
