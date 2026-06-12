@@ -4,23 +4,33 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.common.CogitationAbility;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.BeyonderComponent;
+import de.jakob.lotm.attachments.CorruptedPlayerComponent;
 import de.jakob.lotm.attachments.CorruptionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.pathways.PathwayInfos;
 import de.jakob.lotm.util.playerMap.Characteristic;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 @EventBusSubscriber
 public class CorruptionEventHandler {
@@ -117,69 +127,92 @@ public class CorruptionEventHandler {
 
         Random random = new Random();
 
-        // PHASE 1: Corruption 21-35 - Early symptoms
-        if (corruptionValue <= 35) {
-            if (random.nextInt(10) == 0) {
-                entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 60, 0, false, false));
-            }
-            entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 25, 0, false, true));
+        // Passive sanity loss
+        if (entity.tickCount % 20 == 0) {
+            float sanityLoss = corruption * 0.0001f; // Up to 0.01% per second at 100% corruption
+            SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
+            sanityComp.decreaseSanityAndSync(sanityLoss, entity);
         }
-        // PHASE 2: Corruption 36-50 - Moderate symptoms
-        else if (corruptionValue <= 50) {
-            entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 0, false, false));
-            entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 25, 1, false, true));
 
-            if (random.nextInt(3) == 0) {
-                entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 40, 0, false, false));
-            }
-            entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 25, 0, false, true));
-
-            if (random.nextInt(30) == 0) {
-                entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 1.0f);
+        // Status effects
+        if (corruptionValue >= 20) {
+            if (random.nextInt(1000) < corruptionValue) {
+                entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, corruptionValue / 20));
             }
         }
-        // PHASE 3: Corruption 51-65 - Severe symptoms
-        else if (corruptionValue <= 65) {
-            entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 1, false, false));
-            entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 25, 2, false, true));
-            entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 100, 0, false, false));
-            entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 25, 1, false, true));
-
-            if (random.nextInt(5) == 0) {
-                entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 60, 0, false, false));
+        if (corruptionValue >= 40) {
+            if (random.nextInt(1000) < corruptionValue) {
+                entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 1));
             }
-
-            if (entity instanceof Player player && random.nextInt(10) == 0) {
-                player.getFoodData().addExhaustion(2.0f);
-            }
-
-            if (random.nextInt(20) == 0) {
-                entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 2.0f);
+            if (random.nextInt(1000) < corruptionValue) {
+                entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 1));
             }
         }
-        // PHASE 4: Corruption 66-85 - Critical state
-        else if (corruptionValue <= 85) {
-            entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 2, false, false));
-            entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 25, 3, false, true));
-            entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 200, 0, false, false));
-            entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 25, 2, false, true));
-            entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0, false, false));
-
-            if (random.nextInt(10) == 0) {
-                entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 3.0f);
+        if (corruptionValue >= 60) {
+            if (random.nextInt(1000) < corruptionValue) {
+                entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 100, 0));
             }
         }
-        // PHASE 5: Corruption 86-100 - Near complete corruption
-        else {
-            entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 3, false, false));
-            entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 25, 4, false, true));
-            entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 200, 1, false, false));
-            entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 25, 3, false, true));
-            entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200, 0, false, false));
-            entity.addEffect(new MobEffectInstance(MobEffects.WITHER, 25, 1, false, true));
+        if (corruptionValue >= 80) {
+            if (random.nextInt(1000) < corruptionValue) {
+                entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0));
+            }
+        }
 
-            if (random.nextInt(5) == 0) {
-                entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 4.0f);
+        if (corruptionValue >= 100) {
+            handleFullCorruption(entity);
+        }
+    }
+
+    private static void handleFullCorruption(LivingEntity entity) {
+        if (!(entity.level() instanceof ServerLevel serverLevel)) return;
+
+        if (entity instanceof ServerPlayer player) {
+            CorruptedPlayerComponent corruptedComp = player.getData(ModAttachments.CORRUPTED_PLAYER_COMPONENT);
+            if (!corruptedComp.isFullyCorrupted()) {
+                corruptedComp.setFullyCorrupted(true);
+                
+                BeyonderComponent beyonderComp = player.getData(ModAttachments.BEYONDER_COMPONENT);
+                String pathway = beyonderComp.getPathway();
+                int sequence = beyonderComp.getSequence();
+                
+                // Spawn the Beyonder NPC
+                BeyonderNPCEntity rogueBeyonder = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), serverLevel, true, "amon", pathway, sequence, true);
+                rogueBeyonder.setPos(player.getX(), player.getY(), player.getZ());
+                rogueBeyonder.setCustomName(Component.literal("Corrupted " + player.getName().getString()));
+                rogueBeyonder.setCustomNameVisible(true);
+                
+                serverLevel.addFreshEntity(rogueBeyonder);
+                corruptedComp.setNpcUUID(rogueBeyonder.getUUID());
+                
+                // Set player to spectator and notify
+                player.setGameMode(GameType.SPECTATOR);
+                player.sendSystemMessage(Component.literal("You have lost control and become a rogue beyonder!"));
+            }
+            return;
+        }
+
+        // For non-players, just damage them for now or some other effect
+        entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 2.0f);
+    }
+
+    @SubscribeEvent
+    public static void onLivingDeath(LivingDeathEvent event) {
+        if (event.getEntity().level().isClientSide) return;
+
+        // If the entity that died is a BeyonderNPCEntity, check if it was a corrupted player's NPC
+        if (event.getEntity() instanceof BeyonderNPCEntity npc) {
+            UUID npcUUID = npc.getUUID();
+            ServerLevel level = (ServerLevel) npc.level();
+            for (ServerPlayer player : level.players()) {
+                CorruptedPlayerComponent corruptedComp = player.getData(ModAttachments.CORRUPTED_PLAYER_COMPONENT);
+                if (corruptedComp.isFullyCorrupted() && npcUUID.equals(corruptedComp.getNpcUUID())) {
+                    // Kill the player
+                    player.hurt(ModDamageTypes.source(player.level(), ModDamageTypes.LOOSING_CONTROL), Float.MAX_VALUE);
+                    corruptedComp.setFullyCorrupted(false);
+                    corruptedComp.setNpcUUID(null);
+                    player.setGameMode(GameType.SURVIVAL); // Reset game mode so they can respawn normally
+                }
             }
         }
     }

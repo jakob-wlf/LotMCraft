@@ -307,6 +307,14 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<CorruptedPlayerComponent>> CORRUPTED_PLAYER_COMPONENT =
+            ATTACHMENT_TYPES.register("corrupted_player_component", () ->
+                    AttachmentType.builder(CorruptedPlayerComponent::new)
+                            .serialize(CorruptedPlayerComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

@@ -378,7 +378,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
         // Add targeting behavior based on hostility
         if (isHostile()) {
-            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true, (e) -> e != this && !(e instanceof BeyonderNPCEntity b && b.getPathway().equals(this.getPathway()) && !this.getSkinName().equals("amon"))));
         } else {
             this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Monster.class, true));
         }
@@ -704,8 +704,15 @@ public class BeyonderNPCEntity extends PathfinderMob {
             }
         }
         String skinName = getSkinName();
+
+
+
+        if(Arrays.asList(SKINS).contains(skinName)) {
+            return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
+                    "textures/entity/npc/" + skinName + ".png");
+        }
         return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
-                "textures/entity/npc/" + skinName + ".png");
+                "textures/entity/npc/amon.png");
     }
 
     public void setTargetPlayerUUID(UUID uuid) {

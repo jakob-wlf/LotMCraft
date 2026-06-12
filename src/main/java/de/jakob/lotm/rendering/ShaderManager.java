@@ -34,7 +34,7 @@ public class ShaderManager {
             } else if (shouldApplySanityShader(player)) {
                 applyShader(mc, "sanity_loss");
             } else if (shouldApplyCorruptionShader(player)) {
-                applyShader(mc, "sanity_loss");
+                applyShader(mc, "corruption");
             } else if (shouldApplyAbyssalDistortion(player)) {
                 applyShader(mc, "abyssal_distortion");
             } else if (shouldApplyHolyEffect(player)) {

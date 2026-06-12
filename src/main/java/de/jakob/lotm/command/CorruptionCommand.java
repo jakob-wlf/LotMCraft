@@ -2,13 +2,16 @@ package de.jakob.lotm.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
+import de.jakob.lotm.attachments.CorruptedPlayerComponent;
 import de.jakob.lotm.attachments.CorruptionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.GameType;
 
 public class CorruptionCommand {
 
@@ -16,19 +19,46 @@ public class CorruptionCommand {
         dispatcher.register(Commands.literal("corruption")
             .requires(source -> source.hasPermission(2)) // Requires OP level 2
                 .then(Commands.argument("target", EntityArgument.entity())
-                    .then(Commands.argument("amount", FloatArgumentType.floatArg(0, 1))
+                    .then(Commands.literal("set")
+                        .then(Commands.argument("amount", FloatArgumentType.floatArg(0, 1))
+                            .executes(context -> {
+                                CommandSourceStack source = context.getSource();
+                                var targetEntity = EntityArgument.getEntity(context, "target");
+
+                                if (!(targetEntity instanceof LivingEntity livingEntity)) {
+                                    source.sendFailure(Component.literal("Target must be a living entity!"));
+                                    return 0;
+                                }
+
+                                float amount = FloatArgumentType.getFloat(context, "amount");
+
+                                return executeCorruptionCommand(source, livingEntity, amount);
+                            })
+                        )
+                    )
+                    .then(Commands.literal("reset")
                         .executes(context -> {
                             CommandSourceStack source = context.getSource();
                             var targetEntity = EntityArgument.getEntity(context, "target");
 
-                            if (!(targetEntity instanceof LivingEntity livingEntity)) {
-                                source.sendFailure(Component.literal("Target must be a living entity!"));
-                                return 0;
+                            if (targetEntity instanceof ServerPlayer player) {
+                                CorruptedPlayerComponent corruptedComp = player.getData(ModAttachments.CORRUPTED_PLAYER_COMPONENT);
+                                corruptedComp.setFullyCorrupted(false);
+                                corruptedComp.setNpcUUID(null);
+                                player.setGameMode(GameType.SURVIVAL);
+                                
+                                CorruptionComponent corruptionComp = player.getData(ModAttachments.CORRUPTION_COMPONENT);
+                                corruptionComp.setCorruptionAndSync(0, player);
+                                
+                                source.sendSuccess(() -> Component.literal("Reset corruption and state for " + player.getName().getString()), true);
+                                return 1;
+                            } else if (targetEntity instanceof LivingEntity living) {
+                                CorruptionComponent corruptionComp = living.getData(ModAttachments.CORRUPTION_COMPONENT);
+                                corruptionComp.setCorruptionAndSync(0, living);
+                                source.sendSuccess(() -> Component.literal("Reset corruption for " + living.getName().getString()), true);
+                                return 1;
                             }
-
-                            float amount = FloatArgumentType.getFloat(context, "amount");
-
-                            return executeCorruptionCommand(source, livingEntity, amount);
+                            return 0;
                         })
                     )
                 )
