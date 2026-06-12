@@ -1976,5 +1976,25 @@
 ,
 
   "item.lotmcraft.garbage": "Garbage",
-  "item.lotmcraft.characteristics_exchange_tablet": "Characteristics Exchange Tablet"
+  "item.lotmcraft.characteristics_exchange_tablet": "Characteristics Exchange Tablet",
+
+  "item.lotmcraft.fool_blasphemy_card": "Fool Blasphemy Card",
+  "item.lotmcraft.door_blasphemy_card": "Door Blasphemy Card",
+  "item.lotmcraft.error_blasphemy_card": "Error Blasphemy Card",
+  "item.lotmcraft.sun_blasphemy_card": "Sun Blasphemy Card",
+  "item.lotmcraft.tyrant_blasphemy_card": "Tyrant Blasphemy Card",
+  "item.lotmcraft.visionary_blasphemy_card": "Visionary Blasphemy Card",
+  "item.lotmcraft.darkness_blasphemy_card": "Darkness Blasphemy Card",
+  "item.lotmcraft.death_blasphemy_card": "Death Blasphemy Card",
+  "item.lotmcraft.twilight_giant_blasphemy_card": "Twilight Giant Blasphemy Card",
+  "item.lotmcraft.demoness_blasphemy_card": "Demoness Blasphemy Card",
+  "item.lotmcraft.red_priest_blasphemy_card": "Red Priest Blasphemy Card",
+  "item.lotmcraft.mother_blasphemy_card": "Mother Blasphemy Card",
+  "item.lotmcraft.abyss_blasphemy_card": "Abyss Blasphemy Card",
+  "item.lotmcraft.wheel_of_fortune_blasphemy_card": "Wheel of Fortune Blasphemy Card",
+  "item.lotmcraft.black_emperor_blasphemy_card": "Black Emperor Blasphemy Card",
+  "item.lotmcraft.justiciar_blasphemy_card": "Justiciar Blasphemy Card",
+  "item.lotmcraft.blasphemy_slate_left_half": "Blasphemy Slate (Left Half)",
+  "item.lotmcraft.blasphemy_slate_right_half": "Blasphemy Slate (Right Half)",
+  "item.lotmcraft.blasphemy_slate": "Blasphemy Slate"
 }

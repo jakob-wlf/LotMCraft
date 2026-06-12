@@ -427,7 +427,8 @@ public class DimensionProvider {
                                                     dimensionTypes.getOrThrow(ModDimensions.SEFIRAH_CASTLE_TYPE_KEY),
                                                     new PreGeneratedChunkGenerator(
                                                             new FixedBiomeSource(
-                                                                    biomeRegistry.getOrThrow(ModDimensions.SEFIRAH_CASTLE_BIOME_KEY)))));
+                                                                    biomeRegistry.getOrThrow(ModDimensions.SEFIRAH_CASTLE_BIOME_KEY)),
+                                                            "data/lotmcraft/dimension_data/sefirah_castle/")));
 
                                     bootstrap.register(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_LEVEL_KEY,
                                             new LevelStem(
@@ -442,6 +443,14 @@ public class DimensionProvider {
                                                     new ConcealmentWorldChunkGenerator(
                                                             new FixedBiomeSource(
                                                                     biomeRegistry.getOrThrow(ModDimensions.CONCEALMENT_WORLD_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.CHAOS_SEA_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.CHAOS_SEA_TYPE_KEY),
+                                                    new PreGeneratedChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.CHAOS_SEA_BIOME_KEY)),
+                                                            "data/lotmcraft/dimension_data/chaos_sea/")));
                                 }),
                         Set.of(LOTMCraft.MOD_ID)
                 )

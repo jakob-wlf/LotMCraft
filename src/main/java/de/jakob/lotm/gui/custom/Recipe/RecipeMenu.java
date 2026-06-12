@@ -2,6 +2,7 @@ package de.jakob.lotm.gui.custom.Recipe;
 
 import de.jakob.lotm.gui.ModMenuTypes;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -15,14 +16,22 @@ import java.util.List;
 
 public class RecipeMenu extends AbstractContainerMenu {
     private final ItemStackHandler itemHandler;
+    private final String pathway;
+    private final int sequence;
+    private final boolean fromCard;
 
     // Client-side constructor
-    public RecipeMenu(int containerId, Inventory playerInventory, FriendlyByteBuf ignored) {
-        this(new ArrayList<>(List.of()), containerId, playerInventory);
+    public RecipeMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buf) {
+        this(new ArrayList<>(List.of()), containerId, playerInventory,
+                buf.readUtf(64), buf.readVarInt(), buf.readBoolean());
     }
     // Server-side constructor
-    public RecipeMenu(List<ItemStack> ingredients, int containerId, Inventory playerInventory) {
+    public RecipeMenu(List<ItemStack> ingredients, int containerId, Inventory playerInventory,
+                      String pathway, int sequence, boolean fromCard) {
         super(ModMenuTypes.RECIPE_MENU.get(), containerId);
+        this.pathway  = pathway;
+        this.sequence = sequence;
+        this.fromCard = fromCard;
         this.itemHandler = new ItemStackHandler(3) {
             @Override
             public boolean isItemValid(int slot, ItemStack stack) {
@@ -52,6 +61,10 @@ public class RecipeMenu extends AbstractContainerMenu {
     public @NotNull ItemStack quickMoveStack(Player player, int index) {
         return ItemStack.EMPTY;
     }
+
+    public String getPathway()    { return pathway; }
+    public int    getSequence()   { return sequence; }
+    public boolean isFromCard()   { return fromCard; }
     
     @Override
     public boolean stillValid(Player player) {

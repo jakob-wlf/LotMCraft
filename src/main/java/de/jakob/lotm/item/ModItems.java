@@ -205,6 +205,50 @@ public class ModItems {
         return ingredients.getLast();
     }
 
+    // ─── Blasphemy Cards (one per implemented pathway) ────────────────────────
+    public static final DeferredItem<Item> FOOL_BLASPHEMY_CARD = ITEMS.register("fool_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "fool"));
+    public static final DeferredItem<Item> DOOR_BLASPHEMY_CARD = ITEMS.register("door_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "door"));
+    public static final DeferredItem<Item> ERROR_BLASPHEMY_CARD = ITEMS.register("error_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "error"));
+    public static final DeferredItem<Item> SUN_BLASPHEMY_CARD = ITEMS.register("sun_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "sun"));
+    public static final DeferredItem<Item> TYRANT_BLASPHEMY_CARD = ITEMS.register("tyrant_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "tyrant"));
+    public static final DeferredItem<Item> VISIONARY_BLASPHEMY_CARD = ITEMS.register("visionary_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "visionary"));
+    public static final DeferredItem<Item> DARKNESS_BLASPHEMY_CARD = ITEMS.register("darkness_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "darkness"));
+    public static final DeferredItem<Item> DEATH_BLASPHEMY_CARD = ITEMS.register("death_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "death"));
+    public static final DeferredItem<Item> TWILIGHT_GIANT_BLASPHEMY_CARD = ITEMS.register("twilight_giant_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "twilight_giant"));
+    public static final DeferredItem<Item> DEMONESS_BLASPHEMY_CARD = ITEMS.register("demoness_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "demoness"));
+    public static final DeferredItem<Item> RED_PRIEST_BLASPHEMY_CARD = ITEMS.register("red_priest_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "red_priest"));
+    public static final DeferredItem<Item> MOTHER_BLASPHEMY_CARD = ITEMS.register("mother_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "mother"));
+    public static final DeferredItem<Item> ABYSS_BLASPHEMY_CARD = ITEMS.register("abyss_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "abyss"));
+    public static final DeferredItem<Item> WHEEL_OF_FORTUNE_BLASPHEMY_CARD = ITEMS.register("wheel_of_fortune_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "wheel_of_fortune"));
+    public static final DeferredItem<Item> BLACK_EMPEROR_BLASPHEMY_CARD = ITEMS.register("black_emperor_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "black_emperor"));
+    public static final DeferredItem<Item> JUSTICIAR_BLASPHEMY_CARD = ITEMS.register("justiciar_blasphemy_card",
+            () -> new BlasphemyCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), "justiciar"));
+
+    // ─── Blasphemy Slate halves and full slate ────────────────────────────────
+    public static final DeferredItem<Item> BLASPHEMY_SLATE_LEFT_HALF = ITEMS.register("blasphemy_slate_left_half",
+            () -> new BlasphemySlateHalfItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC),
+                    BlasphemySlateHalfItem.HalfType.LEFT));
+    public static final DeferredItem<Item> BLASPHEMY_SLATE_RIGHT_HALF = ITEMS.register("blasphemy_slate_right_half",
+            () -> new BlasphemySlateHalfItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC),
+                    BlasphemySlateHalfItem.HalfType.RIGHT));
+    public static final DeferredItem<Item> BLASPHEMY_SLATE = ITEMS.register("blasphemy_slate",
+            () -> new BlasphemySlateItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

@@ -327,11 +327,11 @@ public class DeathImprintData extends SavedData {
      * Re-applies any persisted ability seals for {@code player} into their
      * {@link de.jakob.lotm.attachments.DisabledAbilitiesComponent}.
      * Call this on player login so seals survive log-out / log-in cycles.
+     * Seals remain active until the imprint drops below 2 or the owner explicitly removes them.
      */
     public void reapplySealedAbilities(net.minecraft.server.level.ServerPlayer player) {
         de.jakob.lotm.attachments.DisabledAbilitiesComponent comp =
                 player.getData(de.jakob.lotm.attachments.ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        // Clear any stale entries for this cause, then re-apply the current sealed list.
         comp.clearCause(SEAL_CAUSE);
         for (String id : getSealedAbilities(player.getUUID())) {
             comp.disableSpecificAbility(id, SEAL_CAUSE);

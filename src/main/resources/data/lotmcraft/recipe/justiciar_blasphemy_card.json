@@ -1,0 +1,19 @@
+﻿{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "lotmcraft:arbiter"},
+    {"item": "lotmcraft:sheriff"},
+    {"item": "lotmcraft:interrogator"},
+    {"item": "lotmcraft:judge"},
+    {"item": "lotmcraft:disciplinary_paladin"},
+    {"item": "lotmcraft:imperative_mage"},
+    {"item": "lotmcraft:chaos_hunter"},
+    {"item": "lotmcraft:balancer"},
+    {"item": "lotmcraft:hand_of_order"}
+  ],
+  "result": {
+    "id": "lotmcraft:justiciar_blasphemy_card",
+    "count": 1
+  },
+  "category": "misc"
+}

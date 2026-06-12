@@ -2,11 +2,21 @@ package de.jakob.lotm.events;
 
 import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.GatheringData;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SefirotData;
+import de.jakob.lotm.sefirah.RiverBlessingManager;
+import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.PendingPrayer;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -114,6 +124,28 @@ public class HonorificNamesEventHandler {
                 return;
             }
 
+            // ── Gathering member / River-blessed sefirot access ───────────────
+            // If the sender is a gathering member of the target (castle owner)
+            // OR is blessed by the target (River owner), teleport them to the
+            // owner's sefirot instead of sending a prayer notification.
+            {
+                ServerPlayer sender = event.getPlayer();
+                MinecraftServer server = sender.getServer();
+                if (server != null) {
+                    GatheringData gd = GatheringData.get(server);
+                    boolean isMember  = gd.isMember(targetUUID, playerUUID);
+                    boolean isBlessed = RiverBlessingManager.isBlessed(playerUUID)
+                            && targetUUID.equals(RiverBlessingManager.getOwner(playerUUID));
+                    if (isMember || isBlessed) {
+                        input.remove(playerUUID);
+                        timeout.remove(playerUUID);
+                        handleSefirotAccess(sender, targetUUID, server);
+                        return;
+                    }
+                }
+            }
+            // ─────────────────────────────────────────────────────────────────
+
             if(targetUUID.equals(playerUUID)){
                 target.sendSystemMessage(Component.translatable("lotmcraft.own_praying")
                         .withStyle(ChatFormatting.GREEN));
@@ -190,5 +222,43 @@ public class HonorificNamesEventHandler {
 
     public static boolean isHonorificNamePart(String str) {
         return BeyonderData.playerMap.containsHonorificNameWithLine(str);
+    }
+
+    /**
+     * Teleports a gathering member or River-blessed player into their owner's sefirot,
+     * or returns them to their previous location if they are already inside.
+     */
+    private static void handleSefirotAccess(ServerPlayer member, UUID ownerUUID, MinecraftServer server) {
+        SefirotData sefirotData = SefirotData.get(server);
+        String ownerSefirot = sefirotData.getClaimedSefirot(ownerUUID);
+        if (ownerSefirot == null || ownerSefirot.isEmpty()) {
+            member.sendSystemMessage(Component.literal("§cThe owner has no sefirot."));
+            return;
+        }
+
+        ResourceLocation sefirotDimLoc = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, ownerSefirot);
+        boolean inSefirot = member.level().dimension().location().equals(sefirotDimLoc);
+
+        GatheringData gd = GatheringData.get(server);
+
+        if (inSefirot) {
+            // Return to previous location
+            GatheringData.returnPlayer(member, server);
+            member.sendSystemMessage(Component.literal("§bYou have left the sefirot.").withStyle(ChatFormatting.AQUA));
+        } else {
+            // Save return location and teleport in
+            gd.saveReturnLocation(member);
+            ResourceKey<net.minecraft.world.level.Level> dimKey = ResourceKey.create(Registries.DIMENSION, sefirotDimLoc);
+            ServerLevel sefirotLevel = server.getLevel(dimKey);
+            if (sefirotLevel == null) {
+                member.sendSystemMessage(Component.literal("§cSefirot dimension not loaded."));
+                return;
+            }
+            // Use a guest chair position (first slot)
+            double[] pos = GatheringData.CHAIR_POSITIONS[0];
+            member.teleportTo(sefirotLevel, pos[0], pos[1], pos[2], member.getYRot(), member.getXRot());
+            GatheringData.markGathered(member.getUUID());
+            member.sendSystemMessage(Component.literal("§bYou have entered the sefirot.").withStyle(ChatFormatting.AQUA));
+        }
     }
 }

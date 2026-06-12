@@ -6,7 +6,6 @@ import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.Characteristic;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -591,6 +590,36 @@ public class PacketHandler {
                 de.jakob.lotm.network.packets.toClient.OpenRiverVaultScreenPacket::handle
         );
 
+        registrar.playToClient(
+                de.jakob.lotm.network.packets.toClient.SyncSummonedBlasphemyPacket.TYPE,
+                de.jakob.lotm.network.packets.toClient.SyncSummonedBlasphemyPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toClient.SyncSummonedBlasphemyPacket::handle
+        );
+
+        registrar.playToClient(
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionTriggerPacket.TYPE,
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionTriggerPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionTriggerPacket::handle
+        );
+
+        registrar.playToClient(
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionStatusPacket.TYPE,
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionStatusPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionStatusPacket::handle
+        );
+
+        registrar.playToClient(
+                de.jakob.lotm.network.packets.toClient.SyncTargetEnvisionStatusPacket.TYPE,
+                de.jakob.lotm.network.packets.toClient.SyncTargetEnvisionStatusPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toClient.SyncTargetEnvisionStatusPacket::handle
+        );
+
+        registrar.playToClient(
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionCharacteristicsPacket.TYPE,
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionCharacteristicsPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionCharacteristicsPacket::handle
+        );
+
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
@@ -979,10 +1008,58 @@ public class PacketHandler {
                 RequestRecipePathExchangePacket.STREAM_CODEC,
                 RequestRecipePathExchangePacket::handle
         );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.EnvisionSelfTeleportPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.EnvisionSelfTeleportPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.EnvisionSelfTeleportPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.EnvisionTargetTeleportPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.EnvisionTargetTeleportPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.EnvisionTargetTeleportPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RequestSummonBlasphemyPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RequestSummonBlasphemyPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RequestSummonBlasphemyPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RequestEnvisionBlasphemyPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RequestEnvisionBlasphemyPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RequestEnvisionBlasphemyPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RequestSelfStatusActionPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RequestSelfStatusActionPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RequestSelfStatusActionPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RequestTargetStatusActionPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RequestTargetStatusActionPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RequestTargetStatusActionPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RequestEnvisionCharacteristicsPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RequestEnvisionCharacteristicsPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RequestEnvisionCharacteristicsPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RequestTargetEnvisionCharacteristicsPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RequestTargetEnvisionCharacteristicsPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RequestTargetEnvisionCharacteristicsPacket::handle
+        );
     }
 
     public static void sendToServer(CustomPacketPayload packet) {
-        Minecraft.getInstance().getConnection().send(packet);
+        PacketDistributor.sendToServer(packet);
     }
 
     public static void sendToPlayer(ServerPlayer player, CustomPacketPayload packet) {

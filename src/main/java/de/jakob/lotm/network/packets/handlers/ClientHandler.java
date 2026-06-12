@@ -18,6 +18,7 @@ import de.jakob.lotm.gui.custom.CoordinateInput.CoordinateInputScreen;
 import de.jakob.lotm.gui.custom.InternalUnderworld.InternalUnderworldAbilityScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.Quest.QuestAcceptanceScreen;
+import de.jakob.lotm.gui.custom.RiverVault.RiverVaultScreen;
 import de.jakob.lotm.gui.custom.SelectionGui.*;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.quest.Quest;
@@ -713,5 +714,14 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(
                 new de.jakob.lotm.gui.custom.CharExchange.CharExchangeWheelScreen(
                         packet.reelNames(), packet.landingIndex(), packet.outcome(), packet.rewardName(), packet.title()));
+    }
+
+    public static void handleRiverVaultScreenPacket(de.jakob.lotm.network.packets.toClient.OpenRiverVaultScreenPacket packet) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null) {
+            mc.setScreen(new RiverVaultScreen(
+                    packet.vaultItems(), packet.iuItems(),
+                    packet.maxIU(), packet.vaultCapacity()));
+        }
     }
 }

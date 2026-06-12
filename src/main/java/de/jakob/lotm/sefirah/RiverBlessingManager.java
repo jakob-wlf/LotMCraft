@@ -1,6 +1,7 @@
 package de.jakob.lotm.sefirah;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.RiverOfEternalDarknessData;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
@@ -41,7 +42,24 @@ public class RiverBlessingManager {
 
     /** Reverse lookup: blessed player UUID → owner UUID. */
     private static final Map<UUID, UUID> blessedToOwner = new ConcurrentHashMap<>();
+    // ── Persistence ─────────────────────────────────────────────────────────────────
 
+    /**
+     * Populates the in-memory maps from the SavedData store.
+     * Call once on server start / world load.
+     */
+    public static void loadFromData(MinecraftServer server) {
+        blessingsByOwner.clear();
+        blessedToOwner.clear();
+        RiverOfEternalDarknessData data = RiverOfEternalDarknessData.get(server);
+        for (var entry : data.getAllBlessings().entrySet()) {
+            UUID owner = entry.getKey();
+            Set<UUID> set = ConcurrentHashMap.newKeySet();
+            set.addAll(entry.getValue());
+            blessingsByOwner.put(owner, set);
+            for (UUID t : entry.getValue()) blessedToOwner.put(t, owner);
+        }
+    }
     // ── Sequence-based limit ──────────────────────────────────────────────────
 
     /**
@@ -76,6 +94,7 @@ public class RiverBlessingManager {
 
         blessed.add(targetUUID);
         blessedToOwner.put(targetUUID, owner.getUUID());
+        RiverOfEternalDarknessData.get(owner.getServer()).addBlessing(owner.getUUID(), targetUUID);
         return true;
     }
 
@@ -93,10 +112,25 @@ public class RiverBlessingManager {
     }
 
     /**
+     * Removes the blessing from {@code targetUUID} and persists the change.
+     */
+    public static void unblessPlayer(UUID ownerUUID, UUID targetUUID, MinecraftServer server) {
+        unblessPlayer(ownerUUID, targetUUID);
+        if (server != null) RiverOfEternalDarknessData.get(server).removeBlessing(ownerUUID, targetUUID);
+    }
+
+    /**
      * Returns whether {@code playerUUID} is currently under a River blessing.
      */
     public static boolean isBlessed(UUID playerUUID) {
         return blessedToOwner.containsKey(playerUUID);
+    }
+
+    /**
+     * Returns the River owner UUID who blessed this player, or null if not blessed.
+     */
+    public static UUID getOwner(UUID blessedUUID) {
+        return blessedToOwner.get(blessedUUID);
     }
 
     /**
@@ -109,15 +143,21 @@ public class RiverBlessingManager {
 
     /**
      * Removes all blessings granted by {@code ownerUUID}.
-     * Called when the owner loses the River sefirot or logs out.
+     * Called when the owner permanently loses the River sefirot.
      */
     public static void clearBlessingsForOwner(UUID ownerUUID) {
         Set<UUID> blessed = blessingsByOwner.remove(ownerUUID);
         if (blessed != null) {
-            for (UUID uuid : blessed) {
-                blessedToOwner.remove(uuid);
-            }
+            for (UUID uuid : blessed) blessedToOwner.remove(uuid);
         }
+    }
+
+    /**
+     * Clears blessings from memory AND from the saved data store.
+     */
+    public static void clearBlessingsForOwner(UUID ownerUUID, MinecraftServer server) {
+        clearBlessingsForOwner(ownerUUID);
+        if (server != null) RiverOfEternalDarknessData.get(server).clearBlessingsByOwner(ownerUUID);
     }
 
     // ── River audience ────────────────────────────────────────────────────────

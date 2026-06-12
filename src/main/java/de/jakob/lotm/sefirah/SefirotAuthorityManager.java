@@ -39,6 +39,7 @@ public class SefirotAuthorityManager {
         Map<String, List<String>> m = new HashMap<>();
         m.put("sefirah_castle",            Arrays.asList("fool", "error", "door"));
         m.put("river_of_eternal_darkness", Arrays.asList("darkness", "death", "twilight_giant"));
+        m.put("chaos_sea",                 Arrays.asList("sun", "tyrant", "visionary"));
         NEIGHBORING_PATHS = Collections.unmodifiableMap(m);
     }
 

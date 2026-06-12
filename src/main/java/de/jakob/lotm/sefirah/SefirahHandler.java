@@ -23,6 +23,7 @@ public class SefirahHandler {
     public static final String[] implementedSefirah = new String[]{
             "sefirah_castle",
             "river_of_eternal_darkness",
+            "chaos_sea",
             "empty"
     };
 
@@ -154,6 +155,24 @@ public class SefirahHandler {
                         -90,
                         0,
                         0);
+            }
+            case "chaos_sea" -> {
+                ServerLevel chaosSeaLevel = player.serverLevel().getServer().getLevel(
+                        de.jakob.lotm.dimension.ModDimensions.CHAOS_SEA_DIMENSION_KEY);
+                if (chaosSeaLevel == null) {
+                    return;
+                }
+
+                player.teleportTo(chaosSeaLevel,
+                        23568,
+                        66,
+                        299,
+                        -90,
+                        0);
+
+                if (playTeleportEffect) {
+                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, chaosSeaLevel);
+                }
             }
         }
     }

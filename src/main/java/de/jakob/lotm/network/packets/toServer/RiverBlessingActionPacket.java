@@ -68,7 +68,7 @@ public record RiverBlessingActionPacket(int actionType, UUID targetUUID) impleme
                     }
                 }
                 case UNBLESS -> {
-                    RiverBlessingManager.unblessPlayer(owner.getUUID(), target);
+                    RiverBlessingManager.unblessPlayer(owner.getUUID(), target, owner.getServer());
                     ServerPlayer wasBlessed = owner.getServer().getPlayerList().getPlayer(target);
                     if (wasBlessed != null) {
                         wasBlessed.sendSystemMessage(Component.literal(

@@ -11,6 +11,7 @@ import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
 import de.jakob.lotm.gui.custom.Recipe.RecipeMenu;
 import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityMenu;
 import de.jakob.lotm.gui.custom.RiverBlessing.RiverBlessingMenu;
+import de.jakob.lotm.gui.custom.ChaosSeaAuthority.ChaosSeaAuthorityMenu;
 import de.jakob.lotm.gui.custom.RiverSefirotAuthority.RiverSefirotAuthorityMenu;
 import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityMenu;
 import net.minecraft.core.registries.Registries;
@@ -72,6 +73,11 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<RiverSefirotAuthorityMenu>> RIVER_SEFIROT_AUTHORITY_MENU = MENU_TYPES.register(
             "river_sefirot_authority_menu",
             () -> IMenuTypeExtension.create((windowId, inv, data) -> new RiverSefirotAuthorityMenu(windowId, inv, data))
+    );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<ChaosSeaAuthorityMenu>> CHAOS_SEA_AUTHORITY_MENU = MENU_TYPES.register(
+            "chaos_sea_authority_menu",
+            () -> IMenuTypeExtension.create((windowId, inv, data) -> new ChaosSeaAuthorityMenu(windowId, inv, data))
     );
 
     public static final DeferredHolder<MenuType<?>, MenuType<GatheringMenu>> GATHERING_MENU = MENU_TYPES.register(

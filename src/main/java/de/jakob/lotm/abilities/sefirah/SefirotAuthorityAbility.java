@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sefirah;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.gui.custom.ChaosSeaAuthority.ChaosSeaAuthorityMenu;
 import de.jakob.lotm.gui.custom.RiverSefirotAuthority.RiverSefirotAuthorityMenu;
 import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityMenu;
 import de.jakob.lotm.sefirah.SefirahHandler;
@@ -48,6 +49,21 @@ public class SefirotAuthorityAbility extends Ability {
         if (!(entity instanceof ServerPlayer player)) return;
 
         String sefirot = SefirahHandler.getClaimedSefirot(player);
+
+        if (sefirot.equals("chaos_sea")) {
+            List<String> available     = new ArrayList<>(SefirotAuthorityManager.getAvailableAbilityIds(player));
+            List<String> unlocked      = new ArrayList<>(SefirotAuthorityManager.getUnlockedAbilityIds(player));
+            List<String> neighborPaths = new ArrayList<>(SefirotAuthorityManager.getNeighborPaths(player));
+            player.openMenu(new SimpleMenuProvider(
+                    (id, inv, p) -> new ChaosSeaAuthorityMenu(id, inv, available, unlocked, neighborPaths),
+                    Component.literal("Chaos Sea Authority")
+            ), buf -> {
+                buf.writeCollection(available,      FriendlyByteBuf::writeUtf);
+                buf.writeCollection(unlocked,       FriendlyByteBuf::writeUtf);
+                buf.writeCollection(neighborPaths,  FriendlyByteBuf::writeUtf);
+            });
+            return;
+        }
 
         if (sefirot.equals("river_of_eternal_darkness")) {
             // Open the river-themed ability selection screen (Death/Darkness/Twilight Giant

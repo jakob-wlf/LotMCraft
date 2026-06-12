@@ -13,6 +13,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.*;
 
@@ -26,6 +28,7 @@ import java.util.*;
  * Left-click an ability to enable it; right-click to disable it.
  * Enabled abilities appear in the Introspect available-abilities panel.
  */
+@OnlyIn(Dist.CLIENT)
 public class SefirotAuthorityScreen extends AbstractContainerScreen<SefirotAuthorityMenu> {
 
     private static final int PANEL_WIDTH  = 248;

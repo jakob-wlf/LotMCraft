@@ -42,6 +42,27 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.DROPS_OF_ETERNAL_DARKNESS_BUCKET.get());
                         output.accept(ModItems.SEALED_BOTTLE.get());
                         output.accept(ModItems.ETERNAL_DARKNESS_RIVER_WATER_BOTTLE.get());
+                        // ── Blasphemy Cards ──
+                        output.accept(ModItems.FOOL_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.DOOR_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.ERROR_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.SUN_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.TYRANT_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.VISIONARY_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.DARKNESS_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.DEATH_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.TWILIGHT_GIANT_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.DEMONESS_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.RED_PRIEST_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.MOTHER_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.ABYSS_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.WHEEL_OF_FORTUNE_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.BLACK_EMPEROR_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.JUSTICIAR_BLASPHEMY_CARD.get());
+                        // ── Blasphemy Slate ──
+                        output.accept(ModItems.BLASPHEMY_SLATE_LEFT_HALF.get());
+                        output.accept(ModItems.BLASPHEMY_SLATE_RIGHT_HALF.get());
+                        output.accept(ModItems.BLASPHEMY_SLATE.get());
                     })
                     .build());
 

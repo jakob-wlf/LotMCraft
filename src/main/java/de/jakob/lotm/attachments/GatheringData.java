@@ -89,6 +89,22 @@ public class GatheringData extends SavedData {
         return gatheringMembers.getOrDefault(ownerUUID, Collections.emptySet()).contains(memberUUID);
     }
 
+    /** Returns true if {@code memberUUID} is a gathering member of any castle owner. */
+    public boolean isMemberOfAnyCastle(UUID memberUUID) {
+        for (Set<UUID> members : gatheringMembers.values()) {
+            if (members.contains(memberUUID)) return true;
+        }
+        return false;
+    }
+
+    /** Returns the castle owner UUID for the given member, or null if not a member of any castle. */
+    public UUID getOwnerOfMember(UUID memberUUID) {
+        for (Map.Entry<UUID, Set<UUID>> entry : gatheringMembers.entrySet()) {
+            if (entry.getValue().contains(memberUUID)) return entry.getKey();
+        }
+        return null;
+    }
+
     // ── Return locations ───────────────────────────────────────────────────────
 
     public void saveReturnLocation(ServerPlayer player) {
