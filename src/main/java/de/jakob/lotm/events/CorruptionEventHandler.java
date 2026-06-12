@@ -129,7 +129,7 @@ public class CorruptionEventHandler {
 
         // Passive sanity loss
         if (entity.tickCount % 20 == 0) {
-            float sanityLoss = corruption * 0.0001f; // Up to 0.01% per second at 100% corruption
+            float sanityLoss = corruption * 0.01f; // Up to 0.01% per second at 100% corruption
             SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
             sanityComp.decreaseSanityAndSync(sanityLoss, entity);
         }
@@ -137,25 +137,25 @@ public class CorruptionEventHandler {
         // Status effects
         if (corruptionValue >= 20) {
             if (random.nextInt(1000) < corruptionValue) {
-                entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, corruptionValue / 20));
+                //entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, corruptionValue / 20));
             }
         }
         if (corruptionValue >= 40) {
             if (random.nextInt(1000) < corruptionValue) {
-                entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 1));
+                //entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 1));
             }
             if (random.nextInt(1000) < corruptionValue) {
-                entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 1));
+                //entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 1));
             }
         }
         if (corruptionValue >= 60) {
             if (random.nextInt(1000) < corruptionValue) {
-                entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 100, 0));
+                //entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 100, 0));
             }
         }
         if (corruptionValue >= 80) {
             if (random.nextInt(1000) < corruptionValue) {
-                entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0));
+                //entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0));
             }
         }
 
@@ -179,7 +179,8 @@ public class CorruptionEventHandler {
                 // Spawn the Beyonder NPC
                 BeyonderNPCEntity rogueBeyonder = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), serverLevel, true, "amon", pathway, sequence, true);
                 rogueBeyonder.setPos(player.getX(), player.getY(), player.getZ());
-                rogueBeyonder.setCustomName(Component.literal("Corrupted " + player.getName().getString()));
+                rogueBeyonder.setCustomName(Component.literal(player.getName().getString()));
+
                 rogueBeyonder.setCustomNameVisible(true);
                 
                 serverLevel.addFreshEntity(rogueBeyonder);
