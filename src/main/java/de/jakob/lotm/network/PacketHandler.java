@@ -1073,6 +1073,18 @@ public class PacketHandler {
                 de.jakob.lotm.network.packets.toServer.GreyFogActionPacket.STREAM_CODEC,
                 de.jakob.lotm.network.packets.toServer.GreyFogActionPacket::handle
         );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RequestEnvisionCharacteristicsPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RequestEnvisionCharacteristicsPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RequestEnvisionCharacteristicsPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RequestTargetEnvisionCharacteristicsPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RequestTargetEnvisionCharacteristicsPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RequestTargetEnvisionCharacteristicsPacket::handle
+        );
     }
 
     public static void sendToServer(CustomPacketPayload packet) {
