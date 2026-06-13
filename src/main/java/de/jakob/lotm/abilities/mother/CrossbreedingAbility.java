@@ -52,8 +52,8 @@ public class CrossbreedingAbility extends Ability {
 
         // entities to exclude from
         List<EntityType<?>> notValidTargets = List.of(
-                EntityType.ENDER_DRAGON,
-                EntityType.WITHER
+                //EntityType.ENDER_DRAGON,
+                //EntityType.WITHER
         );
 
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2);

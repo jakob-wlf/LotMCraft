@@ -11,6 +11,7 @@ import de.jakob.lotm.attachments.CorruptionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -95,7 +96,7 @@ public class CorruptionEventHandler {
             int extraStack = Math.max(0, charStack - expectedStack);
 
             if (extraStack > 0) {
-                float baseGain = 0.00001f * extraStack; // Base gain per extra characteristic
+                float baseGain = 0.00005f * extraStack; // Base gain per extra characteristic
 
                 if (charPathway.equals(currentPathway)) {
                     // Same pathway, extra characteristic
@@ -159,7 +160,7 @@ public class CorruptionEventHandler {
         }
         if (corruptionValue >= 80) {
             if (random.nextInt(1000) < corruptionValue) {
-                //entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0));
+                entity.addEffect(new MobEffectInstance(ModEffects.MUTATED, 10, 2));
             }
         }
 
