@@ -432,6 +432,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             if (showAbilities) {
                                 showQuests = false;
                                 showCharacteristics = false;
+                                showAnchors = false;
                             }
                             button.setMessage(Component.literal(showAbilities ? "< Hide" : "Abilities >"));
                             updateButtonPositions();
@@ -451,6 +452,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             if (showQuests) {
                                 showAbilities = false;
                                 showCharacteristics = false;
+                                showAnchors = false;
                             }
                             button.setMessage(Component.literal(showQuests ? "< Hide" : "Quests >"));
                             updateButtonPositions();
@@ -469,6 +471,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             if (showCharacteristics) {
                                 showAbilities = false;
                                 showQuests = false;
+                                showAnchors = false;
                             }
                             button.setMessage(Component.literal(showCharacteristics ? "< Hide" : "Chars >"));
                             updateButtonPositions();
