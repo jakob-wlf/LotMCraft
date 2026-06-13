@@ -34,7 +34,7 @@ public class BlessingManager {
             target.heal(4.0f);
         }));
         registerBlessing(new Blessing("concealment", "none", 9, "blessing.lotmcraft.concealment", 600, target -> {
-            target.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, 600, 1, false, false));
+            target.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, 6000, 2, false, false));
         }));
     }
 
