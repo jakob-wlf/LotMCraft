@@ -5,8 +5,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.ArrayList;
@@ -102,19 +100,13 @@ public record SyncEnvisionCharacteristicsPacket(
     // ── Client handler ────────────────────────────────────────────────────────
 
     /** Client-side cache of the latest self sync. */
-    @OnlyIn(Dist.CLIENT)
     public static volatile List<SlotInfo> CLIENT_CACHE = List.of();
-    @OnlyIn(Dist.CLIENT)
     public static volatile List<CooldownInfo> CLIENT_COOLDOWNS = List.of();
 
     /** Client-side cache of the latest target sync. */
-    @OnlyIn(Dist.CLIENT)
     public static volatile List<SlotInfo> TARGET_CACHE = List.of();
-    @OnlyIn(Dist.CLIENT)
     public static volatile List<CooldownInfo> TARGET_COOLDOWNS = List.of();
-    @OnlyIn(Dist.CLIENT)
     public static volatile String TARGET_PATHWAY = "";
-    @OnlyIn(Dist.CLIENT)
     public static volatile int TARGET_SEQUENCE = -1;
 
     public static void handle(SyncEnvisionCharacteristicsPacket packet, IPayloadContext context) {
