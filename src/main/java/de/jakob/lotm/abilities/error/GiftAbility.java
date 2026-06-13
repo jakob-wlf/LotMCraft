@@ -61,7 +61,8 @@ public class GiftAbility extends SelectableAbility {
                 "ability.lotmcraft.gift_ability.distance",
                 "ability.lotmcraft.gift_ability.health",
                 "ability.lotmcraft.gift_ability.digestion",
-                "ability.lotmcraft.gift_ability.luck"
+                "ability.lotmcraft.gift_ability.luck",
+                "ability.lotmcraft.gift_ability.corruption"
         };
     }
 
