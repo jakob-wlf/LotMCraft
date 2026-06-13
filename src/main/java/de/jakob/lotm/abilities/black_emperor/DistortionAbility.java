@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
+//@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class DistortionAbility extends SelectableAbility {
 
     // NBT keys

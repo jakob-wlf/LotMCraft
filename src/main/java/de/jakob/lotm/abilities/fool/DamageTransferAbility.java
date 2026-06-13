@@ -51,7 +51,7 @@ public class DamageTransferAbility extends SelectableAbility {
         }
 
         target.heal(healthLost / 2f);
-        ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.ASH, new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ()), 50, .4, target.getBbWidth() / 2, .4, .1);
-        level.playSound(null, target.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, net.minecraft.sounds.SoundSource.PLAYERS, .4f, .1f);
+        ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.ASH, new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ()), 120, .4, target.getBbWidth() / 2, .4, .1);
+        level.playSound(null, target.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, net.minecraft.sounds.SoundSource.PLAYERS, .6f, .1f);
     }
 }

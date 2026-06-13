@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
+//@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public final class MausoleumDomainAbility extends Ability {
 
     private static final ResourceKey<Level> MAUSOLEUM_DIMENSION = ResourceKey.create(

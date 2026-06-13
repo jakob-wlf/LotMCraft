@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
+//@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BestowmentAbility extends SelectableAbility {
 
     // How long the target is forced into each state.

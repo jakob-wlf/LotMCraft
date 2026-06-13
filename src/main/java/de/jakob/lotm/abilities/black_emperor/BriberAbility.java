@@ -31,7 +31,7 @@ import de.jakob.lotm.util.helper.RingEffectManager;
 
 import java.util.*;
 
-@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
+//@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BriberAbility extends SelectableAbility {
 
 

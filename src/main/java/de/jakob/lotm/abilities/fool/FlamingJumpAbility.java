@@ -101,7 +101,15 @@ public class FlamingJumpAbility extends Ability {
 
         BlockPos nextBestBlock = AbilityUtil.getBlocksInSphereRadius(level, block.getCenter(), 3.2, true, false, false)
                 .stream()
-                .filter(b -> level.getBlockState(b).getBlock() instanceof BaseFireBlock)
+                .filter(b -> {
+                    Block blockAtPos = level.getBlockState(b).getBlock();
+                    for (Block fireBlock : fireBlocks) {
+                        if (blockAtPos == fireBlock) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
                 .min(Comparator.comparing(b -> b.distToCenterSqr(block.getCenter()))).orElse(null);
 
         if(nextBestBlock != null) {

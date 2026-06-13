@@ -306,18 +306,18 @@ public class AbilityHandler {
         abilities.add(new TimeManipulationAbility("time_manipulation_ability"));
 
         // BLACK EMPEROR PATHWAY
-        abilities.add(new Eloquence("eloquence_ability"));
-        abilities.add(new MausoleumDomainAbility("mausoleum_domain_ability"));
-        abilities.add(new BriberAbility("briber_ability"));
-        //abilities.add(new WeaknessDetectionAbility("weakness_detection_ability"));
-        abilities.add(new DistortionAbility("distortion_ability"));
-        abilities.add(new CorrosionAbility("corrosion_ability"));
-        abilities.add(new DisorderAbility("disorder_ability"));
-        abilities.add(new CommandingPresenceAbility("commanding_presence_ability"));
-        abilities.add(new ExploitAbility("exploit_ability"));
-        abilities.add(new BestowmentAbility("bestowment_ability"));
-        abilities.add(new MagnifyAbility("magnify_ability"));
-        abilities.add(new CommandingOrdersAbility("commanding_orders_ability"));
+//        abilities.add(new Eloquence("eloquence_ability"));
+//        abilities.add(new MausoleumDomainAbility("mausoleum_domain_ability"));
+//        abilities.add(new BriberAbility("briber_ability"));
+//        abilities.add(new WeaknessDetectionAbility("weakness_detection_ability"));
+//        abilities.add(new DistortionAbility("distortion_ability"));
+//        abilities.add(new CorrosionAbility("corrosion_ability"));
+//        abilities.add(new DisorderAbility("disorder_ability"));
+//        abilities.add(new CommandingPresenceAbility("commanding_presence_ability"));
+//        abilities.add(new ExploitAbility("exploit_ability"));
+//        abilities.add(new BestowmentAbility("bestowment_ability"));
+//        abilities.add(new MagnifyAbility("magnify_ability"));
+//        abilities.add(new CommandingOrdersAbility("commanding_orders_ability"));
 
         // DEATH PATHWAY
         abilities.add(new EyeOfDeathAbility("eye_of_death_ability"));

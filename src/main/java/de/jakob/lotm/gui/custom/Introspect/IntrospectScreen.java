@@ -638,21 +638,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     );
 
     private MutableComponent getActingTaskName(String taskId) {
-        if(taskId.startsWith("use_") && taskId.endsWith("_ability")) {
-            String abilityId = taskId.substring(4);
-            String suffixKey = null;
-            for (String suffix : SUFFIXES.keySet()) {
-                if (abilityId.endsWith(suffix)) {
-                    suffixKey = SUFFIXES.get(suffix);
-                    abilityId = abilityId.substring(0, abilityId.length() - suffix.length());
-                    break;
-                }
-            }
-
-            return Component.translatable("lotm.acting.ability_use").append(Component.translatable("lotmcraft." + abilityId))
-                    .append(suffixKey != null ? Component.translatable(suffixKey) : Component.empty());
-        }
-
         String suffixKey = null;
         for (String suffix : SUFFIXES.keySet()) {
             if (taskId.endsWith(suffix)) {
@@ -661,6 +646,23 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 break;
             }
         }
+
+        if(taskId.startsWith("use_") && taskId.contains("_ability")) {
+            String abilityId = taskId.substring(4);
+            String abilitySuffixKey = null;
+            for (String suffix : SUFFIXES.keySet()) {
+                if (abilityId.endsWith(suffix)) {
+                    abilitySuffixKey = SUFFIXES.get(suffix);
+                    abilityId = abilityId.substring(0, abilityId.length() - suffix.length());
+                    break;
+                }
+            }
+
+            return Component.translatable("lotm.acting.ability_use").append(Component.translatable("lotmcraft." + abilityId))
+                    .append(abilitySuffixKey != null ? Component.translatable(abilitySuffixKey) : Component.empty())
+                    .append(suffixKey != null ? Component.translatable(suffixKey) : Component.empty());
+        }
+
         return Component.translatable("lotm.acting." + taskId).append(suffixKey != null ? Component.translatable(suffixKey) : Component.empty());
     }
 

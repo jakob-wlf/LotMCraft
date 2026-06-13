@@ -222,6 +222,7 @@ public class ModEvents {
         LuckCheckCommand.register(event.getDispatcher());
         AllyRequestCommands.register(event.getDispatcher());
         AllyCommand.register(event.getDispatcher());
+        EnablePlayerAbilitiesCommand.register(event.getDispatcher());
         SanityCommand.register(event.getDispatcher());
         DigestionCommand.register(event.getDispatcher());
         QuestCommand.register(event.getDispatcher());
