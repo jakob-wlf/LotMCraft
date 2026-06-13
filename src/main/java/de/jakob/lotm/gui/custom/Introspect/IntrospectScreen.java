@@ -10,6 +10,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.BlessingManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.ClientSacrificeCache;
@@ -31,6 +32,8 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
@@ -60,6 +63,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private Button toggleCharacteristicsButton;
     private int characteristicsScrollOffset = 0;
     private int maxCharacteristicsScroll = 0;
+
+    // Anchors section
+    private boolean showAnchors = false;
+    private Button toggleAnchorsButton;
+    private int anchorsScrollOffset = 0;
+    private int maxAnchorsScroll = 0;
+    private UUID selectedAnchorForBlessing = null;
+    private List<BlessingManager.Blessing> availableBlessings = new ArrayList<>();
 
     // Tab management for abilities
     private enum Tab {
@@ -140,49 +151,40 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (showAllAbilities) {
             availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesUpToSequenceOrdered(menu.getSequence()));
         } else {
-            // use the old system in case of controlling - will change once worms get added
-            ControllingDataComponent controllingDataComponent = minecraft.player.getData(ModAttachments.CONTROLLING_DATA);
-            if (controllingDataComponent.isControlling()) {
-                ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
+            var discernmentComponent = minecraft.player.getData(ModAttachments.DISCERNMENT_DATA);
 
+            if (discernmentComponent.isDiscerning()) {
+                ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
                 availableAbilities.addAll(controllerPathwayAbilities);
             } else {
-                var discernmentComponent = minecraft.player.getData(ModAttachments.DISCERNMENT_DATA);
-
-                if(discernmentComponent.isDiscerning()){
-                    ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
-                    availableAbilities.addAll(controllerPathwayAbilities);
+                String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
+                ArrayList<Characteristic> charList = ClientBeyonderCache.getCharList(minecraft.player.getUUID());
+                // GOO (seq -1) owns everything from seq 0 upward; clamp start index to 0
+                int historyStart = Math.max(0, menu.getSequence());
+                for (int i = historyStart; i < pathwayHistory.length; i++) {
+                    String pathway = pathwayHistory[i];
+                    if (pathway != null) {
+                        ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
+                        availableAbilities.addAll(pathwayAbilities);
+                    }
                 }
-                else {
-                    String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
-                    ArrayList<Characteristic> charList = ClientBeyonderCache.getCharList(minecraft.player.getUUID());
-                    // GOO (seq -1) owns everything from seq 0 upward; clamp start index to 0
-                    int historyStart = Math.max(0, menu.getSequence());
-                    for (int i = historyStart; i < pathwayHistory.length; i++) {
-                        String pathway = pathwayHistory[i];
-                        if (pathway != null) {
-                            ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
-                            availableAbilities.addAll(pathwayAbilities);
-                        }
+
+                for (Characteristic characteristic : charList) {
+                    if (characteristic.stack() <= 0) {
+                        continue;
+                    }
+                    // Skip the GOO marker entry — it has no ability row of its own
+                    if (characteristic.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) {
+                        continue;
                     }
 
-                    for (Characteristic characteristic : charList) {
-                        if (characteristic.stack() <= 0) {
-                            continue;
-                        }
-                        // Skip the GOO marker entry — it has no ability row of its own
-                        if (characteristic.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) {
-                            continue;
-                        }
+                    ArrayList<Ability> characteristicAbilities =
+                            LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(
+                                    characteristic.pathway(),
+                                    characteristic.sequence()
+                            );
 
-                        ArrayList<Ability> characteristicAbilities =
-                                LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(
-                                        characteristic.pathway(),
-                                        characteristic.sequence()
-                                );
-
-                        availableAbilities.addAll(characteristicAbilities);
-                    }
+                    availableAbilities.addAll(characteristicAbilities);
                 }
             }
         }
@@ -475,8 +477,27 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         this.addRenderableWidget(toggleCharacteristicsButton);
 
+        int anchorsButtonX = baseLeftPos - 65;
+        int anchorsButtonY = this.topPos + 85;
+
+        toggleAnchorsButton = Button.builder(Component.literal(showAnchors ? "< Hide" : "Anchors >"),
+                        button -> {
+                            showAnchors = !showAnchors;
+                            if (showAnchors) {
+                                showAbilities = false;
+                                showQuests = false;
+                                showCharacteristics = false;
+                            }
+                            button.setMessage(Component.literal(showAnchors ? "< Hide" : "Anchors >"));
+                            updateButtonPositions();
+                        })
+                .bounds(anchorsButtonX, anchorsButtonY, 60, 20)
+                .build();
+
+        this.addRenderableWidget(toggleAnchorsButton);
+
         int messageButtonX = baseLeftPos - 65;
-        int messageButtonY = this.topPos + 85;
+        int messageButtonY = this.topPos + 110;
 
         messageButton = Button.builder(Component.literal("Honorific"),
                 button -> {
@@ -493,7 +514,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         // Add Apotheosis button if player has uniqueness and is Sequence 1
         if (ClientUniquenessCache.hasUniqueness() && menu.getSequence() <= 1) {
             int apotheosisButtonX = baseLeftPos - 65;
-            int apotheosisButtonY = this.topPos + 110;
+            int apotheosisButtonY = this.topPos + 135;
 
             boolean canApotheosize = false;
             if (this.minecraft != null && this.minecraft.player != null) {
@@ -704,8 +725,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         initializeAbilities();
     }
 
-    public void updateMenuData(int sequence, String pathway, float digestionProgress, float sanity) {
-        this.menu.updateData(sequence, pathway, digestionProgress, sanity);
+    public void updateMenuData(int sequence, String pathway, float digestionProgress, float sanity, float corruption) {
+        this.menu.updateData(sequence, pathway, digestionProgress, sanity, corruption);
         initializeAbilities();
     }
 
@@ -727,6 +748,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         // Render characteristics panel if visible
         if (showCharacteristics) {
             renderCharacteristicsPanel(guiGraphics, mouseX, mouseY);
+        }
+
+        if (showAnchors) {
+            renderAnchorsPanel(guiGraphics, mouseX, mouseY);
         }
 
         // Render dragged ability on top
@@ -1137,15 +1162,112 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
     }
 
+    private void renderAnchorsPanel(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        int baseLeftPos = this.leftPos;
+        int panelX = baseLeftPos + this.imageWidth + 5;
+        int panelY = this.topPos;
+        int panelWidth = 140;
+        int panelHeight = this.imageHeight;
+
+        guiGraphics.fill(panelX, panelY, panelX + panelWidth, panelY + panelHeight, 0xCC000000);
+        guiGraphics.renderOutline(panelX, panelY, panelWidth, panelHeight, 0xFFAAAAAA);
+
+        Component label = Component.literal("Your Anchors").withStyle(ChatFormatting.BOLD);
+        guiGraphics.drawString(this.font, label, panelX + 5, panelY + 5, 0xFFFFFFFF, true);
+
+        Map<UUID, Float> anchors = ClientData.getAnchors();
+        if (anchors.isEmpty()) {
+            guiGraphics.drawString(this.font, "No anchors yet.", panelX + 5, panelY + 20, 0xFFAAAAAA, false);
+            return;
+        }
+
+        List<Map.Entry<UUID, Float>> anchorList = new ArrayList<>(anchors.entrySet());
+        int listY = panelY + 20;
+        int lineHeight = this.font.lineHeight + 2;
+        int listHeight = panelHeight - 30;
+
+        int startIndex = anchorsScrollOffset;
+        int visibleCount = listHeight / lineHeight;
+        int endIndex = Math.min(anchorList.size(), startIndex + visibleCount);
+
+        maxAnchorsScroll = Math.max(0, anchorList.size() - visibleCount);
+
+        for (int i = startIndex; i < endIndex; i++) {
+            Map.Entry<UUID, Float> entry = anchorList.get(i);
+            UUID uuid = entry.getKey();
+            String name;
+            var playerInfo = minecraft.getConnection().getPlayerInfo(uuid);
+            if (playerInfo != null) {
+                name = playerInfo.getProfile().getName();
+            } else {
+                name = uuid.toString().substring(0, 8) + "...";
+            }
+
+            float strength = entry.getValue();
+            Component text = Component.literal(name + ": " + (int) (strength * 100) + "%");
+            int textY = listY + (i - startIndex) * lineHeight;
+            guiGraphics.drawString(this.font, text, panelX + 5, textY, 0xFFCCCCCC, false);
+
+            // Add "Bless" button
+            int blessBtnX = panelX + panelWidth - 45;
+            int blessBtnY = textY - 1;
+            boolean isHovered = mouseX >= blessBtnX && mouseX <= blessBtnX + 40 &&
+                    mouseY >= blessBtnY && mouseY <= blessBtnY + 10;
+            
+            guiGraphics.fill(blessBtnX, blessBtnY, blessBtnX + 40, blessBtnY + 10, isHovered ? 0xFF666666 : 0xFF444444);
+            guiGraphics.renderOutline(blessBtnX, blessBtnY, 40, 10, 0xFFAAAAAA);
+            guiGraphics.drawCenteredString(this.font, "Bless", blessBtnX + 20, blessBtnY + 1, 0xFFFFFFFF);
+        }
+
+        if (selectedAnchorForBlessing != null) {
+            renderBlessingSelection(guiGraphics, mouseX, mouseY, panelX, panelY, panelWidth);
+        }
+
+        if (maxAnchorsScroll > 0) {
+            Component scrollHint = Component.literal("(Scroll)").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
+            int hintWidth = this.font.width(scrollHint);
+            guiGraphics.drawString(this.font, scrollHint, panelX + panelWidth - hintWidth - 5,
+                    panelY + panelHeight - 12, 0xFF888888, false);
+        }
+    }
+
+    private void renderBlessingSelection(GuiGraphics guiGraphics, int mouseX, int mouseY, int panelX, int panelY, int panelWidth) {
+        int menuX = panelX + panelWidth + 5;
+        int menuY = panelY + 20;
+        int menuWidth = 120;
+        int itemHeight = 15;
+        int menuHeight = Math.max(20, availableBlessings.size() * itemHeight + 10);
+
+        guiGraphics.fill(menuX, menuY, menuX + menuWidth, menuY + menuHeight, 0xEE000000);
+        guiGraphics.renderOutline(menuX, menuY, menuWidth, menuHeight, 0xFFAAAAAA);
+
+        if (availableBlessings.isEmpty()) {
+            guiGraphics.drawString(this.font, "No blessings available", menuX + 5, menuY + 5, 0xFFAAAAAA, false);
+        } else {
+            for (int i = 0; i < availableBlessings.size(); i++) {
+                BlessingManager.Blessing b = availableBlessings.get(i);
+                int itemY = menuY + 5 + i * itemHeight;
+                boolean isHovered = mouseX >= menuX && mouseX <= menuX + menuWidth &&
+                        mouseY >= itemY && mouseY <= itemY + itemHeight;
+
+                if (isHovered) {
+                    guiGraphics.fill(menuX + 2, itemY, menuX + menuWidth - 2, itemY + itemHeight, 0x44FFFFFF);
+                }
+
+                guiGraphics.drawString(this.font, Component.translatable(b.translationKey()), menuX + 5, itemY + 3, 0xFFFFFFFF, false);
+            }
+        }
+    }
+
     private void renderAvailableAbilities(GuiGraphics guiGraphics, int panelX, int panelY, int mouseX, int mouseY) {
         int startX = panelX + 5;
         int startY = panelY - abilitiesScrollOffset * (ABILITY_ICON_SIZE + 2);
 
-        List<Ability> displayedAbilities = currentTab == Tab.SHARED_ABILITIES
+        List<Ability> displayedAbilities = (currentTab == Tab.SHARED_ABILITIES)
                 ? buildDisplayedSharedAbilities()
                 : availableAbilities;
 
-        List<SubAbilityEntry> displayedEntries = currentTab == Tab.SHARED_ABILITIES
+        List<SubAbilityEntry> displayedEntries = (currentTab == Tab.SHARED_ABILITIES)
                 ? buildDisplayedSharedEntries()
                 : subAbilityEntries;
 
@@ -1441,6 +1563,52 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0 && showAnchors) {
+            int panelX = this.leftPos + this.imageWidth + 5;
+            int panelY = this.topPos;
+            int panelWidth = 140;
+
+            if (selectedAnchorForBlessing != null) {
+                int menuX = panelX + panelWidth + 5;
+                int menuY = panelY + 20;
+                int itemHeight = 15;
+
+                for (int i = 0; i < availableBlessings.size(); i++) {
+                    int itemY = menuY + 5 + i * itemHeight;
+                    if (mouseX >= menuX && mouseX <= menuX + 120 && mouseY >= itemY && mouseY <= itemY + itemHeight) {
+                        PacketHandler.sendToServer(new ApplyBlessingPacket(selectedAnchorForBlessing, availableBlessings.get(i).id()));
+                        selectedAnchorForBlessing = null;
+                        return true;
+                    }
+                }
+                // Click outside menu to close
+                if (mouseX < menuX || mouseX > menuX + 120 || mouseY < menuY || mouseY > menuY + (availableBlessings.size() * itemHeight + 10)) {
+                    selectedAnchorForBlessing = null;
+                }
+            }
+
+            Map<UUID, Float> anchors = ClientData.getAnchors();
+            List<Map.Entry<UUID, Float>> anchorList = new ArrayList<>(anchors.entrySet());
+            int listY = panelY + 20;
+            int lineHeight = this.font.lineHeight + 2;
+
+            int startIndex = anchorsScrollOffset;
+            int visibleCount = (this.imageHeight - 30) / lineHeight;
+            int endIndex = Math.min(anchorList.size(), startIndex + visibleCount);
+
+            for (int i = startIndex; i < endIndex; i++) {
+                int textY = listY + (i - startIndex) * lineHeight;
+                int blessBtnX = panelX + panelWidth - 45;
+                int blessBtnY = textY - 1;
+
+                if (mouseX >= blessBtnX && mouseX <= blessBtnX + 40 && mouseY >= blessBtnY && mouseY <= blessBtnY + 10) {
+                    selectedAnchorForBlessing = anchorList.get(i).getKey();
+                    availableBlessings = BlessingManager.getAvailableBlessings(menu.getPathway(), menu.getSequence());
+                    return true;
+                }
+            }
+        }
+
         if (button == 0 && showAbilities) {
             int baseLeftPos = this.leftPos;
             int panelX = baseLeftPos + this.imageWidth + 5;
@@ -1734,6 +1902,20 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             }
         }
 
+        if (showAnchors) {
+            int baseLeftPos = this.leftPos;
+            int panelX = baseLeftPos + this.imageWidth + 5;
+            int panelY = this.topPos;
+
+            if (mouseX >= panelX && mouseX <= panelX + 140 &&
+                    mouseY >= panelY && mouseY <= panelY + this.imageHeight) {
+
+                anchorsScrollOffset = Math.max(0, Math.min(maxAnchorsScroll,
+                        anchorsScrollOffset - (int) scrollY));
+                return true;
+            }
+        }
+
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
@@ -1873,6 +2055,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         renderDigestionProgress(guiGraphics, x, y);
         renderSanityLabel(guiGraphics, x, y);
         renderSanityProgress(guiGraphics, x, y);
+        renderCorruptionLabel(guiGraphics, x, y);
+        renderCorruptionProgress(guiGraphics, x, y);
         renderPassiveAbilitiesText(guiGraphics, x, y);
         renderKillCount(guiGraphics, x, y);
         renderUniquenessIcon(guiGraphics, x, y);
@@ -1882,7 +2066,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private void renderKillCount(GuiGraphics guiGraphics, int x, int y) {
         if (!menu.getPathway().equals("red_priest") || menu.getSequence() > 3) return;
         Component text = Component.literal("Kills: " + killCount).withStyle(ChatFormatting.BOLD);
-        guiGraphics.drawString(this.font, text, x + 7, y + 154, 0xDDDDDD, true);
+        guiGraphics.drawString(this.font, text, x + 7, y + 174, 0xDDDDDD, true);
     }
 
     private void renderUniquenessIcon(GuiGraphics guiGraphics, int x, int y) {
@@ -1918,14 +2102,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private void renderSanityLabel(GuiGraphics guiGraphics, int x, int y) {
         Component digestionText = Component.translatable("lotm.sanity").withStyle(ChatFormatting.BOLD);
         int color = 0xDDDDDD;
-        int textY = 115;
+        int textY = 102;
         int textX = 7;
         guiGraphics.drawString(this.font, digestionText, x + textX, y + textY, color, true);
     }
 
     private void renderSanityProgress(GuiGraphics guiGraphics, int x, int y) {
-        int barStartY = 132;
-        int barEndY = 143;
+        int barStartY = 110;
+        int barEndY = 120;
         int barStartX = 3;
         int barEndX = (int) (115 * menu.getSanity()) + barStartX;
         int color = 0xFFe8bb68;
@@ -1933,17 +2117,35 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         guiGraphics.fillGradient(barStartX + x, barStartY + y, barEndX + x, barEndY + y, color, color2);
     }
 
+    private void renderCorruptionLabel(GuiGraphics guiGraphics, int x, int y) {
+        Component corruptionText = Component.translatable("lotm.corruption").withStyle(ChatFormatting.BOLD);
+        int color = 0xDDDDDD;
+        int textY = 130;
+        int textX = 7;
+        guiGraphics.drawString(this.font, corruptionText, x + textX, y + textY, color, true);
+    }
+
+    private void renderCorruptionProgress(GuiGraphics guiGraphics, int x, int y) {
+        int barStartY = 139;
+        int barEndY = 150;
+        int barStartX = 3;
+        int barEndX = (int) (115 * menu.getCorruption()) + barStartX;
+        int color = 0xFF5e1212;
+        int color2 = 0xFF360a0a;
+        guiGraphics.fillGradient(barStartX + x, barStartY + y, barEndX + x, barEndY + y, color, color2);
+    }
+
     private void renderDigestionLabel(GuiGraphics guiGraphics, int x, int y) {
         Component digestionText = Component.translatable("lotm.digestion").withStyle(ChatFormatting.BOLD);
         int color = 0xDDDDDD;
-        int textY = 76;
+        int textY = 73;
         int textX = 7;
         guiGraphics.drawString(this.font, digestionText, x + textX, y + textY, color, true);
     }
 
     private void renderDigestionProgress(GuiGraphics guiGraphics, int x, int y) {
-        int barStartY = 93;
-        int barEndY = 104;
+        int barStartY = 82;
+        int barEndY = 93;
         int barStartX = 3;
         int barEndX = (int) (115 * menu.getDigestionProgress()) + barStartX;
         int color = 0xFFe36c54;

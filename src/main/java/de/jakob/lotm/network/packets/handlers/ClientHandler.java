@@ -53,6 +53,9 @@ import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Random;
 
+import de.jakob.lotm.network.packets.toClient.SyncAnchorsPacket;
+import de.jakob.lotm.util.data.ClientData;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -60,6 +63,10 @@ import java.util.UUID;
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class ClientHandler {
+    public static void handleSyncAnchors(SyncAnchorsPacket packet) {
+        ClientData.setAnchors(packet.anchors());
+    }
+
     public static void openCoordinateScreen(Player player, String use) {
         Minecraft.getInstance().setScreen(new CoordinateInputScreen(player, use));
     }
@@ -348,6 +355,17 @@ public class ClientHandler {
         entity.getData(ModAttachments.SANITY_COMPONENT.get()).setSanity(packet.sanity());
     }
 
+    public static void handleCorruptionPacket(SyncCorruptionPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if(entity == null) {
+            return;
+        }
+        entity.getData(ModAttachments.CORRUPTION_COMPONENT.get()).setCorruption(packet.corruption());
+    }
+
     public static void handleSkillScalingPacket(SyncSkillScalingPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
@@ -592,6 +610,10 @@ public class ClientHandler {
         }
         entity.getData(ModAttachments.CONTROLLING_DATA.get()).setControlling(packet.isControlling());
         entity.getData(ModAttachments.CONTROLLING_DATA.get()).setBodyEntity(packet.bodyEntity());
+
+        if (Minecraft.getInstance().screen instanceof IntrospectScreen screen) {
+            screen.refreshAvailableAbilities();
+        }
     }
 
     public static void handleDiscernmentDataPacket(SyncDiscernmentDataPacket packet) {
@@ -638,9 +660,48 @@ public class ClientHandler {
     public static void handleSyncIntrospectMenuPacket(SyncIntrospectMenuPacket packet, UUID playerUUID) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof IntrospectScreen screen) {
-            screen.updateMenuData(packet.sequence(), packet.pathway(), ClientBeyonderCache.getDigestionProgress(playerUUID), packet.sanity());
+            screen.updateMenuData(packet.sequence(), packet.pathway(), ClientBeyonderCache.getDigestionProgress(playerUUID), packet.sanity(), packet.corruption());
+            screen.refreshAvailableAbilities();
         }
     }
+
+    public static void handleSyncBeyonderData(SyncBeyonderDataPacket packet, IPayloadContext context) {
+        Player player = context.player();
+        ClientBeyonderCache.updateData(
+                player.getUUID(),
+                packet.pathway(),
+                packet.sequence(),
+                packet.spirituality(),
+                packet.griefingEnabled(),
+                true,
+                packet.digestionProgress(),
+                packet.pathwayHistory(),
+                packet.charList()
+        );
+
+        // Update received blessings
+        de.jakob.lotm.attachments.ReceivedBlessingComponent receivedBlessings = player.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT);
+        receivedBlessings.getBlessings().clear();
+        receivedBlessings.getBlessings().addAll(packet.blessings());
+
+        if (Minecraft.getInstance().screen instanceof IntrospectScreen screen) {
+            screen.refreshAvailableAbilities();
+        }
+    }
+
+    public static void handleSyncLivingEntityBeyonderData(SyncLivingEntityBeyonderDataPacket packet, IPayloadContext context) {
+        if (!context.flow().isClientbound()) return;
+        syncLivingEntityBeyonderData(packet);
+
+        if (Minecraft.getInstance().screen instanceof IntrospectScreen screen) {
+            screen.refreshAvailableAbilities();
+        }
+    }
+
+    public static void handleSyncIntrospectMenu(SyncIntrospectMenuPacket packet, IPayloadContext context) {
+        handleSyncIntrospectMenuPacket(packet, context.player().getUUID());
+    }
+
     public static void handleApotheosisPacket(SyncApotheosisPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
@@ -720,10 +781,10 @@ public class ClientHandler {
                         packet.reelNames(), packet.landingIndex(), packet.outcome(), packet.rewardName(), packet.title()));
     }
 
-    public static void handleRiverVaultScreenPacket(de.jakob.lotm.network.packets.toClient.OpenRiverVaultScreenPacket packet) {
+    public static void handleOpenRiverVaultScreen(de.jakob.lotm.network.packets.toClient.OpenRiverVaultScreenPacket packet) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
-            mc.setScreen(new RiverVaultScreen(
+            mc.setScreen(new de.jakob.lotm.gui.custom.RiverVault.RiverVaultScreen(
                     packet.vaultItems(), packet.iuItems(),
                     packet.maxIU(), packet.vaultCapacity()));
         }

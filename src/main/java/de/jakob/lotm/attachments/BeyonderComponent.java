@@ -96,7 +96,7 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
 
         // Great Old One entry takes priority — it must be the active sequence
         java.util.Optional<Characteristic> gooEntry = charList.stream()
-                .filter(c -> c.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ)
+                .filter(c -> c.isEnabled() && c.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ)
                 .findFirst();
         if (gooEntry.isPresent()) {
             this.sequence = de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ;
@@ -104,13 +104,17 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
             return;
         }
 
-        int min = charList.stream().mapToInt(Characteristic::sequence).min().orElse(de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ);
+        int min = charList.stream()
+                .filter(Characteristic::isEnabled)
+                .mapToInt(Characteristic::sequence)
+                .min()
+                .orElse(de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ);
         this.sequence = min;
 
-        boolean currentMatches = charList.stream().anyMatch(c -> c.sequence() == min && c.pathway().equals(this.pathway));
+        boolean currentMatches = charList.stream().anyMatch(c -> c.isEnabled() && c.sequence() == min && c.pathway().equals(this.pathway));
         if (!currentMatches) {
             this.pathway = charList.stream()
-                    .filter(c -> c.sequence() == min)
+                    .filter(c -> c.isEnabled() && c.sequence() == min)
                     .map(Characteristic::pathway)
                     .findFirst()
                     .orElse("none");
@@ -119,6 +123,24 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
 
     public void clearCharacteristics() {
         this.charList = new ArrayList<>();
+        syncHighest();
+    }
+
+    public void setCharacteristicEnabled(String pathway, int sequence, boolean enabled) {
+        for (Characteristic c : charList) {
+            if (c.pathway().equals(pathway) && c.sequence() == sequence) {
+                c.setEnabled(enabled);
+            }
+        }
+        syncHighest();
+    }
+
+    public void adjustDisabledStacks(String pathway, int sequence, int delta) {
+        for (Characteristic c : charList) {
+            if (c.pathway().equals(pathway) && c.sequence() == sequence) {
+                c.setDisabledStacks(c.getDisabledStacks() + delta);
+            }
+        }
         syncHighest();
     }
 

@@ -62,9 +62,7 @@ public record OpenRiverVaultScreenPacket(
 
     public static void handle(OpenRiverVaultScreenPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            if (context.flow().getReceptionSide().isClient()) {
-                ClientHandler.handleRiverVaultScreenPacket(packet);
-            }
+            ClientHandler.handleOpenRiverVaultScreen(packet);
         });
     }
 }

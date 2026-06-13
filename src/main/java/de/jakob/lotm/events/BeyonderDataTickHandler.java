@@ -190,6 +190,11 @@ public class BeyonderDataTickHandler {
                 SubordinateControllerItem.onHold(player, player.getMainHandItem());
             }
         }
+
+        if(player.tickCount % 20 == 0) {
+            invalidateCache(player);
+        }
+
     }
 
     @SubscribeEvent

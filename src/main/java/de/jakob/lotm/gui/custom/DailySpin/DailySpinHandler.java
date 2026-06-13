@@ -29,7 +29,7 @@ public class DailySpinHandler {
     // ── Constants ─────────────────────────────────────────────────────────────
     public static final float JACKPOT_CHANCE = 0.0001f; // 0.01%
 
-    private static final List<Supplier<? extends Item>> UNIQUENESS_ITEMS = List.of(
+    public static final List<Supplier<? extends Item>> UNIQUENESS_ITEMS = List.of(
             ModItems.RED_PRIEST_UNIQUENESS,
             ModItems.TYRANT_UNIQUENESS,
             ModItems.SUN_UNIQUENESS,

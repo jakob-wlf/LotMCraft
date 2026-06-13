@@ -33,6 +33,8 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.IntegerValue> SEQ_6_AMOUNT;
     public static GameRules.Key<GameRules.IntegerValue> SEQ_7_AMOUNT;
     public static GameRules.Key<GameRules.IntegerValue> SEQ_8_AMOUNT;
+    public static GameRules.Key<GameRules.IntegerValue> PRAYER_CORRUPTION_DECREASE;
+    public static GameRules.Key<GameRules.IntegerValue> ANCHOR_PASSIVE_CORRUPTION_DECREASE;
 
     public static void register() {
 
@@ -291,6 +293,18 @@ public class ModGameRules {
                                 value.set(400, server);
                             }
                         })
+        );
+
+        PRAYER_CORRUPTION_DECREASE = GameRules.register(
+                "prayerCorruptionDecrease",
+                GameRules.Category.MISC,
+                GameRules.IntegerValue.create(10) // 0.01 corruption (10 / 1000)
+        );
+
+        ANCHOR_PASSIVE_CORRUPTION_DECREASE = GameRules.register(
+                "anchorPassiveCorruptionDecrease",
+                GameRules.Category.MISC,
+                GameRules.IntegerValue.create(1) // 0.00001 corruption per anchor per tick (1 / 100000)
         );
 
     }

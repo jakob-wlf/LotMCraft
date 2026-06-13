@@ -228,7 +228,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
                     .sum();
             buff *=  ((stacks*4f)/(stacks+18f) + 1);
 
-            buff = (i == 1 && buff >= 0) ? buff : (buff > 0) ? 1 : 0;
+            //buff = (i == 1 && buff >= 0) ? buff : (buff > 0) ? 1 : 0;
 
             switch (i) {
                 case 8 -> result += buff;

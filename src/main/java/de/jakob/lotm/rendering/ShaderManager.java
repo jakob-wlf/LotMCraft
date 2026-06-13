@@ -33,6 +33,8 @@ public class ShaderManager {
                 applyShader(mc, "shattered_glass");
             } else if (shouldApplySanityShader(player)) {
                 applyShader(mc, "sanity_loss");
+            } else if (shouldApplyCorruptionShader(player)) {
+                applyShader(mc, "corruption");
             } else if (shouldApplyAbyssalDistortion(player)) {
                 applyShader(mc, "abyssal_distortion");
             } else if (shouldApplyHolyEffect(player)) {
@@ -59,6 +61,10 @@ public class ShaderManager {
 
     private static boolean shouldApplySanityShader(Player player) {
         return player.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity() < .5f;
+    }
+
+    private static boolean shouldApplyCorruptionShader(Player player) {
+        return player.getData(ModAttachments.CORRUPTION_COMPONENT.get()).getCorruption() > .15f;
     }
 
 

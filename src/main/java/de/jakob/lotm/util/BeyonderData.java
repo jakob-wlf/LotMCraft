@@ -176,18 +176,22 @@ public class BeyonderData {
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence) {
-        setBeyonder(entity, pathway, sequence, false, false, true, false, true, true);
+        setBeyonder(entity, pathway, sequence, false, false, true, false, true, true, true);
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack) {
-        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, true, true);
+        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, true, true, true);
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack, boolean resetSpirituality) {
-        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, resetSpirituality, true);
+        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, resetSpirituality, true, true);
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack, boolean resetSpirituality, boolean putIntoMap) {
+        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, resetSpirituality, putIntoMap, true);
+    }
+
+    public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack, boolean resetSpirituality, boolean putIntoMap, boolean updateCharacteristics) {
         if (entity.level() instanceof ServerLevel serverLevel) {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
@@ -200,7 +204,7 @@ public class BeyonderData {
                 playerMap.removeHonorificName(player);
 
 
-            if (clearCharStack) playerMap.clearStack(player);
+            if (clearCharStack && updateCharacteristics) playerMap.clearStack(player);
         }
 
         if (Objects.equals(sequence, LOTMCraft.NON_BEYONDER_SEQ)
@@ -218,23 +222,26 @@ public class BeyonderData {
         boolean griefing = !BeyonderData.isBeyonder(entity) || BeyonderData.isGriefingEnabled(entity);
 
         BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
+        ReceivedBlessingComponent receivedBlessingComponent = entity.getData(ModAttachments.RECEIVED_BLESSING_COMPONENT);
         component.setPathway(pathway);
         component.setSequence(sequence);
-        if (clearCharStack) {
-            component.clearCharacteristics();
-            component.setCharacteristic(1, sequence, pathway);
-        } else {
-            // Remove stale chars at the same sequence slot from a different pathway.
-            // These can accumulate if clearBeyonderData was called via a code path that
-            // didn't go through onPlayerDrops (e.g. join-time recovery after a crash).
-            new java.util.ArrayList<>(component.getCharacteristicList()).stream()
-                    .filter(c -> c.sequence() == sequence && !c.pathway().equals(pathway))
-                    .forEach(c -> component.setCharacteristic(0, c.sequence(), c.pathway()));
-            int current = component.getCharacteristicList().stream()
-                    .filter(c -> c.sequence() == sequence && c.pathway().equals(pathway))
-                    .mapToInt(Characteristic::stack)
-                    .findFirst().orElse(0);
-            component.setCharacteristic(current + 1, sequence, pathway);
+        if (updateCharacteristics) {
+            if (clearCharStack) {
+                component.clearCharacteristics();
+                component.setCharacteristic(1, sequence, pathway);
+            } /*else {
+                // Remove stale chars at the same sequence slot from a different pathway.
+                // These can accumulate if clearBeyonderData was called via a code path that
+                // didn't go through onPlayerDrops (e.g. join-time recovery after a crash).
+                new java.util.ArrayList<>(component.getCharacteristicList()).stream()
+                        .filter(c -> c.sequence() == sequence && !c.pathway().equals(pathway))
+                        .forEach(c -> component.setCharacteristic(0, c.sequence(), c.pathway()));
+                int current = component.getCharacteristicList().stream()
+                        .filter(c -> c.sequence() == sequence && c.pathway().equals(pathway))
+                        .mapToInt(Characteristic::stack)
+                        .findFirst().orElse(0);
+                component.setCharacteristic(current + 1, sequence, pathway);
+            }*/
         }
 
         if (resetSpirituality) component.setSpirituality(getMaxSpirituality(pathway, sequence));
@@ -272,7 +279,7 @@ public class BeyonderData {
                 if (putIntoMap)
                     playerMap.put(serverPlayer);
 
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicList());
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicList(), receivedBlessingComponent.getBlessings());
                 PacketHandler.sendToAllPlayers(packet);
 
                 TeamComponent teamComp = serverPlayer.getData(ModAttachments.TEAM_COMPONENT.get());
@@ -433,7 +440,7 @@ public class BeyonderData {
         }
     }
 
-    private static void callPassiveEffectsOnRemoved(LivingEntity entity, ServerLevel serverLevel) {
+    public static void callPassiveEffectsOnRemoved(LivingEntity entity, ServerLevel serverLevel) {
         List<PassiveAbilityItem> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.ITEMS.getEntries().stream().filter(entry -> {
             if (!(entry.get() instanceof PassiveAbilityItem abilityItem))
                 return false;
@@ -445,7 +452,7 @@ public class BeyonderData {
         }
     }
 
-    private static void callPassiveEffectsOnAdd(LivingEntity entity, ServerLevel serverLevel) {
+    public static void callPassiveEffectsOnAdd(LivingEntity entity, ServerLevel serverLevel) {
         List<PassiveAbilityItem> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.ITEMS.getEntries().stream().filter(entry -> {
             if (!(entry.get() instanceof PassiveAbilityItem abilityItem))
                 return false;
@@ -645,10 +652,14 @@ public class BeyonderData {
     // for getting the spirituality of the main body instead, works on both client and server side
     public static float getMaxSpirituality(String path, int seq, Player player){
         ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
+        float sp = 0;
         if (data.isControlling()) {
             CompoundTag bodyData = data.getBodyEntity().getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
-            float sp = getMaxSpirituality(bodyData.getString("pathway"), bodyData.getInt("sequence"));
+            sp = getMaxSpirituality(bodyData.getString("pathway"), bodyData.getInt("sequence"));
             return sp;
+        }
+        for(int i = 0; i < BeyonderData.pathways.size(); i++){
+            sp += getMaxSpirituality(path, BeyonderData.getCharList(player).parallelStream().filter(c -> c.pathway().equals(path)).mapToInt(Characteristic::sequence).max().orElse(0));
         }
         return getMaxSpirituality(path, seq);
     }
@@ -692,7 +703,7 @@ public class BeyonderData {
         if (!entity.level().isClientSide()) {
             if(entity instanceof ServerPlayer serverPlayer) {
                 // Send empty data to clear client cache
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", 10, 0.0f, false, 0.0f, new String[10], new ArrayList<>());
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", 10, 0.0f, false, 0.0f, new String[10], new ArrayList<>(), new ArrayList<>());
                 PacketHandler.sendToPlayer(serverPlayer, packet);
             }
             else {
@@ -745,12 +756,28 @@ public class BeyonderData {
         return player.getData(ModAttachments.BEYONDER_COMPONENT).isGriefingEnabled();
     }
 
-    public static float getDigestionProgress(Player player) {
-        if(player.level().isClientSide) {
-            return ClientBeyonderCache.getDigestionProgress(player.getUUID());
+    public static float getDigestionProgress(LivingEntity entity) {
+        if(entity.level().isClientSide) {
+            return ClientBeyonderCache.getDigestionProgress(entity.getUUID());
         }
 
-        return player.getData(ModAttachments.BEYONDER_COMPONENT).getDigestionProgress();
+        return entity.getData(ModAttachments.BEYONDER_COMPONENT).getDigestionProgress();
+    }
+
+    public static float getCorruption(LivingEntity entity) {
+        return entity.getData(ModAttachments.CORRUPTION_COMPONENT.get()).getCorruption();
+    }
+
+    public static void setCorruption(LivingEntity entity, float corruption) {
+        entity.getData(ModAttachments.CORRUPTION_COMPONENT.get()).setCorruptionAndSync(corruption, entity);
+    }
+
+    public static void increaseCorruption(LivingEntity entity, float amount) {
+        entity.getData(ModAttachments.CORRUPTION_COMPONENT.get()).increaseCorruptionAndSync(amount, entity);
+    }
+
+    public static void decreaseCorruption(LivingEntity entity, float amount) {
+        entity.getData(ModAttachments.CORRUPTION_COMPONENT.get()).decreaseCorruptionAndSync(amount, entity);
     }
 
     public static int getCharacteristicCount(LivingEntity entity, int sequence) {
@@ -912,7 +939,7 @@ public class BeyonderData {
                 .filter(c -> c.sequence() == sequence && c.pathway().equals(pathway))
                 .mapToInt(Characteristic::stack)
                 .findFirst().orElse(0);
-        //component.setCharacteristic(currentPathwayStack + 1, sequence, pathway);
+        component.setCharacteristic(currentPathwayStack + 1, sequence, pathway);
         component.setDigestionProgress(0);
 
         recalculateCharStackModifiers(player);

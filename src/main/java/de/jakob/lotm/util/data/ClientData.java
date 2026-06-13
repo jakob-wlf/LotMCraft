@@ -2,9 +2,22 @@ package de.jakob.lotm.util.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class ClientData {
+    private static Map<UUID, Float> anchors = new HashMap<>();
+
+    public static Map<UUID, Float> getAnchors() {
+        return anchors;
+    }
+
+    public static void setAnchors(Map<UUID, Float> newAnchors) {
+        anchors = new HashMap<>(newAnchors);
+    }
+
     private static List<String> abilityWheelAbilities = new ArrayList<>();
     private static int selectedAbility = 0;
 
@@ -107,6 +120,7 @@ public class ClientData {
     }
 
     public static void clearCache() {
+        anchors.clear();
         abilityWheelAbilities.clear();
         selectedAbility = 0;
         sharedAbilityMode = false;

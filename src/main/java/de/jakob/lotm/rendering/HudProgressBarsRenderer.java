@@ -35,6 +35,7 @@ public class HudProgressBarsRenderer {
             renderProgressBar(guiGraphics);
             renderSacrificeBar(guiGraphics);
             renderSanityBar(guiGraphics);
+            renderCorruptionBar(guiGraphics);
         });
 
         event.registerAbove(VanillaGuiLayers.PLAYER_HEALTH, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "accommodation_bar"), (guiGraphics, deltaTracker) -> {
@@ -133,6 +134,41 @@ public class HudProgressBarsRenderer {
 
         ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/spirituality_bar_background.png");
         guiGraphics.blit(backgroundTexture, barX - 4, barY - 4, barWidth + 8, barHeight + 8, 0, 0, 44, 256, 44, 256);
+    }
+
+    private static void renderCorruptionBar(GuiGraphics guiGraphics) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null || mc.options.hideGui) return;
+        if (!ClientBeyonderCache.isBeyonder(mc.player.getUUID())) return;
+
+        float corruption = mc.player.getData(ModAttachments.CORRUPTION_COMPONENT.get()).getCorruption();
+
+        if (corruption < 0.15f) return;
+
+        int barWidth = 14;
+        int barHeight = 120;
+        int screenWidth = guiGraphics.guiWidth();
+        // Place it next to the sanity bar (on the left of it)
+        int barX = screenWidth - (barWidth * 2) - 12;
+        int barY = 60;
+
+        guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0x80000000);
+
+        int progressHeight = (int) (barHeight * corruption);
+        int progressStartY = barY + barHeight - progressHeight;
+        if (progressHeight > 0) {
+            // Dark purple/red colors for corruption
+            drawVerticalGradient(guiGraphics, barX, progressStartY, barWidth, progressHeight,
+                    0xFF800080, 0xFF4B0082);
+        }
+
+        ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/spirituality_bar_background.png");
+        guiGraphics.blit(backgroundTexture, barX - 4, barY - 4, barWidth + 8, barHeight + 8, 0, 0, 44, 256, 44, 256);
+
+        String percentText = String.format("%.3f%%", corruption * 100.0f);
+        int textX = barX + (barWidth / 2) - (mc.font.width(percentText) / 2);
+        int textY = barY + barHeight + 8;
+        guiGraphics.drawString(mc.font, percentText, textX, textY, 0xFF800080, true);
     }
 
     private static void renderAccommodationColorOverlay(GuiGraphics guiGraphics) {

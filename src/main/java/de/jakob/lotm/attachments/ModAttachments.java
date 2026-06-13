@@ -108,6 +108,14 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<CorruptionComponent>> CORRUPTION_COMPONENT =
+            ATTACHMENT_TYPES.register("corruption_component", () ->
+                    AttachmentType.builder(CorruptionComponent::new)
+                            .serialize(CorruptionComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<SubordinateComponent>> SUBORDINATE_COMPONENT =
             ATTACHMENT_TYPES.register("subordinate_component", () ->
                     AttachmentType.builder(SubordinateComponent::new)
@@ -298,6 +306,32 @@ public class ModAttachments {
                     AttachmentType.builder(DailySpinComponent::new)
                             .serialize(DailySpinComponent.SERIALIZER)
                             .build()
+            );
+
+    public static final Supplier<AttachmentType<CorruptedPlayerComponent>> CORRUPTED_PLAYER_COMPONENT =
+            ATTACHMENT_TYPES.register("corrupted_player_component", () ->
+                    AttachmentType.builder(CorruptedPlayerComponent::new)
+                            .serialize(CorruptedPlayerComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<AnchorComponent>> ANCHOR_COMPONENT =
+            ATTACHMENT_TYPES.register("anchor_component", () ->
+                    AttachmentType.builder(AnchorComponent::new)
+                            .serialize(AnchorComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<ActiveBlessingComponent>> ACTIVE_BLESSING_COMPONENT =
+            ATTACHMENT_TYPES.register("active_blessing_component", () ->
+                    AttachmentType.serializable(ActiveBlessingComponent::new).copyOnDeath().build()
+            );
+
+    public static final Supplier<AttachmentType<ReceivedBlessingComponent>> RECEIVED_BLESSING_COMPONENT =
+            ATTACHMENT_TYPES.register("received_blessing_component", () ->
+                    AttachmentType.serializable(ReceivedBlessingComponent::new).copyOnDeath().build()
             );
 
     public static void register(IEventBus eventBus) {

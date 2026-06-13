@@ -14,6 +14,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -228,6 +229,12 @@ public abstract class Ability {
                 return true;
             }
         }*/
+        // Check for received blessings
+        if (entity.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT).getBlessings().stream()
+                .anyMatch(b -> getRequirements().containsKey(b.pathway()) && getRequirements().get(b.pathway()) >= b.sequence())) {
+            return true;
+        }
+
         return BeyonderData.getCharList(entity).stream().anyMatch(character -> getRequirements().containsKey(character.pathway()) && getRequirements().get(character.pathway()) >= sequence);
 
         //return false;
@@ -278,11 +285,12 @@ public abstract class Ability {
     private float getDigestionProgressForUse(LivingEntity entity) {
         int sequence = BeyonderData.getSequence(entity);
 
-        if (!getRequirements().containsKey(BeyonderData.getPathway(entity))) {
-            return 0f;
+        String pathway = BeyonderData.getCharList(entity).stream().filter(character -> getRequirements().containsKey(character.pathway())).findFirst().orElse(new Characteristic("None", 0,10)).pathway();
+        if (!getRequirements().containsKey(pathway)) {
+           return 0f;
         }
 
-        int requiredSequence = getRequirements().get(BeyonderData.getPathway(entity));
+        int requiredSequence = getRequirements().get(pathway);
 
         if (sequence > requiredSequence) {
             return 0f;

@@ -88,6 +88,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
             SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Optional<UUID>> TARGET_PLAYER_UUID =
             SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Boolean> IS_PERSISTENT =
+            SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
 
     // ========================= Instance Fields =========================
     private String pathway = "none";
@@ -210,6 +212,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         builder.define(IS_PUPPET_WARRIOR, false);
         builder.define(MAX_LIFETIME_IF_IS_PUPPET, DEFAULT_PUPPET_LIFETIME);
         builder.define(TARGET_PLAYER_UUID, Optional.empty());
+        builder.define(IS_PERSISTENT, false);
     }
 
     @Override
@@ -288,6 +291,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         compound.putString("QuestId", getQuestId());
         compound.putBoolean("IsPuppetWarrior", isPuppetWarrior());
         compound.putInt("MaxLifetimeIfPuppet", getMaxLifetimeIfPuppet());
+        compound.putBoolean("IsPersistentNPC", isPersistentNPC());
         if (getTargetPlayerUUID().isPresent()) {
             compound.putUUID("TargetPlayerUUID", getTargetPlayerUUID().get());
         }
@@ -322,6 +326,10 @@ public class BeyonderNPCEntity extends PathfinderMob {
                 this.entityData.set(PATHWAY, this.pathway);
                 this.entityData.set(SEQUENCE, this.sequence);
             }
+        }
+
+        if (compound.contains("IsPersistentNPC")) {
+            setPersistentNPC(compound.getBoolean("IsPersistentNPC"));
         }
 
         if (compound.contains("TargetPlayerUUID")) {
@@ -378,7 +386,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
         // Add targeting behavior based on hostility
         if (isHostile()) {
-            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true, (e) -> e != this && !(e instanceof BeyonderNPCEntity b && b.getPathway().equals(this.getPathway()) && !this.getSkinName().equals("amon"))));
         } else {
             this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Monster.class, true));
         }
@@ -704,8 +712,15 @@ public class BeyonderNPCEntity extends PathfinderMob {
             }
         }
         String skinName = getSkinName();
+
+
+
+        if(Arrays.asList(SKINS).contains(skinName)) {
+            return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
+                    "textures/entity/npc/" + skinName + ".png");
+        }
         return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
-                "textures/entity/npc/" + skinName + ".png");
+                "textures/entity/npc/amon.png");
     }
 
     public void setTargetPlayerUUID(UUID uuid) {
@@ -756,6 +771,14 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.entityData.set(IS_PUPPET_WARRIOR, isPuppet);
     }
 
+    public void setPersistentNPC(boolean persistent) {
+        this.entityData.set(IS_PERSISTENT, persistent);
+    }
+
+    public boolean isPersistentNPC() {
+        return this.entityData.get(IS_PERSISTENT);
+    }
+
     // ========================= Combat Information =========================
     @Override
     public boolean isAggressive() {
@@ -787,6 +810,9 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
     @Override
     public boolean removeWhenFarAway(double distanceToClosestPlayer) {
+        if (isPersistentNPC()) {
+            return false;
+        }
         MarionetteComponent component = this.getData(ModAttachments.MARIONETTE_COMPONENT.get());
         if (component.isMarionette()) {
             return false;
@@ -796,6 +822,9 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
     @Override
     public void checkDespawn() {
+        if (isPersistentNPC()) {
+            return;
+        }
         MarionetteComponent component = this.getData(ModAttachments.MARIONETTE_COMPONENT.get());
         if (!component.isMarionette()) {
             super.checkDespawn();

@@ -231,6 +231,7 @@ public class ModEvents {
         AllyRequestCommands.register(event.getDispatcher());
         AllyCommand.register(event.getDispatcher());
         SanityCommand.register(event.getDispatcher());
+        CorruptionCommand.register(event.getDispatcher());
         DigestionCommand.register(event.getDispatcher());
         QuestCommand.register(event.getDispatcher());
         BeyonderMapCommand.register(event.getDispatcher());
