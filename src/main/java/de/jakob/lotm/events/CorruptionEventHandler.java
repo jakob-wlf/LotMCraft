@@ -146,7 +146,7 @@ public class CorruptionEventHandler {
         }
         if (corruptionValue >= 40) {
             if (random.nextInt(1000) < corruptionValue) {
-                //entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 1));
+                entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 10, 1));
             }
             if (random.nextInt(1000) < corruptionValue) {
                 //entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 1));
@@ -154,7 +154,7 @@ public class CorruptionEventHandler {
         }
         if (corruptionValue >= 60) {
             if (random.nextInt(1000) < corruptionValue) {
-
+                entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 1, 1));
             }
         }
         if (corruptionValue >= 80) {

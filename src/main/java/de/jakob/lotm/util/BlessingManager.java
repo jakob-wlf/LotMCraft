@@ -1,5 +1,6 @@
 package de.jakob.lotm.util;
 
+import de.jakob.lotm.effect.ModEffects;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -31,6 +32,9 @@ public class BlessingManager {
         // Fallback/Common blessings
         registerBlessing(new Blessing("minor_healing", "none", 9, "blessing.lotmcraft.minor_healing", 0, target -> {
             target.heal(4.0f);
+        }));
+        registerBlessing(new Blessing("concealment", "none", 9, "blessing.lotmcraft.concealment", 600, target -> {
+            target.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, 600, 1, false, false));
         }));
     }
 
