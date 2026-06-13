@@ -5,6 +5,7 @@ import de.jakob.lotm.abilities.mother.handler.HybridMobData;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.network.packets.toClient.HybridMobSyncPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.nbt.CompoundTag;
@@ -79,15 +80,18 @@ public class CrossbreedingAbility extends Ability {
             }
 
             // Spawn the hybrid mob
-            spawnHybridMob(level, previousTarget, target);
+            spawnHybridMob(level, previousTarget, target, entity);
 
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.crossbreeding.success").withColor(0xFF88c276));
         }
     }
 
-    private void spawnHybridMob(Level level, LivingEntity firstMob, LivingEntity secondMob) {
+    private void spawnHybridMob(Level level, LivingEntity firstMob, LivingEntity secondMob, LivingEntity caster) {
         EntityType<?> entityType = secondMob.getType();
         Entity newEntity = entityType.create(level);
+
+        newEntity.copyAttachmentsFrom(secondMob, false);
+
 
         if(!(newEntity instanceof LivingEntity newMob)) {
             return;
@@ -99,6 +103,7 @@ public class CrossbreedingAbility extends Ability {
         HybridMobData hybridData = new HybridMobData(
                 EntityType.getKey(firstMob.getType()),
                 firstMob.getDimensions(firstMob.getPose())
+
         );
 
         CompoundTag tag = hybridData.save();
@@ -112,5 +117,8 @@ public class CrossbreedingAbility extends Ability {
             HybridMobSyncPacket packet = new HybridMobSyncPacket(newMob.getId(), tag);
             PacketDistributor.sendToPlayersTrackingEntity(newMob, packet);
         }
+
+        AllyUtil.makeAllies(newMob, caster);
+
     }
 }
