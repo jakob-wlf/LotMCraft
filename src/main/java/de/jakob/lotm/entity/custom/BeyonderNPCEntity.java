@@ -1,7 +1,6 @@
 package de.jakob.lotm.entity.custom;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.custom.goals.AbilityUseGoal;
@@ -72,10 +71,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
             SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<String> SKIN_NAME =
             SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<String> PATHWAY =
-            SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<Integer> SEQUENCE =
-            SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> IS_PUPPET_WARRIOR =
             SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> MAX_LIFETIME_IF_IS_PUPPET =
@@ -86,10 +81,9 @@ public class BeyonderNPCEntity extends PathfinderMob {
             SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.OPTIONAL_UUID);
 
     // ========================= Instance Fields =========================
-    private String pathway = "none";
-    private int sequence = -1;
+    private String _pathway = "none";
+    private int _sequence = -1;
     private boolean defaultHostile;
-    private ArrayList<Ability> usableAbilities = new ArrayList<>();
     private long tickCounter = 0;
 
     // ========================= Constructors =========================
@@ -116,25 +110,17 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.setHostile(hostile);
         this.setSkinName(skinName);
 
-        // Validate and adjust sequence if needed
         if (sequence < BeyonderData.getHighestImplementedSequence(pathway)) {
             Random random = new Random();
             sequence = random.nextInt(BeyonderData.getHighestImplementedSequence(pathway), 10);
         }
 
-        // Initialize beyonder data on server side
         if (!level.isClientSide) {
-            this.pathway = pathway;
-            this.sequence = sequence;
+            this._pathway = pathway;
+            this._sequence = sequence;
             BeyonderData.setBeyonder(this, pathway, sequence);
-            this.entityData.set(PATHWAY, pathway);
-            this.entityData.set(SEQUENCE, sequence);
         }
 
-        // Initialize abilities if pathway is valid
-        if (!pathway.isEmpty()) {
-            initializeAbilities(pathway, sequence);
-        }
     }
 
     // ========================= Helper Methods for Construction =========================
@@ -147,10 +133,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
         return pathways.get(new Random().nextInt(pathways.size()));
     }
 
-    /**
-     * Generates a weighted random sequence number favoring higher sequences (3-9).
-     * Uses exponential distribution to make higher sequences more likely.
-     */
     private static int getWeightedHighSequence() {
         Random random = new Random();
         double normalizedValue = random.nextDouble();
@@ -191,8 +173,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
         super.defineSynchedData(builder);
         builder.define(IS_HOSTILE, false);
         builder.define(SKIN_NAME, "amon");
-        builder.define(PATHWAY, "none");
-        builder.define(SEQUENCE, -1);
         builder.define(QUEST_ID, "");
         builder.define(IS_PUPPET_WARRIOR, false);
         builder.define(MAX_LIFETIME_IF_IS_PUPPET, DEFAULT_PUPPET_LIFETIME);
@@ -217,9 +197,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
             }
 
             // Sync beyonder data
-            if (this.sequence != -1 && !this.pathway.equals("none")) {
-                BeyonderData.setBeyonder(this, this.pathway, sequence);
-                syncEntityDataWithBeyonderData();
+            if (this._sequence != -1 && !this._pathway.equals("none")) {
+                BeyonderData.setBeyonder(this, this._pathway, _sequence);
             }
         }
     }
@@ -227,33 +206,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> dataAccessor) {
         super.onSyncedDataUpdated(dataAccessor);
-
-        if (this.level().isClientSide) {
-            if (dataAccessor.equals(PATHWAY) || dataAccessor.equals(SEQUENCE)) {
-                String pathway = this.entityData.get(PATHWAY);
-                int sequence = this.entityData.get(SEQUENCE);
-
-                ClientBeyonderCache.updateData(
-                        this.getUUID(),
-                        pathway,
-                        sequence,
-                        BeyonderData.getMaxSpirituality(pathway, sequence),
-                        false,
-                        false,
-                        0.0f
-                );
-            }
-        }
-    }
-
-    // ========================= Data Synchronization =========================
-    private void syncEntityDataWithBeyonderData() {
-        if (!this.level().isClientSide) {
-            String currentPathway = BeyonderData.getPathway(this);
-            int currentSequence = BeyonderData.getSequence(this);
-            this.entityData.set(PATHWAY, currentPathway);
-            this.entityData.set(SEQUENCE, currentSequence);
-        }
     }
 
     // ========================= NBT Data Persistence =========================
@@ -263,8 +215,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
         compound.putBoolean("IsHostile", isHostile());
         compound.putBoolean("DefaultHostile", defaultHostile);
         compound.putString("SkinName", getSkinName());
-        compound.putString("Pathway", getPathway());
-        compound.putInt("Sequence", getSequence());
         compound.putString("QuestId", getQuestId());
         compound.putBoolean("IsPuppetWarrior", isPuppetWarrior());
         compound.putInt("MaxLifetimeIfPuppet", getMaxLifetimeIfPuppet());
@@ -292,24 +242,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
         if (compound.contains("SkinName")) {
             setSkinName(compound.getString("SkinName"));
         }
-
-        if (compound.contains("Pathway") && compound.contains("Sequence")) {
-            this.pathway = compound.getString("Pathway");
-            this.sequence = compound.getInt("Sequence");
-
-            if (!this.level().isClientSide) {
-                BeyonderData.setBeyonder(this, this.pathway, this.sequence);
-                this.entityData.set(PATHWAY, this.pathway);
-                this.entityData.set(SEQUENCE, this.sequence);
-            }
-        }
-
         if (compound.contains("TargetPlayerUUID")) {
             setTargetPlayerUUID(compound.getUUID("TargetPlayerUUID"));
-        }
-
-        if (!getPathway().isEmpty()) {
-            initializeAbilities(getPathway(), getSequence());
         }
     }
 
@@ -330,8 +264,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
             return;
         }
 
-        initializeAbilities(getPathway(), getSequence());
-
         // Clear combat-related goals
         this.goalSelector.removeAllGoals(goal -> goal instanceof MeleeAttackGoal ||
                 goal instanceof WaterAvoidingRandomStrollGoal ||
@@ -344,7 +276,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
 
         // Add combat goals based on abilities
-        if (hasRangedOption()) {
+        if (AbilityUseGoal.hasRangedOption(this)) {
             this.goalSelector.addGoal(3, new RangedCombatGoal(this, 1.0D, 8.0F, 16.0F));
         } else {
             this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
@@ -404,156 +336,10 @@ public class BeyonderNPCEntity extends PathfinderMob {
                 getCurrentTarget() != null;
     }
 
-    // ========================= Ability System =========================
-    private void initializeAbilities(String pathway, int sequence) {
-        if (usableAbilities == null) {
-            usableAbilities = new ArrayList<>();
-        }
-        usableAbilities.clear();
-
-        LOTMCraft.abilityHandler.getByPathwayAndSequence(pathway, sequence).stream()
-                .filter(a -> a.canBeUsedByNPC)
-                .forEach(usableAbilities::add);
-
-        // Add controller abilities if this is a marionette
-        MarionetteComponent component = this.getData(ModAttachments.MARIONETTE_COMPONENT.get());
-        if (component.isMarionette()) {
-            Player controller = getController();
-            if (controller != null && BeyonderData.isBeyonder(controller) && BeyonderData.getSequence(controller) <= 4) {
-                String controllerPathway = BeyonderData.getPathway(controller);
-                int controllerSequence = BeyonderData.getSequence(controller);
-                LOTMCraft.abilityHandler.getByPathwayAndSequence(controllerPathway, controllerSequence).stream()
-                        .filter(a -> a.canBeUsedByNPC)
-                        .forEach(usableAbilities::add);
-            }
-        }
-    }
-
-    private boolean hasRangedOption() {
-        if (usableAbilities.isEmpty()) {
-            return false;
-        }
-
-        return usableAbilities.stream().anyMatch(ability -> ability.hasOptimalDistance);
-    }
-
-    public void useAbility(Level level) {
-        if (level.isClientSide) {
-            return;
-        }
-
-        // Get abilities that can be used right now
-        List<Ability> availableAbilities = usableAbilities.stream()
-                .filter(a -> a.canUse(this))
-                .toList();
-
-        if (availableAbilities.isEmpty()) {
-            return;
-        }
-
-        // Separate abilities by combat suitability
-        List<Ability> combatAbilities = availableAbilities.stream()
-                .filter(a -> a.shouldUseAbility(this))
-                .sorted(Comparator.comparing(Ability::lowestSequenceUsable))
-                .toList();
-
-        // In combat - prefer combat abilities
-        List<Ability> toSelect;
-        if (isInCombat() && !combatAbilities.isEmpty()) {
-            toSelect = combatAbilities;
-        } else if (!isInCombat()) {
-            // Out of combat - only use non-combat abilities
-            List<Ability> nonCombatAbilities = availableAbilities.stream()
-                    .filter(a -> !a.shouldUseAbility(this))
-                    .toList();
-
-            if (nonCombatAbilities.isEmpty()) {
-                return; // Don't use combat abilities outside of combat
-            }
-            toSelect = nonCombatAbilities;
-        } else {
-            // Fallback to all available
-            toSelect = availableAbilities;
-        }
-
-        // Select and use ability
-        Ability selectedAbility = selectWeightedAbility(toSelect, new Random());
-        if(selectedAbility == null) return;
-
-        selectedAbility.useAbility((ServerLevel) level, this);
-    }
-
-    /**
-     * Improved weighted selection with distance consideration
-     */
-    private Ability selectWeightedAbility(List<Ability> abilities, Random random) {
-        if (abilities.isEmpty()) {
-            return null;
-        }
-
-        // If in combat and has target, consider distance
-        if (isInCombat() && getTarget() != null) {
-            double distance = this.distanceTo(getTarget());
-
-            // Filter by optimal distance if abilities have distance preferences
-            List<Ability> distanceAppropriate = abilities.stream()
-                    .filter(a -> !a.hasOptimalDistance ||
-                            Math.abs(distance - a.optimalDistance) <= 5.0)
-                    .toList();
-
-            if (!distanceAppropriate.isEmpty()) {
-                abilities = distanceAppropriate;
-            }
-        }
-
-        // Weighted selection favoring lower sequence (more powerful) abilities
-        int size = abilities.size();
-        int totalWeight = (size * (size + 1)) / 2;
-        int randomValue = random.nextInt(totalWeight);
-
-        int cumulativeWeight = 0;
-        for (int i = 0; i < size; i++) {
-            int weight = size - i;
-            cumulativeWeight += weight;
-
-            if (randomValue < cumulativeWeight) {
-                return abilities.get(i);
-            }
-        }
-
-        return abilities.get(0);
-    }
-
-    public void tryUseAbility() {
-        if (!usableAbilities.isEmpty()) {
-            useAbility(this.level());
-        }
-    }
-
-    public ArrayList<Ability> getUsableAbilities() {
-        return usableAbilities;
-    }
-
-    // ========================= Helper Methods =========================
-    private Player getController() {
-        MarionetteComponent component = this.getData(ModAttachments.MARIONETTE_COMPONENT.get());
-        if (!component.isMarionette()) {
-            return null;
-        }
-
-        try {
-            UUID controllerUUID = UUID.fromString(component.getControllerUUID());
-            Player controller = this.level().getPlayerByUUID(controllerUUID);
-            return (controller != null && controller.isAlive()) ? controller : null;
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
-
     // ========================= Loot and Drops =========================
     @Override
     protected void dropCustomDeathLoot(@NotNull ServerLevel level, @NonNull DamageSource damageSource, boolean recentlyHit) {
-        if (!BeyonderData.playerMap.check(pathway, sequence)) {
+        if (!BeyonderData.playerMap.check(_pathway, _sequence)) {
             super.dropCustomDeathLoot(level, damageSource, recentlyHit);
             return;
         }
@@ -568,7 +354,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
         // Drop characteristic
         BeyonderCharacteristicItem characteristicItem =
-                BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, sequence);
+                BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(_pathway, _sequence);
         if (characteristicItem != null) {
             this.spawnAtLocation(characteristicItem);
         }
@@ -576,7 +362,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         // Drop recipe with chance
         if (random.nextInt(RECIPE_DROP_CHANCE) == 0) {
             PotionRecipeItem recipeItem =
-                    PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, sequence);
+                    PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(_pathway, _sequence);
             if (recipeItem != null) {
                 this.spawnAtLocation(recipeItem);
             }
@@ -587,7 +373,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
     @Override
     protected void dropFromLootTable(DamageSource damageSource, boolean attackedRecently) {
-        if (!BeyonderData.playerMap.check(pathway, sequence)) {
+        if (!BeyonderData.playerMap.check(_pathway, _sequence)) {
             return;
         }
         super.dropFromLootTable(damageSource, attackedRecently);
@@ -663,19 +449,11 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     public String getPathway() {
-        if (this.level().isClientSide) {
-            return this.entityData.get(PATHWAY);
-        } else {
-            return BeyonderData.getPathway(this);
-        }
+        return BeyonderData.getPathway(this);
     }
 
-    public int getSequence() {
-        if (this.level().isClientSide) {
-            return this.entityData.get(SEQUENCE);
-        } else {
-            return BeyonderData.getSequence(this);
-        }
+    public int get_sequence() {
+        return BeyonderData.getSequence(this);
     }
 
     public String getQuestId() {
