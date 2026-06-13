@@ -227,6 +227,11 @@ public class GatheringScreen extends AbstractContainerScreen<GatheringMenu> {
             sendMessage();
             return true;
         }
+        // Let the EditBox consume keystrokes (including E) while it's focused,
+        // so the inventory key doesn't close the screen mid-typing.
+        if (messageBox != null && messageBox.isFocused() && messageBox.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 

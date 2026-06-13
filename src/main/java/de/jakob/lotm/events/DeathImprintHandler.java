@@ -7,6 +7,7 @@ import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.fluid.ModFluids;
 import de.jakob.lotm.sefirah.SefirahHandler;
+import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.abilities.core.AbilityUseEvent;
 import net.minecraft.network.chat.Component;
@@ -156,6 +157,20 @@ public class DeathImprintHandler {
                 if (tick % RIVER_EFFECT_INTERVAL == 0) {
                     if (inRiverDim && isInRiverFluid(player)) {
                         applyRiverWaterEffects(player, data);
+                    }
+
+                    // Passive corruption from death imprints + River mental imprint
+                    // Only applies when the River is claimed and has a mental imprint > 0
+                    int deathTier = data.getImprintCount(uuid);
+                    if (deathTier > 0) {
+                        SefirotData sefirotData = SefirotData.get(event.getServer());
+                        int riverMentalImprint = sefirotData.getMentalImprint("river_of_eternal_darkness");
+                        if (riverMentalImprint > 0) {
+                            // tier 1 + 100% mental imprint = 1% per 10 min; scales with both
+                            float corruptionPerSecond = deathTier * (riverMentalImprint / 100f) * (1f / 60_000f);
+                            player.getData(ModAttachments.CORRUPTION_COMPONENT.get())
+                                    .increaseCorruptionAndSync(corruptionPerSecond, player);
+                        }
                     }
                 }
 

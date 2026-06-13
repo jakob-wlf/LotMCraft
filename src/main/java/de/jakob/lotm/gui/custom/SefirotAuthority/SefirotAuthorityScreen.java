@@ -40,6 +40,9 @@ public class SefirotAuthorityScreen extends AbstractContainerScreen<SefirotAutho
     private static final int ICONS_AREA_W = PANEL_WIDTH - CONTENT_LEFT - 8; // 232px → fits ~12 icons
     private static final int ICONS_PER_ROW = ICONS_AREA_W / ICON_STEP;      // 12
 
+    /** Height of the imprint bar section (only shown when imprint > 0). */
+    private static final int IMPRINT_BAR_HEIGHT = 12;
+
     /** One entry per neighbouring path: ordered list of abilities (high seq → low seq). */
     private final List<PathSection> sections = new ArrayList<>();
     /** Currently unlocked IDs — updated optimistically on click. */
@@ -101,7 +104,7 @@ public class SefirotAuthorityScreen extends AbstractContainerScreen<SefirotAutho
 
         // Calculate total content height for scrolling
         totalContentHeight = computeContentHeight();
-        int visibleH = PANEL_HEIGHT - 35;
+        int visibleH = PANEL_HEIGHT - 35 - (menu.getImprintPercent() > 0 ? IMPRINT_BAR_HEIGHT : 0);
         int maxScroll = Math.max(0, totalContentHeight - visibleH);
 
         clearWidgets();
@@ -163,11 +166,40 @@ public class SefirotAuthorityScreen extends AbstractContainerScreen<SefirotAutho
         // Divider
         g.fill(leftPos + 4, topPos + 27, leftPos + PANEL_WIDTH - 4, topPos + 28, 0xFF8A6A2E);
 
+        // Mental Imprint bar (only shown when imprint > 0)
+        renderImprintBar(g);
+
         renderSections(g, mouseX, mouseY);
     }
 
+    private void renderImprintBar(GuiGraphics g) {
+        int imprint = menu.getImprintPercent();
+        if (imprint <= 0) return;
+
+        int barY = topPos + 29;
+        int barX = leftPos + CONTENT_LEFT;
+        int barW = PANEL_WIDTH - CONTENT_LEFT - 22; // leave room for scroll buttons
+
+        // Label
+        Component label = Component.literal("Mental Imprint: " + imprint + "%").withStyle(ChatFormatting.DARK_PURPLE);
+        g.drawString(this.font, label, barX, barY, 0xFFAA55FF, false);
+
+        // Bar track
+        int trackY = barY + 9;
+        g.fill(barX, trackY, barX + barW, trackY + 3, 0xFF330033);
+        // Bar fill (purple, scaled to %)
+        int fillW = (int) (barW * (imprint / 100.0f));
+        g.fill(barX, trackY, barX + fillW, trackY + 3, 0xFF9933CC);
+        // Bar outline
+        g.renderOutline(barX, trackY, barW, 3, 0xFF660066);
+    }
+
+    private int getImprintBarOffset() {
+        return menu.getImprintPercent() > 0 ? IMPRINT_BAR_HEIGHT : 0;
+    }
+
     private void renderSections(GuiGraphics g, int mouseX, int mouseY) {
-        int clipTop    = topPos + 29;
+        int clipTop    = topPos + 29 + getImprintBarOffset();
         int clipBottom = topPos + PANEL_HEIGHT - 10;
         int curY = clipTop - scrollOffset;
 
@@ -243,7 +275,7 @@ public class SefirotAuthorityScreen extends AbstractContainerScreen<SefirotAutho
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 || button == 1) {
-            int clipTop    = topPos + 29;
+            int clipTop    = topPos + 29 + getImprintBarOffset();
             int clipBottom = topPos + PANEL_HEIGHT - 10;
             int curY = clipTop - scrollOffset;
 
@@ -281,7 +313,7 @@ public class SefirotAuthorityScreen extends AbstractContainerScreen<SefirotAutho
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        int visibleH = PANEL_HEIGHT - 35;
+        int visibleH = PANEL_HEIGHT - 35 - getImprintBarOffset();
         int maxScroll = Math.max(0, totalContentHeight - visibleH);
         scrollOffset = (int) Math.max(0, Math.min(maxScroll, scrollOffset - scrollY * 10));
         return true;

@@ -27,6 +27,18 @@ public class SefirotData extends SavedData {
     private final HashMap<UUID, LocationWithLevelKey> returnLocations = new HashMap<>();
     private final HashSet<UUID> isInSefirot = new HashSet<>();
 
+    // ── Mental Imprint ────────────────────────────────────────────────────────
+    /** sefirot name → UUID of the very first player to ever claim it (never changes once set). */
+    private final HashMap<String, UUID> firstOwners = new HashMap<>();
+    /** sefirot name → imprint percentage 0–100. Grows while first owner holds it; can only drop to 10. */
+    private final HashMap<String, Integer> mentalImprintPercent = new HashMap<>();
+    /** sefirot name → total game-seconds the original owner has been online holding it. */
+    private final HashMap<String, Long> originalOwnerSecondsOnline = new HashMap<>();
+    /** sefirot name → total game-seconds the current non-original owner has been online reducing it. */
+    private final HashMap<String, Long> currentOwnerSecondsOnline = new HashMap<>();
+    /** sefirot name → UUID of original owner when a reclaim is pending (original owner was offline). */
+    private final HashMap<String, UUID> pendingReclaims = new HashMap<>();
+
     public static SefirotData get(MinecraftServer server) {
         DimensionDataStorage storage = server.overworld().getDataStorage();
         return storage.computeIfAbsent(new Factory<>(
@@ -117,6 +129,123 @@ public class SefirotData extends SavedData {
         return new ServerLocation(new Vec3(locationWithLevelKey.getPosition().x, locationWithLevelKey.getPosition().y, locationWithLevelKey.getPosition().z), level);
     }
 
+    // ── Mental Imprint API ────────────────────────────────────────────────────
+
+    /** Sets the first owner for a sefirot only if none has been recorded yet. */
+    public void setFirstOwnerIfAbsent(String sefirot, UUID uuid) {
+        if (!firstOwners.containsKey(sefirot)) {
+            firstOwners.put(sefirot, uuid);
+            setDirty();
+        }
+    }
+
+    /** Returns the UUID of the original first claimer, or {@code null} if none set. */
+    public UUID getFirstOwner(String sefirot) {
+        return firstOwners.get(sefirot);
+    }
+
+    public boolean hasFirstOwner(String sefirot) {
+        return firstOwners.containsKey(sefirot);
+    }
+
+    /** Returns the current imprint percentage (0–100) for the given sefirot. */
+    public int getMentalImprint(String sefirot) {
+        return mentalImprintPercent.getOrDefault(sefirot, 0);
+    }
+
+    /** Directly sets the imprint percentage (admin/command use). Clamps to 0–100. */
+    public void setMentalImprintDirect(String sefirot, int percent) {
+        mentalImprintPercent.put(sefirot, Math.max(0, Math.min(100, percent)));
+        setDirty();
+    }
+
+    /** Clears all imprint data for the given sefirot (first owner, imprint %, counters). */
+    public void clearMentalImprint(String sefirot) {
+        firstOwners.remove(sefirot);
+        mentalImprintPercent.remove(sefirot);
+        originalOwnerSecondsOnline.remove(sefirot);
+        currentOwnerSecondsOnline.remove(sefirot);
+        pendingReclaims.remove(sefirot);
+        setDirty();
+    }
+
+    /**
+     * Ticks the original owner's online time by one game-second.
+     * Increments imprint by 1% for every 3600 accumulated game-seconds (≈1 real hour at 20 TPS).
+     *
+     * @return {@code true} if the imprint percentage increased.
+     */
+    public boolean tickOriginalOwner(String sefirot) {
+        long prev = originalOwnerSecondsOnline.getOrDefault(sefirot, 0L);
+        long next = prev + 1;
+        originalOwnerSecondsOnline.put(sefirot, next);
+        setDirty();
+        if (prev / 3600 < next / 3600) {
+            int current = mentalImprintPercent.getOrDefault(sefirot, 0);
+            mentalImprintPercent.put(sefirot, current + 1);
+            setDirty();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Ticks the current non-original owner's hold time by one game-second.
+     * Decrements imprint by 1% for every 3600 accumulated game-seconds, but never below 10%.
+     *
+     * @return {@code true} if the imprint percentage decreased.
+     */
+    public boolean tickCurrentOwnerReduction(String sefirot) {
+        long prev = currentOwnerSecondsOnline.getOrDefault(sefirot, 0L);
+        long next = prev + 1;
+        currentOwnerSecondsOnline.put(sefirot, next);
+        setDirty();
+        if (prev / 3600 < next / 3600) {
+            int current = mentalImprintPercent.getOrDefault(sefirot, 0);
+            if (current > 10) {
+                mentalImprintPercent.put(sefirot, current - 1);
+                setDirty();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Resets the current-owner reduction counter (call when a new non-original owner takes the sefirot). */
+    public void resetCurrentOwnerSeconds(String sefirot) {
+        currentOwnerSecondsOnline.remove(sefirot);
+        setDirty();
+    }
+
+    /** Returns the UUID of whichever player currently holds the given sefirot, or {@code null}. */
+    public UUID getHolderOf(String sefirot) {
+        for (Map.Entry<UUID, String> e : claimedSefirah.entrySet()) {
+            if (e.getValue().equals(sefirot)) return e.getKey();
+        }
+        return null;
+    }
+
+    // ── Pending Reclaim ───────────────────────────────────────────────────────
+
+    public void setPendingReclaim(String sefirot, UUID originalOwner) {
+        pendingReclaims.put(sefirot, originalOwner);
+        setDirty();
+    }
+
+    public void clearPendingReclaim(String sefirot) {
+        pendingReclaims.remove(sefirot);
+        setDirty();
+    }
+
+    public UUID getPendingReclaim(String sefirot) {
+        return pendingReclaims.get(sefirot);
+    }
+
+    /** Returns a snapshot of all pending reclaims (sefirot → original owner UUID). */
+    public java.util.Map<String, UUID> getAllPendingReclaims() {
+        return java.util.Collections.unmodifiableMap(pendingReclaims);
+    }
+
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         ListTag claimedSefirahList = new ListTag();
@@ -148,6 +277,52 @@ public class SefirotData extends SavedData {
         }
         tag.put("playersInSefirot", playersInSefirotList);
 
+        // Mental Imprint
+        ListTag firstOwnersList = new ListTag();
+        for (Map.Entry<String, UUID> entry : firstOwners.entrySet()) {
+            CompoundTag e = new CompoundTag();
+            e.putString("Sefirot", entry.getKey());
+            e.putUUID("Owner", entry.getValue());
+            firstOwnersList.add(e);
+        }
+        tag.put("firstOwners", firstOwnersList);
+
+        ListTag imprintList = new ListTag();
+        for (Map.Entry<String, Integer> entry : mentalImprintPercent.entrySet()) {
+            CompoundTag e = new CompoundTag();
+            e.putString("Sefirot", entry.getKey());
+            e.putInt("Imprint", entry.getValue());
+            imprintList.add(e);
+        }
+        tag.put("mentalImprintPercent", imprintList);
+
+        ListTag origSecondsList = new ListTag();
+        for (Map.Entry<String, Long> entry : originalOwnerSecondsOnline.entrySet()) {
+            CompoundTag e = new CompoundTag();
+            e.putString("Sefirot", entry.getKey());
+            e.putLong("Seconds", entry.getValue());
+            origSecondsList.add(e);
+        }
+        tag.put("originalOwnerSecondsOnline", origSecondsList);
+
+        ListTag currSecondsList = new ListTag();
+        for (Map.Entry<String, Long> entry : currentOwnerSecondsOnline.entrySet()) {
+            CompoundTag e = new CompoundTag();
+            e.putString("Sefirot", entry.getKey());
+            e.putLong("Seconds", entry.getValue());
+            currSecondsList.add(e);
+        }
+        tag.put("currentOwnerSecondsOnline", currSecondsList);
+
+        ListTag pendingReclaimsList = new ListTag();
+        for (Map.Entry<String, UUID> entry : pendingReclaims.entrySet()) {
+            CompoundTag e = new CompoundTag();
+            e.putString("Sefirot", entry.getKey());
+            e.putUUID("Owner", entry.getValue());
+            pendingReclaimsList.add(e);
+        }
+        tag.put("pendingReclaims", pendingReclaimsList);
+
         return tag;
     }
 
@@ -178,6 +353,47 @@ public class SefirotData extends SavedData {
             CompoundTag entryTag = playersInSefirotList.getCompound(i);
             UUID uuid = entryTag.getUUID("UUID");
             data.isInSefirot.add(uuid);
+        }
+
+        // Mental Imprint
+        if (tag.contains("firstOwners")) {
+            ListTag list = tag.getList("firstOwners", Tag.TAG_COMPOUND);
+            for (int i = 0; i < list.size(); i++) {
+                CompoundTag e = list.getCompound(i);
+                data.firstOwners.put(e.getString("Sefirot"), e.getUUID("Owner"));
+            }
+        }
+
+        if (tag.contains("mentalImprintPercent")) {
+            ListTag list = tag.getList("mentalImprintPercent", Tag.TAG_COMPOUND);
+            for (int i = 0; i < list.size(); i++) {
+                CompoundTag e = list.getCompound(i);
+                data.mentalImprintPercent.put(e.getString("Sefirot"), e.getInt("Imprint"));
+            }
+        }
+
+        if (tag.contains("originalOwnerSecondsOnline")) {
+            ListTag list = tag.getList("originalOwnerSecondsOnline", Tag.TAG_COMPOUND);
+            for (int i = 0; i < list.size(); i++) {
+                CompoundTag e = list.getCompound(i);
+                data.originalOwnerSecondsOnline.put(e.getString("Sefirot"), e.getLong("Seconds"));
+            }
+        }
+
+        if (tag.contains("currentOwnerSecondsOnline")) {
+            ListTag list = tag.getList("currentOwnerSecondsOnline", Tag.TAG_COMPOUND);
+            for (int i = 0; i < list.size(); i++) {
+                CompoundTag e = list.getCompound(i);
+                data.currentOwnerSecondsOnline.put(e.getString("Sefirot"), e.getLong("Seconds"));
+            }
+        }
+
+        if (tag.contains("pendingReclaims")) {
+            ListTag list = tag.getList("pendingReclaims", Tag.TAG_COMPOUND);
+            for (int i = 0; i < list.size(); i++) {
+                CompoundTag e = list.getCompound(i);
+                data.pendingReclaims.put(e.getString("Sefirot"), e.getUUID("Owner"));
+            }
         }
 
         return data;

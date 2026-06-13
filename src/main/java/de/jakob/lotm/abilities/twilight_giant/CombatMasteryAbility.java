@@ -36,6 +36,9 @@ public class CombatMasteryAbility extends Ability {
 
     public CombatMasteryAbility(String id) {
         super(id, Cooldown_Duration); // cooldown matches active duration
+        canBeCopied = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
     }
 
     @Override
@@ -55,7 +58,9 @@ public class CombatMasteryAbility extends Ability {
         if (level.isClientSide) return;
         UUID uuid = entity.getUUID();
         int sequence = BeyonderData.getSequence(entity);
-        int charges = sequence <= 8 ? 2 : 1;
+        // Charges per sequence: 9→2, 8→4, 7→8, 6→10, 5→15, 4→20, 3→25, 2→35, 1→45, 0→50
+        int[] chargeTable = {50, 45, 35, 25, 20, 15, 10, 8, 4, 2};
+        int charges = (sequence >= 0 && sequence <= 9) ? chargeTable[sequence] : 2;
         Crit_Charges.put(uuid, charges);
         AbilityUtil.sendActionBar(entity, Component.literal("Combat Mastery: " + charges + " crits"));
         level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
