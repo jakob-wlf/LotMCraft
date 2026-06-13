@@ -839,6 +839,11 @@ public class PacketHandler {
                 OpenHonorificNamesMenuPacket::handle);
 
         registrar.playToServer(
+                PerformPreyPacket.TYPE,
+                PerformPreyPacket.STREAM_CODEC,
+                PerformPreyPacket::handle);
+
+        registrar.playToServer(
                 HonorificNamesRespondPacket.TYPE,
                 HonorificNamesRespondPacket.STREAM_CODEC,
                 HonorificNamesRespondPacket::handle);

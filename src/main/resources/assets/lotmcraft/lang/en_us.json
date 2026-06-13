@@ -1965,6 +1965,8 @@
   "lotmcraft.griefing_enabled_required": "Enable griefing for this ability to work",
 
   "lotmcraft.own_praying": "You have heard your own praying",
+  "lotmcraft.gui.prey.title": "Select Target to Pray To",
+  "lotmcraft.prey.success": "You have initiated a prayer to the selected target. Your next chat message will be sent as a prayer.",
   "lotmcraft.far_away_praying": "You have heard whispers of praying, but you are too far away to hear them clearly",
   "lotmcraft.honorific_praying": "You have heard praying from %1$s\nTheir general info: Pathway - %2$s; Sequence - %3$d; Position - %4$d %5$d %6$d",
   "lotmcraft.honorific_praying_message": "You have heard message: %s",
