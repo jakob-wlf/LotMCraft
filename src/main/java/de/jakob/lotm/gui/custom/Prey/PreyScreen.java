@@ -17,9 +17,12 @@ import java.util.UUID;
 
 public class PreyScreen extends AbstractContainerScreen<PreyMenu> {
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/honorific_names.png");
     private static final int CARD_HEIGHT = 40;
-    private static final int CARD_WIDTH = 150;
+    private static final int CARD_WIDTH = 180;
+    
+    private static final int COLOR_BG = 0xDD000810;
+    private static final int COLOR_OUTLINE = 0xFF886622;
+    private static final int COLOR_TITLE = 0xFFFFAD33;
     
     private double scrollAmount = 0;
     private final List<Map.Entry<UUID, HonorificName>> entries;
@@ -47,9 +50,12 @@ public class PreyScreen extends AbstractContainerScreen<PreyMenu> {
     protected void renderBg(GuiGraphics gfx, float partialTick, int mouseX, int mouseY) {
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
-        gfx.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
+        
+        // Simple colored background
+        gfx.fill(x, y, x + imageWidth, y + imageHeight, COLOR_BG);
+        gfx.renderOutline(x, y, imageWidth, imageHeight, COLOR_OUTLINE);
 
-        renderList(gfx, x + 53, y + 20, mouseX, mouseY);
+        renderList(gfx, x + (imageWidth - CARD_WIDTH) / 2, y + 25, mouseX, mouseY);
     }
 
     private void renderList(GuiGraphics gfx, int x, int y, int mouseX, int mouseY) {
@@ -68,24 +74,22 @@ public class PreyScreen extends AbstractContainerScreen<PreyMenu> {
 
     private void renderEntry(GuiGraphics gfx, Map.Entry<UUID, HonorificName> entry, int x, int y, int mouseX, int mouseY) {
         boolean hovered = mouseX >= x && mouseX <= x + CARD_WIDTH && mouseY >= y && mouseY <= y + CARD_HEIGHT;
-        int vOffset = hovered ? CARD_HEIGHT : 0;
         
-        // Using same texture region as honorific names cards if available, or just a simple rect
         gfx.fill(x, y, x + CARD_WIDTH, y + CARD_HEIGHT, hovered ? 0x44FFFFFF : 0x22FFFFFF);
-        gfx.renderOutline(x, y, CARD_WIDTH, CARD_HEIGHT, 0xFFFFFFFF);
+        gfx.renderOutline(x, y, CARD_WIDTH, CARD_HEIGHT, hovered ? 0xFFFFFFFF : 0xFFAAAAAA);
 
         HonorificName name = entry.getValue();
         int lineY = y + 5;
         for (int i = 0; i < Math.min(name.lines().size(), 3); i++) {
-            gfx.drawString(font, name.lines().get(i), x + 5, lineY, 0xFFFFFF);
+            gfx.drawString(font, name.lines().get(i), x + 5, lineY, 0xFFE0E0E0);
             lineY += 10;
         }
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        int x = (width - imageWidth) / 2 + 53;
-        int y = (height - imageHeight) / 2 + 20;
+        int x = (width - imageWidth) / 2 + (imageWidth - CARD_WIDTH) / 2;
+        int y = (height - imageHeight) / 2 + 25;
         
         int currentY = y - (int) scrollAmount;
         for (int i = 0; i < entries.size(); i++) {
@@ -109,6 +113,6 @@ public class PreyScreen extends AbstractContainerScreen<PreyMenu> {
 
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int i, int i1) {
-        guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
+        guiGraphics.drawString(this.font, this.title, (this.imageWidth - this.font.width(this.title)) / 2, this.titleLabelY, COLOR_TITLE, false);
     }
 }
