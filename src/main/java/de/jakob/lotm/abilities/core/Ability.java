@@ -229,6 +229,12 @@ public abstract class Ability {
                 return true;
             }
         }*/
+        // Check for received blessings
+        if (entity.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT).getBlessings().stream()
+                .anyMatch(b -> getRequirements().containsKey(b.pathway()) && getRequirements().get(b.pathway()) >= b.sequence())) {
+            return true;
+        }
+
         return BeyonderData.getCharList(entity).stream().anyMatch(character -> getRequirements().containsKey(character.pathway()) && getRequirements().get(character.pathway()) >= sequence);
 
         //return false;

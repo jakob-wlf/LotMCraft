@@ -222,6 +222,7 @@ public class BeyonderData {
         boolean griefing = !BeyonderData.isBeyonder(entity) || BeyonderData.isGriefingEnabled(entity);
 
         BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
+        ReceivedBlessingComponent receivedBlessingComponent = entity.getData(ModAttachments.RECEIVED_BLESSING_COMPONENT);
         component.setPathway(pathway);
         component.setSequence(sequence);
         if (updateCharacteristics) {
@@ -278,7 +279,7 @@ public class BeyonderData {
                 if (putIntoMap)
                     playerMap.put(serverPlayer);
 
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicList());
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicList(), receivedBlessingComponent.getBlessings());
                 PacketHandler.sendToAllPlayers(packet);
 
                 TeamComponent teamComp = serverPlayer.getData(ModAttachments.TEAM_COMPONENT.get());
@@ -702,7 +703,7 @@ public class BeyonderData {
         if (!entity.level().isClientSide()) {
             if(entity instanceof ServerPlayer serverPlayer) {
                 // Send empty data to clear client cache
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", 10, 0.0f, false, 0.0f, new String[10], new ArrayList<>());
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", 10, 0.0f, false, 0.0f, new String[10], new ArrayList<>(), new ArrayList<>());
                 PacketHandler.sendToPlayer(serverPlayer, packet);
             }
             else {

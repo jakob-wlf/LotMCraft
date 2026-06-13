@@ -52,6 +52,9 @@ import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Random;
 
+import de.jakob.lotm.network.packets.toClient.SyncAnchorsPacket;
+import de.jakob.lotm.util.data.ClientData;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -59,6 +62,10 @@ import java.util.UUID;
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class ClientHandler {
+    public static void handleSyncAnchors(SyncAnchorsPacket packet) {
+        ClientData.setAnchors(packet.anchors());
+    }
+
     public static void openCoordinateScreen(Player player, String use) {
         Minecraft.getInstance().setScreen(new CoordinateInputScreen(player, use));
     }
@@ -654,8 +661,9 @@ public class ClientHandler {
     }
 
     public static void handleSyncBeyonderData(SyncBeyonderDataPacket packet, IPayloadContext context) {
+        Player player = context.player();
         ClientBeyonderCache.updateData(
-                context.player().getUUID(),
+                player.getUUID(),
                 packet.pathway(),
                 packet.sequence(),
                 packet.spirituality(),
@@ -665,6 +673,11 @@ public class ClientHandler {
                 packet.pathwayHistory(),
                 packet.charList()
         );
+
+        // Update received blessings
+        de.jakob.lotm.attachments.ReceivedBlessingComponent receivedBlessings = player.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT);
+        receivedBlessings.getBlessings().clear();
+        receivedBlessings.getBlessings().addAll(packet.blessings());
 
         if (Minecraft.getInstance().screen instanceof IntrospectScreen screen) {
             screen.refreshAvailableAbilities();

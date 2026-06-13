@@ -3,6 +3,8 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.common.CogitationAbility;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityHandler;
+import de.jakob.lotm.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.attachments.BeyonderComponent;
 import de.jakob.lotm.attachments.CorruptedPlayerComponent;
 import de.jakob.lotm.attachments.CorruptionComponent;
@@ -12,6 +14,7 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.pathways.PathwayInfos;
 import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.network.chat.Component;
@@ -118,6 +121,7 @@ public class CorruptionEventHandler {
 
     private static void handleCorruptionEffects(LivingEntity entity) {
         CorruptionComponent corruptionComp = entity.getData(ModAttachments.CORRUPTION_COMPONENT);
+        CorruptedPlayerComponent corruptedComp = entity.getData(ModAttachments.CORRUPTED_PLAYER_COMPONENT);
         float corruption = corruptionComp.getCorruption();
         int corruptionValue = (int) (corruption * 100);
 
@@ -128,7 +132,7 @@ public class CorruptionEventHandler {
         Random random = new Random();
 
         // Passive sanity loss
-        if (entity.tickCount % 20 == 0) {
+        if (entity.tickCount % 20 == 0 && !corruptedComp.isFullyCorrupted()) {
             float sanityLoss = corruption * 0.01f; // Up to 0.01% per second at 100% corruption
             SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
             sanityComp.decreaseSanityAndSync(sanityLoss, entity);
@@ -150,7 +154,7 @@ public class CorruptionEventHandler {
         }
         if (corruptionValue >= 60) {
             if (random.nextInt(1000) < corruptionValue) {
-                //entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 100, 0));
+
             }
         }
         if (corruptionValue >= 80) {
@@ -159,8 +163,38 @@ public class CorruptionEventHandler {
             }
         }
 
+        
+
+        if (corruptionValue < 50) {
+            if (entity instanceof ServerPlayer player) {
+                revertFullCorruption(player);
+            }
+        }
+
         if (corruptionValue >= 100) {
             handleFullCorruption(entity);
+        }
+    }
+
+    private static void revertFullCorruption(ServerPlayer player) {
+        CorruptedPlayerComponent corruptedComp = player.getData(ModAttachments.CORRUPTED_PLAYER_COMPONENT);
+        if (corruptedComp.isFullyCorrupted()) {
+            corruptedComp.setFullyCorrupted(false);
+
+            if (player.level() instanceof ServerLevel serverLevel) {
+                UUID npcUUID = corruptedComp.getNpcUUID();
+                if (npcUUID != null) {
+                    net.minecraft.world.entity.Entity npc = serverLevel.getEntity(npcUUID);
+                    if (npc instanceof BeyonderNPCEntity) {
+                        npc.discard();
+                    }
+                }
+            }
+
+            corruptedComp.setNpcUUID(null);
+            player.setGameMode(GameType.SURVIVAL);
+
+            player.sendSystemMessage(Component.literal("Your corruption has decreased, and you have regained control!"));
         }
     }
 
@@ -184,10 +218,18 @@ public class CorruptionEventHandler {
                 rogueBeyonder.setCustomNameVisible(true);
                 
                 serverLevel.addFreshEntity(rogueBeyonder);
+                rogueBeyonder.setPersistentNPC(true);
                 corruptedComp.setNpcUUID(rogueBeyonder.getUUID());
                 
+                // Set sanity to full
+                SanityComponent sanityComp = player.getData(ModAttachments.SANITY_COMPONENT);
+                sanityComp.setSanityAndSync(1.0f, player);
+                
                 // Set player to spectator and notify
+
                 player.setGameMode(GameType.SPECTATOR);
+
+                player.setCamera(rogueBeyonder);
                 player.sendSystemMessage(Component.literal("You have lost control and become a rogue beyonder!"));
             }
             return;

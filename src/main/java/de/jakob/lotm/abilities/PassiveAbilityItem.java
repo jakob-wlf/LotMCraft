@@ -33,6 +33,12 @@ public abstract class PassiveAbilityItem extends Item {
 
     public boolean shouldApplyTo(LivingEntity entity) {
         if (entity.level().isClientSide()) {
+            // Check for received blessings on client-side (assuming we'll sync it)
+            if (entity.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT).getBlessings().stream()
+                    .anyMatch(b -> getRequirements().containsKey(b.pathway()) && b.sequence() <= getRequirements().get(b.pathway()))) {
+                return true;
+            }
+
             ArrayList<Characteristic> charList = ClientBeyonderCache.getCharList(entity.getUUID());
             for (Characteristic c : charList) {
                 Integer minSeq = getRequirements().get(c.pathway());
@@ -62,6 +68,12 @@ public abstract class PassiveAbilityItem extends Item {
 
             return false;
         } else {
+            // Check for received blessings
+            if (entity.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT).getBlessings().stream()
+                    .anyMatch(b -> getRequirements().containsKey(b.pathway()) && b.sequence() <= getRequirements().get(b.pathway()))) {
+                return true;
+            }
+
             ArrayList<Characteristic> charList = BeyonderData.getCharList(entity);
             for (Characteristic c : charList) {
                 Integer minSeq = getRequirements().get(c.pathway());

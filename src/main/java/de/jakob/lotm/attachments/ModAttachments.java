@@ -112,6 +112,7 @@ public class ModAttachments {
             ATTACHMENT_TYPES.register("corruption_component", () ->
                     AttachmentType.builder(CorruptionComponent::new)
                             .serialize(CorruptionComponent.SERIALIZER)
+                            .copyOnDeath()
                             .build()
             );
 
@@ -313,6 +314,24 @@ public class ModAttachments {
                             .serialize(CorruptedPlayerComponent.SERIALIZER)
                             .copyOnDeath()
                             .build()
+            );
+
+    public static final Supplier<AttachmentType<AnchorComponent>> ANCHOR_COMPONENT =
+            ATTACHMENT_TYPES.register("anchor_component", () ->
+                    AttachmentType.builder(AnchorComponent::new)
+                            .serialize(AnchorComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<ActiveBlessingComponent>> ACTIVE_BLESSING_COMPONENT =
+            ATTACHMENT_TYPES.register("active_blessing_component", () ->
+                    AttachmentType.serializable(ActiveBlessingComponent::new).copyOnDeath().build()
+            );
+
+    public static final Supplier<AttachmentType<ReceivedBlessingComponent>> RECEIVED_BLESSING_COMPONENT =
+            ATTACHMENT_TYPES.register("received_blessing_component", () ->
+                    AttachmentType.serializable(ReceivedBlessingComponent::new).copyOnDeath().build()
             );
 
     public static void register(IEventBus eventBus) {

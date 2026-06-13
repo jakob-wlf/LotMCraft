@@ -145,6 +145,12 @@ public class PacketHandler {
                 SyncCorruptionPacket::handle
         );
 
+        registrar.playToClient(
+                SyncAnchorsPacket.TYPE,
+                SyncAnchorsPacket.STREAM_CODEC,
+                SyncAnchorsPacket::handle
+        );
+
 
         registrar.playToClient(
                 SendPassiveTheftEffectPacket.TYPE,
@@ -605,6 +611,11 @@ public class PacketHandler {
                 BecomeBeyonderPacket.STREAM_CODEC,
                 BecomeBeyonderPacket::handle
         );
+        registrar.playToServer(
+                ApplyBlessingPacket.TYPE,
+                ApplyBlessingPacket.STREAM_CODEC,
+                ApplyBlessingPacket::handle
+        );
 
         registrar.playToServer(
                 DiscardQuestPacket.TYPE,
@@ -1002,10 +1013,11 @@ public class PacketHandler {
         boolean griefingEnabled = BeyonderData.isGriefingEnabled(player);
         float digestionProgress = BeyonderData.getDigestionProgress(player);
         ArrayList<Characteristic> charList = BeyonderData.getCharList(player);
+        java.util.List<de.jakob.lotm.attachments.ReceivedBlessingComponent.ReceivedBlessing> blessings = player.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT).getBlessings();
 
         String[] history = BeyonderData.getPathwayHistory(player);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charList);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charList, blessings);
         sendToPlayer(player, packet);
     }
 
@@ -1057,8 +1069,9 @@ public class PacketHandler {
         boolean griefingEnabled = BeyonderData.isGriefingEnabled(targetPlayer);
         float digestionProgress = BeyonderData.getDigestionProgress(targetPlayer);
         ArrayList<Characteristic> charList = BeyonderData.getCharList(targetPlayer);
+        java.util.List<de.jakob.lotm.attachments.ReceivedBlessingComponent.ReceivedBlessing> blessings = targetPlayer.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT).getBlessings();
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charList);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charList, blessings);
 
         targetPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
             sendToPlayer(player, packet);

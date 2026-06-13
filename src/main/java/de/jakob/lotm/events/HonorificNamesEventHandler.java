@@ -2,6 +2,7 @@ package de.jakob.lotm.events;
 
 import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.AnchorComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.PendingPrayer;
@@ -129,6 +130,16 @@ public class HonorificNamesEventHandler {
             isInTransferring.put(playerUUID, targetUUID);
 
             target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(.01f, target);
+
+            // Decrease corruption on prayer
+            int decreaseVal = target.level().getGameRules().getInt(de.jakob.lotm.gamerule.ModGameRules.PRAYER_CORRUPTION_DECREASE);
+            if (decreaseVal > 0) {
+                target.getData(ModAttachments.CORRUPTION_COMPONENT).decreaseCorruptionAndSync(decreaseVal / 1000f, target);
+            }
+
+            // Add/Update anchor
+            AnchorComponent anchorComp = target.getData(ModAttachments.ANCHOR_COMPONENT);
+            anchorComp.addOrUpdateAnchor(playerUUID, 1.0f);
 
             storePendingPrayer(event.getPlayer(), target);
 
