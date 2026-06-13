@@ -82,7 +82,7 @@ public class SelfCharacteristicsScreen extends Screen {
         for (String h : ClientBeyonderCache.getPathwayHistory(self))
             if (h != null && !h.isEmpty() && !h.equals("none")) paths.add(h);
         int minSeq = ClientBeyonderCache.getHighestSequence(self);
-        if (minSeq <= 0) minSeq = 9; // fallback if not yet loaded
+        if (minSeq < 0) minSeq = 9; // fallback if not yet loaded
         for (String p : paths) {
             List<Integer> seqs = new ArrayList<>();
             for (int s = minSeq; s <= 9; s++) seqs.add(s);
