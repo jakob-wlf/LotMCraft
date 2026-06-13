@@ -1,6 +1,6 @@
 ﻿{
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "lotmcraft:item/placeholder"
+    "layer0": "lotmcraft:item/demoness_blasphemy_card"
   }
 }

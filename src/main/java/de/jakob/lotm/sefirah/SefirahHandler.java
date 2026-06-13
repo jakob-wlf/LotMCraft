@@ -3,6 +3,7 @@ package de.jakob.lotm.sefirah;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DeathImprintData;
 import de.jakob.lotm.attachments.SefirotData;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityBarHelper;
@@ -16,6 +17,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -193,6 +195,20 @@ public class SefirahHandler {
                 }
             }
         }
+    }
+
+    /**
+     * Returns the dimension key for the given sefirot, or null if it has no associated dimension.
+     */
+    @Nullable
+    public static ResourceKey<Level> getSefirotDimensionKey(String sefirot) {
+        if (sefirot == null || sefirot.isEmpty()) return null;
+        return switch (sefirot) {
+            case "sefirah_castle"            -> ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY;
+            case "chaos_sea"                 -> ModDimensions.CHAOS_SEA_DIMENSION_KEY;
+            case "river_of_eternal_darkness" -> ModDimensions.RIVER_OF_ETERNAL_DARKNESS_DIMENSION_KEY;
+            default                          -> null;
+        };
     }
 
 }

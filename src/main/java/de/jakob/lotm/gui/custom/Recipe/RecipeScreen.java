@@ -4,15 +4,21 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.OpenRecipeMenuPacket;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import org.lwjgl.glfw.GLFW;
 
 public class RecipeScreen extends AbstractContainerScreen<RecipeMenu> {
     private final ResourceLocation containerBackground;
+
+    /** Mouse position saved just before sending a nav-arrow packet, so we can restore it in init(). */
+    private static double savedMouseX = -1;
+    private static double savedMouseY = -1;
 
     public RecipeScreen(RecipeMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -22,10 +28,18 @@ public class RecipeScreen extends AbstractContainerScreen<RecipeMenu> {
         this.imageHeight = 134;
         this.imageWidth = 216;
     }
-    
+
     @Override
     protected void init() {
         super.init();
+
+        // Restore mouse position if a nav arrow triggered this screen open
+        if (savedMouseX >= 0 && savedMouseY >= 0) {
+            long window = Minecraft.getInstance().getWindow().getWindow();
+            GLFW.glfwSetCursorPos(window, savedMouseX, savedMouseY);
+            savedMouseX = -1;
+            savedMouseY = -1;
+        }
 
         String pathway  = this.menu.getPathway();
         int    sequence = this.menu.getSequence();
@@ -40,7 +54,11 @@ public class RecipeScreen extends AbstractContainerScreen<RecipeMenu> {
         if (sequence < 9) {
             addRenderableWidget(Button.builder(
                     Component.literal("◄"),
-                    btn -> PacketHandler.sendToServer(new OpenRecipeMenuPacket(sequence + 1, pathway, true))
+                    btn -> {
+                        savedMouseX = Minecraft.getInstance().mouseHandler.xpos();
+                        savedMouseY = Minecraft.getInstance().mouseHandler.ypos();
+                        PacketHandler.sendToServer(new OpenRecipeMenuPacket(sequence + 1, pathway, true));
+                    }
             ).pos(bx + 2, by).size(20, 16).build());
         }
 
@@ -48,7 +66,11 @@ public class RecipeScreen extends AbstractContainerScreen<RecipeMenu> {
         if (sequence > 1) {
             addRenderableWidget(Button.builder(
                     Component.literal("►"),
-                    btn -> PacketHandler.sendToServer(new OpenRecipeMenuPacket(sequence - 1, pathway, true))
+                    btn -> {
+                        savedMouseX = Minecraft.getInstance().mouseHandler.xpos();
+                        savedMouseY = Minecraft.getInstance().mouseHandler.ypos();
+                        PacketHandler.sendToServer(new OpenRecipeMenuPacket(sequence - 1, pathway, true));
+                    }
             ).pos(bx + this.imageWidth - 22, by).size(20, 16).build());
         }
     }

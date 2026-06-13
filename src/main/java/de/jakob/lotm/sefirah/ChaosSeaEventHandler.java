@@ -1,7 +1,9 @@
 package de.jakob.lotm.sefirah;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.GatheringData;
 import de.jakob.lotm.attachments.SefirotData;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.custom.BlasphemySlateItem;
 import de.jakob.lotm.network.PacketHandler;
@@ -13,12 +15,15 @@ import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.pathways.PathwayInfos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -55,6 +60,54 @@ public class ChaosSeaEventHandler {
     private static final Map<UUID, UUID>    ritualSlateIds      = new HashMap<>();
     private static final Map<UUID, UUID>    ritualBeamEffectIds = new HashMap<>();
     private static final Set<UUID>          ritualAnnounced     = new HashSet<>();
+
+    // ─── Dimension lock ───────────────────────────────────────────────────────
+
+    /**
+     * 1. While a ritual is in progress, lock the Spirit World (same as other sefirot).
+     * 2. Block entry into the Chaos Sea unless the player is the current owner.
+     * 3. Block travel TO the Chaos Sea from the Nature dimension (compass exploit fix).
+     */
+    @SubscribeEvent
+    public static void onEntityTravelToDimension(EntityTravelToDimensionEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        ResourceKey<Level> target  = event.getDimension();
+        ResourceKey<Level> current = event.getEntity().level().dimension();
+
+        // 1. Spirit World lock during ritual
+        if (!ritualTicks.isEmpty()) {
+            boolean goingIn  = target  == ModDimensions.SPIRIT_WORLD_DIMENSION_KEY;
+            boolean goingOut = current == ModDimensions.SPIRIT_WORLD_DIMENSION_KEY;
+            if (goingIn || goingOut) {
+                event.setCanceled(true);
+                player.sendSystemMessage(Component.translatable("lotm.sefirot.sefirah_castle_spirit_world_locked"));
+                return;
+            }
+        }
+
+        // 2 & 3. Block unauthorised entry into the Chaos Sea
+        if (!target.equals(ModDimensions.CHAOS_SEA_DIMENSION_KEY)) return;
+
+        // The owner may always enter their own dimension
+        if (SEFIROT_ID.equals(SefirahHandler.getClaimedSefirot(player))) return;
+
+        // Gathering members (blessed by the owner) may freely enter and exit
+        UUID ownerUUID = SefirotData.get(player.server).getHolderOf(SEFIROT_ID);
+        if (ownerUUID != null && GatheringData.get(player.server).isMember(ownerUUID, player.getUUID())) return;
+
+        // Nobody else — including players coming from the Nature dimension — may enter
+        event.setCanceled(true);
+        boolean fromNature = current.location().equals(ModDimensions.WORLD_CREATION_LEVEL_KEY.location());
+        if (fromNature) {
+            player.sendSystemMessage(Component.literal(
+                    "The Chaos Sea cannot be reached from within the Nature dimension.")
+                    .withStyle(net.minecraft.ChatFormatting.RED));
+        } else {
+            player.sendSystemMessage(Component.literal(
+                    "You do not have authority over the Chaos Sea.")
+                    .withStyle(net.minecraft.ChatFormatting.RED));
+        }
+    }
 
     // ─── Right-click trigger ─────────────────────────────────────────────────
 

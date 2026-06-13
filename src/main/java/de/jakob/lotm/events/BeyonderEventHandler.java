@@ -130,6 +130,9 @@ public class BeyonderEventHandler {
             // Re-sync data when changing dimensions
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
             BeyonderData.recalculateCharStackModifiers(serverPlayer);
+            // Re-sync corruption so client-side HUD/shaders don't reset to zero
+            float corruption = serverPlayer.getData(ModAttachments.CORRUPTION_COMPONENT).getCorruption();
+            PacketHandler.sendToPlayer(serverPlayer, new de.jakob.lotm.network.packets.toClient.SyncCorruptionPacket(corruption, serverPlayer.getId()));
         }
     }
 
@@ -180,6 +183,9 @@ public class BeyonderEventHandler {
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
             BeyonderData.recalculateCharStackModifiers(serverPlayer);
             serverPlayer.getData(ModAttachments.LUCK_COMPONENT.get()).setLuck(0);
+            // Re-sync corruption so client-side HUD/shaders don't reset to zero
+            float corruption = serverPlayer.getData(ModAttachments.CORRUPTION_COMPONENT).getCorruption();
+            PacketHandler.sendToPlayer(serverPlayer, new de.jakob.lotm.network.packets.toClient.SyncCorruptionPacket(corruption, serverPlayer.getId()));
             // Clear sacrifice bar if it was active when the player died
             if (serverPlayer.getPersistentData().getBoolean("sacrifice_bar_clear")) {
                 serverPlayer.getPersistentData().remove("sacrifice_bar_clear");

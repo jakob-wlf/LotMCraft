@@ -3,6 +3,7 @@ package de.jakob.lotm.gui.custom.ChaosSeaAuthority;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.RequestGatheringScreenPacket;
 import de.jakob.lotm.network.packets.toServer.ToggleSefirotAuthorityAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.pathways.PathwayInfos;
@@ -139,6 +140,12 @@ public class ChaosSeaAuthorityScreen extends AbstractContainerScreen<ChaosSeaAut
                 Component.literal("Envisioning").withStyle(ChatFormatting.GOLD),
                 b -> Minecraft.getInstance().setScreen(new EnvisioningScreen()))
                 .bounds(leftPos + PANEL_WIDTH - 90, topPos + 4, 86, 14).build());
+
+        // Blessed button – bottom left
+        addRenderableWidget(Button.builder(
+                Component.literal("Blessed").withStyle(ChatFormatting.LIGHT_PURPLE),
+                b -> { PacketHandler.sendToServer(new RequestGatheringScreenPacket()); onClose(); })
+                .bounds(leftPos + 4, topPos + PANEL_HEIGHT - 20, 60, 16).build());
 
         unlocked.clear();
         unlocked.addAll(menu.getUnlockedIds());

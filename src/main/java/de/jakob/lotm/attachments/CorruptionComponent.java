@@ -33,6 +33,21 @@ public class CorruptionComponent {
     }
 
     public void increaseCorruptionAndSync(float amount, LivingEntity entity) {
+        // Block positive corruption gains for original sefirot owners inside their own dimension
+        if (amount > 0 && entity instanceof ServerPlayer sp && sp.server != null) {
+            SefirotData sd = SefirotData.get(sp.server);
+            String ownedSef = sd.getClaimedSefirot(sp.getUUID());
+            if (ownedSef != null && !ownedSef.isEmpty()) {
+                java.util.UUID firstOwner = sd.getFirstOwner(ownedSef);
+                if (firstOwner != null && firstOwner.equals(sp.getUUID())) {
+                    net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dim =
+                            de.jakob.lotm.sefirah.SefirahHandler.getSefirotDimensionKey(ownedSef);
+                    if (dim != null && sp.level().dimension().equals(dim)) {
+                        return; // shielded — no corruption gain inside own sefirot
+                    }
+                }
+            }
+        }
         this.corruption += amount;
 
         if (this.corruption > 1.0f) this.corruption = 1.0f;

@@ -161,15 +161,30 @@ public class DeathImprintHandler {
 
                     // Passive corruption from death imprints + River mental imprint
                     // Only applies when the River is claimed and has a mental imprint > 0
+                    // Skip if this player is the original owner of their sefirot and is inside it
                     int deathTier = data.getImprintCount(uuid);
                     if (deathTier > 0) {
                         SefirotData sefirotData = SefirotData.get(event.getServer());
-                        int riverMentalImprint = sefirotData.getMentalImprint("river_of_eternal_darkness");
-                        if (riverMentalImprint > 0) {
-                            // tier 1 + 100% mental imprint = 1% per 10 min; scales with both
-                            float corruptionPerSecond = deathTier * (riverMentalImprint / 100f) * (1f / 60_000f);
-                            player.getData(ModAttachments.CORRUPTION_COMPONENT.get())
-                                    .increaseCorruptionAndSync(corruptionPerSecond, player);
+                        boolean shielded = false;
+                        String ownedSef = sefirotData.getClaimedSefirot(uuid);
+                        if (ownedSef != null && !ownedSef.isEmpty()) {
+                            java.util.UUID firstOwner = sefirotData.getFirstOwner(ownedSef);
+                            if (uuid.equals(firstOwner)) {
+                                net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dim =
+                                        de.jakob.lotm.sefirah.SefirahHandler.getSefirotDimensionKey(ownedSef);
+                                if (dim != null && player.level().dimension().equals(dim)) {
+                                    shielded = true;
+                                }
+                            }
+                        }
+                        if (!shielded) {
+                            int riverMentalImprint = sefirotData.getMentalImprint("river_of_eternal_darkness");
+                            if (riverMentalImprint > 0) {
+                                // tier 1 + 100% mental imprint = 1% per 10 min; scales with both
+                                float corruptionPerSecond = deathTier * (riverMentalImprint / 100f) * (1f / 60_000f);
+                                player.getData(ModAttachments.CORRUPTION_COMPONENT.get())
+                                        .increaseCorruptionAndSync(corruptionPerSecond, player);
+                            }
                         }
                     }
                 }

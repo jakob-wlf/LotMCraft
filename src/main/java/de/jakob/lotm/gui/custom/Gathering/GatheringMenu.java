@@ -16,19 +16,21 @@ public class GatheringMenu extends AbstractContainerMenu {
     private final List<GatheringEntry> prayers;
     private final List<UUID> members;
     private final boolean gatheringActive;
+    private final String sefirahType;
 
     /** One row in the prayer / member list. */
     public record GatheringEntry(UUID uuid, String name, String pathway, int sequence) {}
 
     /** Client-side constructor. */
     public GatheringMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buf) {
-        this(containerId, playerInventory, readEntries(buf), readUUIDs(buf), buf.readBoolean());
+        this(containerId, playerInventory, buf.readUtf(64), readEntries(buf), readUUIDs(buf), buf.readBoolean());
     }
 
     /** Server-side constructor. */
     public GatheringMenu(int containerId, Inventory playerInventory,
-                         List<GatheringEntry> prayers, List<UUID> members, boolean gatheringActive) {
+                         String sefirahType, List<GatheringEntry> prayers, List<UUID> members, boolean gatheringActive) {
         super(ModMenuTypes.GATHERING_MENU.get(), containerId);
+        this.sefirahType = sefirahType;
         this.prayers = prayers;
         this.members = members;
         this.gatheringActive = gatheringActive;
@@ -37,6 +39,7 @@ public class GatheringMenu extends AbstractContainerMenu {
     public List<GatheringEntry> getPrayers()   { return prayers; }
     public List<UUID>           getMembers()   { return members; }
     public boolean              isActive()     { return gatheringActive; }
+    public String               getSefirahType() { return sefirahType; }
 
     private static List<GatheringEntry> readEntries(RegistryFriendlyByteBuf buf) {
         int count = buf.readVarInt();
@@ -58,8 +61,9 @@ public class GatheringMenu extends AbstractContainerMenu {
         return list;
     }
 
-    public static void writeToBuffer(RegistryFriendlyByteBuf buf, List<GatheringEntry> prayers,
-                                     List<UUID> members, boolean active) {
+    public static void writeToBuffer(RegistryFriendlyByteBuf buf, String sefirahType,
+                                     List<GatheringEntry> prayers, List<UUID> members, boolean active) {
+        buf.writeUtf(sefirahType, 64);
         buf.writeVarInt(prayers.size());
         for (GatheringEntry e : prayers) {
             buf.writeUtf(e.uuid().toString(), 64);
