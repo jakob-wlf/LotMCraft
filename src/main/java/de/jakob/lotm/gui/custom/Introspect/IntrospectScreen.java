@@ -7,6 +7,7 @@ import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.RemoteAbilityCastPacket;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.data.ClientData;
@@ -1212,6 +1213,16 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             int textY = listY + (i - startIndex) * lineHeight;
             guiGraphics.drawString(this.font, text, panelX + 5, textY, 0xFFCCCCCC, false);
 
+            // Add "Cast" button
+            int castBtnX = panelX + panelWidth - 90;
+            int castBtnY = textY - 1;
+            boolean isCastHovered = mouseX >= castBtnX && mouseX <= castBtnX + 40 &&
+                    mouseY >= castBtnY && mouseY <= castBtnY + 10;
+
+            guiGraphics.fill(castBtnX, castBtnY, castBtnX + 40, castBtnY + 10, isCastHovered ? 0xFF666666 : 0xFF444444);
+            guiGraphics.renderOutline(castBtnX, castBtnY, 40, 10, 0xFFAAAAAA);
+            guiGraphics.drawCenteredString(this.font, "Cast", castBtnX + 20, castBtnY + 1, 0xFFFFFFFF);
+
             // Add "Bless" button
             int blessBtnX = panelX + panelWidth - 45;
             int blessBtnY = textY - 1;
@@ -1602,6 +1613,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
             for (int i = startIndex; i < endIndex; i++) {
                 int textY = listY + (i - startIndex) * lineHeight;
+                int castBtnX = panelX + panelWidth - 90;
+                int castBtnY = textY - 1;
+
+                if (mouseX >= castBtnX && mouseX <= castBtnX + 40 && mouseY >= castBtnY && mouseY <= castBtnY + 10) {
+                    PacketHandler.sendToServer(new RemoteAbilityCastPacket(anchorList.get(i).getKey()));
+                    return true;
+                }
+
                 int blessBtnX = panelX + panelWidth - 45;
                 int blessBtnY = textY - 1;
 

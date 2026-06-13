@@ -834,6 +834,11 @@ public class PacketHandler {
 
 
         registrar.playToServer(
+                RemoteAbilityCastPacket.TYPE,
+                RemoteAbilityCastPacket.STREAM_CODEC,
+                RemoteAbilityCastPacket::handle);
+
+        registrar.playToServer(
                 OpenHonorificNamesMenuPacket.TYPE,
                 OpenHonorificNamesMenuPacket.STREAM_CODEC,
                 OpenHonorificNamesMenuPacket::handle);
