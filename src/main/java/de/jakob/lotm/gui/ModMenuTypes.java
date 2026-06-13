@@ -42,6 +42,10 @@ public class ModMenuTypes {
             MENU_TYPES.register("honorific_names_menu", () ->
                     IMenuTypeExtension.create(HonorificNamesMenu::new));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<de.jakob.lotm.gui.custom.Prey.PreyMenu>> PREY_MENU =
+            MENU_TYPES.register("prey_menu", () ->
+                    IMenuTypeExtension.create(de.jakob.lotm.gui.custom.Prey.PreyMenu::new));
+
     public static final DeferredHolder<MenuType<?>, MenuType<AbilityWheelMenu>> ABILITY_WHEEL_MENU = MENU_TYPES.register(
             "ability_wheel_menu",
             () -> new MenuType<>(AbilityWheelMenu::new, net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS)

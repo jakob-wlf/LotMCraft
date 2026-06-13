@@ -847,6 +847,7 @@
   "blessing.lotmcraft.sun_cleansing": "Sun's Cleansing",
   "blessing.lotmcraft.error_agility": "Error's Agility",
   "blessing.lotmcraft.minor_healing": "Minor Healing",
+  "blessing.lotmcraft.concealment": "Concealment",
   "lotmcraft.curse_of_misfortune_ability": "Curse of Misfortune",
   "lotmcraft.curse_of_misfortune_ability.description": "Curse your enemies with misfortune",
   "ability.lotmcraft.curse_of_misfortune.resisted": "The target's Sequence is too high to be Cursed",
@@ -1971,6 +1972,8 @@
   "lotmcraft.griefing_enabled_required": "Enable griefing for this ability to work",
 
   "lotmcraft.own_praying": "You have heard your own praying",
+  "lotmcraft.gui.prey.title": "Select Target to Pray To",
+  "lotmcraft.prey.success": "You have initiated a prayer to the selected target. Your next chat message will be sent as a prayer.",
   "lotmcraft.far_away_praying": "You have heard whispers of praying, but you are too far away to hear them clearly",
   "lotmcraft.honorific_praying": "You have heard praying from %1$s\nTheir general info: Pathway - %2$s; Sequence - %3$d; Position - %4$d %5$d %6$d",
   "lotmcraft.honorific_praying_message": "You have heard message: %s",

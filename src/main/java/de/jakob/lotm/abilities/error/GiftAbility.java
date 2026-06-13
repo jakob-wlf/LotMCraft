@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.error.handler.TheftHandler;
+import de.jakob.lotm.attachments.CorruptionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
@@ -60,7 +61,8 @@ public class GiftAbility extends SelectableAbility {
                 "ability.lotmcraft.gift_ability.distance",
                 "ability.lotmcraft.gift_ability.health",
                 "ability.lotmcraft.gift_ability.digestion",
-                "ability.lotmcraft.gift_ability.luck"
+                "ability.lotmcraft.gift_ability.luck",
+                "ability.lotmcraft.gift_ability.corruption"
         };
     }
 
@@ -135,7 +137,29 @@ public class GiftAbility extends SelectableAbility {
             case 2 -> giftHealth(level, entity);
             case 3 -> giftDigestion(level, entity);
             case 4 -> giftLuck(level, entity);
+            case 5 -> giftCorruption(level, entity);
         }
+    }
+
+    private void giftCorruption(Level level, LivingEntity entity) {
+        if(!(entity instanceof ServerPlayer player)) {
+            if(entity instanceof Player player && entity.level().isClientSide) {
+                player.playSound(SoundEvents.BELL_RESONATE, 1, 1);
+            }
+            return;
+        }
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2, false, true);
+        CorruptionComponent targetComp = target.getData(ModAttachments.CORRUPTION_COMPONENT);
+        CorruptionComponent casterComp = entity.getData(ModAttachments.CORRUPTION_COMPONENT);
+
+        if(targetComp == null && casterComp == null && casterComp.getCorruption() !=0){
+            float transfer = Math.min( targetComp.getCorruption(), 10);
+            targetComp.increaseCorruptionAndSync(transfer, target);
+            casterComp.decreaseCorruptionAndSync(transfer, entity);
+        }
+
+
+
     }
 
     private void giftLuck(Level level, LivingEntity entity){
@@ -146,7 +170,7 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2, false, true);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.no_target").withColor(0x6d32a8));
             return;
@@ -185,7 +209,7 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int)(15 * (multiplier(entity) * multiplier(entity))), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int)(15 * (multiplier(entity) * multiplier(entity))), 2, false, true);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.no_target").withColor(0x6d32a8));
             return;
@@ -224,7 +248,7 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2, false, true);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.no_target").withColor(0x6d32a8));
             return;

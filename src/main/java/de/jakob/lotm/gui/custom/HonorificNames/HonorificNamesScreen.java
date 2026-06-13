@@ -1,5 +1,6 @@
 package de.jakob.lotm.gui.custom.HonorificNames;
 
+import de.jakob.lotm.network.packets.toServer.RemoteAbilityCastPacket;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.HonorificNamesRespondPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -92,7 +93,15 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
             this.addRenderableWidget(
                     Button.builder(Component.literal("Teleport"),
                                     btn -> respondToPrayer(btnIdx, true))
-                            .bounds(leftPos + PADDING + 126, entryY + 22, 120, 16)
+                            .bounds(leftPos + PADDING + 126, entryY + 22, 60, 16)
+                            .build()
+            );
+
+            // "Cast Ability" button
+            this.addRenderableWidget(
+                    Button.builder(Component.literal("Cast"),
+                                    btn -> PacketHandler.sendToServer(new RemoteAbilityCastPacket(prayer.senderUUID())))
+                            .bounds(leftPos + PADDING + 126 + 62, entryY + 22, 60, 16)
                             .build()
             );
         }

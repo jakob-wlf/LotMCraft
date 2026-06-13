@@ -229,19 +229,16 @@ public class BeyonderData {
             if (clearCharStack) {
                 component.clearCharacteristics();
                 component.setCharacteristic(1, sequence, pathway);
-            } /*else {
+            } else {
                 // Remove stale chars at the same sequence slot from a different pathway.
                 // These can accumulate if clearBeyonderData was called via a code path that
                 // didn't go through onPlayerDrops (e.g. join-time recovery after a crash).
-                new java.util.ArrayList<>(component.getCharacteristicList()).stream()
-                        .filter(c -> c.sequence() == sequence && !c.pathway().equals(pathway))
-                        .forEach(c -> component.setCharacteristic(0, c.sequence(), c.pathway()));
                 int current = component.getCharacteristicList().stream()
                         .filter(c -> c.sequence() == sequence && c.pathway().equals(pathway))
                         .mapToInt(Characteristic::stack)
                         .findFirst().orElse(0);
                 component.setCharacteristic(current + 1, sequence, pathway);
-            }*/
+            }
         }
 
         if (resetSpirituality) component.setSpirituality(getMaxSpirituality(pathway, sequence));
