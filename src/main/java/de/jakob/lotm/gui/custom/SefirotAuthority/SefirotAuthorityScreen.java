@@ -126,6 +126,14 @@ public class SefirotAuthorityScreen extends AbstractContainerScreen<SefirotAutho
             ).bounds(leftPos + 88, topPos + PANEL_HEIGHT - 20, 120, 16).build());
         }
 
+        // Blessed button — only shown for chaos_sea owner
+        if ("chaos_sea".equals(menu.getSefirotName())) {
+            addRenderableWidget(Button.builder(
+                    Component.literal("Blessed").withStyle(ChatFormatting.LIGHT_PURPLE),
+                    b -> { PacketHandler.sendToServer(new RequestGatheringScreenPacket()); this.onClose(); }
+            ).bounds(leftPos + 4, topPos + PANEL_HEIGHT - 20, 60, 16).build());
+        }
+
         unlocked.clear();
         unlocked.addAll(menu.getUnlockedIds());
     }

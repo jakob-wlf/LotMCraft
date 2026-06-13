@@ -3,8 +3,10 @@ package de.jakob.lotm.sefirah;
 import de.jakob.lotm.attachments.CorruptionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SefirotData;
+import de.jakob.lotm.dimension.ModDimensions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -67,6 +69,18 @@ public class SefirotImprintEventHandler {
                 player.sendSystemMessage(Component.literal(
                         "Your mental imprint in this Sefirot deepens... (" + newImprint + "%)")
                         .withStyle(ChatFormatting.DARK_PURPLE));
+            }
+
+            // Passive corruption drain for the original sefirot owner.
+            // Inside own dimension: strong drain (100% imprint = 5%/min = ~0.000833/sec)
+            // Outside own dimension: weak drain  (100% imprint = 1%/min = ~0.0001667/sec)
+            if (imprint > 0) {
+                ResourceKey<net.minecraft.world.level.Level> dim =
+                        SefirahHandler.getSefirotDimensionKey(sefirot);
+                boolean insideDimension = dim != null && player.level().dimension().equals(dim);
+                float drainPerSecond = imprint / 100f * (insideDimension ? 0.000833f : 0.0001667f);
+                CorruptionComponent corruptComp = player.getData(ModAttachments.CORRUPTION_COMPONENT);
+                corruptComp.decreaseCorruptionAndSync(drainPerSecond, player);
             }
         } else if (imprint > 0) {
             // Non-original owner: apply passive corruption and tick their reduction counter

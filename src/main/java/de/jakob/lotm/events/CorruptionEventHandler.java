@@ -10,9 +10,12 @@ import de.jakob.lotm.attachments.CorruptedPlayerComponent;
 import de.jakob.lotm.attachments.CorruptionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.pathways.PathwayInfos;
@@ -55,6 +58,22 @@ public class CorruptionEventHandler {
     private static void handleCorruptionGain(LivingEntity entity) {
         CorruptionComponent corruptionComp = entity.getData(ModAttachments.CORRUPTION_COMPONENT);
         BeyonderComponent beyonderComp = entity.getData(ModAttachments.BEYONDER_COMPONENT);
+
+        // Original sefirot owner inside their own dimension is shielded from all corruption gain
+        if (entity instanceof ServerPlayer sp && sp.server != null) {
+            SefirotData sd = SefirotData.get(sp.server);
+            String ownedSefirot = sd.getClaimedSefirot(sp.getUUID());
+            if (ownedSefirot != null && !ownedSefirot.isEmpty()) {
+                java.util.UUID firstOwner = sd.getFirstOwner(ownedSefirot);
+                if (firstOwner != null && firstOwner.equals(sp.getUUID())) {
+                    net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dim =
+                            de.jakob.lotm.sefirah.SefirahHandler.getSefirotDimensionKey(ownedSefirot);
+                    if (dim != null && sp.level().dimension().equals(dim)) {
+                        return;
+                    }
+                }
+            }
+        }
 
         String currentPathway = beyonderComp.getPathway();
         int currentSequence = beyonderComp.getSequence();
@@ -172,6 +191,18 @@ public class CorruptionEventHandler {
         }
 
         if (corruptionValue >= 100) {
+            // If this player is a non-original sefirot owner, reclaim the sefirot for the original owner
+            if (entity instanceof ServerPlayer sp && sp.server != null) {
+                SefirotData sd = SefirotData.get(sp.server);
+                String ownedSef = sd.getClaimedSefirot(sp.getUUID());
+                if (ownedSef != null && !ownedSef.isEmpty()) {
+                    java.util.UUID firstOwner = sd.getFirstOwner(ownedSef);
+                    if (firstOwner != null && !firstOwner.equals(sp.getUUID()) && sd.getMentalImprint(ownedSef) > 0) {
+                        de.jakob.lotm.sefirah.SefirotImprintEventHandler.tryReclaimForOriginalOwner(
+                                ownedSef, firstOwner, sp, sp.server);
+                    }
+                }
+            }
             handleFullCorruption(entity);
         }
     }

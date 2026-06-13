@@ -122,8 +122,11 @@ public class GatheringScreen extends AbstractContainerScreen<GatheringMenu> {
         g.fill(leftPos, topPos, leftPos + PANEL_WIDTH, topPos + PANEL_HEIGHT, 0xDD000000);
         g.renderOutline(leftPos, topPos, PANEL_WIDTH, PANEL_HEIGHT, 0xFF4a2070);
 
-        // Title
-        Component title = Component.literal("Sefirah Castle — Gatherings")
+        // Title — varies by sefirah
+        String titleText = "chaos_sea".equals(menu.getSefirahType())
+                ? "Chaos Sea — Blessed"
+                : "Sefirah Castle — Gatherings";
+        Component title = Component.literal(titleText)
                 .withStyle(ChatFormatting.LIGHT_PURPLE, ChatFormatting.BOLD);
         g.drawString(font, title, leftPos + PANEL_WIDTH / 2 - font.width(title) / 2, topPos + 7, 0xFFCC88FF, true);
 
@@ -227,9 +230,10 @@ public class GatheringScreen extends AbstractContainerScreen<GatheringMenu> {
             sendMessage();
             return true;
         }
-        // Let the EditBox consume keystrokes (including E) while it's focused,
-        // so the inventory key doesn't close the screen mid-typing.
-        if (messageBox != null && messageBox.isFocused() && messageBox.keyPressed(keyCode, scanCode, modifiers)) {
+        // While the EditBox is focused, pass control keys to it and block everything
+        // else (including E/inventory) from reaching super. Only Escape is allowed through.
+        if (messageBox != null && messageBox.isFocused() && keyCode != 256) {
+            messageBox.keyPressed(keyCode, scanCode, modifiers);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

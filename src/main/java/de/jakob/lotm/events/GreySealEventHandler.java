@@ -538,13 +538,7 @@ public class GreySealEventHandler {
 
     @Nullable
     private static ResourceKey<Level> getSefirotDimension(String sefirot) {
-        if (sefirot == null || sefirot.isEmpty()) return null;
-        return switch (sefirot) {
-            case "sefirah_castle"            -> ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY;
-            case "chaos_sea"                 -> ModDimensions.CHAOS_SEA_DIMENSION_KEY;
-            case "river_of_eternal_darkness" -> ModDimensions.RIVER_OF_ETERNAL_DARKNESS_DIMENSION_KEY;
-            default                          -> null;
-        };
+        return de.jakob.lotm.sefirah.SefirahHandler.getSefirotDimensionKey(sefirot);
     }
 
     // ─── State record ─────────────────────────────────────────────────────────

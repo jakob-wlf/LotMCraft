@@ -41,8 +41,9 @@ public record RequestGatheringScreenPacket() implements CustomPacketPayload {
             if (!context.flow().getReceptionSide().isServer()) return;
             if (!(context.player() instanceof ServerPlayer player)) return;
 
-            // Only the sefirah_castle owner may open this
-            if (!"sefirah_castle".equals(SefirahHandler.getClaimedSefirot(player))) return;
+            // Only the sefirah_castle or chaos_sea owner may open this
+            String sefirahType = SefirahHandler.getClaimedSefirot(player);
+            if (!"sefirah_castle".equals(sefirahType) && !"chaos_sea".equals(sefirahType)) return;
 
             GatheringData data = GatheringData.get(player.server);
             Set<UUID> members = data.getMembers(player.getUUID());
@@ -85,9 +86,9 @@ public record RequestGatheringScreenPacket() implements CustomPacketPayload {
             List<UUID> memberList = new ArrayList<>(members);
 
             player.openMenu(new SimpleMenuProvider(
-                    (id, inv, p) -> new GatheringMenu(id, inv, entries, memberList, gatheringActive),
-                    Component.literal("Gatherings")
-            ), buf -> GatheringMenu.writeToBuffer(buf, entries, memberList, gatheringActive));
+                    (id, inv, p) -> new GatheringMenu(id, inv, sefirahType, entries, memberList, gatheringActive),
+                    Component.literal("chaos_sea".equals(sefirahType) ? "Blessed" : "Gatherings")
+            ), buf -> GatheringMenu.writeToBuffer(buf, sefirahType, entries, memberList, gatheringActive));
         });
     }
 }
