@@ -147,9 +147,9 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
         BlockPos playerPos = player.blockPosition();
         BlockPos targetPos = targetPlayer.blockPosition();
 
-        int dx = targetPos.getX() - playerPos.getX();
-        int dy = targetPos.getY() - playerPos.getY();
-        int dz = targetPos.getZ() - playerPos.getZ();
+        long dx = targetPos.getX() - playerPos.getX();
+        long dy = targetPos.getY() - playerPos.getY();
+        long dz = targetPos.getZ() - playerPos.getZ();
 
         int distance = (int) Math.sqrt(dx * dx + dy * dy + dz * dz);
 
@@ -240,7 +240,7 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
         }     // Trigger MetaAwareness passive if target has it
     }
 
-    private static String getDirection(int dx, int dz) {
+    private static String getDirection(long dx, long dz) {
         double angle = Math.toDegrees(Math.atan2(dz, dx));
         if (angle < 0) angle += 360;
 

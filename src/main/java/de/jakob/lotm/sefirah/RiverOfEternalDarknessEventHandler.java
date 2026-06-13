@@ -38,6 +38,7 @@ import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.joml.Vector3f;
 
@@ -66,10 +67,15 @@ public class RiverOfEternalDarknessEventHandler {
     private static final Map<UUID, UUID> ritualBeamEffectIds = new HashMap<>();
 
     @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        // Restore blessings from NBT so they survive server restarts
+        RiverBlessingManager.loadFromData(event.getServer());
+    }
+
+    @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        // Clear any blessings this player had granted as River owner
-        RiverBlessingManager.clearBlessingsForOwner(player.getUUID());
+        // NOTE: blessings are intentionally NOT cleared on logout — they persist until revoked
         RiverBlessingManager.clearAudience(player.server);
         // If this player was in the audience, just unmark them (can't teleport offline player)
         if (RiverBlessingManager.isInAudience(player.getUUID())) {
@@ -126,13 +132,19 @@ public class RiverOfEternalDarknessEventHandler {
     }
 
     /**
-     * Blessed players are immune to the ASLEEP mob effect.
+     * The River owner AND blessed players are immune to the ASLEEP mob effect.
      * Cancels the effect before it is applied.
      */
     @SubscribeEvent
     public static void onMobEffectApplicable(MobEffectEvent.Applicable event) {
         if (event.getEffectInstance().getEffect() == ModEffects.ASLEEP) {
-            if (RiverBlessingManager.isBlessed(event.getEntity().getUUID())) {
+            UUID uuid = event.getEntity().getUUID();
+            if (RiverBlessingManager.isBlessed(uuid)) {
+                event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
+                return;
+            }
+            // River owner is permanently immune to sleep
+            if (event.getEntity() instanceof ServerPlayer sp && isRiverOwner(sp)) {
                 event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
             }
         }

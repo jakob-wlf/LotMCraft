@@ -87,6 +87,7 @@ import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesScreen;
 import de.jakob.lotm.gui.custom.Recipe.RecipeScreen;
 import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityScreen;
 import de.jakob.lotm.gui.custom.RiverBlessing.RiverBlessingScreen;
+import de.jakob.lotm.gui.custom.ChaosSeaAuthority.ChaosSeaAuthorityScreen;
 import de.jakob.lotm.gui.custom.RiverSefirotAuthority.RiverSefirotAuthorityScreen;
 import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityScreen;
 import de.jakob.lotm.item.ModCreativeModTabs;
@@ -350,6 +351,7 @@ public class LOTMCraft
             event.registerSpriteSet(ModParticles.LIGHTNING.get(), LightningParticle.Provider::new);
             event.registerSpriteSet(ModParticles.STAR.get(), StarParticle.Provider::new);
             event.registerSpriteSet(ModParticles.FOG_OF_WAR.get(), FogOfWarParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.GREY_SEAL.get(), GreySealParticle.Provider::new);
             event.registerSpriteSet(ModParticles.PURPLE_FLAME.get(), PurpleFlameParticle.Provider::new);
             event.registerSpriteSet(ModParticles.BLACK.get(), BlackParticle.Provider::new);
             event.registerSpriteSet(ModParticles.WHITE_FLAME.get(), WhiteFlameParticle.Provider::new);
@@ -367,6 +369,7 @@ public class LOTMCraft
             event.register(ModMenuTypes.SEFIROT_AUTHORITY_MENU.get(), SefirotAuthorityScreen::new);
             event.register(ModMenuTypes.RIVER_AUTHORITY_MENU.get(), RiverAuthorityScreen::new);
             event.register(ModMenuTypes.RIVER_SEFIROT_AUTHORITY_MENU.get(), RiverSefirotAuthorityScreen::new);
+            event.register(ModMenuTypes.CHAOS_SEA_AUTHORITY_MENU.get(), ChaosSeaAuthorityScreen::new);
             event.register(ModMenuTypes.GATHERING_MENU.get(), GatheringScreen::new);
             event.register(ModMenuTypes.RIVER_BLESSING_MENU.get(), RiverBlessingScreen::new);
         }

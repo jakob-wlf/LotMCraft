@@ -300,6 +300,13 @@ public class SealingAuthorityAbility extends SelectableAbility {
             return;
         }
 
+        // Gathering members of any castle and River-blessed players bypass the dimension lock
+        if (event.getEntity() instanceof ServerPlayer sp) {
+            de.jakob.lotm.attachments.GatheringData gd = de.jakob.lotm.attachments.GatheringData.get(sp.getServer());
+            if (gd.isMemberOfAnyCastle(sp.getUUID())) return;
+            if (de.jakob.lotm.sefirah.RiverBlessingManager.isBlessed(sp.getUUID())) return;
+        }
+
         event.setCanceled(true);
         ParticleUtil.spawnParticles(level, ModParticles.STAR.get(), event.getEntity().getEyePosition().subtract(0, .5, 0), 200, .8, .05);
     }

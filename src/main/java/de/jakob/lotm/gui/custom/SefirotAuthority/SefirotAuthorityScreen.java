@@ -13,6 +13,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.*;
 
@@ -26,6 +28,7 @@ import java.util.*;
  * Left-click an ability to enable it; right-click to disable it.
  * Enabled abilities appear in the Introspect available-abilities panel.
  */
+@OnlyIn(Dist.CLIENT)
 public class SefirotAuthorityScreen extends AbstractContainerScreen<SefirotAuthorityMenu> {
 
     private static final int PANEL_WIDTH  = 248;
@@ -113,6 +116,11 @@ public class SefirotAuthorityScreen extends AbstractContainerScreen<SefirotAutho
                     Component.literal("Gatherings").withStyle(ChatFormatting.LIGHT_PURPLE),
                     b -> { PacketHandler.sendToServer(new RequestGatheringScreenPacket()); this.onClose(); }
             ).bounds(leftPos + 4, topPos + PANEL_HEIGHT - 20, 80, 16).build());
+
+            addRenderableWidget(Button.builder(
+                    Component.literal("Call upon the Grey Fog").withStyle(ChatFormatting.GRAY),
+                    b -> net.minecraft.client.Minecraft.getInstance().setScreen(new GreyFogScreen(this))
+            ).bounds(leftPos + 88, topPos + PANEL_HEIGHT - 20, 120, 16).build());
         }
 
         unlocked.clear();

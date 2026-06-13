@@ -1,12 +1,10 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.gui.custom.Quest.QuestAcceptanceScreen;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.quest.Quest;
 import de.jakob.lotm.quest.QuestRegistry;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;

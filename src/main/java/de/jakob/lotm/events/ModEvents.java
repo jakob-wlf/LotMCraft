@@ -248,6 +248,7 @@ public class ModEvents {
         FragmentCommand.register(event.getDispatcher());
         GreatOldOneCommand.register(event.getDispatcher());
         SlotsCommand.register(event.getDispatcher());
+        BlasphemyCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent
@@ -288,6 +289,14 @@ public class ModEvents {
 
         // Sync uniqueness data on login
         PacketHandler.syncUniquenessToPlayer(player);
+
+        // Sync any registered LEODERO trigger word so the screen pre-fills it
+        de.jakob.lotm.attachments.EnvisionBlasphemyTriggerData triggerData =
+                de.jakob.lotm.attachments.EnvisionBlasphemyTriggerData.get(server);
+        String word = triggerData.getTriggerWord(player.getUUID());
+        PacketHandler.sendToPlayer(player,
+                new de.jakob.lotm.network.packets.toClient.SyncEnvisionTriggerPacket(
+                        word != null ? word : ""));
 
         TeamComponent team = player.getData(ModAttachments.TEAM_COMPONENT.get());
 
@@ -340,4 +349,21 @@ public class ModEvents {
 
         }
     }*/
+
+    @SubscribeEvent
+    public static void onEnvisionBlasphemyChat(ServerChatEvent event) {
+        ServerPlayer speaker = event.getPlayer();
+        String message = event.getMessage().getString();
+
+        de.jakob.lotm.attachments.EnvisionBlasphemyTriggerData triggerData =
+                de.jakob.lotm.attachments.EnvisionBlasphemyTriggerData.get(speaker.getServer());
+
+        // findMatches returns all caster UUIDs whose registered word matches this message.
+        // The trigger persists — fires every time the word is said.
+        java.util.List<UUID> matched = triggerData.findMatches(message);
+        for (UUID casterUUID : matched) {
+            de.jakob.lotm.network.packets.toServer.RequestEnvisionBlasphemyPacket
+                    .fireLeoderoOn(speaker, casterUUID, null);
+        }
+    }
 }

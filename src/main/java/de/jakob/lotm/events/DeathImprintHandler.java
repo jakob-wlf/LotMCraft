@@ -92,7 +92,7 @@ public class DeathImprintHandler {
         }
     }
 
-    // ── Logout event: kill if trapped in river ─────────────────────────────────
+    // ── Logout event: kill if trapped in river ────────────────────────────────
 
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {

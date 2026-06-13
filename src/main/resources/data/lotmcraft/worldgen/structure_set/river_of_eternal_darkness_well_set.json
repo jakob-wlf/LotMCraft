@@ -6,14 +6,11 @@
     }
   ],
   "placement": {
-    "type": "minecraft:random_spread",
-
-    "salt": 4367768781,
-
-    "spacing": 64,
-
-    "separation": 24,
-    "heightmap": "WORLD_SURFACE_WG",
-    "max_tries": 5
+    "type": "minecraft:concentric_rings",
+    "distance": 312,
+    "spread": 312,
+    "count": 8,
+    "salt": 14357800,
+    "preferred_biomes": "#lotmcraft:has_structure/river_of_eternal_darkness_well_biomes"
   }
 }

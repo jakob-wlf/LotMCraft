@@ -971,6 +971,34 @@ public class BeyonderData {
         if (player instanceof ServerPlayer sp) PacketHandler.syncBeyonderDataToPlayer(sp);
     }
 
+    /**
+     * Force-replace the player's entire characteristic list, updating both the
+     * {@link BeyonderComponent} and the {@link de.jakob.lotm.util.playerMap.PlayerMap}
+     * atomically. Does NOT sync to the client — callers must do that.
+     * <p>
+     * Unlike {@link #clearCharacteristics}/{@link #setCharacteristic}, this does NOT
+     * require the player to already be a beyonder; it is safe to call immediately
+     * after {@link #setBeyonder}.
+     */
+    public static void forceRestoreCharList(LivingEntity player,
+                                            java.util.ArrayList<de.jakob.lotm.util.playerMap.Characteristic> charList) {
+        BeyonderComponent bc = player.getData(ModAttachments.BEYONDER_COMPONENT);
+
+        // Clear both stores
+        playerMap.clearStack(player);
+        bc.clearCharacteristics();
+
+        // Rebuild from snapshot
+        for (de.jakob.lotm.util.playerMap.Characteristic c : charList) {
+            playerMap.setStack(player, c.stack(), c.sequence(), c.pathway());
+            bc.setCharacteristic(c.stack(), c.sequence(), c.pathway());
+        }
+        // syncHighest() was called inside each bc.setCharacteristic — pathway/sequence now correct.
+
+        recalculateCharStackModifiers(player);
+        // Intentionally no sync here — caller does it.
+    }
+
     public static final String CHAR_STACK_BOOST_ID = "characteristics_stack_boost";
 
     public static void recalculateCharStackModifiers(LivingEntity player) {

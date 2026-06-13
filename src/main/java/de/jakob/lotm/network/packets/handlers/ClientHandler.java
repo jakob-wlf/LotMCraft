@@ -18,6 +18,7 @@ import de.jakob.lotm.gui.custom.CoordinateInput.CoordinateInputScreen;
 import de.jakob.lotm.gui.custom.InternalUnderworld.InternalUnderworldAbilityScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.Quest.QuestAcceptanceScreen;
+import de.jakob.lotm.gui.custom.RiverVault.RiverVaultScreen;
 import de.jakob.lotm.gui.custom.SelectionGui.*;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.quest.Quest;
@@ -252,6 +253,10 @@ public class ClientHandler {
         Minecraft minecraft = Minecraft.getInstance();
         if(minecraft.player == entity)
             minecraft.options.setCameraType(CameraType.FIRST_PERSON);
+    }
+
+    public static void handleGreyFogStatus(boolean inside) {
+        de.jakob.lotm.rendering.GreyFogOverlayRenderer.insideGreyFog = inside;
     }
 
     public static void handleShaderPacket(SyncShaderPacket packet) {

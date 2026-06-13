@@ -3,6 +3,7 @@ package de.jakob.lotm.gui.custom.BrewingCauldron;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.block.custom.BrewingCauldronBlockEntity;
 import de.jakob.lotm.gui.ModMenuTypes;
+import de.jakob.lotm.item.custom.BlasphemyCardItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -102,9 +103,18 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
         // Check if the slot clicked is one of the vanilla container slots
         if (pIndex < VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT) {
             // This is a vanilla container slot so merge the stack into the tile inventory
-            if (!moveItemStackTo(sourceStack, TE_INVENTORY_FIRST_SLOT_INDEX, TE_INVENTORY_FIRST_SLOT_INDEX
-                    + TE_INVENTORY_SLOT_COUNT, false)) {
-                return ItemStack.EMPTY;  // EMPTY_ITEM
+            if (sourceStack.getItem() instanceof BlasphemyCardItem) {
+                // Blasphemy Cards go specifically to the recipe slot (index 4)
+                if (!moveItemStackTo(sourceStack,
+                        TE_INVENTORY_FIRST_SLOT_INDEX + 4,
+                        TE_INVENTORY_FIRST_SLOT_INDEX + 5, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else {
+                if (!moveItemStackTo(sourceStack, TE_INVENTORY_FIRST_SLOT_INDEX, TE_INVENTORY_FIRST_SLOT_INDEX
+                        + TE_INVENTORY_SLOT_COUNT, false)) {
+                    return ItemStack.EMPTY;  // EMPTY_ITEM
+                }
             }
         } else if (pIndex < TE_INVENTORY_FIRST_SLOT_INDEX + TE_INVENTORY_SLOT_COUNT) {
             // This is a TE slot so merge the stack into the players inventory
@@ -126,6 +136,7 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player pPlayer) {
+        if (blockEntity == null) return false;
         return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
                 pPlayer, ModBlocks.BREWING_CAULDRON.get());
     }
@@ -141,6 +152,26 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
     private void addPlayerHotbar(Inventory playerInventory) {
         for (int i = 0; i < 9; ++i) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 216));
+        }
+    }
+
+    /**
+     * When the Brewing Cauldron GUI is closed, any Blasphemy Card in the recipe slot
+     * (slot 4) is returned to the player's inventory rather than staying in the block.
+     */
+    @Override
+    public void removed(Player player) {
+        super.removed(player);
+        if (blockEntity == null) return;
+        if (player.level().isClientSide()) return;
+        if (blockEntity.isRemoved()) return; // block was broken — drops() already handled it
+        ItemStack recipeStack = blockEntity.itemHandler.getStackInSlot(4);
+        if (!recipeStack.isEmpty() && recipeStack.getItem() instanceof BlasphemyCardItem) {
+            blockEntity.itemHandler.setStackInSlot(4, ItemStack.EMPTY);
+            ItemStack toReturn = recipeStack.copy();
+            if (!player.getInventory().add(toReturn)) {
+                player.drop(toReturn, false);
+            }
         }
     }
 }

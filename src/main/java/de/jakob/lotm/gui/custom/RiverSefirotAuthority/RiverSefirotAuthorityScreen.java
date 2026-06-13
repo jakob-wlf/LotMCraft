@@ -15,6 +15,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.*;
 
@@ -31,6 +33,7 @@ import java.util.*;
  *   Seq 1  →  seq-2 abilities and weaker
  *   Seq 0  →  all abilities (seq 1+)
  */
+@OnlyIn(Dist.CLIENT)
 public class RiverSefirotAuthorityScreen extends AbstractContainerScreen<RiverSefirotAuthorityMenu> {
 
     // ── Layout constants ──────────────────────────────────────────────────────

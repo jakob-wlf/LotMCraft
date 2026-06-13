@@ -42,7 +42,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.LOWER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
         basicItem(ModItems.MYSTERIOUS_TABLET.get());
         basicItem(ModItems.GARBAGE.get());
-        basicItem(ModItems.CHARACTERISTICS_EXCHANGE_TABLET.get());
+        // characteristics_exchange_tablet uses a hand-written model (mysterious_tablet texture)
 
         tintableItem(ModItems.SEALED_ARTIFACT.get());
         tintableItem(ModItems.SEALED_ARTIFACT_BELL.get());
