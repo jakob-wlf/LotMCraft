@@ -56,7 +56,7 @@ public class CrossbreedingAbility extends Ability {
                 //EntityType.WITHER
         );
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2, false, true);
         if(target == null || target instanceof BeyonderNPCEntity || target instanceof Player || notValidTargets.contains(target.getType())) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.crossbreeding.not_valid_mob").withColor(0xFF88c276));
             return;
