@@ -7,9 +7,9 @@
   ],
   "placement": {
     "type": "minecraft:concentric_rings",
-    "distance": 312,
-    "spread": 312,
-    "count": 8,
+    "distance": 32,
+    "spread": 280,
+    "count": 10,
     "salt": 14357800,
     "preferred_biomes": "#lotmcraft:has_structure/river_of_eternal_darkness_well_biomes"
   }
