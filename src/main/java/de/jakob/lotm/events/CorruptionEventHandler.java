@@ -19,10 +19,12 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.pathways.PathwayInfos;
 import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
@@ -56,6 +58,14 @@ public class CorruptionEventHandler {
     private static void handleCorruptionGain(LivingEntity entity) {
         CorruptionComponent corruptionComp = entity.getData(ModAttachments.CORRUPTION_COMPONENT);
         BeyonderComponent beyonderComp = entity.getData(ModAttachments.BEYONDER_COMPONENT);
+        CorruptedPlayerComponent corruptedComp = entity.getData(ModAttachments.CORRUPTED_PLAYER_COMPONENT);
+
+        if(entity.level() instanceof ServerLevel serverLevel) {
+            Entity npc = serverLevel.getEntity(corruptedComp.getNpcUUID());
+            if (corruptedComp.isFullyCorrupted() && corruptedComp.getNpcUUID() != null && entity.distanceTo(npc) > 30) {
+                entity.teleportTo(npc.getX(), npc.getY(), npc.getZ());
+            }
+        }
 
         String currentPathway = beyonderComp.getPathway();
         int currentSequence = beyonderComp.getSequence();
