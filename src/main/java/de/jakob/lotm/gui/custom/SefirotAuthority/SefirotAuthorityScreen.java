@@ -116,6 +116,11 @@ public class SefirotAuthorityScreen extends AbstractContainerScreen<SefirotAutho
                     Component.literal("Gatherings").withStyle(ChatFormatting.LIGHT_PURPLE),
                     b -> { PacketHandler.sendToServer(new RequestGatheringScreenPacket()); this.onClose(); }
             ).bounds(leftPos + 4, topPos + PANEL_HEIGHT - 20, 80, 16).build());
+
+            addRenderableWidget(Button.builder(
+                    Component.literal("Call upon the Grey Fog").withStyle(ChatFormatting.GRAY),
+                    b -> net.minecraft.client.Minecraft.getInstance().setScreen(new GreyFogScreen(this))
+            ).bounds(leftPos + 88, topPos + PANEL_HEIGHT - 20, 120, 16).build());
         }
 
         unlocked.clear();

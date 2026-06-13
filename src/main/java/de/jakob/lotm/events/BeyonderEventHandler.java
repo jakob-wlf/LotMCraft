@@ -35,9 +35,13 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import de.jakob.lotm.item.custom.BlasphemyCardItem;
+import de.jakob.lotm.item.custom.BlasphemySlateHalfItem;
+import de.jakob.lotm.item.custom.BlasphemySlateItem;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -423,6 +427,14 @@ public class BeyonderEventHandler {
                 if (stack.isEmpty()) continue;
 
                 Item item = stack.getItem();
+
+                // Blasphemy cards and slates are crafting ingredients — never lock them out of crafting tables
+                if (container instanceof CraftingMenu &&
+                        (item instanceof BlasphemyCardItem
+                                || item instanceof BlasphemySlateHalfItem
+                                || item instanceof BlasphemySlateItem)) {
+                    continue;
+                }
 
                 if (item instanceof PotionIngredient obj) {
                     for (var path : obj.getPathways()) {

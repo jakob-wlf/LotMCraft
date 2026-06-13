@@ -248,6 +248,10 @@ public class ClientHandler {
             minecraft.options.setCameraType(CameraType.FIRST_PERSON);
     }
 
+    public static void handleGreyFogStatus(boolean inside) {
+        de.jakob.lotm.rendering.GreyFogOverlayRenderer.insideGreyFog = inside;
+    }
+
     public static void handleShaderPacket(SyncShaderPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;

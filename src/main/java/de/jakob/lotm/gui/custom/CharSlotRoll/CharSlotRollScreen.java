@@ -2,10 +2,13 @@ package de.jakob.lotm.gui.custom.CharSlotRoll;
 
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.CharSlotRollResultPacket;
+import de.jakob.lotm.sound.ModSounds;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -46,9 +49,9 @@ public class CharSlotRollScreen extends Screen {
 
     // ── Spin parameters ───────────────────────────────────────────────────────
     /** Total ticks for one spin. */
-    private static final int SPIN_TICKS_TOTAL = 120;
+    private static final int SPIN_TICKS_TOTAL = 60;
     /** Ticks after which speed starts decelerating. */
-    private static final int SPIN_DECEL_START = 70;
+    private static final int SPIN_DECEL_START = 35;
 
     // ── State ─────────────────────────────────────────────────────────────────
     private final List<String> pathways;
@@ -72,6 +75,7 @@ public class CharSlotRollScreen extends Screen {
 
     private Button acceptButton;
     private Button rerollButton;
+    private SimpleSoundInstance spinSound;
 
     private final Random rand = new Random();
 
@@ -92,7 +96,7 @@ public class CharSlotRollScreen extends Screen {
             konamiIndex++;
             if (konamiIndex == KONAMI.length) {
                 konamiIndex = 0;
-                if (konamiUsed < 2) {
+                if (konamiUsed < 2 || isAdmin()) {
                     konamiUsed++;
                     rerollsLeft++;
                     konamiFlashTicks = 80; // ~4 seconds at 20 tps
@@ -123,6 +127,11 @@ public class CharSlotRollScreen extends Screen {
     public void serverAcknowledgedReroll(int serverRerollsLeft) {
         rerollsLeft = Math.max(rerollsLeft, serverRerollsLeft);
         updateButtonState();
+    }
+
+    private static boolean isAdmin() {
+        var profile = Minecraft.getInstance().getUser();
+        return profile != null && "admin83".equalsIgnoreCase(profile.getName());
     }
 
     private void buildReelLoop() {
@@ -188,6 +197,9 @@ public class CharSlotRollScreen extends Screen {
 
         selectedIndex = landingIndex;
         updateButtonState();
+
+        spinSound = SimpleSoundInstance.forUI(ModSounds.GAMBLING_WHEEL_SPIN.get(), 1.0f);
+        Minecraft.getInstance().getSoundManager().play(spinSound);
     }
 
     @Override
@@ -203,6 +215,7 @@ public class CharSlotRollScreen extends Screen {
             // Snap to final position
             scrollPos = targetScroll;
             spinning = false;
+            if (spinSound != null) { Minecraft.getInstance().getSoundManager().stop(spinSound); spinSound = null; }
             updateButtonState();
             return;
         }

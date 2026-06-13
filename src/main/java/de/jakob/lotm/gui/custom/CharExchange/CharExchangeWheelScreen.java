@@ -1,9 +1,12 @@
 package de.jakob.lotm.gui.custom.CharExchange;
 
+import de.jakob.lotm.sound.ModSounds;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -61,8 +64,8 @@ public class CharExchangeWheelScreen extends Screen {
     };
 
     // ── Spin parameters ───────────────────────────────────────────────────────
-    private static final int SPIN_TICKS_TOTAL = 130;
-    private static final int SPIN_DECEL_START = 75;
+    private static final int SPIN_TICKS_TOTAL = 60;
+    private static final int SPIN_DECEL_START = 35;
 
     // ── State ─────────────────────────────────────────────────────────────────
     private final int outcome;
@@ -78,6 +81,7 @@ public class CharExchangeWheelScreen extends Screen {
     private boolean spinning   = false;
 
     private Button closeButton;
+    private SimpleSoundInstance spinSound;
 
     public CharExchangeWheelScreen(List<String> reel, int landingIndex, int outcome, String rewardName, String title) {
         super(Component.literal(title));
@@ -118,6 +122,9 @@ public class CharExchangeWheelScreen extends Screen {
         float fullLaps = reel.size() * 3f; // integer multiple so center == landingIndex
         targetScroll = fullLaps + landingIndex;
         scrollPos    = 0f;
+
+        spinSound = SimpleSoundInstance.forUI(ModSounds.GAMBLING_WHEEL_SPIN.get(), 1.0f);
+        Minecraft.getInstance().getSoundManager().play(spinSound);
     }
 
     @Override
@@ -129,6 +136,7 @@ public class CharExchangeWheelScreen extends Screen {
         if (spinTicks >= SPIN_TICKS_TOTAL) {
             scrollPos = targetScroll;
             spinning  = false;
+            if (spinSound != null) { Minecraft.getInstance().getSoundManager().stop(spinSound); spinSound = null; }
             if (closeButton != null) closeButton.active = true;
             return;
         }

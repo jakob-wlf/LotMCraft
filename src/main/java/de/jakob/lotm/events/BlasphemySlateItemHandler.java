@@ -136,6 +136,24 @@ BlasphemySlateItemHandler {
                         }
                     }
                 }
+                // 4. Check world ItemEntities (envisioned card was thrown/dropped out of inventory)
+                if (!found) {
+                    levelScan:
+                    for (ServerLevel lvl : player.getServer().getAllLevels()) {
+                        for (Entity e : lvl.getAllEntities()) {
+                            if (e instanceof ItemEntity ie) {
+                                ItemStack s = ie.getItem();
+                                if (!s.isEmpty()
+                                        && s.getItem() instanceof BlasphemyCardItem c
+                                        && c.getPathway().equals(pathway)
+                                        && isEnvisionSummoned(s)) {
+                                    found = true;
+                                    break levelScan;
+                                }
+                            }
+                        }
+                    }
+                }
                 if (!found) {
                     sbd.forceDismiss(player.getUUID(), pathway);
                     changed = true;
@@ -229,6 +247,16 @@ BlasphemySlateItemHandler {
             ItemStack s = cauldron.itemHandler.getStackInSlot(4);
             if (s.getItem() instanceof BlasphemyCardItem c && c.getPathway().equals(pathway)
                     && id.equals(BlasphemyCardItem.getCardId(s))) return true;
+        }
+        // World ItemEntities (card was thrown/dropped and is lying in a loaded chunk)
+        for (ServerLevel level : server.getAllLevels()) {
+            for (Entity e : level.getAllEntities()) {
+                if (e instanceof ItemEntity ie) {
+                    ItemStack s = ie.getItem();
+                    if (s.getItem() instanceof BlasphemyCardItem c && c.getPathway().equals(pathway)
+                            && id.equals(BlasphemyCardItem.getCardId(s))) return true;
+                }
+            }
         }
         // Offline players
         return offlineNbtContains(server, LOTMCraft.MOD_ID + ":" + pathway + "_blasphemy_card");

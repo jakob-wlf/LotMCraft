@@ -5,9 +5,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import de.jakob.lotm.sound.ModSounds;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,8 +59,8 @@ public class SellYourSoulScreen extends Screen {
     };
 
     // ── Spin parameters ───────────────────────────────────────────────────────
-    private static final int SPIN_TICKS_TOTAL = 130;
-    private static final int SPIN_DECEL_START = 75;
+    private static final int SPIN_TICKS_TOTAL = 60;
+    private static final int SPIN_DECEL_START = 35;
 
     // ── State ─────────────────────────────────────────────────────────────────
     private final int outcome;
@@ -72,6 +74,7 @@ public class SellYourSoulScreen extends Screen {
     private boolean spinning   = false;
 
     private Button closeButton;
+    private SimpleSoundInstance spinSound;
 
     public SellYourSoulScreen(int outcome, String rewardName) {
         super(Component.literal("Sell Your Soul"));
@@ -133,6 +136,9 @@ public class SellYourSoulScreen extends Screen {
         float fullLaps = reel.size() * 3f; // must be an integer multiple so the reel lands on landingIndex
         targetScroll = fullLaps + landingIndex;
         scrollPos    = 0f;
+
+        spinSound = SimpleSoundInstance.forUI(ModSounds.GAMBLING_WHEEL_SPIN.get(), 1.0f);
+        Minecraft.getInstance().getSoundManager().play(spinSound);
     }
 
     @Override
@@ -144,6 +150,7 @@ public class SellYourSoulScreen extends Screen {
         if (spinTicks >= SPIN_TICKS_TOTAL) {
             scrollPos = targetScroll;
             spinning  = false;
+            if (spinSound != null) { Minecraft.getInstance().getSoundManager().stop(spinSound); spinSound = null; }
             if (closeButton != null) closeButton.active = true;
             return;
         }

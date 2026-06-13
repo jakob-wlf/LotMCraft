@@ -225,6 +225,8 @@ public class VFXRenderer {
     @SubscribeEvent
     public static void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event) {
         clearActiveEffects();
+        de.jakob.lotm.util.ClientAccommodationCache.reset();
+        de.jakob.lotm.rendering.GreyFogOverlayRenderer.insideGreyFog = false;
     }
 
     public static void clearActiveEffects() {

@@ -137,7 +137,9 @@ public class LuckHandler {
             if (new Random().nextBoolean())
                 ParticleUtil.spawnParticles(level, LUCK_DUST, event.getPos().getCenter(), 12, .6, .6, .6, 0);
 
-            ItemStack copy = drops.get(level.getRandom().nextInt(drops.size())).getItem().copy();
+            // Strip all NBT/data components so storage block contents are never duplicated
+            ItemStack original = drops.get(level.getRandom().nextInt(drops.size())).getItem();
+            ItemStack copy = new ItemStack(original.getItem(), original.getCount());
             Block.popResource(level, event.getPos(), copy);
             Block.popResource(level, event.getPos(), copy.copy());
         }

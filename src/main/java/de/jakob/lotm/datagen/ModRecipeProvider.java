@@ -62,6 +62,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
                 .save(recipeOutput);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.SEALED_BOTTLE.get())
+                .pattern("NDN")
+                .pattern("DBD")
+                .pattern("NDN")
+                .define('N', Items.NETHERITE_INGOT)
+                .define('D', Items.DIAMOND)
+                .define('B', de.jakob.lotm.potions.PotionItemHandler.EMPTY_BOTTLE.get())
+                .unlockedBy("has_netherite_ingot", has(Items.NETHERITE_INGOT))
+                .save(recipeOutput);
+
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.MYSTERIOUS_TABLET.get())
             .requires(ModItems.UPPER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get())
             .requires(ModItems.RIGHT_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get())

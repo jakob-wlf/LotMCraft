@@ -351,6 +351,7 @@ public class LOTMCraft
             event.registerSpriteSet(ModParticles.LIGHTNING.get(), LightningParticle.Provider::new);
             event.registerSpriteSet(ModParticles.STAR.get(), StarParticle.Provider::new);
             event.registerSpriteSet(ModParticles.FOG_OF_WAR.get(), FogOfWarParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.GREY_SEAL.get(), GreySealParticle.Provider::new);
             event.registerSpriteSet(ModParticles.PURPLE_FLAME.get(), PurpleFlameParticle.Provider::new);
             event.registerSpriteSet(ModParticles.BLACK.get(), BlackParticle.Provider::new);
             event.registerSpriteSet(ModParticles.WHITE_FLAME.get(), WhiteFlameParticle.Provider::new);
@@ -358,6 +359,7 @@ public class LOTMCraft
 
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event) {
+            event.register(ModMenuTypes.INTROSPECT_MENU.get(), IntrospectScreen::new);
             event.register(ModMenuTypes.HONORIFIC_NAMES_MENU.get(), HonorificNamesScreen::new);
             event.register(ModMenuTypes.RECIPE_MENU.get(), RecipeScreen::new);
             event.register(ModMenuTypes.BREWING_CAULDRON_MENU.get(), BrewingCauldronScreen::new);

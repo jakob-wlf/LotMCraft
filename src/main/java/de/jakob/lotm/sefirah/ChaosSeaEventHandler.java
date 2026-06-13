@@ -109,8 +109,15 @@ public class ChaosSeaEventHandler {
 
     // ─── Logout / death interruption ─────────────────────────────────────────
 
-    @SubscribeEvent
-    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+    @SubscribeEvent    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        // Clear any stale accommodation bar left over from a previous session
+        if (!isAccommodating(player)) {
+            PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(0, 0));
+        }
+    }
+
+    @SubscribeEvent    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (!isAccommodating(player)) return;
         resetRitual(player, true);
