@@ -146,7 +146,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private void initializeAbilities() {
         availableAbilities.clear();
         subAbilityEntries.clear();
-        abilitiesScrollOffset = 0;
+        // Do NOT reset abilitiesScrollOffset here — callers that genuinely need a reset
+        // (e.g. tab switch) do so explicitly before calling this method.
 
         if (showAllAbilities) {
             availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesUpToSequenceOrdered(menu.getSequence()));

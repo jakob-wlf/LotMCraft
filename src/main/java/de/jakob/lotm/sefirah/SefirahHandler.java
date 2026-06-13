@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 public class SefirahHandler {
 
@@ -43,8 +44,25 @@ public class SefirahHandler {
 
         boolean buff =  SefirotData.get(player.server).claimSefirot(player.getUUID(), sefirot);
 
-        if (buff)
+        if (buff) {
             BeyonderData.playerMap.setSefirot(player.getUUID(), sefirot);
+
+            SefirotData data = SefirotData.get(player.server);
+
+            // Record the first-ever owner (no-op if already set)
+            data.setFirstOwnerIfAbsent(sefirot, player.getUUID());
+
+            // If someone other than the original owner just claimed an imprinted sefirot,
+            // apply the initial corruption burst and reset their reduction counter.
+            UUID firstOwner = data.getFirstOwner(sefirot);
+            if (!player.getUUID().equals(firstOwner)) {
+                int imprint = data.getMentalImprint(sefirot);
+                if (imprint > 0) {
+                    data.resetCurrentOwnerSeconds(sefirot);
+                    SefirotImprintEventHandler.applyInitialImprintCorruption(player, imprint);
+                }
+            }
+        }
 
         // Grant Sefirot Authority ability to anyone who owns a sefirot
         if (hasSefirot(player)) {

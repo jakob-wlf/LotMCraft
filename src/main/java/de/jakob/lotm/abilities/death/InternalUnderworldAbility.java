@@ -87,6 +87,14 @@ public class InternalUnderworldAbility extends SelectableAbility {
     private static final String FAVORITED_SOUL_TAG = "IsFavorited";
     private static final int FAVORITED_ROW_START_SLOT = 45;
     private static final int FAVORITED_ROW_END_SLOT = 53;
+    // Toggle abilities the River owner is NOT allowed to use from souls
+    private static final java.util.Set<String> RIVER_TOGGLE_BLACKLIST = java.util.Set.of(
+            "cogitation_ability",
+            "ally_ability",
+            "spirit_vision_ability",
+            "spirit_world_traversal_ability",
+            "mythical_creature_form_ability"
+    );
     // Base passive timings; scaled per sequence below.
     private static final int SOUL_PASSIVE_DURATION_TICKS = 20 * 60;
     private static final int SOUL_PASSIVE_COOLDOWN_TICKS = 20 * 60 * 5;
@@ -704,6 +712,8 @@ public class InternalUnderworldAbility extends SelectableAbility {
         String pathway = soulData.contains("Pathway") ? soulData.getString("Pathway") : "";
         int sequence = soulData.contains("Sequence", Tag.TAG_INT) ? soulData.getInt("Sequence") : -1;
         int playerSequence = BeyonderData.getSequence(player);
+        // River owner can also use ToggleAbilities (e.g. Spectating) from souls, except blacklisted ones
+        boolean isRiverOwner = "river_of_eternal_darkness".equals(SefirahHandler.getClaimedSefirot(player));
 
         if (pathway.isEmpty() || sequence < 0) {
             player.sendSystemMessage(Component.literal("This soul has no abilities").withStyle(ChatFormatting.RED));
@@ -712,7 +722,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
         List<Ability> abilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(pathway, sequence)
             .stream()
-            .filter(ability -> !(ability instanceof ToggleAbility))
+            .filter(ability -> isRiverOwner ? !RIVER_TOGGLE_BLACKLIST.contains(ability.getId()) : !(ability instanceof ToggleAbility))
             .filter(ability -> isAbilityAllowedFor(pathway, playerSequence, ability))
             .toList();
         List<PassiveAbilityItem> passiveAbilities = getSoulPassives(pathway, sequence, playerSequence);

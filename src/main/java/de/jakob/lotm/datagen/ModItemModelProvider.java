@@ -97,6 +97,24 @@ public class ModItemModelProvider extends ItemModelProvider {
 
         itemWithCustomDisplay(ModItems.FOOL_Card.get());
         basicItem(ModItems.MOD_ICON.get());
+
+        // Blasphemy Cards — uses own texture if it exists, else falls back to placeholder
+        blasphemyCard(ModItems.FOOL_BLASPHEMY_CARD.get());
+        blasphemyCard(ModItems.DOOR_BLASPHEMY_CARD.get());
+        blasphemyCard(ModItems.ERROR_BLASPHEMY_CARD.get());
+        blasphemyCard(ModItems.SUN_BLASPHEMY_CARD.get());
+        blasphemyCard(ModItems.TYRANT_BLASPHEMY_CARD.get());
+        blasphemyCard(ModItems.VISIONARY_BLASPHEMY_CARD.get());
+        blasphemyCard(ModItems.DARKNESS_BLASPHEMY_CARD.get());
+        blasphemyCard(ModItems.DEATH_BLASPHEMY_CARD.get());
+        blasphemyCard(ModItems.TWILIGHT_GIANT_BLASPHEMY_CARD.get());
+        blasphemyCard(ModItems.DEMONESS_BLASPHEMY_CARD.get());
+        blasphemyCard(ModItems.RED_PRIEST_BLASPHEMY_CARD.get());
+        blasphemyCard(ModItems.MOTHER_BLASPHEMY_CARD.get());
+        blasphemyCard(ModItems.ABYSS_BLASPHEMY_CARD.get());
+        blasphemyCard(ModItems.WHEEL_OF_FORTUNE_BLASPHEMY_CARD.get());
+        blasphemyCard(ModItems.BLACK_EMPEROR_BLASPHEMY_CARD.get());
+        blasphemyCard(ModItems.JUSTICIAR_BLASPHEMY_CARD.get());
     }
 
     private void uniqueness(Item item) {
@@ -206,6 +224,21 @@ public class ModItemModelProvider extends ItemModelProvider {
     private String getItemName(Item item) {
         ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
         return itemId.getPath();
+    }
+
+    /**
+     * Blasphemy card model: uses own texture if the file exists in textures/item/,
+     * otherwise falls back to the placeholder texture.
+     */
+    private void blasphemyCard(Item item) {
+        String itemName = getItemName(item);
+        // Check whether the texture file exists on disk so datagen doesn't error.
+        java.nio.file.Path texPath = java.nio.file.Paths.get(
+                "src/main/resources/assets/lotmcraft/textures/item/" + itemName + ".png");
+        String textureName = texPath.toFile().exists() ? itemName : "placeholder";
+        getBuilder(itemName)
+                .parent(getExistingFile(mcLoc("item/generated")))
+                .texture("layer0", modLoc("item/" + textureName));
     }
 
     private void potionRecipeItem(Item item) {

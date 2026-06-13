@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.sefirah;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.gui.custom.ChaosSeaAuthority.ChaosSeaAuthorityMenu;
 import de.jakob.lotm.gui.custom.RiverSefirotAuthority.RiverSefirotAuthorityMenu;
 import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityMenu;
@@ -54,31 +55,32 @@ public class SefirotAuthorityAbility extends Ability {
             List<String> available     = new ArrayList<>(SefirotAuthorityManager.getAvailableAbilityIds(player));
             List<String> unlocked      = new ArrayList<>(SefirotAuthorityManager.getUnlockedAbilityIds(player));
             List<String> neighborPaths = new ArrayList<>(SefirotAuthorityManager.getNeighborPaths(player));
+            int imprintPercent = SefirotData.get(player.server).getMentalImprint("chaos_sea");
             player.openMenu(new SimpleMenuProvider(
-                    (id, inv, p) -> new ChaosSeaAuthorityMenu(id, inv, available, unlocked, neighborPaths),
+                    (id, inv, p) -> new ChaosSeaAuthorityMenu(id, inv, available, unlocked, neighborPaths, imprintPercent),
                     Component.literal("Chaos Sea Authority")
             ), buf -> {
                 buf.writeCollection(available,      FriendlyByteBuf::writeUtf);
                 buf.writeCollection(unlocked,       FriendlyByteBuf::writeUtf);
                 buf.writeCollection(neighborPaths,  FriendlyByteBuf::writeUtf);
+                buf.writeInt(imprintPercent);
             });
             return;
         }
 
         if (sefirot.equals("river_of_eternal_darkness")) {
-            // Open the river-themed ability selection screen (Death/Darkness/Twilight Giant
-            // cross-path abilities). That screen has a "Death Imprints" tab to navigate to
-            // the imprint list via RequestRiverImprintScreenPacket.
             List<String> available    = new ArrayList<>(SefirotAuthorityManager.getAvailableAbilityIds(player));
             List<String> unlocked     = new ArrayList<>(SefirotAuthorityManager.getUnlockedAbilityIds(player));
             List<String> neighborPaths = new ArrayList<>(SefirotAuthorityManager.getNeighborPaths(player));
+            int imprintPercent = SefirotData.get(player.server).getMentalImprint("river_of_eternal_darkness");
             player.openMenu(new SimpleMenuProvider(
-                    (id, inv, p) -> new RiverSefirotAuthorityMenu(id, inv, available, unlocked, neighborPaths),
+                    (id, inv, p) -> new RiverSefirotAuthorityMenu(id, inv, available, unlocked, neighborPaths, imprintPercent),
                     Component.literal("River Authority")
             ), buf -> {
                 buf.writeCollection(available,      FriendlyByteBuf::writeUtf);
                 buf.writeCollection(unlocked,       FriendlyByteBuf::writeUtf);
                 buf.writeCollection(neighborPaths,  FriendlyByteBuf::writeUtf);
+                buf.writeInt(imprintPercent);
             });
             return;
         }
@@ -88,14 +90,16 @@ public class SefirotAuthorityAbility extends Ability {
         List<String> unlocked      = new ArrayList<>(SefirotAuthorityManager.getUnlockedAbilityIds(player));
         List<String> neighborPaths = new ArrayList<>(SefirotAuthorityManager.getNeighborPaths(player));
         String sefirotName = sefirot;
+        int imprintPercent = SefirotData.get(player.server).getMentalImprint(sefirotName);
         player.openMenu(new SimpleMenuProvider(
-                (id, inv, p) -> new SefirotAuthorityMenu(id, inv, available, unlocked, neighborPaths, sefirotName),
+                (id, inv, p) -> new SefirotAuthorityMenu(id, inv, available, unlocked, neighborPaths, sefirotName, imprintPercent),
                 Component.literal("Sefirot Authority")
         ), buf -> {
             buf.writeCollection(available,     FriendlyByteBuf::writeUtf);
             buf.writeCollection(unlocked,      FriendlyByteBuf::writeUtf);
             buf.writeCollection(neighborPaths, FriendlyByteBuf::writeUtf);
             buf.writeUtf(sefirotName);
+            buf.writeInt(imprintPercent);
         });
     }
 }

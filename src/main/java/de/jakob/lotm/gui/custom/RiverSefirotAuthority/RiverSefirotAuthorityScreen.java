@@ -46,6 +46,9 @@ public class RiverSefirotAuthorityScreen extends AbstractContainerScreen<RiverSe
     private static final int ICONS_AREA_W  = PANEL_WIDTH - CONTENT_LEFT - 8; // 232 px
     private static final int ICONS_PER_ROW = ICONS_AREA_W / ICON_STEP;       // 12
 
+    /** Height of the imprint bar section (only shown when imprint > 0). */
+    private static final int IMPRINT_BAR_HEIGHT = 12;
+
     // ── River colour palette ──────────────────────────────────────────────────
     /** Panel outline – deep teal-blue */
     private static final int COLOR_OUTLINE       = 0xFF004466;
@@ -124,7 +127,7 @@ public class RiverSefirotAuthorityScreen extends AbstractContainerScreen<RiverSe
         }
 
         totalContentHeight = computeContentHeight();
-        int visibleH  = PANEL_HEIGHT - 40; // content area (below tabs + hint)
+        int visibleH  = PANEL_HEIGHT - 40 - (menu.getImprintPercent() > 0 ? IMPRINT_BAR_HEIGHT : 0);
         int maxScroll = Math.max(0, totalContentHeight - visibleH);
 
         clearWidgets();
@@ -213,11 +216,36 @@ public class RiverSefirotAuthorityScreen extends AbstractContainerScreen<RiverSe
         // Divider
         g.fill(leftPos + 4, topPos + 30, leftPos + PANEL_WIDTH - 4, topPos + 31, COLOR_DIVIDER);
 
+        // Mental Imprint bar
+        renderImprintBar(g);
+
         renderSections(g, mouseX, mouseY);
     }
 
+    private void renderImprintBar(GuiGraphics g) {
+        int imprint = menu.getImprintPercent();
+        if (imprint <= 0) return;
+
+        int barY = topPos + 32;
+        int barX = leftPos + CONTENT_LEFT;
+        int barW = PANEL_WIDTH - CONTENT_LEFT - 22;
+
+        Component label = Component.literal("Mental Imprint: " + imprint + "%").withStyle(ChatFormatting.DARK_PURPLE);
+        g.drawString(this.font, label, barX, barY, 0xFFAA55FF, false);
+
+        int trackY = barY + 9;
+        g.fill(barX, trackY, barX + barW, trackY + 3, 0xFF330033);
+        int fillW = (int) (barW * (imprint / 100.0f));
+        g.fill(barX, trackY, barX + fillW, trackY + 3, 0xFF9933CC);
+        g.renderOutline(barX, trackY, barW, 3, 0xFF660066);
+    }
+
+    private int getImprintBarOffset() {
+        return menu.getImprintPercent() > 0 ? IMPRINT_BAR_HEIGHT : 0;
+    }
+
     private void renderSections(GuiGraphics g, int mouseX, int mouseY) {
-        int clipTop    = topPos + 32;
+        int clipTop    = topPos + 32 + getImprintBarOffset();
         int clipBottom = topPos + PANEL_HEIGHT - 10;
         int curY = clipTop - scrollOffset;
 
@@ -290,7 +318,7 @@ public class RiverSefirotAuthorityScreen extends AbstractContainerScreen<RiverSe
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 || button == 1) {
-            int clipTop    = topPos + 32;
+            int clipTop    = topPos + 32 + getImprintBarOffset();
             int clipBottom = topPos + PANEL_HEIGHT - 10;
             int curY = clipTop - scrollOffset;
 
@@ -331,7 +359,7 @@ public class RiverSefirotAuthorityScreen extends AbstractContainerScreen<RiverSe
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY,
                                  double scrollX, double scrollY) {
-        int visibleH  = PANEL_HEIGHT - 40;
+        int visibleH  = PANEL_HEIGHT - 40 - getImprintBarOffset();
         int maxScroll = Math.max(0, totalContentHeight - visibleH);
         scrollOffset  = (int) Math.max(0,
                 Math.min(maxScroll, scrollOffset - scrollY * 10));

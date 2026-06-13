@@ -1,8 +1,6 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.block.custom.BrewingCauldronBlockEntity;
-import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
 import de.jakob.lotm.item.custom.BlasphemyCardItem;
 import de.jakob.lotm.item.custom.BlasphemySlateHalfItem;
 import de.jakob.lotm.item.custom.BlasphemySlateItem;
@@ -37,10 +35,9 @@ public class TabletProtectionHandler {
 
     private static boolean isProtected(Item item) {
         return item instanceof MysteriousTabletFragmentItem
-                || item instanceof MysteriousTabletItem
-                || item instanceof BlasphemyCardItem
-                || item instanceof BlasphemySlateHalfItem
-                || item instanceof BlasphemySlateItem;
+                || item instanceof MysteriousTabletItem;
+        // BlasphemyCardItem, BlasphemySlateHalfItem and BlasphemySlateItem are intentionally
+        // NOT protected — they need to be placeable in the Brewing Cauldron and crafting tables.
     }
 
     /**
@@ -57,13 +54,10 @@ public class TabletProtectionHandler {
         server.execute(() -> {
             AbstractContainerMenu menu = event.getContainer();
             boolean changed = false;
-            boolean isCauldron = menu instanceof BrewingCauldronMenu;
             for (Slot slot : menu.slots) {
                 ItemStack stack = slot.getItem();
                 if (stack.isEmpty() || !isProtected(stack.getItem())) continue;
                 if (slot.container instanceof Inventory) continue; // player's own inventory — allowed
-                // Blasphemy Cards are intentionally allowed in the brewing cauldron recipe slot
-                if (isCauldron && stack.getItem() instanceof BlasphemyCardItem) continue;
                 if (MysteriousTabletFragmentItem.isChestCopy(stack)) continue; // naturally-spawned chest copy
                 ItemStack copy = stack.copy();
                 slot.set(ItemStack.EMPTY);
@@ -89,13 +83,10 @@ public class TabletProtectionHandler {
         if (menu == null || menu == player.inventoryMenu) return;
 
         boolean changed = false;
-        boolean isCauldron = menu instanceof BrewingCauldronMenu;
         for (Slot slot : menu.slots) {
             ItemStack stack = slot.getItem();
             if (stack.isEmpty() || !isProtected(stack.getItem())) continue;
             if (slot.container instanceof Inventory) continue;
-            // Blasphemy Cards are intentionally allowed in the brewing cauldron recipe slot
-            if (isCauldron && stack.getItem() instanceof BlasphemyCardItem) continue;
             if (MysteriousTabletFragmentItem.isChestCopy(stack)) continue; // naturally-spawned chest copy
             ItemStack copy = stack.copy();
             slot.set(ItemStack.EMPTY);
@@ -137,8 +128,6 @@ public class TabletProtectionHandler {
     }
 
     private static void ejectTabletItemsIfUnwatched(Container container, BlockEntity be, BlockPos pos, ServerLevel level) {
-        // Brewing Cauldron recipe slot allows Blasphemy Cards — skip ejection entirely for it.
-        if (be instanceof BrewingCauldronBlockEntity) return;
         // If any player currently has this container open, onPlayerTick handles it.
         for (ServerPlayer p : level.players()) {
             AbstractContainerMenu menu = p.containerMenu;
