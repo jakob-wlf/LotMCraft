@@ -1095,6 +1095,12 @@ public class PacketHandler {
                 de.jakob.lotm.network.packets.toServer.RequestTargetEnvisionCharacteristicsPacket.STREAM_CODEC,
                 de.jakob.lotm.network.packets.toServer.RequestTargetEnvisionCharacteristicsPacket::handle
         );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.CharacteristicSplittingPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.CharacteristicSplittingPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.CharacteristicSplittingPacket::handle
+        );
     }
 
     public static void sendToServer(CustomPacketPayload packet) {

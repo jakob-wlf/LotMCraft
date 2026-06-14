@@ -64,11 +64,16 @@ public class AngelAuthorityAbility extends SelectableAbility {
     protected String[] getAbilityNames() {
         return new String[]{"ability.lotmcraft.angel_authority.spirit_world_passage",
                 "ability.lotmcraft.angel_authority.artifact_shattering",
-                "ability.lotmcraft.angel_authority.flight"
+                "ability.lotmcraft.angel_authority.flight",
+                "ability.lotmcraft.angel_authority.characteristic_splitting"
         };
     }
 
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
+        if (level.isClientSide && entity instanceof Player && abilityIndex == 3) {
+            net.minecraft.client.Minecraft.getInstance().setScreen(new de.jakob.lotm.gui.custom.CharacteristicSplittingScreen());
+            return;
+        }
         if (!level.isClientSide && entity instanceof ServerPlayer player) {
             switch (abilityIndex) {
                 case 0:

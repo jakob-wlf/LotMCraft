@@ -123,7 +123,7 @@ public class GiftAbility extends SelectableAbility {
         if (entitySeq > 5) {
             return selectedAbility == 0;
         }
-        if (entitySeq > 3) {
+        if (entitySeq > 4) {
             return selectedAbility < 3;
         }
         return true;
