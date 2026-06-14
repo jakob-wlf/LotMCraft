@@ -1,9 +1,13 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.DeathImprintData;
+import de.jakob.lotm.attachments.CorruptionComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.events.DeathImprintHandler;
 import de.jakob.lotm.sefirah.SefirahHandler;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -49,6 +53,22 @@ public record RiverAuthorityActionPacket(int actionType, UUID targetUUID)
             switch (packet.actionType()) {
                 case 0 -> DeathImprintHandler.executeRiversCall(player, packet.targetUUID());
                 case 1 -> DeathImprintHandler.executeLocate(player, packet.targetUUID());
+                case 2 -> {
+                    // Toggle per-player corruption leakage exempt
+                    ServerPlayer target = player.getServer().getPlayerList().getPlayer(packet.targetUUID());
+                    if (target != null) {
+                        CorruptionComponent comp = target.getData(ModAttachments.CORRUPTION_COMPONENT);
+                        comp.setLeakageExempt(!comp.isLeakageExempt());
+                        target.sendSystemMessage(Component.literal(comp.isLeakageExempt()
+                                ? "§5Corruption leakage has been disabled for you by the River."
+                                : "§5Corruption leakage has been re-enabled for you."));
+                    }
+                }
+                case 3 -> {
+                    // Toggle global corruption leakage
+                    DeathImprintData imprintData = DeathImprintData.get(player.getServer());
+                    imprintData.setGlobalLeakageOff(!imprintData.isGlobalLeakageOff());
+                }
             }
         });
     }

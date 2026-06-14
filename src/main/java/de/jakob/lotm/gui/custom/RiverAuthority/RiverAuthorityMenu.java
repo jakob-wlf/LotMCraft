@@ -16,23 +16,29 @@ public class RiverAuthorityMenu extends AbstractContainerMenu {
 
     /** Ordered list of imprint entries for display (sorted by tier desc, then UUID). */
     private final List<ImprintEntry> entries;
+    private final boolean globalLeakageOff;
 
     /** Represents one imprint entry in the GUI. */
-    public record ImprintEntry(UUID uuid, String name, String pathway, int sequence, int imprintTier, boolean online, List<String> sealedAbilityIds) {}
+    public record ImprintEntry(UUID uuid, String name, String pathway, int sequence, int imprintTier, boolean online, List<String> sealedAbilityIds, boolean leakageExempt) {}
 
     /** Client-side constructor — reads serialized entries from buffer. */
     public RiverAuthorityMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buf) {
-        this(containerId, playerInventory, readEntries(buf));
+        this(containerId, playerInventory, readEntries(buf), buf.readBoolean());
     }
 
     /** Server-side constructor. */
-    public RiverAuthorityMenu(int containerId, Inventory playerInventory, List<ImprintEntry> entries) {
+    public RiverAuthorityMenu(int containerId, Inventory playerInventory, List<ImprintEntry> entries, boolean globalLeakageOff) {
         super(ModMenuTypes.RIVER_AUTHORITY_MENU.get(), containerId);
         this.entries = entries;
+        this.globalLeakageOff = globalLeakageOff;
     }
 
     public List<ImprintEntry> getEntries() {
         return entries;
+    }
+
+    public boolean isGlobalLeakageOff() {
+        return globalLeakageOff;
     }
 
     private static List<ImprintEntry> readEntries(RegistryFriendlyByteBuf buf) {
@@ -48,9 +54,15 @@ public class RiverAuthorityMenu extends AbstractContainerMenu {
             int sealCount = buf.readVarInt();
             List<String> sealed = new ArrayList<>(sealCount);
             for (int j = 0; j < sealCount; j++) sealed.add(buf.readUtf(64));
-            list.add(new ImprintEntry(uuid, name, pathway, sequence, tier, online, sealed));
+            boolean leakageExempt = buf.readBoolean();
+            list.add(new ImprintEntry(uuid, name, pathway, sequence, tier, online, sealed, leakageExempt));
         }
         return list;
+    }
+
+    public static void writeBuf(RegistryFriendlyByteBuf buf, List<ImprintEntry> entries, boolean globalLeakageOff) {
+        writeEntries(buf, entries);
+        buf.writeBoolean(globalLeakageOff);
     }
 
     public static void writeEntries(RegistryFriendlyByteBuf buf, List<ImprintEntry> entries) {
@@ -64,6 +76,7 @@ public class RiverAuthorityMenu extends AbstractContainerMenu {
             buf.writeBoolean(e.online());
             buf.writeVarInt(e.sealedAbilityIds().size());
             for (String id : e.sealedAbilityIds()) buf.writeUtf(id, 64);
+            buf.writeBoolean(e.leakageExempt());
         }
     }
 

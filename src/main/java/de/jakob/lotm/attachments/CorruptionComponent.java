@@ -12,6 +12,7 @@ import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 public class CorruptionComponent {
 
     private float corruption = 0.0f;
+    private boolean leakageExempt = false;
 
     public CorruptionComponent() {
     }
@@ -22,6 +23,14 @@ public class CorruptionComponent {
 
     public void setCorruption(float corruption) {
         this.corruption = corruption;
+    }
+
+    public boolean isLeakageExempt() {
+        return leakageExempt;
+    }
+
+    public void setLeakageExempt(boolean leakageExempt) {
+        this.leakageExempt = leakageExempt;
     }
 
     public void setCorruptionAndSync(float corruption, LivingEntity entity) {
@@ -68,6 +77,7 @@ public class CorruptionComponent {
                 public CorruptionComponent read(IAttachmentHolder holder, CompoundTag tag, HolderLookup.Provider lookup) {
                     CorruptionComponent component = new CorruptionComponent();
                     component.corruption = tag.getFloat("corruption");
+                    component.leakageExempt = tag.getBoolean("leakageExempt");
                     return component;
                 }
 
@@ -75,6 +85,7 @@ public class CorruptionComponent {
                 public CompoundTag write(CorruptionComponent component, HolderLookup.Provider lookup) {
                     CompoundTag tag = new CompoundTag();
                     tag.putFloat("corruption", component.corruption);
+                    tag.putBoolean("leakageExempt", component.leakageExempt);
                     return tag;
                 }
             };
