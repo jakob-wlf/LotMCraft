@@ -13,6 +13,7 @@ import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.dimension.ModDimensions;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.sefirah.SefirahHandler;
@@ -21,10 +22,12 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.pathways.PathwayInfos;
 import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
@@ -58,6 +61,14 @@ public class CorruptionEventHandler {
     private static void handleCorruptionGain(LivingEntity entity) {
         CorruptionComponent corruptionComp = entity.getData(ModAttachments.CORRUPTION_COMPONENT);
         BeyonderComponent beyonderComp = entity.getData(ModAttachments.BEYONDER_COMPONENT);
+        CorruptedPlayerComponent corruptedComp = entity.getData(ModAttachments.CORRUPTED_PLAYER_COMPONENT);
+
+        if(entity.level() instanceof ServerLevel serverLevel) {
+            Entity npc = serverLevel.getEntity(corruptedComp.getNpcUUID());
+            if (corruptedComp.isFullyCorrupted() && corruptedComp.getNpcUUID() != null && entity.distanceTo(npc) > 30) {
+                entity.teleportTo(npc.getX(), npc.getY(), npc.getZ());
+            }
+        }
 
         // Players exempted from corruption leakage gain nothing
         if (corruptionComp.isLeakageExempt()) return;
@@ -122,7 +133,7 @@ public class CorruptionEventHandler {
             int extraStack = Math.max(0, charStack - expectedStack);
 
             if (extraStack > 0) {
-                float baseGain = 0.00001f * extraStack; // Base gain per extra characteristic
+                float baseGain = 0.00005f * extraStack; // Base gain per extra characteristic
 
                 if (charPathway.equals(currentPathway)) {
                     // Same pathway, extra characteristic
@@ -173,7 +184,7 @@ public class CorruptionEventHandler {
         }
         if (corruptionValue >= 40) {
             if (random.nextInt(1000) < corruptionValue) {
-                //entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 1));
+                entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 10, 1));
             }
             if (random.nextInt(1000) < corruptionValue) {
                 //entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 1));
@@ -181,12 +192,12 @@ public class CorruptionEventHandler {
         }
         if (corruptionValue >= 60) {
             if (random.nextInt(1000) < corruptionValue) {
-
+                entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 1, 1));
             }
         }
         if (corruptionValue >= 80) {
             if (random.nextInt(1000) < corruptionValue) {
-                //entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0));
+                entity.addEffect(new MobEffectInstance(ModEffects.MUTATED, 10, 2));
             }
         }
 

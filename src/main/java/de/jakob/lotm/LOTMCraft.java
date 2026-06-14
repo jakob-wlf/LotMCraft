@@ -84,6 +84,7 @@ import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelScreen;
 import de.jakob.lotm.gui.custom.Gathering.GatheringScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesScreen;
+import de.jakob.lotm.gui.custom.Prey.PreyScreen;
 import de.jakob.lotm.gui.custom.Recipe.RecipeScreen;
 import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityScreen;
 import de.jakob.lotm.gui.custom.RiverBlessing.RiverBlessingScreen;
@@ -372,6 +373,7 @@ public class LOTMCraft
             event.register(ModMenuTypes.CHAOS_SEA_AUTHORITY_MENU.get(), ChaosSeaAuthorityScreen::new);
             event.register(ModMenuTypes.GATHERING_MENU.get(), GatheringScreen::new);
             event.register(ModMenuTypes.RIVER_BLESSING_MENU.get(), RiverBlessingScreen::new);
+            event.register(ModMenuTypes.PREY_MENU.get(), PreyScreen::new);
         }
     }
 

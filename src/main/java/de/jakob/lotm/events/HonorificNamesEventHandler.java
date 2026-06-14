@@ -55,6 +55,57 @@ public class HonorificNamesEventHandler {
         }
     }
 
+    public static void performPrayer(ServerPlayer sender, UUID targetUUID) {
+        MinecraftServer server = sender.getServer();
+        if (server == null) return;
+        ServerPlayer target = server.getPlayerList().getPlayer(targetUUID);
+        if (target == null) return;
+
+        UUID playerUUID = sender.getUUID();
+
+        // ── Gathering member / River-blessed sefirot access ───────────────
+        GatheringData gd = GatheringData.get(server);
+        boolean isMember  = gd.isMember(targetUUID, playerUUID);
+        boolean isBlessed = RiverBlessingManager.isBlessed(playerUUID)
+                && targetUUID.equals(RiverBlessingManager.getOwner(playerUUID));
+        if (isMember || isBlessed) {
+            handleSefirotAccess(sender, targetUUID, server);
+            return;
+        }
+        // ─────────────────────────────────────────────────────────────────
+
+        if (targetUUID.equals(playerUUID)) {
+            target.sendSystemMessage(Component.translatable("lotmcraft.own_praying")
+                    .withStyle(ChatFormatting.GREEN));
+            return;
+        }
+
+        if (BeyonderData.getSequence(target) == 3 && target.distanceTo(sender) >= 4000.0f) {
+            target.sendSystemMessage(Component.translatable("lotmcraft.far_away_praying")
+                    .withStyle(ChatFormatting.RED));
+            return;
+        }
+
+        isInTransferring.put(playerUUID, targetUUID);
+
+        target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(.01f, target);
+
+        // Decrease corruption on prayer
+        int decreaseVal = target.level().getGameRules().getInt(de.jakob.lotm.gamerule.ModGameRules.PRAYER_CORRUPTION_DECREASE);
+        if (decreaseVal > 0) {
+            target.getData(ModAttachments.CORRUPTION_COMPONENT).decreaseCorruptionAndSync(decreaseVal / 1000f, target);
+        }
+
+        // Add/Update anchor
+        AnchorComponent anchorComp = target.getData(ModAttachments.ANCHOR_COMPONENT);
+        anchorComp.addOrUpdateAnchor(playerUUID, 1.0f);
+
+        target.sendSystemMessage(formNotification(sender));
+        sender.sendSystemMessage(Component.translatable("lotmcraft.prey.success").withStyle(ChatFormatting.GREEN));
+
+        storePendingPrayer(sender, target);
+    }
+
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public static void onChatMessageSent(ServerChatEvent event) {
         UUID playerUUID = event.getPlayer().getUUID();
@@ -116,66 +167,9 @@ public class HonorificNamesEventHandler {
                 return;
             }
 
-            var target = event.getPlayer().server.getPlayerList().getPlayer(targetUUID);
-
-            if(target == null){
-                input.remove(playerUUID);
-                timeout.remove(playerUUID);
-
-                return;
-            }
-
-            // ── Gathering member / River-blessed sefirot access ───────────────
-            // If the sender is a gathering member of the target (castle owner)
-            // OR is blessed by the target (River owner), teleport them to the
-            // owner's sefirot instead of sending a prayer notification.
-            {
-                ServerPlayer sender = event.getPlayer();
-                MinecraftServer server = sender.getServer();
-                if (server != null) {
-                    GatheringData gd = GatheringData.get(server);
-                    boolean isMember  = gd.isMember(targetUUID, playerUUID);
-                    boolean isBlessed = RiverBlessingManager.isBlessed(playerUUID)
-                            && targetUUID.equals(RiverBlessingManager.getOwner(playerUUID));
-                    if (isMember || isBlessed) {
-                        input.remove(playerUUID);
-                        timeout.remove(playerUUID);
-                        handleSefirotAccess(sender, targetUUID, server);
-                        return;
-                    }
-                }
-            }
-            // ─────────────────────────────────────────────────────────────────
-
-            if(targetUUID.equals(playerUUID)){
-                target.sendSystemMessage(Component.translatable("lotmcraft.own_praying")
-                        .withStyle(ChatFormatting.GREEN));
-                return;
-            }
-
-            if(BeyonderData.getSequence(target) == 3 && target.distanceTo(event.getPlayer()) >= 4000.0f){
-                target.sendSystemMessage(Component.translatable("lotmcraft.far_away_praying")
-                        .withStyle(ChatFormatting.RED));
-                return;
-            }
-
-            isInTransferring.put(playerUUID, targetUUID);
-
-            target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(.01f, target);
-
-            // Decrease corruption on prayer
-            int decreaseVal = target.level().getGameRules().getInt(de.jakob.lotm.gamerule.ModGameRules.PRAYER_CORRUPTION_DECREASE);
-            if (decreaseVal > 0) {
-                target.getData(ModAttachments.CORRUPTION_COMPONENT).decreaseCorruptionAndSync(decreaseVal / 1000f, target);
-            }
-
-            // Add/Update anchor
-            AnchorComponent anchorComp = target.getData(ModAttachments.ANCHOR_COMPONENT);
-            anchorComp.addOrUpdateAnchor(playerUUID, 1.0f);
-
-            storePendingPrayer(event.getPlayer(), target);
-
-            target.sendSystemMessage(formNotification(event.getPlayer()));
+            input.remove(playerUUID);
+            timeout.remove(playerUUID);
+            performPrayer(event.getPlayer(), targetUUID);
         }
     }
 
