@@ -1,9 +1,9 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.PassiveAbilityItem;
-import de.jakob.lotm.beyonders.abilities.PhysicalEnhancementsAbility;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.door.passives.VoidImmunityAbility;

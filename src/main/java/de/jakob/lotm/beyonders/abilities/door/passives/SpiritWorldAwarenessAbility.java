@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.door.passives;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.dimension.SpiritWorldHandler;
 import de.jakob.lotm.util.helper.AbilityUtil;

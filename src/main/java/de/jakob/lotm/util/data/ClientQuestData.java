@@ -1,4 +1,4 @@
-package de.jakob.lotm.util;
+package de.jakob.lotm.util.data;
 
 import net.minecraft.world.item.ItemStack;
 import java.util.*;

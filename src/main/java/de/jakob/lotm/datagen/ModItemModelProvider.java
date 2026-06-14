@@ -1,13 +1,13 @@
 package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
-import de.jakob.lotm.potions.BeyonderCharacteristicItem;
-import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
-import de.jakob.lotm.potions.PotionItemHandler;
-import de.jakob.lotm.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.beyonders.potions.PotionItemHandler;
+import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;

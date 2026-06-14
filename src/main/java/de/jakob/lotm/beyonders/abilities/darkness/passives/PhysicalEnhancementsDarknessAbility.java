@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.darkness.passives;
 
-import de.jakob.lotm.beyonders.abilities.PhysicalEnhancementsAbility;
+import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.world.entity.LivingEntity;

@@ -6,7 +6,7 @@ import de.jakob.lotm.entity.custom.ability_entities.door_pathway.TravelersDoorEn
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenCoordinateScreenTravelersDoorPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.TeleportationUtil;
+import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;

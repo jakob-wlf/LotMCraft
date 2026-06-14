@@ -5,7 +5,7 @@ import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionsEnum;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.context.ActionContextBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.context.ActionContextEnum;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.context.implementations.ActionPositionContext;
-import de.jakob.lotm.util.TeleportationUtil;
+import de.jakob.lotm.util.helper.TeleportationUtil;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;

@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.death.passives;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.PhysicalEnhancementsAbility;
+import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageTypes;

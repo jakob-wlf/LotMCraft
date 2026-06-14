@@ -4,7 +4,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenEnvisionLocationScreenPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.TeleportationUtil;
+import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;

@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.black_emperor;
 
-import de.jakob.lotm.beyonders.abilities.PhysicalEnhancementsAbility;
+import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ModAttachments;

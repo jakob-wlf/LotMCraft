@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives;
 
-import de.jakob.lotm.beyonders.abilities.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.calamities.Calamity;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.calamities.Earthquake;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.calamities.Meteor;

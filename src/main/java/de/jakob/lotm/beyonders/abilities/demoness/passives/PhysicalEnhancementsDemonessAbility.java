@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.demoness.passives;
 
-import de.jakob.lotm.beyonders.abilities.PhysicalEnhancementsAbility;
+import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.util.BeyonderData;
 
 import java.util.HashMap;

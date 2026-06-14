@@ -9,7 +9,7 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.packets.toClient.OpenPlayerDivinationScreenPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.PlayerSelectionWorkType;
+import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import de.jakob.lotm.util.data.PlayerInfo;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;

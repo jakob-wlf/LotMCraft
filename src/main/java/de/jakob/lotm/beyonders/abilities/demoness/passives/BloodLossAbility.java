@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.demoness.passives;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.item.ModItems;
 import net.minecraft.world.entity.LivingEntity;

@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.visionary.passives;
 
-import de.jakob.lotm.beyonders.abilities.PhysicalEnhancementsAbility;
+import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 
 import java.util.HashMap;
 import java.util.List;

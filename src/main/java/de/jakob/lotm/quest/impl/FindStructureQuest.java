@@ -2,11 +2,10 @@ package de.jakob.lotm.quest.impl;
 
 import de.jakob.lotm.quest.Quest;
 import de.jakob.lotm.quest.QuestManager;
-import de.jakob.lotm.potions.BeyonderPotion;
-import de.jakob.lotm.potions.PotionItemHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
+import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;

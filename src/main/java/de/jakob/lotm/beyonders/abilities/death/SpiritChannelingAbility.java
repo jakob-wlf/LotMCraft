@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.util.data.ClientSpiritCache;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
@@ -97,7 +98,7 @@ public class SpiritChannelingAbility extends SelectableAbility {
 
     private String[] getAbilityNamesForPlayer(UUID uuid) {
         if (capturedSpirits.isEmpty() && net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
-            int ordinal = de.jakob.lotm.util.ClientSpiritCache.getSpiritTypeOrdinal();
+            int ordinal = ClientSpiritCache.getSpiritTypeOrdinal();
             if (ordinal >= 0) {
                 SpiritType[] values = SpiritType.values();
                 if (ordinal < values.length) {

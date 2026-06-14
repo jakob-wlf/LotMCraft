@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.abyss.passives;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;

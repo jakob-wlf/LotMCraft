@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.darkness.passives;
 
-import de.jakob.lotm.beyonders.abilities.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;

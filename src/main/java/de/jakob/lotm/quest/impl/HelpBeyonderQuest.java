@@ -6,10 +6,10 @@
 //import de.jakob.lotm.entity.ModEntities;
 //import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 //import de.jakob.lotm.entity.custom.goals.KillOutsideRadiusGoal;
-//import de.jakob.lotm.potions.BeyonderCharacteristicItem;
-//import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
-//import de.jakob.lotm.potions.BeyonderPotion;
-//import de.jakob.lotm.potions.PotionItemHandler;
+//import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+//import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
+//import de.jakob.lotm.beyonders.potions.BeyonderPotion;
+//import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 //import de.jakob.lotm.quest.Quest;
 //import de.jakob.lotm.quest.QuestManager;
 //import de.jakob.lotm.util.BeyonderData;

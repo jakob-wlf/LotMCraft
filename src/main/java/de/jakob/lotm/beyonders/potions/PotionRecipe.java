@@ -1,4 +1,4 @@
-package de.jakob.lotm.potions;
+package de.jakob.lotm.beyonders.potions;
 
 import net.minecraft.world.item.ItemStack;
 

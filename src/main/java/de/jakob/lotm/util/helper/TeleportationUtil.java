@@ -1,4 +1,4 @@
-package de.jakob.lotm.util;
+package de.jakob.lotm.util.helper;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;

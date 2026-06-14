@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.justiciar.passives;
 
-import de.jakob.lotm.beyonders.abilities.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.beyonders.abilities.common.DivinationAbility;
 import de.jakob.lotm.effect.ModEffects;
 import net.minecraft.world.effect.MobEffectCategory;

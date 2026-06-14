@@ -1,4 +1,4 @@
-package de.jakob.lotm.beyonders.abilities;
+package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;

@@ -8,7 +8,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenDiscernmentScreenPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.PureIdealismUtil;
+import de.jakob.lotm.util.helper.PureIdealismUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;

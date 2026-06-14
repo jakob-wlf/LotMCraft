@@ -38,7 +38,7 @@ public class PuppetSoldierCreationAbility extends Ability {
         for(int i = 0; i < 6; i++) {
             Vec3 spawnPos = entity.position().add(random.nextDouble(-3, 3), 0, random.nextDouble(-3, 3));
 
-            BeyonderNPCEntity puppetSoldier = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), serverLevel, false, "knight", "red_priest", 4);
+            BeyonderNPCEntity puppetSoldier = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), serverLevel, false, "knight", "red_priest", 4, false, false);
             puppetSoldier.setPos(spawnPos);
             puppetSoldier.setPuppetWarrior(true);
             serverLevel.addFreshEntity(puppetSoldier);

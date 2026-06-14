@@ -10,6 +10,7 @@ import de.jakob.lotm.entity.client.ability_entities.door_pathway.travelers_door.
 import de.jakob.lotm.entity.client.ability_entities.meteor.MeteorModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area.BloomingAreaModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinModel;
+import de.jakob.lotm.entity.client.beyonder_npc.TradeIndicatorModel;
 import de.jakob.lotm.entity.client.projectiles.paper_dagger.PaperDaggerProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.spear_of_destruction.SpearOfDestructionProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.spear_of_light.SpearOfLightProjectileModel;
@@ -108,6 +109,7 @@ public class ModEvents {
         event.registerLayerDefinition(BloomingAreaModel.LAYER_LOCATION, BloomingAreaModel::createBodyLayer);
         event.registerLayerDefinition(DesolateAreaModel.LAYER_LOCATION, DesolateAreaModel::createBodyLayer);
         event.registerLayerDefinition(QuestMarkerModel.LAYER_LOCATION, QuestMarkerModel::createBodyLayer);
+        event.registerLayerDefinition(TradeIndicatorModel.LAYER_LOCATION, TradeIndicatorModel::createBodyLayer);
         event.registerLayerDefinition(CycleOfFateModel.LAYER_LOCATION, CycleOfFateModel::createBodyLayer);
         event.registerLayerDefinition(UnderworldGateModel.LAYER_LOCATION, UnderworldGateModel::createBodyLayer);
 
@@ -225,6 +227,7 @@ public class ModEvents {
         EnablePlayerAbilitiesCommand.register(event.getDispatcher());
         SanityCommand.register(event.getDispatcher());
         DigestionCommand.register(event.getDispatcher());
+        SpawnBeyonderCommand.register(event.getDispatcher());
         QuestCommand.register(event.getDispatcher());
         BeyonderMapCommand.register(event.getDispatcher());
         ResetCooldownsCommand.register(event.getDispatcher());

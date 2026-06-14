@@ -1,7 +1,7 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.util.ClientUniquenessCache;
+import de.jakob.lotm.util.data.ClientUniquenessCache;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

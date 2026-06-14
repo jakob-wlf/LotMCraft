@@ -1,4 +1,4 @@
-package de.jakob.lotm.potions;
+package de.jakob.lotm.beyonders.potions;
 
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;

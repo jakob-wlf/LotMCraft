@@ -1,4 +1,4 @@
-package de.jakob.lotm.potions;
+package de.jakob.lotm.beyonders.potions;
 
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AdvancementUtil;

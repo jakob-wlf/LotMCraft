@@ -7,7 +7,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncPlayerTeleportationOnlinePlayersPacket;
 import de.jakob.lotm.network.packets.toClient.SyncPlayerTeleportationPlayerNamesPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
-import de.jakob.lotm.util.DivinationUtil;
+import de.jakob.lotm.util.helper.DivinationUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

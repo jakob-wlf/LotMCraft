@@ -1,4 +1,4 @@
-package de.jakob.lotm.util;
+package de.jakob.lotm.util.data;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;

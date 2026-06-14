@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.visionary.passives;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.events.HonorificNamesEventHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.PendingPrayer;

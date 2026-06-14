@@ -1,4 +1,4 @@
-package de.jakob.lotm.beyonders.abilities;
+package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ControllingDataComponent;

@@ -1,6 +1,7 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.util.data.ClientCorrosionFovCache;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -26,7 +27,7 @@ public record SyncCorrosionFovPacket(float fovMultiplier) implements CustomPacke
 
     public static void handle(SyncCorrosionFovPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            de.jakob.lotm.util.ClientCorrosionFovCache.setFovMultiplier(packet.fovMultiplier());
+            ClientCorrosionFovCache.setFovMultiplier(packet.fovMultiplier());
         });
     }
 }

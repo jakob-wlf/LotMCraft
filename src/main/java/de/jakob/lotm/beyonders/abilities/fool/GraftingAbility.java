@@ -7,7 +7,7 @@ import de.jakob.lotm.entity.custom.ability_entities.LocationGraftingEntity;
 import de.jakob.lotm.events.custom.TargetEntityEvent;
 import de.jakob.lotm.events.custom.TargetLocationEvent;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.TeleportationUtil;
+import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.data.EntityLocation;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;

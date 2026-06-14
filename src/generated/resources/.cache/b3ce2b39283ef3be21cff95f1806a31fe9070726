@@ -1,4 +1,4 @@
-// 1.21.1	2026-06-11T00:21:20.8919229	Item Models: lotmcraft
+// 1.21.1	2026-06-14T12:08:54.0680902	Item Models: lotmcraft
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 d79ff3aedef37faf54603234b4a98f66afb8991f assets/lotmcraft/models/item/abyss_uniqueness.json
 4e7075a5dc34701bda2cb5db71047fdcdb9a3de6 assets/lotmcraft/models/item/acrobatics_ability.json
@@ -344,6 +344,7 @@ a5ec83bf79581416969ff4c380b65f720ff01cf7 assets/lotmcraft/models/item/planeswalk
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/planter.json
 53bf2e073a7be41175c64d01457176d8d7687e67 assets/lotmcraft/models/item/planter_characteristic.json
 63285aca4004491d7073c8b9998c3b4c06a54638 assets/lotmcraft/models/item/planter_potion.json
+86e1d4a375bdaa2b6140dac32772c81ab3c944ba assets/lotmcraft/models/item/pound_coin.json
 62c84d7e49b04e11821402edfa98492235a81b90 assets/lotmcraft/models/item/powder_of_dazzling_soul.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/priest_of_light.json
 df027ae55c442b809ae64805c5f4e9762e4a809b assets/lotmcraft/models/item/priest_of_light_characteristic.json

@@ -9,7 +9,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.ControllingUtil;
+import de.jakob.lotm.util.helper.ControllingUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import net.minecraft.network.chat.Component;

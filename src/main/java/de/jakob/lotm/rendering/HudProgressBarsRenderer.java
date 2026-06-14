@@ -3,7 +3,7 @@ package de.jakob.lotm.rendering;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.ClientSacrificeCache;
+import de.jakob.lotm.util.data.ClientSacrificeCache;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

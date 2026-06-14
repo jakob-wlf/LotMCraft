@@ -1,4 +1,4 @@
-package de.jakob.lotm.util;
+package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
 import net.minecraft.core.HolderLookup;

@@ -1,4 +1,4 @@
-package de.jakob.lotm.util.pathways;
+package de.jakob.lotm.util.data;
 
 import net.minecraft.network.chat.Component;
 

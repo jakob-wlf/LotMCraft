@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.visionary.handlers.mixin;
 
 import de.jakob.lotm.beyonders.abilities.visionary.MindWorldAuthorityEnvisioningAbility;
-import de.jakob.lotm.potions.BeyonderCharacteristicItem;
-import de.jakob.lotm.potions.BeyonderPotion;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;

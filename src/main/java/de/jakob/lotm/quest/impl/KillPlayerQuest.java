@@ -1,7 +1,7 @@
 package de.jakob.lotm.quest.impl;
 
-import de.jakob.lotm.potions.BeyonderPotion;
-import de.jakob.lotm.potions.PotionItemHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
+import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.quest.Quest;
 import de.jakob.lotm.quest.QuestManager;
 import de.jakob.lotm.util.BeyonderData;

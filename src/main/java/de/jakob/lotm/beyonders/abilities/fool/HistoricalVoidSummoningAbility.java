@@ -9,8 +9,8 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.network.packets.toClient.OpenHistoricalVoidBorrowingScreenPacket;
-import de.jakob.lotm.potions.BeyonderCharacteristicItem;
-import de.jakob.lotm.potions.BeyonderPotion;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.Config;
 import de.jakob.lotm.util.helper.AllyUtil;
@@ -437,7 +437,9 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                         hostile,
                         skin,
                         pathway,
-                        sequence
+                        sequence,
+                        false,
+                        false
                 );
 
                 // store the original player's UUID if the summoned entity was a player

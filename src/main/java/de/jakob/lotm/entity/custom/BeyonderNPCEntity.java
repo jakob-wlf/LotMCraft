@@ -6,20 +6,23 @@ import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.custom.goals.AbilityUseGoal;
 import de.jakob.lotm.entity.custom.goals.RangedCombatGoal;
 import de.jakob.lotm.gamerule.ModGameRules;
-import de.jakob.lotm.potions.BeyonderCharacteristicItem;
-import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
-import de.jakob.lotm.potions.PotionRecipeItem;
-import de.jakob.lotm.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
+import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.quest.QuestManager;
 import de.jakob.lotm.quest.QuestRegistry;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.shapeShifting.PlayerSkinData;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -37,6 +40,8 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -63,6 +68,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
     private static final int MAX_SEQUENCE = 9;
     private static final double SEQUENCE_WEIGHT_EXPONENT = 0.35;
     private static final float QUEST_SPAWN_CHANCE = 0.55f;
+    private static final float TRADE_SPAWN_CHANCE = 0.075f;
     private static final int RECIPE_DROP_CHANCE = 4;
     private static final int DEFAULT_PUPPET_LIFETIME = 20 * 60 * 4; // 4 minutes
 
@@ -77,12 +83,16 @@ public class BeyonderNPCEntity extends PathfinderMob {
             SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<String> QUEST_ID =
             SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<CompoundTag> TRADES =
+            SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.COMPOUND_TAG);
     private static final EntityDataAccessor<Optional<UUID>> TARGET_PLAYER_UUID =
             SynchedEntityData.defineId(BeyonderNPCEntity.class, EntityDataSerializers.OPTIONAL_UUID);
 
     // ========================= Instance Fields =========================
     private String _pathway = "none";
     private int _sequence = -1;
+    private Boolean _hasQuest = null;
+    private Boolean _hasTrade = null;
     private boolean defaultHostile;
     private long tickCounter = 0;
 
@@ -92,21 +102,22 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile) {
-        this(entityType, level, hostile, getRandomSkin());
+        this(entityType, level, hostile, getRandomBeyonderSkin());
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String skinName) {
-        this(entityType, level, hostile, skinName, getRandomPathway(), getWeightedHighSequence());
+        this(entityType, level, hostile, skinName, getRandomPathway(), getWeightedHighSequence(), null, false);
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String pathway, int sequence) {
-        this(entityType, level, hostile, getRandomSkin(), pathway, sequence);
+        this(entityType, level, hostile, getRandomBeyonderSkin(), pathway, sequence, null, false);
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile,
-                             String skinName, String pathway, int sequence) {
+                             String skinName, String pathway, int sequence, Boolean _hasQuest, Boolean _hasTades) {
         super(entityType, level);
         this.defaultHostile = hostile;
+
         this.setHostile(hostile);
         this.setSkinName(skinName);
 
@@ -115,16 +126,18 @@ public class BeyonderNPCEntity extends PathfinderMob {
             sequence = random.nextInt(BeyonderData.getHighestImplementedSequence(pathway), 10);
         }
 
+        this._pathway = pathway;
+        this._sequence = sequence;
+        this._hasQuest = _hasQuest;
+        this._hasTrade = _hasTades;
+
         if (!level.isClientSide) {
-            this._pathway = pathway;
-            this._sequence = sequence;
             BeyonderData.setBeyonder(this, pathway, sequence);
         }
 
     }
 
-    // ========================= Helper Methods for Construction =========================
-    private static String getRandomSkin() {
+    public static String getRandomBeyonderSkin() {
         return SKINS[new Random().nextInt(SKINS.length)];
     }
 
@@ -169,17 +182,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(IS_HOSTILE, false);
-        builder.define(SKIN_NAME, "amon");
-        builder.define(QUEST_ID, "");
-        builder.define(IS_PUPPET_WARRIOR, false);
-        builder.define(MAX_LIFETIME_IF_IS_PUPPET, DEFAULT_PUPPET_LIFETIME);
-        builder.define(TARGET_PLAYER_UUID, Optional.empty());
-    }
-
-    @Override
     public void onAddedToLevel() {
         super.onAddedToLevel();
 
@@ -188,11 +190,21 @@ public class BeyonderNPCEntity extends PathfinderMob {
             if (!this.getPersistentData().getBoolean("Initialized")) {
                 this.getPersistentData().putBoolean("Initialized", true);
 
-                if (random.nextFloat() < QUEST_SPAWN_CHANCE) {
+                if ((random.nextFloat() < QUEST_SPAWN_CHANCE || this._hasQuest == Boolean.TRUE) && this._hasQuest != Boolean.FALSE) {
                     String randomQuestId = QuestRegistry.getRandomMatchingQuest(this);
                     if (randomQuestId != null) {
                         setQuestId(randomQuestId);
                     }
+                } else if((random.nextFloat() < TRADE_SPAWN_CHANCE || this._hasTrade == Boolean.TRUE) && this._hasTrade != Boolean.FALSE) {
+                    ListTag trades = new ListTag();
+                    for(int i = 0; i < 3; i++) {
+                        TradeEntry entry = generateRandomTrade(random);
+                        CompoundTag tradeTag = writeTrade(entry.costA, entry.costB, entry.result, this.registryAccess());
+                        trades.add(tradeTag);
+                    }
+                    CompoundTag tradesCompound = new CompoundTag();
+                    tradesCompound.put("trades", trades);
+                    setTrades(tradesCompound);
                 }
             }
 
@@ -200,50 +212,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
             if (this._sequence != -1 && !this._pathway.equals("none")) {
                 BeyonderData.setBeyonder(this, this._pathway, _sequence);
             }
-        }
-    }
-
-    @Override
-    public void onSyncedDataUpdated(EntityDataAccessor<?> dataAccessor) {
-        super.onSyncedDataUpdated(dataAccessor);
-    }
-
-    // ========================= NBT Data Persistence =========================
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putBoolean("IsHostile", isHostile());
-        compound.putBoolean("DefaultHostile", defaultHostile);
-        compound.putString("SkinName", getSkinName());
-        compound.putString("QuestId", getQuestId());
-        compound.putBoolean("IsPuppetWarrior", isPuppetWarrior());
-        compound.putInt("MaxLifetimeIfPuppet", getMaxLifetimeIfPuppet());
-        if (getTargetPlayerUUID().isPresent()) {
-            compound.putUUID("TargetPlayerUUID", getTargetPlayerUUID().get());
-        }
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-
-        this.defaultHostile = compound.getBoolean("DefaultHostile");
-        setPuppetWarrior(compound.getBoolean("IsPuppetWarrior"));
-        setMaxLifetimeIfPuppet(compound.getInt("MaxLifetimeIfPuppet"));
-
-        if (compound.contains("QuestId")) {
-            setQuestId(compound.getString("QuestId"));
-        }
-
-        if (compound.contains("IsHostile")) {
-            setHostile(compound.getBoolean("IsHostile"));
-        }
-
-        if (compound.contains("SkinName")) {
-            setSkinName(compound.getString("SkinName"));
-        }
-        if (compound.contains("TargetPlayerUUID")) {
-            setTargetPlayerUUID(compound.getUUID("TargetPlayerUUID"));
         }
     }
 
@@ -386,6 +354,61 @@ public class BeyonderNPCEntity extends PathfinderMob {
         return InteractionResult.SUCCESS;
     }
 
+    // ========================= Trade System =========================
+
+    private CompoundTag writeTrade(ItemStack costA, ItemStack costB, ItemStack result, HolderLookup.Provider registries) {
+        CompoundTag trade = new CompoundTag();
+        trade.put("CostA", costA.save(registries));
+        if (!costB.isEmpty()) trade.put("CostB", costB.save(registries));
+        trade.put("Result", result.save(registries));
+        return trade;
+    }
+
+    private TradeEntry readTrade(CompoundTag tag, HolderLookup.Provider registries) {
+        ItemStack costA = ItemStack.parse(registries, tag.getCompound("CostA")).orElse(ItemStack.EMPTY);
+        ItemStack costB = tag.contains("CostB")
+                ? ItemStack.parse(registries, tag.getCompound("CostB")).orElse(ItemStack.EMPTY)
+                : ItemStack.EMPTY;
+        ItemStack result = ItemStack.parse(registries, tag.getCompound("Result")).orElse(ItemStack.EMPTY);
+        return new TradeEntry(costA, costB, result);
+    }
+
+    public List<TradeEntry> getCurrentTrades() {
+        HolderLookup.Provider registries = this.registryAccess();
+        ListTag list = getTrades().getList("trades", Tag.TAG_COMPOUND);
+        List<TradeEntry> result = new ArrayList<>();
+        for (Tag t : list) {
+            result.add(readTrade((CompoundTag) t, registries));
+        }
+        return result;
+    }
+
+    private TradeEntry generateRandomTrade(RandomSource random) {
+        List<TradeEntry> pool = List.of(
+                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 5), ItemStack.EMPTY, new ItemStack(Items.DIAMOND, 1))
+        );
+        return pool.get(random.nextInt(pool.size()));
+    }
+
+    public void removeTrade(int index) {
+        CompoundTag root = getTrades().copy();
+        ListTag trades = root.getList("trades", Tag.TAG_COMPOUND);
+        if (index >= 0 && index < trades.size()) {
+            ListTag newTrades = new ListTag();
+            for (int i = 0; i < trades.size(); i++) {
+                if (i != index) newTrades.add(trades.get(i));
+            }
+            root.put("trades", newTrades);
+            setTrades(root);
+        }
+    }
+
+    public boolean hasTrades() {
+        return !getTrades().getList("trades", Tag.TAG_COMPOUND).isEmpty();
+    }
+
+    public record TradeEntry(ItemStack costA, ItemStack costB, ItemStack result) {}
+
     // ========================= Attributes =========================
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
@@ -394,6 +417,65 @@ public class BeyonderNPCEntity extends PathfinderMob {
                 .add(Attributes.MOVEMENT_SPEED, 0.25D)
                 .add(Attributes.ATTACK_DAMAGE, 3.0D)
                 .add(Attributes.ARMOR, 0.0D);
+    }
+
+    // ========================= Synced Data and Persistence =========================
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> dataAccessor) {
+        super.onSyncedDataUpdated(dataAccessor);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(IS_HOSTILE, false);
+        builder.define(SKIN_NAME, "amon");
+        builder.define(QUEST_ID, "");
+        builder.define(TRADES, new CompoundTag());
+        builder.define(IS_PUPPET_WARRIOR, false);
+        builder.define(MAX_LIFETIME_IF_IS_PUPPET, DEFAULT_PUPPET_LIFETIME);
+        builder.define(TARGET_PLAYER_UUID, Optional.empty());
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putBoolean("IsHostile", isHostile());
+        compound.putBoolean("DefaultHostile", defaultHostile);
+        compound.putString("SkinName", getSkinName());
+        compound.putString("QuestId", getQuestId());
+        compound.put("Trades", getTrades());
+        compound.putBoolean("IsPuppetWarrior", isPuppetWarrior());
+        compound.putInt("MaxLifetimeIfPuppet", getMaxLifetimeIfPuppet());
+        if (getTargetPlayerUUID().isPresent()) {
+            compound.putUUID("TargetPlayerUUID", getTargetPlayerUUID().get());
+        }
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+
+        this.defaultHostile = compound.getBoolean("DefaultHostile");
+        setPuppetWarrior(compound.getBoolean("IsPuppetWarrior"));
+        setMaxLifetimeIfPuppet(compound.getInt("MaxLifetimeIfPuppet"));
+        setTrades(compound.getCompound("Trades"));
+
+        if (compound.contains("QuestId")) {
+            setQuestId(compound.getString("QuestId"));
+        }
+
+        if (compound.contains("IsHostile")) {
+            setHostile(compound.getBoolean("IsHostile"));
+        }
+
+        if (compound.contains("SkinName")) {
+            setSkinName(compound.getString("SkinName"));
+        }
+        if (compound.contains("TargetPlayerUUID")) {
+            setTargetPlayerUUID(compound.getUUID("TargetPlayerUUID"));
+        }
     }
 
     // ========================= Getters and Setters =========================
@@ -469,6 +551,14 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
     public void setPuppetWarrior(boolean isPuppet) {
         this.entityData.set(IS_PUPPET_WARRIOR, isPuppet);
+    }
+
+    public CompoundTag getTrades() {
+        return this.entityData.get(TRADES);
+    }
+
+    public void setTrades(CompoundTag trades) {
+        this.entityData.set(TRADES, trades);
     }
 
     // ========================= Combat Information =========================

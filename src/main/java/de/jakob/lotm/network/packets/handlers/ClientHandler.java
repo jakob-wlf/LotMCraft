@@ -22,7 +22,8 @@ import de.jakob.lotm.quest.QuestRegistry;
 import de.jakob.lotm.rendering.*;
 import de.jakob.lotm.rendering.effectRendering.impl.VFXRenderer;
 import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.util.ClientSacrificeCache;
+import de.jakob.lotm.util.data.ClientSacrificeCache;
+import de.jakob.lotm.util.data.ClientSpiritCache;
 import de.jakob.lotm.util.helper.AnimationUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
@@ -627,7 +628,7 @@ public class ClientHandler {
     }
 
     public static void handleSpiritChannelingPacket(de.jakob.lotm.network.packets.toClient.SyncSpiritChannelingPacket packet) {
-        de.jakob.lotm.util.ClientSpiritCache.setSpiritTypeOrdinal(packet.spiritType());
+        ClientSpiritCache.setSpiritTypeOrdinal(packet.spiritType());
     }
 
     public static void handleSyncIntrospectMenuPacket(SyncIntrospectMenuPacket packet, UUID playerUUID) {

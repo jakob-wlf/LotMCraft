@@ -1,4 +1,4 @@
-package de.jakob.lotm.util;
+package de.jakob.lotm.util.data;
 
 public enum PlayerSelectionWorkType {
     DIVINATION,

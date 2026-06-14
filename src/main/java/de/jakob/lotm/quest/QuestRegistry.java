@@ -13,6 +13,7 @@ import de.jakob.lotm.quest.impl.DeliverQuest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class QuestRegistry {
 
@@ -58,6 +59,7 @@ public class QuestRegistry {
         List<Quest> possibleQuests = QUESTS.values().stream().filter(q -> q.canGiveQuest(npc)).toList();
         if(possibleQuests.isEmpty())
             return null;
+
         int index = (int) (Math.random() * possibleQuests.size());
         return possibleQuests.get(index).getId();
     }

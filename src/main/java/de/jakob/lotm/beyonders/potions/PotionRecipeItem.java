@@ -1,8 +1,8 @@
-package de.jakob.lotm.potions;
+package de.jakob.lotm.beyonders.potions;
 
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.OpenRecipeMenuPacket;
-import de.jakob.lotm.util.pathways.PathwayInfos;
+import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;

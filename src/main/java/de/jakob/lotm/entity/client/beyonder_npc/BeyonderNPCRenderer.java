@@ -21,6 +21,7 @@ public class BeyonderNPCRenderer extends MobRenderer<BeyonderNPCEntity, PlayerMo
         this.wideModel = this.model;
         this.slimModel = new PlayerModel<>(context.bakeLayer(ModelLayers.PLAYER_SLIM), true);
         this.addLayer(new QuestMarkerLayer(this));
+        this.addLayer(new TradeIndicatorLayer(this));
         this.addLayer(new PuppetSoldierLayer(this, context.getModelSet()));
     }
 

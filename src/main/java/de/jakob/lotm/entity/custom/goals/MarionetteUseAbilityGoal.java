@@ -1,7 +1,7 @@
 package de.jakob.lotm.entity.custom.goals;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.fool.passives.PuppeteeringEnhancementsAbility;
 import de.jakob.lotm.attachments.ModAttachments;

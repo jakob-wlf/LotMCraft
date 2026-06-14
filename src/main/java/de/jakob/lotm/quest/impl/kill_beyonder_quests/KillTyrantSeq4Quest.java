@@ -1,7 +1,7 @@
 package de.jakob.lotm.quest.impl.kill_beyonder_quests;
 
-import de.jakob.lotm.potions.BeyonderPotion;
-import de.jakob.lotm.potions.PotionItemHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
+import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;

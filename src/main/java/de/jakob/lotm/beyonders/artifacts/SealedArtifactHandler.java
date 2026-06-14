@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.artifacts;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
