@@ -143,7 +143,7 @@ public class HudProgressBarsRenderer {
 
         float corruption = mc.player.getData(ModAttachments.CORRUPTION_COMPONENT.get()).getCorruption();
 
-        if (corruption < 0.15f) return;
+        if (corruption < 0.25f) return;
 
         int barWidth = 14;
         int barHeight = 120;

@@ -2,6 +2,8 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DeathImprintData;
+import de.jakob.lotm.attachments.CorruptionComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityMenu;
 import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
@@ -47,6 +49,7 @@ public record RequestRiverImprintScreenPacket() implements CustomPacketPayload {
             if (!"river_of_eternal_darkness".equals(SefirahHandler.getClaimedSefirot(player))) return;
 
             DeathImprintData imprintData = DeathImprintData.get(player.getServer());
+            boolean globalLeakageOff = imprintData.isGlobalLeakageOff();
             Set<UUID> allImprinted = imprintData.getAllImprintedPlayers();
             final UUID ownerUUID = player.getUUID();
             List<RiverAuthorityMenu.ImprintEntry> entries = allImprinted.stream()
@@ -56,6 +59,9 @@ public record RequestRiverImprintScreenPacket() implements CustomPacketPayload {
                         boolean isOnline = onlineTarget != null;
                         String entryPathway = isOnline ? BeyonderData.getPathway(onlineTarget) : imprintData.getSnapshotPathway(uuid);
                         int entrySequence = isOnline ? BeyonderData.getSequence(onlineTarget) : imprintData.getSnapshotSequence(uuid);
+                        boolean leakageExempt = isOnline
+                                ? onlineTarget.getData(ModAttachments.CORRUPTION_COMPONENT).isLeakageExempt()
+                                : false;
                         return new RiverAuthorityMenu.ImprintEntry(
                                 uuid,
                                 imprintData.getSnapshotName(uuid),
@@ -63,16 +69,17 @@ public record RequestRiverImprintScreenPacket() implements CustomPacketPayload {
                                 entrySequence,
                                 imprintData.getImprintCount(uuid),
                                 isOnline,
-                                imprintData.getSealedAbilities(uuid)
+                                imprintData.getSealedAbilities(uuid),
+                                leakageExempt
                         );
                     })
                     .sorted(Comparator.comparingInt(RiverAuthorityMenu.ImprintEntry::imprintTier).reversed())
                     .collect(Collectors.toList());
 
             player.openMenu(new SimpleMenuProvider(
-                    (id, inv, p) -> new RiverAuthorityMenu(id, inv, entries),
+                    (id, inv, p) -> new RiverAuthorityMenu(id, inv, entries, globalLeakageOff),
                     Component.literal("Death Imprints")
-            ), buf -> RiverAuthorityMenu.writeEntries(buf, entries));
+            ), buf -> RiverAuthorityMenu.writeBuf(buf, entries, globalLeakageOff));
         });
     }
 }

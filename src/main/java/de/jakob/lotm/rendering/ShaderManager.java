@@ -64,7 +64,7 @@ public class ShaderManager {
     }
 
     private static boolean shouldApplyCorruptionShader(Player player) {
-        return player.getData(ModAttachments.CORRUPTION_COMPONENT.get()).getCorruption() > .15f;
+        return player.getData(ModAttachments.CORRUPTION_COMPONENT.get()).getCorruption() > .25f;
     }
 
 

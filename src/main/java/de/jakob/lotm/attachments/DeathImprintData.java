@@ -51,6 +51,12 @@ public class DeathImprintData extends SavedData {
     /** Real-time milliseconds between imprint decay events: 12 hours. */
     public static final long IMPRINT_DECAY_INTERVAL_MS = 12L * 60L * 60L * 1_000L;
 
+    /** When true, no player gains corruption from characteristic leakage (global override). */
+    private boolean globalLeakageOff = false;
+
+    public boolean isGlobalLeakageOff() { return globalLeakageOff; }
+    public void setGlobalLeakageOff(boolean off) { globalLeakageOff = off; setDirty(); }
+
     // ── Static access ──────────────────────────────────────────────────────────
 
     public static DeathImprintData get(MinecraftServer server) {
@@ -433,6 +439,8 @@ public class DeathImprintData extends SavedData {
         for (CompoundTag soul : riverVault) vaultList.add(soul.copy());
         tag.put("riverVault", vaultList);
 
+        tag.putBoolean("globalLeakageOff", globalLeakageOff);
+
         return tag;
     }
 
@@ -488,6 +496,8 @@ public class DeathImprintData extends SavedData {
             ListTag vaultList = tag.getList("riverVault", Tag.TAG_COMPOUND);
             for (Tag t : vaultList) data.riverVault.add(((CompoundTag) t).copy());
         }
+
+        data.globalLeakageOff = tag.getBoolean("globalLeakageOff");
 
         return data;
     }

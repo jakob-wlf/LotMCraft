@@ -25,8 +25,8 @@ import java.util.UUID;
  * Any subsequent owner faces massive corruption from that imprint, and dying or succumbing
  * while holding it returns the Sefirot to the original owner.
  *
- * <p>Imprint growth: +1% per real-time hour (≈3600 game-seconds) the original owner is online.
- * <p>Imprint reduction: −1% per real-time hour the current non-original owner is online.
+ * <p>Imprint growth (original owner): +1% per real-time hour whether online OR offline.
+ * <p>Imprint reduction (non-original owner): −1% per real-time hour ONLY while online.
  * <p>Floor: the imprint can never drop below 10% once it has been established.
  *
  * <p>Corruption values:
@@ -56,13 +56,19 @@ public class SefirotImprintEventHandler {
         if (sefirot == null || sefirot.isEmpty()) return;
 
         UUID firstOwner = data.getFirstOwner(sefirot);
-        if (firstOwner == null) return; // no imprint set yet (shouldn't happen after first claim, but guard)
+        if (firstOwner == null) {
+            // Retroactively register as first owner for sefirot claims made before the imprint system
+            data.setFirstOwnerIfAbsent(sefirot, player.getUUID());
+            firstOwner = player.getUUID();
+        }
 
         boolean isOriginalOwner = player.getUUID().equals(firstOwner);
         int imprint = data.getMentalImprint(sefirot);
 
         if (isOriginalOwner) {
-            // Accumulate imprint while the original owner is online
+            // Accumulate imprint while the original owner is online; also keep epoch fresh
+            // so offline time is measured correctly.
+            data.updateOriginalOwnerEpoch(sefirot);
             boolean grew = data.tickOriginalOwner(sefirot);
             if (grew) {
                 int newImprint = data.getMentalImprint(sefirot);
@@ -128,6 +134,17 @@ public class SefirotImprintEventHandler {
         if (server == null) return;
 
         SefirotData data = SefirotData.get(server);
+
+        // Apply offline imprint growth for any sefirot this player originally claimed.
+        for (String sefirot : data.getSefirotOwnedByFirst(player.getUUID())) {
+            int gained = data.applyOfflineOriginalOwnerTime(sefirot);
+            if (gained > 0) {
+                int newImprint = data.getMentalImprint(sefirot);
+                player.sendSystemMessage(Component.literal(
+                        "While you were away, your mental imprint grew by " + gained + "% ... (" + newImprint + "%)")
+                        .withStyle(ChatFormatting.DARK_PURPLE));
+            }
+        }
 
         // Process any sefirot that was pending reclaim for this player
         for (Map.Entry<String, UUID> entry : new java.util.HashMap<>(data.getAllPendingReclaims()).entrySet()) {

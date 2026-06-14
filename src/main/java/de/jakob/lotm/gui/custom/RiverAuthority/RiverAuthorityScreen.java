@@ -26,7 +26,7 @@ import java.util.UUID;
 public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthorityMenu> {
 
     private static final int PANEL_WIDTH  = 280;
-    private static final int PANEL_HEIGHT = 220;
+    private static final int PANEL_HEIGHT = 260;
 
     // Left panel: imprint list
     private static final int LIST_X         = 8;
@@ -44,6 +44,8 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
     private UUID selectedUUID   = null;
     private int  selectedTier   = 0;
     private String selectedName = "";
+    private boolean selectedLeakageExempt = false;
+    private boolean localGlobalLeakageOff = false;
 
     /** Pre-computed skull items keyed by player UUID. */
     private final Map<UUID, ItemStack> headStacks = new HashMap<>();
@@ -51,6 +53,8 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
     private Button riversCallButton;
     private Button locateButton;
     private Button sealButton;
+    private Button leakageButton;
+    private Button globalLeakageButton;
 
     public RiverAuthorityScreen(RiverAuthorityMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -64,6 +68,8 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
         this.leftPos = (this.width  - imageWidth)  / 2;
         this.topPos  = (this.height - imageHeight) / 2;
 
+        localGlobalLeakageOff = menu.isGlobalLeakageOff();
+
         headStacks.clear();
         for (RiverAuthorityMenu.ImprintEntry e : menu.getEntries()) {
             ItemStack skull = new ItemStack(Items.PLAYER_HEAD);
@@ -72,9 +78,9 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
             headStacks.put(e.uuid(), skull);
         }
 
-        // Action buttons: stack 3 buttons (18px each, 4px gap) with 8px bottom margin
+        // Action buttons: stack 4 buttons (18px each, 4px gap) with 8px bottom margin
         int bx = leftPos + DETAIL_X;
-        int by = topPos + PANEL_HEIGHT - 70;  // 3*(18+4)-4+8 = 70px from bottom
+        int by = topPos + PANEL_HEIGHT - 110;  // 4*(18+4)-4+8 = 92px from bottom
 
         locateButton = addRenderableWidget(Button.builder(
                 Component.literal("Locate / Teleport").withStyle(ChatFormatting.AQUA),
@@ -91,6 +97,18 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
                 b -> openSealScreen()
         ).bounds(bx, by + 44, DETAIL_W, 18).build());
 
+        leakageButton = addRenderableWidget(Button.builder(
+                Component.literal("Leakage: ON"),
+                b -> togglePlayerLeakage()
+        ).bounds(bx, by + 66, DETAIL_W, 18).build());
+
+        // Global leakage toggle — spans full panel width, pinned near the bottom
+        int gbY = topPos + PANEL_HEIGHT - 24;
+        globalLeakageButton = addRenderableWidget(Button.builder(
+                Component.literal("Global Leakage: ON"),
+                b -> toggleGlobalLeakage()
+        ).bounds(leftPos + 4, gbY, PANEL_WIDTH - 8, 18).build());
+
         updateButtonStates();
     }
 
@@ -98,6 +116,24 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
         if (selectedUUID == null) return;
         PacketHandler.sendToServer(new RequestAbilitySealScreenPacket(selectedUUID.toString()));
         // The server will respond with OpenAbilitySealScreenPacket which opens the screen
+    }
+
+    private void togglePlayerLeakage() {
+        if (selectedUUID == null) return;
+        PacketHandler.sendToServer(new RiverAuthorityActionPacket(2, selectedUUID));
+        // Optimistically flip local state so the button label updates immediately
+        selectedLeakageExempt = !selectedLeakageExempt;
+        // Also update the menu entry so that re-selecting this player reflects the new state
+        menu.setLeakageExempt(selectedUUID, selectedLeakageExempt);
+        updateButtonStates();
+    }
+
+    private void toggleGlobalLeakage() {
+        // Use a zero UUID as placeholder — server ignores targetUUID for action 3
+        PacketHandler.sendToServer(new RiverAuthorityActionPacket(3, new java.util.UUID(0, 0)));
+        // Optimistically flip local state so the button label updates immediately
+        localGlobalLeakageOff = !localGlobalLeakageOff;
+        updateButtonStates();
     }
 
     private void performAction(int actionType) {
@@ -110,6 +146,13 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
         locateButton.active     = selectedUUID != null && selectedTier >= 2;
         riversCallButton.active = selectedUUID != null && selectedTier >= 3;
         sealButton.active       = selectedUUID != null && selectedTier >= 2;
+        leakageButton.active    = selectedUUID != null;
+        leakageButton.setMessage(Component.literal(
+                selectedLeakageExempt ? "\u00a7cLeakage: OFF" : "\u00a7aLeakage: ON"));
+
+        boolean globalOff = localGlobalLeakageOff;
+        globalLeakageButton.setMessage(Component.literal(
+                globalOff ? "\u00a7cGlobal Leakage: OFF" : "\u00a7aGlobal Leakage: ON"));
     }
 
     // ── Rendering ─────────────────────────────────────────────────────────────
@@ -128,7 +171,10 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
         // Divider
         g.fill(leftPos + 4, topPos + 18, leftPos + PANEL_WIDTH - 4, topPos + 19, 0xFF330033);
         // Vertical divider between list and detail
-        g.fill(leftPos + DETAIL_X - 6, topPos + 20, leftPos + DETAIL_X - 5, topPos + PANEL_HEIGHT - 8, 0xFF333333);
+        g.fill(leftPos + DETAIL_X - 6, topPos + 20, leftPos + DETAIL_X - 5, topPos + PANEL_HEIGHT - 30, 0xFF333333);
+
+        // Bottom divider above global button
+        g.fill(leftPos + 4, topPos + PANEL_HEIGHT - 28, leftPos + PANEL_WIDTH - 4, topPos + PANEL_HEIGHT - 27, 0xFF330033);
 
         // Section header: Death Imprints
         g.drawString(font, Component.literal("Death Imprints").withStyle(ChatFormatting.GRAY),
@@ -192,6 +238,7 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
                 tooltip.add(Component.literal("Path: " + capitalize(entry.pathway())).withStyle(ChatFormatting.GRAY));
                 tooltip.add(Component.literal("Sequence: " + entry.sequence()).withStyle(ChatFormatting.GRAY));
                 tooltip.add(Component.literal("Imprint Tier: " + entry.imprintTier()).withStyle(tierFormatting(entry.imprintTier())));
+                tooltip.add(Component.literal(entry.leakageExempt() ? "\u00a7cLeakage: OFF" : "\u00a7aLeakage: ON"));
                 if (!entry.sealedAbilityIds().isEmpty()) {
                     tooltip.add(Component.literal("Sealed:").withStyle(ChatFormatting.DARK_RED));
                     for (String abilityId : entry.sealedAbilityIds()) {
@@ -235,6 +282,9 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
             g.drawString(font, Component.literal("§8✓ §4River's Call"),
                     px, py + 46, 0xFFAAAAAA, false);
         }
+
+        String leakStr = selectedLeakageExempt ? "§cLeakage: OFF" : "§aLeakage: ON";
+        g.drawString(font, Component.literal(leakStr), px, py + 60, 0xFFAAAAAA, false);
     }
 
     @Override
@@ -260,6 +310,7 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
                 selectedUUID = e.uuid();
                 selectedTier = e.imprintTier();
                 selectedName = e.name();
+                selectedLeakageExempt = e.leakageExempt();
                 updateButtonStates();
                 return true;
             }

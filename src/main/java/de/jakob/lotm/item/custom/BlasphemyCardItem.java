@@ -61,8 +61,7 @@ public class BlasphemyCardItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
         if (BlasphemySlateItemHandler.isEnvisionSummoned(stack)) {
-            int uses = BlasphemySlateItemHandler.getEnvisionedUses(stack);
-            tooltip.add(Component.literal("§3Envisioned §7(" + uses + "/" + BlasphemySlateItemHandler.ENVISION_MAX_USES + " brews remaining)"));
+            tooltip.add(Component.literal("§3Envisioned"));
         }
     }
 
@@ -119,6 +118,12 @@ public class BlasphemyCardItem extends Item {
 
         UUID recordedId = data.getCardId(pathway);
         if (!stackId.equals(recordedId)) {
+            // If no card is currently registered for this pathway (e.g., registration was cleared
+            // while the card sat in a corpse-mod inventory), re-register rather than destroy.
+            if (recordedId == null && data.canSpawnCard(pathway)) {
+                data.markCardExists(pathway, stackId, tick);
+                return true;
+            }
             return false;
         }
 
