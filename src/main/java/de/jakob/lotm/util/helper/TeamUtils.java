@@ -18,6 +18,7 @@ public class TeamUtils {
 
     /** Max team members (not counting the leader) based on leader's sequence. */
     public static int getMaxTeamSize(int sequence) {
+        if (sequence <= 0) return 7;
         if (sequence <= 1) return 6;
         if (sequence <= 2) return 5;
         return 4; // sequence 3 and 4
@@ -25,15 +26,16 @@ public class TeamUtils {
 
     /** Slots each member may contribute based on leader's sequence. */
     public static int getSlotsPerMember(int sequence) {
+        if (sequence <= 0) return 4;
         if (sequence <= 1) return 3;
         if (sequence <= 2) return 2;
         return 1; // sequence 3 and 4
     }
 
-    /** Returns true if the player is a Red Priest at sequence <= 3. */
+    /** Returns true if the player has a Red Priest characteristic at sequence <= 3. */
     public static boolean isEligibleLeader(ServerPlayer player) {
-        return BeyonderData.getPathway(player).equals("red_priest")
-                && BeyonderData.getSequence(player) <= 3;
+        return de.jakob.lotm.util.BeyonderData.getCharList(player).stream()
+                .anyMatch(c -> c.pathway().equals("red_priest") && c.sequence() <= 3 && c.stack() > 0);
     }
 
     /**
@@ -41,7 +43,12 @@ public class TeamUtils {
      * Does not send the invite — call this after the invite is accepted.
      */
     public static boolean addMember(ServerPlayer leader, ServerPlayer member) {
-        int sequence = BeyonderData.getSequence(leader);
+        int sequence = de.jakob.lotm.util.BeyonderData.getCharList(leader).stream()
+                .filter(c -> c.pathway().equals("red_priest") && c.sequence() <= 3 && c.stack() > 0)
+                .mapToInt(de.jakob.lotm.util.playerMap.Characteristic::sequence)
+                .min()
+                .orElse(de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ);
+
         TeamComponent leaderTeam = leader.getData(ModAttachments.TEAM_COMPONENT.get());
 
         if (leaderTeam.memberCount() >= getMaxTeamSize(sequence)) {
@@ -117,7 +124,12 @@ public class TeamUtils {
      */
     public static void syncToTeam(ServerPlayer leader) {
         TeamComponent leaderTeam = leader.getData(ModAttachments.TEAM_COMPONENT.get());
-        int sequence = BeyonderData.getSequence(leader);
+        int sequence = de.jakob.lotm.util.BeyonderData.getCharList(leader).stream()
+                .filter(c -> c.pathway().equals("red_priest") && c.sequence() <= 3 && c.stack() > 0)
+                .mapToInt(de.jakob.lotm.util.playerMap.Characteristic::sequence)
+                .min()
+                .orElse(de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ);
+
         int maxSize = getMaxTeamSize(sequence);
         int slots = getSlotsPerMember(sequence);
 
@@ -175,7 +187,13 @@ public class TeamUtils {
             if (leader == null) return false;
         }
 
-        int maxSlots = getSlotsPerMember(BeyonderData.getSequence(leader));
+        int sequence = de.jakob.lotm.util.BeyonderData.getCharList(leader).stream()
+                .filter(c -> c.pathway().equals("red_priest") && c.sequence() <= 3 && c.stack() > 0)
+                .mapToInt(de.jakob.lotm.util.playerMap.Characteristic::sequence)
+                .min()
+                .orElse(de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ);
+
+        int maxSlots = getSlotsPerMember(sequence);
         List<String> capped = abilityIds.size() > maxSlots
                 ? new ArrayList<>(abilityIds.subList(0, maxSlots))
                 : new ArrayList<>(abilityIds);

@@ -59,7 +59,7 @@ public class GlobalTickHandler {
             // Anchor decay: 1% per second if anchor is not praying
             // Since strength is updated to 1.0 on prayer, it takes 100 seconds to fully decay
             // if we decrease by 0.01 every second.
-            float newStrength = strength - 0.0001f;
+            float newStrength = strength - 0.000001f;
             if (newStrength <= 0) {
                 iterator.remove();
             } else {

@@ -176,7 +176,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
             int seq = invisiblePlayers.get(player.getUUID());
 
             if (seq > 2) {
-                remove(player);
+                //remove(player);
                 return;
             }
 
