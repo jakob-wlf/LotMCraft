@@ -246,6 +246,10 @@ public class DeathImprintHandler {
     }
 
     private static void applyRiverWaterEffects(ServerPlayer player, DeathImprintData data) {
+        // Never set health on a dead player — doing so would accidentally revive them server-side
+        // (isDeadOrDying() is purely health-based) causing rapid repeated death loops.
+        if (player.isDeadOrDying()) return;
+
         // HP drain: flat 10% of max health per second, floors at 1 heart (2 HP)
         float maxHp = player.getMaxHealth();
         float newHp = Math.max(2.0f, player.getHealth() - maxHp * 0.10f);
