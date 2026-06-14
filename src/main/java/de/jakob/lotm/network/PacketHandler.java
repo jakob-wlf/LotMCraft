@@ -553,6 +553,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                ExecuteBeyonderTradePacket.TYPE,
+                ExecuteBeyonderTradePacket.STREAM_CODEC,
+                ExecuteBeyonderTradePacket::handle
+        );
+
+        registrar.playToServer(
                 DiscardQuestPacket.TYPE,
                 DiscardQuestPacket.STREAM_CODEC,
                 DiscardQuestPacket::handle

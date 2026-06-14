@@ -38,6 +38,7 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.PAPER_PICKAXE);
                         output.accept(ModItems.PAPER_AXE);
                         output.accept(ModItems.PAPER_SHOVEL);
+                        output.accept(ModItems.POUND_COIN);
                     })
                     .build());
 

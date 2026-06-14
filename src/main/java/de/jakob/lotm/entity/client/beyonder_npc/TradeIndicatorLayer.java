@@ -38,8 +38,8 @@ public class TradeIndicatorLayer extends RenderLayer<BeyonderNPCEntity, PlayerMo
         }
 
         poseStack.pushPose();
-        poseStack.scale(.7f, .7f, .7f);
-        poseStack.translate(0, -2.65, 0);
+        poseStack.scale(.4f, .4f, .4f);
+        poseStack.translate(0, -3.2, 0);
         poseStack.mulPose(Axis.YP.rotationDegrees(ageInTicks));
 
         // Get the vertex consumer with your texture

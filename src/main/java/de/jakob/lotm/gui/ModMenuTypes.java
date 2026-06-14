@@ -8,6 +8,7 @@ import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
 import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelMenu;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
 import de.jakob.lotm.gui.custom.Recipe.RecipeMenu;
+import de.jakob.lotm.gui.custom.Trades.BeyonderTradeMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
@@ -23,6 +24,14 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<IntrospectMenu>> INTROSPECT_MENU =
             MENU_TYPES.register("introspect_menu", () ->
                     IMenuTypeExtension.create(IntrospectMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<BeyonderTradeMenu>> BEYONDER_TRADE_MENU = MENU_TYPES.register(
+            "beyonder_trade_menu",
+            () -> IMenuTypeExtension.create((windowId, inv, data) -> {
+                int npcEntityId = data.readVarInt();
+                return new BeyonderTradeMenu(windowId, inv, npcEntityId);
+            })
+    );
 
     public static final DeferredHolder<MenuType<?>, MenuType<RecipeMenu>> RECIPE_MENU =
             MENU_TYPES.register("recipe_menu", () ->

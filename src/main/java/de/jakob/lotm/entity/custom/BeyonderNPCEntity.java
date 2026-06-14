@@ -10,6 +10,7 @@ import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.gui.custom.Trades.BeyonderTradeMenu;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.quest.QuestManager;
 import de.jakob.lotm.quest.QuestRegistry;
@@ -341,15 +342,22 @@ public class BeyonderNPCEntity extends PathfinderMob {
     // ========================= Player Interaction =========================
     @Override
     protected @NotNull InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if (!(player instanceof ServerPlayer serverPlayer)) {
+            return InteractionResult.PASS;
+        }
+
+        if (hasTrades()) {
+            serverPlayer.openMenu(new net.minecraft.world.SimpleMenuProvider(
+                    (windowId, inv, p) -> new BeyonderTradeMenu(windowId, inv, this.getId()),
+                    net.minecraft.network.chat.Component.literal("Trades")
+            ), buf -> buf.writeVarInt(this.getId()));
+            return InteractionResult.SUCCESS;
+        }
+
         if (getQuestId().isEmpty()) {
             return InteractionResult.PASS;
         }
 
-        if (!(player instanceof ServerPlayer serverPlayer)) {
-            return InteractionResult.SUCCESS;
-        }
-
-        // Open the quest dialog instead of immediately accepting
         QuestManager.openQuestDialog(serverPlayer, getQuestId(), getId());
         return InteractionResult.SUCCESS;
     }
@@ -385,7 +393,15 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
     private TradeEntry generateRandomTrade(RandomSource random) {
         List<TradeEntry> pool = List.of(
-                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 5), ItemStack.EMPTY, new ItemStack(Items.DIAMOND, 1))
+                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 5), ItemStack.EMPTY, new ItemStack(Items.DIAMOND, 1)),
+                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 3), ItemStack.EMPTY, new ItemStack(Items.IRON_INGOT, 4)),
+                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 2), ItemStack.EMPTY, new ItemStack(Items.BREAD, 8)),
+                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 1), ItemStack.EMPTY, new ItemStack(Items.APPLE, 10)),
+                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 4), ItemStack.EMPTY, new ItemStack(Items.ENDER_PEARL, 2)),
+                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 6), ItemStack.EMPTY, new ItemStack(Items.COOKED_BEEF, 5)),
+                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 2), ItemStack.EMPTY, new ItemStack(Items.IRON_SWORD, 1)),
+                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 3), ItemStack.EMPTY, new ItemStack(Items.BOW, 1)),
+                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 5), ItemStack.EMPTY, new ItemStack(Items.SHIELD, 1))
         );
         return pool.get(random.nextInt(pool.size()));
     }
