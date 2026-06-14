@@ -74,7 +74,7 @@ public class BeyonderCharacteristicItem extends Item {
             }
         }
 
-        if(hasPathway || isNeighbor){
+        //if(hasPathway || isNeighbor){
             if(seq >= playerSeq){
                 if((seq >= 1 || playerSeq == 0) && (BeyonderData.getDigestionProgress(player) >= 1.0 || playerSeq == 0)){
                     if (level instanceof ServerLevel serverLevel
@@ -91,7 +91,7 @@ public class BeyonderCharacteristicItem extends Item {
                     return InteractionResultHolder.success(ItemStack.EMPTY);
                 }
             }
-        }
+        //}
 
         return InteractionResultHolder.fail(stack);
     }

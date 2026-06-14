@@ -122,7 +122,7 @@ public class AdvancementUtil {
         Runnable onSuccess = isSameDomainSwitch
                 ? () -> playerMap.recordPathwaySwitch(entity, prevSequence, prevPathway)
                 : null;
-
+        failureChance = 0;
         executeAdvancement(entity, pathway, sequence, failureChance, onSuccess);
     }
 
