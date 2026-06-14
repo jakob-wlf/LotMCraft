@@ -41,6 +41,23 @@ public class RiverAuthorityMenu extends AbstractContainerMenu {
         return globalLeakageOff;
     }
 
+    /**
+     * Updates the leakageExempt flag on the in-memory entry for the given UUID.
+     * Called from the screen after an optimistic toggle so that re-selecting the
+     * player reflects the new state instead of the stale menu-open value.
+     */
+    public void setLeakageExempt(UUID uuid, boolean value) {
+        for (int i = 0; i < entries.size(); i++) {
+            ImprintEntry e = entries.get(i);
+            if (e.uuid().equals(uuid)) {
+                entries.set(i, new ImprintEntry(
+                        e.uuid(), e.name(), e.pathway(), e.sequence(),
+                        e.imprintTier(), e.online(), e.sealedAbilityIds(), value));
+                return;
+            }
+        }
+    }
+
     private static List<ImprintEntry> readEntries(RegistryFriendlyByteBuf buf) {
         int count = buf.readVarInt();
         List<ImprintEntry> list = new ArrayList<>(count);

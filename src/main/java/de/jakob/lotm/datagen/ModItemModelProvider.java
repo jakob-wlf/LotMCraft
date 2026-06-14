@@ -230,12 +230,25 @@ public class ModItemModelProvider extends ItemModelProvider {
      * Blasphemy card model: uses own texture if the file exists in textures/item/,
      * otherwise falls back to the placeholder texture.
      */
+    /**
+     * Some blasphemy-card textures were added with filenames that don't exactly match
+     * the item's registry name. Map those special cases here so datagen always picks the
+     * right file rather than falling back to the placeholder.
+     */
+    private static final java.util.Map<String, String> BLASPHEMY_CARD_TEXTURE_OVERRIDES =
+            java.util.Map.of(
+                    "justiciar_blasphemy_card",       "juciticer_blasphemy_card",
+                    "red_priest_blasphemy_card",      "redpriest_blasphemy_card",
+                    "wheel_of_fortune_blasphemy_card","wheel_of_fortune"
+            );
+
     private void blasphemyCard(Item item) {
         String itemName = getItemName(item);
-        // Check whether the texture file exists on disk so datagen doesn't error.
+        // Prefer the override texture name if one is registered; otherwise use the item name directly.
+        String candidate = BLASPHEMY_CARD_TEXTURE_OVERRIDES.getOrDefault(itemName, itemName);
         java.nio.file.Path texPath = java.nio.file.Paths.get(
-                "src/main/resources/assets/lotmcraft/textures/item/" + itemName + ".png");
-        String textureName = texPath.toFile().exists() ? itemName : "placeholder";
+                "src/main/resources/assets/lotmcraft/textures/item/" + candidate + ".png");
+        String textureName = texPath.toFile().exists() ? candidate : "placeholder";
         getBuilder(itemName)
                 .parent(getExistingFile(mcLoc("item/generated")))
                 .texture("layer0", modLoc("item/" + textureName));

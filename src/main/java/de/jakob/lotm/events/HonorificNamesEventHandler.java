@@ -232,6 +232,8 @@ public class HonorificNamesEventHandler {
     /**
      * Teleports a gathering member or River-blessed player into their owner's sefirot,
      * or returns them to their previous location if they are already inside.
+     *
+     * State is marked BEFORE the teleport so dimension-change guards see the correct flag.
      */
     private static void handleSefirotAccess(ServerPlayer member, UUID ownerUUID, MinecraftServer server) {
         SefirotData sefirotData = SefirotData.get(server);
@@ -244,25 +246,42 @@ public class HonorificNamesEventHandler {
         ResourceLocation sefirotDimLoc = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, ownerSefirot);
         boolean inSefirot = member.level().dimension().location().equals(sefirotDimLoc);
 
+        boolean isRiver = ownerSefirot.equals("river_of_eternal_darkness");
         GatheringData gd = GatheringData.get(server);
 
         if (inSefirot) {
             // Return to previous location
-            GatheringData.returnPlayer(member, server);
+            if (isRiver) {
+                RiverBlessingManager.returnAudienceMember(member, server);
+            } else {
+                GatheringData.returnPlayer(member, server);
+            }
             member.sendSystemMessage(Component.literal("§bYou have left the sefirot.").withStyle(ChatFormatting.AQUA));
         } else {
-            // Save return location and teleport in
-            gd.saveReturnLocation(member);
             ResourceKey<net.minecraft.world.level.Level> dimKey = ResourceKey.create(Registries.DIMENSION, sefirotDimLoc);
             ServerLevel sefirotLevel = server.getLevel(dimKey);
             if (sefirotLevel == null) {
                 member.sendSystemMessage(Component.literal("§cSefirot dimension not loaded."));
                 return;
             }
-            // Use a guest chair position (first slot)
-            double[] pos = GatheringData.CHAIR_POSITIONS[0];
-            member.teleportTo(sefirotLevel, pos[0], pos[1], pos[2], member.getYRot(), member.getXRot());
-            GatheringData.markGathered(member.getUUID());
+
+            if (isRiver) {
+                // River audience path: markInAudience saves current position and flags the player
+                // as audience BEFORE teleporting so the dimension-change guard lets them through.
+                RiverBlessingManager.markInAudience(member);
+                member.teleportTo(sefirotLevel,
+                        RiverBlessingManager.AUDIENCE_X,
+                        RiverBlessingManager.AUDIENCE_Y,
+                        RiverBlessingManager.AUDIENCE_Z,
+                        member.getYRot(), member.getXRot());
+            } else {
+                // Castle / Chaos Sea: save location and mark gathered BEFORE teleporting so
+                // the dimension-change guard in GatheringEventHandler sees isGathered = true.
+                gd.saveReturnLocation(member);
+                GatheringData.markGathered(member.getUUID());
+                double[] pos = GatheringData.CHAIR_POSITIONS[0];
+                member.teleportTo(sefirotLevel, pos[0], pos[1], pos[2], member.getYRot(), member.getXRot());
+            }
             member.sendSystemMessage(Component.literal("§bYou have entered the sefirot.").withStyle(ChatFormatting.AQUA));
         }
     }

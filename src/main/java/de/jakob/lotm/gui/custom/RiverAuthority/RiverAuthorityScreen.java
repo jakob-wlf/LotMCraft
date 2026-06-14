@@ -123,6 +123,8 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
         PacketHandler.sendToServer(new RiverAuthorityActionPacket(2, selectedUUID));
         // Optimistically flip local state so the button label updates immediately
         selectedLeakageExempt = !selectedLeakageExempt;
+        // Also update the menu entry so that re-selecting this player reflects the new state
+        menu.setLeakageExempt(selectedUUID, selectedLeakageExempt);
         updateButtonStates();
     }
 

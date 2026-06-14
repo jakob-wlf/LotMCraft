@@ -163,9 +163,9 @@ public class RiverBlessingManager {
     // ── River audience ────────────────────────────────────────────────────────
 
     /** Audience safe landing spot (above the fluid, separate from River's Call trap zone). */
-    private static final double AUDIENCE_X = 0;
-    private static final double AUDIENCE_Y = 65;
-    private static final double AUDIENCE_Z = -50;
+    public static final double AUDIENCE_X = 0;
+    public static final double AUDIENCE_Y = 65;
+    public static final double AUDIENCE_Z = -50;
 
     /** Players currently present in the river as the owner's invited audience. */
     private static final Set<UUID> CURRENTLY_IN_AUDIENCE = ConcurrentHashMap.newKeySet();
@@ -177,7 +177,7 @@ public class RiverBlessingManager {
         return CURRENTLY_IN_AUDIENCE.contains(uuid);
     }
 
-    private static void markInAudience(ServerPlayer player) {
+    public static void markInAudience(ServerPlayer player) {
         CompoundTag loc = new CompoundTag();
         loc.putDouble("x", player.getX());
         loc.putDouble("y", player.getY());
