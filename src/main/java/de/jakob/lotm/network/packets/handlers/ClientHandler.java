@@ -2,11 +2,11 @@ package de.jakob.lotm.network.packets.handlers;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.Ability;
-import de.jakob.lotm.abilities.core.SelectableAbility;
-import de.jakob.lotm.abilities.core.ToggleAbility;
-import de.jakob.lotm.abilities.visionary.prophecy.VisionaryAbilityMenus;
-import de.jakob.lotm.acting.ActingHelper;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.prophecy.VisionaryAbilityMenus;
+import de.jakob.lotm.beyonders.acting.ActingHelper;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;

@@ -1,22 +1,17 @@
 package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.artifacts.SealedArtifactItem;
+import de.jakob.lotm.beyonders.artifacts.SealedArtifactItem;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.item.custom.*;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.SimpleTier;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,12 +23,12 @@ public class ModItems {
     private static final Tier PAPER_TOOL_TIER = new SimpleTier(
             BlockTags.INCORRECT_FOR_IRON_TOOL, 15, 6.0F, 2.0F, 14, () -> {
         return Ingredient.of(Items.PAPER);
-    }
-    );
+    });
 
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(LOTMCraft.MOD_ID);
 
     public static final DeferredItem<Item> FOOL_Card = ITEMS.registerItem("fool_card", Item::new, new Item.Properties());
+    public static final DeferredItem<Item> POUND_COIN = ITEMS.registerItem("pound_coin", Item::new, new Item.Properties());
     public static final DeferredItem<Item> CRYSTAL_BALL = ITEMS.registerItem("crystal_ball", Item::new, new Item.Properties().stacksTo(1));
     public static final DeferredItem<Item> CANE = ITEMS.registerItem("cane", Item::new, new Item.Properties().stacksTo(1));
     public static final DeferredItem<Item> MOD_ICON = ITEMS.registerItem("lotm_icon", Item::new, new Item.Properties());

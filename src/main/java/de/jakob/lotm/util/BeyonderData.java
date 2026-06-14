@@ -1,8 +1,8 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.PassiveAbilityHandler;
-import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.PassiveAbilityItem;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;

@@ -1,7 +1,7 @@
 package de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway;
 
-import de.jakob.lotm.abilities.core.Ability;
-import de.jakob.lotm.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;

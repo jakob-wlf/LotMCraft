@@ -1,7 +1,7 @@
 package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;

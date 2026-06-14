@@ -1,9 +1,9 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.visionary.DreamTraversalAbility;
-import de.jakob.lotm.abilities.visionary.PsychologicalInvisibilityAbility;
-import de.jakob.lotm.artifacts.SealedArtifactData;
+import de.jakob.lotm.beyonders.abilities.visionary.DreamTraversalAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.PsychologicalInvisibilityAbility;
+import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.data.ModDataComponents;
@@ -16,7 +16,7 @@ import de.jakob.lotm.network.packets.toClient.SyncPsychologicalInvisibilityPacke
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.potions.BeyonderPotion;
-import de.jakob.lotm.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.PureIdealismUtil;
@@ -47,7 +47,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.Objects;
 import java.util.Random;
-import java.util.UUID;
 
 import static de.jakob.lotm.util.BeyonderData.*;
 

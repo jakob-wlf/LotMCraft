@@ -1,7 +1,7 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.artifacts.SealedArtifactItem;
+import de.jakob.lotm.beyonders.artifacts.SealedArtifactItem;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.potions.PotionRecipeItem;

@@ -1,9 +1,9 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.common.DivinationAbility;
-import de.jakob.lotm.abilities.core.ToggleAbility;
-import de.jakob.lotm.abilities.darkness.NightmareAbility;
+import de.jakob.lotm.beyonders.abilities.common.DivinationAbility;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.darkness.NightmareAbility;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -67,7 +67,7 @@ public class PlayerEvents {
             if(BeyonderData.isBeyonder(player))
                 BeyonderData.playerMap.addLastPosition(player);
 
-            de.jakob.lotm.abilities.death.InternalUnderworldAbility.recallSoulsOnLogout(player);
+            de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility.recallSoulsOnLogout(player);
 
             // Revert sacrifice upgrade if active when logging out
             SacrificeRevertComponent revert = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);
@@ -130,7 +130,7 @@ public class PlayerEvents {
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            de.jakob.lotm.abilities.death.InternalUnderworldAbility.despawnSoulsOnDeath(player);
+            de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility.despawnSoulsOnDeath(player);
         }
         if(!(event.getEntity().level() instanceof ServerLevel level)) {
             return;

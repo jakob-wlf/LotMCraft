@@ -264,7 +264,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
             return;
         }
 
-        // Clear combat-related goals
         this.goalSelector.removeAllGoals(goal -> goal instanceof MeleeAttackGoal ||
                 goal instanceof WaterAvoidingRandomStrollGoal ||
                 goal instanceof MoveThroughVillageGoal ||
@@ -272,20 +271,16 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.targetSelector.removeAllGoals(goal -> goal instanceof NearestAttackableTargetGoal ||
                 goal instanceof HurtByTargetGoal);
 
-        // Add retaliation behavior
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
 
-        // Add combat goals based on abilities
         if (AbilityUseGoal.hasRangedOption(this)) {
             this.goalSelector.addGoal(3, new RangedCombatGoal(this, 1.0D, 8.0F, 16.0F));
         } else {
             this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
         }
 
-        // Add movement goal
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0D));
 
-        // Add targeting behavior based on hostility
         if (isHostile()) {
             this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         } else {
@@ -302,23 +297,19 @@ public class BeyonderNPCEntity extends PathfinderMob {
             return;
         }
 
-        // Handle puppet lifetime
         if (isPuppetWarrior() && tickCounter >= getMaxLifetimeIfPuppet()) {
             this.discard();
             return;
         }
 
-        // Validate current target
         if (getTarget() != null && !AbilityUtil.mayTarget(this, getTarget())) {
             this.setTarget(null);
         }
 
-        // Clear quests for controlled entities
         if (shouldClearQuest()) {
             setQuestId("");
         }
 
-        // Apply initial regeneration
         if (tickCounter == 1) {
             this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20, 255, false, true, true));
         }
@@ -502,9 +493,9 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     public enum AttackReason {
-        NOT_ATTACKING,      // Entity has no target
-        HOSTILE_BEHAVIOR,   // Entity is hostile and actively seeking targets
-        RETALIATION         // Entity is neutral but fighting back after being attacked
+        NOT_ATTACKING,
+        HOSTILE_BEHAVIOR,
+        RETALIATION
     }
 
     // ========================= Despawn =========================

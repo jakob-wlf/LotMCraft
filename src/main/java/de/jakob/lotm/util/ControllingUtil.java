@@ -1,8 +1,8 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
-import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.PhysicalEnhancementsAbility;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;

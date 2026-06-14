@@ -1,0 +1,195 @@
+package de.jakob.lotm.beyonders.abilities.common;
+
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.SyncSpiritVisionAbilityPacket;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.mixin.EntityAccessor;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import org.joml.Vector3f;
+
+import java.util.*;
+
+public class SpiritVisionAbility extends ToggleAbility {
+
+    public SpiritVisionAbility(String id) {
+        super(id);
+
+        canBeCopied = false;
+        canBeUsedByNPC = false;
+        doesNotIncreaseDigestion = true;
+        cannotBeStolen = true;
+        canBeReplicated = false;
+        canBeUsedInArtifact = false;
+        autoClear = false;
+    }
+
+    @Override
+    public Map<String, Integer> getRequirements() {
+        Map<String, Integer> reqs = new HashMap(
+                Map.of(
+                        "fool", 9,
+                        "door", 7,
+                        "hermit", 9,
+                        "demoness", 7,
+                        "mother", 8,
+                        "wheel_of_fortune", 9,
+                        "darkness", 7,
+                        "abyss", 9,
+                        "red_priest", 8
+                ));
+
+        for (String pathway : BeyonderData.pathways) {
+            if (!reqs.containsKey(pathway))
+                reqs.put(pathway, 5);
+        }
+        return reqs;
+    }
+
+    @Override
+    public void start(Level level, LivingEntity entity) {
+        if (!level.isClientSide) {
+            if (entity instanceof ServerPlayer player) {
+                PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityPacket(true, -1));
+            }
+            return;
+        }
+
+        entity.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
+    }
+
+    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(255, 255, 255), 2f);
+
+    private final HashMap<UUID, Set<Entity>> glowingEntities = new HashMap<>();
+
+    @Override
+    public void tick(Level level, LivingEntity entity) {
+        if (level.isClientSide()) {
+            return;
+        }
+
+        if (!(entity instanceof ServerPlayer player))
+            return;
+
+        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
+
+        if (lookedAt != null) {
+            if (VisionaryHandler.shouldStayInvisible(BeyonderData.getSequence(entity), lookedAt))
+                return;
+        }
+
+        PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
+
+        if (lookedAt != null) {
+            if (shouldLooseControl(entity, lookedAt)) {
+                if (!entity.hasEffect(ModEffects.LOOSING_CONTROL))
+                    entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 25, 4, false, false, false));
+
+                return;
+            }
+        }
+
+        entity.addEffect(new MobEffectInstance(
+                MobEffects.NIGHT_VISION, 20 * 25, 1, false, false, false));
+
+        List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 30)
+                .stream()
+                .filter(nearbyEntity -> {
+                    return !VisionaryHandler.shouldStayInvisible(BeyonderData.getSequence(entity), nearbyEntity);
+                })
+                .toList();
+
+
+        for (LivingEntity nearbyEntity : nearbyEntities) {
+            setGlowingForPlayer(nearbyEntity, (ServerPlayer) entity, true);
+        }
+
+        glowingEntities.putIfAbsent(entity.getUUID(), new HashSet<>(Set.of()));
+        glowingEntities.get(entity.getUUID()).addAll(nearbyEntities);
+
+    }
+
+    public static boolean shouldLooseControl(LivingEntity player, LivingEntity target) {
+        int playerSeq = BeyonderData.getSequence(player);
+        int targetSeq = BeyonderData.getSequence(target);
+
+        if (player.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(target.getUUID()))
+            return false;
+
+        return AbilityUtil.isTargetSignificantlyStronger(player, target);
+    }
+
+    public static void setGlowingForPlayer(Entity entity, ServerPlayer player, boolean glowing) {
+        EntityDataAccessor<Byte> FLAGS = EntityAccessor.getSharedFlagsId();
+
+
+        // Current flags from the entity
+        byte flags = entity.getEntityData().get(FLAGS);
+
+        if (glowing) {
+            flags |= 0x40; // glowing bit
+        } else {
+            flags &= ~0x40; // clear glowing bit
+        }
+
+        // Build a list of data values (only the one we care about)
+        List<SynchedEntityData.DataValue<?>> values = new ArrayList<>();
+        values.add(SynchedEntityData.DataValue.create(FLAGS, flags));
+
+        // Send metadata update ONLY to that player
+        ClientboundSetEntityDataPacket packet =
+                new ClientboundSetEntityDataPacket(entity.getId(), values);
+        player.connection.send(packet);
+    }
+
+    @Override
+    public void stop(Level level, LivingEntity entity) {
+        if (level.isClientSide) {
+            entity.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
+        } else {
+            if (!(entity instanceof ServerPlayer player))
+                return;
+
+            player.removeEffect(MobEffects.NIGHT_VISION);
+
+            if (glowingEntities.containsKey(entity.getUUID()))
+                glowingEntities.get(entity.getUUID()).forEach(e -> setGlowingForPlayer(e, player, false));
+            glowingEntities.remove(entity.getUUID());
+
+            PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityPacket(false, -1));
+
+            clearArtifactScaling(entity);
+        }
+    }
+
+    private int getRandomColor() {
+        Random random = new Random();
+        int alpha = 0xFF; // Full opacity
+        int red = random.nextInt(256);   // 0 to 255
+        int green = random.nextInt(256); // 0 to 255
+        int blue = random.nextInt(256);  // 0 to 255
+
+        return (alpha << 24) | (red << 16) | (green << 8) | blue;
+    }
+
+    @Override
+    protected float getSpiritualityCost() {
+        return .5f;
+    }
+
+}

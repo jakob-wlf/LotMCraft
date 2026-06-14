@@ -1,7 +1,7 @@
 package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
@@ -33,6 +33,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.MOON_ITEM.get());
         basicItem(ModItems.GUIDING_BOOK.get());
         basicItem(ModItems.CRYSTAL_BALL.get());
+        basicItem(ModItems.POUND_COIN.get());
         basicItem(ModItems.CANE.get());
 
         handheldItem(ModItems.PAPER_SWORD.get());

@@ -1,7 +1,7 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.justiciar.OrderProxyAbility;
+import de.jakob.lotm.beyonders.abilities.justiciar.OrderProxyAbility;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;

@@ -1,7 +1,7 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.helper.CopiedAbilityHelper;

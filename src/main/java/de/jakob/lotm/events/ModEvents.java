@@ -66,7 +66,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import de.jakob.lotm.abilities.tyrant.LightningStormAbility;
+import de.jakob.lotm.beyonders.abilities.tyrant.LightningStormAbility;
 
 import java.util.ArrayList;
 import java.util.HashMap;

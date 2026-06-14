@@ -3,9 +3,9 @@ package de.jakob.lotm;
 import com.zigythebird.playeranim.animation.PlayerAnimationController;
 import com.zigythebird.playeranim.api.PlayerAnimationFactory;
 import com.zigythebird.playeranimcore.enums.PlayState;
-import de.jakob.lotm.abilities.PassiveAbilityHandler;
-import de.jakob.lotm.abilities.core.AbilityHandler;
-import de.jakob.lotm.acting.ActingTaskRegistry;
+import de.jakob.lotm.beyonders.abilities.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.AbilityHandler;
+import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.block.ModBlocks;
@@ -231,7 +231,7 @@ public class LOTMCraft
 
     @SubscribeEvent
     public void onServerStarted(ServerStartedEvent event) {
-        de.jakob.lotm.abilities.black_emperor.MausoleumDomainAbility.prePlaceStructure(event.getServer());
+        de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility.prePlaceStructure(event.getServer());
     }
 
     @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)

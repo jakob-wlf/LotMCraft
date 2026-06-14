@@ -1,9 +1,9 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.visionary.DreamTraversalAbility;
-import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.DreamTraversalAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.DivinationUtil;
@@ -22,7 +22,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
 
-import static de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler.checkAsleep;
+import static de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler.checkAsleep;
 
 public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSelectionWorkType types) implements CustomPacketPayload {
     public static final Type<PlayerDivinationSelectedPacket> TYPE =

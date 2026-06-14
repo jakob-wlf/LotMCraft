@@ -1,9 +1,9 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.darkness.NightmareAbility;
+import de.jakob.lotm.beyonders.abilities.darkness.NightmareAbility;
 import de.jakob.lotm.util.ClientCorrosionFovCache;
-import de.jakob.lotm.artifacts.SealedArtifactData;
+import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;

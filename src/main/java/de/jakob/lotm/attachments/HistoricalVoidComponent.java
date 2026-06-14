@@ -1,6 +1,6 @@
 package de.jakob.lotm.attachments;
 
-import de.jakob.lotm.abilities.fool.HistoricalVoidSummoningAbility;
+import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidSummoningAbility;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

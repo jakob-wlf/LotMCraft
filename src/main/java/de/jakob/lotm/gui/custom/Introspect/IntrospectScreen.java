@@ -2,12 +2,11 @@ package de.jakob.lotm.gui.custom.Introspect;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.Ability;
-import de.jakob.lotm.abilities.core.SelectableAbility;
-import de.jakob.lotm.acting.ActingHandler;
-import de.jakob.lotm.acting.ActingHelper;
-import de.jakob.lotm.acting.ActingTask;
-import de.jakob.lotm.acting.ActingTaskRegistry;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.acting.ActingHelper;
+import de.jakob.lotm.beyonders.acting.ActingTask;
+import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
@@ -32,10 +31,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private ResourceLocation containerBackground;

@@ -1,7 +1,7 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
