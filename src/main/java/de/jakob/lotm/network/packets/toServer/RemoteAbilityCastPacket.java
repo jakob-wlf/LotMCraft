@@ -2,9 +2,12 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import io.netty.buffer.ByteBuf;
+import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -15,58 +18,67 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
 
-/**
- * Client → Server: the player wants to remotely cast their selected ability at a specific target.
- * Used by the Anchors panel in IntrospectScreen and the Cast button in HonorificNamesScreen.
- *
- * The target UUID is stored in the caster's persistent data under "lotm_remote_ability_target"
- * so individual abilities can optionally read it for directed targeting.
- */
 public record RemoteAbilityCastPacket(UUID targetUUID) implements CustomPacketPayload {
 
-    public static final Type<RemoteAbilityCastPacket> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "remote_ability_cast"));
+    public static final CustomPacketPayload.Type<RemoteAbilityCastPacket> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "remote_ability_cast"));
 
-    public static final StreamCodec<ByteBuf, RemoteAbilityCastPacket> STREAM_CODEC =
-            StreamCodec.composite(
-                    ByteBufCodecs.STRING_UTF8.map(UUID::fromString, UUID::toString),
-                    RemoteAbilityCastPacket::targetUUID,
-                    RemoteAbilityCastPacket::new
+    public static final StreamCodec<FriendlyByteBuf, RemoteAbilityCastPacket> STREAM_CODEC =
+            StreamCodec.of(
+                    (buf, pkt) -> buf.writeUUID(pkt.targetUUID()),
+                    buf -> new RemoteAbilityCastPacket(buf.readUUID())
             );
 
     @Override
-    public Type<? extends CustomPacketPayload> type() {
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 
     public static void handle(RemoteAbilityCastPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            if (!(context.player() instanceof ServerPlayer caster)) return;
-            if (!(caster.level() instanceof ServerLevel serverLevel)) return;
-            if (caster.getServer() == null) return;
+            if (context.player() instanceof ServerPlayer serverPlayer) {
+                AbilityWheelComponent component = serverPlayer.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
 
-            // Resolve the target (must be online)
-            ServerPlayer target = caster.getServer().getPlayerList().getPlayer(packet.targetUUID());
-            if (target == null) return;
+                if (component.getAbilities().isEmpty()) {
+                    return;
+                }
 
-            // Store target UUID in caster persistent data so abilities can read it
-            caster.getPersistentData().putUUID("lotm_remote_ability_target", packet.targetUUID());
+                int selectedIndex = component.getSelectedAbility();
+                if (selectedIndex >= 0 && selectedIndex < component.getAbilities().size()) {
+                    String entry = component.getAbilities().get(selectedIndex);
+                    String abilityId = entry.split(":")[0];
+                    Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
 
-            // Get selected ability from wheel
-            AbilityWheelComponent wheel = caster.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
-            if (wheel.getAbilities().isEmpty()) return;
+                    if (ability != null && serverPlayer.level() instanceof ServerLevel serverLevel) {
+                        // Set the remote target for targeting methods in AbilityUtil
+                        AbilityUtil.setRemoteCastTargetUUID(packet.targetUUID());
+                        
+                        try {
+                            if (ability instanceof SelectableAbility selectableAbility) {
+                                int subIndex = getIndex(entry);
+                                if (subIndex != -1) {
+                                    selectableAbility.addSubAbilityOverride(serverPlayer, subIndex);
+                                }
+                            }
 
-            int selectedIndex = wheel.getSelectedAbility();
-            if (selectedIndex < 0 || selectedIndex >= wheel.getAbilities().size()) return;
-
-            String abilityId = wheel.getAbilities().get(selectedIndex).split(":")[0];
-            Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
-            if (ability == null) return;
-
-            ability.useAbility(serverLevel, caster, true, true, true);
-
-            // Clean up remote target hint
-            caster.getPersistentData().remove("lotm_remote_ability_target");
+                            // Use the ability - usually this calls getTargetEntity/Location internally
+                            ability.useAbility(serverLevel, serverPlayer, true, true, true);
+                        } finally {
+                            // Always clear the remote target
+                            AbilityUtil.clearRemoteCastTargetUUID();
+                        }
+                    }
+                }
+            }
         });
+    }
+
+    private static int getIndex(String s) {
+        String[] parts = s.split(":");
+        if (parts.length < 2) return -1;
+        try {
+            return Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 }
