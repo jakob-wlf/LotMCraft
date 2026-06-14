@@ -8,17 +8,27 @@ import de.jakob.lotm.network.packets.toClient.SyncSummonedBlasphemyPacket;
 import de.jakob.lotm.item.custom.BlasphemyCardItem;
 import de.jakob.lotm.item.custom.BlasphemySlateHalfItem;
 import de.jakob.lotm.item.custom.BlasphemySlateItem;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -82,6 +92,30 @@ BlasphemySlateItemHandler {
                 // Tell the client its cursor is now empty
                 player.connection.send(new net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket(
                         -1, player.containerMenu.getStateId(), -1, ItemStack.EMPTY));
+            }
+        }
+
+        // If the player has an unauthorized container open, return any non-envisioned Blasphemy Cards
+        // from its slots back to the player's inventory (or drop them if inventory is full).
+        AbstractContainerMenu menu = player.containerMenu;
+        boolean isAllowedMenu = menu instanceof InventoryMenu
+                || menu instanceof de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu
+                || menu instanceof net.minecraft.world.inventory.CraftingMenu;
+        if (!isAllowedMenu) {
+            for (Slot slot : new java.util.ArrayList<>(menu.slots)) {
+                // Only scan slots that belong to a block-entity container, not the player's own inventory
+                if (slot.container instanceof Inventory) continue;
+                ItemStack s = slot.getItem();
+                if (s.isEmpty()) continue;
+                if (!(s.getItem() instanceof BlasphemyCardItem)) continue;
+                if (isEnvisionSummoned(s)) continue;
+                // Remove from the container and return to the player
+                ItemStack toReturn = s.copy();
+                slot.set(ItemStack.EMPTY);
+                if (slot.container instanceof Container c) c.setChanged();
+                if (!player.getInventory().add(toReturn)) {
+                    level.addFreshEntity(new ItemEntity(level, player.getX(), player.getY(), player.getZ(), toReturn));
+                }
             }
         }
 
@@ -223,6 +257,67 @@ BlasphemySlateItemHandler {
                 data.markCardSeen(bc.getPathway(), cardId, time);
             }
         }
+
+        // Eject any non-envisioned Blasphemy Cards from unauthorized block-entity containers.
+        // Allowed containers: BrewingCauldronBlockEntity and anything from the "corpse" mod.
+        // We only eject when no player currently has that container open, to avoid client desync.
+        for (ServerLevel lvl : event.getServer().getAllLevels()) {
+            for (LevelChunk chunk : getLoadedChunks(lvl)) {
+                for (BlockEntity be : new java.util.ArrayList<>(chunk.getBlockEntities().values())) {
+                    if (be instanceof de.jakob.lotm.block.custom.BrewingCauldronBlockEntity) continue;
+                    if (isCorpseModBlockEntity(be)) continue;
+                    if (!(be instanceof Container container)) continue;
+                    // Skip if any player currently has this container open
+                    boolean viewed = event.getServer().getPlayerList().getPlayers().stream()
+                            .anyMatch(p -> isMenuLinkedTo(p.containerMenu, container));
+                    if (viewed) continue;
+                    BlockPos pos = be.getBlockPos();
+                    boolean dirty = false;
+                    for (int i = 0; i < container.getContainerSize(); i++) {
+                        ItemStack s = container.getItem(i);
+                        if (s.isEmpty()) continue;
+                        if (!(s.getItem() instanceof BlasphemyCardItem)) continue;
+                        if (isEnvisionSummoned(s)) continue;
+                        container.setItem(i, ItemStack.EMPTY);
+                        dirty = true;
+                        lvl.addFreshEntity(new ItemEntity(lvl,
+                                pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, s.copy()));
+                    }
+                    if (dirty) be.setChanged();
+                }
+            }
+        }
+    }
+
+    /** Returns all currently loaded chunks in a level. */
+    private static java.util.List<LevelChunk> getLoadedChunks(ServerLevel level) {
+        java.util.List<LevelChunk> result = new java.util.ArrayList<>();
+        java.util.Set<net.minecraft.world.level.ChunkPos> positions = new java.util.HashSet<>();
+        for (ServerPlayer p : level.players()) {
+            net.minecraft.world.level.ChunkPos center = new net.minecraft.world.level.ChunkPos(p.blockPosition());
+            for (int dx = -8; dx <= 8; dx++)
+                for (int dz = -8; dz <= 8; dz++)
+                    positions.add(new net.minecraft.world.level.ChunkPos(center.x + dx, center.z + dz));
+        }
+        for (net.minecraft.world.level.ChunkPos pos : positions) {
+            LevelChunk chunk = level.getChunkSource().getChunkNow(pos.x, pos.z);
+            if (chunk != null) result.add(chunk);
+        }
+        return result;
+    }
+
+    /** Returns true when the block entity is part of the Corpse mod (by maxhenkel). */
+    private static boolean isCorpseModBlockEntity(BlockEntity be) {
+        ResourceLocation key = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(be.getType());
+        return key != null && "corpse".equals(key.getNamespace());
+    }
+
+    /** Returns true when any slot in the given menu belongs to the supplied container. */
+    private static boolean isMenuLinkedTo(AbstractContainerMenu menu, Container container) {
+        for (Slot slot : menu.slots) {
+            if (slot.container == container) return true;
+        }
+        return false;
     }
 
     // ─── Uniqueness scan helpers ──────────────────────────────────────────────
