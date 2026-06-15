@@ -71,7 +71,7 @@ public class AngelAuthorityAbility extends SelectableAbility {
 
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if (level.isClientSide && entity instanceof Player && abilityIndex == 3) {
-            net.minecraft.client.Minecraft.getInstance().setScreen(new de.jakob.lotm.gui.custom.CharacteristicSplittingScreen());
+            de.jakob.lotm.network.packets.handlers.ClientHandler.openCharacteristicSplittingScreen();
             return;
         }
         if (!level.isClientSide && entity instanceof ServerPlayer player) {

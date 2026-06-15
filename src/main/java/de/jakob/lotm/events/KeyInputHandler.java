@@ -247,7 +247,7 @@ public class KeyInputHandler {
         ItemStack stack = event.getItemStack();
         if (!(stack.getItem() instanceof BlasphemySlateHalfItem half)) return;
         event.setCanceled(true);
-        Minecraft.getInstance().setScreen(new SlateHalfPathwayScreen(half.getHalfType()));
+        de.jakob.lotm.network.packets.handlers.ClientHandler.openSlateHalfPathwayScreen(half.getHalfType());
     }
 
     @SubscribeEvent

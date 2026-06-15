@@ -789,4 +789,12 @@ public class ClientHandler {
                     packet.maxIU(), packet.vaultCapacity()));
         }
     }
+
+    public static void openCharacteristicSplittingScreen() {
+        Minecraft.getInstance().setScreen(new de.jakob.lotm.gui.custom.CharacteristicSplittingScreen());
+    }
+
+    public static void openSlateHalfPathwayScreen(de.jakob.lotm.item.custom.BlasphemySlateHalfItem.HalfType halfType) {
+        Minecraft.getInstance().setScreen(new de.jakob.lotm.gui.custom.BlasphemySlate.SlateHalfPathwayScreen(halfType));
+    }
 }
