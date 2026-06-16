@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.potions;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
@@ -115,7 +116,7 @@ public class PotionRecipeItemHandler {
         return recipes.get(0);
     }
 
-    public static PotionRecipeItem selectRandomRecipeOfSequence(Random random, int sequence) {
+    public static PotionRecipeItem selectRandomRecipeOfSequence(RandomSource random, int sequence) {
         if(!PotionRecipes.initialized) {
             PotionRecipes.initPotionRecipes();
             initializeRecipes();

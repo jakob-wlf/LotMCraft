@@ -2,14 +2,11 @@ package de.jakob.lotm.entity.custom;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.potions.*;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.custom.goals.AbilityUseGoal;
 import de.jakob.lotm.entity.custom.goals.RangedCombatGoal;
 import de.jakob.lotm.gamerule.ModGameRules;
-import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
-import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
-import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
-import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.gui.custom.Trades.BeyonderTradeMenu;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.quest.QuestManager;
@@ -41,8 +38,9 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -198,8 +196,9 @@ public class BeyonderNPCEntity extends PathfinderMob {
                     }
                 } else if((random.nextFloat() < TRADE_SPAWN_CHANCE || this._hasTrade == Boolean.TRUE) && this._hasTrade != Boolean.FALSE) {
                     ListTag trades = new ListTag();
-                    for(int i = 0; i < 3; i++) {
+                    for(int i = 0; i < random.nextInt(2, 5); i++) {
                         TradeEntry entry = generateRandomTrade(random);
+                        if(entry == null) continue;
                         CompoundTag tradeTag = writeTrade(entry.costA, entry.costB, entry.result, this.registryAccess());
                         trades.add(tradeTag);
                     }
@@ -213,6 +212,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
             if (this._sequence != -1 && !this._pathway.equals("none")) {
                 BeyonderData.setBeyonder(this, this._pathway, _sequence);
             }
+            updateGoalsBasedOnHostilityAndTrades();
         }
     }
 
@@ -225,10 +225,10 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
 
-        updateGoalsBasedOnHostility();
+        updateGoalsBasedOnHostilityAndTrades();
     }
 
-    private void updateGoalsBasedOnHostility() {
+    private void updateGoalsBasedOnHostilityAndTrades() {
         if (getPathway().isEmpty()) {
             return;
         }
@@ -248,7 +248,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
             this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
         }
 
-        this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+        if(!hasTrades()) this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0D));
 
         if (isHostile()) {
             this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
@@ -277,6 +277,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
         if (shouldClearQuest()) {
             setQuestId("");
+            setTrades(new CompoundTag());
         }
 
         if (tickCounter == 1) {
@@ -391,19 +392,60 @@ public class BeyonderNPCEntity extends PathfinderMob {
         return result;
     }
 
+
+
     private TradeEntry generateRandomTrade(RandomSource random) {
-        List<TradeEntry> pool = List.of(
-                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 5), ItemStack.EMPTY, new ItemStack(Items.DIAMOND, 1)),
-                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 3), ItemStack.EMPTY, new ItemStack(Items.IRON_INGOT, 4)),
-                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 2), ItemStack.EMPTY, new ItemStack(Items.BREAD, 8)),
-                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 1), ItemStack.EMPTY, new ItemStack(Items.APPLE, 10)),
-                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 4), ItemStack.EMPTY, new ItemStack(Items.ENDER_PEARL, 2)),
-                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 6), ItemStack.EMPTY, new ItemStack(Items.COOKED_BEEF, 5)),
-                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 2), ItemStack.EMPTY, new ItemStack(Items.IRON_SWORD, 1)),
-                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 3), ItemStack.EMPTY, new ItemStack(Items.BOW, 1)),
-                new TradeEntry(new ItemStack(ModItems.POUND_COIN.get(), 5), ItemStack.EMPTY, new ItemStack(Items.SHIELD, 1))
-        );
-        return pool.get(random.nextInt(pool.size()));
+        int itemSequence = Math.clamp(BeyonderData.getSequence(this) + (random.nextInt(3) - 1), 1, 9);
+
+        Item item = switch (random.nextInt(10)) {
+            case 0, 1, 2, 3 -> PotionRecipeItemHandler.selectRandomRecipeOfSequence(random, itemSequence);
+            case 4 -> PotionItemHandler.selectRandomPotionOfSequence(random, itemSequence);
+            default -> BeyonderCharacteristicItemHandler.selectRandomCharacteristicOfSequence(random, itemSequence);
+        };
+
+        if (item == null) {
+            return null;
+        }
+
+        ItemStack itemStack = new ItemStack(item);
+
+        int[] charPriceInSoli = {0, 2560, 1920, 1600, 1100, 400, 200, 100, 30, 10};
+
+        int baseSoli = charPriceInSoli[itemSequence];
+
+        boolean isRecipe = item instanceof PotionRecipeItem;
+        boolean isPotion = item instanceof BeyonderPotion;
+        int multiplierPct = isRecipe ? 33 : isPotion ? 170 : 100;
+
+        long totalSoli = (long) baseSoli * multiplierPct / 100;
+        totalSoli = totalSoli * (85 + random.nextInt(31)) / 100;
+        totalSoli = Math.max(1, totalSoli);
+
+        final int SOLI_PER_POUND = 20;
+        final int MAX_STACK = 64;
+
+        int pounds = (int) Math.min(totalSoli / SOLI_PER_POUND, MAX_STACK);
+        long remainingSoli = totalSoli - ((long) pounds * SOLI_PER_POUND);
+        int soli = (int) Math.min(remainingSoli, MAX_STACK);
+
+        int extraPounds = (pounds == MAX_STACK && !isRecipe && !isPotion)
+                ? (int) Math.min(totalSoli / SOLI_PER_POUND - MAX_STACK, MAX_STACK)
+                : 0;
+
+        ItemStack costA;
+        ItemStack costB;
+
+        if (pounds > 0) {
+            costA = new ItemStack(ModItems.ONE_POUND.get(), pounds);
+            costB = extraPounds > 0
+                    ? new ItemStack(ModItems.ONE_POUND.get(), extraPounds)
+                    : soli > 0 ? new ItemStack(ModItems.ONE_SOLI.get(), soli) : ItemStack.EMPTY;
+        } else {
+            costA = new ItemStack(ModItems.ONE_SOLI.get(), soli);
+            costB = ItemStack.EMPTY;
+        }
+
+        return new TradeEntry(costA, costB, itemStack);
     }
 
     public void removeTrade(int index) {
@@ -417,6 +459,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
             root.put("trades", newTrades);
             setTrades(root);
         }
+
+        updateGoalsBasedOnHostilityAndTrades();
     }
 
     public boolean hasTrades() {
@@ -502,7 +546,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
     public void setHostile(boolean hostile) {
         this.entityData.set(IS_HOSTILE, hostile);
         if (!this.level().isClientSide) {
-            updateGoalsBasedOnHostility();
+            updateGoalsBasedOnHostilityAndTrades();
         }
     }
 

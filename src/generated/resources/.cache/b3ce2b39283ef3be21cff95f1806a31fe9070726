@@ -1,4 +1,4 @@
-// 1.21.1	2026-06-14T12:08:54.0680902	Item Models: lotmcraft
+// 1.21.1	2026-06-16T12:48:24.5786235	Item Models: lotmcraft
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 d79ff3aedef37faf54603234b4a98f66afb8991f assets/lotmcraft/models/item/abyss_uniqueness.json
 4e7075a5dc34701bda2cb5db71047fdcdb9a3de6 assets/lotmcraft/models/item/acrobatics_ability.json
@@ -303,6 +303,8 @@ df027ae55c442b809ae64805c5f4e9762e4a809b assets/lotmcraft/models/item/notary_cha
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/ocean_songster.json
 bc079732c1039919d5215e7ecd82da8fe0d557ac assets/lotmcraft/models/item/ocean_songster_characteristic.json
 35ed80c8aeaadfc3071db8557170f7cd90f0cfb0 assets/lotmcraft/models/item/ocean_songster_potion.json
+30b374f998810aaaf2dfdc14bbf46a4e8ce55ed4 assets/lotmcraft/models/item/one_pound.json
+af08ad21069a688e4c0fd0cdd22e163c06f482cc assets/lotmcraft/models/item/one_soli.json
 71f542dc26b7d968b19c6122828fff51964059f9 assets/lotmcraft/models/item/order_justiciar_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/pale_emperor.json
 1d12da569d45b1ca02f7363182037f2c7ef04263 assets/lotmcraft/models/item/pale_emperor_characteristic.json
@@ -344,7 +346,6 @@ a5ec83bf79581416969ff4c380b65f720ff01cf7 assets/lotmcraft/models/item/planeswalk
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/planter.json
 53bf2e073a7be41175c64d01457176d8d7687e67 assets/lotmcraft/models/item/planter_characteristic.json
 63285aca4004491d7073c8b9998c3b4c06a54638 assets/lotmcraft/models/item/planter_potion.json
-86e1d4a375bdaa2b6140dac32772c81ab3c944ba assets/lotmcraft/models/item/pound_coin.json
 62c84d7e49b04e11821402edfa98492235a81b90 assets/lotmcraft/models/item/powder_of_dazzling_soul.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/priest_of_light.json
 df027ae55c442b809ae64805c5f4e9762e4a809b assets/lotmcraft/models/item/priest_of_light_characteristic.json

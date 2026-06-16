@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.potions;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
@@ -129,6 +130,22 @@ public class BeyonderCharacteristicItemHandler {
         }
 
         return recipes.get(0);
+    }
+
+    public static BeyonderCharacteristicItem selectRandomCharacteristicOfSequence(RandomSource randomSource, int sequence) {
+        List<BeyonderCharacteristicItem> recipes = ITEMS.getEntries()
+                .stream()
+                .map(DeferredHolder::get)
+                .filter(i -> i instanceof BeyonderCharacteristicItem)
+                .map(i -> ((BeyonderCharacteristicItem) i))
+                .filter(i -> i.getSequence() == sequence)
+                .toList();
+
+        if (recipes.isEmpty()) {
+            return null;
+        }
+
+        return recipes.get(randomSource.nextInt(recipes.size()));
     }
 
     public static List<BeyonderCharacteristicItem> selectAllOfPathway(String pathway) {

@@ -77,7 +77,7 @@ public class BeyonderTradeScreen extends AbstractContainerScreen<BeyonderTradeMe
                 int rowY = TRADE_LIST_START_Y + tradeIndex * TRADE_ROW_HEIGHT;
                 int slotX = TRADE_LIST_START_X + (isSlotB ? SLOT_SIZE : 0);
 
-                setSlotPosition(slot, slotX + 1, rowY + 1);
+                setSlotPosition(slot, slotX + (isSlotB ? 2 : 1), rowY + 1);
             } else {
                 int relativeIndex = i - inputSlotCount;
                 if (relativeIndex < 27) {
@@ -125,11 +125,11 @@ public class BeyonderTradeScreen extends AbstractContainerScreen<BeyonderTradeMe
             drawSlotBackground(guiGraphics, rowX, rowY);
 
             if (!trade.costB().isEmpty()) {
-                drawSlotBackground(guiGraphics, rowX + SLOT_SIZE, rowY);
+                drawSlotBackground(guiGraphics, rowX + SLOT_SIZE + 1, rowY);
             }
 
             int arrowX = rowX + SLOT_SIZE * 2 + 2;
-            guiGraphics.drawString(this.font, "->", arrowX, rowY + 5, 0x9E9E9E, false);
+            guiGraphics.drawString(this.font, "->", arrowX + (trade.costB().isEmpty() ? 0 : 5), rowY + 5, 0x9E9E9E, false);
 
             int resultX = arrowX + ARROW_WIDTH;
             drawSlotBackground(guiGraphics, resultX, rowY);
@@ -157,19 +157,35 @@ public class BeyonderTradeScreen extends AbstractContainerScreen<BeyonderTradeMe
             if (!result.isEmpty()) {
                 guiGraphics.renderItem(result, resultX + 1, rowY + 1);
                 guiGraphics.renderItemDecorations(this.font, result, resultX + 1, rowY + 1);
+
+                if (mouseX >= resultX + 1 && mouseX < resultX + SLOT_SIZE
+                        && mouseY >= rowY + 1 && mouseY < rowY + SLOT_SIZE) {
+                    guiGraphics.renderTooltip(this.font, result, mouseX, mouseY);
+                }
             }
 
             if (menu.getInputSlotsContainer().getItem(BeyonderTradeMenu.getInputSlotAIndex(i)).isEmpty()) {
                 ItemStack costA = trade.costA();
-                System.out.println("Cost A for trade " + i + ": " + costA);
                 if (!costA.isEmpty()) {
                     guiGraphics.pose().pushPose();
                     RenderSystem.setShaderColor(1f, 1f, 1f, 0.35f);
                     guiGraphics.renderFakeItem(costA, rowX + 1, rowY + 1);
                     RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
                     guiGraphics.pose().popPose();
+
+                    if (costA.getCount() > 1) {
+                        String countStr = String.valueOf(costA.getCount());
+                        guiGraphics.pose().pushPose();
+                        guiGraphics.pose().translate(0, 0, 200);
+                        guiGraphics.drawString(this.font, countStr,
+                                rowX + SLOT_SIZE - this.font.width(countStr),
+                                rowY + SLOT_SIZE - 9,
+                                0xFFFFFF, true);
+                        guiGraphics.pose().popPose();
+                    }
                 }
             }
+
             if (!trade.costB().isEmpty()
                     && menu.getInputSlotsContainer().getItem(BeyonderTradeMenu.getInputSlotBIndex(i)).isEmpty()) {
                 ItemStack costB = trade.costB();
@@ -178,6 +194,17 @@ public class BeyonderTradeScreen extends AbstractContainerScreen<BeyonderTradeMe
                 guiGraphics.renderFakeItem(costB, rowX + SLOT_SIZE + 1, rowY + 1);
                 RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
                 guiGraphics.pose().popPose();
+
+                if (costB.getCount() > 1) {
+                    String countStr = String.valueOf(costB.getCount());
+                    guiGraphics.pose().pushPose();
+                    guiGraphics.pose().translate(0, 0, 200);
+                    guiGraphics.drawString(this.font, countStr,
+                            rowX + SLOT_SIZE + SLOT_SIZE - this.font.width(countStr),
+                            rowY + SLOT_SIZE - 9,
+                            0xFFFFFF, true);
+                    guiGraphics.pose().popPose();
+                }
             }
         }
 

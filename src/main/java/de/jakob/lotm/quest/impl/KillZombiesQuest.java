@@ -48,7 +48,7 @@ public class KillZombiesQuest extends Quest {
             long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
             Random random = new Random(randomSeed);
 
-            PotionRecipeItem recipe = PotionRecipeItemHandler.selectRandomRecipeOfSequence(random, 9);
+            PotionRecipeItem recipe = PotionRecipeItemHandler.selectRandomRecipeOfSequence(player.level().random, 9);
             if(recipe != null) {
                 rewards.add(new ItemStack(recipe));
             }

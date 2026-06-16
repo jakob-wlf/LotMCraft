@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.potions;
 
 import de.jakob.lotm.LOTMCraft;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
@@ -722,6 +723,22 @@ public class PotionItemHandler {
         }
 
         return potions.get(0);
+    }
+
+    public static BeyonderPotion selectRandomPotionOfSequence(RandomSource random, int sequence) {
+        List<BeyonderPotion> potions = ITEMS.getEntries()
+                .stream()
+                .map(DeferredHolder::get)
+                .filter(i -> i instanceof BeyonderPotion)
+                .map(i -> ((BeyonderPotion) i))
+                .filter(i -> i.getSequence() == sequence)
+                .toList();
+
+        if (potions.isEmpty()) {
+            return null;
+        }
+
+        return potions.get(random.nextInt(potions.size()));
     }
 
 }
