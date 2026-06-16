@@ -4,6 +4,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenCharExchangeWheelPacket;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -30,6 +31,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class CharPathExchangeHandler {
 
     public static void processExchange(ServerPlayer player, int slotIndex) {
+        if (!player.level().getGameRules().getBoolean(de.jakob.lotm.gamerule.ModGameRules.DO_CHAR_EXCHANGE_WHEEL)) {
+            player.sendSystemMessage(Component.literal("§cCharacteristics Exchange is disabled."));
+            return;
+        }
         if (slotIndex < 0 || slotIndex >= player.getInventory().getContainerSize()) return;
         ItemStack sacrificed = player.getInventory().getItem(slotIndex);
         if (sacrificed.isEmpty() || !(sacrificed.getItem() instanceof BeyonderCharacteristicItem charItem)) return;

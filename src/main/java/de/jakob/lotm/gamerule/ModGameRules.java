@@ -21,6 +21,10 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.BooleanValue> SEQUENCE_DIMENSION_LOCK;
     public static GameRules.Key<GameRules.BooleanValue> LOOSE_CHAR_ON_REGRESSION;
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_TOTEMS;
+    public static GameRules.Key<GameRules.BooleanValue> DO_CHAR_EXCHANGE_WHEEL;
+    public static GameRules.Key<GameRules.BooleanValue> DO_CHAR_SLOT_ROLL_WHEEL;
+    public static GameRules.Key<GameRules.BooleanValue> DO_DAILY_SPIN_WHEEL;
+    public static GameRules.Key<GameRules.BooleanValue> DO_SELL_YOUR_SOUL_WHEEL;
 
     public static GameRules.Key<GameRules.IntegerValue> MAX_ALLY_COUNT;
 
@@ -48,6 +52,30 @@ public class ModGameRules {
             "allowAbilityGriefing",
             GameRules.Category.MISC,
             GameRules.BooleanValue.create(true)
+        );
+
+        DO_CHAR_EXCHANGE_WHEEL = GameRules.register(
+                "doCharExchangeWheel",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
+        );
+
+        DO_CHAR_SLOT_ROLL_WHEEL = GameRules.register(
+                "doCharSlotRollWheel",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
+        );
+
+        DO_DAILY_SPIN_WHEEL = GameRules.register(
+                "doDailySpinWheel",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
+        );
+
+        DO_SELL_YOUR_SOUL_WHEEL = GameRules.register(
+                "doSellYourSoulWheel",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
         );
 
         LOOSE_CHAR_ON_REGRESSION= GameRules.register(

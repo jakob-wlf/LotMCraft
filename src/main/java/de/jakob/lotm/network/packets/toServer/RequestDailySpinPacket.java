@@ -8,6 +8,7 @@ import de.jakob.lotm.gui.custom.DailySpin.DailySpinHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenDailySpinScreenPacket;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -34,6 +35,11 @@ public record RequestDailySpinPacket() implements CustomPacketPayload {
         context.enqueueWork(() -> {
             if (!context.flow().getReceptionSide().isServer()) return;
             if (!(context.player() instanceof ServerPlayer player)) return;
+
+            if (!player.level().getGameRules().getBoolean(de.jakob.lotm.gamerule.ModGameRules.DO_DAILY_SPIN_WHEEL)) {
+                player.sendSystemMessage(Component.literal("§cDaily Spin is disabled."));
+                return;
+            }
 
             DailySpinComponent component = player.getData(ModAttachments.DAILY_SPIN_COMPONENT);
 

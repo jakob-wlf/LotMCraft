@@ -61,6 +61,7 @@ public record CharSlotRollResultPacket(int action, String pathway) implements Cu
 
             // Guard: gamerule must be on and player must not have received perks yet
             if (!player.serverLevel().getGameRules().getBoolean(ModGameRules.DO_CHARACTERISTICS_SLOTS)) return;
+            if (!player.serverLevel().getGameRules().getBoolean(ModGameRules.DO_CHAR_SLOT_ROLL_WHEEL)) return;
             NewPlayerComponent comp = player.getData(ModAttachments.BOOK_COMPONENT);
             if (comp.isHasReceivedNewPlayerPerks()) return;
 

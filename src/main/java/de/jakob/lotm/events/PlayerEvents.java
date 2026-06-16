@@ -179,22 +179,23 @@ public class PlayerEvents {
 
             NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
             boolean gameruleOn = player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC);
+            boolean wheelGamerule = player.serverLevel().getGameRules().getBoolean(ModGameRules.DO_CHAR_SLOT_ROLL_WHEEL);
 
             // Safety: clear a stale charSlotRollsLeft key that would keep the player permanently
             // invincible (e.g. kicked by an auth mod mid-roll, or gamerule turned off after the key
             // was written).  The key must be absent when the wheel is not going to be shown.
             if (player.getPersistentData().contains("charSlotRollsLeft")) {
-                boolean wheelWillOpen = !component.isHasReceivedNewPlayerPerks() && gameruleOn;
+                boolean wheelWillOpen = !component.isHasReceivedNewPlayerPerks() && gameruleOn && wheelGamerule;
                 if (!wheelWillOpen) {
                     player.getPersistentData().remove("charSlotRollsLeft");
                     de.jakob.lotm.LOTMCraft.LOGGER.info(
-                            "Cleared stale charSlotRollsLeft for {} (perksReceived={}, gamerule={})",
+                            "Cleared stale charSlotRollsLeft for {} (perksReceived={}, gamerule={}, wheelGamerule={})",
                             player.getGameProfile().getName(),
-                            component.isHasReceivedNewPlayerPerks(), gameruleOn);
+                            component.isHasReceivedNewPlayerPerks(), gameruleOn, wheelGamerule);
                 }
             }
 
-            if(!component.isHasReceivedNewPlayerPerks() && gameruleOn) {
+            if(!component.isHasReceivedNewPlayerPerks() && gameruleOn && wheelGamerule) {
                 // Delay by 40 ticks so the client finishes loading terrain before the screen is shown.
                 // Capture UUID + server reference rather than the player entity so that if the
                 // player is kicked and re-joins before the delay fires we still get the correct

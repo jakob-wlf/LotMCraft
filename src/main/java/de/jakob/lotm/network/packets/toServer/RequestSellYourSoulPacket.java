@@ -33,6 +33,11 @@ public record RequestSellYourSoulPacket() implements CustomPacketPayload {
             if (!context.flow().getReceptionSide().isServer()) return;
             if (!(context.player() instanceof ServerPlayer player)) return;
 
+            if (!player.level().getGameRules().getBoolean(de.jakob.lotm.gamerule.ModGameRules.DO_SELL_YOUR_SOUL_WHEEL)) {
+                player.sendSystemMessage(Component.literal("§cSell Your Soul is disabled."));
+                return;
+            }
+
             DailySpinComponent spinComp = player.getData(ModAttachments.DAILY_SPIN_COMPONENT);
 
             // ── Cooldown check ─────────────────────────────────────────────────

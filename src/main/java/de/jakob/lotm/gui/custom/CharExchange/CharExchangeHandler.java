@@ -6,6 +6,7 @@ import de.jakob.lotm.network.packets.toClient.OpenCharExchangeWheelPacket;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
@@ -50,6 +51,10 @@ public class CharExchangeHandler {
      * @param slotIndex the inventory slot (0-35) that contains the chosen characteristic
      */
     public static void processExchange(ServerPlayer player, int slotIndex) {
+        if (!player.level().getGameRules().getBoolean(de.jakob.lotm.gamerule.ModGameRules.DO_CHAR_EXCHANGE_WHEEL)) {
+            player.sendSystemMessage(Component.literal("§cCharacteristics Exchange is disabled."));
+            return;
+        }
         // Validate slot
         if (slotIndex < 0 || slotIndex >= player.getInventory().getContainerSize()) return;
         ItemStack sacrificed = player.getInventory().getItem(slotIndex);
