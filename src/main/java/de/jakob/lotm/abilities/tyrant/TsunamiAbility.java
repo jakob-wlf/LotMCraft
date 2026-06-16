@@ -39,7 +39,7 @@ public class TsunamiAbility extends Ability {
 
         level.playSound(null, entity.blockPosition(), SoundEvents.GENERIC_SPLASH, entity.getSoundSource(), 5, 1.0f);
 
-        TsunamiEntity tsunami = new TsunamiEntity(level, position, direction, (float) (DamageLookup.lookupDamage(4, .6)* (int) Math.max(multiplier(entity)/4,1)), BeyonderData.isGriefingEnabled(entity), entity);
+        TsunamiEntity tsunami = new TsunamiEntity(level, position, direction, (float) (DamageLookup.lookupDamage(4, .6)* multiplier(entity)), BeyonderData.isGriefingEnabled(entity), entity);
         level.addFreshEntity(tsunami);
     }
 }

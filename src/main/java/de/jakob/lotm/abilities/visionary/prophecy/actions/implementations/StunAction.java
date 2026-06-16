@@ -11,6 +11,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.UUID;
+
 public class StunAction extends ActionBase {
     public StunAction(ActionContextBase context) {
         super(context);
@@ -27,7 +29,7 @@ public class StunAction extends ActionBase {
     }
 
     @Override
-    public void action(Level level, LivingEntity entity) {
+    public void action(Level level, LivingEntity entity, UUID casterId) {
         if (level.isClientSide) return;
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 10, () -> {

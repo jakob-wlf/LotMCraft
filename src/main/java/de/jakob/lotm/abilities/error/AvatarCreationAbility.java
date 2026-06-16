@@ -61,7 +61,7 @@ public class AvatarCreationAbility extends Ability {
             }
         }
 
-        AvatarEntity avatar = new AvatarEntity(ModEntities.ERROR_AVATAR.get(), level, entity.getUUID(), "error", sequence);
+        AvatarEntity avatar = new AvatarEntity(ModEntities.AVATAR.get(), level, entity.getUUID(), "error", sequence);
         avatar.setPos(entity.getX(), entity.getY(), entity.getZ());
         level.addFreshEntity(avatar);
 

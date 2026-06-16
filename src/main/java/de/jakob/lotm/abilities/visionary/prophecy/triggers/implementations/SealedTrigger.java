@@ -12,6 +12,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.UUID;
+
 public class SealedTrigger extends TriggerBase {
     public SealedTrigger(ActionBase action, TriggerContextBase context) {
         super(action, context);
@@ -28,14 +30,14 @@ public class SealedTrigger extends TriggerBase {
     }
 
     @Override
-    public boolean checkTrigger(Level level, LivingEntity entity) {
+    public int checkTrigger(Level level, LivingEntity entity, UUID casterId) {
 
         if(entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).isAbilityUsageDisabled()){
-            action.action(level, entity);
-            return true;
+            action.action(level, entity, casterId);
+            return 1;
         }
 
-        return false;
+        return 0;
     }
 
     public static SealedTrigger load(CompoundTag tag,

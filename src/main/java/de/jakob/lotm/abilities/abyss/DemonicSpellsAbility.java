@@ -94,9 +94,9 @@ public class DemonicSpellsAbility extends SelectableAbility {
                     .stream()
                     .filter(target -> AbilityUtil.mayDamage(entity, target) && !AllyUtil.isAlly(target, entity.getUUID()))
                     .forEach(target -> {
-                        target.addEffect(new MobEffectInstance(MobEffects.POISON, 20 * 6* (int) Math.max(multiplier(entity)/4,1), 2, false, false));
-                        target.addEffect(new MobEffectInstance(MobEffects.WITHER, 20 * 4* (int) Math.max(multiplier(entity)/4,1), 1, false, false));
-                        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 4* (int) Math.max(multiplier(entity)/4,1), 2, false, false));
+                        target.addEffect(new MobEffectInstance(MobEffects.POISON, (int) (20 * 6* multiplier(entity)), 2, false, false));
+                        target.addEffect(new MobEffectInstance(MobEffects.WITHER, (int) (20 * 4* multiplier(entity)), 1, false, false));
+                        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, (int) (20 * 4* multiplier(entity)), 2, false, false));
                     });
         }, null, level, () -> AbilityUtil.getTimeInArea(entity, new Location(swampCenter, level)));
 
@@ -116,7 +116,7 @@ public class DemonicSpellsAbility extends SelectableAbility {
         String pathway = BeyonderData.getPathway(entity);
         int sequence = AbilityUtil.getSeqWithArt(entity, this);
 
-        AvatarEntity clone = new AvatarEntity(ModEntities.ERROR_AVATAR.get(), level,
+        AvatarEntity clone = new AvatarEntity(ModEntities.AVATAR.get(), level,
                 entity.getUUID(), pathway, sequence);
         clone.setPos(clonePos.x, clonePos.y, clonePos.z);
         level.addFreshEntity(clone);

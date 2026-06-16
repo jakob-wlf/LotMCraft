@@ -3,6 +3,8 @@ package de.jakob.lotm.abilities.justiciar.passives;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -43,9 +45,11 @@ public class OrderJusticiarAbility extends PassiveAbilityItem {
         if (!(event.getEntity() instanceof Player victim)) return;
         if (!(killer.level() instanceof ServerLevel serverLevel)) return;
 
+        boolean concealed = VisionaryHandler.isInvisible(killer) || killer.hasEffect(ModEffects.CONCEALMENT);
+
         Component message = Component.translatable("ability.lotmcraft.order_justiciar.murder_prefix")
                 .withStyle(ChatFormatting.GOLD)
-                .append(Component.literal(killer.getDisplayName().getString())
+                .append(Component.literal(concealed ? "Unknown" : killer.getDisplayName().getString())
                         .withStyle(ChatFormatting.WHITE))
                 .append(Component.translatable("ability.lotmcraft.order_justiciar.murder_middle")
                         .withStyle(ChatFormatting.GRAY))

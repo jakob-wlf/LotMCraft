@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
@@ -44,24 +45,31 @@ public class PsycheStormAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
-        if(level.isClientSide || !(level instanceof ServerLevel serverLevel)) {
+        if (level.isClientSide || !(level instanceof ServerLevel serverLevel)) {
             return;
         }
         float multiplier = multiplier(entity);
-        AbilityUtil.damageNearbyEntities(serverLevel, entity, 10*Math.max(multiplier/2, 1), DamageLookup.lookupDamage(6, 1.2)*multiplier, entity.getEyePosition(), true, false);
-        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10*Math.max(multiplier/2, 1)).forEach(e ->
-                e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 7, getAmplifier(entity, e))));
-        int seq = BeyonderData.getSequence(entity);
-        if(seq <= 4){
-            AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10 *Math.max(multiplier/2, 1)).forEach(e -> e.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync((float) (-0.5f * multiplier(entity)), e));
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
 
-        }
+        AbilityUtil.damageNearbyEntities(serverLevel, entity, 10 * Math.max(multiplier / 2, 1), DamageLookup.lookupDamage(6, 1.2) * multiplier, entity.getEyePosition(), true, false);
+
+        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10 * Math.max(multiplier / 2, 1)).forEach(e -> {
+            boolean shouldFail = VisionaryHandler.shouldFailAndTrigger(seq, entity, e, this, false);
+
+            if(!shouldFail) {
+                e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 7, getAmplifier(entity, e)));
+
+                if(seq <= 4)
+                    e.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync((float) (-0.5f * multiplier(entity)), e);
+            }
+        });
+
         Location loc = new Location(entity.position(), serverLevel);
 
-        ParticleUtil.createExpandingParticleSpirals(dust, loc, 3, 4*Math.max(multiplier/2, 1), 2, .5, 4, 90, 7, 2);
-        ParticleUtil.createExpandingParticleSpirals(dust, loc, 5, 6*Math.max(multiplier/2, 1), 2, .5, 4, 90, 7, 2);
-        ParticleUtil.createExpandingParticleSpirals(dust, loc, 7, 8*Math.max(multiplier/2, 1), 2, .5, 4, 90, 7, 2);
-        ParticleUtil.createExpandingParticleSpirals(dust, loc, 9, 10*Math.max(multiplier/2, 1), 2, .5, 4, 90, 7, 2);
+        ParticleUtil.createExpandingParticleSpirals(dust, loc, 3, 4 * Math.max(multiplier / 2, 1), 2, .5, 4, 90, 7, 2);
+        ParticleUtil.createExpandingParticleSpirals(dust, loc, 5, 6 * Math.max(multiplier / 2, 1), 2, .5, 4, 90, 7, 2);
+        ParticleUtil.createExpandingParticleSpirals(dust, loc, 7, 8 * Math.max(multiplier / 2, 1), 2, .5, 4, 90, 7, 2);
+        ParticleUtil.createExpandingParticleSpirals(dust, loc, 9, 10 * Math.max(multiplier / 2, 1), 2, .5, 4, 90, 7, 2);
         ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, entity.getEyePosition(), 150, 7, 3, 7, 0);
 
         serverLevel.playSound(null, BlockPos.containing(loc.getPosition()), SoundEvents.BREEZE_DEATH, SoundSource.BLOCKS);
@@ -69,22 +77,21 @@ public class PsycheStormAbility extends Ability {
     }
 
     private int getAmplifier(LivingEntity entity, LivingEntity target) {
-        if(AbilityUtil.isTargetSignificantlyWeaker(entity, target)) {
+        if (AbilityUtil.isTargetSignificantlyWeaker(entity, target)) {
             return 6;
         }
 
-        if(AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
+        if (AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
             return 1;
         }
 
-        if(BeyonderData.isBeyonder(entity) && BeyonderData.isBeyonder(target)) {
+        if (BeyonderData.isBeyonder(entity) && BeyonderData.isBeyonder(target)) {
             int targetSequence = BeyonderData.getSequence(target);
             int sequence = AbilityUtil.getSeqWithArt(entity, this);
 
-            if(targetSequence <= sequence) {
+            if (targetSequence <= sequence) {
                 return 2;
-            }
-            else {
+            } else {
                 return random.nextInt(3, 5);
             }
         }

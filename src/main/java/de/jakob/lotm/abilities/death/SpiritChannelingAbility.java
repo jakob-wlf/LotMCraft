@@ -443,7 +443,7 @@ public class SpiritChannelingAbility extends SelectableAbility {
 
         AtomicBoolean done = new AtomicBoolean(false);
 
-        ServerScheduler.scheduleForDuration(0, 2, 20 * 4 * (int) Math.max(multiplier(entity) / 4, 1), () -> {
+        ServerScheduler.scheduleForDuration(0, 2, (int) (20 * 4 * multiplier(entity)), () -> {
             if (target.isDeadOrDying()) {
                 done.set(true);
                 return;
@@ -493,8 +493,8 @@ public class SpiritChannelingAbility extends SelectableAbility {
                 ParticleUtil.spawnParticles((ServerLevel) level, EARTH_DUST, pos, 8, 0.3);
                 ParticleUtil.spawnParticles((ServerLevel) level, STONE_DUST, pos, 4, 0.2);
 
-                if (AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1.2f * (int) Math.max(multiplier(entity) / 4, 1),
-                        DamageLookup.lookupDamage(7, 0.5) * (int) Math.max(multiplier(entity) / 4, 1), pos, true, false,
+                if (AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1.2f * multiplier(entity),
+                        DamageLookup.lookupDamage(7, 0.5) * multiplier(entity), pos, true, false,
                         ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity))) {
                     hasHit.set(true);
                     ParticleUtil.spawnParticles((ServerLevel) level, EARTH_DUST, pos, 30, 0.5);
@@ -516,7 +516,7 @@ public class SpiritChannelingAbility extends SelectableAbility {
     private void quicksand(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 25 * (int) Math.max(multiplier(entity) / 4, 1), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (25 * multiplier(entity)), 1.5f);
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.spirit_channeling.no_target").withColor(0xFF334f23));
             return;
@@ -535,7 +535,7 @@ public class SpiritChannelingAbility extends SelectableAbility {
                 ParticleUtil.spawnParticles((ServerLevel) level, EARTH_DUST_SMALL, particlePos, 2, 0.1);
             }
 
-            for (LivingEntity nearby : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, center, 5.0 * (int) Math.max(multiplier(entity) / 4, 1))) {
+            for (LivingEntity nearby : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, center, 5.0 * multiplier(entity))) {
                 int targetSeq = de.jakob.lotm.util.BeyonderData.getSequence(nearby);
                 if (targetSeq <= casterSeq - 1) continue;
 

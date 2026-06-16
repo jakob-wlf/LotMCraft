@@ -58,12 +58,12 @@ public class AbilityIconRenderer {
         }
 
         String selectedAbilityId = ClientData.getAbilityWheelAbilities().get(selectedAbilityIndex);
-        Ability selectedAbility = LOTMCraft.abilityHandler.getById(selectedAbilityId);
+        Ability selectedAbility = LOTMCraft.abilityHandler.getById(selectedAbilityId.split(":")[0]);
         if(selectedAbility == null) {
             return;
         }
 
-        PacketHandler.sendToServer(new RequestActiveStatusOfAbilityPacket(selectedAbilityId));
+        PacketHandler.sendToServer(new RequestActiveStatusOfAbilityPacket(selectedAbilityId.split(":")[0]));
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
 
@@ -79,10 +79,30 @@ public class AbilityIconRenderer {
         int abilityIconY = y + 2;
 
         guiGraphics.blit(selectedAbility.getTextureLocation(), abilityIconX, abilityIconY, 0, 0, ICON_WIDTH, ICON_HEIGHT, ICON_WIDTH, ICON_HEIGHT);
+
+        int subIndex = getSubIndex(selectedAbilityId);
+        if(subIndex != -1) {
+            String badge = String.valueOf(subIndex);
+            int bx = x + ICON_WIDTH - net.minecraft.client.Minecraft.getInstance().font.width(badge);
+            int by = y + ICON_HEIGHT - net.minecraft.client.Minecraft.getInstance().font.lineHeight / 2;
+            guiGraphics.fill(bx, by, bx + net.minecraft.client.Minecraft.getInstance().font.width(badge), by + net.minecraft.client.Minecraft.getInstance().font.lineHeight, 0xAA000000);
+            guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, badge, bx, by, 0xFFFFFF, false);
+        }
+
         if(isDeactivated) {
             guiGraphics.fill(abilityIconX, abilityIconY, abilityIconX + ICON_WIDTH, abilityIconY + ICON_HEIGHT, 0x55000000);
         }
 
         guiGraphics.blit(foregroundTexture, x, y, 0, 0, WIDTH, HEIGHT, WIDTH, HEIGHT);
+    }
+
+    private static int getSubIndex(String s) {
+        String[] parts = s.split(":");
+        if (parts.length < 2) return -1;
+        try {
+            return Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 }

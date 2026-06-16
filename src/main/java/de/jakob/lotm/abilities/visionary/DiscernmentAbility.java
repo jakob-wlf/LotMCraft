@@ -1,66 +1,53 @@
 package de.jakob.lotm.abilities.visionary;
 
-import com.mojang.datafixers.util.Pair;
-import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.SelectableAbility;
-import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
-import de.jakob.lotm.attachments.ModAttachments;
+
+import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.abilities.core.AbilityUseTracker;
+import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.OpenDiscernmentScreenPacket;
-import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.network.packets.toClient.StartStopDiscernmentPacket;
+import de.jakob.lotm.network.packets.toClient.SyncDecryptionLookedAtEntitiesAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSpectatingAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.DiscernmentUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.Team;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class DiscernmentAbility extends SelectableAbility {
-    public static HashMap<UUID, Pair<String, Integer>> preMeditation = new HashMap<>();
-    public static HashSet<UUID> meditating = new HashSet<>();
+import static de.jakob.lotm.abilities.visionary.TelepathyAbility.performTelepaty;
+
+public class DiscernmentAbility extends ToggleAbility {
+    private final HashMap<UUID, Set<Entity>> glowingEntities = new HashMap<>();
+    private static final Map<UUID, String> ENTITY_TEAM_MAP = new HashMap<>();
+    private static final Map<UUID, Set<String>> SENT_TEAMS = new HashMap<>();
+
+    private static final int COOLDOWN = 20 * 2;
+    private static final Map<UUID, Integer> cooldown = new HashMap<>();
 
     public DiscernmentAbility(String id) {
-        super(id, 5f);
+        super(id);
 
-        canBeCopied = false;
-        canBeUsedByNPC = false;
-        cannotBeStolen = true;
-        canBeReplicated = false;
-        canBeUsedInArtifact = false;
         canBeShared = false;
-    }
-
-    @Override
-    protected String[] getAbilityNames() {
-        return new String[]{
-                "ability.lotmcraft.discernment_ability.gather_role",
-                "ability.lotmcraft.discernment_ability.immerse_into_role",
-                "ability.lotmcraft.discernment_ability.meditate"
-        };
-    }
-
-    @Override
-    protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
-        switch (selectedAbility) {
-            case 0 -> gatherRole(level, entity);
-            case 1 -> immerseIntoRole(level, entity);
-            case 2 -> meditate(level, entity);
-        }
+        canBeUsedInArtifact = false;
+        canBeUsedByNPC = false;
     }
 
     @Override
@@ -70,96 +57,124 @@ public class DiscernmentAbility extends SelectableAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 350;
+        return 10;
     }
 
-    private void gatherRole(Level level, LivingEntity entity) {
-        if (!(level instanceof ServerLevel serverLevel)) return;
-        if (!(entity instanceof ServerPlayer player)) return;
-
-        var target = AbilityUtil.getTargetEntity(player, 100, 1f);
-        if (target == null) return;
-
-        if (!BeyonderData.isBeyonder(target)) return;
-
-        String path = BeyonderData.getPathway(target);
-        int seq = BeyonderData.getSequence(target);
-
-        int diff = seq - BeyonderData.getSequence(entity) ;
-
-        if (random.nextInt(10 - diff) != 0) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.discernment_ability.failed").withColor(0xf5c56c));
+    @Override
+    public void tick(Level level, LivingEntity entity) {
+        if(level.isClientSide){
             return;
         }
 
-        preMeditation.put(entity.getUUID(), Pair.of(path, seq));
-        player.sendSystemMessage(Component.literal("Discerned role: sequence " + seq + " of " + path + " pathway").withColor(0xf5c56c));
+        if(!(entity instanceof ServerPlayer player)) return;
 
-        if(target instanceof ServerPlayer playerTarget) {
-            if (path.equals("visionary") && seq <= 1) {
-                MetaAwarenessAbility.onDivined(player, playerTarget);
+        int seq = BeyonderData.getSequence(entity);
+        int range = getRange(seq);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(seq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            cancel((ServerLevel) level, player);
+            return;
+        }
+
+        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, range, 1.2f, false, true);
+        if(lookedAt != null) {
+            if (VisionaryHandler.shouldStayInvisible(seq, lookedAt)){
+                return;
             }
+            else if(VisionaryHandler.shouldFailAndTrigger(seq, entity, lookedAt, this, false)){
+                return;
+            }
+            else if(AbilityUtil.isTargetSignificantlyStronger(seq, BeyonderData.getSequence(lookedAt))){
+                return;
+            }
+        }
+
+        PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
+
+        if(lookedAt != null)
+            performTelepaty(player, lookedAt, seq);
+
+
+        AbilityUseTracker.AbilityUseRecord tracker = AbilityUseTracker.getRecentUseInArea(
+                entity.getEyePosition(), level, getRangeForAbilityDetection(seq), entity);
+
+        if(tracker == null) return;
+
+        if(VisionaryHandler.shouldFailAndTrigger(seq, entity, tracker.entity(), this))
+            return;
+
+        Ability usedSkill = tracker.ability();
+        if(usedSkill.getRequirements().containsKey("visionary") && !cooldown.containsKey(entity.getUUID())){
+            String pos = "x=" + (int) tracker.position().x + " y=" + (int) tracker.position().y + " z=" + (int) tracker.position().z;
+
+            entity.sendSystemMessage(Component.literal("You sense the usage of "
+                    + usedSkill.getId() + " at " + pos + " by " + tracker.entity().getName().getString())
+                    .withColor(0xf5c56c));
+
+            cooldown.put(entity.getUUID(), 0);
+        }
+
+        if(cooldown.containsKey(entity.getUUID())) {
+            cooldown.put(entity.getUUID(), cooldown.get(entity.getUUID()) + 1);
+            if (cooldown.get(entity.getUUID()) >= COOLDOWN)
+                cooldown.remove(entity.getUUID());
+        }
+
+        int entitySeq = BeyonderData.getSequence(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            stop(level, entity);
         }
     }
 
-    private void meditate(Level level, LivingEntity entity){
-        if (!(level instanceof ServerLevel serverLevel)) return;
-        if (!(entity instanceof ServerPlayer player)) return;
-        if(meditating.contains(entity.getUUID())) return;;
+    @Override
+    public void start(Level level, LivingEntity entity) {
+        if(!(level instanceof ServerLevel serverLevel)) return;
 
-        meditating.add(entity.getUUID());
+        int entitySeq = BeyonderData.getSequence(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
 
-        ServerScheduler.scheduleForDuration(0, 2, 20 *
-                getMeditationDuration(BeyonderData.getSequence(entity), preMeditation.get(entity.getUUID()).getSecond().intValue()),
-                ()-> {
-                    if(!entity.isAlive() || entity.isRemoved()) {
-                        preMeditation.remove(entity.getUUID());
-                        meditating.remove(entity.getUUID());
-                        return;
-                    }
-
-                    var pos = entity.position();
-                    entity.teleportTo(pos.x, pos.y, pos.z);
-                    entity.setDeltaMovement(Vec3.ZERO);
-
-                    var component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT.get());
-                    component.disableAbilityUsageForTime("visionary_meditation", 20, entity);
-
-                    entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 20 * 2, 10, false, false, false));
-                    entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 2, 10, false, false, false));
-                    entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 2, 10, false, false, false));
-                    },
-                () -> {
-                        var component = player.getData(ModAttachments.DISCERNMENT_DATA.get());
-                        var pair = preMeditation.get(entity.getUUID());
-
-                        component.add(pair.getFirst(), pair.getSecond());
-
-                        preMeditation.remove(entity.getUUID());
-                        meditating.remove(entity.getUUID());
-                },
-                serverLevel);
+        if(entity instanceof ServerPlayer player)
+            PacketHandler.sendToPlayer(player, new StartStopDiscernmentPacket(true, getRange(BeyonderData.getSequence(entity))));
     }
 
-    private void immerseIntoRole(Level level, LivingEntity entity) {
-        if (!(level instanceof ServerLevel serverLevel)) return;
-        if (!(entity instanceof ServerPlayer player)) return;
+    @Override
+    public void stop(Level level, LivingEntity entity) {
+        if(level.isClientSide){
+            return;
+        }
+        if(!(entity instanceof ServerPlayer player)) return;
 
-        var component = player.getData(ModAttachments.DISCERNMENT_DATA.get());
-        if (component.isDiscerning()) DiscernmentUtil.stopDiscernment(player);
-
-        PacketHandler.sendToPlayer(player, new OpenDiscernmentScreenPacket(component.getSavedPathsAndSeqs()));
+        PacketHandler.sendToPlayer(player, new StartStopDiscernmentPacket(false, getRange(BeyonderData.getSequence(entity))));
+        PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(false, -1));
+        AbilityUtil.sendActionBar(entity, Component.literal(""));
     }
 
-    private static int getMeditationDuration(int seq, int targetSeq){
-        int diff = 10 - (targetSeq - seq);
-
-        return 20 * diff;
+    private static int getRange(int seq){
+        return switch (seq){
+            case 2 -> 100;
+            case 1 -> 400;
+            case 0 -> 1000;
+            default -> 0;
+        };
     }
 
-    @SubscribeEvent
-    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
-        ServerPlayer player = (ServerPlayer) event.getEntity();
-        meditating.remove(player.getUUID());
+    private static int getRangeForAbilityDetection(int seq){
+        return switch (seq){
+          case 2 -> 500;
+          case 1 -> 2000;
+          case 0 -> 10000;
+          default -> 0;
+        };
     }
 }

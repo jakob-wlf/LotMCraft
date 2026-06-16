@@ -59,6 +59,16 @@ public class UniquenessCommand {
                                 })
                         )
                 )
+                .then(Commands.literal("spawn_empty")
+                            .executes(context -> {
+                                String pathway = "";
+
+                                UniquenessEntity uniqueness = new UniquenessEntity(context.getSource().getLevel(), context.getSource().getPosition(), pathway);
+                                uniqueness.setPos(context.getSource().getPosition());
+                                context.getSource().getLevel().addFreshEntity(uniqueness);
+                                return 1;
+                            })
+                )
         );
     }
 

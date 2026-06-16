@@ -1,13 +1,13 @@
 {
   "type": "lotmcraft:simple_structures",
 
-  "start_pool": "lotmcraft:beyonder_house",
+  "start_pool": "lotmcraft:big_evernight_church",
 
   "size": 1,
 
   "max_distance_from_center": 80,
 
-  "biomes": "#lotmcraft:has_structure/beyonder_house_biomes",
+  "biomes": "#lotmcraft:has_structure/evernight_church_biomes",
 
 
   "step": "surface_structures",
@@ -15,6 +15,8 @@
   "start_height": {
     "absolute": 1
   },
+
+  "terrain_adaptation": "beard_box",
 
   "project_start_to_heightmap": "WORLD_SURFACE_WG",
 

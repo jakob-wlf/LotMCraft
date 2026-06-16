@@ -1,7 +1,6 @@
 package de.jakob.lotm.network;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
@@ -15,8 +14,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-
-import java.util.Arrays;
 
 public class PacketHandler {
 
@@ -144,6 +141,11 @@ public class PacketHandler {
                 SyncDecryptionLookedAtEntitiesAbilityPacket::handle
         );
 
+        registrar.playToClient(
+                StartStopDiscernmentPacket.TYPE,
+                StartStopDiscernmentPacket.STREAM_CODEC,
+                StartStopDiscernmentPacket::handle
+        );
 
         registrar.playToClient(
                 SyncIntrospectMenuPacket.TYPE,
@@ -355,6 +357,19 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncPlayerActingDataPayload.TYPE,
+                SyncPlayerActingDataPayload.STREAM_CODEC,
+                SyncPlayerActingDataPayload::handle
+        );
+
+        registrar.playToClient(
+                PlayActingEffectPacket.TYPE,
+                PlayActingEffectPacket.STREAM_CODEC,
+                PlayActingEffectPacket::handle
+        );
+
+
+        registrar.playToClient(
                 SyncSharedAbilitiesDataPacket.TYPE,
                 SyncSharedAbilitiesDataPacket.STREAM_CODEC,
                 SyncSharedAbilitiesDataPacket::handle
@@ -523,7 +538,11 @@ public class PacketHandler {
                 SyncDiscernmentDataPacket::handle
         );
 
-
+        registrar.playToClient(
+                SyncEnvisioningPacket.TYPE,
+                SyncEnvisioningPacket.STREAM_CODEC,
+                SyncEnvisioningPacket::handle
+        );
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {

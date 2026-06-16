@@ -50,8 +50,23 @@ public record UseKeyboundAbilityPacket(int selectedAbility) implements CustomPac
             if (packet.selectedAbility() < 0 || packet.selectedAbility() >= abilityBarComponent.getAbilities().size()) {
                 return;
             }
-            Ability ability = LOTMCraft.abilityHandler.getById(abilityBarComponent.getAbilities().get(packet.selectedAbility()));
+            Ability ability = LOTMCraft.abilityHandler.getById(abilityBarComponent.getAbilities().get(packet.selectedAbility()).split(":")[0]);
+
+            if(ability instanceof SelectableAbility && getIndex(abilityBarComponent.getAbilities().get(packet.selectedAbility())) != -1) {
+                ((SelectableAbility) ability).addSubAbilityOverride(player, getIndex(abilityBarComponent.getAbilities().get(packet.selectedAbility())));
+            }
+
             ability.useAbility(player.serverLevel(), player);
         });
+    }
+
+    private static int getIndex(String s) {
+        String[] parts = s.split(":");
+        if (parts.length < 2) return -1;
+        try {
+            return Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 }

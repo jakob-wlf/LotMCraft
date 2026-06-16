@@ -59,7 +59,7 @@ public class AirBulletAbility extends Ability {
 
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, rawDamage * (int) Math.max(multiplier/4,1), pos, true, false, true, 0)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, rawDamage * (int) multiplier(entity), pos, true, false, true, 0)) {
                 hasHit.set(true);
                 return;
             }

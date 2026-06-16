@@ -59,7 +59,7 @@ public class FireOfLightAbility extends Ability {
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.HOLY_FLAME.get(), targetPos, 140, .4, .04);
         ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, targetPos, 90, .75, 0);
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5* (int) Math.max(multiplier(entity)/4,1), DamageLookup.lookupDamage(7, .75) * (int) Math.max(multiplier(entity)/4,1), targetPos, true, false, true, 0, 20 * 2, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5* (int) multiplier(entity), DamageLookup.lookupDamage(7, .75) * (int) multiplier(entity), targetPos, true, false, true, 0, 20 * 2, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
 
         BlockState block = level.getBlockState(BlockPos.containing(targetPos));
         if(block.isAir()) {

@@ -3,23 +3,25 @@ package de.jakob.lotm.dimension;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.LevelHeightAccessor;
-import net.minecraft.world.level.NoiseColumn;
-import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.blending.Blender;
+import net.minecraft.world.level.levelgen.structure.StructureSet;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -871,12 +873,28 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
     @Override public int getMinY()     { return 0;   }
 
     @Override
-    public int getBaseHeight(int x, int z, Heightmap.Types type, LevelHeightAccessor level,
-                             RandomState rs) {
+    public int getBaseHeight(int x, int z, Heightmap.Types type, LevelHeightAccessor level, RandomState rs) {
         SpiritWorldBiome b = SpiritWorldBiome.getBiomeAt(x, z);
         IslandData d = getIslandData(x, z,
                 RandomSource.create((long) x * 341_873_128_712L + z * 132_897_987_541L), b);
-        return d.density > 0 ? d.top : 0;
+        return d.density > 0 ? d.top : level.getMinBuildHeight();
+    }
+
+    @Override
+    public void createStructures(RegistryAccess registryAccess, ChunkGeneratorStructureState structureState,
+                                 StructureManager structureManager, ChunkAccess chunk, StructureTemplateManager templateManager) {
+        super.createStructures(registryAccess, structureState, structureManager, chunk, templateManager);
+    }
+
+    @Override
+    public void createReferences(WorldGenLevel level, StructureManager structureManager, ChunkAccess chunk) {
+        super.createReferences(level, structureManager, chunk);
+    }
+
+    @Override
+    public ChunkGeneratorStructureState createState(HolderLookup<StructureSet> structureSetLookup,
+                                                    RandomState randomState, long seed) {
+        return super.createState(structureSetLookup, randomState, seed);
     }
 
     @Override

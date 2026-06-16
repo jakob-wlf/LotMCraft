@@ -15,14 +15,15 @@ import java.util.List;
 
 public class SetHonorificNameScreen extends Screen {
 
-    private static final int COL_TITLE   = 0xFFFFFFFF;
-    private static final int COL_LABEL   = 0xFF9090D0;
-    private static final int COL_ERROR   = 0xFFFF5555;
-    private static final int COL_HINT    = 0xFF7777AA;
+    private static final int COL_TITLE   = 0xFFDDDDDD;
+    private static final int COL_LABEL   = 0xFFAAAAAA;
+    private static final int COL_ERROR   = 0xFFFF6666;
+    private static final int COL_HINT    = 0xFF888888;
+    private static final int COL_DIVIDER = 0xFF555555;
+    private static final int COL_PANEL   = 0xC0151515;
 
     private final String pathway;
     private final int sequence;
-
     private final int lineCount;
 
     private final List<EditBox> lineBoxes = new LinkedList<>();
@@ -63,13 +64,13 @@ public class SetHonorificNameScreen extends Screen {
         int confirmY = startY + lineCount * 30 + 8;
         this.addRenderableWidget(
                 Button.builder(Component.literal("Confirm"), btn -> onConfirm())
-                        .bounds(centerX - 55, confirmY, 110, 20)
+                        .bounds(centerX - 58, confirmY, 112, 20)
                         .build()
         );
 
         this.addRenderableWidget(
                 Button.builder(Component.literal("Cancel"), btn -> onClose())
-                        .bounds(centerX - 55, confirmY + 30, 110, 20)
+                        .bounds(centerX - 58, confirmY + 26, 112, 20)
                         .build()
         );
     }
@@ -106,22 +107,34 @@ public class SetHonorificNameScreen extends Screen {
 
     @Override
     public void render(GuiGraphics gfx, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(gfx, mouseX, mouseY, partialTick);
         super.render(gfx, mouseX, mouseY, partialTick);
 
         int centerX = this.width / 2;
-        int startY = this.height / 2 - (lineCount * 30) / 2;
+        int startY  = this.height / 2 - (lineCount * 30) / 2 + 20;
 
-        String title = "Set Honorific Name";
-        gfx.drawCenteredString(font, title, centerX, startY - 40, COL_TITLE);
+        int panelTop    = startY - 58;
+        int panelBottom = startY + lineCount * 30 + 60 + (errorMessage.isEmpty() ? 0 : 14);
+        int panelLeft   = centerX - 148;
+        int panelRight  = centerX + 148;
+
+        gfx.fill(panelLeft, panelTop, panelRight, panelBottom, COL_PANEL);
+        gfx.hLine(panelLeft,      panelRight - 1, panelTop,        COL_DIVIDER);
+        gfx.hLine(panelLeft,      panelRight - 1, panelBottom - 1, COL_DIVIDER);
+        gfx.vLine(panelLeft,      panelTop,        panelBottom,     COL_DIVIDER);
+        gfx.vLine(panelRight - 1, panelTop,        panelBottom,     COL_DIVIDER);
+
+        gfx.drawCenteredString(font, "Set Honorific Name", centerX, panelTop + 8, COL_TITLE);
+
+        int divY = panelTop + 20;
+        gfx.hLine(centerX - 80, centerX + 80, divY, COL_DIVIDER);
 
         String pathInfo = BeyonderData.pathwayInfos.get(pathway).getSequenceName(sequence);
-        gfx.drawCenteredString(font, pathInfo, centerX, startY - 28, COL_LABEL);
+        gfx.drawCenteredString(font, pathInfo, centerX, divY + 5, COL_LABEL);
 
         List<String> requiredWords = HonorificName.getMustHaveWords(pathway);
         if (!requiredWords.isEmpty()) {
             int maxWidth = Math.min(this.width - 40, 400);
-            gfx.drawCenteredString(font, "Required words (at least one per line):", centerX, startY - 16, COL_HINT);
+            gfx.drawCenteredString(font, "Required words (at least one per line):", centerX, divY + 17, COL_HINT);
             String wordsStr = String.join(", ", requiredWords);
             if (font.width(wordsStr) > maxWidth) {
                 int truncIndex = Math.max(0, Math.min(
@@ -129,12 +142,11 @@ public class SetHonorificNameScreen extends Screen {
                         wordsStr.length() - 3));
                 wordsStr = wordsStr.substring(0, truncIndex) + "...";
             }
-            gfx.drawCenteredString(font, wordsStr, centerX, startY - 3, 0xFF8888CC);
+            gfx.drawCenteredString(font, wordsStr, centerX, divY + 27, COL_HINT);
         }
 
         if (!errorMessage.isEmpty()) {
-            gfx.drawCenteredString(font, errorMessage, centerX,
-                    startY + lineCount * 30 + 64, COL_ERROR);
+            gfx.drawCenteredString(font, errorMessage, centerX, startY + lineCount * 30 + 56, COL_ERROR);
         }
     }
 

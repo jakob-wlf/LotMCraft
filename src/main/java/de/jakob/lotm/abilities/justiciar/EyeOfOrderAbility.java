@@ -3,6 +3,7 @@ package de.jakob.lotm.abilities.justiciar;
 import de.jakob.lotm.abilities.core.ToggleAbility;
 import de.jakob.lotm.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.abilities.visionary.PsychologicalInvisibilityAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -72,7 +73,7 @@ public class EyeOfOrderAbility extends ToggleAbility {
         if (level.isClientSide) return;
 
         int sequence = BeyonderData.getSequence(entity);
-        int radius = getRadiusForSequence(sequence) *(int) Math.max(multiplier(entity)/4,1);
+        int radius = (int) (getRadiusForSequence(sequence) *multiplier(entity));
 
         BeyonderData.reduceSpirituality(entity, 36);
 
@@ -109,7 +110,6 @@ public class EyeOfOrderAbility extends ToggleAbility {
                         Component.literal("Your spirituality is exhausted.").withColor(0xFF422a2a)
                 ));
             }
-
 
             cancel((ServerLevel) level, entity);
             return;
@@ -174,17 +174,7 @@ public class EyeOfOrderAbility extends ToggleAbility {
                 e -> {
                     if (e == owner) return false;
 
-                    if (PsychologicalInvisibilityAbility.invisiblePlayersClient.containsKey(e.getUUID())) {
-
-                        int targetSeq = PsychologicalInvisibilityAbility.invisiblePlayersClient.get(e.getUUID());
-                        int selfSeq = BeyonderData.getSequence(owner);
-
-                        if (selfSeq >= targetSeq) {
-                            return false;
-                        }
-                    }
-
-                    return true;
+                    return !VisionaryHandler.shouldStayInvisible(BeyonderData.getSequence(owner), e);
                 }
         );
 

@@ -16,12 +16,18 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.checkerframework.checker.units.qual.A;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -29,10 +35,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class WaterManipulationAbility extends SelectableAbility {
     private final HashSet<UUID> castingCorrosiveRain = new HashSet<>();
+    private final HashSet<UUID> gettingSuffocated = new HashSet<>();
 
     public WaterManipulationAbility(String id) {
         super(id, 1.25f, "water");
@@ -65,6 +73,8 @@ public class WaterManipulationAbility extends SelectableAbility {
         return new String[]{
                 "ability.lotmcraft.water_manipulation.water_bolt",
                 "ability.lotmcraft.water_manipulation.aqueous_light",
+                "ability.lotmcraft.water_manipulation.suffocate",
+                "ability.lotmcraft.water_manipulation.disperse_water",
                 "ability.lotmcraft.water_manipulation.water_surge",
                 "ability.lotmcraft.water_manipulation.corrosive_rain",
         };
@@ -72,15 +82,98 @@ public class WaterManipulationAbility extends SelectableAbility {
 
     @Override
     public void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
-        if(!(entity instanceof Player) && abilityIndex == 1)
+        if(!(entity instanceof Player) && (abilityIndex == 1 || abilityIndex == 3))
             abilityIndex = 0;
 
         switch(abilityIndex) {
             case 0 -> waterBolt(level, entity);
             case 1 -> aqueousLight(level, entity);
-            case 2 -> waterSurge(level, entity);
-            case 3 -> corrosiveRain(level, entity);
+            case 2 -> suffocate(level, entity);
+            case 3 -> disperseWater(level, entity);
+            case 4 -> waterSurge(level, entity);
+            case 5 -> corrosiveRain(level, entity);
         }
+    }
+
+    private void disperseWater(Level level, LivingEntity entity) {
+        if(level.isClientSide) return;
+
+        level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.PLAYER_SPLASH, entity.getSoundSource(), 1.0f, 1.0f);
+
+        ItemStack handItem = entity.getMainHandItem();
+        boolean wasOffHand = false;
+        if(handItem.getItem() != Items.BUCKET && handItem.getItem() != Items.GLASS_BOTTLE) {
+            handItem = entity.getOffhandItem();
+            wasOffHand = true;
+        }
+
+        if(handItem.getItem() != Items.BUCKET && handItem.getItem() != Items.GLASS_BOTTLE) {
+            BlockPos targetBlock = AbilityUtil.getTargetBlock(entity, 3, true);
+
+            if(level.getBlockState(targetBlock).getCollisionShape(level, targetBlock).isEmpty()) {
+                level.setBlockAndUpdate(targetBlock, Blocks.WATER.defaultBlockState());
+            }
+            return;
+        }
+
+        ItemStack newItem;
+        if(handItem.getItem() == Items.BUCKET) {
+            newItem = new ItemStack(Items.WATER_BUCKET);
+        }
+        else {
+            newItem = new ItemStack(Items.POTION);
+        }
+        handItem.shrink(1);
+        if(handItem.isEmpty()) {
+            if(wasOffHand) {
+                entity.setItemInHand(InteractionHand.OFF_HAND, newItem);
+            }
+            else {
+                entity.setItemInHand(InteractionHand.MAIN_HAND, newItem);
+            }
+        }
+        else if(entity instanceof Player player) {
+            player.addItem(newItem);
+        }
+    }
+
+    private void suffocate(Level level, LivingEntity entity) {
+        if(level.isClientSide)
+            return;
+
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 10, 1.5f);
+        if(target == null)
+            return;
+
+        if(gettingSuffocated.contains(target.getUUID()))
+            return;
+
+        gettingSuffocated.add(target.getUUID());
+
+        AtomicBoolean wasCancelled = new AtomicBoolean(false);
+        AtomicInteger suffocateTime = new AtomicInteger(0);
+        ServerScheduler.scheduleForDuration(0, 1, 20 * 8, () -> {
+            if(wasCancelled.get()) {
+                return;
+            }
+
+            if(InteractionHandler.isInteractionPossible(new Location(target.getEyePosition(), level), "burning", 7, false) || !target.isAlive()) {
+                wasCancelled.set(true);
+                return;
+            }
+
+            if(suffocateTime.get() % 30 == 0) {
+                target.setAirSupply(-20);
+                target.hurt(target.damageSources().drown(), 2.5F);
+                suffocateTime.set(0);
+            }
+
+            suffocateTime.getAndIncrement();
+
+            ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.BUBBLE, target.getEyePosition(), 15, 0.2, 0.1);
+            ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, target.getEyePosition(), 4, 0.2, 0.1);
+
+        }, () -> gettingSuffocated.remove(target.getUUID()), (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 
     private void waterSurge(Level level, LivingEntity entity) {
@@ -91,7 +184,7 @@ public class WaterManipulationAbility extends SelectableAbility {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.PLAYER_SPLASH_HIGH_SPEED, entity.getSoundSource(), 1.0f, 1.0f);
 
-        ServerScheduler.scheduleDelayed(18, () -> AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, DamageLookup.lookupDamage(7, .875) * (int) Math.max(multiplier(entity)/4,1), entity.position().add(0, .2, 0), true, false, true, 0));
+        ServerScheduler.scheduleDelayed(18, () -> AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, DamageLookup.lookupDamage(7, .875) * multiplier(entity), entity.position().add(0, .2, 0), true, false, true, 0));
 
         AtomicDouble i = new AtomicDouble(0.6);
         ServerScheduler.scheduleForDuration(0, 1, 24, () -> {
@@ -126,7 +219,7 @@ public class WaterManipulationAbility extends SelectableAbility {
 
         double multiplier = multiplier(entity);
         ServerScheduler.scheduleForDuration(0, 10, 20 * 15, () -> {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5, DamageLookup.lookupDps(7, .775, 10, 20* (int) Math.max(multiplier(entity)/6,1)) * (int) Math.max(multiplier(entity)/4,1), startPos, true, false, true, 0);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5, DamageLookup.lookupDps(7, .775, 10, 20* (int) Math.max(multiplier(entity)/6,1)) * multiplier(entity), startPos, true, false, true, 0);
         }, (ServerLevel) level);
     }
 
@@ -144,7 +237,6 @@ public class WaterManipulationAbility extends SelectableAbility {
         AtomicBoolean hasHit = new AtomicBoolean(false);
         AtomicBoolean frozen = new AtomicBoolean(false);
 
-        double multiplier = multiplier(entity);
         ServerScheduler.scheduleForDuration(0, 1, 20 * 5, () -> {
             if (hasHit.get()) {
                 return;
@@ -161,7 +253,7 @@ public class WaterManipulationAbility extends SelectableAbility {
                 return;
             }
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, .825) * (int) Math.max(multiplier(entity)/4,1), pos, true, false, true, 0)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, .825) * multiplier(entity), pos, true, false, true, 0)) {
                 hasHit.set(true);
                 return;
             }
@@ -197,7 +289,13 @@ public class WaterManipulationAbility extends SelectableAbility {
             ParticleUtil.spawnCircleParticlesForDuration((ServerLevel) level, ParticleTypes.END_ROD, targetBlock.getCenter(), eastFacing, .75, 20 * 20, 15, 7);
             ParticleUtil.spawnParticlesForDuration((ServerLevel) level, dustOptions2, targetBlock.getCenter(), 20 * 20, 10, 3, .9);
 
-            ServerScheduler.scheduleDelayed(20 * 20* (int) Math.max(multiplier(entity)/4,1), () -> {
+            ServerScheduler.scheduleForDuration(0, 10, (int) (20 * 20 * multiplier(entity)), () -> {
+                AbilityUtil.getNearbyEntities(null, (ServerLevel) level, targetBlock.getCenter(), 3).forEach(e -> {
+                    e.heal(.5f * multiplier(entity));
+                });
+            }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
+
+            ServerScheduler.scheduleDelayed((int) (20 * 20 * multiplier(entity)), () -> {
                 if (level.getBlockState(targetBlock).is(Blocks.LIGHT)) {
                     level.setBlock(targetBlock, Blocks.AIR.defaultBlockState(), 3);
                 }

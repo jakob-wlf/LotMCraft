@@ -46,7 +46,6 @@ public class PhysicalEnhancementsErrorAbility extends PhysicalEnhancementsAbilit
                     new PhysicalEnhancement(EnhancementType.SPEED, 3),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 3),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
-                    new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 1),
                     new PhysicalEnhancement(EnhancementType.MINING_EFFICIENCY, 2)
             );
 

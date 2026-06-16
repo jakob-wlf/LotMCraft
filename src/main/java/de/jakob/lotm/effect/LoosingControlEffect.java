@@ -31,8 +31,11 @@ public class LoosingControlEffect extends MobEffect {
 
     @Override
     public boolean applyEffectTick(@NotNull LivingEntity livingEntity, int amplifier) {
-        if (livingEntity.level().isClientSide) {
+        if(livingEntity.level().isClientSide) return true;
 
+        var personas = livingEntity.getData(ModAttachments.VIRTUAL_PERSONAS);
+
+        if (!personas.hasOnSelf()) {
             float yaw = random.nextFloat() * 360f - 180f;
             float pitch = random.nextFloat() * 60f - 30f;
 
@@ -41,12 +44,13 @@ public class LoosingControlEffect extends MobEffect {
 
             livingEntity.yBodyRot = yaw;
             livingEntity.yHeadRot = yaw;
-
-            return true;
+            livingEntity.hurtMarked = true;
         }
 
-        var sanity = livingEntity.getData(ModAttachments.SANITY_COMPONENT.get());
-        sanity.decreaseSanityAndSync((float) (0.0025 * amplifier), livingEntity);
+        if(amplifier >= 1) {
+            var sanity = livingEntity.getData(ModAttachments.SANITY_COMPONENT.get());
+            sanity.decreaseSanityAndSync((float) (0.0025 * amplifier), livingEntity);
+        }
 
         return true;
     }

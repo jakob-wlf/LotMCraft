@@ -73,7 +73,7 @@ public class DeceitAbility extends SelectableAbility {
 
     private void deceiveWorld(ServerLevel serverLevel, LivingEntity entity) {
         cannotBeHarmed.add(entity.getUUID());
-        ServerScheduler.scheduleDelayed(20 * 7*(int) Math.max(multiplier(entity)/4,1), () -> {
+        ServerScheduler.scheduleDelayed((int) (20 * 7*multiplier(entity)), () -> {
             cannotBeHarmed.remove(entity.getUUID());
             clearArtifactScaling(entity);
             seqMap.remove(entity.getUUID());
@@ -100,7 +100,7 @@ public class DeceitAbility extends SelectableAbility {
             }
         });
 
-        ServerScheduler.scheduleDelayed(20 * 12*(int) Math.max(multiplier(entity)/4,1), () -> {
+        ServerScheduler.scheduleDelayed((int) (20 * 12*multiplier(entity)), () -> {
             cannotBeTargeted.remove(entity.getUUID());
             clearArtifactScaling(entity);
             seqMap.remove(entity.getUUID());

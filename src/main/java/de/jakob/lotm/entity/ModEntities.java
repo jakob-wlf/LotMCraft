@@ -309,6 +309,13 @@ public class ModEntities {
                     .updateInterval(1)
                     .build("lightning"));
 
+    public static final Supplier<EntityType<StrongLightningEntity>> STRONG_LIGHTNING =
+            ENTITY_TYPES.register("strong_lightning", () -> EntityType.Builder.<StrongLightningEntity>of(StrongLightningEntity::new, MobCategory.MISC)
+                    .sized(0.1f, 0.1f)
+                    .clientTrackingRange(64)
+                    .updateInterval(1)
+                    .build("strong_lightning"));
+
     public static final Supplier<EntityType<GiantLightningEntity>> GIANT_LIGHTNING =
             ENTITY_TYPES.register("giant_lightning", () -> EntityType.Builder.<GiantLightningEntity>of(GiantLightningEntity::new, MobCategory.MISC)
                     .sized(0.1f, 0.1f)
@@ -363,13 +370,13 @@ public class ModEntities {
                     .updateInterval(2)
                     .build("beyonder_npc"));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<AvatarEntity>> ERROR_AVATAR =
-            ENTITY_TYPES.register("error_avatar", () -> EntityType.Builder.<AvatarEntity>of(AvatarEntity::new, MobCategory.MONSTER)
+    public static final DeferredHolder<EntityType<?>, EntityType<AvatarEntity>> AVATAR =
+            ENTITY_TYPES.register("avatar", () -> EntityType.Builder.<AvatarEntity>of(AvatarEntity::new, MobCategory.MONSTER)
                     .sized(0.6f, 1.95f)
                     .clientTrackingRange(32)
                     .updateInterval(2)
                     .noSummon()
-                    .build("error_avatar"));
+                    .build("avatar"));
 
     public static final Supplier<EntityType<OriginalBodyEntity>> ORIGINAL_BODY =
             ENTITY_TYPES.register("original_body", () -> EntityType.Builder.<OriginalBodyEntity>of(OriginalBodyEntity::new, MobCategory.MISC)

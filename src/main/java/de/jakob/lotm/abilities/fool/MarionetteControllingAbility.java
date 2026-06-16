@@ -15,6 +15,7 @@ import de.jakob.lotm.util.helper.CycleOfFateHelper;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -290,26 +291,8 @@ public class MarionetteControllingAbility extends SelectableAbility {
         TransformationComponent transformationComponent = player.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         if (transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.FOG_OF_HISTORY.getIndex() && transformationComponent.isTransformed()) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(player, 5, 1, false, false, true);
+        LivingEntity target = getSelectedMarionette(player);
 
-        if (target == null) {
-            ItemStack item = player.getMainHandItem();
-            if (!item.is(ModItems.MARIONETTE_CONTROLLER.get())) {
-                item = player.getOffhandItem();
-                if (!item.is(ModItems.MARIONETTE_CONTROLLER.get())) return;
-            }
-            CompoundTag tag = item.get(DataComponents.CUSTOM_DATA).copyTag();
-            if (tag.contains("MarionetteUUID")) {
-                String marionetteId = tag.getString("MarionetteUUID");
-                UUID marionetteUUID = UUID.fromString(marionetteId);
-                if (level instanceof ServerLevel serverLevel) {
-                    Entity entity = serverLevel.getEntity(marionetteUUID);
-                    if (entity instanceof LivingEntity livingEntity) {
-                        target = livingEntity;
-                    }
-                }
-            }
-        }
         if (target != null) {
             ControllingUtil.possess(player, target, true);
         }

@@ -286,6 +286,38 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<RegenDisableComponent>> REGEN_DISABLER =
+            ATTACHMENT_TYPES.register("regen_disabler", () ->
+                    AttachmentType.builder(RegenDisableComponent::new)
+                            .serialize(RegenDisableComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<MentalPlagueComponent>> MENTAL_PLAGUE =
+            ATTACHMENT_TYPES.register("mental_plague", () ->
+                    AttachmentType.builder(MentalPlagueComponent::new)
+                            .serialize(MentalPlagueComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<VirtualPersonaComponent>> VIRTUAL_PERSONAS = ATTACHMENT_TYPES.register(
+            "virtual_personas",
+            () -> AttachmentType.builder(VirtualPersonaComponent::new)
+                    .serialize(VirtualPersonaComponent.SERIALIZER)
+                    .copyOnDeath()
+                    .build()
+    );
+
+    public static final Supplier<AttachmentType<EnvisionSplitComponent>> ENVISION_SPLIT = ATTACHMENT_TYPES.register(
+            "envision_split",
+            () -> AttachmentType.builder(EnvisionSplitComponent::new)
+                    .serialize(EnvisionSplitComponent.SERIALIZER)
+                    .copyOnDeath()
+                    .build()
+    );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

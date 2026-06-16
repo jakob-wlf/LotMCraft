@@ -25,7 +25,7 @@ import java.util.UUID;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MetaAwarenessAbility extends PassiveAbilityItem {
     private static final Map<UUID, Long> COOLDOWNS = new HashMap<>();
-    private static final long COOLDOWN_MS = 5000; // 5s cooldown
+    private static final long COOLDOWN_MS = 10000; // 10s cooldown
 
     public static final Set<String> COMMON_WORDS = Set.of(
             "a","about","above","after","again","against","all","am","an","and","any","are",
@@ -74,7 +74,7 @@ public class MetaAwarenessAbility extends PassiveAbilityItem {
             boolean match = false;
 
             for (int i = 0; i < username.length(); i++) {
-                for (int j = i + 3; j <= username.length(); j++) {
+                for (int j = i + 2; j <= username.length(); j++) {
                     String part = username.substring(i, j);
 
                     if (COMMON_WORDS.contains(part)) continue;
@@ -99,13 +99,25 @@ public class MetaAwarenessAbility extends PassiveAbilityItem {
 
     // Called from PlayerDivinationSelectedPacket.handle when a divination succeeds. If the divined target has MetaAwareness, auto-pray  to the diviner.
     public static void onDivined(ServerPlayer diviner, ServerPlayer target) {
+        if(target.equals(diviner)) return;
+
         if (!hasMetaAwareness(target)) return;
         triggerAutoPrayer(diviner, target, "");
     }
 
+    public static void sendWithMessage(ServerPlayer diviner, ServerPlayer target, String message) {
+        if(target.equals(diviner)) return;
 
-    public static void triggerAutoPrayer(ServerPlayer sender, ServerPlayer target, String msg) {
+        if (!hasMetaAwareness(target)) return;
+        triggerAutoPrayer(diviner, target, message);
+    }
+
+   private static void triggerAutoPrayer(ServerPlayer sender, ServerPlayer target, String msg) {
         // Cooldown check on the target (prevent spam if their name is said repeatedly)
+
+       if(BeyonderData.getPathway(sender).equals("visionary") && BeyonderData.getSequence(sender) < BeyonderData.getSequence(target))
+           return;
+
         long now = System.currentTimeMillis();
         Long lastTrigger = COOLDOWNS.get(target.getUUID());
         if (lastTrigger != null && now - lastTrigger < COOLDOWN_MS) return;

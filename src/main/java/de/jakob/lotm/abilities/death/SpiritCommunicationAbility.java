@@ -141,7 +141,7 @@ public class SpiritCommunicationAbility extends SelectableAbility {
     private void spectralBind(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20* (int) Math.max(multiplier(entity)/4,1), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20* multiplier(entity)), 1.5f);
         if (target == null) return;
 
         int casterSeq = BeyonderData.getSequence(entity);
@@ -150,8 +150,8 @@ public class SpiritCommunicationAbility extends SelectableAbility {
 
         ParticleUtil.createParticleSpirals(ParticleTypes.LARGE_SMOKE, new EntityLocation(target), target.getBbWidth(), target.getBbWidth(), target.getEyeHeight(), .35, 6, 20 * 5, 8, 1);
 
-        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60* (int) Math.max(multiplier(entity)/4,1), 100, false, true, true));
+        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, (int) (60* multiplier(entity)), 100, false, true, true));
         target.setTicksFrozen(target.getTicksRequiredToFreeze() + 60);
-        target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60* (int) Math.max(multiplier(entity)/4,1), 1, false, true, true));
+        target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, (int) (60* multiplier(entity)), 1, false, true, true));
     }
 }

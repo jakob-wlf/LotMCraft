@@ -72,17 +72,17 @@ public class LifeAuraAbility extends ToggleAbility {
             return;
         }
 
-        AbilityUtil.getBlocksInEllipsoid(serverLevel, entity.position(), 30*(int)Math.max(multiplier(entity)/4,1), 7*(int)Math.max(multiplier(entity)/4,1), true, false, false).forEach(blockPos -> {
+        AbilityUtil.getBlocksInEllipsoid(serverLevel, entity.position(), 30*multiplier(entity), 7*multiplier(entity), true, false, false).forEach(blockPos -> {
             BlockState blockState = level.getBlockState(blockPos);
             applyBonemeal(serverLevel, blockPos, blockState, BeyonderData.isGriefingEnabled(entity));
         });
 
-        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 35*(int)Math.max(multiplier(entity)/4,1)).forEach(e -> {
+        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 35*(int)multiplier(entity)).forEach(e -> {
             if(e instanceof Animal animal && animal.canFallInLove()) {
                 animal.setInLove(entity instanceof Player ? (Player) entity : null);
             }
         });
-        AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, null, 35*(int)Math.max(multiplier(entity)/4,1), entity.position(), new MobEffectInstance(MobEffects.REGENERATION, 40, 3, false, false, false));
+        AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, null, 35*(int)multiplier(entity), entity.position(), new MobEffectInstance(MobEffects.REGENERATION, 40, 3, false, false, false));
     }
 
     private void applyBonemeal(ServerLevel serverLevel, BlockPos blockPos, BlockState blockState, boolean shouldBonemealGrass) {

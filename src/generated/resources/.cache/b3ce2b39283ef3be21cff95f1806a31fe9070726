@@ -1,4 +1,4 @@
-// 1.21.1	2026-04-26T15:21:14.0663949	Item Models: lotmcraft
+// 1.21.1	2026-06-02T10:39:44.0592566	Item Models: lotmcraft
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 d79ff3aedef37faf54603234b4a98f66afb8991f assets/lotmcraft/models/item/abyss_uniqueness.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -227,6 +227,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/knight_of_
 4736eb3fcf4c2bc9a061351ed044d3f1a2366deb assets/lotmcraft/models/item/knight_of_misfortune_characteristic.json
 60ff2973915a47f25590916d6a6a2bf5530b8f79 assets/lotmcraft/models/item/knight_of_misfortune_potion.json
 982cb650de716fb4ba221451f31d932790086e60 assets/lotmcraft/models/item/lavos_squid_blood.json
+f011b0eee76cb8110ed85558b29aeff18502bdae assets/lotmcraft/models/item/lightning_arrow_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/lightseeker.json
 99cff99f102c193420828c35a0e5ec906cc5fbc3 assets/lotmcraft/models/item/lightseeker_characteristic.json
 942c44095fa1582735746e5e2dc4b8825087c492 assets/lotmcraft/models/item/lightseeker_potion.json

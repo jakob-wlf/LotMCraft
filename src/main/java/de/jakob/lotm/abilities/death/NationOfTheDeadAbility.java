@@ -178,7 +178,7 @@ public class NationOfTheDeadAbility extends Ability {
 
         int casterSeq = BeyonderData.getSequence(entity);
         Vec3 center = entity.position();
-        double domainRadius = 35.0 * Math.max(multiplier(entity) / 4.0, 1);
+        double domainRadius = 35.0 * multiplier(entity);
 
         level.playSound(null, entity.blockPosition(),
                 SoundEvents.WITHER_SPAWN, SoundSource.PLAYERS, 4.0f, 0.35f);

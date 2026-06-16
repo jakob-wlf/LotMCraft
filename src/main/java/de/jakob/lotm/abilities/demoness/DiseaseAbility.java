@@ -39,7 +39,7 @@ public class DiseaseAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        ServerScheduler.scheduleForDuration(0, 20, 20 * 40*(int) Math.max(multiplier(entity)/4,1), () -> {
+        ServerScheduler.scheduleForDuration(0, 20, (int) (20 * 40*multiplier(entity)), () -> {
             if(entity.level().isClientSide)
                 return;
 
@@ -54,8 +54,8 @@ public class DiseaseAbility extends Ability {
             float damageMult = (bloomingNearby) ? 0.4f : 1f;
 
             ParticleUtil.spawnParticles((ServerLevel) entity.level(), ModParticles.DISEASE.get(), entity.position(), 160, 30, 0.02);
-            AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 20*(int) Math.max(multiplier(entity)/4,1), entity.position(), new MobEffectInstance(MobEffects.POISON, 20, 0, false, false, false));
-            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 20*(int) Math.max(multiplier(entity)/4,1), (float) DamageLookup.lookupDps(5, .2, 35, 20) *(int) Math.max(multiplier(entity)/6,1) * damageMult, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
+            AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 20*multiplier(entity), entity.position(), new MobEffectInstance(MobEffects.POISON, 20, 0, false, false, false));
+            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 20*multiplier(entity), (float) DamageLookup.lookupDps(5, .2, 35, 20) *(int) Math.max(multiplier(entity)/6,1) * damageMult, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
         }, () -> clearArtifactScaling(entity), (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 }

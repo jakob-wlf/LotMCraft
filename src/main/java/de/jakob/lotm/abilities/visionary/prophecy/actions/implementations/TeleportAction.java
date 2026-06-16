@@ -19,6 +19,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.UUID;
+
 public class TeleportAction extends ActionBase {
     public TeleportAction(ActionContextBase context) {
         super(context);
@@ -35,7 +37,7 @@ public class TeleportAction extends ActionBase {
     }
 
     @Override
-    public void action(Level level, LivingEntity entity) {
+    public void action(Level level, LivingEntity entity, UUID casterId) {
         if (!(entity instanceof ServerPlayer serverPlayer)) return;
 
         if(!(context instanceof ActionPositionContext position)) return;

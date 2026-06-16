@@ -13,6 +13,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.UUID;
+
 public class WeatherAction extends ActionBase {
     public WeatherAction(ActionContextBase context) {
         super(context);
@@ -29,7 +31,7 @@ public class WeatherAction extends ActionBase {
     }
 
     @Override
-    public void action(Level level, LivingEntity entity) {
+    public void action(Level level, LivingEntity entity, UUID casterId) {
         if(!(context instanceof ActionStringContext string)) return;
         if(!(level instanceof ServerLevel serverLevel)) return;
 

@@ -2,6 +2,7 @@ package de.jakob.lotm.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.abilities.core.SelectableAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
@@ -42,12 +43,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler.checkAsleep;
+
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class DreamTraversalAbility extends SelectableAbility {
     private static final HashMap<UUID, UUID> hideMap = new HashMap<>();
     private static final HashMap<UUID, Integer> hideSeqMap = new HashMap<>();
-    //this is for artifact stuff
-    //tbh wonkiest ability for atifact cuz it uses selectable (even though hide is a toggle style - cuz i didnt wanna make a whole other ability for it tbh
 
     public DreamTraversalAbility(String id) {
         super(id, 1f);
@@ -76,6 +77,15 @@ public class DreamTraversalAbility extends SelectableAbility {
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
+
         switch (abilityIndex) {
             case 0 -> jump(level, entity);
             case 1 -> jumpInRange(level, entity);
@@ -96,10 +106,15 @@ public class DreamTraversalAbility extends SelectableAbility {
 
         if(!(entity instanceof ServerPlayer player)) return;
 
+        int seq = BeyonderData.getSequence(entity);
+        int range = getRangeBySeq(seq);
+
         List<PlayerInfo> players = server.getPlayerList()
                 .getPlayers()
                 .stream()
-                .filter(p -> p != player)
+                .filter(p -> (p != player) &&
+                        !VisionaryHandler.shouldStayInvisible(seq, p) &&
+                        (p.distanceTo(entity) <= range))
                 .map(p -> new PlayerInfo(p.getUUID(), p.getGameProfile().getName()))
                 .toList();
 
@@ -124,15 +139,8 @@ public class DreamTraversalAbility extends SelectableAbility {
 
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        int targetSeq = BeyonderData.getSequence(target);
-        if(BeyonderData.getPathway(target).equals("visionary") && BeyonderData.getSequence(target) <
-                BeyonderData.getSequence(entity)){
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed").withColor(0xFFff124d));
-
-            if(targetSeq <= 1 && target instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer entityPlayer){
-                MetaAwarenessAbility.onDivined(entityPlayer, targetPlayer);
-            }
-
+        int entitySeq = BeyonderData.getSequence(entity);
+        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
             return;
         }
 
@@ -169,22 +177,14 @@ public class DreamTraversalAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 40 * (int) Math.max(multiplier(entity)/4,1), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (40 * multiplier(entity)), 1.5f);
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.no_target").withColor(0xFFff124d));
             return;
         }
 
-        int targetSeq = BeyonderData.getSequence(target);
-        if(BeyonderData.getPathway(target).equals("visionary") && BeyonderData.getSequence(target) <
-                BeyonderData.getSequence(player)){
-            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.dream_traversal.failed").withColor(0xFFff124d));
-
-            if(targetSeq <= 1 && target instanceof ServerPlayer targetPlayer){
-                MetaAwarenessAbility.onDivined(player, targetPlayer);
-            }
-
+        if(VisionaryHandler.shouldFailAndTrigger(BeyonderData.getSequence(entity), entity, target, this)){
             return;
         }
 
@@ -235,22 +235,14 @@ public class DreamTraversalAbility extends SelectableAbility {
         PsychologicalInvisibilityAbility.removeInvisFromOtherSkills(entity);
     }
 
-    private static boolean requiresAsleep(LivingEntity entity) {
-        return BeyonderData.getSequence(entity) > 3;
-    }
-
-    public static boolean checkAsleep(LivingEntity entity, LivingEntity target){
-        return requiresAsleep(entity) && !(target.hasEffect(ModEffects.ASLEEP) || target.isSleeping());
-    }
-
     public static int getRangeBySeq(int seq){
         return switch (seq){
-            case 5 -> 100;
-            case 4 -> 250;
-            case 3 -> 500;
-            case 2 -> 1000;
-            case 1 -> 2500;
-            case 0 -> 10000;
+            case 5 -> 250;
+            case 4 -> 500;
+            case 3 -> 1000;
+            case 2 -> 7500;
+            case 1 -> 15000;
+            case 0 -> 200000;
             default -> 0;
         };
     }
@@ -303,6 +295,13 @@ public class DreamTraversalAbility extends SelectableAbility {
 
             cancelHide(serverLevel, entity);
             return;
+        }
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(hideSeqMap.getOrDefault(entity.getUUID(), 9))){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            cancelHide(serverLevel, entity);
         }
 
         Vec3 hostPos = host.position();

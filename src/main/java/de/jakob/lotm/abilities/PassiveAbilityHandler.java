@@ -34,12 +34,12 @@ import de.jakob.lotm.abilities.red_priest.passive.FireResistanceAbility;
 import de.jakob.lotm.abilities.red_priest.passive.FlamingHitAbility;
 import de.jakob.lotm.abilities.red_priest.passive.PhysicalEnhancementsRedPriestAbility;
 import de.jakob.lotm.abilities.sun.passives.PhysicalEnhancementsSunAbility;
+import de.jakob.lotm.abilities.tyrant.passives.LightningArrowAbility;
 import de.jakob.lotm.abilities.tyrant.passives.PhysicalEnhancementsTyrantAbility;
 import de.jakob.lotm.abilities.tyrant.passives.RiptideAbility;
 import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.abilities.visionary.passives.PhysicalEnhancementsVisionaryAbility;
 import de.jakob.lotm.abilities.visionary.passives.PureIdealism;
-import de.jakob.lotm.abilities.visionary.passives.VirtualAvatarAbility;
 import de.jakob.lotm.abilities.wheel_of_fortune.passives.PassiveCalamityAttraction;
 import de.jakob.lotm.abilities.wheel_of_fortune.passives.PassiveLuckAbility;
 import de.jakob.lotm.abilities.wheel_of_fortune.passives.PassiveLuckAccumulationAbility;
@@ -101,6 +101,7 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> BLOOD_LOSS = ITEMS.registerItem("blood_loss_ability", BloodLossAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> MIRROR_REVIVAL = ITEMS.registerItem("mirror_revival_ability", MirrorRevivalAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
+    public static final DeferredItem<Item> LIGHTNING_ARROW = ITEMS.registerItem("lightning_arrow_ability", LightningArrowAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> RIPTIDE = ITEMS.registerItem("riptide_ability", RiptideAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_DEATH = ITEMS.registerItem("physical_enhancements_death_ability", PhysicalEnhancementsDeathAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
@@ -108,7 +109,6 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> SOLAR_SENSITIVITY = ITEMS.registerItem("solar_sensitivity_ability", SolarSensitivityAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> REINCARNATION = ITEMS.registerItem("reincarnation_ability", ReincarnationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
-    public static final DeferredItem<Item> VIRTUAL_AVATAR = ITEMS.registerItem("virtual_avatar_ability", VirtualAvatarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> META_AWARENESS = ITEMS.registerItem("meta_awareness_ability", MetaAwarenessAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PURE_IDEALISM = ITEMS.registerItem("pure_idealism_ability", PureIdealism::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 

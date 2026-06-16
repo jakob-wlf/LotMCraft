@@ -1,0 +1,29 @@
+{
+  "type": "lotmcraft:simple_structures",
+
+  "start_pool": "lotmcraft:beyonder_house_desert",
+
+  "size": 1,
+
+  "max_distance_from_center": 80,
+
+  "biomes": [
+    "minecraft:desert"
+  ],
+
+  "step": "surface_structures",
+
+  "start_height": {
+    "absolute": -6
+  },
+
+  "terrain_adaptation": "beard_thin",
+
+  "locate_offset": [0, -6, 0],
+
+  "project_start_to_heightmap": "WORLD_SURFACE_WG",
+
+  "liquid_settings": "apply_waterlogging",
+
+  "spawn_overrides": {}
+}

@@ -13,6 +13,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.UUID;
+
 public class HealthTrigger extends TriggerBase {
     public HealthTrigger(ActionBase action, TriggerContextBase context) {
         super(action, context);
@@ -25,22 +27,22 @@ public class HealthTrigger extends TriggerBase {
 
     @Override
     public int getRequiredSeq() {
-        return 4;
+        return 6;
     }
 
     @Override
-    public boolean checkTrigger(Level level, LivingEntity entity) {
-        if(!(context instanceof TriggerNumbersContext numbers)) return true;
+    public int checkTrigger(Level level, LivingEntity entity, UUID casterId) {
+        if(!(context instanceof TriggerNumbersContext numbers)) return -1;
 
         float value = numbers.isInt ? numbers.intValue : (float) numbers.doubleValue;
         float health = entity.getHealth();
 
-        if(checkOperation(value, health, numbers.operation)){
-            action.action(level, entity);
-            return true;
+        if(numbers.checkOperation(value, health)){
+            action.action(level, entity, casterId);
+            return 1;
         }
 
-        return false;
+        return 0;
     }
 
     public static HealthTrigger load(CompoundTag tag,
@@ -51,14 +53,5 @@ public class HealthTrigger extends TriggerBase {
                 TriggerContextBase.load(contextType, tag, provider));
     }
 
-    private boolean checkOperation(float value, float value2, int operation){
-        return switch (operation) {
-            case -2 -> value2 < value;
-            case -1 -> value2 <= value;
-            case 0 -> value2 == value;
-            case 1 -> value2 >= value;
-            case 2 -> value2 > value;
-            default -> false;
-        };
-    }
+
 }

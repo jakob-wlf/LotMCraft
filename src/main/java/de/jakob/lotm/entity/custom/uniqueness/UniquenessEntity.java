@@ -4,8 +4,10 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.UniquenessComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -76,7 +78,16 @@ public class UniquenessEntity extends Entity {
 
         if(!ACTIVE_ENTITIES.containsValue(this.getId()) || getPathway().isEmpty() || !ACTIVE_ENTITIES.containsKey(getPathway())) {
             ACTIVE_ENTITIES.remove(getPathway());
-            this.discard();
+            AABB hitbox = this.getBoundingBox().inflate(2);
+            List<LivingEntity> nearby = level().getEntitiesOfClass(LivingEntity.class, hitbox);
+
+            for(LivingEntity entity : nearby) {
+                if(BeyonderData.isBeyonder(entity) && BeyonderData.getSequence(entity) <= 3) {
+                    spawnUniqueness(entity);
+                    return;
+                }
+            }
+
             return;
         }
 
@@ -84,7 +95,7 @@ public class UniquenessEntity extends Entity {
         String pathway = getPathway();
         if (pathway.isEmpty()) return;
 
-        ParticleUtil.spawnSphereParticles((ServerLevel) level(), new DustParticleOptions(getPathwayColor(), 1), position().add(0, .5, 0), 2.3, 50);
+        ParticleUtil.spawnParticles((ServerLevel) level(), new DustParticleOptions(getPathwayColor(), 1), position(), 100, 1, .1, 1, 0);
 
         // Check nearby entities for hitbox interactions
         AABB hitbox = this.getBoundingBox().inflate(0.5);
@@ -93,6 +104,22 @@ public class UniquenessEntity extends Entity {
         for (LivingEntity entity : nearby) {
             handleEntityContact(entity, pathway);
         }
+    }
+
+    private void spawnUniqueness(LivingEntity entity) {
+        String pathway = BeyonderData.getPathway(entity);
+        if (pathway.isEmpty()) return;
+        if (UniquenessEntity.existsInWorld((ServerLevel) level(), pathway)) {
+            return;
+        }
+
+        EffectManager.playEffect(EffectManager.Effect.UNIQUENESS_SPAWN, position().x, position().y, position().z, (ServerLevel) level());
+        this.discard();
+        ServerScheduler.scheduleDelayed(20 * 3, () -> {
+            if (level() instanceof ServerLevel serverLevel) {
+                trySpawn(serverLevel, this.position(), pathway);
+            }
+        });
     }
 
     private Vector3f getPathwayColor() {
@@ -212,6 +239,12 @@ public class UniquenessEntity extends Entity {
             }
             ACTIVE_ENTITIES.remove(pathway);
         }
+
+        if (UniquenessEntity.existsInWorld(level, pathway)) return false;
+
+        if (UniquenessEntity.anyPlayerHoldsUniqueness(level, pathway)) return false;
+
+        if (BeyonderData.playerMap != null && BeyonderData.playerMap.count(pathway, 0) > 0) return false;
 
         UniquenessEntity entity = new UniquenessEntity(level, position, pathway);
         level.addFreshEntity(entity);

@@ -1,0 +1,48 @@
+package de.jakob.lotm.abilities.tyrant;
+
+import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.LightningEntity;
+import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.StrongLightningEntity;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class StrongLightningAbility extends Ability {
+    public StrongLightningAbility(String id) {
+        super(id, 2f);
+    }
+
+    @Override
+    public Map<String, Integer> getRequirements() {
+        return new HashMap<>(Map.of("tyrant", 4));
+    }
+
+    @Override
+    public float getSpiritualityCost() {
+        return 1200;
+    }
+
+    @Override
+    public void onAbilityUse(Level level, LivingEntity entity) {
+        if(level.isClientSide)
+            return;
+
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 25, 2, true);
+        for(int i = 0; i < 35; i++) {
+            BlockState state = level.getBlockState(BlockPos.containing(targetLoc.subtract(0, 1, 0)));
+            if(state.getCollisionShape(level, BlockPos.containing(targetLoc)).isEmpty())
+                targetLoc = targetLoc.subtract(0, 1, 0);
+        }
+
+        StrongLightningEntity lightning = new StrongLightningEntity(level, entity, targetLoc, 50, 6, DamageLookup.lookupDamage(4, .85)* multiplier(entity), BeyonderData.isGriefingEnabled(entity), 4, 200* multiplier(entity), 0xe0ac00);
+        level.addFreshEntity(lightning);
+    }
+}

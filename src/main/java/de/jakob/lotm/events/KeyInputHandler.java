@@ -89,6 +89,7 @@ public class KeyInputHandler {
                 }
 
                 String abilityId = ClientData.getAbilityWheelAbilities().get(ClientData.getSelectedAbility());
+                if(abilityId.contains(":")) return;
                 Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
                 if(!(ability instanceof SelectableAbility selectableAbility)) {
                     return;
@@ -129,6 +130,7 @@ public class KeyInputHandler {
                 }
 
                 String abilityId = ClientData.getAbilityWheelAbilities().get(ClientData.getSelectedAbility());
+                if(abilityId.contains(":")) return;
                 Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
                 if(!(ability instanceof SelectableAbility selectableAbility)) {
                     return;

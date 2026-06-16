@@ -43,7 +43,7 @@ public class FlameControllingAbility extends Ability {
             return;
         float multiplier = multiplier(entity);
         Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(-.65, .65), random.nextDouble(-.1, .6));
-        Vec3 direction = AbilityUtil.getTargetLocation(entity, 10* (int) Math.max(multiplier/4,1), 1.4f).subtract(startPos).normalize();
+        Vec3 direction = AbilityUtil.getTargetLocation(entity, 10* (int) multiplier(entity), 1.4f).subtract(startPos).normalize();
 
         AtomicReference<Vec3> currentPos = new AtomicReference<>(startPos);
 
@@ -58,7 +58,7 @@ public class FlameControllingAbility extends Ability {
 
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, .83) * (int) Math.max(multiplier/4,1), pos, true, false, true, 0, 20 * 5)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, .83) * multiplier(entity), pos, true, false, true, 0, 20 * 5)) {
                 hasHit.set(true);
                 return;
             }

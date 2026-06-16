@@ -63,7 +63,7 @@ public class ConfinementAbility extends Ability {
                 .ifPresent(existing -> removeZone(existing, serverLevel));
 
         int radius   = 6;
-        int duration = 1200 * (int) Math.max(multiplier(entity) / 4, 1);
+        int duration = (int) (1200 * multiplier(entity));
         Vec3 center  = AbilityUtil.getTargetLocation(entity, 12, 2f);
 
         List<BlockPos> placed = new ArrayList<>();

@@ -11,6 +11,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.UUID;
+
 public class InstantTrigger extends TriggerBase {
     public InstantTrigger(ActionBase action, TriggerContextBase context) {
         super(action, context);
@@ -27,9 +29,9 @@ public class InstantTrigger extends TriggerBase {
     }
 
     @Override
-    public boolean checkTrigger(Level level, LivingEntity entity) {
-        action.action(level, entity);
-        return true;
+    public int checkTrigger(Level level, LivingEntity entity, UUID casterId) {
+        action.action(level, entity, casterId);
+        return 1;
     }
 
     public static InstantTrigger load(CompoundTag tag,

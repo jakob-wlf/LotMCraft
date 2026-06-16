@@ -35,7 +35,7 @@ public class ExileAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 20*(int) Math.max(multiplier(entity)/4,1), 2);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 20*(int) multiplier(entity), 2);
 
         ExileDoorsEntity door = new ExileDoorsEntity(ModEntities.EXILE_DOORS.get(), level, 20 * 20, entity, AbilityUtil.getSeqWithArt(entity, this), multiplier(entity));
         door.setPos(targetPos.x, targetPos.y, targetPos.z);

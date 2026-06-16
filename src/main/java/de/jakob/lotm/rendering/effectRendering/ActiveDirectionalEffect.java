@@ -21,6 +21,7 @@ public abstract class ActiveDirectionalEffect {
     protected int maxDuration;
 
     protected final Vec3 direction;
+
     protected final double distance;
 
     /** Defaults to normal speed; overridden via {@link #setTimeMultiplier}. */

@@ -49,7 +49,7 @@ public class MentalDisruptionAbility extends Ability {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20*(int) Math.max(multiplier(entity)/4,1), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20*(int) multiplier(entity), 1.5f);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.theft.no_target").withColor(0x4742c9));
             return;
@@ -62,7 +62,7 @@ public class MentalDisruptionAbility extends Ability {
         ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, target.getEyePosition(), 60, .5, .025);
         ParticleUtil.spawnParticles(serverLevel, dust, target.getEyePosition(), 120, .5, .025);
 
-        ServerScheduler.scheduleForDuration(0, 2, 20 * 4*(int) Math.max(multiplier(entity)/4,1), () -> {
+        ServerScheduler.scheduleForDuration(0, 2, (int) (20 * 4*multiplier(entity)), () -> {
             target.setDeltaMovement(new Vec3(0, 0, 0));
             target.hurtMarked = true;
         });

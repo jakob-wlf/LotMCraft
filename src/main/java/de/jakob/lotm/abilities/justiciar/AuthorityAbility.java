@@ -71,11 +71,11 @@ public class AuthorityAbility extends SelectableAbility {
     }
 
     private int scaledRadius(LivingEntity caster) {
-        return 15 * (int) Math.max(multiplier(caster) / 4, 1);
+        return (int) (15 * multiplier(caster));
     }
 
     private int scaledDuration(LivingEntity caster) {
-        return (int) Math.max(multiplier(caster) / 4, 1);
+        return (int) multiplier(caster);
     }
 
     private void applyStunIfEnhanced(LivingEntity caster, LivingEntity target) {

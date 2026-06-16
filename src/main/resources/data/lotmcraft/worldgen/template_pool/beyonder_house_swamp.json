@@ -6,7 +6,7 @@
       "weight": 1,
       "element": {
 
-        "location": "lotmcraft:beyonder_house",
+        "location": "lotmcraft:beyonder_house_swamp",
         "processors": "minecraft:empty",
         "projection": "rigid",
         "element_type": "minecraft:single_pool_element"

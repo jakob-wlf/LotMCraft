@@ -62,7 +62,7 @@ public class IndividualBalanceAbility extends Ability {
             return;
         }
 
-        int DURATION = 3600 * (int) Math.max(multiplier(entity) / 4, 1);
+        int DURATION = (int) (3600 * multiplier(entity));
         UUID targetId = target.getUUID();
         INDIVIDUALLY_BALANCED.put(targetId, serverLevel.getGameTime() + DURATION);
         ServerScheduler.scheduleDelayed(DURATION, () -> INDIVIDUALLY_BALANCED.remove(targetId));

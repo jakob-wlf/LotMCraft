@@ -13,6 +13,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.UUID;
+
 public class SanityAction extends ActionBase {
     public SanityAction(ActionContextBase context) {
         super(context);
@@ -29,7 +31,7 @@ public class SanityAction extends ActionBase {
     }
 
     @Override
-    public void action(Level level, LivingEntity entity) {
+    public void action(Level level, LivingEntity entity, UUID casterId) {
         if(!(context instanceof ActionNumberContext numbers)) return;
 
         if(numbers.isInt){

@@ -71,7 +71,7 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION,1),
                     new PhysicalEnhancement(EnhancementType.OXYGEN_BONUS,1024),
-                    new PhysicalEnhancement(EnhancementType.DOLPHINS_GRACE,3)
+                    new PhysicalEnhancement(EnhancementType.DOLPHINS_GRACE,2)
             );
 
             case 4 -> List.of(
@@ -104,7 +104,7 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION,1),
                     new PhysicalEnhancement(EnhancementType.OXYGEN_BONUS,1024),
-                    new PhysicalEnhancement(EnhancementType.DOLPHINS_GRACE,5)
+                    new PhysicalEnhancement(EnhancementType.DOLPHINS_GRACE,4)
             );
 
             case 1 -> List.of(
@@ -115,7 +115,7 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION,1),
                     new PhysicalEnhancement(EnhancementType.OXYGEN_BONUS,1024),
-                    new PhysicalEnhancement(EnhancementType.DOLPHINS_GRACE,6)
+                    new PhysicalEnhancement(EnhancementType.DOLPHINS_GRACE,4)
             );
 
             case 0 -> List.of(
@@ -126,7 +126,7 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 6),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION,1),
                     new PhysicalEnhancement(EnhancementType.OXYGEN_BONUS,1024),
-                    new PhysicalEnhancement(EnhancementType.DOLPHINS_GRACE,7)
+                    new PhysicalEnhancement(EnhancementType.DOLPHINS_GRACE,4)
             );
 
             default -> List.of();

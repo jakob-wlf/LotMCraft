@@ -20,6 +20,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.UUID;
+
 public class PositionTrigger extends TriggerBase {
     public PositionTrigger(ActionBase action, TriggerContextBase context) {
         super(action, context);
@@ -36,9 +38,9 @@ public class PositionTrigger extends TriggerBase {
     }
 
     @Override
-    public boolean checkTrigger(Level level, LivingEntity entity) {
-        if (!(context instanceof TriggerPositionContext position)) return true;
-        if (!(entity instanceof ServerPlayer serverPlayer)) return true;
+    public int checkTrigger(Level level, LivingEntity entity, UUID casterId) {
+        if (!(context instanceof TriggerPositionContext position)) return -1;
+        if (!(entity instanceof ServerPlayer serverPlayer)) return -1;
 
         ResourceLocation id = null;
         if(!position.dimension.isEmpty()){
@@ -53,7 +55,7 @@ public class PositionTrigger extends TriggerBase {
                     id
             );
 
-            if(serverPlayer.level().dimension() != dimension) return false;
+            if(serverPlayer.level().dimension() != dimension) return 0;
         }
 
         Vec3 pos = entity.position();
@@ -62,12 +64,12 @@ public class PositionTrigger extends TriggerBase {
         double dist = pos.distanceTo(target);
 
         if (dist <= position.range) {
-            action.action(level, entity);
+            action.action(level, entity, casterId);
 
-            return true;
+            return 1;
         }
 
-        return false;
+        return 0;
     }
 
     public static PositionTrigger load(CompoundTag tag,

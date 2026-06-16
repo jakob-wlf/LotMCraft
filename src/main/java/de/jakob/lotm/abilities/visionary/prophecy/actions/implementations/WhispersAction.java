@@ -16,6 +16,8 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ServerChatEvent;
 
+import java.util.UUID;
+
 public class WhispersAction extends ActionBase {
     public WhispersAction(ActionContextBase context) {
         super(context);
@@ -32,7 +34,7 @@ public class WhispersAction extends ActionBase {
     }
 
     @Override
-    public void action(Level level, LivingEntity entity) {
+    public void action(Level level, LivingEntity entity, UUID casterId) {
         if(!(context instanceof ActionStringContext string)) return;
         if(!(level instanceof ServerLevel serverLevel)) return;
         if(!(entity instanceof ServerPlayer player)) return;

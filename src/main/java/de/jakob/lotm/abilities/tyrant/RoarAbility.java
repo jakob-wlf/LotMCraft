@@ -47,8 +47,8 @@ public class RoarAbility extends Ability {
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 3, 1);
 
         double multiplier = multiplier(entity);
-        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 19* (int) Math.max(multiplier(entity)/4,1)).forEach(e -> {
-            e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(4, .85) * (int) Math.max(multiplier(entity)/4,1)));
+        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 19* multiplier(entity)).forEach(e -> {
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(4, .85) * multiplier(entity)));
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(1.5);
             e.setDeltaMovement(knockBack);
         });
@@ -56,10 +56,10 @@ public class RoarAbility extends Ability {
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, startPos.add(0, 1, 0), 600, .75, .75, .75, .15);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, startPos, 600, 7, .2, 7, .005);
 
-        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 5* (int) Math.max(multiplier(entity)/4,1)).forEach(b -> {
+        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 5* multiplier(entity)).forEach(b -> {
             spawnFallingBlocks(level, startPos, b, griefing);
         });
-        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 3* (int) Math.max(multiplier(entity)/4,1)).forEach(b -> {
+        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 3* multiplier(entity)).forEach(b -> {
             spawnFallingBlocks(level, startPos, b, griefing);
         });
     }

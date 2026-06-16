@@ -52,15 +52,15 @@ public class WarCryAbility extends Ability {
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 3, 1);
 
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 19).forEach(e -> {
-            e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(3, .9) *(int) Math.max(multiplier(entity)/4,1)));
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(3, .9) *multiplier(entity)));
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(1.5);
             e.setDeltaMovement(knockBack);
         });
 
-        BeyonderData.addModifierWithTimeLimit(entity, "war_cry", 1.05f, 20L *30*(int) Math.max(multiplier(entity)/4,1));
-        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 12*(int) Math.max(multiplier(entity)/4,1), 3, false, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 12*(int) Math.max(multiplier(entity)/4,1), 4, false, false, false));
-        //entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 12*(int) Math.max(multiplier(entity)/4,1), 1, false, false, false));
+        BeyonderData.addModifierWithTimeLimit(entity, "war_cry", 1.05, (long) (20L *30*multiplier(entity)));
+        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, (int) (20 * 12*multiplier(entity)), 3, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, (int) (20 * 12*multiplier(entity)), 4, false, false, false));
+        //entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 12*multiplier(entity), 1, false, false, false));
 
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, startPos.add(0, 1, 0), 600, .75, .75, .75, .15);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, startPos, 600, 7, .2, 7, .005);

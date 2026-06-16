@@ -22,6 +22,12 @@ public class HistoricalVoidComponent implements INBTSerializable<CompoundTag> {
             CompoundTag originalBeforeBorrowing
     ) {}
 
+    public void reset() {
+        this.summonedCount = 0;
+        this.historicalBorrowingCount = 0;
+        this.activeSummonTimes.clear();
+    }
+
     @Override
     public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();

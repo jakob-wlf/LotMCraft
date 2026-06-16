@@ -751,7 +751,7 @@ public class PotionRecipes {
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 1)))
         ));
 
-        RECIPES.add(new PotionRecipe(
+        /*RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.LAWYER_POTION.get(),
                 new ItemStack(Items.BOOKSHELF, 1),
                 new ItemStack(Items.WRITABLE_BOOK, 1),
@@ -812,7 +812,7 @@ public class PotionRecipes {
                 new ItemStack(Items.WITHER_ROSE, 1),
                 new ItemStack(Items.NETHERITE_SCRAP, 1),
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("black_emperor", 1)))
-        ));
+        ));*/
 
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.CORPSE_COLLECTOR_POTION.get(),

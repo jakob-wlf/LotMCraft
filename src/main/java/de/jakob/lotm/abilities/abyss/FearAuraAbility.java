@@ -50,11 +50,11 @@ public class FearAuraAbility extends Ability {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         Location loc = new Location(entity.position(), serverLevel);
-        UUID effectID = MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.FEAR_AURA, loc, 20 * 25*(int) Math.max(multiplier(entity)/4, 1), false, serverLevel);
+        UUID effectID = MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.FEAR_AURA, loc, (int) (20 * 25*multiplier(entity)), false, serverLevel);
 
         AtomicInteger ticks = new AtomicInteger(0);
 
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 15*(int) Math.max(multiplier(entity)/4,1), () -> {
+        ServerScheduler.scheduleForDuration(0, 1, 20 * 15*(int) multiplier(entity), () -> {
             loc.setPosition(entity.position());
             loc.setLevel(serverLevel);
             MovableEffectManager.updateEffectPosition(effectID, loc, serverLevel);
@@ -66,12 +66,12 @@ public class FearAuraAbility extends Ability {
                 ParticleUtil.spawnSphereParticles(serverLevel, ParticleTypes.END_ROD, entity.getEyePosition().subtract(0, .5, 0), 1, 30);
                 return;
             }
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 20*Math.max(multiplier(entity)/4, 1), entity.position(),
+            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 20*multiplier(entity), entity.position(),
                     new MobEffectInstance(MobEffects.DARKNESS, 60, 5, false, false, false),
                     new MobEffectInstance(MobEffects.BLINDNESS, 60, 4, false, false, false),
                     new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 4, false, false, false));
 
-            AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20*(int) Math.max(multiplier(entity)/4,1)).forEach(e -> {
+            AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20*(int) multiplier(entity)).forEach(e -> {
                 BeyonderData.addModifier(e, "fear_aura", .4);
 
                 int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
@@ -83,7 +83,7 @@ public class FearAuraAbility extends Ability {
                 }
 
                 SanityComponent sanityComponent = e.getData(ModAttachments.SANITY_COMPONENT);
-                sanityComponent.decreaseSanityWithSequenceDifference(0.02168f*(int) Math.max(multiplier(entity)/4,1), e, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(e));
+                sanityComponent.decreaseSanityWithSequenceDifference(0.02168f*(int) multiplier(entity), e, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(e));
             });
             ticks.getAndIncrement();
         }, () -> this.clearArtifactScaling(entity), serverLevel);

@@ -5,6 +5,7 @@ import com.zigythebird.playeranim.api.PlayerAnimationFactory;
 import com.zigythebird.playeranimcore.enums.PlayState;
 import de.jakob.lotm.abilities.PassiveAbilityHandler;
 import de.jakob.lotm.abilities.core.AbilityHandler;
+import de.jakob.lotm.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.block.ModBlocks;
@@ -27,6 +28,7 @@ import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinRenderer;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.return_from_nature.ReturnFromNaturelRenderer;
 import de.jakob.lotm.entity.client.ability_entities.original_body.OriginalBodyRenderer;
+import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.strong_lightning.StrongLightningRenderer;
 import de.jakob.lotm.entity.client.projectiles.paper_dagger.PaperDaggerProjectileRenderer;
 import de.jakob.lotm.entity.client.projectiles.spear_of_destruction.SpearOfDestructionProjectileRenderer;
 import de.jakob.lotm.entity.client.projectiles.spear_of_light.SpearOfLightProjectileRenderer;
@@ -201,6 +203,8 @@ public class LOTMCraft
 
         QuestRegistry.init();
 
+        ActingTaskRegistry.init();
+
         abilityHandler = new AbilityHandler();
 
         modEventBus.addListener(this::addCreative);
@@ -244,6 +248,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.FROST_SPEAR.get(), FrostSpearProjectileRenderer::new);
             EntityRenderers.register(ModEntities.ELECTRIC_SHOCK.get(), ElectricShockRenderer::new);
             EntityRenderers.register(ModEntities.LIGHTNING.get(), LightningRenderer::new);
+            EntityRenderers.register(ModEntities.STRONG_LIGHTNING.get(), StrongLightningRenderer::new);
             EntityRenderers.register(ModEntities.TRAVELERS_DOOR.get(), TravelersDoorRenderer::new);
             EntityRenderers.register(ModEntities.APPRENTICE_BOOK.get(), ApprenticeBookRenderer::new);
             EntityRenderers.register(ModEntities.BEYONDER_NPC.get(), BeyonderNPCRenderer::new);
@@ -268,7 +273,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.DISTORTION_FIELD.get(), DistortionFieldRenderer::new);
             EntityRenderers.register(ModEntities.SPEAR_OF_DESTRUCTION.get(), SpearOfDestructionProjectileRenderer::new);
             EntityRenderers.register(ModEntities.RETURN_PORTAL.get(), ReturnPortalRenderer::new);
-            EntityRenderers.register(ModEntities.ERROR_AVATAR.get(), ErrorAvatarRenderer::new);
+            EntityRenderers.register(ModEntities.AVATAR.get(), ErrorAvatarRenderer::new);
             EntityRenderers.register(ModEntities.BIG_SUN.get(), BigSunRenderer::new);
             EntityRenderers.register(ModEntities.BIG_MOON.get(), BigMoonRenderer::new);
             EntityRenderers.register(ModEntities.COFFIN.get(), CoffinRenderer::new);

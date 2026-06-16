@@ -264,13 +264,13 @@ public class MiracleHandler {
 
         Vec3 pos = AbilityUtil.getTargetLocation(caster, 12, 2);
 
-        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (int) Math.max(BeyonderData.getMultiplier(caster)/2,1), caster) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, 32.5f * (float) BeyonderData.getMultiplier(caster), caster, target);
+        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (int) Math.max(BeyonderData.getMultiplier(caster)/2,1), caster) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, 32.5f * (float) BeyonderData.getMultiplier(caster), caster, target, 5);
         tornado.setPos(pos);
         level.addFreshEntity(tornado);
 
         for(int i = 0; i < 5; i++) {
-            TornadoEntity additionalTornado = target == null || (new Random()).nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (int) Math.max(BeyonderData.getMultiplier(caster)/2,1), caster) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (float) BeyonderData.getMultiplier(caster), caster, target);
-            Vec3 randomOffset = new Vec3((level.random.nextDouble() - 0.5) * 40, 3, (level.random.nextDouble() - 0.5) * 40);
+            TornadoEntity additionalTornado = target == null || (new Random()).nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (int) Math.max(BeyonderData.getMultiplier(caster)/2,1), caster) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (float) BeyonderData.getMultiplier(caster), caster, target, 4);
+            Vec3 randomOffset = new Vec3((level.random.nextDouble() - 0.5) * 70, 3, (level.random.nextDouble() - 0.5) * 70);
             additionalTornado.setPos(pos.add(randomOffset));
             level.addFreshEntity(additionalTornado);
         }

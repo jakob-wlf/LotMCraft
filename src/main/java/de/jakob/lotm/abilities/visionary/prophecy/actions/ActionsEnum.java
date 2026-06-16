@@ -19,8 +19,14 @@ public enum ActionsEnum {
     SAY,
     WEATHER,
     TIME,
-    WHISPERS
-    //DOUBLE
+    WHISPERS,
+    SUICIDE,
+    PLAGUE,
+    SLEEP,
+    DOUBLE,
+    SPIRITUALITY,
+    PLAYER,
+    EMPTY
     ;
 
     public static ActionsEnum fromNBT(CompoundTag tag, String key) {

@@ -86,13 +86,13 @@ public class HairEntanglementAbility extends Ability {
         int targetSeq = BeyonderData.getSequence(targetEntity);
         Location eLoc = new Location(targetEntity.position(), (ServerLevel) level);
         if(entitySeq < targetSeq) {
-            duration = 20 * 60*(int) Math.max(multiplier/4,1);
+            duration = 20 * 60*(int) multiplier;
         }else if (entitySeq > targetSeq){
             if (!BeyonderData.getPathway(targetEntity).equals("darkness")){
-                duration = 35*(int) Math.max(multiplier/4,1);
+                duration = 35*(int) multiplier;
             };
         }else{
-            duration = 20 * 30*(int) Math.max(multiplier/4,1)/  (int) Math.max(multiplier(targetEntity)/4,1);
+            duration = 20 * 30*(int) multiplier/  (int) multiplier(targetEntity);
         };
         if(targetSeq > entitySeq-1 ) {
             if(targetEntity instanceof Mob) {
@@ -102,7 +102,7 @@ public class HairEntanglementAbility extends Ability {
             if(BeyonderData.isBeyonder(targetEntity)) {
                 boolean hasMorale = InteractionHandler.isInteractionPossibleForEntity(eLoc, "morale_boost", targetSeq, targetEntity);
                 int durationmorale = hasMorale? 20*2:20*4;
-                double reduction = -4*(int)Math.max(multiplier(entity)/4,1);
+                double reduction = -4*multiplier(entity);
                 BeyonderData.addModifierWithTimeLimit(targetEntity, "hair_entanglement_multiplier_reduction", reduction, durationmorale);
             }
         }

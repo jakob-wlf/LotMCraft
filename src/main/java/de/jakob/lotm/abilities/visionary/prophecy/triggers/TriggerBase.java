@@ -26,6 +26,7 @@ public abstract class  TriggerBase {
 
     protected final ActionBase action;
     protected final TriggerContextBase context;
+    protected boolean isGeneralLoop = true;
 
     public TriggerBase(ActionBase action, TriggerContextBase context){
         this.action = action;
@@ -45,6 +46,8 @@ public abstract class  TriggerBase {
         return tag;
     }
 
+    public boolean isGeneralLoop() {return isGeneralLoop;}
+
     public UUID getTarget(){
         return context.getTargetId();
     }
@@ -59,7 +62,10 @@ public abstract class  TriggerBase {
 
     public abstract int getRequiredSeq();
 
-    public abstract boolean checkTrigger(Level level, LivingEntity entity);
+    // -1 - error, delete the trigger
+    // 0 - false, keep it and check later
+    // 1 - true, perform action and delete trigger
+    public abstract int checkTrigger(Level level, LivingEntity entity, UUID casterId);
 
     public static TriggerBase load(TriggerEnum type, CompoundTag tag, HolderLookup.Provider provider) {
         ActionsEnum actionType = ActionsEnum.fromNBT(tag, ACTION_TYPE);
@@ -73,7 +79,14 @@ public abstract class  TriggerBase {
             case SANITY -> SanityTrigger.load(tag, actionType, contextType, provider);
             case PLAYER -> PlayerTrigger.load(tag, actionType, contextType, provider);
             case SEALED -> SealedTrigger.load(tag, actionType, contextType, provider);
-        };
+            case HUNGER -> HungerTrigger.load(tag, actionType, contextType, provider);
+            case RIDING -> RidingTrigger.load(tag, actionType, contextType, provider);
+            case SPIRITUALITY -> SpiritualityTrigger.load(tag, actionType, contextType, provider);
+            case SEQUENCE -> SeqTrigger.load(tag, actionType, contextType, provider);
+            case PATHWAY -> PathTrigger.load(tag, actionType, contextType, provider);
+            case LIGHT -> LightTrigger.load(tag, actionType, contextType, provider);
+            case ASLEEP -> AsleepTrigger.load(tag, actionType, contextType, provider);
+            };
     }
 
     public static TriggerBase create(TriggerEnum type, ActionBase action, TriggerContextBase context){
@@ -85,6 +98,13 @@ public abstract class  TriggerBase {
             case SANITY -> new SanityTrigger(action, context);
             case PLAYER -> new PlayerTrigger(action, context);
             case SEALED -> new SealedTrigger(action, context);
+            case HUNGER -> new HungerTrigger(action, context);
+            case RIDING -> new RidingTrigger(action, context);
+            case SPIRITUALITY -> new SpiritualityTrigger(action, context);
+            case SEQUENCE -> new SeqTrigger(action, context);
+            case PATHWAY -> new PathTrigger(action, context);
+            case LIGHT -> new LightTrigger(action, context);
+            case ASLEEP -> new AsleepTrigger(action, context);
         };
     }
 }

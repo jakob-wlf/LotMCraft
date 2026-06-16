@@ -16,6 +16,8 @@
     "absolute": 1
   },
 
+  "terrain_adaptation": "beard_box",
+
   "project_start_to_heightmap": "WORLD_SURFACE_WG",
 
   "liquid_settings": "apply_waterlogging",

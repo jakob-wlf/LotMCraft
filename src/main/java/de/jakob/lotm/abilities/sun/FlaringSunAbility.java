@@ -51,7 +51,7 @@ public class FlaringSunAbility extends Ability {
             return;
 
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 25, 2);
-        Vec3 startPos = targetPos.add(0, 3, 0);
+        Vec3 startPos = targetPos.add(0, 5, 0);
 
         BlockPos blockPos = BlockPos.containing(startPos);
         BlockState state = level.getBlockState(blockPos);
@@ -60,15 +60,15 @@ public class FlaringSunAbility extends Ability {
         }
 
         if(BeyonderData.isGriefingEnabled(entity)) {
-            AbilityUtil.getBlocksInSphereRadius((ServerLevel) level, targetPos, 7, true, true, false).forEach(
+            AbilityUtil.getBlocksInSphereRadius((ServerLevel) level, targetPos, 9, true, true, false).forEach(
                     b -> level.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState())
             );
 
-            AbilityUtil.getBlocksInSphereRadius((ServerLevel) level, targetPos, 7, true).forEach(
+            AbilityUtil.getBlocksInSphereRadius((ServerLevel) level, targetPos, 9, true).forEach(
                     b -> level.setBlockAndUpdate(b, Blocks.FIRE.defaultBlockState())
             );
 
-            AbilityUtil.getBlocksInSphereRadius((ServerLevel) level, targetPos, 8, true, true, false).forEach(
+            AbilityUtil.getBlocksInSphereRadius((ServerLevel) level, targetPos, 10, true, true, false).forEach(
                     b -> level.setBlockAndUpdate(b, Blocks.BASALT.defaultBlockState())
             );
         }
@@ -87,13 +87,13 @@ public class FlaringSunAbility extends Ability {
                     sun.addTag("darkened");
                     PacketHandler.sendToAllPlayersInSameLevel(new AddClientSideTagPacket("darkened", sun.getId()), (ServerLevel) level);
                 }
-                ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.FLAME, startPos, 4.75f, 200);
-                ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, startPos, 4.75f, 180);
+                ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.FLAME, startPos, 5.65f, 200);
+                ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, startPos, 5.65f, 180);
 
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 17* (int) Math.max(multiplier(entity)/4,1), DamageLookup.lookupDps(4, .85, 4, 20) * (int) Math.max(multiplier(entity)/4,1), targetPos, true, false, 20 * 4, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 24* multiplier(entity), DamageLookup.lookupDps(4, .85, 4, 20) * multiplier(entity), targetPos, true, false, 20 * 4, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
             }
             else {
-                ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.SMOKE, startPos, 4.75f, 300);
+                ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.SMOKE, startPos, 5.65f, 300);
             }
         }, () -> {
             if(level.getBlockState(blockPos).getBlock() == Blocks.LIGHT) {

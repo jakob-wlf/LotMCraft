@@ -77,7 +77,7 @@ public class HolyLightAbility extends Ability {
                     lights.add(blockPos);
                 }
 
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f* (int) Math.max(multiplier(entity)/4,1), DamageLookup.lookupDamage(8, .8) * (int) Math.max(multiplier(entity)/4,1), pos, true, false, false, 10, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f* multiplier(entity), DamageLookup.lookupDamage(8, .8) * multiplier(entity), pos, true, false, false, 10, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
 
                 currentPos.set(pos.subtract(0, 2.5, 0));
             }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));

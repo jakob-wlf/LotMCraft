@@ -119,7 +119,7 @@ public class DefilingSeedAbility extends Ability {
         UUID taskId = ServerScheduler.scheduleForDuration(
                 0,
                 8,
-                20 * 20* (int) Math.max(multiplier(entity)/4,1),
+                (int) (20 * 20* multiplier(entity)),
                 () -> {
                     switch (random.nextInt(22)) {
                         case 0, 2, 3 -> target.hurt(

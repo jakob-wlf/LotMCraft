@@ -35,8 +35,8 @@ public class BlackHoleAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 27*(int) Math.max(multiplier(entity)/4,1), 2);
-        BlackHoleEntity blackHole = new BlackHoleEntity(ModEntities.BLACK_HOLE.get(), level, targetLoc.x, targetLoc.y, targetLoc.z, 10f*(int) Math.max(multiplier(entity)/4,1), (float) DamageLookup.lookupDps(1, 1, 1, 10) *(int) Math.max(multiplier(entity)/4,1), BeyonderData.isGriefingEnabled(entity), entity);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 27*(int) multiplier(entity), 2);
+        BlackHoleEntity blackHole = new BlackHoleEntity(ModEntities.BLACK_HOLE.get(), level, targetLoc.x, targetLoc.y, targetLoc.z, 10f*multiplier(entity), (float) DamageLookup.lookupDps(1, 1, 1, 10) *multiplier(entity), BeyonderData.isGriefingEnabled(entity), entity);
         level.addFreshEntity(blackHole);
     }
 }

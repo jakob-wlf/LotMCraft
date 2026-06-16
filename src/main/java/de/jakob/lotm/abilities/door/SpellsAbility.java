@@ -82,7 +82,7 @@ public class SpellsAbility extends SelectableAbility {
     private void tumble(Level level, LivingEntity entity) {
         if(level.isClientSide) return;
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 12*(int) Math.max(multiplier(entity)/4,1), 1);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 12*(int) multiplier(entity), 1);
 
         int maxLoopDepth = 10;
         while(level.getBlockState(BlockPos.containing(targetLoc).below()).getCollisionShape(level, BlockPos.containing(targetLoc).below()).isEmpty()) {
@@ -141,7 +141,7 @@ public class SpellsAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 4*(int) Math.max(multiplier(entity)/4,1), 2);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 4*(int) multiplier(entity), 2);
         level.playSound(null, targetPos.x, targetPos.y, targetPos.z, Blocks.ICE.getSoundType(Blocks.ICE.defaultBlockState(), level, BlockPos.containing(targetPos.x, targetPos.y, targetPos.z), null).getBreakSound(), entity.getSoundSource(), 1.0f, 1.0f);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SNOWFLAKE, targetPos, 120, .5, .175);
         AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, DamageLookup.lookupDamage(8, .8) * (float) multiplier(entity), targetPos, true, false);
@@ -149,7 +149,7 @@ public class SpellsAbility extends SelectableAbility {
     }
 
     private void flash(Level level, LivingEntity entity) {
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 12*(int) Math.max(multiplier(entity)/4,1), 1);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 12*(int) multiplier(entity), 1);
 
         if (!level.isClientSide) {
             BlockState lightBlock = Blocks.LIGHT.defaultBlockState();
@@ -171,11 +171,11 @@ public class SpellsAbility extends SelectableAbility {
             return;
 
         Vec3 start = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(1, 2.85f), random.nextDouble(-.1, .6));
-        Vec3 direction = AbilityUtil.getTargetLocation(entity, 15*(int) Math.max(multiplier(entity)/4,1), 1.4f).subtract(start).normalize();
+        Vec3 direction = AbilityUtil.getTargetLocation(entity, 15*(int) multiplier(entity), 1.4f).subtract(start).normalize();
 
         level.playSound(null, start.x, start.y, start.z, Blocks.ICE.getSoundType(Blocks.COPPER_GRATE.defaultBlockState(), level, BlockPos.containing(start.x, start.y, start.z), null).getStepSound(), entity.getSoundSource(), 5.0f, 1.0f);
 
-        ElectricShockEntity shock = new ElectricShockEntity(level, entity, start, direction, 30, DamageLookup.lookupDamage(8, .7) *(int) Math.max(multiplier(entity)/4,1));
+        ElectricShockEntity shock = new ElectricShockEntity(level, entity, start, direction, 30, DamageLookup.lookupDamage(8, .7) *(int) multiplier(entity));
         level.addFreshEntity(shock);
     }
 
@@ -190,7 +190,7 @@ public class SpellsAbility extends SelectableAbility {
 
         isCastingWind.add(entity.getUUID());
 
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 6*(int) Math.max(multiplier(entity)/4,1), () -> {
+        ServerScheduler.scheduleForDuration(0, 1, 20 * 6*(int) multiplier(entity), () -> {
             Vec3 dir = entity.getLookAngle().normalize().scale(.5);
             AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 10).forEach(e -> {
                 if(AbilityUtil.getSequenceDifference(AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(e)) >= 0) {

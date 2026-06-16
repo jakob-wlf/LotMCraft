@@ -73,13 +73,13 @@ public class BlackFlameAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 10*(int) Math.max(multiplier(entity)/4,1), 1.4f);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (10*multiplier(entity)), 1.4f);
         level.playSound(null, targetPos.x, targetPos.y, targetPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 2.0f, .5f);
 
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), targetPos.subtract(0, .75, 0), 700, .3, 1.3, .3, .01);
         ParticleUtil.spawnParticles((ServerLevel) level, dust, targetPos.subtract(0, .75, 0), 190, .3, 1.3, .3, .02);
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, DamageLookup.lookupDamage(7, .7) *(int) Math.max(multiplier(entity)/4,1), targetPos, true, false, true, 0, 20 * 2, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, DamageLookup.lookupDamage(7, .7) *multiplier(entity), targetPos, true, false, true, 0, 20 * 2, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
 
         BlockState block = level.getBlockState(BlockPos.containing(targetPos));
         if(block.isAir()) {
@@ -105,7 +105,7 @@ public class BlackFlameAbility extends SelectableAbility {
             Vec3 currentPos = startPos.add(0, ySubtraction, 0);
             double radius = i.get() < .71 ? i.get() : i.get() * 2;
             ParticleUtil.spawnCircleParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), currentPos, radius, (int) (radius * 27));
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius - .3, radius, DamageLookup.lookupDamage(7, .8) *(int) Math.max(multiplier(entity)/4,1), startPos.subtract(0, 1, 0), true, false, true, 0, 20 * 5, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius - .3, radius, DamageLookup.lookupDamage(7, .8) *multiplier(entity), startPos.subtract(0, 1, 0), true, false, true, 0, 20 * 5, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
             i.set(i.get() + .1);
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
 
@@ -117,7 +117,7 @@ public class BlackFlameAbility extends SelectableAbility {
             return;
 
         Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(-.65, .65), random.nextDouble(-.1, .6));
-        Vec3 direction = AbilityUtil.getTargetLocation(entity, 10*(int) Math.max(multiplier(entity)/4,1), 1.4f).subtract(startPos).normalize();
+        Vec3 direction = AbilityUtil.getTargetLocation(entity, (int) (10*multiplier(entity)), 1.4f).subtract(startPos).normalize();
 
         AtomicReference<Vec3> currentPos = new AtomicReference<>(startPos);
 
@@ -135,7 +135,7 @@ public class BlackFlameAbility extends SelectableAbility {
                     (ServerLevel) level,
                     entity,
                     2.5f,
-                    DamageLookup.lookupDamage(7, 1.1)*(int) Math.max(multiplier(entity)/4,1),
+                    DamageLookup.lookupDamage(7, 1.1)*multiplier(entity),
                     pos,
                     true,
                     false,

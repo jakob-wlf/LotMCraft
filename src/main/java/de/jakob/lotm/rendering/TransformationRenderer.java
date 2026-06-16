@@ -386,58 +386,155 @@ public class TransformationRenderer {
     private static void renderEnergyMass(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
         poseStack.pushPose();
 
-        // Get entity dimensions for scaling
         float entityHeight = entity.getBbHeight();
         float entityWidth = entity.getBbWidth();
 
-        // Center the effect on the entity
         poseStack.translate(0, entityHeight / 2, 0);
 
-        // Animation parameters
         long gameTime = entity.level().getGameTime();
         float time = (gameTime + partialTick) * 0.05F;
 
-        // Pulsating scale effect
-        float pulseScale = 1.0F + (Mth.sin(time * 2.0F) * 0.1F);
-        poseStack.scale(pulseScale, pulseScale, pulseScale);
+        // === ASYMMETRIC PULSING — different frequencies per axis ===
+        float scaleX = 1.0F + Mth.sin(time * 1.7F) * 0.18F + Mth.sin(time * 3.1F) * 0.07F;
+        float scaleY = 1.0F + Mth.sin(time * 2.3F + 1.2F) * 0.22F + Mth.sin(time * 4.7F) * 0.05F;
+        float scaleZ = 1.0F + Mth.sin(time * 1.1F + 2.4F) * 0.15F + Mth.sin(time * 3.8F) * 0.09F;
+        poseStack.scale(scaleX, scaleY, scaleZ);
 
-        // Rotation for dynamic effect
-        poseStack.mulPose(Axis.YP.rotationDegrees(time * 20.0F));
+        // Slow tumbling rotation on multiple axes — not just Y
+        poseStack.mulPose(Axis.YP.rotationDegrees(time * 15.0F));
+        poseStack.mulPose(Axis.XP.rotationDegrees(time * 7.3F));
 
-        // Get vertex consumer for rendering
         VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.energySwirl(
                 ResourceLocation.withDefaultNamespace("textures/entity/creeper/creeper_armor.png"),
                 time * 0.01F,
                 time * 0.01F
         ));
 
-        // Render main energy sphere
-        renderEnergySphere(poseStack, vertexConsumer, packedLight, entityWidth * 1.5F, 32, 16);
+        // === OUTER SHELL — coarse, irregular geometry ===
+        renderDistortedEnergyMass(poseStack, vertexConsumer, packedLight, entityWidth * 1.5F, 12, 6, time, 0.25F);
 
-        // Render orbiting energy particles
-        for (int i = 0; i < 8; i++) {
+        // === MID LAYER — counter-rotating, different distortion phase ===
+        poseStack.pushPose();
+        poseStack.mulPose(Axis.YP.rotationDegrees(-time * 25.0F));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(time * 11.0F));
+        renderDistortedEnergyMass(poseStack, vertexConsumer, packedLight, entityWidth * 1.1F, 10, 5, time + 1.5F, 0.35F);
+        poseStack.popPose();
+
+        // === ENERGY TENDRILS — jagged arms shooting outward ===
+        for (int i = 0; i < 6; i++) {
             poseStack.pushPose();
 
-            float orbitAngle = (time + i * 45.0F) * (i % 2 == 0 ? 1.0F : -1.0F);
-            float orbitRadius = entityWidth * 1.2F;
-            float orbitHeight = Mth.sin(time + i) * entityHeight * 0.3F;
+            float tendrilAngleY = (360.0F / 6) * i + time * 30.0F * (i % 2 == 0 ? 1 : -1);
+            float tendrilAngleX = Mth.sin(time * 1.3F + i * 1.1F) * 40.0F;
 
-            poseStack.mulPose(Axis.YP.rotationDegrees(orbitAngle));
-            poseStack.translate(orbitRadius, orbitHeight, 0);
+            poseStack.mulPose(Axis.YP.rotationDegrees(tendrilAngleY));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(tendrilAngleX));
 
-            // Render small energy orbs
-            renderEnergyOrb(poseStack, vertexConsumer, packedLight, 0.15F);
+            // Tendrils vary in length with noise-like flicker
+            float tendrilLength = entityWidth * (0.6F + Mth.sin(time * 2.5F + i * 0.9F) * 0.4F);
+            renderEnergyTendril(poseStack, vertexConsumer, packedLight, tendrilLength, time + i * 0.7F);
 
             poseStack.popPose();
         }
 
-        // Render inner core with different color/glow
+        // === INNER CORE — bright, tight, fast-pulsing ===
         VertexConsumer coreConsumer = multiBufferSource.getBuffer(RenderType.eyes(
                 ResourceLocation.withDefaultNamespace("textures/entity/enderman/enderman_eyes.png")
         ));
-        renderEnergySphere(poseStack, coreConsumer, 15728880, entityWidth * 0.8F, 16, 8);
+        float coreScale = 0.7F + Mth.sin(time * 6.0F) * 0.15F; // fast flicker
+        poseStack.pushPose();
+        poseStack.scale(coreScale, coreScale * 1.3F, coreScale); // elongate core vertically
+        renderDistortedEnergyMass(poseStack, coreConsumer, 15728880, entityWidth * 0.6F, 8, 4, time * 2.0F, 0.15F);
+        poseStack.popPose();
 
         poseStack.popPose();
+    }
+
+    /**
+     * Renders an irregular, distorted energy mass instead of a clean sphere.
+     * Vertex positions are displaced by layered sine waves based on their angle,
+     * breaking the spherical silhouette into a lumpy, shifting energy shape.
+     *
+     * @param distortionAmount 0 = perfect sphere, 0.5 = very irregular
+     */
+    private static void renderDistortedEnergyMass(PoseStack poseStack, VertexConsumer consumer,
+                                                  int packedLight, float radius, int stacks, int slices, float time, float distortionAmount) {
+
+        Matrix4f matrix = poseStack.last().pose();
+        Matrix3f normal = poseStack.last().normal();
+
+        for (int i = 0; i < stacks; i++) {
+            float phi0 = (float) Math.PI * i / stacks;
+            float phi1 = (float) Math.PI * (i + 1) / stacks;
+
+            for (int j = 0; j < slices; j++) {
+                float theta0 = 2.0F * (float) Math.PI * j / slices;
+                float theta1 = 2.0F * (float) Math.PI * (j + 1) / slices;
+
+                // Render two triangles per quad
+                renderDistortedVertex(matrix, normal, consumer, packedLight, radius, phi0, theta0, time, distortionAmount);
+                renderDistortedVertex(matrix, normal, consumer, packedLight, radius, phi1, theta0, time, distortionAmount);
+                renderDistortedVertex(matrix, normal, consumer, packedLight, radius, phi1, theta1, time, distortionAmount);
+
+                renderDistortedVertex(matrix, normal, consumer, packedLight, radius, phi0, theta0, time, distortionAmount);
+                renderDistortedVertex(matrix, normal, consumer, packedLight, radius, phi1, theta1, time, distortionAmount);
+                renderDistortedVertex(matrix, normal, consumer, packedLight, radius, phi0, theta1, time, distortionAmount);
+            }
+        }
+    }
+
+    private static void renderDistortedVertex(Matrix4f matrix, Matrix3f normal, VertexConsumer consumer,
+                                              int packedLight, float baseRadius, float phi, float theta, float time, float distortionAmount) {
+
+        // Layered sine displacement — creates irregular, organic surface
+        float distortion = 1.0F
+                + Mth.sin(phi * 3.0F + time * 1.1F) * distortionAmount
+                + Mth.sin(theta * 4.0F + time * 0.7F) * distortionAmount * 0.6F
+                + Mth.sin(phi * 7.0F + theta * 5.0F + time * 2.3F) * distortionAmount * 0.3F;
+
+        float r = baseRadius * distortion;
+
+        float x = r * Mth.sin(phi) * Mth.cos(theta);
+        float y = r * Mth.cos(phi);
+        float z = r * Mth.sin(phi) * Mth.sin(theta);
+
+        float u = theta / ((float) Math.PI * 2);
+        float v = phi / (float) Math.PI;
+
+        consumer.addVertex(matrix, x, y, z)
+                .setColor(1.0F, 1.0F, 1.0F, 0.85F)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(packedLight)
+                .setNormal(x / r, y / r, z / r);
+    }
+
+    /**
+     * Renders a tapered, segmented tendril that jags slightly at each segment.
+     */
+    private static void renderEnergyTendril(PoseStack poseStack, VertexConsumer consumer,
+                                            int packedLight, float length, float time) {
+
+        int segments = 6;
+        float segmentLength = length / segments;
+
+        for (int i = 0; i < segments; i++) {
+            poseStack.pushPose();
+
+            float progress = (float) i / segments;
+            float thickness = 0.06F * (1.0F - progress); // taper toward tip
+
+            // Each segment kinks slightly off-axis
+            float kinkX = Mth.sin(time * 3.0F + i * 1.4F) * 18.0F;
+            float kinkZ = Mth.cos(time * 2.7F + i * 1.1F) * 18.0F;
+            poseStack.translate(0, segmentLength * i, 0);
+            poseStack.mulPose(Axis.XP.rotationDegrees(kinkX));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(kinkZ));
+
+            renderEnergyOrb(poseStack, consumer, packedLight, thickness);
+
+            poseStack.popPose();
+        }
     }
 
     private static void renderEnergySphere(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, float radius, int longitudeSegments, int latitudeSegments) {

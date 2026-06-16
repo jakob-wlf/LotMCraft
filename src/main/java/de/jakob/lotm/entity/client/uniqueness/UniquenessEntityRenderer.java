@@ -41,9 +41,10 @@ public class UniquenessEntityRenderer extends EntityRenderer<UniquenessEntity> {
 
         float tick = entity.getTicksExisted() + partialTick;
 
+        poseStack.scale(1, 1, 1);
         poseStack.translate(0, .75, 0);
 
-        poseStack.mulPose(Axis.YP.rotationDegrees(tick * 3f));
+        poseStack.mulPose(Axis.YP.rotationDegrees(tick * .5f));
 
         // Render the item using the game's item renderer
         Minecraft mc = Minecraft.getInstance();

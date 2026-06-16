@@ -49,7 +49,7 @@ public class PureWhiteLightAbility extends Ability {
             return;
         }
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 50* (int) Math.max(multiplier(entity)/4,1), 4);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 50* (int) multiplier(entity), 4);
         for(int i = 0; i < 50; i++) {
             BlockPos pos = BlockPos.containing(targetLoc);
             BlockState blockState = serverLevel.getBlockState(pos);
@@ -75,7 +75,7 @@ public class PureWhiteLightAbility extends Ability {
                 });
             }
 
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), DamageLookup.lookupDamage(1, 1.2) * (int) Math.max(multiplier(entity)/4,1), finalTargetLoc, true, false, false, 15, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), DamageLookup.lookupDamage(1, 1.2) * multiplier(entity), finalTargetLoc, true, false, false, 15, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
 
             radius.addAndGet(0.8);
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));

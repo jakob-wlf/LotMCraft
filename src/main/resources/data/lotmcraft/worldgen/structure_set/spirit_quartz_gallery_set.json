@@ -1,0 +1,16 @@
+{
+  "structures": [
+    {
+      "structure": "lotmcraft:spirit_quartz_gallery",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+
+    "salt": 436776,
+    "spacing": 10,
+    "separation": 2,
+    "max_tries": 100
+  }
+}

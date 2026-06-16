@@ -10,6 +10,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.UUID;
+
 public class HealthAction extends ActionBase {
     public HealthAction(ActionContextBase context) {
         super(context);
@@ -26,7 +28,7 @@ public class HealthAction extends ActionBase {
     }
 
     @Override
-    public void action(Level level, LivingEntity entity) {
+    public void action(Level level, LivingEntity entity, UUID casterId) {
         if(!(context instanceof ActionNumberContext numbers)) return;
 
         float value = numbers.isInt ? numbers.intValue : (float) numbers.doubleValue;

@@ -13,6 +13,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.UUID;
+
 public class SealAction extends ActionBase {
     public SealAction(ActionContextBase context) {
         super(context);
@@ -29,7 +31,7 @@ public class SealAction extends ActionBase {
     }
 
     @Override
-    public void action(Level level, LivingEntity entity) {
+    public void action(Level level, LivingEntity entity, UUID casterId) {
         DisabledAbilitiesComponent comp = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
         comp.disableAbilityUsage("sealed_visionary");
 

@@ -19,6 +19,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import org.checkerframework.checker.units.qual.C;
 
+import java.util.UUID;
+
 public class SayAction extends ActionBase {
     public SayAction(ActionContextBase context) {
         super(context);
@@ -35,7 +37,7 @@ public class SayAction extends ActionBase {
     }
 
     @Override
-    public void action(Level level, LivingEntity entity) {
+    public void action(Level level, LivingEntity entity, UUID casterId) {
         if(!(context instanceof ActionStringContext string)) return;
         if(!(entity instanceof ServerPlayer player)) return;
 

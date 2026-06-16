@@ -45,7 +45,7 @@ public class AvatarEntity extends PathfinderMob {
     private static final String DEFAULT_SKIN = "amon";
     private static final String DEFAULT_PATHWAY = "error";
     private static final int DEFAULT_SEQUENCE = 5;
-    private static final int MAX_LIFETIME_TICKS = 20 * 60 * 2; // 1 hour
+    private static final int MAX_LIFETIME_TICKS = 20 * 60 * 2; // 2 mins
     private static final int RECIPE_DROP_CHANCE = 4;
     private static final UUID NULL_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
@@ -103,16 +103,16 @@ public class AvatarEntity extends PathfinderMob {
 
         if (!this.level().isClientSide) {
             // Validate owner exists
-            Entity owner = ((ServerLevel) level()).getEntity(getOriginalOwner());
-            if (!(owner instanceof LivingEntity livingOwner)) {
-                this.discard();
-                return;
-            }
+//            Entity owner = ((ServerLevel) level()).getEntity(getOriginalOwner());
+//            if (!(owner instanceof LivingEntity livingOwner)) {
+//                this.discard();
+//                return;
+//            }
 
-            this.ownerEntity = livingOwner;
+            //this.ownerEntity = livingOwner;
 
             // Sync beyonder data
-            if (this.sequence != -1 && !this.pathway.equals("none")) {
+            if (this.sequence != LOTMCraft.NON_BEYONDER_SEQ && !this.pathway.equals("none")) {
                 BeyonderData.setBeyonder(this, this.pathway, sequence);
                 syncEntityDataWithBeyonderData();
             }
@@ -226,7 +226,22 @@ public class AvatarEntity extends PathfinderMob {
 
         // Add movement and targeting goals
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Monster.class, true));
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Monster.class, true));
+
+        this.targetSelector.addGoal(
+                3,
+                new NearestAttackableTargetGoal<>(
+                        this,
+                        Player.class,
+                        10,
+                        true,
+                        false,
+                        player -> {
+                            UUID owner = getOriginalOwner();
+                            return !player.getUUID().equals(owner) && !player.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(owner);
+                        }
+                )
+        );
     }
 
     // ========================= Tick Logic =========================
@@ -239,16 +254,16 @@ public class AvatarEntity extends PathfinderMob {
         }
 
         // Handle lifetime limit
-        if (tickCount > MAX_LIFETIME_TICKS) {
-            this.discard();
-            return;
-        }
+//        if (tickCount > MAX_LIFETIME_TICKS) {
+//            this.discard();
+//            return;
+//        }
 
         // Validate owner is still alive
-        if (ownerEntity == null || !ownerEntity.isAlive()) {
-            this.discard();
-            return;
-        }
+//        if (ownerEntity == null || !ownerEntity.isAlive()) {
+//            this.discard();
+//            return;
+//        }
 
         // Validate targets
         validateTarget(getTarget());

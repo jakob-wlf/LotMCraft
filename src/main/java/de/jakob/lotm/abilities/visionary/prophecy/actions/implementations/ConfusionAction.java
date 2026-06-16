@@ -11,6 +11,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.UUID;
+
 public class ConfusionAction extends ActionBase {
     public ConfusionAction(ActionContextBase context) {
         super(context);
@@ -27,7 +29,7 @@ public class ConfusionAction extends ActionBase {
     }
 
     @Override
-    public void action(Level level, LivingEntity entity) {
+    public void action(Level level, LivingEntity entity, UUID casterId) {
         AbilityUtil.ignoreAllies.put(entity.getUUID(), true);
 
         ServerScheduler.scheduleDelayed(20 * 30, () -> {

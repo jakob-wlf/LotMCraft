@@ -1,6 +1,7 @@
 package de.jakob.lotm.abilities.death;
 
 import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -54,6 +55,9 @@ public class PaleEyeAbility extends ToggleAbility {
 
         int casterSequence = AbilityUtil.getSeqWithArt(entity, this);
         int targetSequence = BeyonderData.getSequence(targetEntity);
+
+        if(VisionaryHandler.shouldStayInvisible(casterSequence, targetEntity))
+            return;
 
         ParticleUtil.spawnParticles((ServerLevel) level, paleDust, targetEntity.getEyePosition(), 30, 0.5, 0.5, 0.5, 0.1);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SOUL, targetEntity.getEyePosition(), 30, 0.5, 0.5, 0.5, 0.05);

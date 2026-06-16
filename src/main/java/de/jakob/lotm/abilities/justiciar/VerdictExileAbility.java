@@ -50,7 +50,7 @@ public class VerdictExileAbility extends Ability {
         if (level.isClientSide) return;
         ServerLevel serverLevel = (ServerLevel) level;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 25 * (int) Math.max(multiplier(entity) / 4, 1), 1.4f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (25 * multiplier(entity)), 1.4f);
         if (target == null) {
             if (entity instanceof ServerPlayer sp) {
                 sp.sendSystemMessage(Component.translatable("ability.lotmcraft.verdict_exile.no_target").withStyle(ChatFormatting.RED));
@@ -81,7 +81,7 @@ public class VerdictExileAbility extends Ability {
             );
             target.setDeltaMovement(finalAwayDir.x * pushHorizontal, pushVertical, finalAwayDir.z * pushHorizontal);
             target.hurtMarked = true;
-            target.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 200 * (int) Math.max(multiplier(entity) / 4, 1), 0, false, false));
+            target.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, (int) (200 * multiplier(entity)), 0, false, false));
 
             serverLevel.playSound(null, BlockPos.containing(target.position()), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.5f, 0.5f);
             serverLevel.playSound(null, BlockPos.containing(target.position()), SoundEvents.ENDER_DRAGON_FLAP, SoundSource.PLAYERS, 1.0f, 1.4f);
