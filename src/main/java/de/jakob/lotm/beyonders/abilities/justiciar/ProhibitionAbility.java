@@ -105,6 +105,7 @@ public class ProhibitionAbility extends SelectableAbility {
                 .sorted(Comparator.comparingLong(z -> z.expiryTick))
                 .toList());
         while (ownZones.size() >= maxZonesPerType) {
+            if(ownZones.isEmpty() || ACTIVE_ZONES.isEmpty()) break;
             ACTIVE_ZONES.remove(ownZones.remove(0));
         }
 

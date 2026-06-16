@@ -48,6 +48,14 @@ public class ModEntities {
             ENTITY_TYPES.register("spear_of_light", () -> EntityType.Builder.<SpearOfLightProjectileEntity>of(SpearOfLightProjectileEntity::new, MobCategory.MISC)
                     .sized(.35f, .35f).noSave().build("spear_of_light"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<BeyonderSpawnerEntity>> BEYONDER_SPAWNER =
+            ENTITY_TYPES.register("beyonder_spawner",
+                    () -> EntityType.Builder.of(BeyonderSpawnerEntity::new, MobCategory.MISC)
+                            .sized(0.0f, 0.0f)
+                            .clientTrackingRange(0)
+                            .updateInterval(Integer.MAX_VALUE)
+                            .build("beyonder_spawner"));
+
     public static final Supplier<EntityType<SpearOfDestructionProjectileEntity>> SPEAR_OF_DESTRUCTION =
             ENTITY_TYPES.register("spear_of_destruction", () -> EntityType.Builder.<SpearOfDestructionProjectileEntity>of(SpearOfDestructionProjectileEntity::new, MobCategory.MISC)
                     .sized(.35f, .35f).noSave().build("spear_of_destruction"));

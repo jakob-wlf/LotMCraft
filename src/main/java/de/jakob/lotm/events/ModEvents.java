@@ -221,6 +221,7 @@ public class ModEvents {
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         BeyonderCommand.register(event.getDispatcher());
+        SpawnBeyonderSpawnerCommand.register(event.getDispatcher());
         LuckCheckCommand.register(event.getDispatcher());
         AllyRequestCommands.register(event.getDispatcher());
         AllyCommand.register(event.getDispatcher());
