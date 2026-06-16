@@ -37,16 +37,7 @@ public class CollectCharacteristicsQuest extends Quest {
 
     @Override
     public List<ItemStack> getRewards(ServerPlayer player) {
-        List<ItemStack> rewards = new ArrayList<>();
-
-        Random random = new Random();
-
-        int rewardSequence = random.nextBoolean() ? 5 : 6;
-        BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, rewardSequence);
-        if (potion != null) {
-            rewards.add(new ItemStack(potion));
-        }
-        return rewards;
+        return new ArrayList<>(currencyRewardForSequence(6, new Random()));
     }
 
     @Override

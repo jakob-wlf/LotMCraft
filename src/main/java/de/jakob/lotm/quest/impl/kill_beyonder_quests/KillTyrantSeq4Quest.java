@@ -18,11 +18,7 @@ public class KillTyrantSeq4Quest extends KillBeyonderQuest {
 
     @Override
     public List<ItemStack> getRewards(ServerPlayer player) {
-        ArrayList<ItemStack> rewards = new ArrayList<>();
-        BeyonderPotion potion = PotionItemHandler.selectPotionOfPathwayAndSequence(new Random(), "tyrant", 4);
-        if(potion != null) {
-            rewards.add(new ItemStack(potion));
-        }
+        List<ItemStack> rewards = new ArrayList<>(currencyRewardForSequence(4, new Random()));
         rewards.add(new ItemStack(Items.DIAMOND, 25));
         rewards.add(new ItemStack(Items.PRISMARINE, 64));
         return rewards;

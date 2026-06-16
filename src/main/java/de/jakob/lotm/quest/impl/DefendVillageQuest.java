@@ -37,28 +37,8 @@ public class DefendVillageQuest extends Quest {
 
     @Override
     public List<ItemStack> getRewards(ServerPlayer player) {
-        ArrayList<ItemStack> rewards = new ArrayList<>();
-
-        if(BeyonderData.isBeyonder(player) && BeyonderData.implementedRecipes.containsKey(BeyonderData.getPathway(player))) {
-            String pathway = BeyonderData.getPathway(player);
-            BeyonderPotion potion = PotionItemHandler.selectPotionOfPathwayAndSequence(new Random(), pathway, 7);
-            if(potion != null) {
-                rewards.add(new ItemStack(potion));
-            }
-        }
-        else {
-            QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
-            int completedQuestCount = component.getCompletedQuests().size();
-
-            long randomSeed = (player.getUUID().getLeastSignificantBits() ^ player.getUUID().getMostSignificantBits()) + completedQuestCount;
-            Random random = new Random(randomSeed);
-            BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, 7);
-            if(potion != null) {
-                rewards.add(new ItemStack(potion));
-            }
-        }
-
-        rewards.add(new ItemStack(DIAMOND, 5));
+        List<ItemStack> rewards = new ArrayList<>(currencyRewardForSequence(7, new Random()));
+        rewards.add(new ItemStack(Items.DIAMOND, 5));
         return rewards;
     }
 

@@ -52,16 +52,8 @@ public class FindStructureQuest extends Quest {
 
     @Override
     public List<ItemStack> getRewards(ServerPlayer player) {
-        List<ItemStack> rewards = new ArrayList<>();
-
-        Random random = new Random();
-
-        int seq = random.nextBoolean() ? 7 : 8;
-        BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, seq);
-        if (potion != null) {
-            rewards.add(new ItemStack(potion));
-        }
-        return rewards;
+        int seq = new Random().nextBoolean() ? 7 : 8;
+        return new ArrayList<>(currencyRewardForSequence(seq, new Random()));
     }
 
     @Override

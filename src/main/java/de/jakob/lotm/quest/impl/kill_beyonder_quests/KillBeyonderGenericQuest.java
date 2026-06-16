@@ -21,24 +21,7 @@ public class KillBeyonderGenericQuest extends KillBeyonderQuest {
 
     @Override
     public List<ItemStack> getRewards(ServerPlayer player) {
-        ArrayList<ItemStack> rewards = new ArrayList<>();
-
-        if(BeyonderData.isBeyonder(player) && BeyonderData.implementedRecipes.containsKey(BeyonderData.getPathway(player))) {
-            String pathway = BeyonderData.getPathway(player);
-            BeyonderPotion potion = PotionItemHandler.selectPotionOfPathwayAndSequence(new Random(), pathway, beyonderSequence);
-            if(potion != null) {
-                rewards.add(new ItemStack(potion));
-            }
-        }
-        else {
-            Random random = new Random();
-
-            BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, beyonderSequence);
-            if(potion != null) {
-                rewards.add(new ItemStack(potion));
-            }
-        }
-        return rewards;
+        return new ArrayList<>(currencyRewardForSequence(beyonderSequence, new Random()));
     }
 
     @Override
