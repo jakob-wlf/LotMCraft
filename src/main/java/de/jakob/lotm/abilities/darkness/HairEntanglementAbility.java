@@ -142,7 +142,7 @@ public class HairEntanglementAbility extends Ability {
                 return;
             }
 
-            targetEntity.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 40, 10, false, false, false));
+            targetEntity.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 20, 10, false, false, false));
             targetEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40, 10, false, false, false));
             targetEntity.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 40, 10, false, false, false));
             targetEntity.setDeltaMovement(Vec3.ZERO);

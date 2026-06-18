@@ -73,7 +73,7 @@ public abstract class Ability {
 
     public Ability(String id, float cooldown, String... interactionFlags) {
         this.id = id;
-        this.cooldown = Math.round(cooldown * 20);
+        this.cooldown = Math.round(cooldown * 40);
         this.interactionFlags = interactionFlags;
         this.artifactScalingMap = new HashMap<>(60);
     }
@@ -179,7 +179,7 @@ public abstract class Ability {
     }
 
     public float multiplier(LivingEntity entity) {
-        return (float) AbilityUtil.getMultiplierWithArt(entity, this);
+        return (float) AbilityUtil.getMultiplierWithArt(entity, this) /2 ;
     }
 
     public void onHold(Level level, LivingEntity entity) {

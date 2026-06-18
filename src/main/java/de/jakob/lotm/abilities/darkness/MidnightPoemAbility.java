@@ -39,7 +39,7 @@ public class MidnightPoemAbility extends SelectableAbility {
     private final DustParticleOptions dustBig = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), 10f);
 
     public MidnightPoemAbility(String id) {
-        super(id, 4f, "calming");
+        super(id, 16f, "calming");
         interactionRadius = 20;
     }
 
