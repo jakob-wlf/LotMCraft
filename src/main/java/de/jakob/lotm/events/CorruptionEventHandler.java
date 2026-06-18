@@ -71,12 +71,12 @@ public class CorruptionEventHandler {
         }
 
         // Players exempted from corruption leakage gain nothing
-        if (corruptionComp.isLeakageExempt()) return;
+        //if (corruptionComp.isLeakageExempt()) return;
 
         // Global leakage override (set by River Authority owner)
-        if (entity instanceof ServerPlayer sp && sp.server != null) {
-            if (de.jakob.lotm.attachments.DeathImprintData.get(sp.server).isGlobalLeakageOff()) return;
-        }
+        //if (entity instanceof ServerPlayer sp && sp.server != null) {
+        //    if (de.jakob.lotm.attachments.DeathImprintData.get(sp.server).isGlobalLeakageOff()) return;
+        //}
 
         // Original sefirot owner inside their own dimension is shielded from all corruption gain
         if (entity instanceof ServerPlayer sp && sp.server != null) {
