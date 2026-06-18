@@ -7,6 +7,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.util.playerMap.Characteristic;
+import de.jakob.lotm.util.playerMap.PlayerMap;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -48,6 +49,8 @@ public record CharacteristicSplittingPacket(String pathway, int sequence) implem
                 // Given the description, it's a menu to remove a characteristic and place it in inventory.
                 
                 component.setCharacteristic(currentStack - 1, packet.sequence(), packet.pathway());
+                PlayerMap playerMap = PlayerMap.get(player.serverLevel());
+                playerMap.setStack(player, currentStack -1, packet.sequence(), packet.pathway());
                 de.jakob.lotm.events.BeyonderDataTickHandler.invalidateCache(player);
                 PacketHandler.syncBeyonderDataToPlayer(player);
 
