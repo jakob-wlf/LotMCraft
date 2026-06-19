@@ -115,6 +115,11 @@ public class FlamingJumpAbility extends Ability {
             return nextBestBlock;
         }
 
+        LivingEntity burningEntity = AbilityUtil.getTargetEntity(entity, 40, 2.5f, true, true);
+        if(burningEntity != null && burningEntity.getRemainingFireTicks() > 0) {
+            return burningEntity.blockPosition();
+        }
+
         if(!checkNearestIfNoneSelected) {
             return null;
         }

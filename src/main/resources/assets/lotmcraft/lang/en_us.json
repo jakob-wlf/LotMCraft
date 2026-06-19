@@ -696,6 +696,10 @@
   "lotmcraft.travelers_door_ability.description": "Travel through Spirit World to reach your destination, or enter it by yourself",
   "ability.lotmcraft.travelers_door.coordinates": "Set Coordinates",
   "ability.lotmcraft.travelers_door.spirit_world": "Spirit World",
+  "lotmcraft.blink_afterimage_ability": "Blink Afterimages",
+  "lotmcraft.blink_afterimage_ability.description": "When activated an afterimage will be left behind each time you blink, and will attack your opponent with recorded abilities. Will consume a Worm of Stars. ",
+  "lotmcraft.door_transfiguration_ability": "Door Transfiguration",
+  "lotmcraft.door_transfiguration_ability.description": "Transform into illusory doors to avoid incoming damage",
   "lotmcraft.space_concealment_ability": "Space Concealment",
   "lotmcraft.space_concealment_ability.description": "Separate a fixed space. Sneak while using to remove all concealed spaces. Use Collapse spaces to destroy anything inside and hurt entities.",
   "ability.lotmcraft.space_concealment.other": "Target Other",
@@ -1254,6 +1258,8 @@
   "item.lotmcraft.passive_luck_accumulation_ability": "Passive Luck Accumulation",
   "item.lotmcraft.passive_luck_accumulation_ability.description": "Passively accumulate luck",
 
+  "item.lotmcraft.danger_premonition_ability": "Danger Premonition",
+  "item.lotmcraft.danger_premonition_ability.description": "There is a chance you can foresee attacks and dodge",
   "item.lotmcraft.acrobatics_ability": "Acrobatics",
   "item.lotmcraft.acrobatics_ability.description": "While Sneaking, you can jump twice as high",
   "item.lotmcraft.paper_dagger_ability": "Paper Daggers",
@@ -2193,6 +2199,7 @@
   "lotm.copied_ability_wheel.no_abilities": "No copied abilities available",
   "lotmcraft.griefing_enabled_required": "Enable griefing for this ability to work",
   "lotm.accept": "Accept",
+  "lotm.dodged_attack": "Dodged Attack",
 
   "lotmcraft.own_praying": "You have heard your own praying",
   "lotmcraft.far_away_praying": "You have heard whispers of praying, but you are too far away to hear them clearly",

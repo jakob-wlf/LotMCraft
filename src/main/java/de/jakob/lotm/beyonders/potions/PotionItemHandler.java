@@ -545,44 +545,42 @@ public class PotionItemHandler {
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
 
-        
 
-
-    public static DeferredItem<Item> LAWYER_POTION = ITEMS.registerItem("lawyer_potion", properties ->
-                    new BeyonderPotion(properties, 9, "black_emperor"),
-            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-
-    public static DeferredItem<Item> BARBARIAN_POTION = ITEMS.registerItem("barbarian_potion", properties ->
-                    new BeyonderPotion(properties, 8, "black_emperor"),
-            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-
-    public static DeferredItem<Item> BRIBER_POTION = ITEMS.registerItem("briber_potion", properties ->
-                    new BeyonderPotion(properties, 7, "black_emperor"),
-            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-
-    public static DeferredItem<Item> BARON_OF_CORRUPTION_POTION = ITEMS.registerItem("baron_of_corruption_potion", properties ->
-                    new BeyonderPotion(properties, 6, "black_emperor"),
-            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-
-    public static DeferredItem<Item> MENTOR_OF_DISORDER_POTION = ITEMS.registerItem("mentor_of_disorder_potion", properties ->
-                    new BeyonderPotion(properties, 5, "black_emperor"),
-            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-
-    public static DeferredItem<Item> EARL_OF_THE_FALLEN_POTION = ITEMS.registerItem("earl_of_the_fallen_potion", properties ->
-                    new BeyonderPotion(properties, 4, "black_emperor"),
-            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-
-    public static DeferredItem<Item> FRENZIED_MAGE_POTION = ITEMS.registerItem("frenzied_mage_potion", properties ->
-                    new BeyonderPotion(properties, 3, "black_emperor"),
-            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-
-    public static DeferredItem<Item> DUKE_OF_ENTROPY_POTION = ITEMS.registerItem("duke_of_entropy_potion", properties ->
-                    new BeyonderPotion(properties, 2, "black_emperor"),
-            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
-
-    public static DeferredItem<Item> PRINCE_OF_ABOLITION_POTION = ITEMS.registerItem("prince_of_abolition_potion", properties ->
-                    new BeyonderPotion(properties, 1, "black_emperor"),
-            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+//    public static DeferredItem<Item> LAWYER_POTION = ITEMS.registerItem("lawyer_potion", properties ->
+//                    new BeyonderPotion(properties, 9, "black_emperor"),
+//            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+//
+//    public static DeferredItem<Item> BARBARIAN_POTION = ITEMS.registerItem("barbarian_potion", properties ->
+//                    new BeyonderPotion(properties, 8, "black_emperor"),
+//            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+//
+//    public static DeferredItem<Item> BRIBER_POTION = ITEMS.registerItem("briber_potion", properties ->
+//                    new BeyonderPotion(properties, 7, "black_emperor"),
+//            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+//
+//    public static DeferredItem<Item> BARON_OF_CORRUPTION_POTION = ITEMS.registerItem("baron_of_corruption_potion", properties ->
+//                    new BeyonderPotion(properties, 6, "black_emperor"),
+//            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+//
+//    public static DeferredItem<Item> MENTOR_OF_DISORDER_POTION = ITEMS.registerItem("mentor_of_disorder_potion", properties ->
+//                    new BeyonderPotion(properties, 5, "black_emperor"),
+//            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+//
+//    public static DeferredItem<Item> EARL_OF_THE_FALLEN_POTION = ITEMS.registerItem("earl_of_the_fallen_potion", properties ->
+//                    new BeyonderPotion(properties, 4, "black_emperor"),
+//            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+//
+//    public static DeferredItem<Item> FRENZIED_MAGE_POTION = ITEMS.registerItem("frenzied_mage_potion", properties ->
+//                    new BeyonderPotion(properties, 3, "black_emperor"),
+//            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+//
+//    public static DeferredItem<Item> DUKE_OF_ENTROPY_POTION = ITEMS.registerItem("duke_of_entropy_potion", properties ->
+//                    new BeyonderPotion(properties, 2, "black_emperor"),
+//            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+//
+//    public static DeferredItem<Item> PRINCE_OF_ABOLITION_POTION = ITEMS.registerItem("prince_of_abolition_potion", properties ->
+//                    new BeyonderPotion(properties, 1, "black_emperor"),
+//            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
 
     public static DeferredItem<Item> EMPTY_BOTTLE = ITEMS.registerItem("empty_bottle", Item::new);

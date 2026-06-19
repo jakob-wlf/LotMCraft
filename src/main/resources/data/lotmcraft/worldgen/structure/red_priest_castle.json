@@ -7,7 +7,7 @@
 
   "max_distance_from_center": 80,
 
-  "biomes": "#lotmcraft:has_structure/red_priest_castle_biomes",
+  "biomes": "#minecraft:is_mountain",
 
 
   "step": "surface_structures",
@@ -16,9 +16,11 @@
     "absolute": 1
   },
 
+  "locate_offset": [0, -8, 0],
+
   "terrain_adaptation": "beard_box",
 
-  "project_start_to_heightmap": "WORLD_SURFACE_WG",
+  "project_start_to_heightmap": "MOTION_BLOCKING_NO_LEAVES",
 
   "liquid_settings": "apply_waterlogging",
 

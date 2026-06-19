@@ -2,5 +2,9 @@
   "replace": false,
 
   "values": [
+    "minecraft:stony_peaks",
+    "minecraft:jagged_peaks",
+    "minecraft:frozen_peaks",
+    "minecraft:grove_peaks"
   ]
 }

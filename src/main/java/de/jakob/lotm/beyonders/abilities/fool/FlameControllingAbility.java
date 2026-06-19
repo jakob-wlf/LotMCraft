@@ -41,7 +41,6 @@ public class FlameControllingAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
-        float multiplier = multiplier(entity);
         Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(-.65, .65), random.nextDouble(-.1, .6));
         Vec3 direction = AbilityUtil.getTargetLocation(entity, 10* (int) multiplier(entity), 1.4f).subtract(startPos).normalize();
 
@@ -58,7 +57,7 @@ public class FlameControllingAbility extends Ability {
 
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, DamageLookup.lookupDamage(7, .83) * multiplier(entity), pos, true, false, true, 0, 20 * 5)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2f, DamageLookup.lookupDamage(7, .85) * multiplier(entity), pos, true, false, true, 0, 20 * 5)) {
                 hasHit.set(true);
                 return;
             }

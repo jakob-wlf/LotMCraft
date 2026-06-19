@@ -37,7 +37,7 @@ public class SpaceConcealmentAbility extends SelectableAbility {
     private static final Map<UUID, List<ApprenticeDoorEntity>> playerDoors = new ConcurrentHashMap<>();
 
     public SpaceConcealmentAbility(String id) {
-        super(id, 40f);
+        super(id, 5f);
         canBeCopied = false;
         canBeShared = false;
     }

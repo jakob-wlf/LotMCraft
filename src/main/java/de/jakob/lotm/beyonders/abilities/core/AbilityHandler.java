@@ -204,6 +204,8 @@ public class AbilityHandler {
         abilities.add(new TravelersDoorAbility("travelers_door_ability"));
         abilities.add(new InvisibleHandAbility("invisible_hand_ability"));
         abilities.add(new SpaceConcealmentAbility("space_concealment_ability"));
+        abilities.add(new DoorTransfigurationAbility("door_transfiguration_ability"));
+        abilities.add(new BlinkAfterImageAbility("blink_afterimage_ability"));
         abilities.add(new ExileAbility("exile_ability"));
         abilities.add(new DoorSubstitutionAbility("door_substitution_ability"));
         abilities.add(new WanderingAbility("wandering_ability"));

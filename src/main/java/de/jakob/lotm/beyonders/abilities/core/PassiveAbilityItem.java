@@ -152,6 +152,10 @@ public abstract class PassiveAbilityItem extends Item {
 
     }
 
+    protected static int getColorForPathway(String pathway) {
+        return BeyonderData.pathwayInfos.containsKey(pathway) ? BeyonderData.pathwayInfos.get(pathway).color() : 0xFFFFFF;
+    }
+
     protected void applyPotionEffects(LivingEntity entity, List<MobEffectInstance> effects) {
         for (MobEffectInstance effect : effects) {
             entity.addEffect(new MobEffectInstance(

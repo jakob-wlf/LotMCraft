@@ -6,6 +6,7 @@ import com.mojang.math.Axis;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.return_portal.HighSequenceDoorsModel;
 import de.jakob.lotm.rendering.models.door.DoorHighMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.door.DoorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.fool.FoolMythicalCreatureModel;
@@ -56,7 +57,8 @@ public class TransformationRenderer {
     private static DoorHighMythicalCreatureModel<Entity> doorHighMythicalCreatureModel;
     private static final ResourceLocation doorHighMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/door_high.png");
 
-
+    private static HighSequenceDoorsModel<Entity> mysticalDoorsModel;
+    private static final ResourceLocation mysticalDoorsTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_3.png");
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?> event) {
@@ -69,6 +71,12 @@ public class TransformationRenderer {
 
         if(component.shouldCancelDefaultRendering()) {
             event.setCanceled(true);
+        }
+
+        // Mystical Doors: The digit after 200 shows the size of the mystical doors, allowing the doors to grow bigger when hit more often
+        if(component.getTransformationIndex() >= 200 && component.getTransformationIndex() <= 220) {
+            renderMysticalDoor(event.getPoseStack(), event.getMultiBufferSource(),
+                    event.getPackedLight(), entity, event.getPartialTick(), Math.clamp(component.getTransformationIndex() - 200, 1, 12));
         }
 
         switch (component.getTransformationIndex()) {
@@ -87,6 +95,42 @@ public class TransformationRenderer {
             }
 
         }
+    }
+
+    private static void renderMysticalDoor(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick, int sizeMultiplier) {
+        if (mysticalDoorsModel == null) {
+            mysticalDoorsModel = new HighSequenceDoorsModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(HighSequenceDoorsModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + (sizeMultiplier * .25f) - .25, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        float actualSize = sizeMultiplier * .25f;
+        poseStack.scale(actualSize, -actualSize, actualSize);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(mysticalDoorsTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        mysticalDoorsModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        mysticalDoorsModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
     }
 
     private static boolean renderMythicalCreature(String path,
@@ -195,7 +239,7 @@ public class TransformationRenderer {
 
         poseStack.pushPose();
 
-        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 2, 0.0);
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 1.7, 0.0);
 
         float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
         poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));

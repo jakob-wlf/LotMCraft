@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class AirBulletAbility extends Ability {
     public AirBulletAbility(String id) {
-        super(id, 1.5f);
+        super(id, .75f);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class AirBulletAbility extends Ability {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        double rawDamage = Math.min(DamageLookup.lookupDamage(entitySeq, .9), DamageLookup.lookupDamage(3, .7));
+        double rawDamage = Math.min(DamageLookup.lookupDamage(entitySeq, 1), DamageLookup.lookupDamage(3, .95f));
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 10, () -> {
             if(hasHit.get())
@@ -59,7 +59,7 @@ public class AirBulletAbility extends Ability {
 
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, rawDamage * (int) multiplier(entity), pos, true, false, true, 0)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, rawDamage * multiplier(entity), pos, true, false, true, 0)) {
                 hasHit.set(true);
                 return;
             }
