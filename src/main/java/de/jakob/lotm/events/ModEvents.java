@@ -240,6 +240,7 @@ public class ModEvents {
         KillCountCommand.register(event.getDispatcher());
         UniquenessCommand.register(event.getDispatcher());
         SefirotCommand.register(event.getDispatcher());
+        ResetCapCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

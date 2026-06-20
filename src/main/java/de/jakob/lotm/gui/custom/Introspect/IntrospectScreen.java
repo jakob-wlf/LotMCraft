@@ -57,6 +57,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private boolean showActing = false;
     private Button toggleActingButton;
 
+    private boolean showMissedActing = false;
+    private Button toggleMissedActingButton;
+
     private enum Tab {
         ABILITY_WHEEL,
         ABILITY_BAR,
@@ -308,6 +311,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             if (showAbilities) {
                                 showQuests = false;
                                 showActing = false;
+                                showMissedActing = false;
                             }
                             button.setMessage(Component.literal(showAbilities ? "< Hide" : "Abilities >"));
                             updateButtonPositions();
@@ -325,6 +329,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             if (showQuests) {
                                 showAbilities = false;
                                 showActing = false;
+                                showMissedActing = false;
                             }
                             button.setMessage(Component.literal(showQuests ? "< Hide" : "Quests >"));
                             updateButtonPositions();
@@ -342,6 +347,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             if (showActing) {
                                 showAbilities = false;
                                 showQuests = false;
+                                showMissedActing = false;
                             }
                             button.setMessage(Component.literal(showActing ? "< Hide" : "Acting >"));
                             updateButtonPositions();
@@ -350,8 +356,26 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 .build();
         this.addRenderableWidget(toggleActingButton);
 
+        int missedActingButtonX = baseLeftPos - 65;
+        int missedActingButtonY = this.topPos + 85;
+
+        toggleMissedActingButton = Button.builder(Component.literal(showMissedActing ? "< Hide" : "Missed >"),
+                        button -> {
+                            showMissedActing = !showMissedActing;
+                            if (showMissedActing) {
+                                showAbilities = false;
+                                showQuests = false;
+                                showActing = false;
+                            }
+                            button.setMessage(Component.literal(showMissedActing ? "< Hide" : "Missed >"));
+                            updateButtonPositions();
+                        })
+                .bounds(missedActingButtonX, missedActingButtonY, 60, 20)
+                .build();
+        this.addRenderableWidget(toggleMissedActingButton);
+
         int messageButtonX = baseLeftPos - 65;
-        int messageButtonY = this.topPos + 85;
+        int messageButtonY = this.topPos + 110;
 
         messageButton = Button.builder(Component.literal("Honorific"),
                         button -> openHonorificNamesMenu())
@@ -364,7 +388,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         if (ClientUniquenessCache.hasUniqueness() && menu.getSequence() == 1) {
             int apotheosisButtonX = baseLeftPos - 65;
-            int apotheosisButtonY = this.topPos + 110;
+            int apotheosisButtonY = this.topPos + 135;
 
             boolean canApotheosize = false;
             if (this.minecraft != null && this.minecraft.player != null) {
@@ -386,7 +410,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         if (isCreativeOp()) {
             int allAbilitiesButtonX = baseLeftPos - 65;
-            int allAbilitiesButtonY = this.topPos + 135;
+            int allAbilitiesButtonY = this.topPos + 160;
 
             toggleAllAbilitiesButton = Button.builder(
                             Component.literal(showAllAbilities ? "All: ON" : "All: OFF")
@@ -571,6 +595,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if(showActing) {
             renderActingPanel(guiGraphics);
         }
+
+        if (showMissedActing) {
+            renderMissedActingPanel(guiGraphics);
+        }
     }
 
     private void renderActingPanel(GuiGraphics guiGraphics) {
@@ -625,6 +653,73 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             guiGraphics.drawString(this.font, noReqs, panelX + (ACTING_PANEL_WIDTH - textWidth) / 2,
                     panelY + ACTING_PANEL_HEIGHT / 2 - this.font.lineHeight / 2, 0xFF888888, false);
         }
+    }
+
+    private void renderMissedActingPanel(GuiGraphics guiGraphics) {
+        int baseLeftPos = this.leftPos;
+        int panelX = baseLeftPos + this.imageWidth + 5;
+        int panelY = this.topPos;
+        int panelHeight = ACTING_PANEL_HEIGHT + 40;
+
+        guiGraphics.fill(panelX, panelY, panelX + ACTING_PANEL_WIDTH, panelY + panelHeight, 0xCC000000);
+        guiGraphics.renderOutline(panelX, panelY, ACTING_PANEL_WIDTH, panelHeight, 0xFFAAAAAA);
+
+        Component label = Component.literal("Missed Acting").withStyle(ChatFormatting.BOLD);
+        guiGraphics.drawString(this.font, label, panelX + 5, panelY + 5, 0xFFFFFFFF, true);
+
+        net.minecraft.nbt.CompoundTag missed = new net.minecraft.nbt.CompoundTag();
+        if (minecraft.player != null) {
+            missed = minecraft.player.getPersistentData()
+                    .getCompound(de.jakob.lotm.beyonders.acting.ActingCapHelper.MISSED_ACTING_KEY);
+        }
+
+        int listY = panelY + 17;
+        int lineHeight = this.font.lineHeight + 2;
+        int maxY = panelY + panelHeight - 4;
+
+        if (missed.isEmpty()) {
+            Component none = Component.literal("No missed acting").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
+            int textWidth = this.font.width(none);
+            guiGraphics.drawString(this.font, none,
+                    panelX + (ACTING_PANEL_WIDTH - textWidth) / 2,
+                    panelY + panelHeight / 2 - this.font.lineHeight / 2, 0xFF888888, false);
+            return;
+        }
+
+        // Group keys are "pathway/seq"; sort by seq descending (most recent first)
+        List<String> groupKeys = new ArrayList<>(missed.getAllKeys());
+        groupKeys.sort((a, b) -> {
+            int sa = safeParseInt(a.contains("/") ? a.split("/", 2)[1] : "0");
+            int sb = safeParseInt(b.contains("/") ? b.split("/", 2)[1] : "0");
+            return Integer.compare(sb, sa);
+        });
+
+        int currentY = listY;
+        for (String groupKey : groupKeys) {
+            if (currentY + lineHeight > maxY) break;
+            net.minecraft.nbt.CompoundTag group = missed.getCompound(groupKey);
+            net.minecraft.nbt.CompoundTag tasks = group.getCompound("tasks");
+            if (tasks.isEmpty()) continue;
+
+            String seqStr = groupKey.contains("/") ? groupKey.split("/", 2)[1] : groupKey;
+
+            for (String taskId : tasks.getAllKeys()) {
+                if (currentY + lineHeight > maxY) break;
+
+                MutableComponent taskName = getActingTaskName(taskId).withStyle(ChatFormatting.OBFUSCATED);
+                guiGraphics.drawString(this.font,
+                        Component.literal("- ").withStyle(ChatFormatting.YELLOW)
+                                .append(Component.literal("[Seq " + seqStr + "] ")
+                                        .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD))
+                                .append(taskName),
+                        panelX + 5, currentY, 0xFFCCCCCC, false);
+                currentY += lineHeight;
+            }
+        }
+    }
+
+    private static int safeParseInt(String s) {
+        try { return Integer.parseInt(s); } catch (NumberFormatException e) { return 0; }
     }
 
     private static final Map<String, String> SUFFIXES = Map.of(
@@ -1703,8 +1798,19 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private void renderSanityLabel(GuiGraphics guiGraphics, int x, int y) {
-        Component digestionText = Component.translatable("lotm.sanity").withStyle(ChatFormatting.BOLD);
-        guiGraphics.drawString(this.font, digestionText, x + 7, y + 115, 0xDDDDDD, true);
+        Component sanityText = Component.translatable("lotm.sanity").withStyle(ChatFormatting.BOLD);
+        guiGraphics.drawString(this.font, sanityText, x + 7, y + 115, 0xDDDDDD, true);
+
+        if (minecraft.player != null) {
+            float capReduction = minecraft.player.getPersistentData()
+                    .getFloat(de.jakob.lotm.beyonders.acting.ActingCapHelper.CAP_REDUCTION_KEY);
+            if (capReduction > 0.001f) {
+                int capPct = Math.round((1f - capReduction) * 100);
+                Component capText = Component.literal(" (Cap: " + capPct + "%)").withStyle(ChatFormatting.GOLD);
+                guiGraphics.drawString(this.font, capText,
+                        x + 7 + this.font.width(sanityText), y + 115, 0xFFAA00, false);
+            }
+        }
     }
 
     private void renderSanityProgress(GuiGraphics guiGraphics, int x, int y) {

@@ -28,9 +28,14 @@ public class ActingHandler {
                     if(!ActingHelper.isTriggerUnlocked(pathway, sequence, player, task.getId())) {
                         if(!player.level().isClientSide) {
                             ActingHelper.unlockTrigger(pathway, sequence, player, task.getId());
+                            ActingCapHelper.onActingUnlocked(player, pathway, sequence, task.getId());
                             PacketHandler.sendToPlayer((ServerPlayer) player, new PlayActingEffectPacket());
                         }
                     }
                 });
+
+        if (!player.level().isClientSide) {
+            ActingCapHelper.tryCompleteMissedActing(player, taskId);
+        }
     }
 }

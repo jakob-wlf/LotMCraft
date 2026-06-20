@@ -103,7 +103,20 @@ public abstract class Ability {
 
         // Consume spirituality
         if(shouldConsumeSpirituality(newUser) && consumeSpirituality) {
-            BeyonderData.reduceSpirituality(newUser, getInflatedSpiritualityCost(newUser, serverLevel));
+            float cost = getInflatedSpiritualityCost(newUser, serverLevel);
+            float current = BeyonderData.getSpirituality(newUser);
+
+            // A spirituality shortfall (up to 30%) is paid in sanity: deeper deficits and pricier abilities cost more,
+            // capped at 0.1. Applied directly (bypassing the per-sequence resistance) so it bites at any sequence.
+            if(cost > 0 && current < cost && newUser instanceof Player) {
+                float deficitScale = Math.min(0.3f, (cost - current) / cost) / 0.3f;
+                float costScale = (float) Math.log10(Math.max(10f, cost));
+                float sanityCost = Math.min(0.1f, deficitScale * costScale * 0.025f);
+                SanityComponent sanityComp = newUser.getData(ModAttachments.SANITY_COMPONENT);
+                sanityComp.setSanityAndSync(sanityComp.getSanity() - sanityCost, newUser);
+            }
+
+            BeyonderData.reduceSpirituality(newUser, cost);
         }
 
         // Digest potion
@@ -246,7 +259,8 @@ public abstract class Ability {
         AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
         if(component.isOnCooldown(id)) return false;
 
-        if(shouldConsumeSpirituality(entity) && doesConsumeSpirituality && BeyonderData.getSpirituality(entity) <= getSpiritualityCost()) return false;
+        // Allow use down to a 30% spirituality deficit; the shortfall is paid in sanity on use
+        if(shouldConsumeSpirituality(entity) && doesConsumeSpirituality && BeyonderData.getSpirituality(entity) < getSpiritualityCost() * 0.7f) return false;
 
         if(!(entity instanceof Player) && !canBeUsedByNPC) return false;
 

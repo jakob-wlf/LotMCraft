@@ -80,6 +80,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncActingCapPacket.TYPE,
+                SyncActingCapPacket.STREAM_CODEC,
+                SyncActingCapPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncOnHoldAbilityPacket.TYPE,
                 SyncOnHoldAbilityPacket.STREAM_CODEC,
                 SyncOnHoldAbilityPacket::handle
