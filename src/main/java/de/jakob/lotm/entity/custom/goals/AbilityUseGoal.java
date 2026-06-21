@@ -3,7 +3,6 @@ package de.jakob.lotm.entity.custom.goals;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -27,8 +26,19 @@ public class AbilityUseGoal extends Goal {
     private static final int OUT_OF_COMBAT_CHECK_INTERVAL = 100;
     private int outOfCombatTimer = 0;
 
-    public AbilityUseGoal(BeyonderNPCEntity entity) {
+    private final boolean ignoreUsageConditions;
+    private List<Ability> presetAbilities = null;
+
+    public AbilityUseGoal(Mob entity) {
         this.entity = entity;
+        this.ignoreUsageConditions = false;
+        this.setFlags(EnumSet.of(Flag.TARGET));
+    }
+
+    public AbilityUseGoal(Mob entity, List<Ability> usableAbilities) {
+        this.entity = entity;
+        this.presetAbilities = usableAbilities;
+        this.ignoreUsageConditions = true;
         this.setFlags(EnumSet.of(Flag.TARGET));
     }
 
@@ -64,8 +74,8 @@ public class AbilityUseGoal extends Goal {
             return;
         }
 
-        ArrayList<Ability> usableAbilities =  getUsableAbilities(entity);
-        if (usableAbilities == null || usableAbilities.isEmpty()) {
+        List<Ability> usableAbilities = presetAbilities == null ? getUsableAbilities(entity) : presetAbilities;
+        if (usableAbilities.isEmpty()) {
             return;
         }
 
@@ -82,18 +92,18 @@ public class AbilityUseGoal extends Goal {
         }
     }
 
-    private void tryUseAbility(ArrayList<Ability> usableAbilities) {
+    private void tryUseAbility(List<Ability> usableAbilities) {
         if(!usableAbilities.isEmpty()) {
             useAbility(entity.level(), usableAbilities);
         }
     }
 
-    private void useAbility(Level level, ArrayList<Ability> usableAbilities) {
+    private void useAbility(Level level, List<Ability> usableAbilities) {
         if (level.isClientSide) {
             return;
         }
 
-        List<Ability> availableAbilities = usableAbilities.stream()
+        List<Ability> availableAbilities = ignoreUsageConditions ? usableAbilities : usableAbilities.stream()
                 .filter(a -> a.canUse(entity))
                 .toList();
 
@@ -125,7 +135,10 @@ public class AbilityUseGoal extends Goal {
         Ability selectedAbility = selectWeightedAbility(toSelect, new Random());
         if(selectedAbility == null) return;
 
-        selectedAbility.useAbility((ServerLevel) level, entity);
+        if(!ignoreUsageConditions)
+            selectedAbility.useAbility((ServerLevel) level, entity);
+        else
+            selectedAbility.useAbility((ServerLevel) level, entity, false, false, false);
     }
 
     private Ability selectWeightedAbility(List<Ability> abilities, Random random) {
@@ -160,7 +173,7 @@ public class AbilityUseGoal extends Goal {
             }
         }
 
-        return abilities.get(0);
+        return abilities.getFirst();
     }
 
     public static boolean hasRangedOption(Mob mob) {

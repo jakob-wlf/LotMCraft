@@ -17,9 +17,11 @@ import de.jakob.lotm.rendering.models.wheel_of_fortune.WheelOfFortuneMythicalCre
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -58,13 +60,17 @@ public class TransformationRenderer {
     private static final ResourceLocation doorHighMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/door_high.png");
 
     private static HighSequenceDoorsModel<Entity> mysticalDoorsModel;
-    private static final ResourceLocation mysticalDoorsTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_3.png");
+    private static final ResourceLocation mysticalDoorsTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_1.png");
+    private static final ResourceLocation mysticalDoorsTexture2 = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_2.png");
+    private static final ResourceLocation mysticalDoorsTexture3 = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_3.png");
+    private static final ResourceLocation mysticalDoorsTexture4 = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_4.png");
+    private static final ResourceLocation mysticalDoorsTextur5 = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_5.png");
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?> event) {
         LivingEntity entity = event.getEntity();
         TransformationComponent component = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
-        
+
         if (!component.isTransformed()) {
             return;
         }
@@ -90,7 +96,7 @@ public class TransformationRenderer {
                     event.getPackedLight(), entity, event.getPartialTick());
             case 101 -> {
                 if(!renderMythicalCreature(component.getAdditionalData(), event.getPoseStack(), event.getMultiBufferSource(),
-                    event.getPackedLight(), entity, event.getPartialTick()))
+                        event.getPackedLight(), entity, event.getPartialTick()))
                     event.setCanceled(false);
             }
 
@@ -104,17 +110,30 @@ public class TransformationRenderer {
             );
         }
 
+        RandomSource random = RandomSource.create(sizeMultiplier * 1000L);
+        int textureIndex = random.nextInt(5) + 1;
+        ResourceLocation selectedTexture = switch (textureIndex) {
+            case 2 -> mysticalDoorsTexture2;
+            case 3 -> mysticalDoorsTexture3;
+            case 4 -> mysticalDoorsTexture4;
+            case 5 -> mysticalDoorsTextur5;
+            default -> mysticalDoorsTexture;
+        };
+
         poseStack.pushPose();
 
-        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + (sizeMultiplier * .25f) - .25, 0.0);
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + (sizeMultiplier * .125f) - .25, 0.0);
 
         float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
         poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
 
-        float actualSize = sizeMultiplier * .25f;
+        float actualSize = Math.clamp(sizeMultiplier * .125f, .75f, 3.5f);
+
+        renderMysticalDoorParticles(poseStack, multiBufferSource, packedLight, entity, partialTick, actualSize);
+
         poseStack.scale(actualSize, -actualSize, actualSize);
 
-        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(mysticalDoorsTexture));
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(selectedTexture));
 
         float limbSwing = 0;
         float limbSwingAmount = 0;
@@ -133,9 +152,79 @@ public class TransformationRenderer {
         poseStack.popPose();
     }
 
+    private static void renderMysticalDoorParticles(PoseStack poseStack, MultiBufferSource multiBufferSource,
+                                                    int packedLight, LivingEntity entity, float partialTick, float doorSize) {
+        float time = entity.tickCount + partialTick;
+
+        EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        Quaternionf camOrientation = new Quaternionf(dispatcher.cameraOrientation());
+
+        VertexConsumer consumer = multiBufferSource.getBuffer(RenderType.lightning());
+
+        int particleCount = 18;
+        float spread = doorSize * 1.15f;
+
+        for (int i = 0; i < particleCount; i++) {
+            float seed = i * 17.231f;
+            float h1 = hash(seed);
+            float h2 = hash(seed + 4.71f);
+            float h3 = hash(seed + 9.13f);
+
+            float orbitRadius = spread * (0.35f + h1 * 0.85f);
+            float orbitSpeed = (0.022f + h2 * 0.03f) * (i % 2 == 0 ? 1f : -1f);
+            float phase = h3 * Mth.TWO_PI;
+
+            float cycleLength = 80f + h1 * 50f;
+            float riseSpeed = (doorSize * 1.7f) / cycleLength;
+            float cycle = (time + seed * 23f) % cycleLength;
+
+            float angle = time * orbitSpeed + phase;
+            float wobble = Mth.sin(time * 0.05f + seed) * 0.18f;
+
+            float x = Mth.cos(angle) * (orbitRadius + wobble);
+            float z = Mth.sin(angle) * (orbitRadius + wobble);
+            float y = cycle * riseSpeed - doorSize * 0.25f;
+
+            float lifeProgress = cycle / cycleLength;
+            float fade = Mth.sin(lifeProgress * Mth.PI);
+            if (fade <= 0.01f) continue;
+
+            boolean isPurple = h3 > 0.5f;
+            float r = isPurple ? 0.78f : 0.30f;
+            float g = isPurple ? 0.30f : 0.70f;
+            float b = 1.0f;
+            float alpha = Mth.clamp(fade * 1.3f, 0f, 1f);
+
+            float size = (0.14f + h2 * 0.12f) * doorSize * (0.6f + fade * 0.6f);
+
+            poseStack.pushPose();
+            poseStack.translate(x, y, z);
+            poseStack.mulPose(camOrientation);
+
+            Matrix4f matrix = poseStack.last().pose();
+
+            addParticleVertex(consumer, matrix, -size, -size, 0, r, g, b, alpha); // BL
+            addParticleVertex(consumer, matrix, size, -size, 0, r, g, b, alpha);  // BR
+            addParticleVertex(consumer, matrix, -size, size, 0, r, g, b, alpha);  // TL
+            addParticleVertex(consumer, matrix, size, size, 0, r, g, b, alpha);   // TR
+
+            poseStack.popPose();
+        }
+    }
+
+    private static void addParticleVertex(VertexConsumer consumer, Matrix4f matrix, float x, float y, float z,
+                                          float r, float g, float b, float alpha) {
+        consumer.addVertex(matrix, x, y, z).setColor(r, g, b, alpha);
+    }
+
+    private static float hash(float n) {
+        float val = Mth.sin(n) * 43758.5453F;
+        return val - Mth.floor(val);
+    }
+
     private static boolean renderMythicalCreature(String path,
-            PoseStack poseStack, MultiBufferSource multiBufferSource,
-            int packedLight, LivingEntity entity, float partialTick)
+                                                  PoseStack poseStack, MultiBufferSource multiBufferSource,
+                                                  int packedLight, LivingEntity entity, float partialTick)
     {
         switch (path){
             case "tyrant" -> renderTyrantMythicalCreature(poseStack, multiBufferSource,

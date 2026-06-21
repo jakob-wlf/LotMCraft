@@ -129,6 +129,10 @@ public class BeyonderDataTickHandler {
                 invalidateCache(livingEntity);
             }
 
+            if(entity.tickCount % (20 * 30) == 0) {
+                BeyonderData.incrementWormAmount(livingEntity, 1);
+            }
+
             // Tick Passive Abilities, and onHold for currently selected Ability and tick luck
             if(entity.tickCount % 5 == 0) {
                 tickAbilities(livingEntity);

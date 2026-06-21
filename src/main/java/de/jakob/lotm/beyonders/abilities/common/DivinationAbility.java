@@ -135,7 +135,7 @@ public class DivinationAbility extends SelectableAbility {
             return;
         }
 
-        PacketHandler.sendToPlayer(player, new OpenCoordinateScreenPacket());
+        PacketHandler.sendToPlayer(player, new OpenCoordinateScreenPacket("dream_divination"));
     }
 
     private static final HashMap<UUID, Integer> dreamDivinationUsers = new HashMap<>();

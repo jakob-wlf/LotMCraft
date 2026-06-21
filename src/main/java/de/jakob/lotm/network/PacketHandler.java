@@ -179,7 +179,7 @@ public class PacketHandler {
 
         registrar.playToClient(
                 OpenCoordinateScreenPacket.TYPE,
-                OpenCoordinateScreenPacket.STREAM_CODEC,
+                OpenCoordinateScreenPacket.CODEC,
                 OpenCoordinateScreenPacket::handle
         );
 
@@ -553,6 +553,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                UseTeleportationAuthorityPacket.TYPE,
+                UseTeleportationAuthorityPacket.STREAM_CODEC,
+                UseTeleportationAuthorityPacket::handle
+        );
+
+        registrar.playToServer(
                 ExecuteBeyonderTradePacket.TYPE,
                 ExecuteBeyonderTradePacket.STREAM_CODEC,
                 ExecuteBeyonderTradePacket::handle
@@ -823,10 +829,11 @@ public class PacketHandler {
         boolean griefingEnabled = BeyonderData.isGriefingEnabled(player);
         float digestionProgress = BeyonderData.getDigestionProgress(player);
         int[] charStacks = BeyonderData.getCharStacks(player);
+        int cowardWormAmount = BeyonderData.getCowardWormAmount(player);
 
         String[] history = BeyonderData.getPathwayHistory(player);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charStacks);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charStacks, cowardWormAmount);
         sendToPlayer(player, packet);
     }
 
@@ -878,8 +885,9 @@ public class PacketHandler {
         boolean griefingEnabled = BeyonderData.isGriefingEnabled(targetPlayer);
         float digestionProgress = BeyonderData.getDigestionProgress(targetPlayer);
         int[] charStacks = BeyonderData.getCharStacks(targetPlayer);
+        int wormAmount = BeyonderData.getCowardWormAmount(targetPlayer);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charStacks);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charStacks, wormAmount);
 
         targetPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
             sendToPlayer(player, packet);

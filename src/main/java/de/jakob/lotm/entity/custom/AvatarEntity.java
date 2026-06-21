@@ -37,8 +37,6 @@ public class AvatarEntity extends PathfinderMob {
     private static final String DEFAULT_SKIN = "amon";
     private static final String DEFAULT_PATHWAY = "error";
     private static final int DEFAULT_SEQUENCE = 5;
-    private static final int MAX_LIFETIME_TICKS = 20 * 60 * 2; // 2 mins
-    private static final int RECIPE_DROP_CHANCE = 4;
     private static final UUID NULL_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
     // ========================= Entity Data Accessors =========================
@@ -127,7 +125,8 @@ public class AvatarEntity extends PathfinderMob {
                         BeyonderData.getMaxSpirituality(pathway, sequence),
                         false,
                         false,
-                        0.0f
+                        0.0f,
+                        0
                 );
             }
         }

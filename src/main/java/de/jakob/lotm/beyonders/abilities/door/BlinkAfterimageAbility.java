@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -13,7 +14,9 @@ public class BlinkAfterImageAbility extends ToggleAbility {
 
     @Override
     public void tick(Level level, LivingEntity entity) {
-
+        if(level.isClientSide) {
+            return;
+        }
     }
 
     @Override

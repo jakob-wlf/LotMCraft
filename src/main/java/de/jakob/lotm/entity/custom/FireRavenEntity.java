@@ -188,7 +188,7 @@ public class FireRavenEntity extends Animal {
             this.setupAnimationStates();
         }
         else {
-            if(tickCount > 20 * 60) {
+            if(tickCount > 20 * 30) {
                 this.discard();
                 return;
             }

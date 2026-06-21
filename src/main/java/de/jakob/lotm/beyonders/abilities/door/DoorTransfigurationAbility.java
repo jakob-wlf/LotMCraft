@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -38,7 +39,10 @@ public class DoorTransfigurationAbility extends ToggleAbility {
 
     @Override
     public void tick(Level level, LivingEntity entity) {
-        if(level.isClientSide) return;
+        if(level.isClientSide) {
+            ClientHandler.changeToThirdPerson(entity);
+            return;
+        }
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         if (!transformationComponent.isTransformed() ||
                 transformationComponent.getTransformationIndex() <= TransformationComponent.TransformationType.DOOR_TRANSFIGURATION.getIndex() ||
@@ -48,12 +52,14 @@ public class DoorTransfigurationAbility extends ToggleAbility {
             return;
         }
 
-        if(BeyonderData.getSpirituality(entity) < 280) {
+        float spiritualityCost = BeyonderData.getMaxSpirituality(BeyonderData.getPathway(entity), BeyonderData.getSequence(entity)) / 10f;
+        if(BeyonderData.getSpirituality(entity) < spiritualityCost) {
             cancel((ServerLevel) level, entity);
             return;
         }
 
-        entity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 30, 1, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 30, 10, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30, 15, false, false, false));
     }
 
     @Override
@@ -69,7 +75,10 @@ public class DoorTransfigurationAbility extends ToggleAbility {
 
     @Override
     public void stop(Level level, LivingEntity entity) {
-        if(level.isClientSide) return;
+        if(level.isClientSide) {
+            ClientHandler.changeToFirstPerson(entity);
+            return;
+        }
 
         doorSizeModifier.remove(entity.getUUID());
 
@@ -106,8 +115,6 @@ public class DoorTransfigurationAbility extends ToggleAbility {
         if(!doorSizeModifier.containsKey(entity.getUUID())) return;
         int sizeModifier = doorSizeModifier.get(entity.getUUID());
 
-        System.out.println(sizeModifier);
-
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         if(transformationComponent.isTransformed() &&
                 transformationComponent.getTransformationIndex() >= TransformationComponent.TransformationType.DOOR_TRANSFIGURATION.getIndex() &&
@@ -116,8 +123,9 @@ public class DoorTransfigurationAbility extends ToggleAbility {
             transformationComponent.setTransformationIndexAndSync(TransformationComponent.TransformationType.DOOR_TRANSFIGURATION.getIndex() + sizeModifier, entity);
         }
 
-        if(BeyonderData.getSpirituality(entity) >= 280) {
-            BeyonderData.reduceSpirituality(entity, 280);
+        float spiritualityCost = BeyonderData.getMaxSpirituality(BeyonderData.getPathway(entity), BeyonderData.getSequence(entity)) / 10f;
+        if(BeyonderData.getSpirituality(entity) >= spiritualityCost) {
+            BeyonderData.reduceSpirituality(entity, spiritualityCost);
         }
 
         event.setCanceled(true);

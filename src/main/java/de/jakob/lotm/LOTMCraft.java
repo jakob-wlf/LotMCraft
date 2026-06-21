@@ -20,6 +20,8 @@ import de.jakob.lotm.entity.client.ability_entities.death_pathway.divine_kingdom
 import de.jakob.lotm.entity.client.ability_entities.death_pathway.underworld_gate.UnderworldGateRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.apprentice_door.ApprenticeDoorRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.black_hole.BlackHoleRenderer;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.blink_afterimage.BlinkAfterimageRenderer;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.mystical_door.MysticalDoorRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.planet.PlanetRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.space_collapse.SpaceCollapseRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.travelers_door.TravelersDoorRenderer;
@@ -260,6 +262,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.SPACE_COLLAPSE.get(), SpaceCollapseRenderer::new);
             EntityRenderers.register(ModEntities.BLACK_HOLE.get(), BlackHoleRenderer::new);
             EntityRenderers.register(ModEntities.WAR_BANNER.get(), WarBannerRenderer::new);
+            EntityRenderers.register(ModEntities.MYSTICAL_DOOR.get(), MysticalDoorRenderer::new);
             EntityRenderers.register(ModEntities.Meteor.get(), MeteorRenderer::new);
             EntityRenderers.register(ModEntities.JUDGMENT_SWORD.get(), JudgmentSwordRenderer::new);
             EntityRenderers.register(ModEntities.ANCIENT_COURT.get(), AncientCourtEntityRenderer::new);
@@ -275,6 +278,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.SPEAR_OF_DESTRUCTION.get(), SpearOfDestructionProjectileRenderer::new);
             EntityRenderers.register(ModEntities.RETURN_PORTAL.get(), ReturnPortalRenderer::new);
             EntityRenderers.register(ModEntities.AVATAR.get(), ErrorAvatarRenderer::new);
+            EntityRenderers.register(ModEntities.BLINK_AFTERIMAGE.get(), BlinkAfterimageRenderer::new);
             EntityRenderers.register(ModEntities.BIG_SUN.get(), BigSunRenderer::new);
             EntityRenderers.register(ModEntities.BIG_MOON.get(), BigMoonRenderer::new);
             EntityRenderers.register(ModEntities.COFFIN.get(), CoffinRenderer::new);

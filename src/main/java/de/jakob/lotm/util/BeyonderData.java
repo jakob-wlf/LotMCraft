@@ -205,6 +205,7 @@ public class BeyonderData {
         if (resetSpirituality) component.setSpirituality(getMaxSpirituality(pathway, sequence));
         component.setDigestionProgress(0);
         component.setGriefingEnabled(griefing);
+        component.setCowardWormAmount(getMaxWormAmount(sequence));
 
         BeyonderDataTickHandler.invalidateCache(entity);
 
@@ -236,7 +237,7 @@ public class BeyonderData {
                 if(putIntoMap)
                     playerMap.put(serverPlayer);
 
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicStack());
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicStack(), getMaxWormAmount(sequence));
                 PacketHandler.sendToAllPlayers(packet);
 
                 TeamComponent teamComp = serverPlayer.getData(ModAttachments.TEAM_COMPONENT.get());
@@ -249,6 +250,23 @@ public class BeyonderData {
             }
         }
 
+    }
+
+    private static int getMaxWormAmount(int sequence) {
+        return switch (sequence) {
+            case 3 -> 60;
+            case 2 -> 200;
+            case 1 -> 400;
+            case 0 -> 600;
+            default -> 20;
+        };
+    }
+
+    public static int getCowardWormAmount(LivingEntity entity) {
+        if(entity.level().isClientSide) {
+            return ClientBeyonderCache.getCowardWormAmount(entity.getUUID());
+        }
+        return entity.getData(ModAttachments.BEYONDER_COMPONENT).getCowardWormAmount();
     }
 
     private static void callPassiveEffectsOnRemoved(LivingEntity entity, ServerLevel serverLevel) {
@@ -476,7 +494,7 @@ public class BeyonderData {
         if (!entity.level().isClientSide()) {
             if(entity instanceof ServerPlayer serverPlayer) {
                 // Send empty data to clear client cache
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", 10, 0.0f, false, 0.0f, new String[10], new int[10]);
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", 10, 0.0f, false, 0.0f, new String[10], new int[10], 0);
                 PacketHandler.sendToPlayer(serverPlayer, packet);
             }
             else {
@@ -691,6 +709,22 @@ public class BeyonderData {
         if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
         }
+    }
+
+    public static void setWormAmount(LivingEntity entity, int amount) {
+        entity.getData(ModAttachments.BEYONDER_COMPONENT).setCowardWormAmount(amount);
+
+        if (!entity.level().isClientSide() && entity instanceof ServerPlayer serverPlayer) {
+            PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
+        }
+    }
+
+    public static void incrementWormAmount(LivingEntity entity, int amount) {
+        int currentAmount = getCowardWormAmount(entity);
+        if((currentAmount + amount) < 0 || (currentAmount + amount) > getMaxWormAmount(getSequence(entity)))
+            return;
+
+        setWormAmount(entity, currentAmount + amount);
     }
 
     public static void addCharStack(LivingEntity player, int sequence) {

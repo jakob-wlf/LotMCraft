@@ -204,6 +204,7 @@ public class AbilityHandler {
         abilities.add(new TravelersDoorAbility("travelers_door_ability"));
         abilities.add(new InvisibleHandAbility("invisible_hand_ability"));
         abilities.add(new SpaceConcealmentAbility("space_concealment_ability"));
+        abilities.add(new SecretKeepingAbility("secret_keeping_ability"));
         abilities.add(new DoorTransfigurationAbility("door_transfiguration_ability"));
         abilities.add(new BlinkAfterImageAbility("blink_afterimage_ability"));
         abilities.add(new ExileAbility("exile_ability"));
@@ -216,6 +217,7 @@ public class AbilityHandler {
         abilities.add(new ReplicatingAbility("replicating_ability"));
         abilities.add(new DistortionFieldAbility("distortion_field_ability"));
         abilities.add(new AreaMiniaturizationAbility("area_miniaturization_ability"));
+        abilities.add(new TeleportationAuthorityAbility("teleportation_authority_ability"));
         abilities.add(new SpaceDistortionAbility("space_distortion_ability"));
         abilities.add(new PocketDimensionAbility("pocket_dimension_ability"));
         abilities.add(new BlackHoleAbility("black_hole_ability"));

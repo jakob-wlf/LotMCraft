@@ -232,7 +232,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
         if (getPathway().isEmpty()) {
             return;
         }
-
         this.goalSelector.removeAllGoals(goal -> goal instanceof MeleeAttackGoal ||
                 goal instanceof WaterAvoidingRandomStrollGoal ||
                 goal instanceof MoveThroughVillageGoal ||

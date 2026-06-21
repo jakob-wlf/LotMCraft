@@ -74,7 +74,8 @@ public class ClientHandler {
                     packet.spirituality(),
                     false,
                     false,
-                    0.0f
+                    0.0f,
+                    0
             );
         }
     }

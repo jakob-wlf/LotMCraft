@@ -1,8 +1,13 @@
 package de.jakob.lotm.beyonders.abilities.door;
 
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.CopiedAbilityComponent;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.demoness.CharmAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlinkAfterimageEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.data.Location;
@@ -19,12 +24,10 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.fml.common.EventBusSubscriber;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BlinkAbility extends SelectableAbility {
@@ -122,6 +125,7 @@ public class BlinkAbility extends SelectableAbility {
             return;
 
         Vec3 targetLocBuff = AbilityUtil.getTargetBlock(entity, 8*multiplier(entity), true).getCenter().add(0, 1, 0);
+        Vec3 originalPos = entity.position();
         var targetLoc = TeleportationUtil.clampToBorder((ServerLevel) level, targetLocBuff);
 
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
@@ -135,5 +139,49 @@ public class BlinkAbility extends SelectableAbility {
         ParticleUtil.spawnParticles((ServerLevel) level, dust, targetLoc.add(0, .5, 0), 30, .4, 1, .4, 0);
         ParticleUtil.spawnParticles((ServerLevel) level, dust2, targetLoc.add(0, .5, 0), 30, .4, 1, .4, 0);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.END_ROD, targetLoc.add(0, .5, 0), 30, .4, 1, .4, 0);
+
+        // Spawn Afterimage if Afterimage ability is active
+        if(!((BlinkAfterImageAbility) LOTMCraft.abilityHandler.getById("blink_afterimage_ability")).isActiveForEntity(entity))
+            return;
+
+        if(BeyonderData.getCowardWormAmount(entity) <= 0)
+            return;
+
+        BeyonderData.incrementWormAmount(entity, -1);
+
+        BlinkAfterimageEntity blinkAfterimage = new BlinkAfterimageEntity(level, originalPos, entity, getAbilityToUse(entity));
+        blinkAfterimage.setTarget(getTargetEntity(entity));
+        level.addFreshEntity(blinkAfterimage);
+        BeyonderData.setBeyonder(blinkAfterimage, BeyonderData.getPathway(entity), BeyonderData.getSequence(entity), true, true, false, true, true, false);
+    }
+
+    private Ability getAbilityToUse(LivingEntity entity) {
+        CopiedAbilityComponent component = entity.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
+        List<Ability> usableAbilities = component.getAbilities()
+                                            .stream()
+                                            .map(a -> LOTMCraft.abilityHandler.getById(a.abilityId()))
+                                            .filter(a -> a != null && a.canBeUsedByNPC)
+                                            .toList();
+
+        if(usableAbilities.isEmpty()) {
+            usableAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(BeyonderData.getPathway(entity), BeyonderData.getSequence(entity))
+                    .stream()
+                    .filter(a -> a.canBeUsedByNPC)
+                    .toList();
+        }
+
+        if(!usableAbilities.isEmpty()) {
+            return usableAbilities.get(entity.getRandom().nextInt(usableAbilities.size()));
+        }
+
+        return null;
+    }
+
+    private LivingEntity getTargetEntity(LivingEntity entity) {
+        LivingEntity target = entity.getLastHurtMob();
+        if(target == null) target = entity.getLastHurtByMob();
+        if(target == null) target = AbilityUtil.getTargetEntity(entity, 20, 2);
+
+        return target;
     }
 }
