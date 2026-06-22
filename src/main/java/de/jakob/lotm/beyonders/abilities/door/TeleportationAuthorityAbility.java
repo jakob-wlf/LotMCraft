@@ -70,9 +70,9 @@ public class TeleportationAuthorityAbility extends SelectableAbility {
         ServerLevel banishLevel = selectRandomLevel(level);
         Vec3 banishLoc = generateRandomLocationInLevel(banishLevel);
 
-        for(int i = 0; i < 40; i++) {
-            MysticalDoorEntity door = new MysticalDoorEntity(level, targetLoc.add((level.random.nextDouble() - .5) * 16, (level.random.nextDouble() - .5) * 4, (level.random.nextDouble() - .5) * 16), level.random.nextInt(5) + 1, 1, 34);
-            door.setYBodyRot(level.random.nextFloat() * 360);
+        for(int i = 0; i < 20; i++) {
+            MysticalDoorEntity door = new MysticalDoorEntity(level, targetLoc.add((level.random.nextDouble() - .5) * 13, (level.random.nextDouble() - .5) * 4, (level.random.nextDouble() - .5) * 13), level.random.nextInt(5) + 1, 1, 34);
+            door.setRotation(level.random.nextFloat() * 360);
             level.addFreshEntity(door);
         }
 

@@ -18,6 +18,10 @@ public class MysticalDoorEntity extends Entity {
     private static final EntityDataAccessor<Float> SIZE =
             SynchedEntityData.defineId(MysticalDoorEntity.class, EntityDataSerializers.FLOAT);
 
+    private static final EntityDataAccessor<Float> ROTATION =
+            SynchedEntityData.defineId(MysticalDoorEntity.class, EntityDataSerializers.FLOAT);
+
+
     private final int maxLifeTime;
 
     public MysticalDoorEntity(EntityType<?> entityType, Level level) {
@@ -46,6 +50,7 @@ public class MysticalDoorEntity extends Entity {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(TEXTURE_INDEX, 1);
         builder.define(SIZE, 1f);
+        builder.define(ROTATION, 0f);
     }
 
     @Override
@@ -56,6 +61,14 @@ public class MysticalDoorEntity extends Entity {
     @Override
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
 
+    }
+
+    public float getRotation() {
+        return entityData.get(ROTATION);
+    }
+
+    public void setRotation(float rotation) {
+        entityData.set(ROTATION, rotation);
     }
 
     public int getTextureIndex() {

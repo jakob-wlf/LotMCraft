@@ -22,7 +22,9 @@ public class WormOverlayRenderer {
         });
     }
 
-    private static final ResourceLocation iconTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/abilities/parasitation_ability.png");
+    private static final ResourceLocation iconTextureFool = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/misc/worm_of_spirit.png");
+    private static final ResourceLocation iconTextureDoor = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/misc/worm_of_star.png");
+    private static final ResourceLocation iconTextureError = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/misc/worm_of_time.png");
     private static final int size = 24;
     private final static int hotbarWidth = 182;
     private final static int hotbarheight = 22;
@@ -42,6 +44,13 @@ public class WormOverlayRenderer {
 
         int x = hotbarEndX - size;
         int y = mc.getWindow().getGuiScaledHeight() - (hotbarheight) - size - 15;
+
+        ResourceLocation iconTexture = switch (ClientBeyonderCache.getPathway(mc.player.getUUID())) {
+            case "fool" -> iconTextureFool;
+            case "door" -> iconTextureDoor;
+            case "error" -> iconTextureError;
+            default -> iconTextureFool;
+        };
 
         guiGraphics.blit(iconTexture, x, y, 0, 0, size, size, size, size);
         guiGraphics.drawString(mc.font, ClientBeyonderCache.getCowardWormAmount(mc.player.getUUID()) + "", x + size, y + (size / 2) - (mc.font.lineHeight / 2), 0xffffff);

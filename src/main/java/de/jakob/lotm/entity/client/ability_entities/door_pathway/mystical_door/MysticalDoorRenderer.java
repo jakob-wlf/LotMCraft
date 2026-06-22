@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity.client.ability_entities.door_pathway.mystical_door;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.return_portal.HighSequenceDoorsModel;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.MysticalDoorEntity;
@@ -24,6 +25,7 @@ public class MysticalDoorRenderer extends EntityRenderer<MysticalDoorEntity> {
     public void render(MysticalDoorEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         poseStack.pushPose();
 
+        poseStack.mulPose(Axis.YP.rotationDegrees(-entity.getRotation()));
         poseStack.scale(entity.getSize(), -entity.getSize(), entity.getSize());
         poseStack.translate(0, -1.45, 0);
 

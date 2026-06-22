@@ -152,6 +152,8 @@ public class TransformationRenderer {
         poseStack.popPose();
     }
 
+    private static final ResourceLocation WHITE_TEXTURE = ResourceLocation.withDefaultNamespace("textures/misc/white.png");
+
     private static void renderMysticalDoorParticles(PoseStack poseStack, MultiBufferSource multiBufferSource,
                                                     int packedLight, LivingEntity entity, float partialTick, float doorSize) {
         float time = entity.tickCount + partialTick;
@@ -159,7 +161,9 @@ public class TransformationRenderer {
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         Quaternionf camOrientation = new Quaternionf(dispatcher.cameraOrientation());
 
-        VertexConsumer consumer = multiBufferSource.getBuffer(RenderType.lightning());
+        VertexConsumer consumer = multiBufferSource.getBuffer(
+                RenderType.entityTranslucentEmissive(WHITE_TEXTURE)
+        );
 
         int particleCount = 18;
         float spread = doorSize * 1.15f;
@@ -193,7 +197,7 @@ public class TransformationRenderer {
             float r = isPurple ? 0.78f : 0.30f;
             float g = isPurple ? 0.30f : 0.70f;
             float b = 1.0f;
-            float alpha = Mth.clamp(fade * 1.3f, 0f, 1f);
+            float alpha = Mth.clamp(0.55f + fade * 0.45f, 0f, 0.92f);
 
             float size = (0.14f + h2 * 0.12f) * doorSize * (0.6f + fade * 0.6f);
 
@@ -202,19 +206,26 @@ public class TransformationRenderer {
             poseStack.mulPose(camOrientation);
 
             Matrix4f matrix = poseStack.last().pose();
+            Matrix3f normal = poseStack.last().normal();
 
-            addParticleVertex(consumer, matrix, -size, -size, 0, r, g, b, alpha); // BL
-            addParticleVertex(consumer, matrix, size, -size, 0, r, g, b, alpha);  // BR
-            addParticleVertex(consumer, matrix, -size, size, 0, r, g, b, alpha);  // TL
-            addParticleVertex(consumer, matrix, size, size, 0, r, g, b, alpha);   // TR
+            addParticleVertex(consumer, matrix, normal, -size, -size, 0, 0, 1, r, g, b, alpha, packedLight); // BL
+            addParticleVertex(consumer, matrix, normal,  size, -size, 0, 1, 1, r, g, b, alpha, packedLight); // BR
+            addParticleVertex(consumer, matrix, normal,  size,  size, 0, 1, 0, r, g, b, alpha, packedLight); // TR
+            addParticleVertex(consumer, matrix, normal, -size,  size, 0, 0, 0, r, g, b, alpha, packedLight); // TL
 
             poseStack.popPose();
         }
     }
 
-    private static void addParticleVertex(VertexConsumer consumer, Matrix4f matrix, float x, float y, float z,
-                                          float r, float g, float b, float alpha) {
-        consumer.addVertex(matrix, x, y, z).setColor(r, g, b, alpha);
+    private static void addParticleVertex(VertexConsumer consumer, Matrix4f matrix, Matrix3f normal,
+                                          float x, float y, float z, float u, float v,
+                                          float r, float g, float b, float alpha, int packedLight) {
+        consumer.addVertex(matrix, x, y, z)
+                .setColor(r, g, b, alpha)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(packedLight)
+                .setNormal(0f, 1f, 0f);
     }
 
     private static float hash(float n) {
