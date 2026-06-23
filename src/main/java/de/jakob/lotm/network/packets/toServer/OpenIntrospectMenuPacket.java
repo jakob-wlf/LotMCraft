@@ -1,17 +1,16 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectMenuProvider;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncIntrospectMenuPacket;
 import de.jakob.lotm.network.packets.toClient.SyncKillCountPacket;
-import de.jakob.lotm.network.packets.toClient.SyncSefirotAuthorityDataPacket;
 import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.util.BeyonderData;

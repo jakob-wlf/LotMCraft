@@ -1,8 +1,8 @@
 package de.jakob.lotm.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import de.jakob.lotm.gui.custom.Prey.PreyMenuProvider;
 import de.jakob.lotm.gui.custom.Prey.PreyMenu;
+import de.jakob.lotm.gui.custom.Prey.PreyMenuProvider;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.HonorificName;
 import de.jakob.lotm.util.playerMap.StoredData;

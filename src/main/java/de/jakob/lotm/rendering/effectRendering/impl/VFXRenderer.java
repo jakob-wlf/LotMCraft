@@ -4,8 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.LOTMCraft;
-import net.minecraft.client.renderer.GameRenderer;
-import org.joml.Matrix4f;
 import de.jakob.lotm.network.packets.toClient.AddDirectionalEffectPacket;
 import de.jakob.lotm.network.packets.toClient.AddMovableEffectPacket;
 import de.jakob.lotm.rendering.effectRendering.*;
@@ -13,6 +11,7 @@ import de.jakob.lotm.util.data.EntityLocation;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -23,6 +22,7 @@ import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
+import org.joml.Matrix4f;
 
 import java.util.*;
 

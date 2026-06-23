@@ -1,8 +1,7 @@
 package de.jakob.lotm.command;
 
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.CommandDispatcher;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.helper.AllyUtil;

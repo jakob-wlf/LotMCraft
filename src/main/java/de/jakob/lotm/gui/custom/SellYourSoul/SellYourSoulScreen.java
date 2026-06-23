@@ -1,5 +1,6 @@
 package de.jakob.lotm.gui.custom.SellYourSoul;
 
+import de.jakob.lotm.sound.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -9,7 +10,6 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import de.jakob.lotm.sound.ModSounds;
 
 import java.util.ArrayList;
 import java.util.Collections;

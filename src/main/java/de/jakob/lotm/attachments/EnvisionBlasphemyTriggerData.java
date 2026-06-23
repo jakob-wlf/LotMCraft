@@ -6,7 +6,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Stores per-Chaos-Sea-authority LEODERO trigger words set via the Envisioning > Target > Blasphemy screen.

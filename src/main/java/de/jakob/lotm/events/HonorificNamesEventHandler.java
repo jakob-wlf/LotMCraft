@@ -2,12 +2,11 @@ package de.jakob.lotm.events;
 
 import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.GatheringData;
 import de.jakob.lotm.attachments.AnchorComponent;
+import de.jakob.lotm.attachments.GatheringData;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.sefirah.RiverBlessingManager;
-import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.PendingPrayer;
 import net.minecraft.ChatFormatting;
@@ -24,7 +23,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.ServerChatEvent;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class HonorificNamesEventHandler {

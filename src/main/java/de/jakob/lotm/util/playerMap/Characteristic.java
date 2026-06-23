@@ -2,8 +2,6 @@ package de.jakob.lotm.util.playerMap;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import org.checkerframework.checker.units.qual.C;
 
 public class Characteristic {
     private final String pathway;

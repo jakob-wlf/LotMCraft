@@ -7,7 +7,6 @@ import de.jakob.lotm.events.GreySealEventHandler;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.sefirah.SefirahHandler;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

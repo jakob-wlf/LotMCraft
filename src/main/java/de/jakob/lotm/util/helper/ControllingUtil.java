@@ -1,26 +1,18 @@
 package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
-import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncOriginalBodyOwnerPacket;
-import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.AbilityWheelHelper;
-import de.jakob.lotm.util.helper.AllyUtil;
-import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import de.jakob.lotm.network.packets.toClient.UpdateAbilityBarPacket;
-import de.jakob.lotm.util.playerMap.PlayerMap;
-import de.jakob.lotm.util.scheduling.ServerScheduler;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.playerMap.Characteristic;
-import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -32,9 +24,15 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.*;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.GameType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -47,7 +45,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.*;
-import java.util.stream.Collector;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ControllingUtil {

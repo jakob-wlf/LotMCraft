@@ -2,7 +2,6 @@ package de.jakob.lotm.gui.custom.RiverAuthority;
 
 import de.jakob.lotm.gui.ModMenuTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;

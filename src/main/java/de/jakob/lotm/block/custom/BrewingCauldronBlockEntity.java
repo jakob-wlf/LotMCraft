@@ -1,10 +1,10 @@
 package de.jakob.lotm.block.custom;
 
-import de.jakob.lotm.block.ModBlockEntities;
-import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
 import de.jakob.lotm.beyonders.potions.PotionRecipes;
+import de.jakob.lotm.block.ModBlockEntities;
+import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
 import de.jakob.lotm.item.custom.BlasphemyCardItem;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;

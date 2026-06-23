@@ -5,7 +5,6 @@ import de.jakob.lotm.attachments.SharedAbilitiesComponent;
 import de.jakob.lotm.attachments.TeamComponent;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket;
-import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 

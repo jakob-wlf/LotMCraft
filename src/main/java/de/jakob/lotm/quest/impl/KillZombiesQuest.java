@@ -1,10 +1,6 @@
 package de.jakob.lotm.quest.impl;
 
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.QuestComponent;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
-import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
-import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.quest.Quest;
 import de.jakob.lotm.quest.QuestManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -18,8 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static net.minecraft.world.item.Items.IRON_INGOT;
 
 public class KillZombiesQuest extends Quest {
 

@@ -1,13 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.error;
 
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
-import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.Ability;
-import de.jakob.lotm.abilities.core.SelectableAbility;
-import de.jakob.lotm.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.attachments.CorruptionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;

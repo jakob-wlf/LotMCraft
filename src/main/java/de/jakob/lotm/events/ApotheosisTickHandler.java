@@ -24,9 +24,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ApotheosisTickHandler {
 

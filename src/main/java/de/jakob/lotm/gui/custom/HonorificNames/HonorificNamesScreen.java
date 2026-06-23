@@ -1,8 +1,8 @@
 package de.jakob.lotm.gui.custom.HonorificNames;
 
-import de.jakob.lotm.network.packets.toServer.RemoteAbilityCastPacket;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.HonorificNamesRespondPacket;
+import de.jakob.lotm.network.packets.toServer.RemoteAbilityCastPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.HonorificName;
 import de.jakob.lotm.util.playerMap.PendingPrayer;

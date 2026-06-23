@@ -1,12 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.abilities.core.Ability;
-import de.jakob.lotm.abilities.core.SelectableAbility;
 import de.jakob.lotm.abilities.common.passives.FateResistanceAbility;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;

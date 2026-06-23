@@ -3,18 +3,14 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.BlasphemySlateData;
 import de.jakob.lotm.attachments.SummonedBlasphemyData;
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncSummonedBlasphemyPacket;
 import de.jakob.lotm.item.custom.BlasphemyCardItem;
 import de.jakob.lotm.item.custom.BlasphemySlateHalfItem;
 import de.jakob.lotm.item.custom.BlasphemySlateItem;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.SyncSummonedBlasphemyPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtAccounter;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -38,12 +34,12 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 /**
  * Handles:
  *  1. Uniqueness enforcement for BlasphemyCardItem, BlasphemySlateHalfItem, BlasphemySlateItem.

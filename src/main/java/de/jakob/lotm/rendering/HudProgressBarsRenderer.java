@@ -3,18 +3,18 @@ package de.jakob.lotm.rendering;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.ClientSacrificeCache;
-import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.ClientAccommodationCache;
+import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.data.ClientSacrificeCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class HudProgressBarsRenderer {

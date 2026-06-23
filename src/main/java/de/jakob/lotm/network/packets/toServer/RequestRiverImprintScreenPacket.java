@@ -2,7 +2,6 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DeathImprintData;
-import de.jakob.lotm.attachments.CorruptionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityMenu;
 import de.jakob.lotm.sefirah.SefirahHandler;

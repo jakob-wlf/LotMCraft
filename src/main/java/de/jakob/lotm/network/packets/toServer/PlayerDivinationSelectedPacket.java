@@ -1,21 +1,18 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.common.passives.ElevatedDivinationAbility;
+import de.jakob.lotm.attachments.DeathImprintData;
 import de.jakob.lotm.beyonders.abilities.visionary.DreamTraversalAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
-import de.jakob.lotm.abilities.common.passives.ElevatedDivinationAbility;
-import de.jakob.lotm.abilities.visionary.DreamTraversalAbility;
-import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
-import de.jakob.lotm.attachments.DeathImprintData;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.sefirah.SefirotAuthorityManager;
-import de.jakob.lotm.network.packets.toClient.OpenPlayerDivinationScreenPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.DivinationUtil;
 import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DivinationUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;

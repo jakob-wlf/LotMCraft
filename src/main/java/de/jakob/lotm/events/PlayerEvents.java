@@ -1,33 +1,21 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.common.DivinationAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.NightmareAbility;
-import de.jakob.lotm.attachments.AbilityCooldownComponent;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.NewPlayerComponent;
-import de.jakob.lotm.attachments.SacrificeRevertComponent;
-import de.jakob.lotm.attachments.UniquenessComponent;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
 import de.jakob.lotm.entity.custom.uniqueness.UniquenessEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
-import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.ResetClientEffectsPacket;
 import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
-import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
-import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
-import de.jakob.lotm.network.packets.toServer.CharSlotRollResultPacket;
-import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
-import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.scheduling.ServerScheduler;
-import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.ExplodingFallingBlockHelper;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
@@ -36,8 +24,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -48,24 +34,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.joml.Vector3f;
 
-
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.LOTMCraft;
-
-
-
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class PlayerEvents {

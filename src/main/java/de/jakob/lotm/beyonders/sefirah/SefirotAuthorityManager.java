@@ -1,7 +1,7 @@
 package de.jakob.lotm.sefirah;
 
-import de.jakob.lotm.abilities.common.passives.ElevatedConcealmentAbility;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.abilities.common.passives.ElevatedConcealmentAbility;
 import de.jakob.lotm.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SefirotUnlockedAbilitiesComponent;

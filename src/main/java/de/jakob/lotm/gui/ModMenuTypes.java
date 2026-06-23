@@ -1,20 +1,20 @@
 package de.jakob.lotm.gui;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelMenu;
 import de.jakob.lotm.gui.custom.ArtifactWheel.ArtifactWheelMenu;
+import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
+import de.jakob.lotm.gui.custom.ChaosSeaAuthority.ChaosSeaAuthorityMenu;
+import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelMenu;
 import de.jakob.lotm.gui.custom.Gathering.GatheringMenu;
 import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesMenu;
-import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelMenu;
-import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
-import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelMenu;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
 import de.jakob.lotm.gui.custom.Recipe.RecipeMenu;
-import de.jakob.lotm.gui.custom.Trades.BeyonderTradeMenu;
 import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityMenu;
 import de.jakob.lotm.gui.custom.RiverBlessing.RiverBlessingMenu;
-import de.jakob.lotm.gui.custom.ChaosSeaAuthority.ChaosSeaAuthorityMenu;
 import de.jakob.lotm.gui.custom.RiverSefirotAuthority.RiverSefirotAuthorityMenu;
 import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityMenu;
+import de.jakob.lotm.gui.custom.Trades.BeyonderTradeMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;

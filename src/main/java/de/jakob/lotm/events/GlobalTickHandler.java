@@ -1,13 +1,8 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.attachments.DoorAuthorityData;
-import de.jakob.lotm.attachments.SealedDimensionData;
-import de.jakob.lotm.attachments.ActiveBlessingComponent;
-import de.jakob.lotm.attachments.AnchorComponent;
-import de.jakob.lotm.attachments.CorruptionComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAnchorsPacket;
@@ -19,7 +14,6 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;

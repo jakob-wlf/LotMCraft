@@ -1,13 +1,10 @@
 package de.jakob.lotm.attachments;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public class CorruptedPlayerComponent {

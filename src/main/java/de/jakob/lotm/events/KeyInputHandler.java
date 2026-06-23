@@ -6,7 +6,6 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
-import de.jakob.lotm.gui.custom.BlasphemySlate.SlateHalfPathwayScreen;
 import de.jakob.lotm.item.custom.BlasphemySlateHalfItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.*;

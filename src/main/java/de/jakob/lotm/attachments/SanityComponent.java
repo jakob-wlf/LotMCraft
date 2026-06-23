@@ -1,7 +1,5 @@
 package de.jakob.lotm.attachments;
 
-import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.GatheringData;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSanityPacket;
 import de.jakob.lotm.util.BeyonderData;

@@ -10,7 +10,6 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 
 import java.util.*;
-import java.util.ArrayList;
 
 /**
  * Server-persistent data for the River of Eternal Darkness Death Imprint system.

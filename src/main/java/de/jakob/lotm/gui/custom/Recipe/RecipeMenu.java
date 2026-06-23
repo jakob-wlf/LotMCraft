@@ -1,7 +1,6 @@
 package de.jakob.lotm.gui.custom.Recipe;
 
 import de.jakob.lotm.gui.ModMenuTypes;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;

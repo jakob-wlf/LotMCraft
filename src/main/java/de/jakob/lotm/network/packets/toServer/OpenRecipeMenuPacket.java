@@ -1,10 +1,10 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.gui.custom.Recipe.RecipeMenuProvider;
 import de.jakob.lotm.beyonders.potions.PotionRecipe;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.gui.custom.Recipe.RecipeMenuProvider;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

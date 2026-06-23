@@ -7,7 +7,6 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec3;
 
 public class MovableEffectFactory {
 

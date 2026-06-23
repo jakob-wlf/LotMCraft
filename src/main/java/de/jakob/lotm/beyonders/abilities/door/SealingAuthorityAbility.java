@@ -2,9 +2,12 @@ package de.jakob.lotm.beyonders.abilities.door;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.FogComponent;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SealedDimensionData;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.TimeChangeEntity;

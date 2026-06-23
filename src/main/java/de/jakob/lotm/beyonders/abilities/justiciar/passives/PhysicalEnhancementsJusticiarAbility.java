@@ -1,7 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.justiciar.passives;
 
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
-import de.jakob.lotm.util.BeyonderData;
 
 import java.util.HashMap;
 import java.util.List;

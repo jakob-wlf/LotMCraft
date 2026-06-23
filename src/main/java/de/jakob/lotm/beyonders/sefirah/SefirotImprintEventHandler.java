@@ -3,7 +3,6 @@ package de.jakob.lotm.sefirah;
 import de.jakob.lotm.attachments.CorruptionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SefirotData;
-import de.jakob.lotm.dimension.ModDimensions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;

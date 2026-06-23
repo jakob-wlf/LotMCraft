@@ -1,16 +1,11 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
+import de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility;
 import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
-import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
-import de.jakob.lotm.attachments.AbilityCooldownComponent;
-import de.jakob.lotm.attachments.ControllingDataComponent;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.*;
-import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -27,7 +22,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
-import de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility;
 
 import java.util.HashMap;
 import java.util.Map;

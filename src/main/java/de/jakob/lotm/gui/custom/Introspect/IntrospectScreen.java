@@ -2,25 +2,22 @@ package de.jakob.lotm.gui.custom.Introspect;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.acting.ActingHelper;
 import de.jakob.lotm.beyonders.acting.ActingTask;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
-import de.jakob.lotm.attachments.ControllingDataComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.RemoteAbilityCastPacket;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.*;
-import de.jakob.lotm.util.data.ClientData;
-import de.jakob.lotm.util.BlessingManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.BlessingManager;
 import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.util.data.ClientSacrificeCache;
-import de.jakob.lotm.util.data.ClientQuestData;
-import de.jakob.lotm.util.data.ClientUniquenessCache;
 import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.data.ClientQuestData;
+import de.jakob.lotm.util.data.ClientSacrificeCache;
+import de.jakob.lotm.util.data.ClientUniquenessCache;
 import de.jakob.lotm.util.helper.ClientTeamData;
 import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.ChatFormatting;
@@ -38,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private ResourceLocation containerBackground;

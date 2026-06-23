@@ -1,5 +1,6 @@
 package de.jakob.lotm.gui.custom.Gathering;
 
+import com.mojang.authlib.GameProfile;
 import de.jakob.lotm.attachments.GatheringData;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.GatheringActionPacket;
@@ -9,13 +10,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
-import net.minecraft.core.component.DataComponents;
-import com.mojang.authlib.GameProfile;
 
 import java.util.ArrayList;
 import java.util.List;

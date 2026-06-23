@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.door;
 
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.DistortionFieldEntity;
 import de.jakob.lotm.util.BeyonderData;

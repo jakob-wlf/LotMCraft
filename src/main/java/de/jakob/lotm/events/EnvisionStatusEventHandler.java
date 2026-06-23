@@ -4,7 +4,6 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.EnvisionedCharacteristicsData;
 import de.jakob.lotm.attachments.SelfEnvisionStatusData;
 import de.jakob.lotm.attachments.TargetEnvisionStatusData;
-import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.RequestSelfStatusActionPacket;
 import de.jakob.lotm.network.packets.toServer.RequestTargetStatusActionPacket;
 import net.minecraft.server.MinecraftServer;

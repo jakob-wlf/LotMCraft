@@ -2,11 +2,7 @@ package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
-import de.jakob.lotm.quest.Quest;
-import de.jakob.lotm.quest.QuestRegistry;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -15,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public record OpenQuestAcceptanceScreenPacket(String questId, List<ItemStack> rewards, 

@@ -25,11 +25,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 //@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class CommandingPresenceAbility extends ToggleAbility {

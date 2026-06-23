@@ -11,7 +11,6 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class GreatOldOneCommand {

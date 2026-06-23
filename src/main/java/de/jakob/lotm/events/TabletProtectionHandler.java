@@ -1,9 +1,6 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.item.custom.BlasphemyCardItem;
-import de.jakob.lotm.item.custom.BlasphemySlateHalfItem;
-import de.jakob.lotm.item.custom.BlasphemySlateItem;
 import de.jakob.lotm.item.custom.MysteriousTabletFragmentItem;
 import de.jakob.lotm.item.custom.MysteriousTabletItem;
 import net.minecraft.core.BlockPos;

@@ -1,16 +1,16 @@
 package de.jakob.lotm.beyonders.abilities.fool;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.CopiedInventoryComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.HistoricalVoidComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.network.packets.toClient.OpenHistoricalVoidBorrowingScreenPacket;
-import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
-import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.Config;
 import de.jakob.lotm.util.helper.AllyUtil;

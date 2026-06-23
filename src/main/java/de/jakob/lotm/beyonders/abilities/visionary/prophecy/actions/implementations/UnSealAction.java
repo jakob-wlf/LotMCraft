@@ -1,10 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.implementations;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionsEnum;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.context.ActionContextBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.context.ActionContextEnum;
-import de.jakob.lotm.attachments.ModAttachments;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;

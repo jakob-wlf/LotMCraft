@@ -1,18 +1,14 @@
 package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.artifacts.SealedArtifactItem;
 import de.jakob.lotm.attachments.MysteriousTabletData;
-import de.jakob.lotm.artifacts.SealedArtifactItem;
+import de.jakob.lotm.beyonders.artifacts.SealedArtifactItem;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.fluid.ModFluids;
 import de.jakob.lotm.item.custom.*;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.BlockItem;import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.SimpleTier;
 import net.neoforged.neoforge.registries.DeferredHolder;

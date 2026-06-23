@@ -1,38 +1,41 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.visionary.DreamTraversalAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.PsychologicalInvisibilityAbility;
 import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
-import de.jakob.lotm.attachments.*;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.PotionIngredient;
+import de.jakob.lotm.item.custom.BlasphemyCardItem;
+import de.jakob.lotm.item.custom.BlasphemySlateHalfItem;
+import de.jakob.lotm.item.custom.BlasphemySlateItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncKillCountPacket;
 import de.jakob.lotm.network.packets.toClient.SyncPsychologicalInvisibilityPacket;
-import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
-import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
-import de.jakob.lotm.beyonders.potions.BeyonderPotion;
-import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.DiscernmentUtil;
-import de.jakob.lotm.util.playerMap.Characteristic;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.PureIdealismUtil;
+import de.jakob.lotm.util.helper.TeamUtils;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import de.jakob.lotm.util.playerMap.StoredData;
 import de.jakob.lotm.util.playerMap.StoredDataBuilder;
-import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.TeamUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -40,9 +43,6 @@ import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import de.jakob.lotm.item.custom.BlasphemyCardItem;
-import de.jakob.lotm.item.custom.BlasphemySlateHalfItem;
-import de.jakob.lotm.item.custom.BlasphemySlateItem;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -53,10 +53,9 @@ import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.*;
-import java.util.Objects;
-import java.util.Random;
 
-import static de.jakob.lotm.util.BeyonderData.*;
+import static de.jakob.lotm.util.BeyonderData.getSequence;
+import static de.jakob.lotm.util.BeyonderData.playerMap;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderEventHandler {
@@ -315,37 +314,37 @@ public class BeyonderEventHandler {
         if (charItem == null) return;
 
         // Handle Discernment (drop items into the killer's inventory if they have the uniqueness)
-        if(DiscernmentUtil.died.containsKey(player.getUUID())){
+        if (DiscernmentUtil.died.containsKey(player.getUUID())) {
             String killerPath = DiscernmentUtil.died.get(player.getUUID());
             UUID id = playerMap.findPlayerByUniqueness(killerPath);
-            if (id != null){
+            if (id != null) {
                 var target = player.level().getPlayerByUUID(id);
-                if(target != null){
+                if (target != null) {
                     target.addItem(new ItemStack(charItem, count));
                     return;
                 }
             }
-        if(PureIdealismUtil.died.containsKey(player.getUUID())){
-            return;
-        }
-        else if(envisionedSplitComponent.isEnvisioned()){
-            envisionedSplitComponent.setEnvisioned(false);
-            return;
-        }
+            if (PureIdealismUtil.died.containsKey(player.getUUID())) {
+                return;
+            } else if (envisionedSplitComponent.isEnvisioned()) {
+                envisionedSplitComponent.setEnvisioned(false);
+                return;
+            }
 
-        int remaining = count;
-        int maxStack = Math.max(1, new ItemStack(charItem).getMaxStackSize());
-        while (remaining > 0) {
-            int stackSize = Math.min(remaining, maxStack);
-            ItemEntity itemEntity = new ItemEntity(
-                    player.level(),
-                    player.getX(),
-                    player.getY(),
-                    player.getZ(),
-                    new ItemStack(charItem, stackSize)
-            );
-            event.getDrops().add(itemEntity);
-            remaining -= stackSize;
+            int remaining = count;
+            int maxStack = Math.max(1, new ItemStack(charItem).getMaxStackSize());
+            while (remaining > 0) {
+                int stackSize = Math.min(remaining, maxStack);
+                ItemEntity itemEntity = new ItemEntity(
+                        player.level(),
+                        player.getX(),
+                        player.getY(),
+                        player.getZ(),
+                        new ItemStack(charItem, stackSize)
+                );
+                event.getDrops().add(itemEntity);
+                remaining -= stackSize;
+            }
         }
     }
 

@@ -2,7 +2,6 @@ package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
-import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

@@ -3,12 +3,12 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.FoolCardData;
 import de.jakob.lotm.item.ModItems;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -24,7 +24,6 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import java.util.UUID;
 
 /**

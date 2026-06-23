@@ -2,7 +2,6 @@ package de.jakob.lotm.abilities.twilight_giant.Passives;
 
 
 import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
-import de.jakob.lotm.util.BeyonderData;
 
 import java.util.HashMap;
 import java.util.List;

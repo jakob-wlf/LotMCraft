@@ -3,7 +3,6 @@ package de.jakob.lotm.network.packets.toServer;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.sefirah.RiverBlessingManager;
 import de.jakob.lotm.sefirah.SefirahHandler;
-import de.jakob.lotm.util.BeyonderData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;

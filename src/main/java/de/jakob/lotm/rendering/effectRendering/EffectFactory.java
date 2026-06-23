@@ -1,11 +1,11 @@
 package de.jakob.lotm.rendering.effectRendering;
 
+import de.jakob.lotm.rendering.effectRendering.impl.*;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
-import de.jakob.lotm.rendering.effectRendering.impl.*;
 import net.minecraft.world.phys.Vec3;
 
 public class EffectFactory {

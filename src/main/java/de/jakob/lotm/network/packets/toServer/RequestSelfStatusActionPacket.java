@@ -5,7 +5,6 @@ import de.jakob.lotm.attachments.SelfEnvisionStatusData;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncEnvisionStatusPacket;
 import de.jakob.lotm.status.StatusSnapshot;
-import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;

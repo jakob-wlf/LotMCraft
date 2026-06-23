@@ -5,7 +5,6 @@ import de.jakob.lotm.attachments.BeyonderComponent;
 import de.jakob.lotm.attachments.EnvisionedCharacteristicsData;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncEnvisionCharacteristicsPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.network.FriendlyByteBuf;
@@ -15,8 +14,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-import java.util.ArrayList;
 
 /**
  * Client → Server: Chaos Sea Envisioning > Self > Characteristics action.

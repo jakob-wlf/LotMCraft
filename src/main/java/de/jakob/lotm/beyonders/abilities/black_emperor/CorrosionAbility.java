@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.black_emperor;
 
-import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncCorrosionFovPacket;
 import de.jakob.lotm.util.BeyonderData;
