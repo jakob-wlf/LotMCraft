@@ -6,8 +6,8 @@ import de.jakob.lotm.beyonders.abilities.core.AbilityUseTracker;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.StartStopDiscernmentPacket;
-import de.jakob.lotm.network.packets.toClient.SyncSpectatingAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.StartStopDiscernmentS2CPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSpectatingAbilityS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
@@ -70,7 +70,7 @@ public class DiscernmentAbility extends ToggleAbility {
             }
         }
 
-        PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
+        PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityS2CPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
 
         if(lookedAt != null)
             performTelepaty(player, lookedAt, seq);
@@ -121,7 +121,7 @@ public class DiscernmentAbility extends ToggleAbility {
         }
 
         if(entity instanceof ServerPlayer player)
-            PacketHandler.sendToPlayer(player, new StartStopDiscernmentPacket(true, getRange(BeyonderData.getSequence(entity))));
+            PacketHandler.sendToPlayer(player, new StartStopDiscernmentS2CPacket(true, getRange(BeyonderData.getSequence(entity))));
     }
 
     @Override
@@ -131,8 +131,8 @@ public class DiscernmentAbility extends ToggleAbility {
         }
         if(!(entity instanceof ServerPlayer player)) return;
 
-        PacketHandler.sendToPlayer(player, new StartStopDiscernmentPacket(false, getRange(BeyonderData.getSequence(entity))));
-        PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(false, -1));
+        PacketHandler.sendToPlayer(player, new StartStopDiscernmentS2CPacket(false, getRange(BeyonderData.getSequence(entity))));
+        PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityS2CPacket(false, -1));
         AbilityUtil.sendActionBar(entity, Component.literal(""));
     }
 

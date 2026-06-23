@@ -1,7 +1,7 @@
 package de.jakob.lotm.util.shapeShifting;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.network.packets.toClient.NameSyncPacket;
+import de.jakob.lotm.network.packets.toClient.NameSyncS2CPacket;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -58,7 +58,7 @@ public class NameUtils {
 
     public static void broadcastNicknameChange(ServerPlayer player, String newNickname) {
         for (ServerPlayer otherPlayer : player.getServer().getPlayerList().getPlayers()) {
-            otherPlayer.connection.send(new NameSyncPacket(player.getUUID(), newNickname));
+            otherPlayer.connection.send(new NameSyncS2CPacket(player.getUUID(), newNickname));
         }
     }
 
@@ -68,14 +68,14 @@ public class NameUtils {
             for (ServerPlayer onlinePlayer : player.getServer().getPlayerList().getPlayers()) {
                 String nickname = mapping.get(onlinePlayer.getUUID());
                 if (nickname != null && !nickname.isEmpty()) {
-                    player.connection.send(new NameSyncPacket(onlinePlayer.getUUID(), nickname));
+                    player.connection.send(new NameSyncS2CPacket(onlinePlayer.getUUID(), nickname));
                 }
             }
             String newPlayerNickname = mapping.get(player.getUUID());
             if (newPlayerNickname != null && !newPlayerNickname.isEmpty()) {
                 for (ServerPlayer otherPlayer : player.getServer().getPlayerList().getPlayers()) {
                     if (!otherPlayer.getUUID().equals(player.getUUID())) {
-                        otherPlayer.connection.send(new NameSyncPacket(player.getUUID(), newPlayerNickname));
+                        otherPlayer.connection.send(new NameSyncS2CPacket(player.getUUID(), newPlayerNickname));
                     }
                 }
             }
@@ -87,7 +87,7 @@ public class NameUtils {
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             for (ServerPlayer otherPlayer : player.getServer().getPlayerList().getPlayers()) {
-                otherPlayer.connection.send(new NameSyncPacket(player.getUUID(), ""));
+                otherPlayer.connection.send(new NameSyncS2CPacket(player.getUUID(), ""));
             }
             resetPlayerName(player);
         }

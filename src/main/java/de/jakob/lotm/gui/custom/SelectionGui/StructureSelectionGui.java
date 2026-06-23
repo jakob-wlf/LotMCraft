@@ -1,6 +1,6 @@
 package de.jakob.lotm.gui.custom.SelectionGui;
 
-import de.jakob.lotm.network.packets.toServer.StructureDivinationSelectedPacket;
+import de.jakob.lotm.network.packets.toServer.StructureDivinationSelectedC2SPacket;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -23,7 +23,7 @@ public class StructureSelectionGui extends ButtonListGui<String> {
 
     @Override
     protected void onItemSelected(String structureId) {
-        PacketDistributor.sendToServer(new StructureDivinationSelectedPacket(structureId));
+        PacketDistributor.sendToServer(new StructureDivinationSelectedC2SPacket(structureId));
         minecraft.setScreen(null);
     }
 }

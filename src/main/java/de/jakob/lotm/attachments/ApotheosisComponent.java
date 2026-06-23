@@ -1,7 +1,7 @@
 package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncApotheosisPacket;
+import de.jakob.lotm.network.packets.toClient.SyncApotheosisS2CPacket;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -30,7 +30,7 @@ public class ApotheosisComponent implements INBTSerializable<CompoundTag> {
         if(player == null) return;
         if(pathway == null) return;
 
-        if(level != null) PacketHandler.sendToAllPlayersInSameLevel(new SyncApotheosisPacket(player.getId(), apotheosisTicksLeft, pathway), level);
+        if(level != null) PacketHandler.sendToAllPlayersInSameLevel(new SyncApotheosisS2CPacket(player.getId(), apotheosisTicksLeft, pathway), level);
     }
 
     public void setApotheosisTicksLeft(int apotheosisTicksLeft) {

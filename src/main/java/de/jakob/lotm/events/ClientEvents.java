@@ -7,7 +7,7 @@ import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.InventoryOpenedPacket;
+import de.jakob.lotm.network.packets.toServer.InventoryOpenedC2SPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.client.KeyMapping;
@@ -123,7 +123,7 @@ public class ClientEvents {
     public static void onScreenOpen(ScreenEvent.Opening event) {
         if (!(event.getScreen() instanceof InventoryScreen)) return;
 
-        PacketHandler.sendToServer(new InventoryOpenedPacket());
+        PacketHandler.sendToServer(new InventoryOpenedC2SPacket());
     }
 
     @SubscribeEvent

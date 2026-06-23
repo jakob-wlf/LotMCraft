@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.black_emperor;
 
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncWeaknessDetectionTargetsAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncWeaknessDetectionTargetsAbilityS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.network.chat.Component;
@@ -68,7 +68,7 @@ public class WeaknessDetectionAbility extends ToggleAbility {
         if (entity instanceof ServerPlayer player) {
             PacketHandler.sendToPlayer(
                     player,
-                    new SyncWeaknessDetectionTargetsAbilityPacket(false, Map.of())
+                    new SyncWeaknessDetectionTargetsAbilityS2CPacket(false, Map.of())
             );
         }
     }
@@ -115,7 +115,7 @@ public class WeaknessDetectionAbility extends ToggleAbility {
         // Send private glow data only to the player who has the ability active.
         PacketHandler.sendToPlayer(
                 player,
-                new SyncWeaknessDetectionTargetsAbilityPacket(true, clientTargets)
+                new SyncWeaknessDetectionTargetsAbilityS2CPacket(true, clientTargets)
         );
 
         // Debuff pass.
@@ -144,7 +144,7 @@ public class WeaknessDetectionAbility extends ToggleAbility {
         if (entity instanceof ServerPlayer player) {
             PacketHandler.sendToPlayer(
                     player,
-                    new SyncWeaknessDetectionTargetsAbilityPacket(false, Map.of())
+                    new SyncWeaknessDetectionTargetsAbilityS2CPacket(false, Map.of())
             );
             DETECTED_BY_CASTER.remove(player.getUUID());
         }

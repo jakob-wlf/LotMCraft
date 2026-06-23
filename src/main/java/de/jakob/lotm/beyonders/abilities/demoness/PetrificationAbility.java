@@ -6,7 +6,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.AddEntityTagPacket;
+import de.jakob.lotm.network.packets.toClient.AddEntityTagS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -107,7 +107,7 @@ public class PetrificationAbility extends SelectableAbility {
                 }
                 else {
                     target.getTags().add("petrified");
-                    PacketHandler.sendToAllPlayersInSameLevel(new AddEntityTagPacket("petrified", target.getId()), serverLevel);
+                    PacketHandler.sendToAllPlayersInSameLevel(new AddEntityTagS2CPacket("petrified", target.getId()), serverLevel);
                 }
             });
 

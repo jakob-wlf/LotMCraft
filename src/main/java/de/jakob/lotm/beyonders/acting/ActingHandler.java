@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.acting;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.PlayActingEffectPacket;
+import de.jakob.lotm.network.packets.toClient.PlayActingEffectS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -29,7 +29,7 @@ public class ActingHandler {
                         if(!player.level().isClientSide) {
                             ActingHelper.unlockTrigger(pathway, sequence, player, task.getId());
                             ActingCapHelper.onActingUnlocked(player, pathway, sequence, task.getId());
-                            PacketHandler.sendToPlayer((ServerPlayer) player, new PlayActingEffectPacket());
+                            PacketHandler.sendToPlayer((ServerPlayer) player, new PlayActingEffectS2CPacket());
                         }
                     }
                 });

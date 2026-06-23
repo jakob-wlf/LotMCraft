@@ -2,7 +2,7 @@ package de.jakob.lotm.attachments;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncFogPacket;
+import de.jakob.lotm.network.packets.toClient.SyncFogS2CPacket;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
@@ -33,7 +33,7 @@ public class FogComponent {
 
     public void setActiveAndSync(boolean transformed, LivingEntity entity) {
         setActive(transformed);
-        PacketHandler.sendToAllPlayers(new SyncFogPacket(entity.getId(), isActive(), fogIndex, color.x(), color.y(), color.z()));
+        PacketHandler.sendToAllPlayers(new SyncFogS2CPacket(entity.getId(), isActive(), fogIndex, color.x(), color.y(), color.z()));
     }
 
     public int getFogIndex() {
@@ -67,17 +67,17 @@ public class FogComponent {
 
     public void setFogIndexAndSync(int transformationIndex, LivingEntity entity) {
         this.fogIndex = transformationIndex;
-        PacketHandler.sendToAllPlayers(new SyncFogPacket(entity.getId(), isActive(), transformationIndex, color.x(), color.y(), color.z()));
+        PacketHandler.sendToAllPlayers(new SyncFogS2CPacket(entity.getId(), isActive(), transformationIndex, color.x(), color.y(), color.z()));
     }
 
     public void setFogIndexAndSync(FOG_TYPE type, LivingEntity entity) {
         this.fogIndex = type.getIndex();
-        PacketHandler.sendToAllPlayers(new SyncFogPacket(entity.getId(), isActive(), fogIndex, color.x(), color.y(), color.z()));
+        PacketHandler.sendToAllPlayers(new SyncFogS2CPacket(entity.getId(), isActive(), fogIndex, color.x(), color.y(), color.z()));
     }
 
     public void setFogColorAndSync(Vec3f color, LivingEntity entity) {
         this.color = color;
-        PacketHandler.sendToAllPlayers(new SyncFogPacket(entity.getId(), isActive(), getFogIndex(), color.x(), color.y(), color.z()));
+        PacketHandler.sendToAllPlayers(new SyncFogS2CPacket(entity.getId(), isActive(), getFogIndex(), color.x(), color.y(), color.z()));
     }
 
 

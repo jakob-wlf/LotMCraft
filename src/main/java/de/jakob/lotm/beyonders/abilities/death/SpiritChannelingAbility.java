@@ -8,7 +8,7 @@ import de.jakob.lotm.util.data.ClientSpiritCache;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncSpiritChannelingPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSpiritChannelingS2CPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -164,7 +164,7 @@ public class SpiritChannelingAbility extends SelectableAbility {
         if (names.length == 0) return;
         int idx = (selectedAbilities.getOrDefault(entity.getUUID(), 0) + 1) % names.length;
         selectedAbilities.put(entity.getUUID(), idx);
-        de.jakob.lotm.network.PacketHandler.sendToServer(new de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket(getId(), idx));
+        de.jakob.lotm.network.PacketHandler.sendToServer(new de.jakob.lotm.network.packets.toServer.AbilitySelectionC2SPacket(getId(), idx));
     }
 
     @Override
@@ -173,7 +173,7 @@ public class SpiritChannelingAbility extends SelectableAbility {
         if (names.length == 0) return;
         int idx = (selectedAbilities.getOrDefault(entity.getUUID(), 0) - 1 + names.length) % names.length;
         selectedAbilities.put(entity.getUUID(), idx);
-        de.jakob.lotm.network.PacketHandler.sendToServer(new de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket(getId(), idx));
+        de.jakob.lotm.network.PacketHandler.sendToServer(new de.jakob.lotm.network.packets.toServer.AbilitySelectionC2SPacket(getId(), idx));
     }
 
     @Override
@@ -217,7 +217,7 @@ public class SpiritChannelingAbility extends SelectableAbility {
         capturedSpirits.put(entity.getUUID(), type);
 
         if (entity instanceof net.minecraft.server.level.ServerPlayer sp) {
-            PacketHandler.sendToPlayer(sp, new SyncSpiritChannelingPacket(type.ordinal()));
+            PacketHandler.sendToPlayer(sp, new SyncSpiritChannelingS2CPacket(type.ordinal()));
         }
 
         spawnSpiritCaptureParticles((ServerLevel) level, entity, type);
@@ -233,7 +233,7 @@ public class SpiritChannelingAbility extends SelectableAbility {
         selectedAbilities.put(entity.getUUID(), 0);
 
         if (entity instanceof net.minecraft.server.level.ServerPlayer sp) {
-            PacketHandler.sendToPlayer(sp, new SyncSpiritChannelingPacket(-1));
+            PacketHandler.sendToPlayer(sp, new SyncSpiritChannelingS2CPacket(-1));
         }
 
         if (type == null) {

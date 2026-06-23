@@ -8,7 +8,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
+import de.jakob.lotm.network.packets.toServer.AbilitySelectionC2SPacket;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
@@ -92,7 +92,7 @@ public class MidnightPoemAbility extends SelectableAbility {
         }
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+        PacketHandler.sendToServer(new AbilitySelectionC2SPacket(getId(), selectedAbility));
     }
 
     @Override
@@ -124,7 +124,7 @@ public class MidnightPoemAbility extends SelectableAbility {
         }
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+        PacketHandler.sendToServer(new AbilitySelectionC2SPacket(getId(), selectedAbility));
     }
 
     @Override

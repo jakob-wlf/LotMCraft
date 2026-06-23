@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.potions;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.OpenRecipeMenuPacket;
+import de.jakob.lotm.network.packets.toServer.OpenRecipeMenuC2SPacket;
 import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -31,7 +31,7 @@ public class PotionRecipeItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         if (level.isClientSide && recipe != null) {
-            PacketHandler.sendToServer(new OpenRecipeMenuPacket(recipe.potion().getSequence(), recipe.potion().getPathway()));
+            PacketHandler.sendToServer(new OpenRecipeMenuC2SPacket(recipe.potion().getSequence(), recipe.potion().getPathway()));
         }
         return InteractionResultHolder.success(player.getItemInHand(usedHand));
     }

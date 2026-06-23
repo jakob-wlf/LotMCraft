@@ -11,8 +11,8 @@ import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.PotionIngredient;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncKillCountPacket;
-import de.jakob.lotm.network.packets.toClient.SyncPsychologicalInvisibilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncKillCountS2CPacket;
+import de.jakob.lotm.network.packets.toClient.SyncPsychologicalInvisibilityS2CPacket;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
@@ -92,7 +92,7 @@ public class BeyonderEventHandler {
             serverPlayer.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, 20 * 5, 99));
             BeyonderData.recalculateCharStackModifiers(serverPlayer);
             serverPlayer.getData(ModAttachments.LUCK_COMPONENT.get()).setLuck(0);
-            PacketHandler.sendToPlayer(serverPlayer, new SyncPsychologicalInvisibilityPacket(PsychologicalInvisibilityAbility.invisiblePlayers));
+            PacketHandler.sendToPlayer(serverPlayer, new SyncPsychologicalInvisibilityS2CPacket(PsychologicalInvisibilityAbility.invisiblePlayers));
 
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
         }
@@ -184,7 +184,7 @@ public class BeyonderEventHandler {
             // Clear sacrifice bar if it was active when the player died
             if (serverPlayer.getPersistentData().getBoolean("sacrifice_bar_clear")) {
                 serverPlayer.getPersistentData().remove("sacrifice_bar_clear");
-                PacketHandler.sendToPlayer(serverPlayer, new de.jakob.lotm.network.packets.toClient.SyncSacrificeDurationPacket(0));
+                PacketHandler.sendToPlayer(serverPlayer, new de.jakob.lotm.network.packets.toClient.SyncSacrificeDurationS2CPacket(0));
             }
         }
     }
@@ -210,7 +210,7 @@ public class BeyonderEventHandler {
                     ServerPlayer member = player.getServer().getPlayerList().getPlayer(
                             java.util.UUID.fromString(memberUUID));
                     if (member != null) {
-                        PacketHandler.sendToPlayer(member, new de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket(
+                        PacketHandler.sendToPlayer(member, new de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataS2CPacket(
                                 "", new java.util.ArrayList<>(), new java.util.ArrayList<>(), new java.util.HashMap<>(), 0, 0));
                     }
                 }
@@ -351,7 +351,7 @@ public class BeyonderEventHandler {
 
         KillCountComponent killCount = player.getData(ModAttachments.KILL_COUNT_COMPONENT);
         killCount.increment();
-        PacketHandler.sendToPlayer(player, new SyncKillCountPacket(killCount.getKillCount()));
+        PacketHandler.sendToPlayer(player, new SyncKillCountS2CPacket(killCount.getKillCount()));
     }
 
     @SubscribeEvent

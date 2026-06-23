@@ -47,7 +47,7 @@ import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlinkAfterimageEntity;
 import de.jakob.lotm.entity.custom.spirits.*;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataS2CPacket;
 import de.jakob.lotm.rendering.models.door.DoorHighMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.fool.FoolMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.red_priest.RedPriestMythicalCreatureModel;
@@ -255,7 +255,7 @@ public class ModEvents {
 
         if (team.memberCount() > 0) {
             // Leaving player is a leader — clear the shared tab for all online members
-            SyncSharedAbilitiesDataPacket clearPacket = new SyncSharedAbilitiesDataPacket(
+            SyncSharedAbilitiesDataS2CPacket clearPacket = new SyncSharedAbilitiesDataS2CPacket(
                     "", new ArrayList<>(), new ArrayList<>(), new HashMap<>(), 0, 0);
             for (String memberUUID : team.memberUUIDs()) {
                 ServerPlayer member = server.getPlayerList().getPlayer(
@@ -292,7 +292,7 @@ public class ModEvents {
             if (leader != null && !leader.getData(ModAttachments.TEAM_COMPONENT.get()).hasMember(player.getStringUUID())) {
                 // Leader is online but no longer claims this player — clear stale membership
                 player.setData(ModAttachments.TEAM_COMPONENT.get(), team.clearLeader());
-                PacketHandler.sendToPlayer(player, new de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket(
+                PacketHandler.sendToPlayer(player, new de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataS2CPacket(
                         "", new ArrayList<>(), new ArrayList<>(), new java.util.HashMap<>(), 0, 0));
             }
         } else if (team.memberCount() > 0) {

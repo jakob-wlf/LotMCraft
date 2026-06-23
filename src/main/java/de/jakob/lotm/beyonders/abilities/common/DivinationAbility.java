@@ -105,7 +105,7 @@ public class DivinationAbility extends SelectableAbility {
 
         dangerPremonitionActive.add(entity.getUUID());
 
-        PacketHandler.sendToPlayer(player, new SyncDangerPremonitionAbilityPacket(true));
+        PacketHandler.sendToPlayer(player, new SyncDangerPremonitionAbilityS2CPacket(true));
 
         AtomicBoolean stop = new AtomicBoolean(false);
         ServerScheduler.scheduleUntil((ServerLevel) level,  () -> {
@@ -119,7 +119,7 @@ public class DivinationAbility extends SelectableAbility {
             }
 
             if(stop.get()) {
-                PacketHandler.sendToPlayer(player, new SyncDangerPremonitionAbilityPacket(false));
+                PacketHandler.sendToPlayer(player, new SyncDangerPremonitionAbilityS2CPacket(false));
             }
             BeyonderData.reduceSpirituality(player, .5f);
         }, 2, null, stop);
@@ -135,7 +135,7 @@ public class DivinationAbility extends SelectableAbility {
             return;
         }
 
-        PacketHandler.sendToPlayer(player, new OpenCoordinateScreenPacket("dream_divination"));
+        PacketHandler.sendToPlayer(player, new OpenCoordinateScreenS2CPacket("dream_divination"));
     }
 
     private static final HashMap<UUID, Integer> dreamDivinationUsers = new HashMap<>();
@@ -193,7 +193,7 @@ public class DivinationAbility extends SelectableAbility {
 
         PacketDistributor.sendToPlayer(
                 player,
-                new OpenPlayerDivinationScreenPacket(players, PlayerSelectionWorkType.DIVINATION)
+                new OpenPlayerDivinationScreenS2CPacket(players, PlayerSelectionWorkType.DIVINATION)
         );
     }
 
@@ -211,7 +211,7 @@ public class DivinationAbility extends SelectableAbility {
 
         PacketDistributor.sendToPlayer(
                 player,
-                new OpenStructureDivinationScreenPacket(structureIds)
+                new OpenStructureDivinationScreenS2CPacket(structureIds)
         );
     }
 
@@ -241,7 +241,7 @@ public class DivinationAbility extends SelectableAbility {
 
         PacketDistributor.sendToPlayer(
                 player,
-                new OpenBiomeDivinationScreenPacket(biomeIds)
+                new OpenBiomeDivinationScreenS2CPacket(biomeIds)
         );
     }
 

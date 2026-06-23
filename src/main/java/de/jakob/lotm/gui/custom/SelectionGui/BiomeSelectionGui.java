@@ -1,6 +1,6 @@
 package de.jakob.lotm.gui.custom.SelectionGui;
 
-import de.jakob.lotm.network.packets.toServer.BiomeDivinationSelectedPacket;
+import de.jakob.lotm.network.packets.toServer.BiomeDivinationSelectedC2SPacket;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -22,7 +22,7 @@ public class BiomeSelectionGui extends ButtonListGui<String> {
 
     @Override
     protected void onItemSelected(String biomeId) {
-        PacketDistributor.sendToServer(new BiomeDivinationSelectedPacket(biomeId));
+        PacketDistributor.sendToServer(new BiomeDivinationSelectedC2SPacket(biomeId));
         minecraft.setScreen(null);
     }
 }

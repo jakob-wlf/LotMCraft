@@ -8,7 +8,7 @@ import de.jakob.lotm.attachments.HistoricalVoidComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
-import de.jakob.lotm.network.packets.toClient.OpenHistoricalVoidBorrowingScreenPacket;
+import de.jakob.lotm.network.packets.toClient.OpenHistoricalVoidBorrowingScreenS2CPacket;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.util.BeyonderData;
@@ -821,7 +821,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         if (getHistoricalBorrowingCount(player) <= getMaxHistoricalBorrowingCount(player)) {
             PacketDistributor.sendToPlayer(
                     player,
-                    new OpenHistoricalVoidBorrowingScreenPacket(List.of("Borrow Health", "Borrow Spirituality", "Borrow Cleansed State", "Borrow Sequence"))
+                    new OpenHistoricalVoidBorrowingScreenS2CPacket(List.of("Borrow Health", "Borrow Spirituality", "Borrow Cleansed State", "Borrow Sequence"))
             );
         }
     }

@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncToggleAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncToggleAbilityS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,7 +42,7 @@ public abstract class ToggleAbility extends Ability {
             activeAbilities.get(entity.getUUID()).add(this);
             start(level, entity);
             if(entity instanceof ServerPlayer player)
-                PacketHandler.sendToPlayer(player, new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.START.getValue()));
+                PacketHandler.sendToPlayer(player, new SyncToggleAbilityS2CPacket(entity.getId(), getId(), SyncToggleAbilityS2CPacket.Action.START.getValue()));
             return;
         }
 
@@ -55,7 +55,7 @@ public abstract class ToggleAbility extends Ability {
         }
         stop(level, entity);
         if(entity instanceof ServerPlayer player)
-            PacketHandler.sendToPlayer(player, new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.STOP.getValue()));
+            PacketHandler.sendToPlayer(player, new SyncToggleAbilityS2CPacket(entity.getId(), getId(), SyncToggleAbilityS2CPacket.Action.STOP.getValue()));
     }
 
     public static void cleanUp(ServerLevel serverLevel, LivingEntity entity) {

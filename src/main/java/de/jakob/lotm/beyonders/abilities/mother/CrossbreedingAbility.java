@@ -3,7 +3,7 @@ package de.jakob.lotm.beyonders.abilities.mother;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.mother.handler.HybridMobData;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
-import de.jakob.lotm.network.packets.toClient.HybridMobSyncPacket;
+import de.jakob.lotm.network.packets.toClient.HybridMobSyncS2CPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -109,7 +109,7 @@ public class CrossbreedingAbility extends Ability {
 
         // Send packet to all nearby clients
         if(level instanceof ServerLevel serverLevel) {
-            HybridMobSyncPacket packet = new HybridMobSyncPacket(newMob.getId(), tag);
+            HybridMobSyncS2CPacket packet = new HybridMobSyncS2CPacket(newMob.getId(), tag);
             PacketDistributor.sendToPlayersTrackingEntity(newMob, packet);
         }
     }

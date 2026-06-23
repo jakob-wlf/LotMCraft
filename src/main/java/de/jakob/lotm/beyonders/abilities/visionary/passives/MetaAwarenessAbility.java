@@ -97,7 +97,7 @@ public class MetaAwarenessAbility extends PassiveAbilityItem {
     }
 
 
-    // Called from PlayerDivinationSelectedPacket.handle when a divination succeeds. If the divined target has MetaAwareness, auto-pray  to the diviner.
+    // Called from PlayerDivinationSelectedC2SPacket.handle when a divination succeeds. If the divined target has MetaAwareness, auto-pray  to the diviner.
     public static void onDivined(ServerPlayer diviner, ServerPlayer target) {
         if(target.equals(diviner)) return;
 

@@ -4,8 +4,8 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncPlayerTeleportationOnlinePlayersPacket;
-import de.jakob.lotm.network.packets.toClient.SyncPlayerTeleportationPlayerNamesPacket;
+import de.jakob.lotm.network.packets.toClient.SyncPlayerTeleportationOnlinePlayersS2CPacket;
+import de.jakob.lotm.network.packets.toClient.SyncPlayerTeleportationPlayerNamesS2CPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.DivinationUtil;
 import net.minecraft.network.chat.Component;
@@ -120,7 +120,7 @@ public class PlayerTeleportationAbility extends SelectableAbility {
             onlinePlayers.add(player.getUUID());
             levelsForPlayer.put(player.getUUID(), player.serverLevel());
             namesForPlayer.put(player.getUUID(), player.getName().getString());
-            PacketHandler.sendToAllPlayers(new SyncPlayerTeleportationPlayerNamesPacket(player.getUUID().toString(), player.getName().getString()));
+            PacketHandler.sendToAllPlayers(new SyncPlayerTeleportationPlayerNamesS2CPacket(player.getUUID().toString(), player.getName().getString()));
         }
 
         if(onlinePlayers == null || onlinePlayers.isEmpty() || onlinePlayers.contains(null)) {
@@ -128,7 +128,7 @@ public class PlayerTeleportationAbility extends SelectableAbility {
         }
         List<UUID> snapshot = List.copyOf(onlinePlayers);
 
-        PacketHandler.sendToAllPlayers(new SyncPlayerTeleportationOnlinePlayersPacket(
+        PacketHandler.sendToAllPlayers(new SyncPlayerTeleportationOnlinePlayersS2CPacket(
                 new ArrayList<>(snapshot.stream().map(UUID::toString).toList())
         ));
     }

@@ -10,8 +10,8 @@ import de.jakob.lotm.entity.custom.ability_entities.TornadoEntity;
 import de.jakob.lotm.entity.custom.ability_entities.VolcanoEntity;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.GiantLightningEntity;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.DarknessEffectPacket;
-import de.jakob.lotm.network.packets.toClient.HotGroundEffectPacket;
+import de.jakob.lotm.network.packets.toClient.DarknessEffectS2CPacket;
+import de.jakob.lotm.network.packets.toClient.HotGroundEffectS2CPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -123,7 +123,7 @@ public class MiracleHandler {
 
             ServerScheduler.scheduleDelayed(delay, () -> {
                 // Send packet to all players in the level
-                HotGroundEffectPacket packet = new HotGroundEffectPacket(waveBlocks, false, currentWave);
+                HotGroundEffectS2CPacket packet = new HotGroundEffectS2CPacket(waveBlocks, false, currentWave);
                 PacketHandler.sendToAllPlayersInSameLevel(packet, (ServerLevel) level);
             }, (ServerLevel) level);
 
@@ -138,7 +138,7 @@ public class MiracleHandler {
 
         ServerScheduler.scheduleDelayed(restorationTime, () -> {
             // Send restoration packet to clients
-            HotGroundEffectPacket packet = new HotGroundEffectPacket(sortedBlocks, true, 0);
+            HotGroundEffectS2CPacket packet = new HotGroundEffectS2CPacket(sortedBlocks, true, 0);
             PacketHandler.sendToAllPlayersInSameLevel(packet, (ServerLevel) level);
 
             // Force block updates server-side to ensure sync
@@ -187,7 +187,7 @@ public class MiracleHandler {
 
             ServerScheduler.scheduleDelayed(delay, () -> {
                 // Send packet to all players in the level
-                DarknessEffectPacket packet = new DarknessEffectPacket(waveBlocks, false, currentWave);
+                DarknessEffectS2CPacket packet = new DarknessEffectS2CPacket(waveBlocks, false, currentWave);
                 PacketHandler.sendToAllPlayersInSameLevel(packet, (ServerLevel) level);
             }, (ServerLevel) level);
 
@@ -202,7 +202,7 @@ public class MiracleHandler {
 
         ServerScheduler.scheduleDelayed(restorationTime, () -> {
             // Send restoration packet to clients
-            DarknessEffectPacket packet = new DarknessEffectPacket(sortedBlocks, true, 0);
+            DarknessEffectS2CPacket packet = new DarknessEffectS2CPacket(sortedBlocks, true, 0);
             PacketHandler.sendToAllPlayersInSameLevel(packet, (ServerLevel) level);
 
             // Force block updates server-side to ensure sync

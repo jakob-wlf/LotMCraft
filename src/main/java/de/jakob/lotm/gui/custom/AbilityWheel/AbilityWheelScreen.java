@@ -7,7 +7,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.events.KeyInputHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
-import de.jakob.lotm.network.packets.toServer.UpdateSelectedAbilityPacket;
+import de.jakob.lotm.network.packets.toServer.UpdateSelectedAbilityC2SPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.ClientData;
 import net.minecraft.ChatFormatting;
@@ -343,7 +343,7 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
             if (ClientData.sharedAbilityMode) {
                 ClientData.setSelectedSharedAbility(hoveredSlot);
             } else {
-                PacketHandler.sendToServer(new UpdateSelectedAbilityPacket(hoveredSlot));
+                PacketHandler.sendToServer(new UpdateSelectedAbilityC2SPacket(hoveredSlot));
                 ClientData.setAbilityWheelData(
                         new java.util.ArrayList<>(getActiveAbilities()),
                         hoveredSlot
@@ -361,7 +361,7 @@ public class AbilityWheelScreen extends AbstractContainerScreen<AbilityWheelMenu
     @Override
     public void onClose() {
         if (KeyInputHandler.wasWheelOpenedWithHold && hoveredSlot != -1) {
-            PacketHandler.sendToServer(new UpdateSelectedAbilityPacket(hoveredSlot));
+            PacketHandler.sendToServer(new UpdateSelectedAbilityC2SPacket(hoveredSlot));
             if (ClientData.sharedAbilityMode) {
                 ClientData.setSelectedSharedAbility(hoveredSlot);
             } else {

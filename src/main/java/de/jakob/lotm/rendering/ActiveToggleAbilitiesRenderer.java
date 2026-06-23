@@ -16,7 +16,7 @@ import java.util.HashSet;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class ActiveToggleAbilitiesRenderer {
 
-    // Modified from the SyncToggleAbilityPacket
+    // Modified from the SyncToggleAbilityS2CPacket
     public static final HashSet<String> activeToggleAbilities = new HashSet<>();
 
     @SubscribeEvent

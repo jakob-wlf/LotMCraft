@@ -3,7 +3,7 @@ package de.jakob.lotm.beyonders.abilities.black_emperor;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncCorrosionFovPacket;
+import de.jakob.lotm.network.packets.toClient.SyncCorrosionFovS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
@@ -96,7 +96,7 @@ public class CorrosionAbility extends ToggleAbility {
                     if (level instanceof ServerLevel sl) {
                         ServerPlayer leaver = sl.getServer().getPlayerList().getPlayer(entry.getKey());
                         if (leaver != null) {
-                            PacketHandler.sendToPlayer(leaver, new SyncCorrosionFovPacket(1.0f));
+                            PacketHandler.sendToPlayer(leaver, new SyncCorrosionFovS2CPacket(1.0f));
                         }
                     }
                     return true;
@@ -117,7 +117,7 @@ public class CorrosionAbility extends ToggleAbility {
             for (UUID uuid : exposureTicks.keySet()) {
                 ServerPlayer player = sl.getServer().getPlayerList().getPlayer(uuid);
                 if (player != null) {
-                    PacketHandler.sendToPlayer(player, new SyncCorrosionFovPacket(1.0f));
+                    PacketHandler.sendToPlayer(player, new SyncCorrosionFovS2CPacket(1.0f));
                 }
             }
         }
@@ -172,7 +172,7 @@ public class CorrosionAbility extends ToggleAbility {
             // Every 5 seconds, send a random FOV multiplier to player targets
             if (target instanceof ServerPlayer player && level.getGameTime() % 100 == 0) {
                 float fov = 0.6f + level.random.nextFloat() * 1.2f; // range: 0.6x – 1.8x
-                PacketHandler.sendToPlayer(player, new SyncCorrosionFovPacket(fov));
+                PacketHandler.sendToPlayer(player, new SyncCorrosionFovS2CPacket(fov));
             }
 
             if (target instanceof Player player && ticks == STAGE_2_TICKS) {

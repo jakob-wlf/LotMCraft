@@ -6,7 +6,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.DarknessEffectPacket;
+import de.jakob.lotm.network.packets.toClient.DarknessEffectS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -91,7 +91,7 @@ public class SurgeOfDarknessAbility extends Ability {
 
                 ServerScheduler.scheduleDelayed(delay, () -> {
                     // Send packet to all players in the level
-                    DarknessEffectPacket packet = new DarknessEffectPacket(waveBlocks, false, currentWave);
+                    DarknessEffectS2CPacket packet = new DarknessEffectS2CPacket(waveBlocks, false, currentWave);
                     PacketHandler.sendToAllPlayersInSameLevel(packet, (ServerLevel) level);
                 }, (ServerLevel) level);
 
@@ -106,7 +106,7 @@ public class SurgeOfDarknessAbility extends Ability {
 
             ServerScheduler.scheduleDelayed(restorationTime, () -> {
                 // Send restoration packet to clients
-                DarknessEffectPacket packet = new DarknessEffectPacket(sortedBlocks, true, 0);
+                DarknessEffectS2CPacket packet = new DarknessEffectS2CPacket(sortedBlocks, true, 0);
                 PacketHandler.sendToAllPlayersInSameLevel(packet, (ServerLevel) level);
 
                 // Force block updates server-side to ensure sync

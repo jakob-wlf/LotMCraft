@@ -61,7 +61,7 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(new CoordinateInputScreen(player, use));
     }
 
-    public static void syncLivingEntityBeyonderData(SyncLivingEntityBeyonderDataPacket packet) {
+    public static void syncLivingEntityBeyonderData(SyncLivingEntityBeyonderDataS2CPacket packet) {
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -80,7 +80,7 @@ public class ClientHandler {
         }
     }
 
-    public static void handleSyncPlayerData(SyncPlayerActingDataPayload payload, IPayloadContext context) {
+    public static void handleSyncPlayerData(SyncPlayerActingDataS2CPacket payload, IPayloadContext context) {
         context.enqueueWork(() -> {
             Player player = Minecraft.getInstance().player;
             if (player != null) {
@@ -93,7 +93,7 @@ public class ClientHandler {
         Minecraft.getInstance().levelRenderer.setBlocksDirty(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
-    public static void syncSpectatingAbility(SyncSpectatingAbilityPacket packet, Player player) {
+    public static void syncSpectatingAbility(SyncSpectatingAbilityS2CPacket packet, Player player) {
         if(packet.active()) {
             Level level = Minecraft.getInstance().level;
             if (level == null) return;
@@ -107,7 +107,7 @@ public class ClientHandler {
         }
     }
 
-    public static void syncSpiritVisionAbility(SyncSpiritVisionAbilityPacket packet, Player player) {
+    public static void syncSpiritVisionAbility(SyncSpiritVisionAbilityS2CPacket packet, Player player) {
         if(packet.active()) {
             Level level = Minecraft.getInstance().level;
             if (level == null) return;
@@ -128,7 +128,7 @@ public class ClientHandler {
         player.level().playSound(player, BlockPos.containing(player.getEyePosition()), SoundEvents.ENCHANTMENT_TABLE_USE, player.getSoundSource(), .5f, 1);
     }
 
-    public static void syncEyeOfDeathAbility(SyncEyeOfDeathAbilityPacket packet, Player player) {
+    public static void syncEyeOfDeathAbility(SyncEyeOfDeathAbilityS2CPacket packet, Player player) {
         if (packet.active()) {
             Level level = Minecraft.getInstance().level;
             if (level == null) return;
@@ -141,11 +141,11 @@ public class ClientHandler {
         }
     }
 
-    public static void handleRingPacket(RingEffectPacket packet) {
+    public static void handleRingPacket(RingEffectS2CPacket packet) {
         RingExpansionRenderer.handleRingEffectPacket(packet);
     }
 
-    public static void syncTelepathyAbility(SyncTelepathyAbilityPacket packet, Player player) {
+    public static void syncTelepathyAbility(SyncTelepathyAbilityS2CPacket packet, Player player) {
         if(packet.active()) {
             Level level = Minecraft.getInstance().level;
             if (level == null) return;
@@ -199,7 +199,7 @@ public class ClientHandler {
         }
     }
 
-    public static void syncSelectedMarionette(SyncSelectedMarionettePacket packet, Player player) {
+    public static void syncSelectedMarionette(SyncSelectedMarionetteS2CPacket packet, Player player) {
         if(packet.active()) {
             MarionetteOverlayRenderer.currentMarionette.put(
                     player.getUUID(),
@@ -215,7 +215,7 @@ public class ClientHandler {
         }
     }
 
-    public static void handleMirrorWorldPacket(SyncMirrorWorldPacket packet) {
+    public static void handleMirrorWorldPacket(SyncMirrorWorldS2CPacket packet) {
         Player player = Minecraft.getInstance().player;
         if (player != null) {
             player.getData(ModAttachments.MIRROR_WORLD_COMPONENT.get())
@@ -223,7 +223,7 @@ public class ClientHandler {
         }
     }
 
-    public static void handleTransformationPacket(SyncTransformationPacket packet) {
+    public static void handleTransformationPacket(SyncTransformationS2CPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -249,7 +249,7 @@ public class ClientHandler {
             minecraft.options.setCameraType(CameraType.FIRST_PERSON);
     }
 
-    public static void handleShaderPacket(SyncShaderPacket packet) {
+    public static void handleShaderPacket(SyncShaderS2CPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -262,7 +262,7 @@ public class ClientHandler {
         entity.getData(ModAttachments.SHADER_COMPONENT.get()).setShaderIndex(packet.shaderIndex());
     }
 
-    public static void handleFogPacket(SyncFogPacket packet) {
+    public static void handleFogPacket(SyncFogS2CPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -277,7 +277,7 @@ public class ClientHandler {
     }
 
     public static void addEffect(int index, double x, double y, double z, int entityId) {
-        if (entityId == AddEffectPacket.NO_ENTITY) {
+        if (entityId == AddEffectS2CPacket.NO_ENTITY) {
             VFXRenderer.addActiveEffect(index, x, y, z);
         } else {
             VFXRenderer.addActiveEffect(index, x, y, z, entityId);
@@ -288,7 +288,7 @@ public class ClientHandler {
                                             double startX, double startY, double startZ,
                                             double endX, double endY, double endZ,
                                             int duration, int entityId) {
-        if (entityId == AddDirectionalEffectPacket.NO_ENTITY) {
+        if (entityId == AddDirectionalEffectS2CPacket.NO_ENTITY) {
             VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration);
         } else {
             VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration, entityId);
@@ -299,7 +299,7 @@ public class ClientHandler {
                                         double x, double y, double z,
                                         int duration, boolean infinite,
                                         int entityId) {
-        if (entityId == AddMovableEffectPacket.NO_ENTITY) {
+        if (entityId == AddMovableEffectS2CPacket.NO_ENTITY) {
             VFXRenderer.addActiveMovableEffect(effectId, index, x, y, z, duration, infinite);
         } else {
             VFXRenderer.addActiveMovableEffect(effectId, index, x, y, z, duration, infinite, entityId);
@@ -318,7 +318,7 @@ public class ClientHandler {
         VFXRenderer.cancelEffectsNear(x, y, z, radius);
     }
 
-    public static void syncDecryptionAbility(SyncDecryptionLookedAtEntitiesAbilityPacket packet, Player player) {
+    public static void syncDecryptionAbility(SyncDecryptionLookedAtEntitiesAbilityS2CPacket packet, Player player) {
         if(packet.active()) {
             DecryptionRenderLayer.activeDecryption.add(player.getUUID());
             Level level = Minecraft.getInstance().level;
@@ -334,7 +334,7 @@ public class ClientHandler {
         }
     }
 
-    public static void syncDiscernmentAbility(StartStopDiscernmentPacket packet, Player player) {
+    public static void syncDiscernmentAbility(StartStopDiscernmentS2CPacket packet, Player player) {
         if(packet.active()) {
            DiscernmentRenderer.activeDiscernment.put(player.getUUID(), packet.range());
         }
@@ -343,7 +343,7 @@ public class ClientHandler {
         }
     }
 
-    public static void handleSanityPacket(SyncSanityPacket packet) {
+    public static void handleSanityPacket(SyncSanityS2CPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -354,7 +354,7 @@ public class ClientHandler {
         entity.getData(ModAttachments.SANITY_COMPONENT.get()).setSanity(packet.sanity());
     }
 
-    public static void handleSkillScalingPacket(SyncSkillScalingPacket packet) {
+    public static void handleSkillScalingPacket(SyncSkillScalingS2CPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -369,7 +369,7 @@ public class ClientHandler {
                 .setSeq(packet.seq());
     }
 
-    public static void handleAllyPacket(SyncAllyDataPacket packet) {
+    public static void handleAllyPacket(SyncAllyDataS2CPacket packet) {
         if (Minecraft.getInstance().player != null) {
             AllyComponent newComponent = new AllyComponent(packet.allies());
             Minecraft.getInstance().player.setData(ModAttachments.ALLY_COMPONENT.get(), newComponent);
@@ -422,7 +422,7 @@ public class ClientHandler {
         Minecraft.getInstance().options.hideGui = false;
     }
 
-    public static void useAbility(UseAbilityPacket packet) {
+    public static void useAbility(UseAbilityS2CPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -439,7 +439,7 @@ public class ClientHandler {
         ability.onAbilityUse(level, living);
     }
 
-    public static void handleSyncAbilityWheelDataPacket(SyncAbilityWheelDataPacket packet) {
+    public static void handleSyncAbilityWheelDataPacket(SyncAbilityWheelDataS2CPacket packet) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof IntrospectScreen screen) {
             screen.setAbilityWheelSlots(packet.abilityIds());
@@ -472,7 +472,7 @@ public class ClientHandler {
         }
     }
 
-    public static void handleQuestScreenPacket(OpenQuestAcceptanceScreenPacket packet) {
+    public static void handleQuestScreenPacket(OpenQuestAcceptanceScreenS2CPacket packet) {
         Quest quest = QuestRegistry.getQuest(packet.questId());
         if (quest == null) {
             return;
@@ -496,7 +496,7 @@ public class ClientHandler {
         return Minecraft.getInstance().player;
     }
 
-    public static void handlePlayerDivinationScreenPacket(OpenPlayerDivinationScreenPacket packet) {
+    public static void handlePlayerDivinationScreenPacket(OpenPlayerDivinationScreenS2CPacket packet) {
         Minecraft.getInstance().setScreen(new PlayerSelectionGui(packet.players(), packet.types()));
     }
 
@@ -508,27 +508,27 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(VisionaryAbilityMenus.createStoryWritingAbilityMenu(Minecraft.getInstance().screen));
     }
 
-    public static void handleStructureDivinationScreenPacket(OpenStructureDivinationScreenPacket packet) {
+    public static void handleStructureDivinationScreenPacket(OpenStructureDivinationScreenS2CPacket packet) {
         Minecraft.getInstance().setScreen(new StructureSelectionGui(packet.structureIds()));
     }
 
-    public static void handleBiomeDivinationScreenPacket(OpenBiomeDivinationScreenPacket packet) {
+    public static void handleBiomeDivinationScreenPacket(OpenBiomeDivinationScreenS2CPacket packet) {
         Minecraft.getInstance().setScreen(new BiomeSelectionGui(packet.biomeIds()));
     }
 
-    public static void handleShapeShiftingScreenPacket(OpenShapeShiftingScreenPacket packet) {
+    public static void handleShapeShiftingScreenPacket(OpenShapeShiftingScreenS2CPacket packet) {
         Minecraft.getInstance().setScreen(new ShapeShiftingSelectionGui(packet.entityTypes()));
     }
 
-    public static void handleDiscernmentScreenPacket(OpenDiscernmentScreenPacket packet) {
+    public static void handleDiscernmentScreenPacket(OpenDiscernmentScreenS2CPacket packet) {
         Minecraft.getInstance().setScreen(new DiscernmentSelectionGui(packet.saved()));
     }
 
-    public static void handleHistoricalVoidBorrowingScreenPacket(OpenHistoricalVoidBorrowingScreenPacket packet) {
+    public static void handleHistoricalVoidBorrowingScreenPacket(OpenHistoricalVoidBorrowingScreenS2CPacket packet) {
         Minecraft.getInstance().setScreen(new HistoricalVoidBorrowingSelectionGui(packet.options()));
     }
 
-    public static void handleOriginalBodyOwnerSyncPacket(SyncOriginalBodyOwnerPacket packet) {
+    public static void handleOriginalBodyOwnerSyncPacket(SyncOriginalBodyOwnerS2CPacket packet) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null && mc.level.getEntity(packet.entityId()) instanceof OriginalBodyEntity body) {
             body.getData(ModAttachments.CONTROLLING_DATA).setOwnerUUID(packet.ownerUUID());
@@ -536,7 +536,7 @@ public class ClientHandler {
         }
     }
 
-    public static void handleDisableAbilityUsageForTimePacket(DisableAbilityUsageForTimePacket packet) {
+    public static void handleDisableAbilityUsageForTimePacket(DisableAbilityUsageForTimeS2CPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -549,7 +549,7 @@ public class ClientHandler {
         disabledComponent.disableAbilityUsageForTime(packet.cause(), packet.ticks(), living);
     }
 
-    public static void handleSyncToggleAbility(SyncToggleAbilityPacket packet, IPayloadContext context) {
+    public static void handleSyncToggleAbility(SyncToggleAbilityS2CPacket packet, IPayloadContext context) {
         Entity entity = context.player().level().getEntity(packet.entityId());
         Ability ability = LOTMCraft.abilityHandler.getById(packet.abilityId());
         if(!(ability instanceof ToggleAbility toggleAbility) || !(entity instanceof LivingEntity living)) {
@@ -574,7 +574,7 @@ public class ClientHandler {
         }
     }
 
-    public static void handleAddClientSideTagPacket(AddEntityTagPacket packet) {
+    public static void handleAddClientSideTagPacket(AddEntityTagS2CPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -584,14 +584,14 @@ public class ClientHandler {
         }
     }
 
-    public static void handleSyncWeaknessDetectionPacket(SyncWeaknessDetectionTargetsAbilityPacket packet) {
+    public static void handleSyncWeaknessDetectionPacket(SyncWeaknessDetectionTargetsAbilityS2CPacket packet) {
         WeaknessDetectionRenderLayer.activeWeaknessDetection.clear();
         if (packet.active()) {
             WeaknessDetectionRenderLayer.activeWeaknessDetection.putAll(packet.targets());
         }
     }
 
-    public static void handleControllingDataPacket(SyncControllingDataPacket packet) {
+    public static void handleControllingDataPacket(SyncControllingDataS2CPacket packet) {
         Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
         if(entity == null) {
             return;
@@ -600,7 +600,7 @@ public class ClientHandler {
         entity.getData(ModAttachments.CONTROLLING_DATA.get()).setBodyEntity(packet.bodyEntity());
     }
 
-    public static void handleDiscernmentDataPacket(SyncDiscernmentDataPacket packet) {
+    public static void handleDiscernmentDataPacket(SyncDiscernmentDataS2CPacket packet) {
         Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
         if(entity == null) {
             return;
@@ -628,18 +628,18 @@ public class ClientHandler {
         }
     }
 
-    public static void handleSpiritChannelingPacket(de.jakob.lotm.network.packets.toClient.SyncSpiritChannelingPacket packet) {
+    public static void handleSpiritChannelingPacket(de.jakob.lotm.network.packets.toClient.SyncSpiritChannelingS2CPacket packet) {
         ClientSpiritCache.setSpiritTypeOrdinal(packet.spiritType());
     }
 
-    public static void handleSyncIntrospectMenuPacket(SyncIntrospectMenuPacket packet, UUID playerUUID) {
+    public static void handleSyncIntrospectMenuPacket(SyncIntrospectMenuS2CPacket packet, UUID playerUUID) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof IntrospectScreen screen) {
             screen.updateMenuData(packet.sequence(), packet.pathway(), ClientBeyonderCache.getDigestionProgress(playerUUID), packet.sanity());
         }
     }
 
-    public static void handleActingCapPacket(de.jakob.lotm.network.packets.toClient.SyncActingCapPacket packet) {
+    public static void handleActingCapPacket(de.jakob.lotm.network.packets.toClient.SyncActingCapS2CPacket packet) {
         net.minecraft.client.player.LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
         player.getPersistentData().putFloat(
@@ -648,7 +648,7 @@ public class ClientHandler {
                 de.jakob.lotm.beyonders.acting.ActingCapHelper.MISSED_ACTING_KEY, packet.missedActing());
     }
 
-    public static void handleApotheosisPacket(SyncApotheosisPacket packet) {
+    public static void handleApotheosisPacket(SyncApotheosisS2CPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -659,7 +659,7 @@ public class ClientHandler {
         }
     }
 
-    public static void playAnimation(PlayAnimationPacket packet) {
+    public static void playAnimation(PlayAnimationS2CPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -671,7 +671,7 @@ public class ClientHandler {
         AnimationUtil.playAnimation(player, AnimationUtil.getResourceLocationById(packet.animId()));
     }
 
-    public static void handleAbilitySelectionPacket(SyncAbilitySelectionPacket packet) {
+    public static void handleAbilitySelectionPacket(SyncAbilitySelectionS2CPacket packet) {
         if (!(LOTMCraft.abilityHandler.getById(packet.abilityId()) instanceof SelectableAbility selectable)) return;
         var player = Minecraft.getInstance().player;
         if (player == null) return;

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.ExecuteBeyonderTradePacket;
+import de.jakob.lotm.network.packets.toServer.ExecuteBeyonderTradeC2SPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -105,7 +105,7 @@ public class BeyonderTradeScreen extends AbstractContainerScreen<BeyonderTradeMe
     }
 
     private void onConfirmTrade(int tradeIndex) {
-        PacketHandler.sendToServer(new ExecuteBeyonderTradePacket(menu.getNpcEntityId(), tradeIndex));
+        PacketHandler.sendToServer(new ExecuteBeyonderTradeC2SPacket(menu.getNpcEntityId(), tradeIndex));
     }
 
     @Override

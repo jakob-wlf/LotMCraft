@@ -5,7 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.DisplayShadowParticlesPacket;
+import de.jakob.lotm.network.packets.toClient.DisplayShadowParticlesS2CPacket;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -61,7 +61,7 @@ public class ShadowConcealmentAbility extends Ability {
             entity.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 20 * 20, 20, false, false, false));
 
             if(entity instanceof ServerPlayer player)
-                PacketHandler.sendToPlayer(player, new DisplayShadowParticlesPacket(20 * 20));
+                PacketHandler.sendToPlayer(player, new DisplayShadowParticlesS2CPacket(20 * 20));
 
             //make visible again
             AtomicReference<UUID> taskIdRef = new AtomicReference<>();

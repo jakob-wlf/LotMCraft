@@ -43,6 +43,6 @@ public class TheftAbility extends Ability {
         }
 
         TheftHandler.stealItemsFromEntity(target, player, this);
-       // PacketHandler.sendToPlayer(player, new SendPassiveTheftEffectPacket(target.getEyePosition().x, target.getEyePosition().y, target.getEyePosition().z));
+       // PacketHandler.sendToPlayer(player, new SendPassiveTheftEffectS2CPacket(target.getEyePosition().x, target.getEyePosition().y, target.getEyePosition().z));
     }
 }

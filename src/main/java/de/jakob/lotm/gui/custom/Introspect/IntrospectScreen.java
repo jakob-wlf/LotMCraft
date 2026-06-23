@@ -269,9 +269,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         this.killCount = ClientSacrificeCache.getKillCount();
 
-        PacketHandler.sendToServer(new RequestAbilityBarPacket());
-        PacketHandler.sendToServer(new RequestQuestDataPacket());
-        PacketHandler.sendToServer(new RequestSharedAbilitiesPacket());
+        PacketHandler.sendToServer(new RequestAbilityBarC2SPacket());
+        PacketHandler.sendToServer(new RequestQuestDataC2SPacket());
+        PacketHandler.sendToServer(new RequestSharedAbilitiesC2SPacket());
 
         sharedWheelSlots.clear();
         sharedWheelSlots.addAll(ClientData.getSharedWheelAbilities());
@@ -393,14 +393,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             boolean canApotheosize = false;
             if (this.minecraft != null && this.minecraft.player != null) {
                 int charStack = ClientBeyonderCache.getCharStack(this.minecraft.player.getUUID());
-                canApotheosize = ClientUniquenessCache.getKillCount() >= RequestUniquenessApotheosisPacket.KILLS_REQUIRED_FOR_APOTHEOSIS && charStack >= 2;
+                canApotheosize = ClientUniquenessCache.getKillCount() >= RequestUniquenessApotheosisC2SPacket.KILLS_REQUIRED_FOR_APOTHEOSIS && charStack >= 2;
             }
             final boolean finalCanApotheosize = canApotheosize;
 
             apotheosisButton = Button.builder(
                             Component.literal("Apotheosis").withStyle(finalCanApotheosize ? ChatFormatting.GOLD : ChatFormatting.GRAY),
                             button -> {
-                                if (finalCanApotheosize) PacketHandler.sendToServer(new RequestUniquenessApotheosisPacket());
+                                if (finalCanApotheosize) PacketHandler.sendToServer(new RequestUniquenessApotheosisC2SPacket());
                             })
                     .bounds(apotheosisButtonX, apotheosisButtonY, 60, 20)
                     .build();
@@ -507,7 +507,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             button -> {
                                 abilityWheelSlots.clear();
                                 abilityWheelSubIndexes.clear();
-                                PacketHandler.sendToServer(new SyncAbilityWheelAbilitiesPacket(new ArrayList<>()));
+                                PacketHandler.sendToServer(new SyncAbilityWheelAbilitiesC2SPacket(new ArrayList<>()));
                             })
                     .bounds(clearButtonX, clearButtonY, ABILITIES_PANEL_WIDTH, 20)
                     .build();
@@ -518,7 +518,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             button -> {
                                 abilityBarSlots.clear();
                                 abilityBarSubIndexes.clear();
-                                PacketHandler.sendToServer(new SyncAbilityBarAbilitiesPacket(new ArrayList<>()));
+                                PacketHandler.sendToServer(new SyncAbilityBarAbilitiesC2SPacket(new ArrayList<>()));
                             })
                     .bounds(clearButtonX, clearButtonY, ABILITIES_PANEL_WIDTH, 20)
                     .build();
@@ -534,8 +534,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
             discardQuestButton = Button.builder(Component.literal("Discard Quest").withStyle(ChatFormatting.RED),
                             button -> {
-                                PacketHandler.sendToServer(new DiscardQuestPacket());
-                                PacketHandler.sendToServer(new RequestQuestDataPacket());
+                                PacketHandler.sendToServer(new DiscardQuestC2SPacket());
+                                PacketHandler.sendToServer(new RequestQuestDataC2SPacket());
                             })
                     .bounds(panelX, discardButtonY, QUESTS_PANEL_WIDTH, 20)
                     .build();
@@ -545,7 +545,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     private void openHonorificNamesMenu() {
         if (menu.getSequence() >= 4) return;
-        PacketHandler.sendToServer(new OpenHonorificNamesMenuPacket());
+        PacketHandler.sendToServer(new OpenHonorificNamesMenuC2SPacket());
     }
 
     private boolean isCreativeOp() {
@@ -1460,7 +1460,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                     }
                 }
 
-                PacketHandler.sendToServer(new SyncAbilityWheelAbilitiesPacket(wheelSlotsToIdList()));
+                PacketHandler.sendToServer(new SyncAbilityWheelAbilitiesC2SPacket(wheelSlotsToIdList()));
 
             } else if (currentTab == Tab.ABILITY_BAR) {
                 if (isInAbilityBarArea((int) mouseX, (int) mouseY, panelX, slotY)) {
@@ -1498,7 +1498,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                     }
                 }
 
-                PacketHandler.sendToServer(new SyncAbilityBarAbilitiesPacket(barSlotsToIdList()));
+                PacketHandler.sendToServer(new SyncAbilityBarAbilitiesC2SPacket(barSlotsToIdList()));
 
             } else if (currentTab == Tab.SHARED_ABILITIES && draggedAbility != null) {
                 int sectionY = panelY + ABILITIES_PANEL_HEIGHT + 5;
@@ -1529,7 +1529,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 if (draggedFromAvailable) {
                     if (inPoolArea && !myContributions.contains(draggedId)) {
                         myContributions.add(draggedId);
-                        PacketHandler.sendToServer(new SyncSharedAbilitiesPacket(new ArrayList<>(myContributions)));
+                        PacketHandler.sendToServer(new SyncSharedAbilitiesC2SPacket(new ArrayList<>(myContributions)));
                     }
                 } else if (draggedFromSharedWheelIndex >= 0) {
                     if (targetWheelSlot >= 0 && targetWheelSlot != draggedFromSharedWheelIndex) {
@@ -1552,7 +1552,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         myContributions.remove(draggedId);
                         sharedWheelSlots.remove(draggedId);
                         ClientData.setSharedWheelAbilities(sharedWheelSlots);
-                        PacketHandler.sendToServer(new SyncSharedAbilitiesPacket(new ArrayList<>(myContributions)));
+                        PacketHandler.sendToServer(new SyncSharedAbilitiesC2SPacket(new ArrayList<>(myContributions)));
                     }
                 } else {
                     if (targetWheelSlot >= 0) {
@@ -1785,7 +1785,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         guiGraphics.blit(textureLocation, iconX, iconY, 0, 0, iconSize, iconSize, iconSize, iconSize);
 
         int kills = ClientUniquenessCache.getKillCount();
-        Component killText = Component.literal(kills + "/" + RequestUniquenessApotheosisPacket.KILLS_REQUIRED_FOR_APOTHEOSIS + " kills").withStyle(ChatFormatting.GOLD);
+        Component killText = Component.literal(kills + "/" + RequestUniquenessApotheosisC2SPacket.KILLS_REQUIRED_FOR_APOTHEOSIS + " kills").withStyle(ChatFormatting.GOLD);
         guiGraphics.drawString(this.font, killText, iconX + iconSize + 3, iconY + 4, 0xFFAA00, true);
     }
 

@@ -3,7 +3,7 @@ package de.jakob.lotm.rendering;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.RequestActiveStatusOfAbilityPacket;
+import de.jakob.lotm.network.packets.toServer.RequestActiveStatusOfAbilityC2SPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.ClientData;
@@ -63,7 +63,7 @@ public class AbilityIconRenderer {
             return;
         }
 
-        PacketHandler.sendToServer(new RequestActiveStatusOfAbilityPacket(selectedAbilityId.split(":")[0]));
+        PacketHandler.sendToServer(new RequestActiveStatusOfAbilityC2SPacket(selectedAbilityId.split(":")[0]));
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
 

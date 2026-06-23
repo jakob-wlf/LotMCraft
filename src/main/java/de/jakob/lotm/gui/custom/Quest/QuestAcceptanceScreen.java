@@ -3,7 +3,7 @@ package de.jakob.lotm.gui.custom.Quest;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.QuestAcceptanceResponsePacket;
+import de.jakob.lotm.network.packets.toServer.QuestAcceptanceResponseC2SPacket;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
@@ -192,12 +192,12 @@ public class QuestAcceptanceScreen extends Screen {
     }
     
     private void acceptQuest() {
-        PacketHandler.sendToServer(new QuestAcceptanceResponsePacket(questId, true, npcId));
+        PacketHandler.sendToServer(new QuestAcceptanceResponseC2SPacket(questId, true, npcId));
         this.onClose();
     }
     
     private void declineQuest() {
-        PacketHandler.sendToServer(new QuestAcceptanceResponsePacket(questId, false, npcId));
+        PacketHandler.sendToServer(new QuestAcceptanceResponseC2SPacket(questId, false, npcId));
         this.onClose();
     }
     

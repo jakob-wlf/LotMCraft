@@ -4,7 +4,7 @@ import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.tsunami.TsunamiRenderer;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.AddEntityTagPacket;
+import de.jakob.lotm.network.packets.toClient.AddEntityTagS2CPacket;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -139,7 +139,7 @@ public class TsunamiEntity extends Entity {
         if (!this.level().isClientSide) {
             if(InteractionHandler.isInteractionPossible(new Location(this.position(), level()), "freezing")) {
                 getTags().add("frozen");
-                PacketHandler.sendToAllPlayersInSameLevel(new AddEntityTagPacket("frozen", this.getId()), (ServerLevel) level());
+                PacketHandler.sendToAllPlayersInSameLevel(new AddEntityTagS2CPacket("frozen", this.getId()), (ServerLevel) level());
             }
 
             // Adjust position on first tick if not on solid ground

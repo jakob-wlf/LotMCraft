@@ -4,7 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncEnvisioningPacket;
+import de.jakob.lotm.network.packets.toClient.SyncEnvisioningS2CPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -65,7 +65,7 @@ public class MindWorldAuthorityEnvisioningAbility extends ToggleAbility {
 
         serverPlayer.onUpdateAbilities();
 
-        PacketHandler.sendToPlayer(serverPlayer, new SyncEnvisioningPacket(true));
+        PacketHandler.sendToPlayer(serverPlayer, new SyncEnvisioningS2CPacket(true));
     }
 
     @Override
@@ -83,7 +83,7 @@ public class MindWorldAuthorityEnvisioningAbility extends ToggleAbility {
 
         serverPlayer.onUpdateAbilities();
 
-        PacketHandler.sendToPlayer(serverPlayer, new SyncEnvisioningPacket(false));
+        PacketHandler.sendToPlayer(serverPlayer, new SyncEnvisioningS2CPacket(false));
     }
 
     @Override

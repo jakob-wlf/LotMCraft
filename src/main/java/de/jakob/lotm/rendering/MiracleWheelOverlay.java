@@ -3,7 +3,7 @@ package de.jakob.lotm.rendering;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.PerformMiraclePacket;
+import de.jakob.lotm.network.packets.toServer.PerformMiracleC2SPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
@@ -407,7 +407,7 @@ public class MiracleWheelOverlay {
 
     public void handleMouseRelease() {
         if (isOpen && hoveredIndex >= 0 && hoveredIndex < abilityNames.length) {
-            PacketHandler.sendToServer(new PerformMiraclePacket(abilityNames[hoveredIndex]));
+            PacketHandler.sendToServer(new PerformMiracleC2SPacket(abilityNames[hoveredIndex]));
         }
         close();
     }

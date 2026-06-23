@@ -4,7 +4,7 @@ import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelMenu;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncCopiedAbilitiesPacket;
+import de.jakob.lotm.network.packets.toClient.SyncCopiedAbilitiesS2CPacket;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
@@ -64,6 +64,6 @@ public class CopiedAbilityHelper {
             remainingUses.add(data.remainingUses());
         }
 
-        PacketHandler.sendToPlayer(player, new SyncCopiedAbilitiesPacket(abilityIds, copyTypes, remainingUses));
+        PacketHandler.sendToPlayer(player, new SyncCopiedAbilitiesS2CPacket(abilityIds, copyTypes, remainingUses));
     }
 }

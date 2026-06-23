@@ -5,7 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SendPassiveTheftEffectPacket;
+import de.jakob.lotm.network.packets.toClient.SendPassiveTheftEffectS2CPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -58,6 +58,6 @@ public class PassiveTheftAbility extends PassiveAbilityItem {
         LivingEntity target = event.getEntity();
         TheftHandler.stealItemsFromEntityPassive(target, player);
 
-        PacketHandler.sendToPlayer(player, new SendPassiveTheftEffectPacket(target.getEyePosition().x, target.getEyePosition().y, target.getEyePosition().z));
+        PacketHandler.sendToPlayer(player, new SendPassiveTheftEffectS2CPacket(target.getEyePosition().x, target.getEyePosition().y, target.getEyePosition().z));
     }
 }

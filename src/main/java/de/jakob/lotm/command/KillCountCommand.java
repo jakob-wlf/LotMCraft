@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import de.jakob.lotm.attachments.KillCountComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncKillCountPacket;
+import de.jakob.lotm.network.packets.toClient.SyncKillCountS2CPacket;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -25,7 +25,7 @@ public class KillCountCommand {
 
                         KillCountComponent killCount = target.getData(ModAttachments.KILL_COUNT_COMPONENT);
                         killCount.setKillCount(amount);
-                        PacketHandler.sendToPlayer(target, new SyncKillCountPacket(amount));
+                        PacketHandler.sendToPlayer(target, new SyncKillCountS2CPacket(amount));
 
                         context.getSource().sendSuccess(() -> Component.literal(
                                 "Set kill count of " + target.getName().getString() + " to " + amount), true);

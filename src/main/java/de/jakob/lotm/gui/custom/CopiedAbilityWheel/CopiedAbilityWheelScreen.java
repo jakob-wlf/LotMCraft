@@ -5,7 +5,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
-import de.jakob.lotm.network.packets.toServer.UseCopiedAbilityPacket;
+import de.jakob.lotm.network.packets.toServer.UseCopiedAbilityC2SPacket;
 import de.jakob.lotm.util.data.ClientData;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -308,7 +308,7 @@ public class CopiedAbilityWheelScreen extends AbstractContainerScreen<CopiedAbil
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && hoveredSlot != -1) {
-            PacketHandler.sendToServer(new UseCopiedAbilityPacket(hoveredSlot));
+            PacketHandler.sendToServer(new UseCopiedAbilityC2SPacket(hoveredSlot));
             this.onClose();
             return true;
         }

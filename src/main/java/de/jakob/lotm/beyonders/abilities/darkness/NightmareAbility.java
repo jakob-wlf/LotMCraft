@@ -4,7 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncNightmareAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncNightmareAbilityS2CPacket;
 import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.data.NightmareCenter;
@@ -314,7 +314,7 @@ public class NightmareAbility extends SelectableAbility {
         }
 
         activeNightmaresServer.put(entity.getUUID(), center);
-        PacketHandler.sendToAllPlayers(new SyncNightmareAbilityPacket(entity.position().x, entity.position().y, entity.position().z, radius, true));
+        PacketHandler.sendToAllPlayers(new SyncNightmareAbilityS2CPacket(entity.position().x, entity.position().y, entity.position().z, radius, true));
 
         // Create an empty snapshot - it will capture blocks as they're modified
         RegionSnapshot region = new RegionSnapshot(level, BlockPos.containing(center.pos()), radius);
@@ -358,7 +358,7 @@ public class NightmareAbility extends SelectableAbility {
             set.removeIf(pos -> pos.getCenter().distanceToSqr(center.pos()) <= (radius * radius));
         }
 
-        PacketHandler.sendToAllPlayers(new SyncNightmareAbilityPacket(0, 0, 0, 0, false));
+        PacketHandler.sendToAllPlayers(new SyncNightmareAbilityS2CPacket(0, 0, 0, 0, false));
     }
 
     public static boolean hasActiveNightmare(LivingEntity entity) {

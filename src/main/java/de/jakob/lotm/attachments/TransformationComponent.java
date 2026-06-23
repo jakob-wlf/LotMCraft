@@ -1,7 +1,7 @@
 package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncTransformationPacket;
+import de.jakob.lotm.network.packets.toClient.SyncTransformationS2CPacket;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,7 +27,7 @@ public class TransformationComponent {
 
     public void setTransformedAndSync(boolean transformed, LivingEntity entity) {
         isTransformed = transformed;
-        PacketHandler.sendToAllPlayers(new SyncTransformationPacket(entity.getId(), isTransformed, transformationIndex, additionalData));
+        PacketHandler.sendToAllPlayers(new SyncTransformationS2CPacket(entity.getId(), isTransformed, transformationIndex, additionalData));
     }
 
     public int getTransformationIndex() {
@@ -44,12 +44,12 @@ public class TransformationComponent {
 
     public void setTransformationIndexAndSync(int transformationIndex, LivingEntity entity) {
         this.transformationIndex = transformationIndex;
-        PacketHandler.sendToAllPlayers(new SyncTransformationPacket(entity.getId(), isTransformed, transformationIndex, additionalData));
+        PacketHandler.sendToAllPlayers(new SyncTransformationS2CPacket(entity.getId(), isTransformed, transformationIndex, additionalData));
     }
 
     public void setTransformationIndexAndSync(TransformationType type, LivingEntity entity) {
         this.transformationIndex = type.getIndex();
-        PacketHandler.sendToAllPlayers(new SyncTransformationPacket(entity.getId(), isTransformed, transformationIndex, additionalData));
+        PacketHandler.sendToAllPlayers(new SyncTransformationS2CPacket(entity.getId(), isTransformed, transformationIndex, additionalData));
     }
 
     public String getAdditionalData() {
@@ -62,7 +62,7 @@ public class TransformationComponent {
 
     public void setAdditionalDataAndSync(String additionalData, LivingEntity entity) {
         this.additionalData = additionalData;
-        PacketHandler.sendToAllPlayers(new SyncTransformationPacket(entity.getId(), isTransformed, transformationIndex, additionalData));
+        PacketHandler.sendToAllPlayers(new SyncTransformationS2CPacket(entity.getId(), isTransformed, transformationIndex, additionalData));
     }
 
     public void reset() {

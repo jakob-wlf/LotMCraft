@@ -8,7 +8,7 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
+import de.jakob.lotm.network.packets.toServer.AbilitySelectionC2SPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -308,7 +308,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
         }
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+        PacketHandler.sendToServer(new AbilitySelectionC2SPacket(getId(), selectedAbility));
     }
 
     @Override
@@ -332,7 +332,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
         }
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+        PacketHandler.sendToServer(new AbilitySelectionC2SPacket(getId(), selectedAbility));
     }
 
     private void spawnAvatar(ServerLevel serverLevel, LivingEntity entity) {

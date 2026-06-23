@@ -1,6 +1,6 @@
 package de.jakob.lotm.util.helper;
 
-import de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataS2CPacket;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Client-side cache of team data, populated by SyncSharedAbilitiesDataPacket.
+ * Client-side cache of team data, populated by SyncSharedAbilitiesDataS2CPacket.
  * Used by IntrospectScreen to render the Shared Abilities tab.
  */
 public class ClientTeamData {
@@ -20,7 +20,7 @@ public class ClientTeamData {
     private static int maxTeamSize = 4;
     private static int slotsPerMember = 1;
 
-    public static void update(SyncSharedAbilitiesDataPacket packet) {
+    public static void update(SyncSharedAbilitiesDataS2CPacket packet) {
         leaderUUID = packet.leaderUUID();
         memberUUIDs = new ArrayList<>(packet.teamMemberUUIDs());
         memberNames = new ArrayList<>(packet.teamMemberNames());

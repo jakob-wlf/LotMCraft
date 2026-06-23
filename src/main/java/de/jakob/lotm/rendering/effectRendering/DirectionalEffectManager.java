@@ -1,7 +1,7 @@
 package de.jakob.lotm.rendering.effectRendering;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.AddDirectionalEffectPacket;
+import de.jakob.lotm.network.packets.toClient.AddDirectionalEffectS2CPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,7 +17,7 @@ public class DirectionalEffectManager {
                                   double endX, double endY, double endZ,
                                   int durationTicks, ServerLevel level) {
         PacketHandler.sendToAllPlayersInSameLevel(
-                new AddDirectionalEffectPacket(effect.getIndex(),
+                new AddDirectionalEffectS2CPacket(effect.getIndex(),
                         startX, startY, startZ,
                         endX, endY, endZ,
                         durationTicks),
@@ -30,7 +30,7 @@ public class DirectionalEffectManager {
                                   double endX, double endY, double endZ,
                                   int durationTicks, ServerPlayer player) {
         PacketHandler.sendToPlayer(player,
-                new AddDirectionalEffectPacket(effect.getIndex(),
+                new AddDirectionalEffectS2CPacket(effect.getIndex(),
                         startX, startY, startZ,
                         endX, endY, endZ,
                         durationTicks)
@@ -52,7 +52,7 @@ public class DirectionalEffectManager {
                                   int durationTicks, ServerLevel level,
                                   LivingEntity entity) {
         PacketHandler.sendToAllPlayersInSameLevel(
-                new AddDirectionalEffectPacket(effect.getIndex(),
+                new AddDirectionalEffectS2CPacket(effect.getIndex(),
                         startX, startY, startZ,
                         endX, endY, endZ,
                         durationTicks, entity.getId()),
@@ -69,7 +69,7 @@ public class DirectionalEffectManager {
                                   int durationTicks, ServerPlayer player,
                                   LivingEntity entity) {
         PacketHandler.sendToPlayer(player,
-                new AddDirectionalEffectPacket(effect.getIndex(),
+                new AddDirectionalEffectS2CPacket(effect.getIndex(),
                         startX, startY, startZ,
                         endX, endY, endZ,
                         durationTicks, entity.getId())

@@ -8,8 +8,8 @@ import de.jakob.lotm.attachments.SacrificeRevertComponent;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.WarBannerEntity;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncKillCountPacket;
-import de.jakob.lotm.network.packets.toClient.SyncSacrificeDurationPacket;
+import de.jakob.lotm.network.packets.toClient.SyncKillCountS2CPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSacrificeDurationS2CPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
@@ -92,7 +92,7 @@ public class SacrificeAbility extends Ability {
 
         // Consume the kills
         killCount.setKillCount(kills - killsConsumed);
-        PacketHandler.sendToPlayer(player, new SyncKillCountPacket(killCount.getKillCount()));
+        PacketHandler.sendToPlayer(player, new SyncKillCountS2CPacket(killCount.getKillCount()));
 
         int tempSeq = currentSeq - 1;
         String pathway = BeyonderData.getPathway(player);
@@ -114,7 +114,7 @@ public class SacrificeAbility extends Ability {
             SacrificeRevertComponent revert = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);
             revert.set(serverLevel.getGameTime() + durationTicks, currentSeq, pathway, savedDigestion);
 
-            PacketHandler.sendToPlayer(player, new SyncSacrificeDurationPacket(durationTicks));
+            PacketHandler.sendToPlayer(player, new SyncSacrificeDurationS2CPacket(durationTicks));
 
             // Revert while online after duration expires
             ServerScheduler.scheduleDelayed(durationTicks, () -> {

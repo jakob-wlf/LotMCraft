@@ -6,7 +6,7 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.events.KeyInputHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
-import de.jakob.lotm.network.packets.toServer.UpdateSelectedAbilityPacket;
+import de.jakob.lotm.network.packets.toServer.UpdateSelectedAbilityC2SPacket;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -346,7 +346,7 @@ public class ArtifactWheelScreen extends AbstractContainerScreen<ArtifactWheelMe
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && hoveredSlot != -1) {
             // Update selected ability
-            PacketHandler.sendToServer(new UpdateSelectedAbilityPacket(hoveredSlot));
+            PacketHandler.sendToServer(new UpdateSelectedAbilityC2SPacket(hoveredSlot));
             this.menu.setSelectedAbilityIndex(hoveredSlot);
 //            ClientData.setAbilityWheelData(
 //                    new java.util.ArrayList<>(this.menu.getAbilities()),
@@ -364,7 +364,7 @@ public class ArtifactWheelScreen extends AbstractContainerScreen<ArtifactWheelMe
     @Override
     public void onClose() {
         if(KeyInputHandler.wasWheelOpenedWithHold && hoveredSlot != -1) {
-            PacketHandler.sendToServer(new UpdateSelectedAbilityPacket(hoveredSlot));
+            PacketHandler.sendToServer(new UpdateSelectedAbilityC2SPacket(hoveredSlot));
             this.menu.setSelectedAbilityIndex(hoveredSlot);
 //            ClientData.setAbilityWheelData(
 //                    new java.util.ArrayList<>(this.menu.getAbilities()),

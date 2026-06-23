@@ -1,7 +1,7 @@
 package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncShaderPacket;
+import de.jakob.lotm.network.packets.toClient.SyncShaderS2CPacket;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,7 +30,7 @@ public class ActiveShaderComponent {
 
     public void setShaderActiveAndSync(boolean shaderActive, LivingEntity entity) {
         setShaderActive(shaderActive);
-        PacketHandler.sendToAllPlayers(new SyncShaderPacket(entity.getId(), isShaderActive(), shaderIndex));
+        PacketHandler.sendToAllPlayers(new SyncShaderS2CPacket(entity.getId(), isShaderActive(), shaderIndex));
     }
 
     public int getShaderIndex() {
@@ -47,12 +47,12 @@ public class ActiveShaderComponent {
 
     public void setShaderIndexAndSync(int transformationIndex, LivingEntity entity) {
         this.shaderIndex = transformationIndex;
-        PacketHandler.sendToAllPlayers(new SyncShaderPacket(entity.getId(), isShaderActive(), transformationIndex));
+        PacketHandler.sendToAllPlayers(new SyncShaderS2CPacket(entity.getId(), isShaderActive(), transformationIndex));
     }
 
     public void setShaderIndexAndSync(SHADERTYPE type, LivingEntity entity) {
         this.shaderIndex = type.getIndex();
-        PacketHandler.sendToAllPlayers(new SyncShaderPacket(entity.getId(), isShaderActive(), shaderIndex));
+        PacketHandler.sendToAllPlayers(new SyncShaderS2CPacket(entity.getId(), isShaderActive(), shaderIndex));
     }
 
 

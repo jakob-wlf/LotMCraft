@@ -13,8 +13,8 @@ import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.events.BeyonderDataTickHandler;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
-import de.jakob.lotm.network.packets.toClient.SyncLivingEntityBeyonderDataPacket;
+import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataS2CPacket;
+import de.jakob.lotm.network.packets.toClient.SyncLivingEntityBeyonderDataS2CPacket;
 import de.jakob.lotm.util.playerMap.*;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -269,7 +269,7 @@ public class BeyonderData {
                 if(putIntoMap)
                     playerMap.put(serverPlayer);
 
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicStack(), getMaxWormAmount(sequence));
+                SyncBeyonderDataS2CPacket packet = new SyncBeyonderDataS2CPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicStack(), getMaxWormAmount(sequence));
                 PacketHandler.sendToAllPlayers(packet);
 
                 TeamComponent teamComp = serverPlayer.getData(ModAttachments.TEAM_COMPONENT.get());
@@ -525,12 +525,12 @@ public class BeyonderData {
         if (!entity.level().isClientSide()) {
             if(entity instanceof ServerPlayer serverPlayer) {
                 // Send empty data to clear client cache
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", 10, 0.0f, false, 0.0f, new String[10], new int[10], 0);
+                SyncBeyonderDataS2CPacket packet = new SyncBeyonderDataS2CPacket("none", 10, 0.0f, false, 0.0f, new String[10], new int[10], 0);
                 PacketHandler.sendToPlayer(serverPlayer, packet);
             }
             else {
-                SyncLivingEntityBeyonderDataPacket packet =
-                        new SyncLivingEntityBeyonderDataPacket(entity.getId(), "none", 10, 0.0f);
+                SyncLivingEntityBeyonderDataS2CPacket packet =
+                        new SyncLivingEntityBeyonderDataS2CPacket(entity.getId(), "none", 10, 0.0f);
                 PacketHandler.sendToAllPlayers(packet); // broadcast to all players tracking this entity
             }
         }

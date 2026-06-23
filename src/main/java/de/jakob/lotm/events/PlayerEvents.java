@@ -13,8 +13,8 @@ import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDo
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.ResetClientEffectsPacket;
-import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
+import de.jakob.lotm.network.packets.toClient.ResetClientEffectsS2CPacket;
+import de.jakob.lotm.network.packets.toClient.SyncGriefingGameruleS2CPacket;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.util.BeyonderData;
@@ -84,7 +84,7 @@ public class PlayerEvents {
                 revert.clear();
             }
 
-            PacketHandler.sendToPlayer(player, new ResetClientEffectsPacket());
+            PacketHandler.sendToPlayer(player, new ResetClientEffectsS2CPacket());
         }
     }
 
@@ -108,7 +108,7 @@ public class PlayerEvents {
                 } catch (IllegalArgumentException ignored) {}
             }
 
-            PacketHandler.sendToPlayer(player, new SyncGriefingGamerulePacket(player.level().getGameRules().getBoolean(ModGameRules.ALLOW_GRIEFING)));
+            PacketHandler.sendToPlayer(player, new SyncGriefingGameruleS2CPacket(player.level().getGameRules().getBoolean(ModGameRules.ALLOW_GRIEFING)));
 
             NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
             if(!component.isHasReceivedNewPlayerPerks() && player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC)) {

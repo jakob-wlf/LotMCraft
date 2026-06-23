@@ -1,7 +1,7 @@
 package de.jakob.lotm.gui.custom.HonorificNames;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.HonorificNamesRespondPacket;
+import de.jakob.lotm.network.packets.toServer.HonorificNamesRespondC2SPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.HonorificName;
 import de.jakob.lotm.util.playerMap.PendingPrayer;
@@ -133,7 +133,7 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
         List<PendingPrayer> prayers = menu.getPendingPrayers();
         if (index >= 0 && index < prayers.size()) {
             PendingPrayer prayer = prayers.get(index);
-            PacketHandler.sendToServer(new HonorificNamesRespondPacket(prayer.senderUUID(), teleport));
+            PacketHandler.sendToServer(new HonorificNamesRespondC2SPacket(prayer.senderUUID(), teleport));
             // Remove immediately client-side so the UI updates without waiting for a server round-trip
             prayers.remove(index);
             // Clamp scroll offset so it stays within valid bounds

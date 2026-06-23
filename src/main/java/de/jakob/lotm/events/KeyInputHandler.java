@@ -41,21 +41,21 @@ public class KeyInputHandler {
         if(LOTMCraft.toggleGriefingKey != null && LOTMCraft.toggleGriefingKey.consumeClick()) {
             Player player = Minecraft.getInstance().player;
             if (player != null) {
-                PacketHandler.sendToServer(new ToggleGriefingPacket());
+                PacketHandler.sendToServer(new ToggleGriefingC2SPacket());
             }
         }
 
         if(LOTMCraft.pathwayInfosKey != null && LOTMCraft.pathwayInfosKey.consumeClick()) {
             Player player = Minecraft.getInstance().player;
             if (player != null) {
-                PacketHandler.sendToServer(new OpenIntrospectMenuPacket(ClientBeyonderCache.getSequence(player.getUUID()), ClientBeyonderCache.getPathway(player.getUUID())));
+                PacketHandler.sendToServer(new OpenIntrospectMenuC2SPacket(ClientBeyonderCache.getSequence(player.getUUID()), ClientBeyonderCache.getPathway(player.getUUID())));
             }
         }
 
         if(LOTMCraft.enterSefirotKey != null && LOTMCraft.enterSefirotKey.consumeClick()) {
             Player player = Minecraft.getInstance().player;
             if (player != null) {
-                PacketHandler.sendToServer(new TeleportToSefirotPacket());
+                PacketHandler.sendToServer(new TeleportToSefirotC2SPacket());
             }
         }
 
@@ -152,7 +152,7 @@ public class KeyInputHandler {
 
         // Handle use ability key
         if (LOTMCraft.useSelectedAbilityKey != null && LOTMCraft.useSelectedAbilityKey.consumeClick()) {
-            PacketHandler.sendToServer(new UseSelectedAbilityPacket());
+            PacketHandler.sendToServer(new UseSelectedAbilityC2SPacket());
         }
 
         // Open shared ability wheel
@@ -166,7 +166,7 @@ public class KeyInputHandler {
             List<String> sharedWheel = ClientData.getSharedWheelAbilities();
             int idx = ClientData.getSelectedSharedAbility();
             if (!sharedWheel.isEmpty() && idx >= 0 && idx < sharedWheel.size()) {
-                PacketHandler.sendToServer(new UseSharedAbilityPacket(sharedWheel.get(idx)));
+                PacketHandler.sendToServer(new UseSharedAbilityC2SPacket(sharedWheel.get(idx)));
             }
         }
 
@@ -209,33 +209,33 @@ public class KeyInputHandler {
         }
 
         if(LOTMCraft.useAbilityBarAbility1 != null && LOTMCraft.useAbilityBarAbility1.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(0));
+            PacketHandler.sendToServer(new UseKeyboundAbilityC2SPacket(0));
         }
         if(LOTMCraft.useAbilityBarAbility2 != null && LOTMCraft.useAbilityBarAbility2.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(1));
+            PacketHandler.sendToServer(new UseKeyboundAbilityC2SPacket(1));
         }
         if(LOTMCraft.useAbilityBarAbility3 != null && LOTMCraft.useAbilityBarAbility3.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(2));
+            PacketHandler.sendToServer(new UseKeyboundAbilityC2SPacket(2));
         }
         if(LOTMCraft.useAbilityBarAbility4 != null && LOTMCraft.useAbilityBarAbility4.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(3));
+            PacketHandler.sendToServer(new UseKeyboundAbilityC2SPacket(3));
         }
         if(LOTMCraft.useAbilityBarAbility5 != null && LOTMCraft.useAbilityBarAbility5.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(4));
+            PacketHandler.sendToServer(new UseKeyboundAbilityC2SPacket(4));
         }
         if(LOTMCraft.useAbilityBarAbility6 != null && LOTMCraft.useAbilityBarAbility6.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(5));
+            PacketHandler.sendToServer(new UseKeyboundAbilityC2SPacket(5));
         }
 
         if (LOTMCraft.returnToMainBody != null && LOTMCraft.returnToMainBody.consumeClick()) {
-            PacketHandler.sendToServer(new ReturnToMainBodyPacket());
-            PacketHandler.sendToServer(new StopDiscernmentPacket());
+            PacketHandler.sendToServer(new ReturnToMainBodyC2SPacket());
+            PacketHandler.sendToServer(new StopDiscernmentC2SPacket());
         }
         if (LOTMCraft.openArtifactWheel != null && LOTMCraft.openArtifactWheel.consumeClick()) {
             openArtifactWheel();
         }
         if(LOTMCraft.nextArtifactAbilityKey != null && LOTMCraft.nextArtifactAbilityKey.consumeClick()) {
-            PacketHandler.sendToServer(new NextArtifactAbilityPacket());
+            PacketHandler.sendToServer(new NextArtifactAbilityC2SPacket());
         }
     }
 
@@ -244,7 +244,7 @@ public class KeyInputHandler {
         if(event.getKeyCode() == LOTMCraft.openWheelHoldKey.getKey().getValue()) {
             if(Minecraft.getInstance().screen instanceof AbilityWheelScreen && wasWheelOpenedWithHold) {
                 Minecraft.getInstance().screen.onClose();
-                PacketHandler.sendToServer(new CloseAbilityWheelPacket());
+                PacketHandler.sendToServer(new CloseAbilityWheelC2SPacket());
             }
         }
     }
@@ -284,12 +284,12 @@ public class KeyInputHandler {
             return;
         }
 
-        PacketHandler.sendToServer(new UpdateSelectedAbilityPacket(number - 1));
+        PacketHandler.sendToServer(new UpdateSelectedAbilityC2SPacket(number - 1));
         ClientData.setAbilityWheelData(
                 new ArrayList<>(ClientData.getAbilityWheelAbilities()),
                 number - 1
         );
-        PacketHandler.sendToServer(new CloseAbilityWheelPacket());
+        PacketHandler.sendToServer(new CloseAbilityWheelC2SPacket());
     }
 
     private static void openSharedAbilityWheel() {
@@ -310,7 +310,7 @@ public class KeyInputHandler {
         }
 
         ClientData.sharedAbilityMode = true;
-        PacketHandler.sendToServer(new OpenAbilityWheelPacket());
+        PacketHandler.sendToServer(new OpenAbilityWheelC2SPacket());
     }
 
     private static void openAbilityWheel() {
@@ -318,7 +318,7 @@ public class KeyInputHandler {
         if (ClientData.getAbilityWheelAbilities().isEmpty()) {
             mc.player.displayClientMessage(Component.translatable("lotm.ability_wheel.no_abilities"), true);
         } else {
-            PacketHandler.sendToServer(new OpenAbilityWheelPacket());
+            PacketHandler.sendToServer(new OpenAbilityWheelC2SPacket());
         }
     }
 
@@ -335,6 +335,6 @@ public class KeyInputHandler {
         if (data == null || data.abilities().isEmpty()) {
             return;
         }
-        PacketHandler.sendToServer(new OpenArtifactWheelPacket(stack));
+        PacketHandler.sendToServer(new OpenArtifactWheelC2SPacket(stack));
     }
 }

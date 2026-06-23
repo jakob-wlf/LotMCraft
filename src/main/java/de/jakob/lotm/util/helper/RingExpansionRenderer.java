@@ -3,7 +3,7 @@ package de.jakob.lotm.util.helper;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.network.packets.toClient.RingEffectPacket;
+import de.jakob.lotm.network.packets.toClient.RingEffectS2CPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.entity.player.Player;
@@ -167,7 +167,7 @@ public class RingExpansionRenderer {
     /**
      * Handle incoming ring effect packet from server (called by packet handler)
      */
-    public static void handleRingEffectPacket(RingEffectPacket packet) {
+    public static void handleRingEffectPacket(RingEffectS2CPacket packet) {
         Vec3 center = new Vec3(packet.x(), packet.y(), packet.z());
         RingEffect effect = new RingEffect(
                 center, packet.maxRadius(), packet.duration(),

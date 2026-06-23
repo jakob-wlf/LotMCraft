@@ -1,0 +1,71 @@
+package de.jakob.lotm.network.packets.toServer;
+
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.attachments.AbilityBarComponent;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+public record UseKeyboundAbilityC2SPacket(int selectedAbility) implements CustomPacketPayload {
+    public static final Type<UseKeyboundAbilityC2SPacket> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "use_keybound_ability"));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, UseKeyboundAbilityC2SPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT,
+            UseKeyboundAbilityC2SPacket::selectedAbility,
+            UseKeyboundAbilityC2SPacket::new
+    );
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
+    public static void handle(UseKeyboundAbilityC2SPacket packet, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            ServerPlayer player = (ServerPlayer) context.player();
+
+            // Fooling effect: 25% chance to fail entirely, otherwise scramble to a random ability.
+            if (player.getData(ModAttachments.FOOLING_COMPONENT).isFooled()) {
+                if (new java.util.Random().nextFloat() < 0.25f) return;
+                String pathway = BeyonderData.getPathway(player);
+                int sequence   = BeyonderData.getSequence(player);
+                Ability randomAbility = LOTMCraft.abilityHandler.getRandomAbility(pathway, sequence, new java.util.Random(), false, java.util.Collections.emptyList());
+                if (randomAbility != null) {
+                    randomAbility.useAbility(player.serverLevel(), player);
+                }
+                return;
+            }
+
+            AbilityBarComponent abilityBarComponent = player.getData(ModAttachments.ABILITY_BAR_COMPONENT);
+            if (packet.selectedAbility() < 0 || packet.selectedAbility() >= abilityBarComponent.getAbilities().size()) {
+                return;
+            }
+            Ability ability = LOTMCraft.abilityHandler.getById(abilityBarComponent.getAbilities().get(packet.selectedAbility()).split(":")[0]);
+
+            if(ability instanceof SelectableAbility && getIndex(abilityBarComponent.getAbilities().get(packet.selectedAbility())) != -1) {
+                ((SelectableAbility) ability).addSubAbilityOverride(player, getIndex(abilityBarComponent.getAbilities().get(packet.selectedAbility())));
+            }
+
+            ability.useAbility(player.serverLevel(), player);
+        });
+    }
+
+    private static int getIndex(String s) {
+        String[] parts = s.split(":");
+        if (parts.length < 2) return -1;
+        try {
+            return Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+}

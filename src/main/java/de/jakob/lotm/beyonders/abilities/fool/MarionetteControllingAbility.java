@@ -6,7 +6,7 @@ import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncSelectedMarionettePacket;
+import de.jakob.lotm.network.packets.toClient.SyncSelectedMarionetteS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ControllingUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -227,7 +227,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
 
         String name = marionette.getDisplayName() == null ? marionette.getName().getString(): marionette.getDisplayName().getString();
 
-        SyncSelectedMarionettePacket packet = new SyncSelectedMarionettePacket(true, name, marionette.getHealth(), marionette.getMaxHealth());
+        SyncSelectedMarionetteS2CPacket packet = new SyncSelectedMarionetteS2CPacket(true, name, marionette.getHealth(), marionette.getMaxHealth());
         PacketHandler.sendToPlayer(player, packet);
 
         return marionette;
@@ -244,7 +244,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
 
         //If no marionette is selected make sure no overlay gets rendered
         if(marionette == null) {
-            SyncSelectedMarionettePacket packet = new SyncSelectedMarionettePacket(false, "", 0, 0);
+            SyncSelectedMarionetteS2CPacket packet = new SyncSelectedMarionetteS2CPacket(false, "", 0, 0);
             PacketHandler.sendToPlayer(player, packet);
             return;
         }
@@ -252,7 +252,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
         //Make sure the overlay goes away when the player stops holding the item
         ServerScheduler.scheduleDelayed(10, () -> {
             if(!player.getItemInHand(entity.getUsedItemHand()).getItem().equals(this)) {
-                SyncSelectedMarionettePacket packet1 = new SyncSelectedMarionettePacket(false, "", 0, 0);
+                SyncSelectedMarionetteS2CPacket packet1 = new SyncSelectedMarionetteS2CPacket(false, "", 0, 0);
                 PacketHandler.sendToPlayer(player, packet1);
             }
         });

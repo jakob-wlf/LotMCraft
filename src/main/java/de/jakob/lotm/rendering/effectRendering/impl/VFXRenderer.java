@@ -2,8 +2,8 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.network.packets.toClient.AddDirectionalEffectPacket;
-import de.jakob.lotm.network.packets.toClient.AddMovableEffectPacket;
+import de.jakob.lotm.network.packets.toClient.AddDirectionalEffectS2CPacket;
+import de.jakob.lotm.network.packets.toClient.AddMovableEffectS2CPacket;
 import de.jakob.lotm.rendering.effectRendering.*;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Camera;
@@ -115,7 +115,7 @@ public class VFXRenderer {
         }
 
         LivingEntity entity = null;
-        if (entityId != AddMovableEffectPacket.NO_ENTITY) {
+        if (entityId != AddMovableEffectS2CPacket.NO_ENTITY) {
             net.minecraft.world.entity.Entity raw = mc.level.getEntity(entityId);
             if (raw instanceof LivingEntity le) {
                 entity = le;
@@ -184,7 +184,7 @@ public class VFXRenderer {
      * Add an effect whose playback speed is continuously driven by the local
      * time multiplier at {@code entityId}'s position.
      * <p>
-     * Called by the packet handler when the server sends an {@code AddEffectPacket}
+     * Called by the packet handler when the server sends an {@code AddEffectS2CPacket}
      * that includes an entity ID. The entity is looked up from the client-side
      * level; if it cannot be found (e.g. not yet loaded) the effect falls back
      * to normal speed via {@link EffectFactory#createEffect(int, double, double, double)}.
@@ -242,7 +242,7 @@ public class VFXRenderer {
         }
 
         LivingEntity entity = null;
-        if (entityId != AddDirectionalEffectPacket.NO_ENTITY) {
+        if (entityId != AddDirectionalEffectS2CPacket.NO_ENTITY) {
             net.minecraft.world.entity.Entity raw = mc.level.getEntity(entityId);
             if (raw instanceof LivingEntity le) {
                 entity = le;

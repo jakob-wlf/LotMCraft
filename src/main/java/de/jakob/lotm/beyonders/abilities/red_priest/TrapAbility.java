@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.red_priest;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncExplodedTrapPacket;
+import de.jakob.lotm.network.packets.toClient.SyncExplodedTrapS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -65,7 +65,7 @@ public class TrapAbility extends Ability {
 
                     // Send packet to all nearby clients to stop particles
                     if(entity instanceof ServerPlayer player) {
-                        PacketHandler.sendToPlayer(player, new SyncExplodedTrapPacket(trapId));
+                        PacketHandler.sendToPlayer(player, new SyncExplodedTrapS2CPacket(trapId));
                     }
 
                     if(BeyonderData.isGriefingEnabled(entity)) {

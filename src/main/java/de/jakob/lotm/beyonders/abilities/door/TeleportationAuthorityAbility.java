@@ -5,7 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.MysticalDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.OpenCoordinateScreenPacket;
+import de.jakob.lotm.network.packets.toClient.OpenCoordinateScreenS2CPacket;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -54,9 +54,9 @@ public class TeleportationAuthorityAbility extends SelectableAbility {
         if(!(entity instanceof ServerPlayer)) selectedAbility = 3;
 
         switch (selectedAbility) {
-            case 0 -> PacketHandler.sendToPlayer((ServerPlayer) entity, new OpenCoordinateScreenPacket("teleportation_authority_self"));
-            case 1 -> PacketHandler.sendToPlayer((ServerPlayer) entity, new OpenCoordinateScreenPacket("teleportation_authority_self_and_nearby"));
-            case 2 -> PacketHandler.sendToPlayer((ServerPlayer) entity, new OpenCoordinateScreenPacket("teleportation_authority_targets"));
+            case 0 -> PacketHandler.sendToPlayer((ServerPlayer) entity, new OpenCoordinateScreenS2CPacket("teleportation_authority_self"));
+            case 1 -> PacketHandler.sendToPlayer((ServerPlayer) entity, new OpenCoordinateScreenS2CPacket("teleportation_authority_self_and_nearby"));
+            case 2 -> PacketHandler.sendToPlayer((ServerPlayer) entity, new OpenCoordinateScreenS2CPacket("teleportation_authority_targets"));
             case 3 -> banishTargets((ServerLevel) level, entity);
         }
     }

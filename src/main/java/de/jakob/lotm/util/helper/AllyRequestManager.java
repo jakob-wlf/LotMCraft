@@ -1,7 +1,7 @@
 package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.AllyRequestResponsePacket;
+import de.jakob.lotm.network.packets.toServer.AllyRequestResponseC2SPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -41,7 +41,7 @@ public class AllyRequestManager {
         }
         
         // Send packet to server
-        PacketHandler.sendToServer(new AllyRequestResponsePacket(requesterUUID, true));
+        PacketHandler.sendToServer(new AllyRequestResponseC2SPacket(requesterUUID, true));
         pendingRequests.remove(requesterUUID);
     }
     
@@ -54,7 +54,7 @@ public class AllyRequestManager {
         }
         
         // Send packet to server
-        PacketHandler.sendToServer(new AllyRequestResponsePacket(requesterUUID, false));
+        PacketHandler.sendToServer(new AllyRequestResponseC2SPacket(requesterUUID, false));
         pendingRequests.remove(requesterUUID);
     }
     

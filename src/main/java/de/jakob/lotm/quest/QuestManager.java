@@ -4,7 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.QuestComponent;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.OpenQuestAcceptanceScreenPacket;
+import de.jakob.lotm.network.packets.toClient.OpenQuestAcceptanceScreenS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
@@ -94,7 +94,7 @@ public class QuestManager {
 
 
         // Send packet to open the GUI on client
-        PacketHandler.sendToPlayer(player, new OpenQuestAcceptanceScreenPacket(
+        PacketHandler.sendToPlayer(player, new OpenQuestAcceptanceScreenS2CPacket(
                 questId,
                 rewards,
                 digestionReward,

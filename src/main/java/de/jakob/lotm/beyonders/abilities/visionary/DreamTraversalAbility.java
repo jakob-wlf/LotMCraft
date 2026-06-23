@@ -7,7 +7,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
-import de.jakob.lotm.network.packets.toClient.OpenPlayerDivinationScreenPacket;
+import de.jakob.lotm.network.packets.toClient.OpenPlayerDivinationScreenS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import de.jakob.lotm.util.data.PlayerInfo;
@@ -115,7 +115,7 @@ public class DreamTraversalAbility extends SelectableAbility {
 
         PacketDistributor.sendToPlayer(
                 player,
-                new OpenPlayerDivinationScreenPacket(players, PlayerSelectionWorkType.DREAM_TRAVERSAL)
+                new OpenPlayerDivinationScreenS2CPacket(players, PlayerSelectionWorkType.DREAM_TRAVERSAL)
         );
     }
 

@@ -17,8 +17,8 @@ import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.custom.MarionetteControllerItem;
 import de.jakob.lotm.item.custom.SubordinateControllerItem;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncOnHoldAbilityPacket;
-import de.jakob.lotm.network.packets.toClient.SyncToggleAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncOnHoldAbilityS2CPacket;
+import de.jakob.lotm.network.packets.toClient.SyncToggleAbilityS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -155,7 +155,7 @@ public class BeyonderDataTickHandler {
                     return;
                 }
                 toggleAbility.prepareTick(livingEntity.level(), livingEntity);
-                PacketHandler.sendToTrackingAndSelf(livingEntity, new SyncToggleAbilityPacket(livingEntity.getId(), toggleAbility.getId(), SyncToggleAbilityPacket.Action.TICK.getValue()));
+                PacketHandler.sendToTrackingAndSelf(livingEntity, new SyncToggleAbilityS2CPacket(livingEntity.getId(), toggleAbility.getId(), SyncToggleAbilityS2CPacket.Action.TICK.getValue()));
             });
         }
     }
@@ -218,7 +218,7 @@ public class BeyonderDataTickHandler {
             Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
             if(ability != null) {
                 ability.onHold(player.serverLevel(), player);
-                PacketHandler.sendToTrackingAndSelf(player, new SyncOnHoldAbilityPacket(player.getId(), abilityId));
+                PacketHandler.sendToTrackingAndSelf(player, new SyncOnHoldAbilityS2CPacket(player.getId(), abilityId));
             }
         }
     }

@@ -4,7 +4,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
+import de.jakob.lotm.network.packets.toServer.AbilitySelectionC2SPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -157,7 +157,7 @@ public class SleepInducementAbility extends SelectableAbility {
         }
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+        PacketHandler.sendToServer(new AbilitySelectionC2SPacket(getId(), selectedAbility));
     }
 
     @Override
@@ -181,6 +181,6 @@ public class SleepInducementAbility extends SelectableAbility {
         }
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+        PacketHandler.sendToServer(new AbilitySelectionC2SPacket(getId(), selectedAbility));
     }
 }

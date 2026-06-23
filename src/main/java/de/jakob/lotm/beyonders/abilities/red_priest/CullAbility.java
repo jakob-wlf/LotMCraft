@@ -3,7 +3,7 @@ package de.jakob.lotm.beyonders.abilities.red_priest;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncCullAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncCullAbilityS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.mixin.EntityAccessor;
@@ -42,7 +42,7 @@ public class CullAbility extends ToggleAbility {
             return;
         BeyonderData.addModifier(entity, "cull", 1.3);
         if(entity instanceof ServerPlayer player)
-            PacketHandler.sendToPlayer(player, new SyncCullAbilityPacket(true));
+            PacketHandler.sendToPlayer(player, new SyncCullAbilityS2CPacket(true));
     }
 
     @Override
@@ -76,7 +76,7 @@ public class CullAbility extends ToggleAbility {
             glowingEntities.get(entity.getUUID()).forEach(e -> setGlowingForPlayer(e, player, false));
         glowingEntities.remove(entity.getUUID());
 
-        PacketHandler.sendToPlayer(player, new SyncCullAbilityPacket(false));
+        PacketHandler.sendToPlayer(player, new SyncCullAbilityS2CPacket(false));
     }
 
     public static void setGlowingForPlayer(Entity entity, ServerPlayer player, boolean glowing) {

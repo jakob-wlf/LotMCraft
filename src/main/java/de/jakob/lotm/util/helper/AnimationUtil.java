@@ -4,7 +4,7 @@ import com.zigythebird.playeranim.animation.PlayerAnimationController;
 import com.zigythebird.playeranim.api.PlayerAnimationAccess;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.PlayAnimationPacket;
+import de.jakob.lotm.network.packets.toClient.PlayAnimationS2CPacket;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -20,7 +20,7 @@ public class AnimationUtil {
             playAnimation(clientPlayer, openArmsAnimationID);
         }
         else {
-            PacketHandler.sendToTrackingAndSelf(player, new PlayAnimationPacket(player.getId(), "open_arms"));
+            PacketHandler.sendToTrackingAndSelf(player, new PlayAnimationS2CPacket(player.getId(), "open_arms"));
         }
     }
 

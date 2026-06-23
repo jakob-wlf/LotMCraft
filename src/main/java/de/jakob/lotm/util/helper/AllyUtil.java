@@ -3,7 +3,7 @@ package de.jakob.lotm.util.helper;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncAllyDataPacket;
+import de.jakob.lotm.network.packets.toClient.SyncAllyDataS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -188,7 +188,7 @@ public class AllyUtil {
      */
     private static void syncAllyData(ServerPlayer player) {
         AllyComponent comp = player.getData(ModAttachments.ALLY_COMPONENT.get());
-        SyncAllyDataPacket packet = new SyncAllyDataPacket(comp.allies());
+        SyncAllyDataS2CPacket packet = new SyncAllyDataS2CPacket(comp.allies());
         PacketHandler.sendToPlayer(player, packet);
     }
 

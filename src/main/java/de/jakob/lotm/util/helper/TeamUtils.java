@@ -4,7 +4,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SharedAbilitiesComponent;
 import de.jakob.lotm.attachments.TeamComponent;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -81,7 +81,7 @@ public class TeamUtils {
                 memberShared.removeContributions(leader.getStringUUID()));
 
         // Tell the removed member to clear their team data immediately
-        PacketHandler.sendToPlayer(member, new SyncSharedAbilitiesDataPacket(
+        PacketHandler.sendToPlayer(member, new SyncSharedAbilitiesDataS2CPacket(
                 "", new java.util.ArrayList<>(), new java.util.ArrayList<>(), new java.util.HashMap<>(), 0, 0));
 
         syncToTeam(leader);
@@ -92,7 +92,7 @@ public class TeamUtils {
      */
     public static void disbandTeam(ServerPlayer leader, MinecraftServer server) {
         TeamComponent leaderTeam = leader.getData(ModAttachments.TEAM_COMPONENT.get());
-        SyncSharedAbilitiesDataPacket clearPacket = new SyncSharedAbilitiesDataPacket(
+        SyncSharedAbilitiesDataS2CPacket clearPacket = new SyncSharedAbilitiesDataS2CPacket(
                 "", new java.util.ArrayList<>(), new java.util.ArrayList<>(), new java.util.HashMap<>(), 0, 0);
         for (String memberUUID : new ArrayList<>(leaderTeam.memberUUIDs())) {
             ServerPlayer member = server.getPlayerList().getPlayer(
@@ -143,7 +143,7 @@ public class TeamUtils {
             contributions.put(uuid, new ArrayList<>(shared.getContributions(leader.getStringUUID())));
         }
 
-        SyncSharedAbilitiesDataPacket packet = new SyncSharedAbilitiesDataPacket(
+        SyncSharedAbilitiesDataS2CPacket packet = new SyncSharedAbilitiesDataS2CPacket(
                 leader.getStringUUID(), memberUUIDs, memberNames, contributions, maxSize, slots);
 
         PacketHandler.sendToPlayer(leader, packet);

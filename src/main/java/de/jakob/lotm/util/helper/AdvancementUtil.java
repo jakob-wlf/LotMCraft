@@ -8,7 +8,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.custom.StartAdvanceSequencePathwayEvent;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.ChangePlayerPerspectivePacket;
+import de.jakob.lotm.network.packets.toClient.ChangePlayerPerspectiveS2CPacket;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.util.BeyonderData;
@@ -206,8 +206,8 @@ public class AdvancementUtil {
 
     private static void sendThirdPersonPacket(LivingEntity entity) {
         if (entity instanceof ServerPlayer serverPlayer) {
-            PacketHandler.sendToPlayer(serverPlayer, new ChangePlayerPerspectivePacket(
-                    entity.getId(), ChangePlayerPerspectivePacket.PERSPECTIVE.THIRD.getValue()));
+            PacketHandler.sendToPlayer(serverPlayer, new ChangePlayerPerspectiveS2CPacket(
+                    entity.getId(), ChangePlayerPerspectiveS2CPacket.PERSPECTIVE.THIRD.getValue()));
         }
     }
 
@@ -277,11 +277,11 @@ public class AdvancementUtil {
 
         ServerScheduler.scheduleForDuration(0, 2, duration, () -> {
             if (entity.isDeadOrDying()) return;
-            PacketHandler.sendToPlayer(serverPlayer, new ChangePlayerPerspectivePacket(
-                    entity.getId(), ChangePlayerPerspectivePacket.PERSPECTIVE.THIRD.getValue()));
+            PacketHandler.sendToPlayer(serverPlayer, new ChangePlayerPerspectiveS2CPacket(
+                    entity.getId(), ChangePlayerPerspectiveS2CPacket.PERSPECTIVE.THIRD.getValue()));
         }, () -> {
-            PacketHandler.sendToPlayer(serverPlayer, new ChangePlayerPerspectivePacket(
-                    entity.getId(), ChangePlayerPerspectivePacket.PERSPECTIVE.FIRST.getValue()));
+            PacketHandler.sendToPlayer(serverPlayer, new ChangePlayerPerspectiveS2CPacket(
+                    entity.getId(), ChangePlayerPerspectiveS2CPacket.PERSPECTIVE.FIRST.getValue()));
         }, serverPlayer.serverLevel());
     }
 

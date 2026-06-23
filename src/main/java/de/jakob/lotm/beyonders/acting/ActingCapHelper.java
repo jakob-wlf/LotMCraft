@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.acting;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncActingCapPacket;
+import de.jakob.lotm.network.packets.toClient.SyncActingCapS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -236,7 +236,7 @@ public class ActingCapHelper {
 
     public static void syncToClient(Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
-            PacketHandler.sendToPlayer(serverPlayer, new SyncActingCapPacket(
+            PacketHandler.sendToPlayer(serverPlayer, new SyncActingCapS2CPacket(
                     getCapReduction(player),
                     getMissedActing(player)
             ));

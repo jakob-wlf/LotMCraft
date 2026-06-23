@@ -1,7 +1,7 @@
 package de.jakob.lotm.gui.custom.HonorificNames;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.SetHonorificNamePacket;
+import de.jakob.lotm.network.packets.toServer.SetHonorificNameC2SPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.HonorificName;
 import net.minecraft.client.gui.GuiGraphics;
@@ -101,7 +101,7 @@ public class SetHonorificNameScreen extends Screen {
             return;
         }
 
-        PacketHandler.sendToServer(new SetHonorificNamePacket(lines));
+        PacketHandler.sendToServer(new SetHonorificNameC2SPacket(lines));
         this.onClose();
     }
 

@@ -1,7 +1,7 @@
 package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncControllingDataPacket;
+import de.jakob.lotm.network.packets.toClient.SyncControllingDataS2CPacket;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -106,7 +106,7 @@ public class ControllingDataComponent {
 
     public void syncData(ServerPlayer player) {
         if (player != null) {
-            PacketHandler.sendToPlayer(player, new SyncControllingDataPacket(this.isControlling, this.bodyEntity, player.getId()));
+            PacketHandler.sendToPlayer(player, new SyncControllingDataS2CPacket(this.isControlling, this.bodyEntity, player.getId()));
         }
     }
 

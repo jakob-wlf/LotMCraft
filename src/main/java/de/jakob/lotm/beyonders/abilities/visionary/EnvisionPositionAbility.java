@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.OpenEnvisionLocationScreenPacket;
+import de.jakob.lotm.network.packets.toClient.OpenEnvisionLocationScreenS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -75,7 +75,7 @@ public class EnvisionPositionAbility extends SelectableAbility {
         if(!(level instanceof ServerLevel serverLevel)) return;
         if(!(entity instanceof ServerPlayer player)) return;
 
-        PacketHandler.sendToPlayer(player, new OpenEnvisionLocationScreenPacket());
+        PacketHandler.sendToPlayer(player, new OpenEnvisionLocationScreenS2CPacket());
     }
 
     private static double getDistancePerSeq(int seq){

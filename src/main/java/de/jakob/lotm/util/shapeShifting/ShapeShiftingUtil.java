@@ -4,7 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ShapeShiftComponent;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
-import de.jakob.lotm.network.packets.toClient.ShapeShiftingSyncPacket;
+import de.jakob.lotm.network.packets.toClient.ShapeShiftingSyncS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -53,7 +53,7 @@ public class ShapeShiftingUtil {
         player.refreshDimensions();
 
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(player,
-                new ShapeShiftingSyncPacket(player.getUUID(), entityType));
+                new ShapeShiftingSyncS2CPacket(player.getUUID(), entityType));
 
         if (entityType.startsWith("player:")){
             data.setSkinOnly(true);
@@ -113,7 +113,7 @@ public class ShapeShiftingUtil {
         serverPlayer.refreshDimensions();
 
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(serverPlayer,
-                new ShapeShiftingSyncPacket(serverPlayer.getUUID(), ""));
+                new ShapeShiftingSyncS2CPacket(serverPlayer.getUUID(), ""));
 
         NameUtils.resetPlayerName(serverPlayer);
         if (!serverPlayer.isCreative() && !serverPlayer.isSpectator()) {
@@ -140,7 +140,7 @@ public class ShapeShiftingUtil {
             ShapeShiftComponent data = serverPlayer.getData(ModAttachments.SHAPE_SHIFT);
             String shape = data.getShape();
             PacketDistributor.sendToPlayersTrackingEntityAndSelf(serverPlayer,
-                    new ShapeShiftingSyncPacket(serverPlayer.getUUID(), shape));
+                    new ShapeShiftingSyncS2CPacket(serverPlayer.getUUID(), shape));
         }
     }
 

@@ -1,0 +1,54 @@
+package de.jakob.lotm.network.packets.toClient;
+
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+public record SyncToggleAbilityS2CPacket(int entityId, String abilityId, int action) implements CustomPacketPayload {
+    
+    public static final Type<SyncToggleAbilityS2CPacket> TYPE =
+        new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sync_toggle_ability"));
+
+    public static final StreamCodec<FriendlyByteBuf, SyncToggleAbilityS2CPacket> STREAM_CODEC =
+            StreamCodec.composite(
+                    ByteBufCodecs.INT,
+                    SyncToggleAbilityS2CPacket::entityId,
+                    ByteBufCodecs.STRING_UTF8,
+                    SyncToggleAbilityS2CPacket::abilityId,
+                    ByteBufCodecs.INT,
+                    SyncToggleAbilityS2CPacket::action,
+                    SyncToggleAbilityS2CPacket::new
+            );
+    
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+    
+    public static void handle(SyncToggleAbilityS2CPacket packet, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            ClientHandler.handleSyncToggleAbility(packet, context);
+        });
+    }
+
+    public enum Action {
+        START(0),
+        TICK(1),
+        STOP(2);
+
+        private final int value;
+
+        Action(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
+}

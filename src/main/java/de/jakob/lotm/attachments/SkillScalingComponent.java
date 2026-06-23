@@ -2,8 +2,8 @@ package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncSanityPacket;
-import de.jakob.lotm.network.packets.toClient.SyncSkillScalingPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSanityS2CPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSkillScalingS2CPacket;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,7 +49,7 @@ public class SkillScalingComponent {
     public void Sync(LivingEntity entity){
         if(!(entity instanceof ServerPlayer player)) return;
 
-        PacketHandler.sendToPlayer(player, new SyncSkillScalingPacket(scaleToSkill, seq, path, entity.getId()));
+        PacketHandler.sendToPlayer(player, new SyncSkillScalingS2CPacket(scaleToSkill, seq, path, entity.getId()));
     }
 
     public static final IAttachmentSerializer<CompoundTag, SkillScalingComponent> SERIALIZER =

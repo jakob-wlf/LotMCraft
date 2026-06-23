@@ -5,7 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.ability_entities.BigMoonEntity;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.GiantLightningEntity;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.FireEffectPacket;
+import de.jakob.lotm.network.packets.toClient.FireEffectS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -109,7 +109,7 @@ public class WrathOfNatureAbility extends SelectableAbility {
 
                 ServerScheduler.scheduleDelayed(delay, () -> {
                     // Send packet to all players in the level
-                    FireEffectPacket packet = new FireEffectPacket(waveBlocks, false, currentWave);
+                    FireEffectS2CPacket packet = new FireEffectS2CPacket(waveBlocks, false, currentWave);
                     PacketHandler.sendToAllPlayersInSameLevel(packet, (ServerLevel) level);
                 }, (ServerLevel) level);
 
@@ -124,7 +124,7 @@ public class WrathOfNatureAbility extends SelectableAbility {
 
             ServerScheduler.scheduleDelayed(restorationTime, () -> {
                 // Send restoration packet to clients
-                FireEffectPacket packet = new FireEffectPacket(sortedBlocks, true, 0);
+                FireEffectS2CPacket packet = new FireEffectS2CPacket(sortedBlocks, true, 0);
                 PacketHandler.sendToAllPlayersInSameLevel(packet, (ServerLevel) level);
 
                 // Force block updates server-side to ensure sync

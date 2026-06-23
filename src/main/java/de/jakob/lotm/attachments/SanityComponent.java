@@ -2,7 +2,7 @@ package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncSanityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSanityS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -32,7 +32,7 @@ public class SanityComponent {
         this.sanity = Math.clamp(sanity, 0.0f, maxSanity);
 
         if (entity instanceof ServerPlayer player) {
-            PacketHandler.sendToPlayer(player, new SyncSanityPacket(this.sanity, entity.getId()));
+            PacketHandler.sendToPlayer(player, new SyncSanityS2CPacket(this.sanity, entity.getId()));
         }
     }
 
@@ -55,7 +55,7 @@ public class SanityComponent {
         else if (this.sanity < 0.0f) this.sanity = 0.0f;
 
         if (entity instanceof ServerPlayer player) {
-            PacketHandler.sendToPlayer(player, new SyncSanityPacket(sanity, entity.getId()));
+            PacketHandler.sendToPlayer(player, new SyncSanityS2CPacket(sanity, entity.getId()));
         }
     }
 
@@ -84,7 +84,7 @@ public class SanityComponent {
         else if (this.sanity < 0.0f) this.sanity = 0.0f;
 
         if (entity instanceof ServerPlayer player) {
-            PacketHandler.sendToPlayer(player, new SyncSanityPacket(sanity, entity.getId()));
+            PacketHandler.sendToPlayer(player, new SyncSanityS2CPacket(sanity, entity.getId()));
         }
     }
 

@@ -1,0 +1,82 @@
+package de.jakob.lotm.network.packets.toServer;
+
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.attachments.AbilityWheelComponent;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.gui.custom.Introspect.IntrospectMenuProvider;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelDataS2CPacket;
+import de.jakob.lotm.network.packets.toClient.SyncIntrospectMenuS2CPacket;
+import de.jakob.lotm.network.packets.toClient.SyncKillCountS2CPacket;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityWheelHelper;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public record OpenIntrospectMenuC2SPacket(int sequence, String pathway) implements CustomPacketPayload {
+    public static final Type<OpenIntrospectMenuC2SPacket> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "open_introspect"));
+
+    public static final StreamCodec<FriendlyByteBuf, OpenIntrospectMenuC2SPacket> STREAM_CODEC =
+            StreamCodec.composite(
+                    StreamCodec.of(FriendlyByteBuf::writeInt, FriendlyByteBuf::readInt),
+                    OpenIntrospectMenuC2SPacket::sequence,
+                    StreamCodec.of(FriendlyByteBuf::writeUtf, FriendlyByteBuf::readUtf),
+                    OpenIntrospectMenuC2SPacket::pathway,
+                    OpenIntrospectMenuC2SPacket::new
+            );
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
+    public static void handle(OpenIntrospectMenuC2SPacket packet, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            if (context.flow().getReceptionSide().isServer()) {
+                ServerPlayer player = (ServerPlayer) context.player();
+                
+                if(!BeyonderData.isBeyonder(player))
+                    return;
+
+                int sequence = BeyonderData.getSequence(player);
+                String pathway = BeyonderData.getPathway(player);
+                float digestionProgress = BeyonderData.getDigestionProgress(player);
+
+                List<ItemStack> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.ITEMS.getEntries().stream().filter(entry -> {
+                    if (!(entry.get() instanceof PassiveAbilityItem abilityItem))
+                        return false;
+                    return abilityItem.shouldApplyTo(context.player());
+                }).map(entry -> new ItemStack(entry.get())).toList());
+
+                SanityComponent sanityComponent = player.getData(ModAttachments.SANITY_COMPONENT);
+                float sanity = sanityComponent.getSanity();
+
+                AbilityWheelHelper.removeUnusableAbilities(player);
+                AbilityWheelComponent abilityWheelComponent = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
+
+                player.openMenu(new IntrospectMenuProvider(passiveAbilities, sequence, pathway, digestionProgress, sanity), buf -> {
+                    buf.writeInt(sequence);
+                    buf.writeUtf(pathway);
+                });
+
+                PacketHandler.sendToPlayer(player, new SyncIntrospectMenuS2CPacket(sequence, pathway, sanity));
+                PacketHandler.sendToPlayer(player, new SyncAbilityWheelDataS2CPacket(abilityWheelComponent.getAbilities()));
+                PacketHandler.sendToPlayer(player, new SyncKillCountS2CPacket(player.getData(ModAttachments.KILL_COUNT_COMPONENT).getKillCount()));
+                PacketHandler.syncUniquenessToPlayer(player);
+            }
+        });
+    }
+
+}

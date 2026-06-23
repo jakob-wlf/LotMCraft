@@ -7,7 +7,7 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunEntity;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.AddEntityTagPacket;
+import de.jakob.lotm.network.packets.toClient.AddEntityTagS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -85,7 +85,7 @@ public class FlaringSunAbility extends Ability {
                 if(InteractionHandler.isInteractionPossible(new Location(targetPos, level), "darkness", BeyonderData.getSequence(entity))) {
                     wasDarkened.set(true);
                     sun.addTag("darkened");
-                    PacketHandler.sendToAllPlayersInSameLevel(new AddEntityTagPacket("darkened", sun.getId()), (ServerLevel) level);
+                    PacketHandler.sendToAllPlayersInSameLevel(new AddEntityTagS2CPacket("darkened", sun.getId()), (ServerLevel) level);
                 }
                 ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.FLAME, startPos, 5.65f, 200);
                 ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, startPos, 5.65f, 180);

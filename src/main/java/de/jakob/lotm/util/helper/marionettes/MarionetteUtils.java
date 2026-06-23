@@ -4,7 +4,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.goals.*;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
+import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;

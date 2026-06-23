@@ -15,7 +15,7 @@ import de.jakob.lotm.entity.custom.spirits.SpiritGhostEntity;
 import de.jakob.lotm.entity.custom.spirits.SpiritMalmouthEntity;
 import de.jakob.lotm.entity.custom.spirits.SpiritTranslucentWizardEntity;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncEyeOfDeathAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncEyeOfDeathAbilityS2CPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -61,7 +61,7 @@ public class EyeOfDeathAbility extends ToggleAbility {
         if (!level.isClientSide) {
             activePlayers.add(entity.getUUID());
             if (entity instanceof ServerPlayer player) {
-                PacketHandler.sendToPlayer(player, new SyncEyeOfDeathAbilityPacket(true, -1));
+                PacketHandler.sendToPlayer(player, new SyncEyeOfDeathAbilityS2CPacket(true, -1));
             }
             return;
         }
@@ -87,7 +87,7 @@ public class EyeOfDeathAbility extends ToggleAbility {
                 return;
         }
 
-        PacketHandler.sendToPlayer(player, new SyncEyeOfDeathAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
+        PacketHandler.sendToPlayer(player, new SyncEyeOfDeathAbilityS2CPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
 
         entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 25, 1, false, false, false));
     }
@@ -102,7 +102,7 @@ public class EyeOfDeathAbility extends ToggleAbility {
 
             player.removeEffect(MobEffects.NIGHT_VISION);
 
-            PacketHandler.sendToPlayer(player, new SyncEyeOfDeathAbilityPacket(false, -1));
+            PacketHandler.sendToPlayer(player, new SyncEyeOfDeathAbilityS2CPacket(false, -1));
         }
     }
 

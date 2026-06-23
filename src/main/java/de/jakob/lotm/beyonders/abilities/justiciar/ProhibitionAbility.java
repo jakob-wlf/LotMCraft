@@ -3,7 +3,7 @@ package de.jakob.lotm.beyonders.abilities.justiciar;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
+import de.jakob.lotm.network.packets.toServer.AbilitySelectionC2SPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -215,7 +215,7 @@ public class ProhibitionAbility extends SelectableAbility {
         selected = clampToSequence(selected, entity);
 
         selectedAbilities.put(entity.getUUID(), selected);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selected));
+        PacketHandler.sendToServer(new AbilitySelectionC2SPacket(getId(), selected));
     }
 
     @Override
@@ -228,7 +228,7 @@ public class ProhibitionAbility extends SelectableAbility {
         selected = clampToSequence(selected, entity);
 
         selectedAbilities.put(entity.getUUID(), selected);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selected));
+        PacketHandler.sendToServer(new AbilitySelectionC2SPacket(getId(), selected));
     }
 
     private int clampToSequence(int selected, LivingEntity entity) {

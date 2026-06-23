@@ -5,7 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.MirrorWorldTraversalComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncMirrorWorldPacket;
+import de.jakob.lotm.network.packets.toClient.SyncMirrorWorldS2CPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -76,7 +76,7 @@ public class MirrorWorldTraversalAbility extends Ability {
         }
 
         MirrorWorldTraversalComponent component = player.getData(ModAttachments.MIRROR_WORLD_COMPONENT.get());
-        PacketHandler.sendToPlayer(serverPlayer, new SyncMirrorWorldPacket(component.isInMirrorWorld()));
+        PacketHandler.sendToPlayer(serverPlayer, new SyncMirrorWorldS2CPacket(component.isInMirrorWorld()));
     }
 
     private static final HashMap<UUID, Vec3> lastPositions = new HashMap<>();
@@ -102,7 +102,7 @@ public class MirrorWorldTraversalAbility extends Ability {
         if(serverPlayer.gameMode.getGameModeForPlayer() != GameType.SPECTATOR) {
             component.setInMirrorWorld(false);
             component.setPreviousGameModeIndex(0);
-            PacketHandler.sendToPlayer(serverPlayer, new SyncMirrorWorldPacket(false));
+            PacketHandler.sendToPlayer(serverPlayer, new SyncMirrorWorldS2CPacket(false));
             return;
         }
 
@@ -129,7 +129,7 @@ public class MirrorWorldTraversalAbility extends Ability {
         component.setInMirrorWorld(false);
         component.setPreviousGameModeIndex(0);
 
-        PacketHandler.sendToPlayer(serverPlayer, new SyncMirrorWorldPacket(false));
+        PacketHandler.sendToPlayer(serverPlayer, new SyncMirrorWorldS2CPacket(false));
     }
 
     private void enterMirrorWorld(ServerLevel level, ServerPlayer player, MirrorWorldTraversalComponent component) {
@@ -143,7 +143,7 @@ public class MirrorWorldTraversalAbility extends Ability {
         component.setPreviousGameMode(player.gameMode.getGameModeForPlayer());
         component.setOnCooldown();
 
-        PacketHandler.sendToPlayer(player, new SyncMirrorWorldPacket(true));
+        PacketHandler.sendToPlayer(player, new SyncMirrorWorldS2CPacket(true));
 
         player.setGameMode(GameType.SPECTATOR);
         player.hurtMarked = true;

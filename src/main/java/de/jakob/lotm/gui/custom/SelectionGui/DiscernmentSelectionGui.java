@@ -1,7 +1,7 @@
 package de.jakob.lotm.gui.custom.SelectionGui;
 
 import com.mojang.datafixers.util.Pair;
-import de.jakob.lotm.network.packets.toServer.DiscernmentSelectedPacket;
+import de.jakob.lotm.network.packets.toServer.DiscernmentSelectedC2SPacket;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -19,7 +19,7 @@ public class DiscernmentSelectionGui extends ButtonListGui<Pair<String, Integer>
 
     @Override
     protected void onItemSelected(Pair<String, Integer> item) {
-        PacketDistributor.sendToServer(new DiscernmentSelectedPacket(item));
+        PacketDistributor.sendToServer(new DiscernmentSelectedC2SPacket(item));
         minecraft.setScreen(null);
     }
 }

@@ -7,7 +7,7 @@ import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TeamComponent;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.PendingTeamInvitePacket;
+import de.jakob.lotm.network.packets.toClient.PendingTeamInviteS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.TeamInviteManager;
 import de.jakob.lotm.util.helper.TeamUtils;
@@ -162,7 +162,7 @@ public class TeamCommand {
         }
 
         addPendingInvite(leader.getUUID(), target.getUUID());
-        PacketHandler.sendToPlayer(target, new PendingTeamInvitePacket(leader.getUUID(), leader.getName().getString()));
+        PacketHandler.sendToPlayer(target, new PendingTeamInviteS2CPacket(leader.getUUID(), leader.getName().getString()));
         source.sendSuccess(() -> Component.literal("Team invite sent to " + target.getName().getString() + ".").withStyle(s -> s.withColor(0x2196F3)), false);
         return 1;
     }
@@ -199,7 +199,7 @@ public class TeamCommand {
         } else {
             // Leader is offline — clean up manually and clear client data
             sender.setData(ModAttachments.TEAM_COMPONENT.get(), senderTeam.clearLeader());
-            PacketHandler.sendToPlayer(sender, new de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket(
+            PacketHandler.sendToPlayer(sender, new de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataS2CPacket(
                     "", new java.util.ArrayList<>(), new java.util.ArrayList<>(), new java.util.HashMap<>(), 0, 0));
         }
 
@@ -243,14 +243,14 @@ public class TeamCommand {
             } else {
                 // Leader offline — clear manually
                 target.setData(ModAttachments.TEAM_COMPONENT.get(), new TeamComponent());
-                PacketHandler.sendToPlayer(target, new de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket(
+                PacketHandler.sendToPlayer(target, new de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataS2CPacket(
                         "", new java.util.ArrayList<>(), new java.util.ArrayList<>(), new java.util.HashMap<>(), 0, 0));
             }
         }
 
         // Force-clear regardless, in case data was stale
         target.setData(ModAttachments.TEAM_COMPONENT.get(), new TeamComponent());
-        PacketHandler.sendToPlayer(target, new de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket(
+        PacketHandler.sendToPlayer(target, new de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataS2CPacket(
                 "", new java.util.ArrayList<>(), new java.util.ArrayList<>(), new java.util.HashMap<>(), 0, 0));
 
         source.sendSuccess(() -> Component.literal("Reset team data for " + target.getName().getString() + ".").withStyle(s -> s.withColor(0x4CAF50)), true);

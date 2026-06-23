@@ -1,9 +1,9 @@
 package de.jakob.lotm.rendering.effectRendering;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.AddMovableEffectPacket;
-import de.jakob.lotm.network.packets.toClient.RemoveMovableEffectPacket;
-import de.jakob.lotm.network.packets.toClient.UpdateMovableEffectPositionPacket;
+import de.jakob.lotm.network.packets.toClient.AddMovableEffectS2CPacket;
+import de.jakob.lotm.network.packets.toClient.RemoveMovableEffectS2CPacket;
+import de.jakob.lotm.network.packets.toClient.UpdateMovableEffectPositionS2CPacket;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,7 +23,7 @@ public class MovableEffectManager {
         UUID effectId = UUID.randomUUID();
         Vec3 pos = location.getPosition();
         PacketHandler.sendToAllPlayersInSameLevel(
-                new AddMovableEffectPacket(effectId, effect.getIndex(),
+                new AddMovableEffectS2CPacket(effectId, effect.getIndex(),
                         pos.x, pos.y, pos.z, durationTicks, infinite),
                 level
         );
@@ -35,7 +35,7 @@ public class MovableEffectManager {
         UUID effectId = UUID.randomUUID();
         Vec3 pos = location.getPosition();
         PacketHandler.sendToPlayer(player,
-                new AddMovableEffectPacket(effectId, effect.getIndex(),
+                new AddMovableEffectS2CPacket(effectId, effect.getIndex(),
                         pos.x, pos.y, pos.z, durationTicks, infinite)
         );
         return effectId;
@@ -55,7 +55,7 @@ public class MovableEffectManager {
         UUID effectId = UUID.randomUUID();
         Vec3 pos = location.getPosition();
         PacketHandler.sendToAllPlayersInSameLevel(
-                new AddMovableEffectPacket(effectId, effect.getIndex(),
+                new AddMovableEffectS2CPacket(effectId, effect.getIndex(),
                         pos.x, pos.y, pos.z, durationTicks, infinite, entity.getId()),
                 level
         );
@@ -70,7 +70,7 @@ public class MovableEffectManager {
         UUID effectId = UUID.randomUUID();
         Vec3 pos = location.getPosition();
         PacketHandler.sendToPlayer(player,
-                new AddMovableEffectPacket(effectId, effect.getIndex(),
+                new AddMovableEffectS2CPacket(effectId, effect.getIndex(),
                         pos.x, pos.y, pos.z, durationTicks, infinite, entity.getId())
         );
         return effectId;
@@ -83,21 +83,21 @@ public class MovableEffectManager {
     public static void updateEffectPosition(UUID effectId, Location newLocation, ServerLevel level) {
         Vec3 pos = newLocation.getPosition();
         PacketHandler.sendToAllPlayersInSameLevel(
-                new UpdateMovableEffectPositionPacket(effectId, pos.x, pos.y, pos.z), level);
+                new UpdateMovableEffectPositionS2CPacket(effectId, pos.x, pos.y, pos.z), level);
     }
 
     public static void updateEffectPosition(UUID effectId, Location newLocation, ServerPlayer player) {
         Vec3 pos = newLocation.getPosition();
         PacketHandler.sendToPlayer(player,
-                new UpdateMovableEffectPositionPacket(effectId, pos.x, pos.y, pos.z));
+                new UpdateMovableEffectPositionS2CPacket(effectId, pos.x, pos.y, pos.z));
     }
 
     public static void removeEffect(UUID effectId, ServerLevel level) {
-        PacketHandler.sendToAllPlayersInSameLevel(new RemoveMovableEffectPacket(effectId), level);
+        PacketHandler.sendToAllPlayersInSameLevel(new RemoveMovableEffectS2CPacket(effectId), level);
     }
 
     public static void removeEffect(UUID effectId, ServerPlayer player) {
-        PacketHandler.sendToPlayer(player, new RemoveMovableEffectPacket(effectId));
+        PacketHandler.sendToPlayer(player, new RemoveMovableEffectS2CPacket(effectId));
     }
 
     // -------------------------------------------------------------------------

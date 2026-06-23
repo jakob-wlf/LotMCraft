@@ -3,7 +3,7 @@ package de.jakob.lotm.beyonders.abilities.common;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.PendingAllyRequestPacket;
+import de.jakob.lotm.network.packets.toClient.PendingAllyRequestS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
@@ -122,7 +122,7 @@ public class AllyAbility extends Ability {
 
         // Send packet to target client to display clickable message
         if (target instanceof ServerPlayer serverTarget) {
-            PendingAllyRequestPacket packet = new PendingAllyRequestPacket(requesterUUID, requester.getName().getString());
+            PendingAllyRequestS2CPacket packet = new PendingAllyRequestS2CPacket(requesterUUID, requester.getName().getString());
             PacketHandler.sendToPlayer(serverTarget, packet);
         }
 

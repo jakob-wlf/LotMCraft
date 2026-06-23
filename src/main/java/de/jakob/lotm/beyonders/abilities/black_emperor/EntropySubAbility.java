@@ -6,8 +6,8 @@ import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncAbilitySelectionPacket;
-import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelPacket;
+import de.jakob.lotm.network.packets.toClient.SyncAbilitySelectionS2CPacket;
+import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelS2CPacket;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -260,7 +260,7 @@ public final class EntropySubAbility {
                             randomIndex = level.random.nextInt(names.length);
                         } while (randomIndex == current);
                         selectable.setSelectedAbility(player, randomIndex);
-                        PacketHandler.sendToPlayer(player, new SyncAbilitySelectionPacket(abilityId, randomIndex));
+                        PacketHandler.sendToPlayer(player, new SyncAbilitySelectionS2CPacket(abilityId, randomIndex));
                     }
                 }
             }
@@ -300,7 +300,7 @@ public final class EntropySubAbility {
                 Collections.shuffle(shuffled, new java.util.Random(level.random.nextLong()));
                 wheel.setAbilities(shuffled);
                 wheel.setSelectedAbility(0);
-                PacketHandler.sendToPlayer(player, new SyncAbilityWheelPacket(shuffled, 0));
+                PacketHandler.sendToPlayer(player, new SyncAbilityWheelS2CPacket(shuffled, 0));
             }
         }
 

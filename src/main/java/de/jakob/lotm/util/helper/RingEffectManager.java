@@ -1,6 +1,6 @@
 package de.jakob.lotm.util.helper;
 
-import de.jakob.lotm.network.packets.toClient.RingEffectPacket;
+import de.jakob.lotm.network.packets.toClient.RingEffectS2CPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.AABB;
@@ -22,7 +22,7 @@ public class RingEffectManager {
                                         boolean fadeOut,
                                         ServerLevel level) {
         // Send packet to all players in range
-        RingEffectPacket packet = new RingEffectPacket(
+        RingEffectS2CPacket packet = new RingEffectS2CPacket(
                 center.x, center.y, center.z,
                 maxRadius, duration,
                 red, green, blue, alpha,
@@ -44,7 +44,7 @@ public class RingEffectManager {
                                         float expansionSpeed, boolean smoothExpansion,
                                         ServerLevel level, ServerPlayer player) {
         // Send packet to all players in range
-        RingEffectPacket packet = new RingEffectPacket(
+        RingEffectS2CPacket packet = new RingEffectS2CPacket(
                 center.x, center.y, center.z,
                 maxRadius, duration,
                 red, green, blue, alpha,

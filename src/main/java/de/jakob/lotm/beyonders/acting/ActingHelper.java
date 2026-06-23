@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.acting;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncPlayerActingDataPayload;
+import de.jakob.lotm.network.packets.toClient.SyncPlayerActingDataS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -47,7 +47,7 @@ public class ActingHelper {
         unlocked.putBoolean(key, true);
         player.getPersistentData().put(NBT_UNLOCKED_KEY, unlocked);
 
-        PacketHandler.sendToPlayer(serverPlayer, new SyncPlayerActingDataPayload(unlocked));
+        PacketHandler.sendToPlayer(serverPlayer, new SyncPlayerActingDataS2CPacket(unlocked));
     }
 
     public static boolean isTriggerUnlocked(String pathway, int sequence, Player player, String triggerId) {
@@ -61,7 +61,7 @@ public class ActingHelper {
         Player player = event.getEntity();
         if (player instanceof ServerPlayer serverPlayer) {
             CompoundTag unlocked = player.getPersistentData().getCompound(NBT_UNLOCKED_KEY);
-            PacketHandler.sendToPlayer(serverPlayer, new SyncPlayerActingDataPayload(unlocked));
+            PacketHandler.sendToPlayer(serverPlayer, new SyncPlayerActingDataS2CPacket(unlocked));
             ActingCapHelper.syncToClient(serverPlayer);
         }
     }
@@ -75,7 +75,7 @@ public class ActingHelper {
                 ActingCapHelper.reinstateCapForCurrentSequence(serverPlayer);
             }
             CompoundTag unlocked = serverPlayer.getPersistentData().getCompound(NBT_UNLOCKED_KEY);
-            PacketHandler.sendToPlayer(serverPlayer, new SyncPlayerActingDataPayload(unlocked));
+            PacketHandler.sendToPlayer(serverPlayer, new SyncPlayerActingDataS2CPacket(unlocked));
             ActingCapHelper.syncToClient(serverPlayer);
         }
     }
@@ -85,7 +85,7 @@ public class ActingHelper {
         Player player = event.getEntity();
         if (player instanceof ServerPlayer serverPlayer) {
             CompoundTag unlocked = player.getPersistentData().getCompound(NBT_UNLOCKED_KEY);
-            PacketHandler.sendToPlayer(serverPlayer, new SyncPlayerActingDataPayload(unlocked));
+            PacketHandler.sendToPlayer(serverPlayer, new SyncPlayerActingDataS2CPacket(unlocked));
             ActingCapHelper.syncToClient(serverPlayer);
         }
     }

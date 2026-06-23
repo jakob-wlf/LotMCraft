@@ -7,9 +7,9 @@ import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import de.jakob.lotm.util.data.EntityLocation;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.OpenPlayerDivinationScreenPacket;
-import de.jakob.lotm.network.packets.toClient.OpenStructureDivinationScreenPacket;
-import de.jakob.lotm.network.packets.toClient.SyncDangerPremonitionAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.OpenPlayerDivinationScreenS2CPacket;
+import de.jakob.lotm.network.packets.toClient.OpenStructureDivinationScreenS2CPacket;
+import de.jakob.lotm.network.packets.toClient.SyncDangerPremonitionAbilityS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PlayerInfo;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -90,7 +90,7 @@ public class SpiritCommunicationAbility extends SelectableAbility {
         if (!(entity instanceof ServerPlayer player)) return;
 
         DivinationAbility.dangerPremonitionActive.add(entity.getUUID());
-        PacketHandler.sendToPlayer(player, new SyncDangerPremonitionAbilityPacket(true));
+        PacketHandler.sendToPlayer(player, new SyncDangerPremonitionAbilityS2CPacket(true));
 
         AtomicBoolean stop = new AtomicBoolean(false);
         ServerScheduler.scheduleUntil((ServerLevel) level, () -> {
@@ -102,7 +102,7 @@ public class SpiritCommunicationAbility extends SelectableAbility {
                 stop.set(true);
             }
             if (stop.get()) {
-                PacketHandler.sendToPlayer(player, new SyncDangerPremonitionAbilityPacket(false));
+                PacketHandler.sendToPlayer(player, new SyncDangerPremonitionAbilityS2CPacket(false));
             }
             BeyonderData.reduceSpirituality(player, .5f);
         }, 2, null, stop);
@@ -118,7 +118,7 @@ public class SpiritCommunicationAbility extends SelectableAbility {
                 .map(p -> new PlayerInfo(p.getUUID(), p.getGameProfile().getName()))
                 .toList();
 
-        PacketDistributor.sendToPlayer(player, new OpenPlayerDivinationScreenPacket(players, PlayerSelectionWorkType.DIVINATION));
+        PacketDistributor.sendToPlayer(player, new OpenPlayerDivinationScreenS2CPacket(players, PlayerSelectionWorkType.DIVINATION));
     }
 
     private void structureDivination(Level level, Entity entity) {
@@ -132,7 +132,7 @@ public class SpiritCommunicationAbility extends SelectableAbility {
                 .sorted()
                 .toList();
 
-        PacketDistributor.sendToPlayer(player, new OpenStructureDivinationScreenPacket(structureIds));
+        PacketDistributor.sendToPlayer(player, new OpenStructureDivinationScreenS2CPacket(structureIds));
     }
 
 

@@ -5,7 +5,7 @@ import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncSpiritVisionAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSpiritVisionAbilityS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.mixin.EntityAccessor;
@@ -65,7 +65,7 @@ public class SpiritVisionAbility extends ToggleAbility {
     public void start(Level level, LivingEntity entity) {
         if (!level.isClientSide) {
             if (entity instanceof ServerPlayer player) {
-                PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityPacket(true, -1));
+                PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityS2CPacket(true, -1));
             }
             return;
         }
@@ -93,7 +93,7 @@ public class SpiritVisionAbility extends ToggleAbility {
                 return;
         }
 
-        PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
+        PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityS2CPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
 
         if (lookedAt != null) {
             if (shouldLooseControl(entity, lookedAt)) {
@@ -171,7 +171,7 @@ public class SpiritVisionAbility extends ToggleAbility {
                 glowingEntities.get(entity.getUUID()).forEach(e -> setGlowingForPlayer(e, player, false));
             glowingEntities.remove(entity.getUUID());
 
-            PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityPacket(false, -1));
+            PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityS2CPacket(false, -1));
 
             clearArtifactScaling(entity);
         }

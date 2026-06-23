@@ -6,7 +6,7 @@ import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
-import de.jakob.lotm.network.packets.toClient.SyncOriginalBodyOwnerPacket;
+import de.jakob.lotm.network.packets.toClient.SyncOriginalBodyOwnerS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.helper.AllyUtil;
@@ -106,7 +106,7 @@ public class ControllingUtil {
             originalBody.getData(ModAttachments.CONTROLLING_DATA).setOwnerUUID(player.getUUID());
             originalBody.getData(ModAttachments.CONTROLLING_DATA).setOwnerName(player.getName().getString());
             PacketDistributor.sendToPlayersTrackingEntity(originalBody,
-                    new SyncOriginalBodyOwnerPacket(originalBody.getId(), player.getUUID(), player.getName().getString())
+                    new SyncOriginalBodyOwnerS2CPacket(originalBody.getId(), player.getUUID(), player.getName().getString())
             );
         }
 
@@ -598,7 +598,7 @@ public class ControllingUtil {
             ControllingDataComponent data = body.getData(ModAttachments.CONTROLLING_DATA);
             if (data.getOwnerUUID() != null && data.getOwnerName() != null) {
                 PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(),
-                        new SyncOriginalBodyOwnerPacket(body.getId(), data.getOwnerUUID(), data.getOwnerName())
+                        new SyncOriginalBodyOwnerS2CPacket(body.getId(), data.getOwnerUUID(), data.getOwnerName())
                 );
             }
         }

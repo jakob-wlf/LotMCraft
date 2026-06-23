@@ -5,7 +5,7 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.ApprenticeDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.DisplaySpaceConcealmentParticlesPacket;
+import de.jakob.lotm.network.packets.toClient.DisplaySpaceConcealmentParticlesS2CPacket;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -487,7 +487,7 @@ public class SpaceConcealmentAbility extends SelectableAbility {
                         if(edgeCount >= 2) {
                             BlockPos pos = centerPos.offset(x, y, z);
                             Vec3 particlePos = pos.getCenter();
-                            DisplaySpaceConcealmentParticlesPacket packet = new DisplaySpaceConcealmentParticlesPacket(particlePos.x, particlePos.y, particlePos.z);
+                            DisplaySpaceConcealmentParticlesS2CPacket packet = new DisplaySpaceConcealmentParticlesS2CPacket(particlePos.x, particlePos.y, particlePos.z);
                             PacketHandler.sendToPlayer(player, packet);
                         }
                     }

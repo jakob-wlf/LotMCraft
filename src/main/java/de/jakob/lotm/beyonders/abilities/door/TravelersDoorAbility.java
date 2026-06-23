@@ -4,7 +4,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.TravelersDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.OpenCoordinateScreenTravelersDoorPacket;
+import de.jakob.lotm.network.packets.toClient.OpenCoordinateScreenTravelersDoorS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -102,7 +102,7 @@ public class TravelersDoorAbility extends SelectableAbility {
     }
 
     private void createDoorWithCoordinates(ServerLevel serverLevel, ServerPlayer player, Vec3 targetLoc) {
-        PacketHandler.sendToPlayer(player, new OpenCoordinateScreenTravelersDoorPacket());
+        PacketHandler.sendToPlayer(player, new OpenCoordinateScreenTravelersDoorS2CPacket());
 
         AtomicBoolean hasInputCoordinates = new AtomicBoolean(false);
         ServerScheduler.scheduleForDuration(0, 5, 20 * 60 * 5, () -> {

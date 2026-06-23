@@ -4,7 +4,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
+import de.jakob.lotm.network.packets.toServer.AbilitySelectionC2SPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -83,7 +83,7 @@ public class GiftAbility extends SelectableAbility {
         }
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+        PacketHandler.sendToServer(new AbilitySelectionC2SPacket(getId(), selectedAbility));
     }
 
     @Override
@@ -108,7 +108,7 @@ public class GiftAbility extends SelectableAbility {
         }
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+        PacketHandler.sendToServer(new AbilitySelectionC2SPacket(getId(), selectedAbility));
     }
 
     @Override

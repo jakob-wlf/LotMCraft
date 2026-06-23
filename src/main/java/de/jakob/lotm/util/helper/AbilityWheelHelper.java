@@ -5,7 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelPacket;
+import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelS2CPacket;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
@@ -121,7 +121,7 @@ public class AbilityWheelHelper {
         AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
         PacketHandler.sendToPlayer(
                 player,
-                new SyncAbilityWheelPacket(component.getAbilities(), component.getSelectedAbility())
+                new SyncAbilityWheelS2CPacket(component.getAbilities(), component.getSelectedAbility())
         );
     }
 

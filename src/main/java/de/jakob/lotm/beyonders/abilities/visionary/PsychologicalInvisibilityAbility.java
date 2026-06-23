@@ -6,7 +6,7 @@ import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
-import de.jakob.lotm.network.packets.toClient.SyncPsychologicalInvisibilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncPsychologicalInvisibilityS2CPacket;
 import de.jakob.lotm.rendering.DecryptionRenderLayer;
 import de.jakob.lotm.rendering.SpiritVisionOverlayRenderer;
 import de.jakob.lotm.util.BeyonderData;
@@ -151,7 +151,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
 
         removeOrAddName(entity);
 
-        PacketHandler.sendToAllPlayers(new SyncPsychologicalInvisibilityPacket(finalInvisiblePlayers));
+        PacketHandler.sendToAllPlayers(new SyncPsychologicalInvisibilityS2CPacket(finalInvisiblePlayers));
         entity.setInvisible(true);
     }
 
@@ -163,7 +163,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
 
         removeOrAddName(entity);
 
-        PacketHandler.sendToAllPlayers(new SyncPsychologicalInvisibilityPacket(finalInvisiblePlayers));
+        PacketHandler.sendToAllPlayers(new SyncPsychologicalInvisibilityS2CPacket(finalInvisiblePlayers));
         entity.setInvisible(false);
     }
 
@@ -171,7 +171,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         if (!invisiblePlayers.containsKey(entity.getUUID())) {
             finalInvisiblePlayers.put(entity.getUUID(), seq);
 
-            PacketHandler.sendToAllPlayers(new SyncPsychologicalInvisibilityPacket(finalInvisiblePlayers));
+            PacketHandler.sendToAllPlayers(new SyncPsychologicalInvisibilityS2CPacket(finalInvisiblePlayers));
             entity.setInvisible(true);
         }
     }
@@ -180,7 +180,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         if (!invisiblePlayers.containsKey(entity.getUUID())) {
             finalInvisiblePlayers.remove(entity.getUUID());
 
-            PacketHandler.sendToAllPlayers(new SyncPsychologicalInvisibilityPacket(finalInvisiblePlayers));
+            PacketHandler.sendToAllPlayers(new SyncPsychologicalInvisibilityS2CPacket(finalInvisiblePlayers));
             entity.setInvisible(false);
         }
     }

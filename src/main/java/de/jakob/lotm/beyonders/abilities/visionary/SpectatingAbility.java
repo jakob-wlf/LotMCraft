@@ -3,7 +3,7 @@ package de.jakob.lotm.beyonders.abilities.visionary;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncSpectatingAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncSpectatingAbilityS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
@@ -49,7 +49,7 @@ public class SpectatingAbility extends ToggleAbility {
 
         if(!level.isClientSide) {
             if(entity instanceof ServerPlayer player) {
-                PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(true, -1));
+                PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityS2CPacket(true, -1));
             }
             return;
         }
@@ -85,7 +85,7 @@ public class SpectatingAbility extends ToggleAbility {
             return;
         }
 
-        PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
+        PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityS2CPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
 
         entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 17, 1, false, false, false));
     }
@@ -94,7 +94,7 @@ public class SpectatingAbility extends ToggleAbility {
     public void stop(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
             if(entity instanceof ServerPlayer player) {
-                PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(false, -1));
+                PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityS2CPacket(false, -1));
             }
 
             clearArtifactScaling(entity);

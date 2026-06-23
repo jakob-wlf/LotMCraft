@@ -10,7 +10,7 @@ import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
+import de.jakob.lotm.network.packets.toClient.UseAbilityS2CPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.ChatFormatting;
@@ -146,7 +146,7 @@ public abstract class Ability {
 
         // Use ability client and server sided
         onAbilityUse(serverLevel, newUser);
-        if(entity instanceof ServerPlayer player) PacketHandler.sendToPlayer(player, new UseAbilityPacket(getId(), newUser.getId()));
+        if(entity instanceof ServerPlayer player) PacketHandler.sendToPlayer(player, new UseAbilityS2CPacket(getId(), newUser.getId()));
 
         if(this.autoClear){
             clearArtifactScaling(entity);

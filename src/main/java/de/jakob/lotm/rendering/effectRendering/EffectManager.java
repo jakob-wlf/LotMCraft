@@ -1,8 +1,8 @@
 package de.jakob.lotm.rendering.effectRendering;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.AddEffectPacket;
-import de.jakob.lotm.network.packets.toClient.CancelEffectByPositionPacket;
+import de.jakob.lotm.network.packets.toClient.AddEffectS2CPacket;
+import de.jakob.lotm.network.packets.toClient.CancelEffectByPositionS2CPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,19 +15,19 @@ public class EffectManager {
 
     public static void playEffect(Effect effect, double x, double y, double z, ServerLevel level) {
         PacketHandler.sendToAllPlayersInSameLevel(
-                new AddEffectPacket(effect.getIndex(), x, y, z), level);
+                new AddEffectS2CPacket(effect.getIndex(), x, y, z), level);
     }
 
     public static void playEffect(Effect effect, double x, double y, double z, ServerPlayer player) {
         PacketHandler.sendToPlayer(player,
-                new AddEffectPacket(effect.getIndex(), x, y, z));
+                new AddEffectS2CPacket(effect.getIndex(), x, y, z));
     }
 
     // -------------------------------------------------------------------------
     // With entity — the client will look the entity up by ID and apply the
     // local time multiplier at its position every tick.
     //
-    // NOTE: AddEffectPacket needs an extra optional int field for entityId.
+    // NOTE: AddEffectS2CPacket needs an extra optional int field for entityId.
     //       Pass -1 (or Entity.INVALID_ID) when no entity is involved so
     //       existing packet handling stays backward-compatible.
     // -------------------------------------------------------------------------
@@ -43,7 +43,7 @@ public class EffectManager {
     public static void playEffect(Effect effect, double x, double y, double z,
                                   ServerLevel level, LivingEntity entity) {
         PacketHandler.sendToAllPlayersInSameLevel(
-                new AddEffectPacket(effect.getIndex(), x, y, z, entity.getId()), level);
+                new AddEffectS2CPacket(effect.getIndex(), x, y, z, entity.getId()), level);
     }
 
     /**
@@ -52,7 +52,7 @@ public class EffectManager {
     public static void playEffect(Effect effect, double x, double y, double z,
                                   ServerPlayer player, LivingEntity entity) {
         PacketHandler.sendToPlayer(player,
-                new AddEffectPacket(effect.getIndex(), x, y, z, entity.getId()));
+                new AddEffectS2CPacket(effect.getIndex(), x, y, z, entity.getId()));
     }
 
     /**
@@ -60,7 +60,7 @@ public class EffectManager {
      */
     public static void cancelEffectsNear(double x, double y, double z, double radius, ServerLevel level) {
         PacketHandler.sendToAllPlayersInSameLevel(
-                new CancelEffectByPositionPacket(x, y, z, radius), level);
+                new CancelEffectByPositionS2CPacket(x, y, z, radius), level);
     }
 
     // -------------------------------------------------------------------------

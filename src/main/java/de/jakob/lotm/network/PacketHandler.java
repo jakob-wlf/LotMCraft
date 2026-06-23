@@ -32,791 +32,791 @@ public class PacketHandler {
 
     private static void registerClientPackets(PayloadRegistrar registrar) {
         registrar.playToClient(
-                SyncBeyonderDataPacket.TYPE,
-                SyncBeyonderDataPacket.STREAM_CODEC,
-                SyncBeyonderDataPacket::handle
+                SyncBeyonderDataS2CPacket.TYPE,
+                SyncBeyonderDataS2CPacket.STREAM_CODEC,
+                SyncBeyonderDataS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncWeaknessDetectionTargetsAbilityPacket.TYPE,
-                SyncWeaknessDetectionTargetsAbilityPacket.STREAM_CODEC,
-                SyncWeaknessDetectionTargetsAbilityPacket::handle
+                SyncWeaknessDetectionTargetsAbilityS2CPacket.TYPE,
+                SyncWeaknessDetectionTargetsAbilityS2CPacket.STREAM_CODEC,
+                SyncWeaknessDetectionTargetsAbilityS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncApotheosisPacket.TYPE,
-                SyncApotheosisPacket.STREAM_CODEC,
-                SyncApotheosisPacket::handle
+                SyncApotheosisS2CPacket.TYPE,
+                SyncApotheosisS2CPacket.STREAM_CODEC,
+                SyncApotheosisS2CPacket::handle
         );
 
         registrar.playToClient(
-                DisableAbilityUsageForTimePacket.TYPE,
-                DisableAbilityUsageForTimePacket.STREAM_CODEC,
-                DisableAbilityUsageForTimePacket::handle
+                DisableAbilityUsageForTimeS2CPacket.TYPE,
+                DisableAbilityUsageForTimeS2CPacket.STREAM_CODEC,
+                DisableAbilityUsageForTimeS2CPacket::handle
         );
 
         registrar.playToClient(
-                FireEffectPacket.TYPE,
-                FireEffectPacket.STREAM_CODEC,
-                FireEffectPacket::handle
+                FireEffectS2CPacket.TYPE,
+                FireEffectS2CPacket.STREAM_CODEC,
+                FireEffectS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncQuestDataPacket.TYPE,
-                SyncQuestDataPacket.STREAM_CODEC,
-                SyncQuestDataPacket::handle
+                SyncQuestDataS2CPacket.TYPE,
+                SyncQuestDataS2CPacket.STREAM_CODEC,
+                SyncQuestDataS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncAbilityActiveStatusPacket.TYPE,
-                SyncAbilityActiveStatusPacket.STREAM_CODEC,
-                SyncAbilityActiveStatusPacket::handle
+                SyncAbilityActiveStatusS2CPacket.TYPE,
+                SyncAbilityActiveStatusS2CPacket.STREAM_CODEC,
+                SyncAbilityActiveStatusS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncToggleAbilityPacket.TYPE,
-                SyncToggleAbilityPacket.STREAM_CODEC,
-                SyncToggleAbilityPacket::handle
+                SyncToggleAbilityS2CPacket.TYPE,
+                SyncToggleAbilityS2CPacket.STREAM_CODEC,
+                SyncToggleAbilityS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncActingCapPacket.TYPE,
-                SyncActingCapPacket.STREAM_CODEC,
-                SyncActingCapPacket::handle
+                SyncActingCapS2CPacket.TYPE,
+                SyncActingCapS2CPacket.STREAM_CODEC,
+                SyncActingCapS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncOnHoldAbilityPacket.TYPE,
-                SyncOnHoldAbilityPacket.STREAM_CODEC,
-                SyncOnHoldAbilityPacket::handle
+                SyncOnHoldAbilityS2CPacket.TYPE,
+                SyncOnHoldAbilityS2CPacket.STREAM_CODEC,
+                SyncOnHoldAbilityS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncAbilityWheelDataPacket.TYPE,
-                SyncAbilityWheelDataPacket.STREAM_CODEC,
-                SyncAbilityWheelDataPacket::handle
+                SyncAbilityWheelDataS2CPacket.TYPE,
+                SyncAbilityWheelDataS2CPacket.STREAM_CODEC,
+                SyncAbilityWheelDataS2CPacket::handle
         );
 
         registrar.playToClient(
-                UseAbilityPacket.TYPE,
-                UseAbilityPacket.STREAM_CODEC,
-                UseAbilityPacket::handle
+                UseAbilityS2CPacket.TYPE,
+                UseAbilityS2CPacket.STREAM_CODEC,
+                UseAbilityS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncAbilityWheelPacket.TYPE,
-                SyncAbilityWheelPacket.STREAM_CODEC,
-                SyncAbilityWheelPacket::handle
+                SyncAbilityWheelS2CPacket.TYPE,
+                SyncAbilityWheelS2CPacket.STREAM_CODEC,
+                SyncAbilityWheelS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncCopiedAbilitiesPacket.TYPE,
-                SyncCopiedAbilitiesPacket.STREAM_CODEC,
-                SyncCopiedAbilitiesPacket::handle
+                SyncCopiedAbilitiesS2CPacket.TYPE,
+                SyncCopiedAbilitiesS2CPacket.STREAM_CODEC,
+                SyncCopiedAbilitiesS2CPacket::handle
         );
 
         registrar.playToClient(
-                OpenCopiedAbilityWheelPacket.TYPE,
-                OpenCopiedAbilityWheelPacket.STREAM_CODEC,
-                OpenCopiedAbilityWheelPacket::handle
+                OpenCopiedAbilityWheelS2CPacket.TYPE,
+                OpenCopiedAbilityWheelS2CPacket.STREAM_CODEC,
+                OpenCopiedAbilityWheelS2CPacket::handle
         );
 
 
         registrar.playToClient(
-                HybridMobSyncPacket.TYPE,
-                HybridMobSyncPacket.STREAM_CODEC,
-                HybridMobSyncPacket::handle
+                HybridMobSyncS2CPacket.TYPE,
+                HybridMobSyncS2CPacket.STREAM_CODEC,
+                HybridMobSyncS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncSanityPacket.TYPE,
-                SyncSanityPacket.STREAM_CODEC,
-                SyncSanityPacket::handle
+                SyncSanityS2CPacket.TYPE,
+                SyncSanityS2CPacket.STREAM_CODEC,
+                SyncSanityS2CPacket::handle
         );
 
 
         registrar.playToClient(
-                SendPassiveTheftEffectPacket.TYPE,
-                SendPassiveTheftEffectPacket.STREAM_CODEC,
-                SendPassiveTheftEffectPacket::handle
+                SendPassiveTheftEffectS2CPacket.TYPE,
+                SendPassiveTheftEffectS2CPacket.STREAM_CODEC,
+                SendPassiveTheftEffectS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncDecryptionLookedAtEntitiesAbilityPacket.TYPE,
-                SyncDecryptionLookedAtEntitiesAbilityPacket.STREAM_CODEC,
-                SyncDecryptionLookedAtEntitiesAbilityPacket::handle
+                SyncDecryptionLookedAtEntitiesAbilityS2CPacket.TYPE,
+                SyncDecryptionLookedAtEntitiesAbilityS2CPacket.STREAM_CODEC,
+                SyncDecryptionLookedAtEntitiesAbilityS2CPacket::handle
         );
 
         registrar.playToClient(
-                StartStopDiscernmentPacket.TYPE,
-                StartStopDiscernmentPacket.STREAM_CODEC,
-                StartStopDiscernmentPacket::handle
+                StartStopDiscernmentS2CPacket.TYPE,
+                StartStopDiscernmentS2CPacket.STREAM_CODEC,
+                StartStopDiscernmentS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncIntrospectMenuPacket.TYPE,
-                SyncIntrospectMenuPacket.STREAM_CODEC,
-                SyncIntrospectMenuPacket::handle
+                SyncIntrospectMenuS2CPacket.TYPE,
+                SyncIntrospectMenuS2CPacket.STREAM_CODEC,
+                SyncIntrospectMenuS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncKillCountPacket.TYPE,
-                SyncKillCountPacket.STREAM_CODEC,
-                SyncKillCountPacket::handle
+                SyncKillCountS2CPacket.TYPE,
+                SyncKillCountS2CPacket.STREAM_CODEC,
+                SyncKillCountS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncSacrificeDurationPacket.TYPE,
-                SyncSacrificeDurationPacket.STREAM_CODEC,
-                SyncSacrificeDurationPacket::handle
+                SyncSacrificeDurationS2CPacket.TYPE,
+                SyncSacrificeDurationS2CPacket.STREAM_CODEC,
+                SyncSacrificeDurationS2CPacket::handle
         );
 
         registrar.playToClient(
-                AddEffectPacket.TYPE,
-                AddEffectPacket.STREAM_CODEC,
-                AddEffectPacket::handle
+                AddEffectS2CPacket.TYPE,
+                AddEffectS2CPacket.STREAM_CODEC,
+                AddEffectS2CPacket::handle
         );
 
         registrar.playToClient(
-                AddDirectionalEffectPacket.TYPE,
-                AddDirectionalEffectPacket.STREAM_CODEC,
-                AddDirectionalEffectPacket::handle
+                AddDirectionalEffectS2CPacket.TYPE,
+                AddDirectionalEffectS2CPacket.STREAM_CODEC,
+                AddDirectionalEffectS2CPacket::handle
         );
 
         registrar.playToClient(
-                OpenCoordinateScreenPacket.TYPE,
-                OpenCoordinateScreenPacket.CODEC,
-                OpenCoordinateScreenPacket::handle
+                OpenCoordinateScreenS2CPacket.TYPE,
+                OpenCoordinateScreenS2CPacket.CODEC,
+                OpenCoordinateScreenS2CPacket::handle
         );
 
         registrar.playToClient(
-                OpenCoordinateScreenTravelersDoorPacket.TYPE,
-                OpenCoordinateScreenTravelersDoorPacket.STREAM_CODEC,
-                OpenCoordinateScreenTravelersDoorPacket::handle
+                OpenCoordinateScreenTravelersDoorS2CPacket.TYPE,
+                OpenCoordinateScreenTravelersDoorS2CPacket.STREAM_CODEC,
+                OpenCoordinateScreenTravelersDoorS2CPacket::handle
         );
 
         registrar.playToClient(
-                OpenEnvisionLocationScreenPacket.TYPE,
-                OpenEnvisionLocationScreenPacket.STREAM_CODEC,
-                OpenEnvisionLocationScreenPacket::handle
+                OpenEnvisionLocationScreenS2CPacket.TYPE,
+                OpenEnvisionLocationScreenS2CPacket.STREAM_CODEC,
+                OpenEnvisionLocationScreenS2CPacket::handle
         );
 
         registrar.playToClient(
-                DisplayShadowParticlesPacket.TYPE,
-                DisplayShadowParticlesPacket.STREAM_CODEC,
-                DisplayShadowParticlesPacket::handle
+                DisplayShadowParticlesS2CPacket.TYPE,
+                DisplayShadowParticlesS2CPacket.STREAM_CODEC,
+                DisplayShadowParticlesS2CPacket::handle
         );
 
         registrar.playToClient(
-                DisplaySpaceConcealmentParticlesPacket.TYPE,
-                DisplaySpaceConcealmentParticlesPacket.STREAM_CODEC,
-                DisplaySpaceConcealmentParticlesPacket::handle
+                DisplaySpaceConcealmentParticlesS2CPacket.TYPE,
+                DisplaySpaceConcealmentParticlesS2CPacket.STREAM_CODEC,
+                DisplaySpaceConcealmentParticlesS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncMirrorWorldPacket.TYPE,
-                SyncMirrorWorldPacket.STREAM_CODEC,
-                SyncMirrorWorldPacket::handle
+                SyncMirrorWorldS2CPacket.TYPE,
+                SyncMirrorWorldS2CPacket.STREAM_CODEC,
+                SyncMirrorWorldS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncTransformationPacket.TYPE,
-                SyncTransformationPacket.STREAM_CODEC,
-                SyncTransformationPacket::handle
+                SyncTransformationS2CPacket.TYPE,
+                SyncTransformationS2CPacket.STREAM_CODEC,
+                SyncTransformationS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncShaderPacket.TYPE,
-                SyncShaderPacket.STREAM_CODEC,
-                SyncShaderPacket::handle
+                SyncShaderS2CPacket.TYPE,
+                SyncShaderS2CPacket.STREAM_CODEC,
+                SyncShaderS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncFogPacket.TYPE,
-                SyncFogPacket.STREAM_CODEC,
-                SyncFogPacket::handle
+                SyncFogS2CPacket.TYPE,
+                SyncFogS2CPacket.STREAM_CODEC,
+                SyncFogS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncLivingEntityBeyonderDataPacket.TYPE,
-                SyncLivingEntityBeyonderDataPacket.STREAM_CODEC,
-                SyncLivingEntityBeyonderDataPacket::handle
+                SyncLivingEntityBeyonderDataS2CPacket.TYPE,
+                SyncLivingEntityBeyonderDataS2CPacket.STREAM_CODEC,
+                SyncLivingEntityBeyonderDataS2CPacket::handle
         );
 
         registrar.playToClient(
-                UpdateAbilityBarPacket.TYPE,
-                UpdateAbilityBarPacket.STREAM_CODEC,
-                UpdateAbilityBarPacket::handle
+                UpdateAbilityBarS2CPacket.TYPE,
+                UpdateAbilityBarS2CPacket.STREAM_CODEC,
+                UpdateAbilityBarS2CPacket::handle
         );
 
         registrar.playToClient(
-                ChangePlayerPerspectivePacket.TYPE,
-                ChangePlayerPerspectivePacket.STREAM_CODEC,
-                ChangePlayerPerspectivePacket::handle
+                ChangePlayerPerspectiveS2CPacket.TYPE,
+                ChangePlayerPerspectiveS2CPacket.STREAM_CODEC,
+                ChangePlayerPerspectiveS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncGriefingGamerulePacket.TYPE,
-                SyncGriefingGamerulePacket.STREAM_CODEC,
-                SyncGriefingGamerulePacket::handle
+                SyncGriefingGameruleS2CPacket.TYPE,
+                SyncGriefingGameruleS2CPacket.STREAM_CODEC,
+                SyncGriefingGameruleS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncCullAbilityPacket.TYPE,
-                SyncCullAbilityPacket.STREAM_CODEC,
-                SyncCullAbilityPacket::handle
+                SyncCullAbilityS2CPacket.TYPE,
+                SyncCullAbilityS2CPacket.STREAM_CODEC,
+                SyncCullAbilityS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncDangerPremonitionAbilityPacket.TYPE,
-                SyncDangerPremonitionAbilityPacket.STREAM_CODEC,
-                SyncDangerPremonitionAbilityPacket::handle
+                SyncDangerPremonitionAbilityS2CPacket.TYPE,
+                SyncDangerPremonitionAbilityS2CPacket.STREAM_CODEC,
+                SyncDangerPremonitionAbilityS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncNightmareAbilityPacket.TYPE,
-                SyncNightmareAbilityPacket.STREAM_CODEC,
-                SyncNightmareAbilityPacket::handle
+                SyncNightmareAbilityS2CPacket.TYPE,
+                SyncNightmareAbilityS2CPacket.STREAM_CODEC,
+                SyncNightmareAbilityS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncSpectatingAbilityPacket.TYPE,
-                SyncSpectatingAbilityPacket.STREAM_CODEC,
-                SyncSpectatingAbilityPacket::handle
+                SyncSpectatingAbilityS2CPacket.TYPE,
+                SyncSpectatingAbilityS2CPacket.STREAM_CODEC,
+                SyncSpectatingAbilityS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncTelepathyAbilityPacket.TYPE,
-                SyncTelepathyAbilityPacket.STREAM_CODEC,
-                SyncTelepathyAbilityPacket::handle
+                SyncTelepathyAbilityS2CPacket.TYPE,
+                SyncTelepathyAbilityS2CPacket.STREAM_CODEC,
+                SyncTelepathyAbilityS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncSelectedMarionettePacket.TYPE,
-                SyncSelectedMarionettePacket.STREAM_CODEC,
-                SyncSelectedMarionettePacket::handle
+                SyncSelectedMarionetteS2CPacket.TYPE,
+                SyncSelectedMarionetteS2CPacket.STREAM_CODEC,
+                SyncSelectedMarionetteS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncSpiritVisionAbilityPacket.TYPE,
-                SyncSpiritVisionAbilityPacket.STREAM_CODEC,
-                SyncSpiritVisionAbilityPacket::handle
+                SyncSpiritVisionAbilityS2CPacket.TYPE,
+                SyncSpiritVisionAbilityS2CPacket.STREAM_CODEC,
+                SyncSpiritVisionAbilityS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncEyeOfDeathAbilityPacket.TYPE,
-                SyncEyeOfDeathAbilityPacket.STREAM_CODEC,
-                SyncEyeOfDeathAbilityPacket::handle
+                SyncEyeOfDeathAbilityS2CPacket.TYPE,
+                SyncEyeOfDeathAbilityS2CPacket.STREAM_CODEC,
+                SyncEyeOfDeathAbilityS2CPacket::handle
         );
 
         registrar.playToClient(
-                RingEffectPacket.TYPE,
-                RingEffectPacket.STREAM_CODEC,
-                RingEffectPacket::handle
+                RingEffectS2CPacket.TYPE,
+                RingEffectS2CPacket.STREAM_CODEC,
+                RingEffectS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncExplodedTrapPacket.TYPE,
-                SyncExplodedTrapPacket.STREAM_CODEC,
-                SyncExplodedTrapPacket::handle
+                SyncExplodedTrapS2CPacket.TYPE,
+                SyncExplodedTrapS2CPacket.STREAM_CODEC,
+                SyncExplodedTrapS2CPacket::handle
         );
         registrar.playToClient(
-                SyncGriefingStatePacket.TYPE,
-                SyncGriefingStatePacket.STREAM_CODEC,
-                SyncGriefingStatePacket::handle
+                SyncGriefingStateS2CPacket.TYPE,
+                SyncGriefingStateS2CPacket.STREAM_CODEC,
+                SyncGriefingStateS2CPacket::handle
         );
 
         registrar.playToClient(
-                DarknessEffectPacket.TYPE,
-                DarknessEffectPacket.STREAM_CODEC,
-                DarknessEffectPacket::handle
+                DarknessEffectS2CPacket.TYPE,
+                DarknessEffectS2CPacket.STREAM_CODEC,
+                DarknessEffectS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncCorrosionFovPacket.TYPE,
-                SyncCorrosionFovPacket.STREAM_CODEC,
-                SyncCorrosionFovPacket::handle
+                SyncCorrosionFovS2CPacket.TYPE,
+                SyncCorrosionFovS2CPacket.STREAM_CODEC,
+                SyncCorrosionFovS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncAbilitySelectionPacket.TYPE,
-                SyncAbilitySelectionPacket.STREAM_CODEC,
-                SyncAbilitySelectionPacket::handle
+                SyncAbilitySelectionS2CPacket.TYPE,
+                SyncAbilitySelectionS2CPacket.STREAM_CODEC,
+                SyncAbilitySelectionS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncAllyDataPacket.TYPE,
-                SyncAllyDataPacket.STREAM_CODEC,
-                SyncAllyDataPacket::handle
+                SyncAllyDataS2CPacket.TYPE,
+                SyncAllyDataS2CPacket.STREAM_CODEC,
+                SyncAllyDataS2CPacket::handle
         );
 
         registrar.playToClient(
-                PendingAllyRequestPacket.TYPE,
-                PendingAllyRequestPacket.STREAM_CODEC,
-                PendingAllyRequestPacket::handle
+                PendingAllyRequestS2CPacket.TYPE,
+                PendingAllyRequestS2CPacket.STREAM_CODEC,
+                PendingAllyRequestS2CPacket::handle
         );
 
         registrar.playToClient(
-                PendingTeamInvitePacket.TYPE,
-                PendingTeamInvitePacket.STREAM_CODEC,
-                PendingTeamInvitePacket::handle
+                PendingTeamInviteS2CPacket.TYPE,
+                PendingTeamInviteS2CPacket.STREAM_CODEC,
+                PendingTeamInviteS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncPlayerActingDataPayload.TYPE,
-                SyncPlayerActingDataPayload.STREAM_CODEC,
-                SyncPlayerActingDataPayload::handle
+                SyncPlayerActingDataS2CPacket.TYPE,
+                SyncPlayerActingDataS2CPacket.STREAM_CODEC,
+                SyncPlayerActingDataS2CPacket::handle
         );
 
         registrar.playToClient(
-                PlayActingEffectPacket.TYPE,
-                PlayActingEffectPacket.STREAM_CODEC,
-                PlayActingEffectPacket::handle
+                PlayActingEffectS2CPacket.TYPE,
+                PlayActingEffectS2CPacket.STREAM_CODEC,
+                PlayActingEffectS2CPacket::handle
         );
 
 
         registrar.playToClient(
-                SyncSharedAbilitiesDataPacket.TYPE,
-                SyncSharedAbilitiesDataPacket.STREAM_CODEC,
-                SyncSharedAbilitiesDataPacket::handle
+                SyncSharedAbilitiesDataS2CPacket.TYPE,
+                SyncSharedAbilitiesDataS2CPacket.STREAM_CODEC,
+                SyncSharedAbilitiesDataS2CPacket::handle
         );
 
         registrar.playToClient(
-                RemoveMovableEffectPacket.TYPE,
-                RemoveMovableEffectPacket.STREAM_CODEC,
-                RemoveMovableEffectPacket::handle
+                RemoveMovableEffectS2CPacket.TYPE,
+                RemoveMovableEffectS2CPacket.STREAM_CODEC,
+                RemoveMovableEffectS2CPacket::handle
         );
 
         registrar.playToClient(
-                CancelEffectByPositionPacket.TYPE,
-                CancelEffectByPositionPacket.STREAM_CODEC,
-                CancelEffectByPositionPacket::handle
+                CancelEffectByPositionS2CPacket.TYPE,
+                CancelEffectByPositionS2CPacket.STREAM_CODEC,
+                CancelEffectByPositionS2CPacket::handle
         );
 
         registrar.playToClient(
-                UpdateMovableEffectPositionPacket.TYPE,
-                UpdateMovableEffectPositionPacket.STREAM_CODEC,
-                UpdateMovableEffectPositionPacket::handle
+                UpdateMovableEffectPositionS2CPacket.TYPE,
+                UpdateMovableEffectPositionS2CPacket.STREAM_CODEC,
+                UpdateMovableEffectPositionS2CPacket::handle
         );
 
         registrar.playToClient(
-                OpenCoordinateScreenForTeleportationPacket.TYPE,
-                OpenCoordinateScreenForTeleportationPacket.STREAM_CODEC,
-                OpenCoordinateScreenForTeleportationPacket::handle
+                OpenCoordinateScreenForTeleportationS2CPacket.TYPE,
+                OpenCoordinateScreenForTeleportationS2CPacket.STREAM_CODEC,
+                OpenCoordinateScreenForTeleportationS2CPacket::handle
         );
 
         registrar.playToClient(
-                HotGroundEffectPacket.TYPE,
-                HotGroundEffectPacket.STREAM_CODEC,
-                HotGroundEffectPacket::handle
+                HotGroundEffectS2CPacket.TYPE,
+                HotGroundEffectS2CPacket.STREAM_CODEC,
+                HotGroundEffectS2CPacket::handle
         );
 
 
         registrar.playToClient(
-                AddMovableEffectPacket.TYPE,
-                AddMovableEffectPacket.STREAM_CODEC,
-                AddMovableEffectPacket::handle
+                AddMovableEffectS2CPacket.TYPE,
+                AddMovableEffectS2CPacket.STREAM_CODEC,
+                AddMovableEffectS2CPacket::handle
         );
 
         registrar.playToClient(
-                OpenQuestAcceptanceScreenPacket.TYPE,
-                OpenQuestAcceptanceScreenPacket.STREAM_CODEC,
-                OpenQuestAcceptanceScreenPacket::handle
+                OpenQuestAcceptanceScreenS2CPacket.TYPE,
+                OpenQuestAcceptanceScreenS2CPacket.STREAM_CODEC,
+                OpenQuestAcceptanceScreenS2CPacket::handle
         );
 
         registrar.playToClient(
-                OpenPlayerDivinationScreenPacket.TYPE,
-                OpenPlayerDivinationScreenPacket.STREAM_CODEC,
-                OpenPlayerDivinationScreenPacket::handle
+                OpenPlayerDivinationScreenS2CPacket.TYPE,
+                OpenPlayerDivinationScreenS2CPacket.STREAM_CODEC,
+                OpenPlayerDivinationScreenS2CPacket::handle
         );
 
         registrar.playToClient(
-                OpenStructureDivinationScreenPacket.TYPE,
-                OpenStructureDivinationScreenPacket.STREAM_CODEC,
-                OpenStructureDivinationScreenPacket::handle
+                OpenStructureDivinationScreenS2CPacket.TYPE,
+                OpenStructureDivinationScreenS2CPacket.STREAM_CODEC,
+                OpenStructureDivinationScreenS2CPacket::handle
         );
 
         registrar.playToClient(
-                OpenBiomeDivinationScreenPacket.TYPE,
-                OpenBiomeDivinationScreenPacket.STREAM_CODEC,
-                OpenBiomeDivinationScreenPacket::handle
+                OpenBiomeDivinationScreenS2CPacket.TYPE,
+                OpenBiomeDivinationScreenS2CPacket.STREAM_CODEC,
+                OpenBiomeDivinationScreenS2CPacket::handle
         );
 
         registrar.playToClient(
-                OpenShapeShiftingScreenPacket.TYPE,
-                OpenShapeShiftingScreenPacket.STREAM_CODEC,
-                OpenShapeShiftingScreenPacket::handle
+                OpenShapeShiftingScreenS2CPacket.TYPE,
+                OpenShapeShiftingScreenS2CPacket.STREAM_CODEC,
+                OpenShapeShiftingScreenS2CPacket::handle
         );
 
         registrar.playToClient(
-                OpenHistoricalVoidBorrowingScreenPacket.TYPE,
-                OpenHistoricalVoidBorrowingScreenPacket.STREAM_CODEC,
-                OpenHistoricalVoidBorrowingScreenPacket::handle
+                OpenHistoricalVoidBorrowingScreenS2CPacket.TYPE,
+                OpenHistoricalVoidBorrowingScreenS2CPacket.STREAM_CODEC,
+                OpenHistoricalVoidBorrowingScreenS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncPlayerTeleportationPlayerNamesPacket.TYPE,
-                SyncPlayerTeleportationPlayerNamesPacket.STREAM_CODEC,
-                SyncPlayerTeleportationPlayerNamesPacket::handle
+                SyncPlayerTeleportationPlayerNamesS2CPacket.TYPE,
+                SyncPlayerTeleportationPlayerNamesS2CPacket.STREAM_CODEC,
+                SyncPlayerTeleportationPlayerNamesS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncPsychologicalInvisibilityPacket.TYPE,
-                SyncPsychologicalInvisibilityPacket.STREAM_CODEC,
-                SyncPsychologicalInvisibilityPacket::handle
+                SyncPsychologicalInvisibilityS2CPacket.TYPE,
+                SyncPsychologicalInvisibilityS2CPacket.STREAM_CODEC,
+                SyncPsychologicalInvisibilityS2CPacket::handle
         );
 
         registrar.playToClient(
-                AddEntityTagPacket.TYPE,
-                AddEntityTagPacket.STREAM_CODEC,
-                AddEntityTagPacket::handle
+                AddEntityTagS2CPacket.TYPE,
+                AddEntityTagS2CPacket.STREAM_CODEC,
+                AddEntityTagS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncPlayerTeleportationOnlinePlayersPacket.TYPE,
-                SyncPlayerTeleportationOnlinePlayersPacket.STREAM_CODEC,
-                SyncPlayerTeleportationOnlinePlayersPacket::handle
+                SyncPlayerTeleportationOnlinePlayersS2CPacket.TYPE,
+                SyncPlayerTeleportationOnlinePlayersS2CPacket.STREAM_CODEC,
+                SyncPlayerTeleportationOnlinePlayersS2CPacket::handle
         );
 
         registrar.playToClient(
-                NameSyncPacket.TYPE,
-                NameSyncPacket.CODEC,
-                NameSyncPacket::handle
+                NameSyncS2CPacket.TYPE,
+                NameSyncS2CPacket.CODEC,
+                NameSyncS2CPacket::handle
         );
 
         registrar.playToClient(
-                ShapeShiftingSyncPacket.TYPE,
-                ShapeShiftingSyncPacket.STREAM_CODEC,
-                ShapeShiftingSyncPacket::handle
+                ShapeShiftingSyncS2CPacket.TYPE,
+                ShapeShiftingSyncS2CPacket.STREAM_CODEC,
+                ShapeShiftingSyncS2CPacket::handle
         );
 
         registrar.playToClient(
-                PlayAnimationPacket.TYPE,
-                PlayAnimationPacket.STREAM_CODEC,
-                PlayAnimationPacket::handle
+                PlayAnimationS2CPacket.TYPE,
+                PlayAnimationS2CPacket.STREAM_CODEC,
+                PlayAnimationS2CPacket::handle
         );
 
         registrar.playToClient(
-                ResetClientEffectsPacket.TYPE,
-                ResetClientEffectsPacket.STREAM_CODEC,
-                ResetClientEffectsPacket::handle
+                ResetClientEffectsS2CPacket.TYPE,
+                ResetClientEffectsS2CPacket.STREAM_CODEC,
+                ResetClientEffectsS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncOriginalBodyOwnerPacket.TYPE,
-                SyncOriginalBodyOwnerPacket.STREAM_CODEC,
-                SyncOriginalBodyOwnerPacket::handle
+                SyncOriginalBodyOwnerS2CPacket.TYPE,
+                SyncOriginalBodyOwnerS2CPacket.STREAM_CODEC,
+                SyncOriginalBodyOwnerS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncSkillScalingPacket.TYPE,
-                SyncSkillScalingPacket.STREAM_CODEC,
-                SyncSkillScalingPacket::handle
+                SyncSkillScalingS2CPacket.TYPE,
+                SyncSkillScalingS2CPacket.STREAM_CODEC,
+                SyncSkillScalingS2CPacket::handle
         );
       
         registrar.playToClient(
-                SyncSpiritChannelingPacket.TYPE,
-                SyncSpiritChannelingPacket.STREAM_CODEC,
-                SyncSpiritChannelingPacket::handle
+                SyncSpiritChannelingS2CPacket.TYPE,
+                SyncSpiritChannelingS2CPacket.STREAM_CODEC,
+                SyncSpiritChannelingS2CPacket::handle
         );
       
         registrar.playToClient(
-                SyncUniquenessPacket.TYPE,
-                SyncUniquenessPacket.STREAM_CODEC,
-                SyncUniquenessPacket::handle
+                SyncUniquenessS2CPacket.TYPE,
+                SyncUniquenessS2CPacket.STREAM_CODEC,
+                SyncUniquenessS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncControllingDataPacket.TYPE,
-                SyncControllingDataPacket.STREAM_CODEC,
-                SyncControllingDataPacket::handle
+                SyncControllingDataS2CPacket.TYPE,
+                SyncControllingDataS2CPacket.STREAM_CODEC,
+                SyncControllingDataS2CPacket::handle
         );
 
         registrar.playToClient(
-                OpenDiscernmentScreenPacket.TYPE,
-                OpenDiscernmentScreenPacket.STREAM_CODEC,
-                OpenDiscernmentScreenPacket::handle
+                OpenDiscernmentScreenS2CPacket.TYPE,
+                OpenDiscernmentScreenS2CPacket.STREAM_CODEC,
+                OpenDiscernmentScreenS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncDiscernmentDataPacket.TYPE,
-                SyncDiscernmentDataPacket.STREAM_CODEC,
-                SyncDiscernmentDataPacket::handle
+                SyncDiscernmentDataS2CPacket.TYPE,
+                SyncDiscernmentDataS2CPacket.STREAM_CODEC,
+                SyncDiscernmentDataS2CPacket::handle
         );
 
         registrar.playToClient(
-                SyncEnvisioningPacket.TYPE,
-                SyncEnvisioningPacket.STREAM_CODEC,
-                SyncEnvisioningPacket::handle
+                SyncEnvisioningS2CPacket.TYPE,
+                SyncEnvisioningS2CPacket.STREAM_CODEC,
+                SyncEnvisioningS2CPacket::handle
         );
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
         registrar.playToServer(
-                BecomeBeyonderPacket.TYPE,
-                BecomeBeyonderPacket.STREAM_CODEC,
-                BecomeBeyonderPacket::handle
+                BecomeBeyonderC2SPacket.TYPE,
+                BecomeBeyonderC2SPacket.STREAM_CODEC,
+                BecomeBeyonderC2SPacket::handle
         );
 
         registrar.playToServer(
-                UseTeleportationAuthorityPacket.TYPE,
-                UseTeleportationAuthorityPacket.STREAM_CODEC,
-                UseTeleportationAuthorityPacket::handle
+                UseTeleportationAuthorityC2SPacket.TYPE,
+                UseTeleportationAuthorityC2SPacket.STREAM_CODEC,
+                UseTeleportationAuthorityC2SPacket::handle
         );
 
         registrar.playToServer(
-                ExecuteBeyonderTradePacket.TYPE,
-                ExecuteBeyonderTradePacket.STREAM_CODEC,
-                ExecuteBeyonderTradePacket::handle
+                ExecuteBeyonderTradeC2SPacket.TYPE,
+                ExecuteBeyonderTradeC2SPacket.STREAM_CODEC,
+                ExecuteBeyonderTradeC2SPacket::handle
         );
 
         registrar.playToServer(
-                DiscardQuestPacket.TYPE,
-                DiscardQuestPacket.STREAM_CODEC,
-                DiscardQuestPacket::handle
+                DiscardQuestC2SPacket.TYPE,
+                DiscardQuestC2SPacket.STREAM_CODEC,
+                DiscardQuestC2SPacket::handle
         );
 
         registrar.playToServer(
-                QuestAcceptanceResponsePacket.TYPE,
-                QuestAcceptanceResponsePacket.STREAM_CODEC,
-                QuestAcceptanceResponsePacket::handle
+                QuestAcceptanceResponseC2SPacket.TYPE,
+                QuestAcceptanceResponseC2SPacket.STREAM_CODEC,
+                QuestAcceptanceResponseC2SPacket::handle
         );
 
         registrar.playToServer(
-                NextArtifactAbilityPacket.TYPE,
-                NextArtifactAbilityPacket.STREAM_CODEC,
-                NextArtifactAbilityPacket::handle
+                NextArtifactAbilityC2SPacket.TYPE,
+                NextArtifactAbilityC2SPacket.STREAM_CODEC,
+                NextArtifactAbilityC2SPacket::handle
         );
 
         registrar.playToServer(
-                RequestQuestDataPacket.TYPE,
-                RequestQuestDataPacket.STREAM_CODEC,
-                RequestQuestDataPacket::handle
+                RequestQuestDataC2SPacket.TYPE,
+                RequestQuestDataC2SPacket.STREAM_CODEC,
+                RequestQuestDataC2SPacket::handle
         );
 
         registrar.playToServer(
-                UseKeyboundAbilityPacket.TYPE,
-                UseKeyboundAbilityPacket.STREAM_CODEC,
-                UseKeyboundAbilityPacket::handle
+                UseKeyboundAbilityC2SPacket.TYPE,
+                UseKeyboundAbilityC2SPacket.STREAM_CODEC,
+                UseKeyboundAbilityC2SPacket::handle
         );
 
         registrar.playToServer(
-                SyncAbilityBarAbilitiesPacket.TYPE,
-                SyncAbilityBarAbilitiesPacket.STREAM_CODEC,
-                SyncAbilityBarAbilitiesPacket::handle
+                SyncAbilityBarAbilitiesC2SPacket.TYPE,
+                SyncAbilityBarAbilitiesC2SPacket.STREAM_CODEC,
+                SyncAbilityBarAbilitiesC2SPacket::handle
         );
 
         registrar.playToServer(
-                RequestAbilityBarPacket.TYPE,
-                RequestAbilityBarPacket.STREAM_CODEC,
-                RequestAbilityBarPacket::handle
+                RequestAbilityBarC2SPacket.TYPE,
+                RequestAbilityBarC2SPacket.STREAM_CODEC,
+                RequestAbilityBarC2SPacket::handle
         );
 
         registrar.playToServer(
-                RequestActiveStatusOfAbilityPacket.TYPE,
-                RequestActiveStatusOfAbilityPacket.STREAM_CODEC,
-                RequestActiveStatusOfAbilityPacket::handle
+                RequestActiveStatusOfAbilityC2SPacket.TYPE,
+                RequestActiveStatusOfAbilityC2SPacket.STREAM_CODEC,
+                RequestActiveStatusOfAbilityC2SPacket::handle
         );
 
         registrar.playToServer(
-                OpenAbilityWheelPacket.TYPE,
-                OpenAbilityWheelPacket.STREAM_CODEC,
-                OpenAbilityWheelPacket::handle
+                OpenAbilityWheelC2SPacket.TYPE,
+                OpenAbilityWheelC2SPacket.STREAM_CODEC,
+                OpenAbilityWheelC2SPacket::handle
         );
 
         registrar.playToServer(
-                CloseAbilityWheelPacket.TYPE,
-                CloseAbilityWheelPacket.STREAM_CODEC,
-                CloseAbilityWheelPacket::handle
+                CloseAbilityWheelC2SPacket.TYPE,
+                CloseAbilityWheelC2SPacket.STREAM_CODEC,
+                CloseAbilityWheelC2SPacket::handle
         );
 
         registrar.playToServer(
-                RequestAbilityWheelPacket.TYPE,
-                RequestAbilityWheelPacket.STREAM_CODEC,
-                RequestAbilityWheelPacket::handle
+                RequestAbilityWheelC2SPacket.TYPE,
+                RequestAbilityWheelC2SPacket.STREAM_CODEC,
+                RequestAbilityWheelC2SPacket::handle
         );
 
         registrar.playToServer(
-                SyncAbilityWheelAbilitiesPacket.TYPE,
-                SyncAbilityWheelAbilitiesPacket.STREAM_CODEC,
-                SyncAbilityWheelAbilitiesPacket::handle
+                SyncAbilityWheelAbilitiesC2SPacket.TYPE,
+                SyncAbilityWheelAbilitiesC2SPacket.STREAM_CODEC,
+                SyncAbilityWheelAbilitiesC2SPacket::handle
         );
 
         registrar.playToServer(
-                SyncSharedAbilitiesPacket.TYPE,
-                SyncSharedAbilitiesPacket.STREAM_CODEC,
-                SyncSharedAbilitiesPacket::handle
+                SyncSharedAbilitiesC2SPacket.TYPE,
+                SyncSharedAbilitiesC2SPacket.STREAM_CODEC,
+                SyncSharedAbilitiesC2SPacket::handle
         );
 
         registrar.playToServer(
-                RequestSharedAbilitiesPacket.TYPE,
-                RequestSharedAbilitiesPacket.STREAM_CODEC,
-                RequestSharedAbilitiesPacket::handle
+                RequestSharedAbilitiesC2SPacket.TYPE,
+                RequestSharedAbilitiesC2SPacket.STREAM_CODEC,
+                RequestSharedAbilitiesC2SPacket::handle
         );
 
         registrar.playToServer(
-                UpdateSelectedAbilityPacket.TYPE,
-                UpdateSelectedAbilityPacket.STREAM_CODEC,
-                UpdateSelectedAbilityPacket::handle
+                UpdateSelectedAbilityC2SPacket.TYPE,
+                UpdateSelectedAbilityC2SPacket.STREAM_CODEC,
+                UpdateSelectedAbilityC2SPacket::handle
         );
 
         registrar.playToServer(
-                UseSelectedAbilityPacket.TYPE,
-                UseSelectedAbilityPacket.STREAM_CODEC,
-                UseSelectedAbilityPacket::handle
+                UseSelectedAbilityC2SPacket.TYPE,
+                UseSelectedAbilityC2SPacket.STREAM_CODEC,
+                UseSelectedAbilityC2SPacket::handle
         );
 
         registrar.playToServer(
-                UseSharedAbilityPacket.TYPE,
-                UseSharedAbilityPacket.STREAM_CODEC,
-                UseSharedAbilityPacket::handle
+                UseSharedAbilityC2SPacket.TYPE,
+                UseSharedAbilityC2SPacket.STREAM_CODEC,
+                UseSharedAbilityC2SPacket::handle
         );
 
         registrar.playToServer(
-                UseCopiedAbilityPacket.TYPE,
-                UseCopiedAbilityPacket.STREAM_CODEC,
-                UseCopiedAbilityPacket::handle
+                UseCopiedAbilityC2SPacket.TYPE,
+                UseCopiedAbilityC2SPacket.STREAM_CODEC,
+                UseCopiedAbilityC2SPacket::handle
         );
 
         registrar.playToServer(
-                AllyRequestResponsePacket.TYPE,
-                AllyRequestResponsePacket.STREAM_CODEC,
-                AllyRequestResponsePacket::handle
+                AllyRequestResponseC2SPacket.TYPE,
+                AllyRequestResponseC2SPacket.STREAM_CODEC,
+                AllyRequestResponseC2SPacket::handle
         );
 
 
         registrar.playToServer(
-                OpenIntrospectMenuPacket.TYPE,
-                OpenIntrospectMenuPacket.STREAM_CODEC,
-                OpenIntrospectMenuPacket::handle
+                OpenIntrospectMenuC2SPacket.TYPE,
+                OpenIntrospectMenuC2SPacket.STREAM_CODEC,
+                OpenIntrospectMenuC2SPacket::handle
         );
 
         registrar.playToServer(
-                PerformMiraclePacket.TYPE,
-                PerformMiraclePacket.STREAM_CODEC,
-                PerformMiraclePacket::handle
+                PerformMiracleC2SPacket.TYPE,
+                PerformMiracleC2SPacket.STREAM_CODEC,
+                PerformMiracleC2SPacket::handle
         );
 
         registrar.playToServer(
-                OpenRecipeMenuPacket.TYPE,
-                OpenRecipeMenuPacket.STREAM_CODEC,
-                OpenRecipeMenuPacket::handle
+                OpenRecipeMenuC2SPacket.TYPE,
+                OpenRecipeMenuC2SPacket.STREAM_CODEC,
+                OpenRecipeMenuC2SPacket::handle
         );
 
         registrar.playToServer(
-                TeleportToSefirotPacket.TYPE,
-                TeleportToSefirotPacket.STREAM_CODEC,
-                TeleportToSefirotPacket::handle
+                TeleportToSefirotC2SPacket.TYPE,
+                TeleportToSefirotC2SPacket.STREAM_CODEC,
+                TeleportToSefirotC2SPacket::handle
         );
 
         registrar.playToServer(
-                SyncDreamDivinationCoordinatesPacket.TYPE,
-                SyncDreamDivinationCoordinatesPacket.STREAM_CODEC,
-                SyncDreamDivinationCoordinatesPacket::handle
+                SyncDreamDivinationCoordinatesC2SPacket.TYPE,
+                SyncDreamDivinationCoordinatesC2SPacket.STREAM_CODEC,
+                SyncDreamDivinationCoordinatesC2SPacket::handle
         );
 
         registrar.playToServer(
-                SyncTravelersDoorCoordinatesPacket.TYPE,
-                SyncTravelersDoorCoordinatesPacket.STREAM_CODEC,
-                SyncTravelersDoorCoordinatesPacket::handle
+                SyncTravelersDoorCoordinatesC2SPacket.TYPE,
+                SyncTravelersDoorCoordinatesC2SPacket.STREAM_CODEC,
+                SyncTravelersDoorCoordinatesC2SPacket::handle
         );
 
         registrar.playToServer(
-                AbilitySelectionPacket.TYPE,
-                AbilitySelectionPacket.STREAM_CODEC,
-                AbilitySelectionPacket::handle
+                AbilitySelectionC2SPacket.TYPE,
+                AbilitySelectionC2SPacket.STREAM_CODEC,
+                AbilitySelectionC2SPacket::handle
         );
 
         registrar.playToServer(
-                TeleportPlayerToLocationPacket.TYPE,
-                TeleportPlayerToLocationPacket.STREAM_CODEC,
-                TeleportPlayerToLocationPacket::handle
+                TeleportPlayerToLocationC2SPacket.TYPE,
+                TeleportPlayerToLocationC2SPacket.STREAM_CODEC,
+                TeleportPlayerToLocationC2SPacket::handle
         );
 
         registrar.playToServer(
-                ToggleGriefingPacket.TYPE,
-                ToggleGriefingPacket.STREAM_CODEC,
-                ToggleGriefingPacket::handle
+                ToggleGriefingC2SPacket.TYPE,
+                ToggleGriefingC2SPacket.STREAM_CODEC,
+                ToggleGriefingC2SPacket::handle
         );
 
         registrar.playToServer(
-                InventoryOpenedPacket.TYPE,
-                InventoryOpenedPacket.STREAM_CODEC,
-                InventoryOpenedPacket::handle);
+                InventoryOpenedC2SPacket.TYPE,
+                InventoryOpenedC2SPacket.STREAM_CODEC,
+                InventoryOpenedC2SPacket::handle);
 
 
         registrar.playToServer(
-                OpenHonorificNamesMenuPacket.TYPE,
-                OpenHonorificNamesMenuPacket.STREAM_CODEC,
-                OpenHonorificNamesMenuPacket::handle);
+                OpenHonorificNamesMenuC2SPacket.TYPE,
+                OpenHonorificNamesMenuC2SPacket.STREAM_CODEC,
+                OpenHonorificNamesMenuC2SPacket::handle);
 
         registrar.playToServer(
-                HonorificNamesRespondPacket.TYPE,
-                HonorificNamesRespondPacket.STREAM_CODEC,
-                HonorificNamesRespondPacket::handle);
+                HonorificNamesRespondC2SPacket.TYPE,
+                HonorificNamesRespondC2SPacket.STREAM_CODEC,
+                HonorificNamesRespondC2SPacket::handle);
 
         registrar.playToServer(
-                SetHonorificNamePacket.TYPE,
-                SetHonorificNamePacket.STREAM_CODEC,
-                SetHonorificNamePacket::handle);
+                SetHonorificNameC2SPacket.TYPE,
+                SetHonorificNameC2SPacket.STREAM_CODEC,
+                SetHonorificNameC2SPacket::handle);
 
         registrar.playToServer(
-                PlayerDivinationSelectedPacket.TYPE,
-                PlayerDivinationSelectedPacket.STREAM_CODEC,
-                PlayerDivinationSelectedPacket::handle);
+                PlayerDivinationSelectedC2SPacket.TYPE,
+                PlayerDivinationSelectedC2SPacket.STREAM_CODEC,
+                PlayerDivinationSelectedC2SPacket::handle);
 
         registrar.playToServer(
-                StructureDivinationSelectedPacket.TYPE,
-                StructureDivinationSelectedPacket.STREAM_CODEC,
-                StructureDivinationSelectedPacket::handle);
+                StructureDivinationSelectedC2SPacket.TYPE,
+                StructureDivinationSelectedC2SPacket.STREAM_CODEC,
+                StructureDivinationSelectedC2SPacket::handle);
 
         registrar.playToServer(
-                BiomeDivinationSelectedPacket.TYPE,
-                BiomeDivinationSelectedPacket.STREAM_CODEC,
-                BiomeDivinationSelectedPacket::handle);
+                BiomeDivinationSelectedC2SPacket.TYPE,
+                BiomeDivinationSelectedC2SPacket.STREAM_CODEC,
+                BiomeDivinationSelectedC2SPacket::handle);
 
         registrar.playToServer(
-                HistoricalVoidBorrowingSelectedPacket.TYPE,
-                HistoricalVoidBorrowingSelectedPacket.STREAM_CODEC,
-                HistoricalVoidBorrowingSelectedPacket::handle);
+                HistoricalVoidBorrowingSelectedC2SPacket.TYPE,
+                HistoricalVoidBorrowingSelectedC2SPacket.STREAM_CODEC,
+                HistoricalVoidBorrowingSelectedC2SPacket::handle);
 
         registrar.playToServer(
-                ShapeShiftingSelectedPacket.TYPE,
-                ShapeShiftingSelectedPacket.STREAM_CODEC,
-                ShapeShiftingSelectedPacket::handle);
+                ShapeShiftingSelectedC2SPacket.TYPE,
+                ShapeShiftingSelectedC2SPacket.STREAM_CODEC,
+                ShapeShiftingSelectedC2SPacket::handle);
 
         registrar.playToServer(
-                ReturnToMainBodyPacket.TYPE,
-                ReturnToMainBodyPacket.STREAM_CODEC,
-                ReturnToMainBodyPacket::handle);
+                ReturnToMainBodyC2SPacket.TYPE,
+                ReturnToMainBodyC2SPacket.STREAM_CODEC,
+                ReturnToMainBodyC2SPacket::handle);
 
         registrar.playToServer(
-                OpenArtifactWheelPacket.TYPE,
-                OpenArtifactWheelPacket.STREAM_CODEC,
-                OpenArtifactWheelPacket::handle);
+                OpenArtifactWheelC2SPacket.TYPE,
+                OpenArtifactWheelC2SPacket.STREAM_CODEC,
+                OpenArtifactWheelC2SPacket::handle);
 
         registrar.playToServer(
-                SyncArtifactAbilityWheel.TYPE,
-                SyncArtifactAbilityWheel.STREAM_CODEC,
-                SyncArtifactAbilityWheel::handle
+                SyncArtifactAbilityWheelC2SPacket.TYPE,
+                SyncArtifactAbilityWheelC2SPacket.STREAM_CODEC,
+                SyncArtifactAbilityWheelC2SPacket::handle
         );
 
         registrar.playToServer(
-                RequestUniquenessApotheosisPacket.TYPE,
-                RequestUniquenessApotheosisPacket.STREAM_CODEC,
-                RequestUniquenessApotheosisPacket::handle
+                RequestUniquenessApotheosisC2SPacket.TYPE,
+                RequestUniquenessApotheosisC2SPacket.STREAM_CODEC,
+                RequestUniquenessApotheosisC2SPacket::handle
         );
 
         registrar.playToServer(
-                DiscernmentSelectedPacket.TYPE,
-                DiscernmentSelectedPacket.STREAM_CODEC,
-                DiscernmentSelectedPacket::handle
+                DiscernmentSelectedC2SPacket.TYPE,
+                DiscernmentSelectedC2SPacket.STREAM_CODEC,
+                DiscernmentSelectedC2SPacket::handle
         );
 
         registrar.playToServer(
-                StopDiscernmentPacket.TYPE,
-                StopDiscernmentPacket.STREAM_CODEC,
-                StopDiscernmentPacket::handle
+                StopDiscernmentC2SPacket.TYPE,
+                StopDiscernmentC2SPacket.STREAM_CODEC,
+                StopDiscernmentC2SPacket::handle
         );
     }
 
@@ -839,7 +839,7 @@ public class PacketHandler {
 
         String[] history = BeyonderData.getPathwayHistory(player);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charStacks, cowardWormAmount);
+        SyncBeyonderDataS2CPacket packet = new SyncBeyonderDataS2CPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charStacks, cowardWormAmount);
         sendToPlayer(player, packet);
     }
 
@@ -849,8 +849,8 @@ public class PacketHandler {
         String pathway = BeyonderData.getPathway(entity);
         int sequence = BeyonderData.getSequence(entity);
 
-        SyncLivingEntityBeyonderDataPacket packet =
-                new SyncLivingEntityBeyonderDataPacket(entity.getId(), pathway, sequence, BeyonderData.getMaxSpirituality(pathway, sequence));
+        SyncLivingEntityBeyonderDataS2CPacket packet =
+                new SyncLivingEntityBeyonderDataS2CPacket(entity.getId(), pathway, sequence, BeyonderData.getMaxSpirituality(pathway, sequence));
 
         sendToAllPlayers(packet);
     }
@@ -875,7 +875,7 @@ public class PacketHandler {
 
     public static void syncUniquenessToPlayer(ServerPlayer player) {
         de.jakob.lotm.attachments.UniquenessComponent comp = player.getData(de.jakob.lotm.attachments.ModAttachments.UNIQUENESS_COMPONENT);
-        SyncUniquenessPacket packet = new SyncUniquenessPacket(
+        SyncUniquenessS2CPacket packet = new SyncUniquenessS2CPacket(
                 comp.hasUniqueness(),
                 comp.getUniquenessPathway(),
                 comp.getKillCount()
@@ -893,7 +893,7 @@ public class PacketHandler {
         int[] charStacks = BeyonderData.getCharStacks(targetPlayer);
         int wormAmount = BeyonderData.getCowardWormAmount(targetPlayer);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charStacks, wormAmount);
+        SyncBeyonderDataS2CPacket packet = new SyncBeyonderDataS2CPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charStacks, wormAmount);
 
         targetPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
             sendToPlayer(player, packet);

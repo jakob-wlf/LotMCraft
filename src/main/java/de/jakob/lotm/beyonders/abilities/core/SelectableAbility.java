@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
+import de.jakob.lotm.network.packets.toServer.AbilitySelectionC2SPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -68,7 +68,7 @@ public abstract class SelectableAbility extends Ability {
             selectedAbility = 0;
         }
         selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+        PacketHandler.sendToServer(new AbilitySelectionC2SPacket(getId(), selectedAbility));
     }
 
     public String getSelectedAbility(LivingEntity entity) {
@@ -113,6 +113,6 @@ public abstract class SelectableAbility extends Ability {
             selectedAbility = getAbilityNames().length - 1;
         }
         selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+        PacketHandler.sendToServer(new AbilitySelectionC2SPacket(getId(), selectedAbility));
     }
 }

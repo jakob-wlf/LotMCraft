@@ -3,8 +3,8 @@ package de.jakob.lotm.attachments;
 import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncControllingDataPacket;
-import de.jakob.lotm.network.packets.toClient.SyncDiscernmentDataPacket;
+import de.jakob.lotm.network.packets.toClient.SyncControllingDataS2CPacket;
+import de.jakob.lotm.network.packets.toClient.SyncDiscernmentDataS2CPacket;
 import jdk.jfr.Frequency;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -139,7 +139,7 @@ public class DiscernmentComponent {
 
     public void syncData(ServerPlayer player) {
         if (player != null) {
-            PacketHandler.sendToPlayer(player, new SyncDiscernmentDataPacket(this.isDiscerning, player.getId()));
+            PacketHandler.sendToPlayer(player, new SyncDiscernmentDataS2CPacket(this.isDiscerning, player.getId()));
         }
     }
 

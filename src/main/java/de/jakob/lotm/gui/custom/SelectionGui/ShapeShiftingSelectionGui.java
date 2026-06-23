@@ -1,6 +1,6 @@
 package de.jakob.lotm.gui.custom.SelectionGui;
 
-import de.jakob.lotm.network.packets.toServer.ShapeShiftingSelectedPacket;
+import de.jakob.lotm.network.packets.toServer.ShapeShiftingSelectedC2SPacket;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -27,7 +27,7 @@ public class ShapeShiftingSelectionGui extends ButtonListGui<String> {
 
     @Override
     protected void onItemSelected(String entityType) {
-        PacketDistributor.sendToServer(new ShapeShiftingSelectedPacket(entityType, true));
+        PacketDistributor.sendToServer(new ShapeShiftingSelectedC2SPacket(entityType, true));
         minecraft.setScreen(null);
     }
 }

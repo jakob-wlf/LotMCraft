@@ -1,7 +1,7 @@
 package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.DisableAbilityUsageForTimePacket;
+import de.jakob.lotm.network.packets.toClient.DisableAbilityUsageForTimeS2CPacket;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -48,7 +48,7 @@ public class DisabledAbilitiesComponent implements INBTSerializable<CompoundTag>
         });
 
         if(entity instanceof ServerPlayer player) {
-            PacketHandler.sendToPlayer(player, new DisableAbilityUsageForTimePacket(entity.getId(), cause, ticks));
+            PacketHandler.sendToPlayer(player, new DisableAbilityUsageForTimeS2CPacket(entity.getId(), cause, ticks));
         }
     }
 

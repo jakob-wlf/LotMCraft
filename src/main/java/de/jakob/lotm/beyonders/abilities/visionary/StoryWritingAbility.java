@@ -224,7 +224,7 @@ public class StoryWritingAbility extends ToggleAbility {
 //    // Opens shapeshifting screen to select a player
 //    private void castPlayer(ServerLevel level, ServerPlayer author) {
 //        PacketDistributor.sendToPlayer(author,
-//                new OpenShapeShiftingScreenPacket(Collections.emptyList()));
+//                new OpenShapeShiftingScreenS2CPacket(Collections.emptyList()));
 //        // Wire screen confirm callback to onTargetSelected(author, target)
 //    }
 //

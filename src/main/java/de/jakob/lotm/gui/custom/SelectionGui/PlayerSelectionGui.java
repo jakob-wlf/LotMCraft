@@ -1,6 +1,6 @@
 package de.jakob.lotm.gui.custom.SelectionGui;
 
-import de.jakob.lotm.network.packets.toServer.PlayerDivinationSelectedPacket;
+import de.jakob.lotm.network.packets.toServer.PlayerDivinationSelectedC2SPacket;
 import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import de.jakob.lotm.util.data.PlayerInfo;
 import net.minecraft.network.chat.Component;
@@ -23,7 +23,7 @@ public class PlayerSelectionGui extends ButtonListGui<PlayerInfo> {
 
     @Override
     protected void onItemSelected(PlayerInfo player) {
-        PacketDistributor.sendToServer(new PlayerDivinationSelectedPacket(player.uuid(), type));
+        PacketDistributor.sendToServer(new PlayerDivinationSelectedC2SPacket(player.uuid(), type));
         minecraft.setScreen(null);
     }
 }

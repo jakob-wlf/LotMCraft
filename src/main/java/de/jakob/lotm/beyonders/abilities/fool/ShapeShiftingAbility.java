@@ -3,7 +3,7 @@ package de.jakob.lotm.beyonders.abilities.fool;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.MemorisedEntities;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.network.packets.toClient.OpenShapeShiftingScreenPacket;
+import de.jakob.lotm.network.packets.toClient.OpenShapeShiftingScreenS2CPacket;
 import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -56,7 +56,7 @@ public class ShapeShiftingAbility extends SelectableAbility {
         List<String> entityTypes = memorisedEntities.getMemorisedEntityTypes();
         PacketDistributor.sendToPlayer(
                 player,
-                new OpenShapeShiftingScreenPacket(entityTypes)
+                new OpenShapeShiftingScreenS2CPacket(entityTypes)
         );
     }
 

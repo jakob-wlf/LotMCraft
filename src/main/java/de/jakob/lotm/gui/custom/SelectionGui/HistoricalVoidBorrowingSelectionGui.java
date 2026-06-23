@@ -1,6 +1,6 @@
 package de.jakob.lotm.gui.custom.SelectionGui;
 
-import de.jakob.lotm.network.packets.toServer.HistoricalVoidBorrowingSelectedPacket;
+import de.jakob.lotm.network.packets.toServer.HistoricalVoidBorrowingSelectedC2SPacket;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -18,7 +18,7 @@ public class HistoricalVoidBorrowingSelectionGui  extends ButtonListGui<String> 
 
     @Override
     protected void onItemSelected(String option) {
-        PacketDistributor.sendToServer(new HistoricalVoidBorrowingSelectedPacket(option));
+        PacketDistributor.sendToServer(new HistoricalVoidBorrowingSelectedC2SPacket(option));
         minecraft.setScreen(null);
     }
 }

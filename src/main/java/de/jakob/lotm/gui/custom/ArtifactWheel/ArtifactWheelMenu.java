@@ -4,7 +4,7 @@ import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.SyncArtifactAbilityWheel;
+import de.jakob.lotm.network.packets.toServer.SyncArtifactAbilityWheelC2SPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -53,7 +53,7 @@ public class ArtifactWheelMenu extends AbstractContainerMenu {
         }
         stackInHand.set(ModDataComponents.SEALED_ARTIFACT_SELECTED, index);
         PacketHandler.sendToServer(
-                new SyncArtifactAbilityWheel(index)
+                new SyncArtifactAbilityWheelC2SPacket(index)
         );
     }
 
