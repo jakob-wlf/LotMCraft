@@ -105,7 +105,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String skinName) {
-        this(entityType, level, hostile, skinName, getRandomPathway(), getWeightedHighSequence(), null, false);
+        this(entityType, level, hostile, skinName, "", 10, null, false);
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String pathway, int sequence) {
@@ -120,19 +120,27 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this.setHostile(hostile);
         this.setSkinName(skinName);
 
-        if (sequence < BeyonderData.getHighestImplementedSequence(pathway)) {
-            Random random = new Random();
-            sequence = random.nextInt(BeyonderData.getHighestImplementedSequence(pathway), 10);
+        if(!BeyonderData.isBeyonder(this) && !pathway.equalsIgnoreCase("none") && !pathway.isEmpty()) {
+            this._pathway = pathway;
+            this._sequence = sequence;
+            if(!level.isClientSide) {
+                BeyonderData.setBeyonder(this, pathway, sequence);
+            }
         }
+        else {
+            this._pathway = getRandomPathway();
+            this._sequence = getWeightedHighSequence();
 
-        this._pathway = pathway;
-        this._sequence = sequence;
+            if (_sequence < BeyonderData.getHighestImplementedSequence(_pathway)) {
+                Random random = new Random();
+                _sequence = random.nextInt(BeyonderData.getHighestImplementedSequence(_pathway), 10);
+            }
+            if(!level.isClientSide) {
+                BeyonderData.setBeyonder(this, _pathway, _sequence);
+            }
+        }
         this._hasQuest = _hasQuest;
         this._hasTrade = _hasTades;
-
-        if (!level.isClientSide) {
-            BeyonderData.setBeyonder(this, pathway, sequence);
-        }
 
     }
 
@@ -510,6 +518,9 @@ public class BeyonderNPCEntity extends PathfinderMob {
         if (getTargetPlayerUUID().isPresent()) {
             compound.putUUID("TargetPlayerUUID", getTargetPlayerUUID().get());
         }
+
+        compound.putString("Pathway", _pathway);
+        compound.putInt("Sequence", _sequence);
     }
 
     @Override
@@ -521,20 +532,13 @@ public class BeyonderNPCEntity extends PathfinderMob {
         setMaxLifetimeIfPuppet(compound.getInt("MaxLifetimeIfPuppet"));
         setTrades(compound.getCompound("Trades"));
 
-        if (compound.contains("QuestId")) {
-            setQuestId(compound.getString("QuestId"));
-        }
+        if (compound.contains("QuestId"))  setQuestId(compound.getString("QuestId"));
+        if (compound.contains("IsHostile")) setHostile(compound.getBoolean("IsHostile"));
+        if (compound.contains("SkinName"))  setSkinName(compound.getString("SkinName"));
+        if (compound.contains("TargetPlayerUUID")) setTargetPlayerUUID(compound.getUUID("TargetPlayerUUID"));
 
-        if (compound.contains("IsHostile")) {
-            setHostile(compound.getBoolean("IsHostile"));
-        }
-
-        if (compound.contains("SkinName")) {
-            setSkinName(compound.getString("SkinName"));
-        }
-        if (compound.contains("TargetPlayerUUID")) {
-            setTargetPlayerUUID(compound.getUUID("TargetPlayerUUID"));
-        }
+        if (compound.contains("Pathway")) _pathway = compound.getString("Pathway");
+        if (compound.contains("Sequence")) _sequence = compound.getInt("Sequence");
     }
 
     // ========================= Getters and Setters =========================

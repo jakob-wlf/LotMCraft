@@ -461,9 +461,9 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                AddClientSideTagPacket.TYPE,
-                AddClientSideTagPacket.STREAM_CODEC,
-                AddClientSideTagPacket::handle
+                AddEntityTagPacket.TYPE,
+                AddEntityTagPacket.STREAM_CODEC,
+                AddEntityTagPacket::handle
         );
 
         registrar.playToClient(

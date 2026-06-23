@@ -1,0 +1,10 @@
+{
+  "type": "lotmcraft:exile",
+  "generator": {
+    "type": "lotmcraft:exile_chunk_generator",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "lotmcraft:exile_biome"
+    }
+  }
+}

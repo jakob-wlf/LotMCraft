@@ -574,7 +574,7 @@ public class ClientHandler {
         }
     }
 
-    public static void handleAddClientSideTagPacket(AddClientSideTagPacket packet) {
+    public static void handleAddClientSideTagPacket(AddEntityTagPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 

@@ -2,12 +2,13 @@ package de.jakob.lotm.entity.custom.goals;
 
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
 
 public class RangedCombatGoal extends Goal {
-    private final BeyonderNPCEntity entity;
+    private final Mob entity;
     private final double moveSpeed;
     private final float minDistance;
     private final float maxDistance;
@@ -19,7 +20,7 @@ public class RangedCombatGoal extends Goal {
     private static final int MELEE_COOLDOWN_TICKS = 60;  // 3 seconds
     private static final int REPOSITION_COOLDOWN_TICKS = 40;  // 2 seconds
 
-    public RangedCombatGoal(BeyonderNPCEntity entity, double moveSpeed, float minDistance, float maxDistance) {
+    public RangedCombatGoal(Mob entity, double moveSpeed, float minDistance, float maxDistance) {
         this.entity = entity;
         this.moveSpeed = moveSpeed;
         this.minDistance = minDistance;

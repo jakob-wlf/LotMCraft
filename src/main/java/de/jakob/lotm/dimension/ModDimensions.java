@@ -12,6 +12,7 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -39,6 +40,9 @@ public class ModDimensions {
 
     public static final Supplier<MapCodec<NatureDimensionWorldChunkGenerator>> NATURE_WORLD_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("nature", () -> NatureDimensionWorldChunkGenerator.CODEC);
+
+    public static final DeferredHolder<MapCodec<? extends ChunkGenerator>, MapCodec<ExileDimensionChunkGenerator>> EXILE_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("exile_chunk_generator", () -> ExileDimensionChunkGenerator.CODEC);
 
     // -------------------------------------------------------------------------
     // BiomeSource Registry
@@ -87,6 +91,22 @@ public class ModDimensions {
     public static final ResourceKey<Biome> SPACE_BIOME_KEY =
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space_biome"));
+
+    // =========================================================================
+    // SPACE dimension
+    // =========================================================================
+
+    public static final ResourceKey<LevelStem> EXILE_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "exile"));
+
+    public static final ResourceKey<DimensionType> EXILE_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "exile"));
+
+    public static final ResourceKey<Biome> EXILE_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "exile_biome"));
 
     // =========================================================================
     // NATURE / WORLD CREATION dimension

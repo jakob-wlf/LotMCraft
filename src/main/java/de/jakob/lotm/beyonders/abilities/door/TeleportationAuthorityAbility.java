@@ -23,6 +23,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -79,12 +81,15 @@ public class TeleportationAuthorityAbility extends SelectableAbility {
         int casterSequence = BeyonderData.getSequence(entity);
         for (LivingEntity target : targets) {
             int targetSequence = BeyonderData.getSequence(target);
-            if(targetSequence > casterSequence)
+            if(targetSequence > casterSequence) {
                 target.teleportTo(banishLevel, banishLoc.x, banishLoc.y, banishLoc.z, Set.of(), target.getYRot(), target.getXRot());
+                target.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 20 * 10, 0, false, false));
+            }
             else if(!AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
                 ServerScheduler.scheduleDelayed(20 * 5, () -> {
                     if(target.position().distanceTo(targetLoc) < 14) {
                         target.teleportTo(banishLevel, banishLoc.x, banishLoc.y, banishLoc.z, Set.of(), target.getYRot(), target.getXRot());
+                        target.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 20 * 10, 0, false, false));
                     }
                 });
             }
@@ -104,7 +109,7 @@ public class TeleportationAuthorityAbility extends SelectableAbility {
     private ServerLevel selectRandomLevel(ServerLevel level) {
          return switch (level.random.nextInt(3)) {
             case 0 -> level.getServer().getLevel(ResourceKey.create(Registries.DIMENSION,
-                        ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space")));
+                        ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "exile")));
             case 1 -> level.getServer().getLevel(ResourceKey.create(Registries.DIMENSION,
                         ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world")));
             default -> level;

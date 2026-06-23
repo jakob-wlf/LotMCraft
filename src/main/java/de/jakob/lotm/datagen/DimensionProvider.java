@@ -51,6 +51,23 @@ public class DimensionProvider {
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
                                                     .build());
 
+                                    bootstrap.register(ModDimensions.EXILE_BIOME_KEY,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.0f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x000000)
+                                                            .fogColor(0x000000)
+                                                            .waterColor(0x1b5ee3)
+                                                            .waterFogColor(0x050533)
+                                                            .grassColorOverride(0x4ad145)
+                                                            .foliageColorOverride(0x30BB00)
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
                                     bootstrap.register(ModDimensions.WORLD_CREATION_BIOME_KEY,
                                             new Biome.BiomeBuilder()
                                                     .hasPrecipitation(false)
@@ -324,6 +341,14 @@ public class DimensionProvider {
                                             1.0f,
                                             new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 7), 0)));
 
+                                    bootstrap.register(ModDimensions.EXILE_TYPE_KEY, new DimensionType(
+                                            OptionalLong.empty(), true, false, false, false,
+                                            1.0, true, false, -64, 384, 384,
+                                            BlockTags.INFINIBURN_OVERWORLD,
+                                            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "exile"),
+                                            1.0f,
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 7), 0)));
+
                                     bootstrap.register(ModDimensions.WORLD_CREATION_TYPE_KEY, new DimensionType(
                                             OptionalLong.empty(), true, false, false, false,
                                             1.0, true, false, -64, 384, 384,
@@ -374,6 +399,13 @@ public class DimensionProvider {
                                                     new EmptyChunkGenerator(
                                                             new FixedBiomeSource(
                                                                     biomeRegistry.getOrThrow(ModDimensions.SPACE_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.EXILE_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.EXILE_TYPE_KEY),
+                                                    new ExileDimensionChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.EXILE_BIOME_KEY)))));
 
                                     bootstrap.register(ModDimensions.WORLD_CREATION_LEVEL_KEY,
                                             new LevelStem(
