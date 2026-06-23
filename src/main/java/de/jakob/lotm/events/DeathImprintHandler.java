@@ -1,14 +1,14 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.AbilityUseEvent;
+import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.attachments.DeathImprintData;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.fluid.ModFluids;
-import de.jakob.lotm.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -87,7 +87,7 @@ public class DeathImprintHandler {
             trapReturnLevel.remove(dyingPlayer.getUUID());
             trapReturnCoords.remove(dyingPlayer.getUUID());
             for (ServerPlayer online : serverLevel.getServer().getPlayerList().getPlayers()) {
-                if (de.jakob.lotm.abilities.death.InternalUnderworldAbility.tryCaptureRiverVictim(online, dyingPlayer)) {
+                if (de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility.tryCaptureRiverVictim(online, dyingPlayer)) {
                     break; // only the first eligible death-path player receives the soul
                 }
             }
@@ -172,7 +172,7 @@ public class DeathImprintHandler {
                             java.util.UUID firstOwner = sefirotData.getFirstOwner(ownedSef);
                             if (uuid.equals(firstOwner)) {
                                 net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dim =
-                                        de.jakob.lotm.sefirah.SefirahHandler.getSefirotDimensionKey(ownedSef);
+                                        de.jakob.lotm.beyonders.sefirah.SefirahHandler.getSefirotDimensionKey(ownedSef);
                                 if (dim != null && player.level().dimension().equals(dim)) {
                                     shielded = true;
                                 }

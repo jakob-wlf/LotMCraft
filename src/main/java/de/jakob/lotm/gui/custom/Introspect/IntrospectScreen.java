@@ -390,7 +390,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         // Infer sefirot from pathway group
         java.util.List<String> castle = java.util.List.of("fool", "error", "door");
         String sefirot = castle.contains(ownPath) ? "sefirah_castle" : "river_of_eternal_darkness";
-        java.util.List<String> neighbors = de.jakob.lotm.sefirah.SefirotAuthorityManager.NEIGHBORING_PATHS
+        java.util.List<String> neighbors = de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager.NEIGHBORING_PATHS
                 .getOrDefault(sefirot, java.util.Collections.emptyList());
         for (String neighborPath : neighbors) {
             if (neighborPath.equals(ownPath)) continue;

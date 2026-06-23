@@ -1,8 +1,8 @@
 package de.jakob.lotm.item.custom;
 
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.sefirah.RiverOfEternalDarknessEventHandler;
-import de.jakob.lotm.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.RiverOfEternalDarknessEventHandler;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;

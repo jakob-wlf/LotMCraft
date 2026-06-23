@@ -1,7 +1,7 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.tyrant.LightningStormAbility;
+import de.jakob.lotm.beyonders.abilities.tyrant.LightningStormAbility;
 import de.jakob.lotm.attachments.EnvisionBlasphemyTriggerData;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncEnvisionTriggerPacket;

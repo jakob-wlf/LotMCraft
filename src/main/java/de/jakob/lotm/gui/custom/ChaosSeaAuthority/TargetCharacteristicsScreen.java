@@ -5,7 +5,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncEnvisionCharacteristicsPacket;
 import de.jakob.lotm.network.packets.toServer.RequestTargetEnvisionCharacteristicsPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.pathways.PathwayInfos;
+import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;

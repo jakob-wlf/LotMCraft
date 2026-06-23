@@ -2,8 +2,8 @@ package de.jakob.lotm.gui.custom.CharExchange;
 
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenCharExchangeWheelPacket;
-import de.jakob.lotm.potions.PotionRecipeItem;
-import de.jakob.lotm.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
+import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;

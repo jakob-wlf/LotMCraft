@@ -1,12 +1,12 @@
-package de.jakob.lotm.abilities.sefirah;
+package de.jakob.lotm.beyonders.abilities.sefirah;
 
-import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.gui.custom.ChaosSeaAuthority.ChaosSeaAuthorityMenu;
 import de.jakob.lotm.gui.custom.RiverSefirotAuthority.RiverSefirotAuthorityMenu;
 import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityMenu;
-import de.jakob.lotm.sefirah.SefirahHandler;
-import de.jakob.lotm.sefirah.SefirotAuthorityManager;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;

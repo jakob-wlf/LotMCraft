@@ -7,7 +7,7 @@ import de.jakob.lotm.attachments.UniquenessComponent;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
-import de.jakob.lotm.sefirah.GreatOldOneManager;
+import de.jakob.lotm.beyonders.sefirah.GreatOldOneManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.EntityLocation;
 import de.jakob.lotm.util.helper.ParticleUtil;

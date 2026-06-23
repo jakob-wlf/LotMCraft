@@ -5,7 +5,7 @@ import de.jakob.lotm.attachments.CorruptionComponent;
 import de.jakob.lotm.attachments.DeathImprintData;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.events.DeathImprintHandler;
-import de.jakob.lotm.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;

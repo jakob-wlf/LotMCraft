@@ -1,7 +1,7 @@
 package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.common.passives.ElevatedConcealmentAbility;
+import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedConcealmentAbility;
 import de.jakob.lotm.attachments.MirrorWorldTraversalComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.common.DivinationAbility;

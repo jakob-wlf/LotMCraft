@@ -1,8 +1,8 @@
 package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.common.passives.ElevatedConcealmentAbility;
-import de.jakob.lotm.abilities.common.passives.ElevatedDivinationAbility;
+import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedConcealmentAbility;
+import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedDivinationAbility;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;

@@ -364,69 +364,70 @@ public class BeyonderEventHandler {
             if (!BeyonderData.isBeyonder(player)) return;
             if (playerMap.get(player).isEmpty()) return;
             if (!player.level().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)
-            && !player.getData(ModAttachments.ENVISION_SPLIT.get()).isEnvisioned()) {
+                    && !player.getData(ModAttachments.ENVISION_SPLIT.get()).isEnvisioned()) {
                 BeyonderData.recalculateCharStackModifiers(player);
                 return;
             }
-        if (!BeyonderData.isBeyonder(player)) return;
-        if (playerMap.get(player).isEmpty()) return;
+            if (!BeyonderData.isBeyonder(player)) return;
+            if (playerMap.get(player).isEmpty()) return;
 
-        // Great Old One: only a seq-0 beyonder can end their transcendence
-        if (de.jakob.lotm.sefirah.GreatOldOneManager.isGreatOldOne(player)) {
-            Entity killer = event.getSource().getEntity();
-            if (killer instanceof ServerPlayer killerPlayer
-                    && BeyonderData.getSequence(killerPlayer) == 0) {
-                de.jakob.lotm.sefirah.GreatOldOneManager.revert(player);
-                BeyonderData.setDigestionProgress(player, 1.0f);
-            }
-            // All other deaths are ignored for GOO — no regression, no sefirot unclaim
-            return;
-        }
-
-        StoredData data = playerMap.get(player).get();
-        StoredData regressed;
-
-        boolean shouldRegress = player.level().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH);
-
-        if (shouldRegress) {
-            SacrificeRevertComponent revert = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);
-            if (revert.isActive()) {
-                int originalSeq = revert.getRevertToSequence();
-                // Store the original sequence so onPlayerDrops drops the right characteristic
-                player.getPersistentData().putInt("sacrifice_drop_sequence", originalSeq);
-                player.getPersistentData().putBoolean("sacrifice_bar_clear", true);
-                revert.clear();
-                // Regress from the original sequence, not the temporary sacrificed one
-                StoredData dataAtOriginalSeq = StoredData.builder.copyFrom(data).sequence(originalSeq).build();
-                regressed = dataAtOriginalSeq.regressSeq(false);
-            } else {
-                boolean respectStack = player.level().getGameRules().getBoolean(ModGameRules.LOOSE_CHAR_ON_REGRESSION);
-                regressed = data.regressSeq(respectStack);
-            }
-        } else {
-            // Drop only extras logic: regressSeq(true) with same sequence also works if it removes extras
-            // But we'll manually define "no extras" state for the map.
-            StoredDataBuilder b = StoredData.builder.copyFrom(data).clearCharList();
-            for (Characteristic c : data.chars()) {
-                if (c.pathway().equals(data.pathway()) && c.sequence() >= data.sequence() && c.sequence() < 10) {
-                    b.characteristic(1, c.sequence(), c.pathway());
+            // Great Old One: only a seq-0 beyonder can end their transcendence
+            if (de.jakob.lotm.beyonders.sefirah.GreatOldOneManager.isGreatOldOne(player)) {
+                Entity killer = event.getSource().getEntity();
+                if (killer instanceof ServerPlayer killerPlayer
+                        && BeyonderData.getSequence(killerPlayer) == 0) {
+                    de.jakob.lotm.beyonders.sefirah.GreatOldOneManager.revert(player);
+                    BeyonderData.setDigestionProgress(player, 1.0f);
                 }
+                // All other deaths are ignored for GOO — no regression, no sefirot unclaim
+                return;
             }
-            regressed = b.build();
-        }
 
-        playerMap.put(player, regressed);
-        // We DO NOT update BeyonderComponent here, as onPlayerDrops needs to compare component (old) with playerMap (new)
+            StoredData data = playerMap.get(player).get();
+            StoredData regressed;
 
-        BeyonderData.setDigestionProgress(player, 1.0f);
-        player.getData(ModAttachments.LUCK_COMPONENT.get()).setLuck(0);
-        SefirahHandler.unclaimSefirot(player);
+            boolean shouldRegress = player.level().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH);
 
-        if (Objects.equals(regressed.sequence(), LOTMCraft.NON_BEYONDER_SEQ)) {
-            ClientBeyonderCache.removePlayer(player.getUUID());
-        } else {
-            ClientBeyonderCache.updateData(player.getUUID(), regressed.pathway(), regressed.sequence(),
-                    0.0f, false, true, 1.0f);
+            if (shouldRegress) {
+                SacrificeRevertComponent revert = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);
+                if (revert.isActive()) {
+                    int originalSeq = revert.getRevertToSequence();
+                    // Store the original sequence so onPlayerDrops drops the right characteristic
+                    player.getPersistentData().putInt("sacrifice_drop_sequence", originalSeq);
+                    player.getPersistentData().putBoolean("sacrifice_bar_clear", true);
+                    revert.clear();
+                    // Regress from the original sequence, not the temporary sacrificed one
+                    StoredData dataAtOriginalSeq = StoredData.builder.copyFrom(data).sequence(originalSeq).build();
+                    regressed = dataAtOriginalSeq.regressSeq(false);
+                } else {
+                    boolean respectStack = player.level().getGameRules().getBoolean(ModGameRules.LOOSE_CHAR_ON_REGRESSION);
+                    regressed = data.regressSeq(respectStack);
+                }
+            } else {
+                // Drop only extras logic: regressSeq(true) with same sequence also works if it removes extras
+                // But we'll manually define "no extras" state for the map.
+                StoredDataBuilder b = StoredData.builder.copyFrom(data).clearCharList();
+                for (Characteristic c : data.chars()) {
+                    if (c.pathway().equals(data.pathway()) && c.sequence() >= data.sequence() && c.sequence() < 10) {
+                        b.characteristic(1, c.sequence(), c.pathway());
+                    }
+                }
+                regressed = b.build();
+            }
+
+            playerMap.put(player, regressed);
+            // We DO NOT update BeyonderComponent here, as onPlayerDrops needs to compare component (old) with playerMap (new)
+
+            BeyonderData.setDigestionProgress(player, 1.0f);
+            player.getData(ModAttachments.LUCK_COMPONENT.get()).setLuck(0);
+            SefirahHandler.unclaimSefirot(player);
+
+            if (Objects.equals(regressed.sequence(), LOTMCraft.NON_BEYONDER_SEQ)) {
+                ClientBeyonderCache.removePlayer(player.getUUID());
+            } else {
+                ClientBeyonderCache.updateData(player.getUUID(), regressed.pathway(), regressed.sequence(),
+                        0.0f, false, true, 1.0f);
+            }
         }
     }
 

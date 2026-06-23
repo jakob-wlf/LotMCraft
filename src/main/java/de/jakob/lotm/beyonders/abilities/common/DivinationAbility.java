@@ -6,7 +6,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toClient.*;
-import de.jakob.lotm.sefirah.SefirotAuthorityManager;
+import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PlayerInfo;
 import de.jakob.lotm.util.data.PlayerSelectionWorkType;

@@ -4,7 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.GatheringData;
 import de.jakob.lotm.events.HonorificNamesEventHandler;
 import de.jakob.lotm.gui.custom.Gathering.GatheringMenu;
-import de.jakob.lotm.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.PendingPrayer;
 import io.netty.buffer.ByteBuf;

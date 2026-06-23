@@ -207,8 +207,8 @@ public class PlayerEvents {
             de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility.despawnSoulsOnDeath(player);
 
             // Clear stored souls and announce freed seq0/seq1 slots.
-            de.jakob.lotm.abilities.death.InternalUnderworldAbility.FreedSoulSlots freed =
-                    de.jakob.lotm.abilities.death.InternalUnderworldAbility.clearStoredSoulsAndCollectFreedPaths(player);
+            de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility.FreedSoulSlots freed =
+                    de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility.clearStoredSoulsAndCollectFreedPaths(player);
             spawnFreedUniquenesses(player, freed.seq0Paths());
             if (!freed.seq0Paths().isEmpty() || !freed.seq1Paths().isEmpty()) {
                 if (!freed.seq0Paths().isEmpty()) {

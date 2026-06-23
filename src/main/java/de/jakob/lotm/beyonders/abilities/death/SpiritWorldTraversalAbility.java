@@ -44,7 +44,7 @@ public class SpiritWorldTraversalAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(entity instanceof ServerPlayer player)) return;
         if (player.level().isClientSide) return;
-        if (de.jakob.lotm.sefirah.SefirahCastleEventHandler.isAccommodating(player)) {
+        if (de.jakob.lotm.beyonders.sefirah.SefirahCastleEventHandler.isAccommodating(player)) {
             player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("lotm.sefirot.sefirah_castle_spirit_world_locked"));
             return;
         }

@@ -1,7 +1,7 @@
-package de.jakob.lotm.abilities.common.passives;
+package de.jakob.lotm.beyonders.abilities.common.passives;
 
-import de.jakob.lotm.abilities.PassiveAbilityItem;
-import de.jakob.lotm.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;

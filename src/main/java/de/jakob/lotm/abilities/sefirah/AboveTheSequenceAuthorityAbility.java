@@ -1,9 +1,9 @@
-package de.jakob.lotm.abilities.sefirah;
+package de.jakob.lotm.beyonders.abilities.sefirah;
 
-import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenAboveSeqAuthorityScreenPacket;
-import de.jakob.lotm.sefirah.GreatOldOneManager;
+import de.jakob.lotm.beyonders.sefirah.GreatOldOneManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;

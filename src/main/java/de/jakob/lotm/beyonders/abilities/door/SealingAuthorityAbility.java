@@ -305,7 +305,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
         if (event.getEntity() instanceof ServerPlayer sp) {
             de.jakob.lotm.attachments.GatheringData gd = de.jakob.lotm.attachments.GatheringData.get(sp.getServer());
             if (gd.isMemberOfAnyCastle(sp.getUUID())) return;
-            if (de.jakob.lotm.sefirah.RiverBlessingManager.isBlessed(sp.getUUID())) return;
+            if (de.jakob.lotm.beyonders.sefirah.RiverBlessingManager.isBlessed(sp.getUUID())) return;
         }
 
         event.setCanceled(true);

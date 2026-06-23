@@ -1,14 +1,14 @@
 package de.jakob.lotm.gui.custom.RiverSefirotAuthority;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.RequestRiverBlessingScreenPacket;
 import de.jakob.lotm.network.packets.toServer.RequestRiverImprintScreenPacket;
 import de.jakob.lotm.network.packets.toServer.RequestRiverVaultScreenPacket;
 import de.jakob.lotm.network.packets.toServer.ToggleSefirotAuthorityAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.pathways.PathwayInfos;
+import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;

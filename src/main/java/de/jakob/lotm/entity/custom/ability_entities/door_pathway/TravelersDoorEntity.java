@@ -118,7 +118,7 @@ public class TravelersDoorEntity extends Entity {
 
             for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(TELEPORT_RANGE), e -> e != this && e.isAlive())) {
                 if (entity instanceof net.minecraft.server.level.ServerPlayer sp
-                        && de.jakob.lotm.sefirah.SefirahCastleEventHandler.isAccommodating(sp)) {
+                        && de.jakob.lotm.beyonders.sefirah.SefirahCastleEventHandler.isAccommodating(sp)) {
                     sp.sendSystemMessage(net.minecraft.network.chat.Component.translatable("lotm.sefirot.sefirah_castle_spirit_world_locked"));
                     continue;
                 }

@@ -6,7 +6,7 @@ import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSpiritVisionAbilityPacket;
-import de.jakob.lotm.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.mixin.EntityAccessor;
@@ -169,7 +169,7 @@ public class SpiritVisionAbility extends ToggleAbility {
                 }
             }
         }
-    }
+
 
     public static boolean shouldLooseControl(LivingEntity player, LivingEntity target) {
         int playerSeq = BeyonderData.getSequence(player);

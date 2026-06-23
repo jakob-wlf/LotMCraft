@@ -50,7 +50,7 @@ public class CorruptionComponent {
                 java.util.UUID firstOwner = sd.getFirstOwner(ownedSef);
                 if (firstOwner != null && firstOwner.equals(sp.getUUID())) {
                     net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dim =
-                            de.jakob.lotm.sefirah.SefirahHandler.getSefirotDimensionKey(ownedSef);
+                            de.jakob.lotm.beyonders.sefirah.SefirahHandler.getSefirotDimensionKey(ownedSef);
                     if (dim != null && sp.level().dimension().equals(dim)) {
                         return; // shielded — no corruption gain inside own sefirot
                     }

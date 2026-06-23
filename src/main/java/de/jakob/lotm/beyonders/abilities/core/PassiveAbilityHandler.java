@@ -1,15 +1,15 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.common.passives.ElevatedConcealmentAbility;
-import de.jakob.lotm.abilities.common.passives.ElevatedDivinationAbility;
-import de.jakob.lotm.abilities.common.passives.FateResistanceAbility;
-import de.jakob.lotm.abilities.fool.passives.MiracleOfResurrectionAbility;
-import de.jakob.lotm.abilities.fool.passives.PaperDaggersAbility;
-import de.jakob.lotm.abilities.fool.passives.PhysicalEnhancementsFoolAbility;
-import de.jakob.lotm.abilities.fool.passives.PuppeteeringEnhancementsAbility;
-import de.jakob.lotm.abilities.twilight_giant.Passives.PhysicalEnhancementsTwilightGiantAbility;
-import de.jakob.lotm.abilities.twilight_giant.Passives.WeaponMasteryPassiveAbility;
+import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedConcealmentAbility;
+import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedDivinationAbility;
+import de.jakob.lotm.beyonders.abilities.common.passives.FateResistanceAbility;
+import de.jakob.lotm.beyonders.abilities.fool.passives.MiracleOfResurrectionAbility;
+import de.jakob.lotm.beyonders.abilities.fool.passives.PaperDaggersAbility;
+import de.jakob.lotm.beyonders.abilities.fool.passives.PhysicalEnhancementsFoolAbility;
+import de.jakob.lotm.beyonders.abilities.fool.passives.PuppeteeringEnhancementsAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.Passives.PhysicalEnhancementsTwilightGiantAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.Passives.WeaponMasteryPassiveAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.FireResistanceAbyssAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.PhysicalEnhancementsAbyssAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.WordImmunityAbility;

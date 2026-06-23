@@ -1,15 +1,15 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.AbilityUseEvent;
+import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.attachments.GatheringData;
 import de.jakob.lotm.attachments.GreySealData;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.packets.toClient.SyncGreyFogStatusPacket;
 import de.jakob.lotm.particle.ModParticles;
-import de.jakob.lotm.sefirah.GreatOldOneManager;
-import de.jakob.lotm.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.GreatOldOneManager;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -531,7 +531,7 @@ public class GreySealEventHandler {
 
     @Nullable
     private static ResourceKey<Level> getSefirotDimension(String sefirot) {
-        return de.jakob.lotm.sefirah.SefirahHandler.getSefirotDimensionKey(sefirot);
+        return de.jakob.lotm.beyonders.sefirah.SefirahHandler.getSefirotDimensionKey(sefirot);
     }
 
     // ─── State record ─────────────────────────────────────────────────────────

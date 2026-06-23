@@ -1,7 +1,7 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.death.InternalUnderworldAbility;
+import de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
@@ -14,7 +14,7 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
-import de.jakob.lotm.util.pathways.PathwayInfos;
+import de.jakob.lotm.util.data.PathwayInfos;
 import de.jakob.lotm.util.playerMap.Characteristic;
 import de.jakob.lotm.util.playerMap.HonorificName;
 import de.jakob.lotm.util.playerMap.PlayerMap;

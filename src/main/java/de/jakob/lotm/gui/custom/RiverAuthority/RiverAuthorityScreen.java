@@ -237,7 +237,7 @@ public class RiverAuthorityScreen extends AbstractContainerScreen<RiverAuthority
                 if (!entry.sealedAbilityIds().isEmpty()) {
                     tooltip.add(Component.literal("Sealed:").withStyle(ChatFormatting.DARK_RED));
                     for (String abilityId : entry.sealedAbilityIds()) {
-                        de.jakob.lotm.abilities.core.Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+                        de.jakob.lotm.beyonders.abilities.core.Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
                         String abilityName = ability != null
                                 ? ability.getName().getString()
                                 : capitalize(abilityId.replace("_ability", ""));

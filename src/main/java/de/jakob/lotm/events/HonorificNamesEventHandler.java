@@ -6,7 +6,7 @@ import de.jakob.lotm.attachments.AnchorComponent;
 import de.jakob.lotm.attachments.GatheringData;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SefirotData;
-import de.jakob.lotm.sefirah.RiverBlessingManager;
+import de.jakob.lotm.beyonders.sefirah.RiverBlessingManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.PendingPrayer;
 import net.minecraft.ChatFormatting;

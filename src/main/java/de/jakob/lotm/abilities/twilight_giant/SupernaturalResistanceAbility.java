@@ -1,6 +1,6 @@
-package de.jakob.lotm.abilities.twilight_giant;
+package de.jakob.lotm.beyonders.abilities.twilight_giant;
 
-import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;

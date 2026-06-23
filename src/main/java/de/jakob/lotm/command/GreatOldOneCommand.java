@@ -3,7 +3,7 @@ package de.jakob.lotm.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import de.jakob.lotm.sefirah.GreatOldOneManager;
+import de.jakob.lotm.beyonders.sefirah.GreatOldOneManager;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;

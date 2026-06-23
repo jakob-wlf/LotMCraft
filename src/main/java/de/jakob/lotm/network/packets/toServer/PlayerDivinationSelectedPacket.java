@@ -1,14 +1,14 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.common.passives.ElevatedDivinationAbility;
+import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedDivinationAbility;
 import de.jakob.lotm.attachments.DeathImprintData;
 import de.jakob.lotm.beyonders.abilities.visionary.DreamTraversalAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.effect.ModEffects;
-import de.jakob.lotm.sefirah.SefirahHandler;
-import de.jakob.lotm.sefirah.SefirotAuthorityManager;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import de.jakob.lotm.util.helper.AbilityUtil;

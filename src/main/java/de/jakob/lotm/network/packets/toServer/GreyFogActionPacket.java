@@ -5,7 +5,7 @@ import de.jakob.lotm.attachments.FoolCardData;
 import de.jakob.lotm.events.FoolCardItemHandler;
 import de.jakob.lotm.events.GreySealEventHandler;
 import de.jakob.lotm.item.ModItems;
-import de.jakob.lotm.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;

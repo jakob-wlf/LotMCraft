@@ -68,7 +68,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NDN")
                 .define('N', Items.NETHERITE_INGOT)
                 .define('D', Items.DIAMOND)
-                .define('B', de.jakob.lotm.potions.PotionItemHandler.EMPTY_BOTTLE.get())
+                .define('B', de.jakob.lotm.beyonders.potions.PotionItemHandler.EMPTY_BOTTLE.get())
                 .unlockedBy("has_netherite_ingot", has(Items.NETHERITE_INGOT))
                 .save(recipeOutput);
 

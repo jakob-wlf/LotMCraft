@@ -2,7 +2,7 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DeathImprintData;
-import de.jakob.lotm.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -80,7 +80,7 @@ public record SetAbilitySealPacket(String targetUUIDStr, List<String> abilityIds
                 } else {
                     StringBuilder names = new StringBuilder();
                     for (String id : toSeal) {
-                        de.jakob.lotm.abilities.core.Ability ab = LOTMCraft.abilityHandler.getById(id);
+                        de.jakob.lotm.beyonders.abilities.core.Ability ab = LOTMCraft.abilityHandler.getById(id);
                         names.append(ab != null ? ab.getName().getString() : id);
                         if (toSeal.indexOf(id) < toSeal.size() - 1) names.append(", ");
                     }

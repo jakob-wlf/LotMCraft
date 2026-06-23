@@ -1,15 +1,15 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.common.CogitationAbility;
-import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.common.CogitationAbility;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.pathways.PathwayInfos;
+import de.jakob.lotm.util.data.PathwayInfos;
 import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -74,7 +74,7 @@ public class CorruptionEventHandler {
                 java.util.UUID firstOwner = sd.getFirstOwner(ownedSefirot);
                 if (firstOwner != null && firstOwner.equals(sp.getUUID())) {
                     net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dim =
-                            de.jakob.lotm.sefirah.SefirahHandler.getSefirotDimensionKey(ownedSefirot);
+                            de.jakob.lotm.beyonders.sefirah.SefirahHandler.getSefirotDimensionKey(ownedSefirot);
                     if (dim != null && sp.level().dimension().equals(dim)) {
                         return;
                     }
@@ -205,7 +205,7 @@ public class CorruptionEventHandler {
                 if (ownedSef != null && !ownedSef.isEmpty()) {
                     java.util.UUID firstOwner = sd.getFirstOwner(ownedSef);
                     if (firstOwner != null && !firstOwner.equals(sp.getUUID()) && sd.getMentalImprint(ownedSef) > 0) {
-                        de.jakob.lotm.sefirah.SefirotImprintEventHandler.tryReclaimForOriginalOwner(
+                        de.jakob.lotm.beyonders.sefirah.SefirotImprintEventHandler.tryReclaimForOriginalOwner(
                                 ownedSef, firstOwner, sp, sp.server);
                     }
                 }

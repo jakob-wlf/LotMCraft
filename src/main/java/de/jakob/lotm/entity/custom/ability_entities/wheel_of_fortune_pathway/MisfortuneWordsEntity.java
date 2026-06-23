@@ -1,6 +1,6 @@
 package de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway;
 
-import de.jakob.lotm.abilities.common.passives.FateResistanceAbility;
+import de.jakob.lotm.beyonders.abilities.common.passives.FateResistanceAbility;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.ModEntities;

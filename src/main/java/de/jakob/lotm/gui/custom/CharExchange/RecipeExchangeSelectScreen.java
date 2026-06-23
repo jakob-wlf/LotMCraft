@@ -3,7 +3,7 @@ package de.jakob.lotm.gui.custom.CharExchange;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.RequestRecipeExchangePacket;
 import de.jakob.lotm.network.packets.toServer.RequestRecipePathExchangePacket;
-import de.jakob.lotm.potions.PotionRecipeItem;
+import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
