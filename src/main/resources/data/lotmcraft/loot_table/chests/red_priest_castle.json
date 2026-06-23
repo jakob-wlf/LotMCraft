@@ -1,0 +1,195 @@
+{
+  "type": "minecraft:chest",
+  "random_sequence": "lotmcraft:chests/red_priest_castle",
+  "pools": [
+    {
+      "comment": "--- POTIONS ---",
+      "rolls": { "type": "minecraft:uniform", "min": 1, "max": 3 },
+      "bonus_rolls": 0.0,
+      "entries": [
+        { "type": "minecraft:item", "name": "lotmcraft:hunter_potion",                    "weight": 12 },
+        { "type": "minecraft:item", "name": "lotmcraft:assassin_potion",                  "weight": 10 },
+        { "type": "minecraft:item", "name": "lotmcraft:provoker_potion",                  "weight": 9  },
+        { "type": "minecraft:item", "name": "lotmcraft:instigator_potion",                "weight": 7  },
+        { "type": "minecraft:item", "name": "lotmcraft:pyromaniac_potion",                "weight": 7  },
+        { "type": "minecraft:item", "name": "lotmcraft:conspirer_potion",                 "weight": 6  },
+        { "type": "minecraft:item", "name": "lotmcraft:witch_potion",                     "weight": 5  },
+        { "type": "minecraft:item", "name": "lotmcraft:reaper_potion",                    "weight": 4  },
+        { "type": "minecraft:item", "name": "lotmcraft:demoness_of_pleasure_potion",      "weight": 4  },
+        { "type": "minecraft:item", "name": "lotmcraft:demoness_of_affliction_potion",    "weight": 2  },
+        { "type": "minecraft:empty",                                                       "weight": 34 }
+      ]
+    },
+    {
+      "comment": "--- CHARACTERISTICS ---",
+      "rolls": { "type": "minecraft:uniform", "min": 0, "max": 2 },
+      "bonus_rolls": 0.0,
+      "entries": [
+        { "type": "minecraft:item", "name": "lotmcraft:hunter_characteristic",                 "weight": 18 },
+        { "type": "minecraft:item", "name": "lotmcraft:assassin_characteristic",               "weight": 16 },
+        { "type": "minecraft:item", "name": "lotmcraft:provoker_characteristic",               "weight": 15 },
+        { "type": "minecraft:item", "name": "lotmcraft:instigator_characteristic",             "weight": 13 },
+        { "type": "minecraft:item", "name": "lotmcraft:pyromaniac_characteristic",             "weight": 13 },
+        { "type": "minecraft:item", "name": "lotmcraft:conspirer_characteristic",              "weight": 12 },
+        { "type": "minecraft:item", "name": "lotmcraft:witch_characteristic",                  "weight": 11 },
+        { "type": "minecraft:item", "name": "lotmcraft:reaper_characteristic",                 "weight": 10 },
+        { "type": "minecraft:item", "name": "lotmcraft:demoness_of_pleasure_characteristic",   "weight": 10 },
+        { "type": "minecraft:item", "name": "lotmcraft:demoness_of_affliction_characteristic", "weight": 6  },
+        { "type": "minecraft:empty",                                                            "weight": 76 }
+      ]
+    },
+    {
+      "comment": "--- BASE ITEMS ---",
+      "rolls": { "type": "minecraft:uniform", "min": 0, "max": 2 },
+      "bonus_rolls": 0.0,
+      "entries": [
+        { "type": "minecraft:item", "name": "lotmcraft:hunter",                 "weight": 20 },
+        { "type": "minecraft:item", "name": "lotmcraft:assassin",               "weight": 18 },
+        { "type": "minecraft:item", "name": "lotmcraft:provoker",               "weight": 17 },
+        { "type": "minecraft:item", "name": "lotmcraft:instigator",             "weight": 15 },
+        { "type": "minecraft:item", "name": "lotmcraft:pyromaniac",             "weight": 15 },
+        { "type": "minecraft:item", "name": "lotmcraft:conspirer",              "weight": 14 },
+        { "type": "minecraft:item", "name": "lotmcraft:witch",                  "weight": 13 },
+        { "type": "minecraft:item", "name": "lotmcraft:reaper",                 "weight": 12 },
+        { "type": "minecraft:item", "name": "lotmcraft:demoness_of_pleasure",   "weight": 12 },
+        { "type": "minecraft:item", "name": "lotmcraft:demoness_of_affliction", "weight": 8  },
+        { "type": "minecraft:empty",                                             "weight": 56 }
+      ]
+    },
+    {
+      "comment": "--- CORES ---",
+      "rolls": 1,
+      "bonus_rolls": 0.0,
+      "entries": [
+        { "type": "minecraft:item", "name": "lotmcraft:war_comet_core",   "weight": 9  },
+        { "type": "minecraft:item", "name": "lotmcraft:magma_giant_core", "weight": 9  },
+        { "type": "minecraft:empty",                                       "weight": 82 }
+      ]
+    },
+    {
+      "comment": "--- MINECRAFT THEMATIC ITEMS ---",
+      "rolls": { "type": "minecraft:uniform", "min": 1, "max": 4 },
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:blaze_powder",
+          "weight": 15,
+          "functions": [
+            { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 4 } }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:magma_cream",
+          "weight": 12,
+          "functions": [
+            { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 3 } }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:fire_charge",
+          "weight": 10,
+          "functions": [
+            { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 3 } }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:nether_wart",
+          "weight": 14,
+          "functions": [
+            { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 2, "max": 6 } }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:soul_sand",
+          "weight": 8,
+          "functions": [
+            { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 2 } }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:obsidian",
+          "weight": 8,
+          "functions": [
+            { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 2, "max": 5 } }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:gold_ingot",
+          "weight": 12,
+          "functions": [
+            { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 4 } }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:golden_sword",
+          "weight": 6,
+          "functions": [
+            { "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 10, "max": 25 } }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:crossbow",
+          "weight": 5,
+          "functions": [
+            { "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 5, "max": 20 } }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:spectral_arrow",
+          "weight": 10,
+          "functions": [
+            { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 3, "max": 8 } }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:book",
+          "weight": 7,
+          "functions": [
+            { "function": "minecraft:enchant_randomly" }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:experience_bottle",
+          "weight": 9,
+          "functions": [
+            { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 3 } }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:wither_skeleton_skull",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:chain",
+          "weight": 8,
+          "functions": [
+            { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 2, "max": 6 } }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:candle",
+          "weight": 10,
+          "functions": [
+            { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 4 } }
+          ]
+        },
+        { "type": "minecraft:empty", "weight": 20 }
+      ]
+    }
+  ]
+}
