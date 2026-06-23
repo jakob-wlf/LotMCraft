@@ -638,6 +638,16 @@ public class ClientHandler {
             screen.updateMenuData(packet.sequence(), packet.pathway(), ClientBeyonderCache.getDigestionProgress(playerUUID), packet.sanity());
         }
     }
+
+    public static void handleActingCapPacket(de.jakob.lotm.network.packets.toClient.SyncActingCapPacket packet) {
+        net.minecraft.client.player.LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return;
+        player.getPersistentData().putFloat(
+                de.jakob.lotm.beyonders.acting.ActingCapHelper.CAP_REDUCTION_KEY, packet.capReduction());
+        player.getPersistentData().put(
+                de.jakob.lotm.beyonders.acting.ActingCapHelper.MISSED_ACTING_KEY, packet.missedActing());
+    }
+
     public static void handleApotheosisPacket(SyncApotheosisPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;

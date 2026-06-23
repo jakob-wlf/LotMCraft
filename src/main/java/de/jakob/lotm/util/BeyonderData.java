@@ -1,12 +1,14 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.MultiplierModifierComponent;
+import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.events.BeyonderDataTickHandler;
 import de.jakob.lotm.gamerule.ModGameRules;
@@ -198,14 +200,44 @@ public class BeyonderData {
         boolean griefing = !BeyonderData.isBeyonder(entity) || BeyonderData.isGriefingEnabled(entity);
 
         BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
+
+        // Detect sequence-up before data changes so we can record missed acting and update cap
+        String oldPathway = getPathway(entity);
+        int oldSeq = getSequence(entity);
+        boolean isNormalSequenceUp = isBeyonder(entity) && oldSeq > sequence && oldPathway.equals(pathway);
+        boolean isFirstTimeBeyonder = !isBeyonder(entity) && !pathway.equals("none") && sequence < LOTMCraft.NON_BEYONDER_SEQ;
+        boolean isSequenceUp = isNormalSequenceUp || isFirstTimeBeyonder;
+        if (isSequenceUp) {
+            ActingCapHelper.onSequenceUp(entity, oldPathway, oldSeq);
+        }
+        // Reaching sequence 0 (godhood) clears the cap entirely
+        if (sequence == 0 && entity instanceof Player player0) {
+            ActingCapHelper.clearCap(player0);
+        }
+
         component.setPathway(pathway);
         component.setSequence(sequence);
         if(clearCharStack) component.clearCharacteristicStack();
         else component.setCharacteristicStack(0, sequence - 1);
-        if (resetSpirituality) component.setSpirituality(getMaxSpirituality(pathway, sequence));
+        if (resetSpirituality) {
+            float maxSp = getMaxSpirituality(pathway, sequence);
+            if (entity instanceof Player player) {
+                maxSp *= ActingCapHelper.getEffectiveCap(player);
+            }
+            component.setSpirituality(maxSp);
+        }
         component.setDigestionProgress(0);
         component.setGriefingEnabled(griefing);
         component.setCowardWormAmount(getMaxWormAmount(sequence));
+
+        // Clamp sanity down to the new effective cap after sequencing up
+        if (isSequenceUp && entity instanceof Player player && entity.level() instanceof ServerLevel) {
+            SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
+            float cap = ActingCapHelper.getEffectiveCap(player);
+            if (sanityComp.getSanity() > cap) {
+                sanityComp.setSanityAndSync(cap, entity);
+            }
+        }
 
         BeyonderDataTickHandler.invalidateCache(entity);
 
@@ -451,10 +483,9 @@ public class BeyonderData {
         ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
         if (data.isControlling()) {
             CompoundTag bodyData = data.getBodyEntity().getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
-            float sp = getMaxSpirituality(bodyData.getString("pathway"), bodyData.getInt("sequence"));
-            return sp;
+            return getMaxSpirituality(bodyData.getString("pathway"), bodyData.getInt("sequence"));
         }
-        return getMaxSpirituality(path, seq);
+        return getMaxSpirituality(path, seq) * ActingCapHelper.getEffectiveCap(player);
     }
 
     public static float getMaxSpirituality(String path, int seq){

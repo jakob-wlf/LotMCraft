@@ -62,23 +62,31 @@ public class ActingHelper {
         if (player instanceof ServerPlayer serverPlayer) {
             CompoundTag unlocked = player.getPersistentData().getCompound(NBT_UNLOCKED_KEY);
             PacketHandler.sendToPlayer(serverPlayer, new SyncPlayerActingDataPayload(unlocked));
+            ActingCapHelper.syncToClient(serverPlayer);
         }
     }
 
     @SubscribeEvent
     public static void onCopyPlayerData(PlayerEvent.Clone event) {
-        if(event.getEntity() instanceof ServerPlayer serverPlayer) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            if (event.isWasDeath()) {
+                // Reinstate cap fresh for the current sequence rather than copying old accumulated data.
+                // This clears missed acting from sequences the player no longer holds after death.
+                ActingCapHelper.reinstateCapForCurrentSequence(serverPlayer);
+            }
             CompoundTag unlocked = serverPlayer.getPersistentData().getCompound(NBT_UNLOCKED_KEY);
             PacketHandler.sendToPlayer(serverPlayer, new SyncPlayerActingDataPayload(unlocked));
+            ActingCapHelper.syncToClient(serverPlayer);
         }
     }
 
     @SubscribeEvent
     public static void onChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         Player player = event.getEntity();
-        if(player instanceof ServerPlayer serverPlayer) {
+        if (player instanceof ServerPlayer serverPlayer) {
             CompoundTag unlocked = player.getPersistentData().getCompound(NBT_UNLOCKED_KEY);
             PacketHandler.sendToPlayer(serverPlayer, new SyncPlayerActingDataPayload(unlocked));
+            ActingCapHelper.syncToClient(serverPlayer);
         }
     }
 }
