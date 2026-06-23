@@ -74,15 +74,24 @@ import de.jakob.lotm.entity.client.spirits.ghost.SpiritGhostRenderer;
 import de.jakob.lotm.entity.client.spirits.malmouth.SpiritMalmouthRenderer;
 import de.jakob.lotm.entity.client.spirits.spirit_bane.SpiritBaneRenderer;
 import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentWizardRenderer;
+import de.jakob.lotm.fluid.ModFluidTypes;
+import de.jakob.lotm.fluid.ModFluids;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
 import de.jakob.lotm.gui.custom.ArtifactWheel.ArtifactWheelScreen;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronScreen;
 import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelScreen;
+import de.jakob.lotm.gui.custom.Gathering.GatheringScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesScreen;
+import de.jakob.lotm.gui.custom.Prey.PreyScreen;
 import de.jakob.lotm.gui.custom.Recipe.RecipeScreen;
+import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityScreen;
+import de.jakob.lotm.gui.custom.RiverBlessing.RiverBlessingScreen;
+import de.jakob.lotm.gui.custom.ChaosSeaAuthority.ChaosSeaAuthorityScreen;
+import de.jakob.lotm.gui.custom.RiverSefirotAuthority.RiverSefirotAuthorityScreen;
+import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityScreen;
 import de.jakob.lotm.gui.custom.Trades.BeyonderTradeScreen;
 import de.jakob.lotm.item.ModCreativeModTabs;
 import de.jakob.lotm.item.ModIngredients;
@@ -134,6 +143,8 @@ public class LOTMCraft
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public static final Integer NON_BEYONDER_SEQ = 10;
+    /** Sequence value for a Great Old One (above seq 0). */
+    public static final int GREAT_OLD_ONE_SEQ = -1;
 
     public static KeyMapping pathwayInfosKey;
     public static KeyMapping toggleGriefingKey;
@@ -189,6 +200,8 @@ public class LOTMCraft
         ModSounds.register(modEventBus);
         ModLootModifiers.register(modEventBus);
         ModVillagers.register(modEventBus);
+        ModFluidTypes.register(modEventBus);
+        ModFluids.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModStructures.register(modEventBus);
@@ -309,6 +322,8 @@ public class LOTMCraft
 
             event.enqueueWork(() -> {
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.MYSTICAL_RING.get(), RenderType.cutout());
+                ItemBlockRenderTypes.setRenderLayer(ModFluids.DROPS_OF_ETERNAL_DARKNESS_SOURCE.get(), RenderType.translucent());
+                ItemBlockRenderTypes.setRenderLayer(ModFluids.DROPS_OF_ETERNAL_DARKNESS_FLOWING.get(), RenderType.translucent());
 
                 PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(ANIMATION_LAYER_ID, 1000,
                         player -> new PlayerAnimationController(player,
@@ -340,6 +355,7 @@ public class LOTMCraft
             event.registerSpriteSet(ModParticles.LIGHTNING.get(), LightningParticle.Provider::new);
             event.registerSpriteSet(ModParticles.STAR.get(), StarParticle.Provider::new);
             event.registerSpriteSet(ModParticles.FOG_OF_WAR.get(), FogOfWarParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.GREY_SEAL.get(), GreySealParticle.Provider::new);
             event.registerSpriteSet(ModParticles.PURPLE_FLAME.get(), PurpleFlameParticle.Provider::new);
             event.registerSpriteSet(ModParticles.BLACK.get(), BlackParticle.Provider::new);
             event.registerSpriteSet(ModParticles.WHITE_FLAME.get(), WhiteFlameParticle.Provider::new);
@@ -355,6 +371,13 @@ public class LOTMCraft
             event.register(ModMenuTypes.ABILITY_WHEEL_MENU.get(), AbilityWheelScreen::new);
             event.register(ModMenuTypes.COPIED_ABILITY_WHEEL_MENU.get(), CopiedAbilityWheelScreen::new);
             event.register(ModMenuTypes.ARTIFACT_WHEEL_MENU.get(), ArtifactWheelScreen::new);
+            event.register(ModMenuTypes.SEFIROT_AUTHORITY_MENU.get(), SefirotAuthorityScreen::new);
+            event.register(ModMenuTypes.RIVER_AUTHORITY_MENU.get(), RiverAuthorityScreen::new);
+            event.register(ModMenuTypes.RIVER_SEFIROT_AUTHORITY_MENU.get(), RiverSefirotAuthorityScreen::new);
+            event.register(ModMenuTypes.CHAOS_SEA_AUTHORITY_MENU.get(), ChaosSeaAuthorityScreen::new);
+            event.register(ModMenuTypes.GATHERING_MENU.get(), GatheringScreen::new);
+            event.register(ModMenuTypes.RIVER_BLESSING_MENU.get(), RiverBlessingScreen::new);
+            event.register(ModMenuTypes.PREY_MENU.get(), PreyScreen::new);
         }
     }
 

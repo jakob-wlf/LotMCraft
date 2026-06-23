@@ -118,6 +118,14 @@ public class HistoricalVoidHidingAbility extends ToggleAbility {
 
     }
 
+    public static void forceExit(ServerLevel level, LivingEntity entity) {
+        for (ToggleAbility ability : ToggleAbility.getActiveAbilitiesForEntity(entity)) {
+            if (ability instanceof HistoricalVoidHidingAbility hiding) {
+                hiding.cancel(level, entity);
+            }
+        }
+    }
+
     @SubscribeEvent
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
         if(!(event.getEntity().level() instanceof ServerLevel serverLevel)) {

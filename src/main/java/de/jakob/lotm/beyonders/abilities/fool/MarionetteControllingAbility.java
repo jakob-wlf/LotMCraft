@@ -290,7 +290,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
         LivingEntity target = getSelectedMarionette(player);
 
         if (target != null) {
-            ControllingUtil.possess(player, target, true);
+            ControllingUtil.possess(player, target, true, true);
         }
     }
 }

@@ -84,8 +84,8 @@ public class LuckHandler {
     );
 
     private static final ItemDrop[] POSSIBLE_LUCK_DROPS = {
-            //new ItemDrop(Items.GOLDEN_CARROT,  32, 0.30),
-            //new ItemDrop(Items.DIAMOND,         6, 0.05),
+            new ItemDrop(Items.GOLDEN_CARROT,  32, 0.30),
+            new ItemDrop(Items.DIAMOND,         6, 0.05),
             new ItemDrop(Items.GOLD_INGOT,     22, 0.15),
             new ItemDrop(Items.EMERALD,        22, 0.15),
             new ItemDrop(Items.LAPIS_LAZULI,   22, 0.12),
@@ -116,7 +116,7 @@ public class LuckHandler {
     }
 
     private static void handleLuckBlockBreak(BlockDropsEvent event, LivingEntity entity, ServerLevel level, int luck) {
-        /*if (Math.random() < getChanceForRandomDrop(luck)) {
+        if (Math.random() < getChanceForRandomDrop(luck)) {
             if (new Random().nextBoolean())
                 ParticleUtil.spawnParticles(level, LUCK_DUST, event.getPos().getCenter(), 12, .6, .6, .6, 0);
             dropRandomLuckItem(event.getPos().getCenter(), level);
@@ -130,10 +130,12 @@ public class LuckHandler {
             if (new Random().nextBoolean())
                 ParticleUtil.spawnParticles(level, LUCK_DUST, event.getPos().getCenter(), 12, .6, .6, .6, 0);
 
-            ItemStack copy = drops.get(level.getRandom().nextInt(drops.size())).getItem().copy();
+            // Strip all NBT/data components so storage block contents are never duplicated
+            ItemStack original = drops.get(level.getRandom().nextInt(drops.size())).getItem();
+            ItemStack copy = new ItemStack(original.getItem(), original.getCount());
             Block.popResource(level, event.getPos(), copy);
             Block.popResource(level, event.getPos(), copy.copy());
-        }*/
+        }
     }
 
     private static void handleUnluckBlockBreak(BlockDropsEvent event, LivingEntity entity, ServerLevel level, int luck) {

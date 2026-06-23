@@ -122,7 +122,7 @@ public class ParasitationAbility extends SelectableAbility {
         startControl(serverLevel, player, target, lowerSeq);
     }
 
-    private void startControl(ServerLevel serverLevel, ServerPlayer player, LivingEntity target, boolean lowerSeq) {
+    public void startControl(ServerLevel serverLevel, ServerPlayer player, LivingEntity target, boolean lowerSeq) {
         controllingMap.put(player.getUUID(), target.getUUID());
         controllingLowerSeq.put(player.getUUID(), lowerSeq);
 
@@ -134,7 +134,7 @@ public class ParasitationAbility extends SelectableAbility {
         pc.setParasited(true);
         pc.setParasiteUUID(player.getUUID());
 
-        ControllingUtil.possess(player, target, false);
+        ControllingUtil.possess(player, target, false, true);
     }
 
     public static void exitControl(ServerLevel serverLevel, ServerPlayer player) {
@@ -214,7 +214,7 @@ public class ParasitationAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(player, 8, 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(player, 8, 2, false, true);
 
         if (target == null) {
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.parasitation.no_target").withColor(0x3240bf));
@@ -224,6 +224,12 @@ public class ParasitationAbility extends SelectableAbility {
         if (!isValidConcealedTarget(player, target)) {
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.parasitation.target_too_strong").withColor(0xbf3232));
             return;
+        }
+
+        if(BeyonderData.getSequence(target) == BeyonderData.getSequence(player)){
+            if(Math.random() > 0.5){
+                return;
+            }
         }
 
         // If currently controlling, switch to concealed
@@ -245,7 +251,7 @@ public class ParasitationAbility extends SelectableAbility {
 
     private boolean isValidConcealedTarget(LivingEntity entity, LivingEntity target) {
         if (!BeyonderData.isBeyonder(target)) return true;
-        return BeyonderData.getSequence(target) > BeyonderData.getSequence(entity);
+        return BeyonderData.getSequence(target) >= BeyonderData.getSequence(entity);
     }
 
     private void startConcealed(ServerLevel serverLevel, ServerPlayer serverPlayer, LivingEntity host) {
@@ -259,7 +265,7 @@ public class ParasitationAbility extends SelectableAbility {
         serverPlayer.setCamera(host);
     }
 
-    private void cancelConcealed(ServerLevel serverLevel, ServerPlayer serverPlayer) {
+    public void cancelConcealed(ServerLevel serverLevel, ServerPlayer serverPlayer) {
         if (concealedMap.containsKey(serverPlayer.getUUID())) {
             Entity hostEntity = serverLevel.getEntity(concealedMap.get(serverPlayer.getUUID()));
             if (hostEntity instanceof LivingEntity host) {
@@ -291,6 +297,14 @@ public class ParasitationAbility extends SelectableAbility {
             if (host != null) {
                 serverTarget.setGameMode(GameType.SPECTATOR);
                 serverTarget.setCamera(host);
+
+                if (host instanceof LivingEntity livingHost) {
+                    float health = livingHost.getHealth();
+                    float maxHealth = livingHost.getMaxHealth();
+                    String healthText = String.format("%.1f", health);
+                    String maxHealthText = String.format("%.1f", maxHealth);
+                    AbilityUtil.sendActionBar(serverTarget, Component.translatable("ability.lotmcraft.parasitation.host_health", healthText, maxHealthText).withColor(0xFFbf3232));
+                }
             } else {
                 serverTarget.setGameMode(GameType.SURVIVAL);
                 serverTarget.setCamera(serverTarget);
@@ -327,6 +341,55 @@ public class ParasitationAbility extends SelectableAbility {
             }
             controllingTimer.put(serverPlayer.getUUID(), ticks);
         }
+    }
+
+    public static void switchToControl(ServerLevel serverLevel, ServerPlayer player) {
+        if (!isConcealed(player.getUUID())) return;
+        UUID hostUUID = concealedMap.get(player.getUUID());
+        Entity hostEntity = serverLevel.getEntity(hostUUID);
+        if (!(hostEntity instanceof LivingEntity host)) return;
+
+        int userSeq = BeyonderData.getSequence(player);
+        int targetSeq = BeyonderData.isBeyonder(host) ? BeyonderData.getSequence(host) : 10;
+        boolean lowerSeq = userSeq < targetSeq;
+
+        ParasitationAbility instance = (ParasitationAbility) LOTMCraft.abilityHandler.getById("parasitation_ability");
+        if (instance != null) {
+            instance.cancelConcealed(serverLevel, player);
+            instance.startControl(serverLevel, player, host, lowerSeq);
+        }
+    }
+
+    public static void switchToMovementControl(ServerLevel serverLevel, ServerPlayer player) {
+        if (!isConcealed(player.getUUID())) return;
+        UUID hostUUID = concealedMap.get(player.getUUID());
+        Entity hostEntity = serverLevel.getEntity(hostUUID);
+        if (!(hostEntity instanceof LivingEntity host)) return;
+
+        int userSeq = BeyonderData.getSequence(player);
+        int targetSeq = BeyonderData.isBeyonder(host) ? BeyonderData.getSequence(host) : 10;
+        boolean lowerSeq = userSeq < targetSeq;
+
+        ParasitationAbility instance = (ParasitationAbility) LOTMCraft.abilityHandler.getById("parasitation_ability");
+        if (instance != null) {
+            instance.cancelConcealed(serverLevel, player);
+            instance.startMovementControl(serverLevel, player, host, lowerSeq);
+        }
+    }
+
+    public void startMovementControl(ServerLevel serverLevel, ServerPlayer player, LivingEntity target, boolean lowerSeq) {
+        controllingMap.put(player.getUUID(), target.getUUID());
+        controllingLowerSeq.put(player.getUUID(), lowerSeq);
+
+        if (!lowerSeq) {
+            controllingTimer.put(player.getUUID(), 100);
+        }
+
+        ParasitationComponent pc = target.getData(ModAttachments.PARASITE_COMPONENT);
+        pc.setParasited(true);
+        pc.setParasiteUUID(player.getUUID());
+
+        ControllingUtil.possess(player, target, false, false);
     }
 
     private static LivingEntity resolveHost(ServerLevel serverLevel, UUID uuid) {

@@ -1,7 +1,9 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.MysteriousTabletData;
 import de.jakob.lotm.item.ModIngredients;
+import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.PotionIngredient;
 import de.jakob.lotm.beyonders.potions.*;
 import de.jakob.lotm.util.BeyonderData;
@@ -15,6 +17,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
+import net.minecraft.util.RandomSource;
+import net.minecraft.server.level.ServerLevel;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -27,6 +32,7 @@ import java.util.Random;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class VillagerTradesEventHandler {
+    private static final String ANCIENT_TRADER_TAG = "AncientTrader";
 
     private static final int[] costsPerSequence = new int[]{1000, 300, 250, 180, 160, 70, 64, 40, 29, 29};
     private static final int[] costsPerSequenceForIngredients = new int[]{1000, 120, 50, 35, 29, 18, 14, 11, 8, 4};
@@ -74,6 +80,23 @@ public class VillagerTradesEventHandler {
             }
         }
 
+        if (event.getType() == ModVillagers.ANCIENT_TRADER_PROFESSION.value()) {
+            Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
+            addAncientTraderPotionTrades(trades, 1, 4, 2);
+            addAncientTraderPotionTrades(trades, 2, 3, 2);
+            addAncientTraderPotionTrades(trades, 3, 2, 2);
+            addAncientTraderPotionTrades(trades, 4, 1, 1);
+
+            trades.get(5).add((entity, randomSource) -> new MerchantOffer(
+                    new ItemCost(Items.DIAMOND, 64),
+                    java.util.Optional.of(new ItemCost(Items.NETHER_STAR, 1)),
+                    new ItemStack(ModItems.UPPER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get(), 1),
+                    1,
+                    30,
+                    0.05f
+            ));
+        }
+
         if (event.getType() == ModVillagers.EVERNIGHT_PROFESSION.value()) {
             populateVillagerWithPathwayProfession(event.getTrades(), "darkness");
 
@@ -112,6 +135,77 @@ public class VillagerTradesEventHandler {
                 });
             }
         }
+    }
+
+    private static void addAncientTraderPotionTrades(Int2ObjectMap<List<VillagerTrades.ItemListing>> trades, int level, int sequence, int maxUses) {
+        trades.get(level).add((entity, randomSource) -> createAncientTraderPotionOffer(level, sequence, maxUses, randomSource));
+        trades.get(level).add((entity, randomSource) -> createAncientTraderPotionOffer(level, sequence, maxUses, randomSource));
+    }
+
+    public static MerchantOffers buildAncientTraderOffers(RandomSource randomSource, boolean includeFragment) {
+        MerchantOffers offers = new MerchantOffers();
+        addAncientTraderPotionOffers(offers, 4, 2, randomSource, 2);
+        addAncientTraderPotionOffers(offers, 3, 2, randomSource, 2);
+        addAncientTraderPotionOffers(offers, 2, 2, randomSource, 2);
+        addAncientTraderPotionOffers(offers, 1, 1, randomSource, 1);
+
+        if (includeFragment) {
+            offers.add(new MerchantOffer(
+                    new ItemCost(Items.DIAMOND, 64),
+                    java.util.Optional.of(new ItemCost(Items.NETHER_STAR, 1)),
+                    new ItemStack(ModItems.UPPER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get(), 1),
+                    1,
+                    30,
+                    0.05f
+            ));
+        }
+
+        return offers;
+    }
+
+    private static void addAncientTraderPotionOffers(MerchantOffers offers, int sequence, int maxUses, RandomSource randomSource, int count) {
+        for (int i = 0; i < count; i++) {
+            MerchantOffer offer = createAncientTraderPotionOffer(1, sequence, maxUses, randomSource);
+            if (offer != null) {
+                offers.add(offer);
+            }
+        }
+    }
+
+    private static MerchantOffer createAncientTraderPotionOffer(int level, int sequence, int maxUses, net.minecraft.util.RandomSource randomSource) {
+        Random random = new Random(randomSource.nextLong());
+        BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, sequence);
+        if (potion == null) {
+            return null;
+        }
+
+        BeyonderCharacteristicItem characteristic = BeyonderCharacteristicItemHandler
+                .selectCharacteristicOfPathwayAndSequence(potion.getPathway(), potion.getSequence());
+
+        ItemCost firstItemCost;
+        java.util.Optional<ItemCost> additionalCost = java.util.Optional.empty();
+        if (characteristic != null) {
+            firstItemCost = new ItemCost(characteristic, 1);
+        } else {
+            int cost = costsPerSequence[sequence];
+            int diamondAmount = Math.max(1, random.nextInt(cost - 4, cost + 5));
+            firstItemCost = new ItemCost(Items.DIAMOND, diamondAmount);
+
+            if (sequence == 4) {
+                firstItemCost = new ItemCost(Items.ANCIENT_DEBRIS, diamondAmount);
+            }
+
+            additionalCost = getAdditionalCostForSequence(sequence, random);
+        }
+
+        return new MerchantOffer(
+            firstItemCost,
+            additionalCost,
+            new ItemStack(potion, 1),
+            maxUses,
+            30 * level,
+            0.005f
+        );
     }
 
     private static java.util.Optional<ItemCost> getAdditionalCostForSequence(int sequence, Random random) {
@@ -163,6 +257,30 @@ public class VillagerTradesEventHandler {
     }
 
     @SubscribeEvent
+    public static void onAncientTraderTick(EntityTickEvent.Post event) {
+        if (!(event.getEntity() instanceof Villager villager)) {
+            return;
+        }
+        if (villager.level().isClientSide) {
+            return;
+        }
+
+        boolean isTagged = villager.getPersistentData().getBoolean(ANCIENT_TRADER_TAG);
+        boolean isAncientProfession = villager.getVillagerData().getProfession() == ModVillagers.ANCIENT_TRADER_PROFESSION.value();
+        if (!isTagged && !isAncientProfession) {
+            return;
+        }
+
+        if (!isTagged) {
+            villager.getPersistentData().putBoolean(ANCIENT_TRADER_TAG, true);
+        }
+
+        if (!villager.isPersistenceRequired()) {
+            villager.setPersistenceRequired();
+        }
+    }
+
+    @SubscribeEvent
     public static void onVillagerInteract(PlayerInteractEvent.EntityInteract event) {
         if (!(event.getTarget() instanceof Villager villager)) return;
         if (event.getLevel().isClientSide()) return;
@@ -171,7 +289,18 @@ public class VillagerTradesEventHandler {
 
         if(offers.isEmpty()) return;
 
+        boolean isAncientTrader = villager.getVillagerData().getProfession() == ModVillagers.ANCIENT_TRADER_PROFESSION.value();
+
+        if (event.getLevel() instanceof ServerLevel serverLevel) {
+            MysteriousTabletData data = MysteriousTabletData.get(serverLevel.getServer());
+            offers.removeIf(offer -> offer.getResult().is(ModItems.UPPER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get())
+                && !data.canSpawnFragment(MysteriousTabletData.FragmentType.UPPER));
+        }
+
         offers.removeIf(offer -> {
+                    if (isAncientTrader) {
+                        return false;
+                    }
                     var item = offer.getResult().getItem();
 
                     if(item instanceof PotionIngredient obj){

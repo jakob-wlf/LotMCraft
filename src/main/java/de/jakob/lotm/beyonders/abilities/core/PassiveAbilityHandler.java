@@ -41,6 +41,56 @@ import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveCalami
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveLuckAbility;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveLuckAccumulationAbility;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PhysicalEnhancementsWheelOfFortuneAbility;
+import de.jakob.lotm.abilities.common.passives.ElevatedConcealmentAbility;
+import de.jakob.lotm.abilities.common.passives.ElevatedDivinationAbility;
+import de.jakob.lotm.abilities.common.passives.FateResistanceAbility;
+import de.jakob.lotm.abilities.twilight_giant.Passives.PhysicalEnhancementsTwilightGiantAbility;
+import de.jakob.lotm.abilities.twilight_giant.Passives.WeaponMasteryPassiveAbility;
+import de.jakob.lotm.abilities.abyss.passives.FireResistanceAbyssAbility;
+import de.jakob.lotm.abilities.abyss.passives.PhysicalEnhancementsAbyssAbility;
+import de.jakob.lotm.abilities.abyss.passives.WordImmunityAbility;
+import de.jakob.lotm.abilities.black_emperor.passives.PhysicalEnhancementsBlackEmperorAbility;
+import de.jakob.lotm.abilities.darkness.passives.DarknessRevivalAbility;
+import de.jakob.lotm.abilities.darkness.passives.NocturnalityAbility;
+import de.jakob.lotm.abilities.darkness.passives.PhysicalEnhancementsDarknessAbility;
+import de.jakob.lotm.abilities.death.passives.PhysicalEnhancementsDeathAbility;
+import de.jakob.lotm.abilities.death.passives.ReincarnationAbility;
+import de.jakob.lotm.abilities.death.passives.SolarSensitivityAbility;
+import de.jakob.lotm.abilities.death.passives.UndeadIgnoranceAbility;
+import de.jakob.lotm.abilities.demoness.passives.BloodLossAbility;
+import de.jakob.lotm.abilities.demoness.passives.FeatherFallAbility;
+import de.jakob.lotm.abilities.demoness.passives.MirrorRevivalAbility;
+import de.jakob.lotm.abilities.demoness.passives.PhysicalEnhancementsDemonessAbility;
+import de.jakob.lotm.abilities.door.passives.PhysicalEnhancementsDoorAbility;
+import de.jakob.lotm.abilities.door.passives.SpiritWorldAwarenessAbility;
+import de.jakob.lotm.abilities.door.passives.VoidImmunityAbility;
+import de.jakob.lotm.abilities.error.passives.PassiveTheftAbility;
+import de.jakob.lotm.abilities.error.passives.PhysicalEnhancementsErrorAbility;
+import de.jakob.lotm.abilities.fool.passives.MiracleOfResurrectionAbility;
+import de.jakob.lotm.abilities.justiciar.passives.ChaosHuntingAbility;
+import de.jakob.lotm.abilities.justiciar.passives.EnhancedMentalAttributesAbility;
+import de.jakob.lotm.abilities.justiciar.passives.OrderJusticiarAbility;
+import de.jakob.lotm.abilities.justiciar.passives.PhysicalEnhancementsJusticiarAbility;
+import de.jakob.lotm.abilities.fool.passives.PaperDaggersAbility;
+import de.jakob.lotm.abilities.fool.passives.PhysicalEnhancementsFoolAbility;
+import de.jakob.lotm.abilities.fool.passives.PuppeteeringEnhancementsAbility;
+import de.jakob.lotm.abilities.mother.passives.PhysicalEnhancementsMotherAbility;
+import de.jakob.lotm.abilities.red_priest.passive.FireResistanceAbility;
+import de.jakob.lotm.abilities.red_priest.passive.FlamingHitAbility;
+import de.jakob.lotm.abilities.red_priest.passive.PhysicalEnhancementsRedPriestAbility;
+import de.jakob.lotm.abilities.sun.passives.PhysicalEnhancementsSunAbility;
+import de.jakob.lotm.abilities.tyrant.passives.LightningArrowAbility;
+import de.jakob.lotm.abilities.tyrant.passives.PhysicalEnhancementsTyrantAbility;
+import de.jakob.lotm.abilities.tyrant.passives.RiptideAbility;
+import de.jakob.lotm.abilities.visionary.passives.MetaAwarenessAbility;
+import de.jakob.lotm.abilities.visionary.passives.PhysicalEnhancementsVisionaryAbility;
+import de.jakob.lotm.abilities.visionary.passives.PureIdealism;
+import de.jakob.lotm.abilities.visionary.passives.VirtualAvatarAbility;
+import de.jakob.lotm.abilities.wheel_of_fortune.passives.PassiveCalamityAttraction;
+import de.jakob.lotm.abilities.wheel_of_fortune.passives.PassiveLuckAbility;
+import de.jakob.lotm.abilities.wheel_of_fortune.passives.PassiveLuckAccumulationAbility;
+import de.jakob.lotm.abilities.wheel_of_fortune.passives.PhysicalEnhancementsWheelOfFortuneAbility;
+import de.jakob.lotm.events.BeyonderDataTickHandler;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
@@ -64,6 +114,8 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_VISIONARY = ITEMS.registerItem("physical_enhancements_visionary_ability", PhysicalEnhancementsVisionaryAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_WHEEL_OF_FORTUNE = ITEMS.registerItem("physical_enhancements_wheel_of_fortune_ability", PhysicalEnhancementsWheelOfFortuneAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_JUSTICIAR = ITEMS.registerItem("physical_enhancements_justiciar_ability", PhysicalEnhancementsJusticiarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_Twilight_Giant = ITEMS.registerItem("physical_enhancements_twilight_giant_ability", PhysicalEnhancementsTwilightGiantAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
 
     public static final DeferredItem<Item> ORDER_JUSTICIAR = ITEMS.registerItem("order_justiciar_ability", OrderJusticiarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> ENHANCED_MENTAL_ATTRIBUTES_JUSTICIAR = ITEMS.registerItem("enhanced_mental_attributes_justiciar_ability", EnhancedMentalAttributesAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
@@ -108,6 +160,16 @@ public class PassiveAbilityHandler {
 
     public static final DeferredItem<Item> META_AWARENESS = ITEMS.registerItem("meta_awareness_ability", MetaAwarenessAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PURE_IDEALISM = ITEMS.registerItem("pure_idealism_ability", PureIdealism::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
+    public static final DeferredItem<Item> WEAPON_MASTERY_PASSIVE = ITEMS.registerItem("weapon_mastery_ability", WeaponMasteryPassiveAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
+    // Sefirot passives
+    public static final DeferredItem<Item> ELEVATED_DIVINATION_PASSIVE = ITEMS.registerItem("elevated_divination_ability", ElevatedDivinationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static final DeferredItem<Item> ELEVATED_CONCEALMENT_PASSIVE = ITEMS.registerItem("elevated_concealment_ability", ElevatedConcealmentAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    // General tier passives
+    public static final DeferredItem<Item> FATE_RESISTANCE_PASSIVE = ITEMS.registerItem("fate_resistance_ability", FateResistanceAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+
 
     public static void registerAbilities(IEventBus eventBus) {
         ITEMS.register(eventBus);

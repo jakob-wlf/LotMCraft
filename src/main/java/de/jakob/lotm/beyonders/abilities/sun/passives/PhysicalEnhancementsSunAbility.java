@@ -121,8 +121,4 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
         };
     }
 
-    @Override
-    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
-    }
 }

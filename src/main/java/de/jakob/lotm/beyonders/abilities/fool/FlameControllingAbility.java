@@ -63,7 +63,12 @@ public class FlameControllingAbility extends Ability {
                 return;
             }
 
-            if(!level.getBlockState(BlockPos.containing(pos.x, pos.y, pos.z)).isAir()) {
+            BlockPos blockPos = BlockPos.containing(pos.x, pos.y, pos.z);
+            if (!level.isLoaded(blockPos)) {
+                hasHit.set(true);
+                return;
+            }
+            if(!level.getBlockState(blockPos).isAir()) {
                 if(BeyonderData.isGriefingEnabled(entity)) {
                     pos = pos.subtract(direction);
                     level.setBlockAndUpdate(BlockPos.containing(pos.x, pos.y, pos.z), Blocks.FIRE.defaultBlockState());

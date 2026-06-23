@@ -40,7 +40,7 @@ public class SanityEventHandler {
         boolean hasSwitched = BeyonderData.hasSwitchedPathway(entity);
         boolean hasUndigestedStack = isBeyonder
                 && entity instanceof Player digestionPlayer
-                && BeyonderData.getCurrentCharStack(entity) > 0
+                && BeyonderData.getCurrentCharacteristicCount(entity) > 0
                 && BeyonderData.getDigestionProgress(digestionPlayer) < 1.0f;
 
         boolean shouldDrain = isHighSequence || sanityComp.getSanity() < .2f || hasUndigestedStack || hasSwitched;
@@ -57,20 +57,24 @@ public class SanityEventHandler {
             return;
         }
 
+        // Clear all sanity effects if above threshold
 
+        // ---------------- SANITY ----------------
         if (BeyonderData.isBeyonder(entity)) {
             Random random = new Random();
             double sanityMultiplier = getSanityMultiplier(entity, sanity, sanityValue);
 
+            // Always refresh for 2000 ms
             BeyonderData.addModifier(entity, "sanity_loss", sanityMultiplier);
 
+            // ----- RANDOM ABILITY DISABLING -----
             if (!entity.level().isClientSide) {
 
-                int disableChance;
+                int disableChance; // lower = more frequent
                 int disableDuration = 20;
 
                 if (sanityValue >= 64) {
-                    disableChance = -1;
+                    disableChance = -1; // disabled
                 } else if (sanityValue >= 50) {
                     disableChance = 120;
                     disableDuration = 1500;

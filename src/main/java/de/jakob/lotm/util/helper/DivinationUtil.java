@@ -12,6 +12,18 @@ import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidHidingAbility;
 import de.jakob.lotm.beyonders.abilities.red_priest.FogOfWarAbility;
 import de.jakob.lotm.beyonders.abilities.tyrant.LightningStormAbility;
+import de.jakob.lotm.abilities.common.DivinationAbility;
+import de.jakob.lotm.abilities.common.passives.ElevatedConcealmentAbility;
+import de.jakob.lotm.abilities.core.AbilityUseEvent;
+import de.jakob.lotm.abilities.core.ToggleAbility;
+import de.jakob.lotm.abilities.darkness.NightDomainAbility;
+import de.jakob.lotm.abilities.demoness.InvisibilityAbility;
+import de.jakob.lotm.abilities.demoness.ShadowConcealmentAbility;
+import de.jakob.lotm.abilities.door.SpaceConcealmentAbility;
+import de.jakob.lotm.abilities.error.ParasitationAbility;
+import de.jakob.lotm.abilities.fool.HistoricalVoidHidingAbility;
+import de.jakob.lotm.abilities.red_priest.FogOfWarAbility;
+import de.jakob.lotm.abilities.tyrant.LightningStormAbility;
 import de.jakob.lotm.attachments.MirrorWorldTraversalComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.dimension.ModDimensions;
@@ -269,7 +281,12 @@ public class DivinationUtil {
         if (ParasitationAbility.isConcealed(serverPlayer.getUUID())) {
             addedValue += 99;
         }
-        
+
+        // Elevated Concealment (River of Eternal Darkness sefirot passive) — always concealed
+        if (ElevatedConcealmentAbility.ELEVATED_CONCEALMENT_ACTIVE.contains(serverPlayer.getUUID())) {
+            addedValue += 99;
+        }
+
         return addedValue;
     }
 

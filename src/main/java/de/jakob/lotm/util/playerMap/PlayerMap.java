@@ -63,7 +63,6 @@ public class PlayerMap extends SavedData {
             if(obj.getValue().claimedSefirot().equals(sefirot))
                 return obj.getKey();
         }
-
         return null;
     }
 
@@ -164,10 +163,11 @@ public class PlayerMap extends SavedData {
         String uniqueness = uniquenessComponent.hasUniqueness() ? uniquenessComponent.getUniquenessPathway() : "none";
 
 
-        // Don't store if this is default/empty data
-//        if(pathway.equals("none") || sequence == LOTMCraft.NON_BEYONDER_SEQ) {
-//            return; // Don't overwrite existing data with empty data
-//        }
+        // Don't overwrite existing map entries with empty/default data (prevents data loss when entity component is uninitialized)
+        if ((pathway.equals("none") || sequence == LOTMCraft.NON_BEYONDER_SEQ) && map.containsKey(entity.getUUID())) {
+            LOTMCraft.LOGGER.info("Skipping put for {} because entity has empty/default beyonder data", ((ServerPlayer) entity).getGameProfile().getName());
+            return;
+        }
 
         var data = map.get(entity.getUUID());
         boolean isNull = data == null;
@@ -176,18 +176,13 @@ public class PlayerMap extends SavedData {
                 ((ServerPlayer) entity).getGameProfile().getName(), sequence, pathway,
                 isNull ? "none" : data.trueName(), isNull ? LOTMCraft.NON_BEYONDER_SEQ : data.sequence(), isNull ? "none" : data.pathway());
 
-        int[] componentCharStack = entity.getData(ModAttachments.BEYONDER_COMPONENT)
-                .getCharacteristicStack();
-
-        String[] pathwayHistory = entity.getData(ModAttachments.BEYONDER_COMPONENT).getPathwayHistory();
-
         map.put(entity.getUUID(), StoredData.builder
                 .copyFrom(data)
                 .pathway(pathway)
                 .sequence(sequence)
                 .trueName(((ServerPlayer) entity).getGameProfile().getName())
-                .charStackArray(componentCharStack)
-                .pathwayHistory(pathwayHistory)
+                .charList(entity.getData(ModAttachments.BEYONDER_COMPONENT).getCharacteristicList())
+                .pathwayHistory(BeyonderData.getPathwayHistory(entity))
                 .uniqueness(uniqueness)
                 .build());
 
@@ -295,55 +290,41 @@ public class PlayerMap extends SavedData {
     public int count(String path, int seq) {
         int res = 0;
         for (var obj : map.values()) {
-            if (obj.pathway().equals(path) && obj.sequence() == seq) {
-                res++;
-                res += obj.charStack()[seq];
+            int totalOfThisType = obj.chars().stream()
+                    .filter(c -> c.pathway().equals(path) && c.sequence() == seq)
+                    .mapToInt(Characteristic::stack)
+                    .sum();
+
+            if (path.equals(obj.pathway()) && seq == obj.sequence()) {
+                res += Math.max(1, totalOfThisType);
+            } else {
+                res += totalOfThisType;
             }
         }
         return res;
     }
 
     public boolean check(String path, int seq){
-        int seq_0 = count(path, 0),
-                seq_1 = count(path, 1),
-                seq_2 = count(path, 2),
-                seq_3 = count(path, 3),
-                seq_4 = count(path, 4),
-                seq_5 = count(path, 5),
-                seq_6 = count(path, 6),
-                seq_7 = count(path, 7),
-                seq_8 = count(path, 8)
-        ;
+        int currentCount = count(path, seq);
+        int limit = switch (seq) {
+            case 0 -> server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT);
+            case 1 -> server.getGameRules().getInt(ModGameRules.SEQ_1_AMOUNT);
+            case 2 -> server.getGameRules().getInt(ModGameRules.SEQ_2_AMOUNT);
+            case 3 -> server.getGameRules().getInt(ModGameRules.SEQ_3_AMOUNT);
+            case 4 -> server.getGameRules().getInt(ModGameRules.SEQ_4_AMOUNT);
+            case 5 -> server.getGameRules().getInt(ModGameRules.SEQ_5_AMOUNT);
+            case 6 -> server.getGameRules().getInt(ModGameRules.SEQ_6_AMOUNT);
+            case 7 -> server.getGameRules().getInt(ModGameRules.SEQ_7_AMOUNT);
+            case 8 -> server.getGameRules().getInt(ModGameRules.SEQ_8_AMOUNT);
+            default -> Integer.MAX_VALUE;
+        };
 
-        switch (seq) {
-            case 0:
-                if (seq_0 >= server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)) return false;
-                break;
-            case 1:
-                if (seq_0 >= server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)
-                        || seq_1 >= server.getGameRules().getInt(ModGameRules.SEQ_1_AMOUNT)) return false;
-                break;
-            case 2:
-                if (seq_2 + seq_1 >= server.getGameRules().getInt(ModGameRules.SEQ_2_AMOUNT)) return false;
-                break;
-            case 3:
-                if (seq_3 + seq_2 >= server.getGameRules().getInt(ModGameRules.SEQ_3_AMOUNT)) return false;
-                break;
-            case 4:
-                if (seq_4 + seq_3 >= server.getGameRules().getInt(ModGameRules.SEQ_4_AMOUNT)) return false;
-                break;
-            case 5:
-                if (seq_5 + seq_4 >= server.getGameRules().getInt(ModGameRules.SEQ_5_AMOUNT)) return false;
-                break;
-            case 6:
-                if (seq_6 + seq_5 >= server.getGameRules().getInt(ModGameRules.SEQ_6_AMOUNT)) return false;
-                break;
-            case 7:
-                if (seq_7 + seq_6 >= server.getGameRules().getInt(ModGameRules.SEQ_7_AMOUNT)) return false;
-                break;
-            case 8:
-                if (seq_8 + seq_7 >= server.getGameRules().getInt(ModGameRules.SEQ_8_AMOUNT)) return false;
-                break;
+        if (currentCount >= limit) return false;
+
+        // Additional lore-based constraints
+        if (seq == 1) {
+            // Cannot become Sequence 1 if a Sequence 0 already exists
+            if (count(path, 0) >= server.getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)) return false;
         }
 
         return true;
@@ -477,11 +458,14 @@ public class PlayerMap extends SavedData {
         setDirty();
     }
 
-    public void addStack(LivingEntity entity, int value, int sequence) {
+    public void addStack(LivingEntity entity, int value, int sequence, String pathway) {
         if (!contains(entity)) put(entity);
 
-        int current = playerMap.get(entity.getUUID()).get().charStack()[sequence];
-        setStack(entity, current + value, sequence);
+        int current = map.get(entity.getUUID()).chars().stream()
+                .filter(c -> c.pathway().equals(pathway) && c.sequence() == sequence)
+                .mapToInt(Characteristic::stack)
+                .sum();
+        setStack(entity, current + value, sequence, pathway);
     }
 
     /**
@@ -505,12 +489,12 @@ public class PlayerMap extends SavedData {
         setDirty();
     }
 
-    public void setStack(LivingEntity entity, int value, int sequence) {
+    public void setStack(LivingEntity entity, int value, int sequence, String pathway) {
         if (!contains(entity)) put(entity);
 
         map.put(entity.getUUID(), StoredData.builder
                 .copyFrom(map.get(entity.getUUID()))
-                .charStack(value, sequence)
+                .characteristic(value, sequence, pathway)
                 .build());
 
         setDirty();
@@ -521,7 +505,7 @@ public class PlayerMap extends SavedData {
 
         map.put(entity.getUUID(), StoredData.builder
                 .copyFrom(map.get(entity.getUUID()))
-                .clearCharStack()
+                .clearCharList()
                 .build());
 
         setDirty();

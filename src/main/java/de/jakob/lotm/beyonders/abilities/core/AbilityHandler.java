@@ -15,6 +15,24 @@ import de.jakob.lotm.beyonders.abilities.sun.*;
 import de.jakob.lotm.beyonders.abilities.tyrant.*;
 import de.jakob.lotm.beyonders.abilities.visionary.*;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.*;
+import de.jakob.lotm.abilities.twilight_giant.*;
+import de.jakob.lotm.abilities.abyss.*;
+import de.jakob.lotm.abilities.common.*;
+import de.jakob.lotm.abilities.justiciar.*;
+import de.jakob.lotm.abilities.darkness.*;
+import de.jakob.lotm.abilities.death.*;
+import de.jakob.lotm.abilities.demoness.*;
+import de.jakob.lotm.abilities.door.*;
+import de.jakob.lotm.abilities.error.*;
+import de.jakob.lotm.abilities.fool.*;
+import de.jakob.lotm.abilities.mother.*;
+import de.jakob.lotm.abilities.red_priest.*;
+import de.jakob.lotm.abilities.sefirah.*;
+import de.jakob.lotm.abilities.sun.*;
+import de.jakob.lotm.abilities.tyrant.*;
+import de.jakob.lotm.abilities.visionary.*;
+import de.jakob.lotm.abilities.wheel_of_fortune.*;
+import de.jakob.lotm.abilities.black_emperor.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -335,6 +353,27 @@ public class AbilityHandler {
         abilities.add(new HandOfDeathAbility("hand_of_death_ability"));
         abilities.add(new DeathFlameAbility("death_flame_ability"));
         abilities.add(new NationOfTheDeadAbility("nation_of_the_dead_ability"));
+        abilities.add(new WordOfSpiritAbility("word_of_spirit_ability"));
+
+        //Twilight Giant Pathway
+        abilities.add(new CombatMasteryAbility("combat_mastery_ability"));
+        abilities.add(new SupernaturalResistanceAbility("supernatural_resistance_ability"));
+
+        // Sefirot Abilities
+        abilities.add(new SefirotAuthorityAbility("sefirot_authority_ability"));
+        abilities.add(new AboveTheSequenceAuthorityAbility("above_the_sequence_authority_ability"));
+
+
+
+
+
+
+
+
+
+
+
+
 
         //abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
     }

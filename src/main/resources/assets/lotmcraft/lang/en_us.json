@@ -16,6 +16,11 @@
   "item.lotmcraft.paper_axe": "Paper Axe",
   "item.lotmcraft.paper_shovel": "Paper Shovel",
   "item.lotmcraft.spacer": "",
+  "item.lotmcraft.upper_fragment_of_a_mysterious_tablet": "Upper Fragment of a Mysterious Tablet",
+  "item.lotmcraft.right_fragment_of_a_mysterious_tablet": "Right Fragment of a Mysterious Tablet",
+  "item.lotmcraft.left_fragment_of_a_mysterious_tablet": "Left Fragment of a Mysterious Tablet",
+  "item.lotmcraft.lower_fragment_of_a_mysterious_tablet": "Lower Fragment of a Mysterious Tablet",
+  "item.lotmcraft.mysterious_tablet": "Mysterious Tablet",
 
 
   "creativetab.lotmcraft.lotm_tab": "Lord of the Mysteries",
@@ -160,9 +165,16 @@
   "ability.lotmcraft.divination.anti_divination": "Anti Divination",
   "lotmcraft.angel_authority_ability": "Angel Authority",
   "lotmcraft.angel_authority_ability.description": "Angelic power that allows you to traverse the spirit world and shatter artifacts",
+  "lotmcraft.sefirot_authority_ability": "Sefirot Authority",
+  "lotmcraft.sefirot_authority_ability.description": "The authority granted by holding a Sefirot",
+  "lotmcraft.above_the_sequence_authority_ability": "Above the Sequence Authority",
+  "lotmcraft.above_the_sequence_authority_ability.description": "The authority of one who has transcended the boundaries of the sequence",
+  "item.lotmcraft.elevated_divination_ability": "Elevated Divination",
+  "item.lotmcraft.elevated_concealment_ability": "Elevated Concealment",
   "ability.lotmcraft.angel_authority.spirit_world_passage": "Spirit World Passage",
   "ability.lotmcraft.angel_authority.artifact_shattering": "Artifact Shattering",
   "ability.lotmcraft.angel_authority.flight": "Flight",
+  "ability.lotmcraft.angel_authority.characteristic_splitting": "Characteristic Splitting",
 
   "lotmcraft.evil_detection_ability": "Evil Detection",
   "lotmcraft.evil_detection_ability.description": "Highlight all evil and undead entities around you",
@@ -893,6 +905,11 @@
   "lotmcraft.misfortune_field_ability.description": "Cast an area of misfortune",
   "lotmcraft.blessing_ability": "Blessing",
   "lotmcraft.blessing_ability.description": "Give a blessing gifted to your allies",
+  "blessing.lotmcraft.fool_protection": "Fool's Protection",
+  "blessing.lotmcraft.sun_cleansing": "Sun's Cleansing",
+  "blessing.lotmcraft.error_agility": "Error's Agility",
+  "blessing.lotmcraft.minor_healing": "Minor Healing",
+  "blessing.lotmcraft.concealment": "Concealment",
   "lotmcraft.curse_of_misfortune_ability": "Curse of Misfortune",
   "lotmcraft.curse_of_misfortune_ability.description": "Curse your enemies with misfortune",
   "ability.lotmcraft.curse_of_misfortune.resisted": "The target's Sequence is too high to be Cursed",
@@ -954,10 +971,13 @@
   "ability.lotmcraft.parasitation.concealed": "Mode: Conceal",
   "ability.lotmcraft.parasitation.no_target": "No Target found for parasitation",
   "ability.lotmcraft.parasitation.target_too_strong": "Target is too strong to parasitize",
+  "ability.lotmcraft.parasitation.host_health": "Host Health: %s / %s",
   "lotmcraft.host_controlling_ability": "Host Controlling",
   "lotmcraft.host_controlling_ability.description": "Control your Host, either Draining their health to Heal yourself or kill them",
   "ability.lotmcraft.host_controlling.drain_health": "Drain Health",
   "ability.lotmcraft.host_controlling.kill": "Kill Host",
+  "ability.lotmcraft.host_controlling.switch_to_control": "Switch to Control",
+  "ability.lotmcraft.host_controlling.control_movement": "Control Movement",
   "ability.lotmcraft.host_controlling.no_host": "You are not parasitizing anyone",
   "lotmcraft.avatar_creation_ability": "Avatar Creation",
   "lotmcraft.avatar_creation_ability.description": "Create an Avatar of yourself, it will be 1 sequence below you",
@@ -998,6 +1018,8 @@
   "ability.lotmcraft.magnify.execution": "Magnify Execution",
   "lotmcraft.loophole_creation_ability": "Loophole Creation",
   "lotmcraft.loophole_creation_ability.description": "Create an Area, where enemies will be randomly teleported around and their abilities will be stolen",
+  "item.lotmcraft.fate_resistance_ability": "Elevated Fate",
+  "lotmcraft.fate_resistance_ability.description": "Elevate your fate, granting resistance to fate-based effects",
   "lotmcraft.fate_siphoning_ability": "Fate Siphoning",
   "lotmcraft.fate_siphoning_ability.description": "Siphon someone's Fate, anything that is going to harm you, will be transferred",
   "ability.lotmcraft.fate_siphoning.no_target": "No Target found",
@@ -1195,6 +1217,16 @@
 
   "lotm.ability.cogitation.tick": "Cogitating",
 
+  "lotmcraft.combat_mastery_ability": "Combat Mastery",
+  "lotmcraft.combat_mastery_ability.description": "When activating this ability the next attack you do deals a critical hit",
+  
+
+
+
+
+
+
+
   "item.lotmcraft.ability_not_implemented": "Abilities for this Sequence are not yet implemented",
 
   "_comment002": "Passive Abilities-----------------------------------------------------------------------------",
@@ -1317,6 +1349,16 @@
   "item.lotmcraft.pure_idealism_ability": "Pure Idealism",
   "item.lotmcraft.pure_idealism_ability.description": "The better your mental state - the stronger you are",
 
+  
+  
+  "item.lotmcraft.weapon_mastery_ability": "Weapon Mastery",
+  "item.lotmcraft.weapon_mastery_ability.description": "Holding a weapon boosts attack damage and attack speed. Bows, crossbows, and tridents charge faster.",
+  "lotmcraft.supernatural_resistance_ability": "Supernatural Resistance",
+  "lotmcraft.supernatural_resistance_ability.description": "A self buff skill that grants Resistance and clears negative effects",
+  
+  
+  
+  
   "_comment003": "Effects-----------------------------------------------------------------------------",
   "effect.lotmcraft.asleep": "Asleep",
   "effect.lotmcraft.loosing_control": "Loosing Control",
@@ -1356,9 +1398,12 @@
   "entity.minecraft.villager.lotmcraft.beyonder_merchant": "Beyonder Merchant",
   "entity.minecraft.villager.lotmcraft.evernight_clergyman": "Evernight Clergyman",
   "entity.minecraft.villager.lotmcraft.eternal_blazing_sun_clergyman": "Eternal Blazing Sun Clergyman",
+  "entity.minecraft.villager.lotmcraft.ancient_trader": "Ancient Trader",
 
   "_comment006": "Potions-----------------------------------------------------------------------------",
   "item.lotmcraft.empty_bottle": "Empty Bottle",
+  "item.lotmcraft.sealed_bottle": "Sealed Bottle",
+  "item.lotmcraft.eternal_darkness_river_water_bottle": "Bottle of Eternal Darkness River Water",
 
 
   "_comment007": "Damage-----------------------------------------------------------------------------",
@@ -1433,6 +1478,12 @@
   "item.lotmcraft.agate_peacock_egg": "Egg of an Agate Peacock",
   "item.lotmcraft.succubus_eyes": "Eyes of a Succubus",
   "item.lotmcraft.shadow_lizard_scales": "Scales of a Shadow Lizard",
+  "item.lotmcraft.iron_warrior_blood": "Blood of an Iron Warrior",
+  "item.lotmcraft.giant_crab_claw": "Claw of a Giant Crab",
+  "item.lotmcraft.enchanted_blade_fragment": "Enchanted Blade Fragment",
+  "item.lotmcraft.dawn_holy_crystal": "Dawn Holy Crystal",
+  "item.lotmcraft.ancient_shield_shard": "Shard of an Ancient Shield",
+  "item.lotmcraft.demon_claw": "Demon Claw",
   "item.lotmcraft.bizarro_bane_eye": "Eye of a Bizarro Bane",
   "item.lotmcraft.golden_blood": "Golden Blood",
   "item.lotmcraft.sun_orb": "Sun Orb",
@@ -1466,6 +1517,7 @@
   "lotm.pathway.justiciar": "Justiciar",
   "lotm.pathway.black_emperor": "Black Emperor",
   "lotm.pathway.wheel_of_fortune": "Wheel of Fortune",
+  "lotm.pathway.Twilight_Giant": "Twilight Giant",
 
   "_comment011": "Sequences-----------------------------------------------------------------------------",
   "lotm.sequence.fool": "Fool",
@@ -1710,6 +1762,18 @@
   "lotm.sequence.sheriff": "Sheriff",
   "lotm.sequence.arbiter": "Arbiter",
 
+  "lotm.sequence.Twilight_Giant": "Twilight Giant",
+  "lotm.sequence.Hand_Of_God": "Hand Of God",
+  "lotm.sequence.Glory": "Glory",
+  "lotm.sequence.Silver_Knight": "Silver Knight",
+  "lotm.sequence.Demon_Hunter": "Demon Hunter",
+  "lotm.sequence.Guardian": "Guardian",
+  "lotm.sequence.Dawn_Paladin": "Dawn Paladin",
+  "lotm.sequence.Weapon_Master": "Weapon Master",
+  "lotm.sequence.Pugilist": "Pugilist",
+  "lotm.sequence.Warrior": "Warrior",
+
+
   "_comment012": "Advancements-----------------------------------------------------------------------------",
   "advancements.lotmcraft.root.title": "Path of the Divine",
   "advancements.lotmcraft.root.description": "Begin your journey as a Beyonder",
@@ -1817,9 +1881,20 @@
   "lotm.calamity.tornado": "Tornado",
   "lotm.calamity.earthquake": "Earthquake",
 
+  "block.lotmcraft.drops_of_eternal_darkness": "Drops of Eternal Darkness",
+  "item.lotmcraft.drops_of_eternal_darkness_bucket": "Bucket of Eternal Darkness River Water",
+
   "lotm.sefirot.no_sefirot": "You don't have a Sefirot",
+  "lotm.sefirot.already_has_sefirot": "You already possess a Sefirot",
   "lotm.sefirot.sefirah_castle_already_occupied": "Sefirah Castle is occupied already",
   "lotm.sefirot.wrong_pathway": "Your Pathway does not align with the Sefirot",
+  "lotm.sefirot.sefirah_castle_started": "%s has begun accommodating Sefirah Castle (5 minutes remain)",
+  "lotm.sefirot.sefirah_castle_spirit_world_locked": "The Spirit World is too unstable right now",
+  "lotm.sefirot.sefirah_castle_claimed": "Sefirah Castle has accepted you",
+  "lotm.sefirot.command_blocked": "Your commands are sealed during accommodation",
+  "lotm.sefirot.river_started": "%s has begun accommodating the River of Eternal Darkness",
+  "lotm.sefirot.river_claimed": "The River of Eternal Darkness has accepted you",
+  "lotm.sefirot.river_already_occupied": "The River of Eternal Darkness is already claimed",
 
   "lotm.ally.no_target": "No valid target found",
   "lotm.ally.added": "Allied with %s",
@@ -2177,6 +2252,7 @@
   "lotm.sequence": "Sequence",
   "lotm.digestion": "Digestion",
   "lotm.sanity": "Sanity",
+  "lotm.corruption": "Corruption",
   "lotm.passive_abilities": "Passive Abilities",
   "lotm.beyonder_characteristic": "Beyonder Characteristic",
   "lotm.potion": "Potion",
@@ -2195,6 +2271,8 @@
   "lotm.accept": "Accept",
 
   "lotmcraft.own_praying": "You have heard your own praying",
+  "lotmcraft.gui.prey.title": "Select Target to Pray To",
+  "lotmcraft.prey.success": "You have initiated a prayer to the selected target. Your next chat message will be sent as a prayer.",
   "lotmcraft.far_away_praying": "You have heard whispers of praying, but you are too far away to hear them clearly",
   "lotmcraft.honorific_praying": "You have heard praying from %1$s\nTheir general info: Pathway - %2$s; Sequence - %3$d; Position - %4$d %5$d %6$d",
   "lotmcraft.honorific_praying_message": "You have heard message: %s",
@@ -2208,4 +2286,28 @@
   "lotmcraft.honorific_praying_not_met_req_desc": "You have not met requirements to use this option",
   "lotmcraft.honorific_praying_use_skill_button": "[ USE SKILL ]",
   "lotmcraft.honorific_praying_use_skill_desc": "Will use one of your abilities for/against the prayer"
+,
+
+  "item.lotmcraft.garbage": "Garbage",
+  "item.lotmcraft.characteristics_exchange_tablet": "Characteristics Exchange Tablet",
+
+  "item.lotmcraft.fool_blasphemy_card": "Fool Blasphemy Card",
+  "item.lotmcraft.door_blasphemy_card": "Door Blasphemy Card",
+  "item.lotmcraft.error_blasphemy_card": "Error Blasphemy Card",
+  "item.lotmcraft.sun_blasphemy_card": "Sun Blasphemy Card",
+  "item.lotmcraft.tyrant_blasphemy_card": "Tyrant Blasphemy Card",
+  "item.lotmcraft.visionary_blasphemy_card": "Visionary Blasphemy Card",
+  "item.lotmcraft.darkness_blasphemy_card": "Darkness Blasphemy Card",
+  "item.lotmcraft.death_blasphemy_card": "Death Blasphemy Card",
+  "item.lotmcraft.twilight_giant_blasphemy_card": "Twilight Giant Blasphemy Card",
+  "item.lotmcraft.demoness_blasphemy_card": "Demoness Blasphemy Card",
+  "item.lotmcraft.red_priest_blasphemy_card": "Red Priest Blasphemy Card",
+  "item.lotmcraft.mother_blasphemy_card": "Mother Blasphemy Card",
+  "item.lotmcraft.abyss_blasphemy_card": "Abyss Blasphemy Card",
+  "item.lotmcraft.wheel_of_fortune_blasphemy_card": "Wheel of Fortune Blasphemy Card",
+  "item.lotmcraft.black_emperor_blasphemy_card": "Black Emperor Blasphemy Card",
+  "item.lotmcraft.justiciar_blasphemy_card": "Justiciar Blasphemy Card",
+  "item.lotmcraft.blasphemy_slate_left_half": "Blasphemy Slate (Left Half)",
+  "item.lotmcraft.blasphemy_slate_right_half": "Blasphemy Slate (Right Half)",
+  "item.lotmcraft.blasphemy_slate": "Blasphemy Slate"
 }

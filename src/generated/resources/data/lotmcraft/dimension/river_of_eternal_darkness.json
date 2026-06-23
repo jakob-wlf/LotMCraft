@@ -1,0 +1,10 @@
+{
+  "type": "lotmcraft:river_of_eternal_darkness",
+  "generator": {
+    "type": "lotmcraft:empty",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "lotmcraft:river_of_eternal_darkness_biome"
+    }
+  }
+}

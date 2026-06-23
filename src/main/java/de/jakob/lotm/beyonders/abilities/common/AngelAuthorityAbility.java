@@ -64,11 +64,16 @@ public class AngelAuthorityAbility extends SelectableAbility {
     protected String[] getAbilityNames() {
         return new String[]{"ability.lotmcraft.angel_authority.spirit_world_passage",
                 "ability.lotmcraft.angel_authority.artifact_shattering",
-                "ability.lotmcraft.angel_authority.flight"
+                "ability.lotmcraft.angel_authority.flight",
+                "ability.lotmcraft.angel_authority.characteristic_splitting"
         };
     }
 
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
+        if (level.isClientSide && entity instanceof Player && abilityIndex == 3) {
+            de.jakob.lotm.network.packets.handlers.ClientHandler.openCharacteristicSplittingScreen();
+            return;
+        }
         if (!level.isClientSide && entity instanceof ServerPlayer player) {
             switch (abilityIndex) {
                 case 0:
@@ -131,6 +136,10 @@ public class AngelAuthorityAbility extends SelectableAbility {
 
     public void spiritWorldPassage(ServerPlayer player) {
         if (player.level().isClientSide) return;
+        if (de.jakob.lotm.sefirah.SefirahCastleEventHandler.isAccommodating(player)) {
+            player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("lotm.sefirot.sefirah_castle_spirit_world_locked"));
+            return;
+        }
         ServerLevel targetLevel;
         Vec3 targetPos;
 

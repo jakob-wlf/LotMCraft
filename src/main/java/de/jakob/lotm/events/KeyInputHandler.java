@@ -6,6 +6,8 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
+import de.jakob.lotm.gui.custom.BlasphemySlate.SlateHalfPathwayScreen;
+import de.jakob.lotm.item.custom.BlasphemySlateHalfItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.ClientBeyonderCache;
@@ -22,6 +24,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -237,6 +240,14 @@ public class KeyInputHandler {
         if(LOTMCraft.nextArtifactAbilityKey != null && LOTMCraft.nextArtifactAbilityKey.consumeClick()) {
             PacketHandler.sendToServer(new NextArtifactAbilityPacket());
         }
+    }
+
+    @SubscribeEvent
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        ItemStack stack = event.getItemStack();
+        if (!(stack.getItem() instanceof BlasphemySlateHalfItem half)) return;
+        event.setCanceled(true);
+        de.jakob.lotm.network.packets.handlers.ClientHandler.openSlateHalfPathwayScreen(half.getHalfType());
     }
 
     @SubscribeEvent

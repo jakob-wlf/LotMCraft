@@ -57,7 +57,7 @@ public class ReincarnationAbility extends PassiveAbilityItem {
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("death", 3));
+        return new HashMap<>(Map.of("death", 4));
     }
 
     @Override
@@ -156,26 +156,34 @@ public class ReincarnationAbility extends PassiveAbilityItem {
     }
 
     private static final int MIN_DISTANCE = 500;
+    private static final int MAX_DISTANCE = 5000;
 
     /**
-     * Tries up to 10 rounds of 32 candidates each to find a safe spawn position within the world border.
-     * Each failed round doubles the search radius and halves the minimum distance requirement,
-     * eventually dropping it to 0 so a position is almost always found.
+     * Tries up to 10 rounds of 32 candidates each to find a safe spawn position near the death point.
+     * The search radius expands up to MAX_DISTANCE while the minimum distance relaxes toward 0.
      */
     private static BlockPos findSafeTeleportPos(ServerLevel level, RandomSource random, BlockPos origin) {
         var border = level.getWorldBorder();
-        double fullSize = border.getSize() / 2.0;
+        double maxBorderDistance = Math.min(
+                Math.min(origin.getX() - border.getMinX(), border.getMaxX() - origin.getX()),
+                Math.min(origin.getZ() - border.getMinZ(), border.getMaxZ() - origin.getZ())
+        );
+        double maxDistance = Math.max(0.0, Math.min(maxBorderDistance, MAX_DISTANCE));
 
         int round = 0;
-        int minDistance = MIN_DISTANCE;
+        int minDistance = Math.min(MIN_DISTANCE, (int) Math.floor(maxDistance));
 
         while (round < 10) {
-            // Each round the search covers a larger slice of the border area
-            double size = fullSize * (0.1 + 0.9 * (round / 9.0));
+            // Each round expands the search radius toward maxDistance.
+            double size = maxDistance * (0.2 + 0.8 * (round / 9.0));
 
             for (int attempt = 0; attempt < 32; attempt++) {
-                double rawX = border.getCenterX() + (random.nextDouble() * 2 - 1) * size;
-                double rawZ = border.getCenterZ() + (random.nextDouble() * 2 - 1) * size;
+                double angle = random.nextDouble() * Math.PI * 2.0;
+                double minRadius = Math.min(minDistance, size);
+                double distance = minRadius + random.nextDouble() * Math.max(0.0, size - minRadius);
+
+                double rawX = origin.getX() + Math.cos(angle) * distance;
+                double rawZ = origin.getZ() + Math.sin(angle) * distance;
                 Vec3 clamped = TeleportationUtil.clampToBorder(level, new Vec3(rawX, 0, rawZ));
                 int x = (int) clamped.x;
                 int z = (int) clamped.z;

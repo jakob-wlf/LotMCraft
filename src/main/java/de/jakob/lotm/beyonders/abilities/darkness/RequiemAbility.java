@@ -38,7 +38,7 @@ public class RequiemAbility extends Ability {
     private static final HashSet<UUID> pacifiedEntities = new HashSet<>();
 
     public RequiemAbility(String id) {
-        super(id, 3, "calming");
+        super(id, 15, "calming");
         postsUsedAbilityEventManually = true;
     }
 
@@ -49,7 +49,7 @@ public class RequiemAbility extends Ability {
 
     @Override
     public float getSpiritualityCost() {
-        return 45;
+        return 50;
     }
 
     @Override

@@ -37,7 +37,7 @@ public class MidnightPoemAbility extends SelectableAbility {
     private final DustParticleOptions dustBig = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), 10f);
 
     public MidnightPoemAbility(String id) {
-        super(id, 4f, "calming");
+        super(id, 16f, "calming");
         interactionRadius = 20;
     }
 
@@ -125,6 +125,21 @@ public class MidnightPoemAbility extends SelectableAbility {
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
         PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+    }
+
+    @Override
+    public boolean isSubAbilityAllowed(LivingEntity entity, int selectedAbility) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (entitySeq > 6) {
+            return selectedAbility < 2;
+        }
+        if (entitySeq > 4) {
+            return selectedAbility < 3;
+        }
+        if (entitySeq > 3) {
+            return selectedAbility < 4;
+        }
+        return true;
     }
 
     @Override

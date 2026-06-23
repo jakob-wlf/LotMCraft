@@ -49,13 +49,26 @@ public record UseKeyboundAbilityPacket(int selectedAbility) implements CustomPac
             if (packet.selectedAbility() < 0 || packet.selectedAbility() >= abilityBarComponent.getAbilities().size()) {
                 return;
             }
-            Ability ability = LOTMCraft.abilityHandler.getById(abilityBarComponent.getAbilities().get(packet.selectedAbility()).split(":")[0]);
+            String rawEntry = abilityBarComponent.getAbilities().get(packet.selectedAbility());
 
-            if(ability instanceof SelectableAbility && getIndex(abilityBarComponent.getAbilities().get(packet.selectedAbility())) != -1) {
-                ((SelectableAbility) ability).addSubAbilityOverride(player, getIndex(abilityBarComponent.getAbilities().get(packet.selectedAbility())));
+            // Soul abilities (from Internal Underworld) are prefixed with "soul|" and must
+            // bypass the hasAbility check since they belong to a different pathway.
+            boolean isSoulAbility = rawEntry.startsWith("soul|");
+            String effectiveEntry = isSoulAbility ? rawEntry.substring(5) : rawEntry; // strip "soul|"
+
+            Ability ability = LOTMCraft.abilityHandler.getById(effectiveEntry.split(":")[0]);
+            if (ability == null) return;
+
+            if(ability instanceof SelectableAbility && getIndex(effectiveEntry) != -1) {
+                ((SelectableAbility) ability).addSubAbilityOverride(player, getIndex(effectiveEntry));
             }
 
-            ability.useAbility(player.serverLevel(), player);
+            if (isSoulAbility) {
+                // Cast as a soul ability: skip hasAbility and requirements checks.
+                ability.useAbility(player.serverLevel(), player, true, false, false);
+            } else {
+                ability.useAbility(player.serverLevel(), player);
+            }
         });
     }
 

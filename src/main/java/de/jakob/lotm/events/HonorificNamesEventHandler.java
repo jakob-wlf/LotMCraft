@@ -2,11 +2,22 @@ package de.jakob.lotm.events;
 
 import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.GatheringData;
+import de.jakob.lotm.attachments.AnchorComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SefirotData;
+import de.jakob.lotm.sefirah.RiverBlessingManager;
+import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.PendingPrayer;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -42,6 +53,57 @@ public class HonorificNamesEventHandler {
             list.removeIf(p -> p.senderUUID().equals(senderUUID));
             if (list.isEmpty()) pendingPrayers.remove(targetUUID);
         }
+    }
+
+    public static void performPrayer(ServerPlayer sender, UUID targetUUID) {
+        MinecraftServer server = sender.getServer();
+        if (server == null) return;
+        ServerPlayer target = server.getPlayerList().getPlayer(targetUUID);
+        if (target == null) return;
+
+        UUID playerUUID = sender.getUUID();
+
+        // ── Gathering member / River-blessed sefirot access ───────────────
+        GatheringData gd = GatheringData.get(server);
+        boolean isMember  = gd.isMember(targetUUID, playerUUID);
+        boolean isBlessed = RiverBlessingManager.isBlessed(playerUUID)
+                && targetUUID.equals(RiverBlessingManager.getOwner(playerUUID));
+        if (isMember || isBlessed) {
+            handleSefirotAccess(sender, targetUUID, server);
+            return;
+        }
+        // ─────────────────────────────────────────────────────────────────
+
+        if (targetUUID.equals(playerUUID)) {
+            target.sendSystemMessage(Component.translatable("lotmcraft.own_praying")
+                    .withStyle(ChatFormatting.GREEN));
+            return;
+        }
+
+        if (BeyonderData.getSequence(target) == 3 && target.distanceTo(sender) >= 4000.0f) {
+            target.sendSystemMessage(Component.translatable("lotmcraft.far_away_praying")
+                    .withStyle(ChatFormatting.RED));
+            return;
+        }
+
+        isInTransferring.put(playerUUID, targetUUID);
+
+        target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(.01f, target);
+
+        // Decrease corruption on prayer
+        int decreaseVal = target.level().getGameRules().getInt(de.jakob.lotm.gamerule.ModGameRules.PRAYER_CORRUPTION_DECREASE);
+        if (decreaseVal > 0) {
+            target.getData(ModAttachments.CORRUPTION_COMPONENT).decreaseCorruptionAndSync(decreaseVal / 1000f, target);
+        }
+
+        // Add/Update anchor
+        AnchorComponent anchorComp = target.getData(ModAttachments.ANCHOR_COMPONENT);
+        anchorComp.addOrUpdateAnchor(playerUUID, 1.0f);
+
+        target.sendSystemMessage(formNotification(sender));
+        sender.sendSystemMessage(Component.translatable("lotmcraft.prey.success").withStyle(ChatFormatting.GREEN));
+
+        storePendingPrayer(sender, target);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
@@ -105,34 +167,9 @@ public class HonorificNamesEventHandler {
                 return;
             }
 
-            var target = event.getPlayer().server.getPlayerList().getPlayer(targetUUID);
-
-            if(target == null){
-                input.remove(playerUUID);
-                timeout.remove(playerUUID);
-
-                return;
-            }
-
-            if(targetUUID.equals(playerUUID)){
-                target.sendSystemMessage(Component.translatable("lotmcraft.own_praying")
-                        .withStyle(ChatFormatting.GREEN));
-                return;
-            }
-
-            if(BeyonderData.getSequence(target) == 3 && target.distanceTo(event.getPlayer()) >= 4000.0f){
-                target.sendSystemMessage(Component.translatable("lotmcraft.far_away_praying")
-                        .withStyle(ChatFormatting.RED));
-                return;
-            }
-
-            isInTransferring.put(playerUUID, targetUUID);
-
-            target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(.01f, target);
-
-            storePendingPrayer(event.getPlayer(), target);
-
-            target.sendSystemMessage(formNotification(event.getPlayer()));
+            input.remove(playerUUID);
+            timeout.remove(playerUUID);
+            performPrayer(event.getPlayer(), targetUUID);
         }
     }
 
@@ -190,5 +227,62 @@ public class HonorificNamesEventHandler {
 
     public static boolean isHonorificNamePart(String str) {
         return BeyonderData.playerMap.containsHonorificNameWithLine(str);
+    }
+
+    /**
+     * Teleports a gathering member or River-blessed player into their owner's sefirot,
+     * or returns them to their previous location if they are already inside.
+     *
+     * State is marked BEFORE the teleport so dimension-change guards see the correct flag.
+     */
+    private static void handleSefirotAccess(ServerPlayer member, UUID ownerUUID, MinecraftServer server) {
+        SefirotData sefirotData = SefirotData.get(server);
+        String ownerSefirot = sefirotData.getClaimedSefirot(ownerUUID);
+        if (ownerSefirot == null || ownerSefirot.isEmpty()) {
+            member.sendSystemMessage(Component.literal("§cThe owner has no sefirot."));
+            return;
+        }
+
+        ResourceLocation sefirotDimLoc = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, ownerSefirot);
+        boolean inSefirot = member.level().dimension().location().equals(sefirotDimLoc);
+
+        boolean isRiver = ownerSefirot.equals("river_of_eternal_darkness");
+        GatheringData gd = GatheringData.get(server);
+
+        if (inSefirot) {
+            // Return to previous location
+            if (isRiver) {
+                RiverBlessingManager.returnAudienceMember(member, server);
+            } else {
+                GatheringData.returnPlayer(member, server);
+            }
+            member.sendSystemMessage(Component.literal("§bYou have left the sefirot.").withStyle(ChatFormatting.AQUA));
+        } else {
+            ResourceKey<net.minecraft.world.level.Level> dimKey = ResourceKey.create(Registries.DIMENSION, sefirotDimLoc);
+            ServerLevel sefirotLevel = server.getLevel(dimKey);
+            if (sefirotLevel == null) {
+                member.sendSystemMessage(Component.literal("§cSefirot dimension not loaded."));
+                return;
+            }
+
+            if (isRiver) {
+                // River audience path: markInAudience saves current position and flags the player
+                // as audience BEFORE teleporting so the dimension-change guard lets them through.
+                RiverBlessingManager.markInAudience(member);
+                member.teleportTo(sefirotLevel,
+                        RiverBlessingManager.AUDIENCE_X,
+                        RiverBlessingManager.AUDIENCE_Y,
+                        RiverBlessingManager.AUDIENCE_Z,
+                        member.getYRot(), member.getXRot());
+            } else {
+                // Castle / Chaos Sea: save location and mark gathered BEFORE teleporting so
+                // the dimension-change guard in GatheringEventHandler sees isGathered = true.
+                gd.saveReturnLocation(member);
+                GatheringData.markGathered(member.getUUID());
+                double[] pos = GatheringData.CHAIR_POSITIONS[0];
+                member.teleportTo(sefirotLevel, pos[0], pos[1], pos[2], member.getYRot(), member.getXRot());
+            }
+            member.sendSystemMessage(Component.literal("§bYou have entered the sefirot.").withStyle(ChatFormatting.AQUA));
+        }
     }
 }

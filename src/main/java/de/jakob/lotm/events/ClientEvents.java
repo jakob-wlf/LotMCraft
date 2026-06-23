@@ -4,7 +4,14 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.darkness.NightmareAbility;
 import de.jakob.lotm.util.data.ClientCorrosionFovCache;
 import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
+import com.mojang.blaze3d.shaders.FogShape;
+import com.mojang.blaze3d.systems.RenderSystem;
+import de.jakob.lotm.beyonders.abilities.darkness.NightmareAbility;
+import de.jakob.lotm.util.ClientCorrosionFovCache;
+import de.jakob.lotm.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
+import de.jakob.lotm.fluid.ModFluidTypes;
+import de.jakob.lotm.gui.custom.InternalUnderworld.InternalUnderworldAbilityScreen;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.InventoryOpenedPacket;
@@ -12,12 +19,26 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Camera;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.FogRenderer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.inventory.ChestMenu;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
@@ -80,6 +101,55 @@ public class ClientEvents {
         registerSealedArtifactTint(ModItems.SEALED_ARTIFACT_CHAIN.get(), event);
     }
 
+    @SubscribeEvent
+    public static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
+        event.registerFluidType(new IClientFluidTypeExtensions() {
+            private static final ResourceLocation STILL = ResourceLocation.fromNamespaceAndPath("lotmcraft", "block/river_of_eternal_darkness_water_still");
+            private static final ResourceLocation FLOWING = ResourceLocation.fromNamespaceAndPath("lotmcraft", "block/river_of_eternal_darkness_water_flowing");
+            private static final ResourceLocation OVERLAY = ResourceLocation.fromNamespaceAndPath("lotmcraft", "block/river_of_eternal_darkness_water_still");
+            private static final ResourceLocation UNDERWATER_OVERLAY = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/misc/underwater.png");
+
+            @Override
+            public ResourceLocation getStillTexture() {
+                return STILL;
+            }
+
+            @Override
+            public ResourceLocation getFlowingTexture() {
+                return FLOWING;
+            }
+
+            @Override
+            public ResourceLocation getOverlayTexture() {
+                return OVERLAY;
+            }
+
+            @Override
+            public int getTintColor() {
+                return 0xFF090909;
+            }
+
+            @Override
+            public ResourceLocation getRenderOverlayTexture(Minecraft mc) {
+                return UNDERWATER_OVERLAY;
+            }
+
+            @Override
+            public Vector3f modifyFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance,
+                                           float darkenWorldAmount, Vector3f fluidFogColor) {
+                return new Vector3f(0.02f, 0.02f, 0.03f);
+            }
+
+            @Override
+            public void modifyFogRender(Camera camera, FogRenderer.FogMode mode, float renderDistance,
+                                        float partialTick, float nearDistance, float farDistance, FogShape shape) {
+                RenderSystem.setShaderFogStart(0.1f);
+                RenderSystem.setShaderFogEnd(Math.min(farDistance, Math.max(2.5f, renderDistance * 0.15f)));
+                RenderSystem.setShaderFogShape(FogShape.SPHERE);
+            }
+        }, ModFluidTypes.DROPS_OF_ETERNAL_DARKNESS_TYPE.get());
+    }
+
     private static void registerSealedArtifactTint(Item item, RegisterColorHandlersEvent.Item event) {
         event.register(
                 (stack, tintIndex) -> {
@@ -121,6 +191,29 @@ public class ClientEvents {
 
     @SubscribeEvent
     public static void onScreenOpen(ScreenEvent.Opening event) {
+        if (event.getScreen() instanceof InternalUnderworldAbilityScreen) {
+            return;
+        }
+
+        // Swap matching chest titles into the custom underworld ability UI.
+        if (event.getScreen() instanceof AbstractContainerScreen<?> containerScreen
+                && containerScreen.getMenu() instanceof ChestMenu chestMenu) {
+            String title = containerScreen.getTitle().getString();
+            String selectSoulTitle = Component.translatable("ability.lotmcraft.internal_underworld.select_soul").getString();
+            boolean isUnderworldTitle = title.startsWith("Internal Underworld - ") || title.equals(selectSoulTitle);
+            if (isUnderworldTitle) {
+                Minecraft mc = Minecraft.getInstance();
+                if (mc.player != null) {
+                    event.setNewScreen(new InternalUnderworldAbilityScreen(
+                            chestMenu,
+                            mc.player.getInventory(),
+                            containerScreen.getTitle()
+                    ));
+                    return;
+                }
+            }
+        }
+
         if (!(event.getScreen() instanceof InventoryScreen)) return;
 
         PacketHandler.sendToServer(new InventoryOpenedPacket());

@@ -8,6 +8,8 @@ import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.MiracleOfResurrectionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -43,7 +45,27 @@ public class MiracleOfResurrectionAbility extends PassiveAbilityItem {
 
     }
 
+    @Override
+    public void onPassiveAbilityGained(LivingEntity entity, ServerLevel serverLevel) {
+        if (!(entity instanceof ServerPlayer player)) return;
+        MiracleOfResurrectionComponent data = player.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
+        if (data.getResurrectionAttempts() <= 0) {
+            data.setResurrectionAttempts(4);
+        }
+    }
+
+    @Override
+    public void onPassiveAbilityRemoved(LivingEntity entity, ServerLevel serverLevel) {
+        if (!(entity instanceof ServerPlayer player)) return;
+        // Clear attempts when this passive isn't naturally active for the player's pathway.
+        if (!"fool".equalsIgnoreCase(BeyonderData.getPathway(player)) || BeyonderData.getSequence(player) > 2) {
+            MiracleOfResurrectionComponent data = player.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
+            data.setResurrectionAttempts(0);
+        }
+    }
+
     static Random random = new Random();
+    private static final int HISTORICAL_VOID_EXIT_TICKS = 20 * 10;
 
     @SubscribeEvent
     public static void beforePlayerDies(LivingIncomingDamageEvent event) {
@@ -94,6 +116,11 @@ public class MiracleOfResurrectionAbility extends PassiveAbilityItem {
                     // put the player in historical hiding state
                     HistoricalVoidHidingAbility ability = new HistoricalVoidHidingAbility("historical_void_hiding_ability");
                     ability.useAbility(serverLevel, serverPlayer);
+
+                        if (!"fool".equalsIgnoreCase(BeyonderData.getPathway(serverPlayer))) {
+                        ServerScheduler.scheduleDelayed(HISTORICAL_VOID_EXIT_TICKS, () ->
+                            HistoricalVoidHidingAbility.forceExit(serverLevel, serverPlayer), serverLevel);
+                        }
                 }
 
                 // reset all of his effects and abilities and state

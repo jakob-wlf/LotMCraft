@@ -11,12 +11,19 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.IntegerValue> DIGESTION_RATE;
     public static GameRules.Key<GameRules.BooleanValue> REDUCE_REGEN_IN_BEYONDER_FIGHT;
     public static GameRules.Key<GameRules.BooleanValue> SPAWN_WITH_STARTING_CHARACTERISTIC;
+    public static GameRules.Key<GameRules.BooleanValue> DO_CHARACTERISTICS_SLOTS;
     public static GameRules.Key<GameRules.BooleanValue> REGRESS_SEQUENCE_ON_DEATH;
     public static GameRules.Key<GameRules.BooleanValue> DISABLE_FLIGHT_IN_COMBAT;
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_ARTIFACTS;
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_ARTIFACTS_WITH_NO_NEGATIVES;
     public static GameRules.Key<GameRules.IntegerValue> CHARSTACK_REQUIRED_FOR_APOTHEOSIS;
     public static GameRules.Key<GameRules.BooleanValue> SEQUENCE_DIMENSION_LOCK;
+    public static GameRules.Key<GameRules.BooleanValue> LOOSE_CHAR_ON_REGRESSION;
+    public static GameRules.Key<GameRules.BooleanValue> ALLOW_TOTEMS;
+    public static GameRules.Key<GameRules.BooleanValue> DO_CHAR_EXCHANGE_WHEEL;
+    public static GameRules.Key<GameRules.BooleanValue> DO_CHAR_SLOT_ROLL_WHEEL;
+    public static GameRules.Key<GameRules.BooleanValue> DO_DAILY_SPIN_WHEEL;
+    public static GameRules.Key<GameRules.BooleanValue> DO_SELL_YOUR_SOUL_WHEEL;
 
     public static GameRules.Key<GameRules.IntegerValue> MAX_ALLY_COUNT;
 
@@ -29,12 +36,51 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.IntegerValue> SEQ_6_AMOUNT;
     public static GameRules.Key<GameRules.IntegerValue> SEQ_7_AMOUNT;
     public static GameRules.Key<GameRules.IntegerValue> SEQ_8_AMOUNT;
+    public static GameRules.Key<GameRules.IntegerValue> PRAYER_CORRUPTION_DECREASE;
+    public static GameRules.Key<GameRules.IntegerValue> ANCHOR_PASSIVE_CORRUPTION_DECREASE;
 
     public static void register() {
+
+        ALLOW_TOTEMS = GameRules.register(
+          "allowTotems",
+          GameRules.Category.MISC,
+          GameRules.BooleanValue.create(false)
+        );
+
         ALLOW_GRIEFING = GameRules.register(
             "allowAbilityGriefing",
             GameRules.Category.MISC,
             GameRules.BooleanValue.create(true)
+        );
+
+        DO_CHAR_EXCHANGE_WHEEL = GameRules.register(
+                "doCharExchangeWheel",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
+        );
+
+        DO_CHAR_SLOT_ROLL_WHEEL = GameRules.register(
+                "doCharSlotRollWheel",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
+        );
+
+        DO_DAILY_SPIN_WHEEL = GameRules.register(
+                "doDailySpinWheel",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
+        );
+
+        DO_SELL_YOUR_SOUL_WHEEL = GameRules.register(
+                "doSellYourSoulWheel",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
+        );
+
+        LOOSE_CHAR_ON_REGRESSION= GameRules.register(
+                "looseCharStackOnRegression",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(false)
         );
 
         DISABLE_FLIGHT_IN_COMBAT = GameRules.register(
@@ -77,6 +123,12 @@ public class ModGameRules {
 
         SPAWN_WITH_STARTING_CHARACTERISTIC = GameRules.register(
                 "spawnWithCharacteristic",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
+        );
+
+        DO_CHARACTERISTICS_SLOTS = GameRules.register(
+                "doCharacteristicsSlots",
                 GameRules.Category.MISC,
                 GameRules.BooleanValue.create(true)
         );
@@ -252,6 +304,18 @@ public class ModGameRules {
                                 value.set(400, server);
                             }
                         })
+        );
+
+        PRAYER_CORRUPTION_DECREASE = GameRules.register(
+                "prayerCorruptionDecrease",
+                GameRules.Category.MISC,
+                GameRules.IntegerValue.create(10) // 0.01 corruption (10 / 1000)
+        );
+
+        ANCHOR_PASSIVE_CORRUPTION_DECREASE = GameRules.register(
+                "anchorPassiveCorruptionDecrease",
+                GameRules.Category.MISC,
+                GameRules.IntegerValue.create(1) // 0.00001 corruption per anchor per tick (1 / 100000)
         );
 
     }

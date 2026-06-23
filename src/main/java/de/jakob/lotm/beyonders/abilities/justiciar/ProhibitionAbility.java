@@ -233,10 +233,23 @@ public class ProhibitionAbility extends SelectableAbility {
 
     private int clampToSequence(int selected, LivingEntity entity) {
         int seq = AbilityUtil.getSeqWithArt(entity, this);
-        if (seq > 6 && selected >= 2) return 0;
-        if (seq > 4 && selected >= 3) return 0;
-        if (seq > 3 && selected >= 4) return 0;
+        if (!isSubAbilityAllowed(entity, selected)) return 0;
         return selected;
+    }
+
+    @Override
+    public boolean isSubAbilityAllowed(LivingEntity entity, int selectedAbility) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        // seq 7-9: only beyonder_abilities (0) and combat (1)
+        if (entitySeq > 6) {
+            return selectedAbility < 2;
+        }
+        // seq 5-6: main 6 abilities (0-5) plus marionette_interchange (7), no stand_ins (6), no theft (8)
+        if (entitySeq > 4) {
+            return selectedAbility < 6 || selectedAbility == 7;
+        }
+        // seq ≤ 4: all abilities
+        return true;
     }
 
     public enum ProhibitionType {

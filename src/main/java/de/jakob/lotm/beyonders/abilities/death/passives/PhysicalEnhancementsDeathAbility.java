@@ -142,8 +142,4 @@ public class PhysicalEnhancementsDeathAbility extends PhysicalEnhancementsAbilit
         };
     }
 
-    @Override
-    protected int getCurrentSequenceLevel(LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
-    }
 }

@@ -420,6 +420,22 @@ public class AbilityUtil {
         return BlockPos.containing(targetPosition);
     }
 
+    // ==================== REMOTE TARGETING ====================
+    private static final ThreadLocal<UUID> REMOTE_CAST_TARGET_UUID = new ThreadLocal<>();
+
+    public static void setRemoteCastTargetUUID(UUID uuid) {
+        REMOTE_CAST_TARGET_UUID.set(uuid);
+    }
+
+    public static void clearRemoteCastTargetUUID() {
+        REMOTE_CAST_TARGET_UUID.remove();
+    }
+
+    @Nullable
+    public static UUID getRemoteCastTargetUUID() {
+        return REMOTE_CAST_TARGET_UUID.get();
+    }
+
     // ==================== TARGET ENTITY METHODS ====================
 
     @Nullable
@@ -487,6 +503,21 @@ public class AbilityUtil {
     @Nullable
     private static LivingEntity getTargetEntityInternal(LivingEntity entity, int radius, float entityDetectionRadius,
                                                         boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes) {
+        // Check for remote target first
+        UUID remoteTargetUUID = getRemoteCastTargetUUID();
+        if (remoteTargetUUID != null) {
+            Entity target = entity.level().getPlayerByUUID(remoteTargetUUID);
+            if (target == null) {
+                for (Entity e : entity.level().getEntities((Entity) null, entity.getBoundingBox().inflate(512), e -> e.getUUID().equals(remoteTargetUUID))) {
+                    target = e;
+                    break;
+                }
+            }
+            if (target instanceof LivingEntity livingTarget) {
+                return livingTarget;
+            }
+        }
+
         // Check for existing targets first (unless line of sight only)
         if (!onlyAllowWithLineOfSight) {
             LivingEntity currentTarget = getCurrentTarget(entity);
@@ -596,6 +627,21 @@ public class AbilityUtil {
      */
     public static Vec3 getTargetLocation(LivingEntity entity, int radius, float entityDetectionRadius,
                                          boolean positionAtEntityFeet, boolean allowAllies) {
+        // Check for remote target first
+        UUID remoteTargetUUID = getRemoteCastTargetUUID();
+        if (remoteTargetUUID != null) {
+            Entity target = entity.level().getPlayerByUUID(remoteTargetUUID);
+            if (target == null) {
+                for (Entity e : entity.level().getEntities((Entity) null, entity.getBoundingBox().inflate(512), e -> e.getUUID().equals(remoteTargetUUID))) {
+                    target = e;
+                    break;
+                }
+            }
+            if (target != null) {
+                return positionAtEntityFeet ? target.position() : target.position().add(0, target.getEyeHeight(), 0);
+            }
+        }
+
         // Set flag to prevent TargetEntityEvent from firing during this call
         INSIDE_GET_TARGET_LOCATION.set(true);
 

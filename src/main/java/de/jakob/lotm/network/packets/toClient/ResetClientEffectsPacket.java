@@ -2,6 +2,7 @@ package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.rendering.*;
+import de.jakob.lotm.util.ClientAccommodationCache;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.ClientData;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -26,6 +27,7 @@ public record ResetClientEffectsPacket() implements CustomPacketPayload {
         context.enqueueWork(() -> {
             ClientBeyonderCache.clearCache();
             ClientData.clearCache();
+            ClientAccommodationCache.reset();
             ActiveToggleAbilitiesRenderer.clearCache();
             CullOverlay.clearCache();
             DangerPremonitionOverlayRenderer.clearCache();

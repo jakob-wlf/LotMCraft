@@ -9,6 +9,7 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.RingEffectManager;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import io.netty.handler.logging.LogLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -19,6 +20,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.Logging;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
@@ -28,7 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.AABB;
 import java.util.*;
 
-//@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class DisorderAbility extends SelectableAbility {
 
     // NBT keys — public so DistortionAbility.breakBonds can clear them
@@ -308,6 +311,9 @@ public class DisorderAbility extends SelectableAbility {
     @SubscribeEvent
     public static void onAbilityUsed(AbilityUsedEvent event) {
         LivingEntity entity = event.getEntity();
+        if(entity == null){
+            return;
+        }
         if (!entity.getPersistentData().getBoolean(DISORDERED_PERCEPTION_KEY)) return;
         if (!(entity.level() instanceof ServerLevel serverLevel)) return;
 

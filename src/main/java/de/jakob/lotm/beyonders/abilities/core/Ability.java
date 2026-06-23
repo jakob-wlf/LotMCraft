@@ -9,10 +9,13 @@ import de.jakob.lotm.attachments.AbilityCooldownComponent;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.*;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -194,6 +197,12 @@ public abstract class Ability {
     public boolean hasAbility(LivingEntity entity) {
         if(!BeyonderData.isBeyonder(entity)) return false;
 
+        // Check sefirot-authority-granted abilities (server-side only)
+        if (!entity.level().isClientSide()
+                && entity.getData(de.jakob.lotm.attachments.ModAttachments.SEFIROT_UNLOCKED_ABILITIES).hasAbility(this.id)) {
+            return true;
+        }
+
         String pathway = BeyonderData.getPathway(entity);
         int sequence = BeyonderData.getSequence(entity);
 
@@ -217,15 +226,22 @@ public abstract class Ability {
         }
 
         // Check pathway
-        for(int i = sequence; i < BeyonderData.getPathwayHistory(entity).length; i++) {
+        /*for(int i = sequence; i < BeyonderData.getPathwayHistory(entity).length; i++) {
             if(BeyonderData.getPathwayHistory(entity)[i] == null) continue;
             String userPath = BeyonderData.getPathwayHistory(entity)[i];
             if(getRequirements().containsKey(userPath) && getRequirements().get(userPath) == i) {
                 return true;
             }
+        }*/
+        // Check for received blessings
+        if (entity.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT).getBlessings().stream()
+                .anyMatch(b -> getRequirements().containsKey(b.pathway()) && getRequirements().get(b.pathway()) >= b.sequence())) {
+            return true;
         }
 
-        return false;
+        return BeyonderData.getCharList(entity).stream().anyMatch(character -> getRequirements().containsKey(character.pathway()) && getRequirements().get(character.pathway()) >= sequence);
+
+        //return false;
     }
 
     public boolean canUse(LivingEntity entity) {
@@ -273,11 +289,12 @@ public abstract class Ability {
     private float getDigestionProgressForUse(LivingEntity entity) {
         int sequence = BeyonderData.getSequence(entity);
 
-        if (!getRequirements().containsKey(BeyonderData.getPathway(entity))) {
-            return 0f;
+        String pathway = BeyonderData.getCharList(entity).stream().filter(character -> getRequirements().containsKey(character.pathway())).findFirst().orElse(new Characteristic("None", 0,10)).pathway();
+        if (!getRequirements().containsKey(pathway)) {
+           return 0f;
         }
 
-        int requiredSequence = getRequirements().get(BeyonderData.getPathway(entity));
+        int requiredSequence = getRequirements().get(pathway);
 
         if (sequence > requiredSequence) {
             return 0f;

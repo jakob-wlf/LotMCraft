@@ -1,9 +1,23 @@
 package de.jakob.lotm.util.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class ClientData {
+    private static Map<UUID, Float> anchors = new HashMap<>();
+
+    public static Map<UUID, Float> getAnchors() {
+        return anchors;
+    }
+
+    public static void setAnchors(Map<UUID, Float> newAnchors) {
+        anchors = new HashMap<>(newAnchors);
+    }
+
     private static List<String> abilityWheelAbilities = new ArrayList<>();
     private static int selectedAbility = 0;
 
@@ -13,6 +27,46 @@ public class ClientData {
     // Personal shared wheel ordering, set from IntrospectScreen's Shared tab
     private static List<String> sharedWheelAbilities = new ArrayList<>();
     private static int selectedSharedAbility = 0;
+
+    // Sefirot Authority: available and unlocked cross-path ability IDs
+    private static List<String> sefirotAvailableAbilityIds = new ArrayList<>();
+    private static List<String> sefirotUnlockedAbilityIds  = new ArrayList<>();
+    /** True when the player owns any sefirot (even those with no cross-path neighbours). */
+    private static boolean ownsSefirot = false;
+    /** The sefirot ID this player owns, or empty string if none. */
+    private static String claimedSefirot = "";
+
+    public static List<String> getSefirotAvailableAbilityIds() {
+        return Collections.unmodifiableList(sefirotAvailableAbilityIds);
+    }
+
+    public static void setSefirotAvailableAbilityIds(List<String> ids) {
+        sefirotAvailableAbilityIds = new ArrayList<>(ids);
+    }
+
+    public static List<String> getSefirotUnlockedAbilityIds() {
+        return Collections.unmodifiableList(sefirotUnlockedAbilityIds);
+    }
+
+    public static void setSefirotUnlockedAbilityIds(List<String> ids) {
+        sefirotUnlockedAbilityIds = new ArrayList<>(ids);
+    }
+
+    public static boolean isOwningSefirot() {
+        return ownsSefirot;
+    }
+
+    public static void setOwnsSefirot(boolean owns) {
+        ownsSefirot = owns;
+    }
+
+    public static String getClaimedSefirot() {
+        return claimedSefirot;
+    }
+
+    public static void setClaimedSefirot(String sefirot) {
+        claimedSefirot = sefirot == null ? "" : sefirot;
+    }
 
     public static List<String> getSharedWheelAbilities() {
         return sharedWheelAbilities;
@@ -66,6 +120,7 @@ public class ClientData {
     }
 
     public static void clearCache() {
+        anchors.clear();
         abilityWheelAbilities.clear();
         selectedAbility = 0;
         sharedAbilityMode = false;
