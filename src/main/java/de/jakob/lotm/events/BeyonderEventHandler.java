@@ -22,7 +22,6 @@ import de.jakob.lotm.network.packets.toClient.SyncKillCountPacket;
 import de.jakob.lotm.network.packets.toClient.SyncPsychologicalInvisibilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.util.DiscernmentUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.PureIdealismUtil;
 import de.jakob.lotm.util.helper.TeamUtils;

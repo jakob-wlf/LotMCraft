@@ -1,4 +1,4 @@
-package de.jakob.lotm.sefirah;
+package de.jakob.lotm.beyonders.sefirah;
 
 import de.jakob.lotm.attachments.CorruptionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
