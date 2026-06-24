@@ -64,13 +64,18 @@ public record WanderingSelectedPacket(String dimensionId) implements CustomPacke
             ServerLevel currentLevel = player.serverLevel();
 
             double yValue = player.position().y;
+            int minY = targetLevel.getMinBuildHeight();
+            int maxY = targetLevel.getMaxBuildHeight();
             for (int i = 0; i < 100; i++) {
+                if (yValue >= maxY) break;
                 BlockPos pos = BlockPos.containing(player.getX(), yValue, player.getZ());
+                if (pos.getY() < minY) { yValue = minY; break; }
                 if (targetLevel.getBlockState(pos).getCollisionShape(targetLevel, pos).isEmpty()) {
                     break;
                 }
                 yValue += 1;
             }
+            yValue = Math.max(minY, Math.min(yValue, maxY - 2));
 
             player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 20 * 5, 1, false, false, false));
             ParticleUtil.spawnParticles(currentLevel, ModParticles.STAR.get(), player.position().add(0, 1, 0), 100, .4, 1.1, .4, .05);

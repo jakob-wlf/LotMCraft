@@ -14,10 +14,18 @@ public class WanderingSelectionGui extends ButtonListGui<String> {
     @Override
     protected Component getItemName(String dimensionId) {
         int colonIndex = dimensionId.indexOf(":");
-        if (colonIndex != -1 && colonIndex < dimensionId.length() - 1) {
-            return Component.literal(dimensionId.substring(colonIndex + 1).replace("_", " "));
+        String name = colonIndex != -1 && colonIndex < dimensionId.length() - 1
+                ? dimensionId.substring(colonIndex + 1)
+                : dimensionId;
+        String[] words = name.split("_");
+        StringBuilder result = new StringBuilder();
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                if (result.length() > 0) result.append(" ");
+                result.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1));
+            }
         }
-        return Component.literal(dimensionId);
+        return Component.literal(result.toString());
     }
 
     @Override
