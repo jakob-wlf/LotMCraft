@@ -545,6 +545,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                OpenWanderingSelectionScreenPacket.TYPE,
+                OpenWanderingSelectionScreenPacket.STREAM_CODEC,
+                OpenWanderingSelectionScreenPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncEnvisioningPacket.TYPE,
                 SyncEnvisioningPacket.STREAM_CODEC,
                 SyncEnvisioningPacket::handle
@@ -779,6 +785,12 @@ public class PacketHandler {
                 HistoricalVoidBorrowingSelectedPacket.TYPE,
                 HistoricalVoidBorrowingSelectedPacket.STREAM_CODEC,
                 HistoricalVoidBorrowingSelectedPacket::handle);
+
+        registrar.playToServer(
+                WanderingSelectedPacket.TYPE,
+                WanderingSelectedPacket.STREAM_CODEC,
+                WanderingSelectedPacket::handle
+        );
 
         registrar.playToServer(
                 ShapeShiftingSelectedPacket.TYPE,

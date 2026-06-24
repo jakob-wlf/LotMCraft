@@ -520,6 +520,10 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(new ShapeShiftingSelectionGui(packet.entityTypes()));
     }
 
+    public static void handleWanderingSelectionScreenPacket(OpenWanderingSelectionScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new WanderingSelectionGui(packet.dimensionIds()));
+    }
+
     public static void handleDiscernmentScreenPacket(OpenDiscernmentScreenPacket packet) {
         Minecraft.getInstance().setScreen(new DiscernmentSelectionGui(packet.saved()));
     }
