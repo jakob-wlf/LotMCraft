@@ -61,13 +61,13 @@ public abstract class BaseAbilityWheelScreen<T extends AbstractContainerMenu>
 
     /**
      * ARGB colour for the divider lines between wheel sections.
-     * Example: {@code 0x4Dc4a8e3}.
+     * Examples: {@code 0x4Dc4a8e3} (ability wheel), {@code 0x4Da8c4e3} (copied ability wheel).
      */
     protected abstract int getLineColor();
 
     /**
      * RGB colour (no alpha – alpha is computed per-pixel) for the hover glow.
-     * Example: {@code 0xc4a8e3}.
+     * Examples: {@code 0xc4a8e3} (ability wheel), {@code 0xa8c4e3} (copied ability wheel).
      */
     protected abstract int getGlowColor();
 
