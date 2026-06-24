@@ -442,7 +442,7 @@ public class ControllingUtil {
                     target.getData(ModAttachments.BEYONDER_COMPONENT).setCharacteristicList(charCopy);
 
                     // Sync digestion/griefing for players
-                    if (source instanceof Player sourcePlayer && target instanceof Player targetPlayer) {
+                    if (source instanceof Player sourcePlayer) {
                         //BeyonderData.digest(targetPlayer, BeyonderData.getDigestionProgress(sourcePlayer), false);
                         BeyonderData.setGriefingEnabled(targetPlayer, BeyonderData.isGriefingEnabled(sourcePlayer));
                     }

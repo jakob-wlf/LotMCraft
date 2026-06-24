@@ -53,9 +53,9 @@ public class UniquenessEventHandler {
 
         if (BeyonderData.playerMap == null || BeyonderData.playerMap.count(pathway, 1) == 0) return;
 
-        float spawnChance = level.getGameRules().getInt(ModGameRules.UNIQUENESS_SPAWN_LIKELIHOOD) / 100f;
+        //float spawnChance = level.getGameRules().getInt(ModGameRules.UNIQUENESS_SPAWN_LIKELIHOOD) / 100f;
 
-        if (RANDOM.nextDouble() > spawnChance) return;
+        //if (RANDOM.nextDouble() > spawnChance) return;
 
         ServerPlayer targetPlayer = findSeq1Player(level, pathway);
         if (targetPlayer == null) return;

@@ -42,8 +42,8 @@ public class SanityComponent {
             if (GatheringData.isGathered(entity.getUUID())) return;
 
             // Consume one virtual persona stack to fully cancel this sanity reduction
-            if (virtualPersonas > 0) {
-                virtualPersonas--;
+            if (virtualPersonas.getAvatars().size() > 0) {
+                virtualPersonas.getAvatars().removeLast();
                 return;
             }
 

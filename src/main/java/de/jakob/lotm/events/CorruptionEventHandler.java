@@ -249,7 +249,7 @@ public class CorruptionEventHandler {
                 int sequence = beyonderComp.getSequence();
                 
                 // Spawn the Beyonder NPC
-                BeyonderNPCEntity rogueBeyonder = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), serverLevel, true, "amon", pathway, sequence, true);
+                BeyonderNPCEntity rogueBeyonder = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), serverLevel, true, "amon", pathway, sequence, true, false, false);
                 rogueBeyonder.setPos(player.getX(), player.getY(), player.getZ());
                 rogueBeyonder.setCustomName(Component.literal(player.getName().getString()));
 

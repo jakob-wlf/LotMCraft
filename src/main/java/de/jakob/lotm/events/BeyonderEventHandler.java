@@ -51,6 +51,7 @@ import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
+
 import java.util.*;
 
 import static de.jakob.lotm.util.BeyonderData.getSequence;
@@ -242,108 +243,56 @@ public class BeyonderEventHandler {
 
     @SubscribeEvent
     public static void onPlayerDrops(LivingDropsEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-
-        // Use the BeyonderComponent (pre-death state) — playerMap was already updated to the
-        // regressed state in onDeath, so calling BeyonderData.isBeyonder() here would check the
-        // post-regression playerMap and incorrectly return false for a regressed-to-non-beyonder player,
-        // preventing any characteristic drops.
-        BeyonderComponent preDeathComp = player.getData(ModAttachments.BEYONDER_COMPONENT);
-        if (preDeathComp.getSequence() >= de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ) return;
-
+        // sorry nihil i have to mess with your method :)
         // cancel the drop of items completely for summoned entities
         if (event.getEntity().getPersistentData().contains("VoidSummoned")) {
-            boolean underworldSummoned = event.getEntity().getPersistentData().getBoolean("UnderworldSummonedSoul");
-            if (!underworldSummoned) {
-                event.setCanceled(true);
-                return;
-            }
-        }
-
-        if (event.isCanceled()) return;
-
-        // If the soul was captured by Internal Underworld, skip characteristic drops.
-        boolean capturedByUnderworld = player.getPersistentData().getBoolean("InternalUnderworldCaptured");
-        if (capturedByUnderworld) {
-            player.getPersistentData().remove("InternalUnderworldCaptured");
+            event.setCanceled(true);
             return;
         }
 
-        // The playerMap was updated in onDeath to the regressed/target state.
-        // The BeyonderComponent still holds the old state from before death.
-        Optional<StoredData> dataOpt = playerMap.get(player);
-        if (dataOpt.isEmpty()) return;
-        StoredData newData = dataOpt.get();
-        BeyonderComponent component = player.getData(ModAttachments.BEYONDER_COMPONENT);
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
-        ArrayList<Characteristic> oldChars = new ArrayList<>(component.getCharacteristicList());
-        ArrayList<Characteristic> newChars = newData.chars();
+        if (!BeyonderData.isBeyonder(player)) return;
+        if (!player.serverLevel().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)) return;
 
-        for (Characteristic oldC : oldChars) {
-            Characteristic newC = newChars.stream()
-                    .filter(c -> c.pathway().equals(oldC.pathway()) && c.sequence() == oldC.sequence())
-                    .findFirst().orElse(null);
+        // onDeath (LivingDeathEvent) already handled regression and cleared the revert component.
+        // Here we only need to drop the correct characteristic item.
+        // The sequence to drop is the one onDeath regressed FROM, stored temporarily in NBT.
+        int dropSequence = player.getPersistentData().contains("sacrifice_drop_sequence")
+                ? player.getPersistentData().getInt("sacrifice_drop_sequence")
+                : BeyonderData.getSequence(player);
+        player.getPersistentData().remove("sacrifice_drop_sequence");
 
-            int newStack = (newC == null) ? 0 : newC.stack();
-            int toDrop = oldC.stack() - newStack;
+        if (playerMap.get(player).isEmpty()) return;
 
-            if (toDrop > 0) {
-                dropCharacteristicItem(player, event, oldC.pathway(), oldC.sequence(), toDrop);
-            }
-        }
-
-        // Now sync the component with the new state
-        component.setPathway(newData.pathway());
-        component.setSequence(newData.sequence());
-        component.clearCharacteristics();
-        for (Characteristic c : newChars) {
-            component.setCharacteristic(c.stack(), c.sequence(), c.pathway());
-        }
         var envisionedSplitComponent = player.getData(ModAttachments.ENVISION_SPLIT.get());
 
         var data = playerMap.get(player).get();
 
-        BeyonderData.recalculateCharStackModifiers(player);
-        PacketHandler.syncBeyonderDataToPlayer(player);
-    }
-
-    private static void dropCharacteristicItem(ServerPlayer player, LivingDropsEvent event, String pathway, int sequence, int count) {
         BeyonderCharacteristicItem charItem = BeyonderCharacteristicItemHandler
-                .selectCharacteristicOfPathwayAndSequence(pathway, sequence);
+                .selectCharacteristicOfPathwayAndSequence(BeyonderData.getPathway(player), dropSequence);
+
+        BeyonderData.setBeyonder(player, data.pathway(), data.sequence(), true, false, false, false);
+
         if (charItem == null) return;
 
-        // Handle Discernment (drop items into the killer's inventory if they have the uniqueness)
-        if (DiscernmentUtil.died.containsKey(player.getUUID())) {
-            String killerPath = DiscernmentUtil.died.get(player.getUUID());
-            UUID id = playerMap.findPlayerByUniqueness(killerPath);
-            if (id != null) {
-                var target = player.level().getPlayerByUUID(id);
-                if (target != null) {
-                    target.addItem(new ItemStack(charItem, count));
-                    return;
-                }
-            }
-            if (PureIdealismUtil.died.containsKey(player.getUUID())) {
-                return;
-            } else if (envisionedSplitComponent.isEnvisioned()) {
-                envisionedSplitComponent.setEnvisioned(false);
-                return;
-            }
+        if(PureIdealismUtil.died.containsKey(player.getUUID())){
+            return;
+        }
+        else if(envisionedSplitComponent.isEnvisioned()){
+            envisionedSplitComponent.setEnvisioned(false);
+            return;
+        }
+        else {
+            ItemEntity itemEntity = new ItemEntity(
+                    player.level(),
+                    player.getX(),
+                    player.getY(),
+                    player.getZ(),
+                    new ItemStack(charItem.asItem())
+            );
 
-            int remaining = count;
-            int maxStack = Math.max(1, new ItemStack(charItem).getMaxStackSize());
-            while (remaining > 0) {
-                int stackSize = Math.min(remaining, maxStack);
-                ItemEntity itemEntity = new ItemEntity(
-                        player.level(),
-                        player.getX(),
-                        player.getY(),
-                        player.getZ(),
-                        new ItemStack(charItem, stackSize)
-                );
-                event.getDrops().add(itemEntity);
-                remaining -= stackSize;
-            }
+            event.getDrops().add(itemEntity);
         }
     }
 

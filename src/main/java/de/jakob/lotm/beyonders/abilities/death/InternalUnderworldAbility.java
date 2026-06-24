@@ -1443,7 +1443,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
                 EntityType<? extends BeyonderNPCEntity> npcType = ModEntities.BEYONDER_NPC.get();
                 if (skin != null && !skin.isEmpty()) {
-                    entity = new BeyonderNPCEntity(npcType, level, hostile, skin, pathway, sequence, true);
+                    entity = new BeyonderNPCEntity(npcType, level, hostile, skin, pathway, sequence, true, false, false);
                 } else {
                     entity = new BeyonderNPCEntity(npcType, level, hostile, pathway, sequence, true);
                 }

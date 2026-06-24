@@ -22,7 +22,6 @@ import de.jakob.lotm.quest.QuestRegistry;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.StructureHelper;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.shapeShifting.PlayerSkinData;
@@ -61,7 +60,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static de.jakob.lotm.util.data.ClientUniquenessCache.getPathway;
+
 
 public class BeyonderNPCEntity extends PathfinderMob {
     // ========================= Constants =========================
@@ -132,13 +131,13 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile,
                              String skinName, String pathway, int sequence, Boolean _hasQuest, Boolean _hasTades) {
-        this(entityType, level, hostile, skinName, pathway, sequence);
+        this(entityType, level, hostile, skinName, pathway, sequence, false, _hasQuest, _hasTades);
     }
 
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile,
                              String pathway, int sequence, boolean forceSequence) {
-        this(entityType, level, hostile, getRandomBeyonderSkin(), pathway, sequence, forceSequence);
+        this(entityType, level, hostile, getRandomBeyonderSkin(), pathway, sequence, forceSequence, false, false);
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile,
@@ -158,7 +157,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         this._sequence = sequence;
         this._hasQuest = _hasQuest;
 
-        this._hasTrade = _hasTades;
+        this._hasTrade = _hasTrades;
 
         if (!level.isClientSide) {
             BeyonderData.setBeyonder(this, pathway, sequence);
@@ -167,7 +166,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
             // Set up goals and abilities now that pathway/sequence are known
             updateGoalsBasedOnHostilityAndTrades();
         } else if (!pathway.isEmpty()) {
-            initializeAbilities(pathway, sequence);
+
         }
     }
 
@@ -263,10 +262,10 @@ public class BeyonderNPCEntity extends PathfinderMob {
                 }
 
                 // Sync beyonder data and ensure goals/abilities are fully set up
-                if (this.sequence != -1 && !this.pathway.equals("none")) {
-                    BeyonderData.setBeyonder(this, this.pathway, sequence);
+                if (this._sequence != -1 && !this._pathway.equals("none")) {
+                    BeyonderData.setBeyonder(this, this._pathway, _sequence);
                     syncEntityDataWithBeyonderData();
-                    updateGoalsBasedOnHostility();
+                    updateGoalsBasedOnHostilityAndTrades();
                     // For fresh spawns, start at full HP after passives have applied their modifiers
                     if (freshSpawn) {
                         this.setHealth(this.getMaxHealth());
@@ -367,7 +366,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         }
 
         if (!getPathway().isEmpty() && !getPathway().equals("none")) {
-            initializeAbilities(getPathway(), getSequence());
+
         }
     }
 
@@ -463,90 +462,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
                 getCurrentTarget() != null;
     }
 
-    // ========================= Ability System =========================
-    private void initializeAbilities(String pathway, int sequence) {
-        if (usableAbilities == null) {
-            usableAbilities = new ArrayList<>();
-        }
-        usableAbilities.clear();
-
-        LOTMCraft.abilityHandler.getByPathwayAndSequence(pathway, sequence).stream()
-                .filter(a -> a.canBeUsedByNPC)
-                .forEach(usableAbilities::add);
-
-        // Add controller abilities if this is a marionette
-        MarionetteComponent component = this.getData(ModAttachments.MARIONETTE_COMPONENT.get());
-        if (component.isMarionette()) {
-            Player controller = getController();
-            if (controller != null && BeyonderData.isBeyonder(controller) && BeyonderData.getSequence(controller) <= 4) {
-                String controllerPathway = BeyonderData.getPathway(controller);
-                int controllerSequence = BeyonderData.getSequence(controller);
-                LOTMCraft.abilityHandler.getByPathwayAndSequence(controllerPathway, controllerSequence).stream()
-                        .filter(a -> a.canBeUsedByNPC)
-                        .forEach(usableAbilities::add);
-            }
-        }
-    }
-
-    private boolean hasRangedOption() {
-        if (usableAbilities.isEmpty()) {
-            return false;
-        }
-
-        return usableAbilities.stream().anyMatch(ability -> ability.hasOptimalDistance);
-    }
-
-    public void useAbility(Level level) {
-        if (level.isClientSide) {
-            return;
-        }
-
-        // Get abilities that can be used right now.
-        // Use (false, false) to skip the hasAbility/isBeyonder check — NPCs are not in the
-        // playerMap so isBeyonder() returns false for them. Abilities were already validated by
-        // initializeAbilities. Cooldown and canBeUsedByNPC flag are still enforced.
-        List<Ability> availableAbilities = usableAbilities.stream()
-                .filter(a -> a.canUse(this, false, false))
-                .toList();
-
-        if (availableAbilities.isEmpty()) {
-            return;
-        }
-
-        // Separate abilities by combat suitability
-        List<Ability> combatAbilities = availableAbilities.stream()
-                .filter(a -> a.shouldUseAbility(this))
-                .sorted(Comparator.comparing(Ability::lowestSequenceUsable))
-                .toList();
-
-        // In combat - prefer combat abilities
-        List<Ability> toSelect;
-        if (isInCombat() && !combatAbilities.isEmpty()) {
-            toSelect = combatAbilities;
-        } else if (!isInCombat()) {
-            // Out of combat - only use non-combat abilities
-            List<Ability> nonCombatAbilities = availableAbilities.stream()
-                    .filter(a -> !a.shouldUseAbility(this))
-                    .toList();
-
-            if (nonCombatAbilities.isEmpty()) {
-                return; // Don't use combat abilities outside of combat
-            }
-            toSelect = nonCombatAbilities;
-        } else {
-            // Fallback to all available
-            toSelect = availableAbilities;
-        }
-
-        // Select and use ability
-        Ability selectedAbility = selectWeightedAbility(toSelect, new Random());
-        if(selectedAbility == null) return;
-
-        // Skip hasAbility check (abilities were pre-filtered by initializeAbilities — NPCs are not in
-        // playerMap so isBeyonder() returns false for them, but they are valid ability users).
-        selectedAbility.useAbility((ServerLevel) level, this, false, false, true);
-    }
-
     /**
      * Improved weighted selection with distance consideration
      */
@@ -588,32 +503,6 @@ public class BeyonderNPCEntity extends PathfinderMob {
         return abilities.get(0);
     }
 
-    public void tryUseAbility() {
-        if (!usableAbilities.isEmpty()) {
-            useAbility(this.level());
-        }
-    }
-
-    public ArrayList<Ability> getUsableAbilities() {
-        return usableAbilities;
-    }
-
-    // ========================= Helper Methods =========================
-    private Player getController() {
-        MarionetteComponent component = this.getData(ModAttachments.MARIONETTE_COMPONENT.get());
-        if (!component.isMarionette()) {
-            return null;
-        }
-
-        try {
-            UUID controllerUUID = UUID.fromString(component.getControllerUUID());
-            Player controller = this.level().getPlayerByUUID(controllerUUID);
-            return (controller != null && controller.isAlive()) ? controller : null;
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
-
     // ========================= Loot and Drops =========================
     @Override
     protected void dropCustomDeathLoot(@NotNull ServerLevel level, @NonNull DamageSource damageSource, boolean recentlyHit) {
@@ -635,20 +524,20 @@ public class BeyonderNPCEntity extends PathfinderMob {
         boolean capturedByUnderworld = this.getPersistentData().getBoolean("InternalUnderworldCaptured");
 
         // Seq 0 NPCs release their uniqueness on death if none is present/held.
-        if (sequence == 0
-                && BeyonderData.implementedPathways.contains(pathway)
-                && !UniquenessEntity.existsInWorld(level, pathway)
-                && !UniquenessEntity.anyPlayerHoldsUniqueness(level, pathway)
+        if (_sequence == 0
+                && BeyonderData.implementedPathways.contains(_pathway)
+                && !UniquenessEntity.existsInWorld(level, _pathway)
+                && !UniquenessEntity.anyPlayerHoldsUniqueness(level, _pathway)
                 && !UniquenessEntity.anySeq0Presence(level, this)) {
-            UniquenessEntity.trySpawn(level, this.position(), pathway);
+            UniquenessEntity.trySpawn(level, this.position(), _pathway);
         }
 
         // Drop characteristic
-        boolean isSeq0UnderworldSoul = underworldSummoned && sequence == 0;
+        boolean isSeq0UnderworldSoul = underworldSummoned && _sequence == 0;
 
         if (!capturedByUnderworld && !isSeq0UnderworldSoul) {
             BeyonderCharacteristicItem characteristicItem =
-                    BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, sequence);
+                    BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(_pathway, _sequence);
             if (characteristicItem != null) {
                 this.spawnAtLocation(characteristicItem);
             }
@@ -665,7 +554,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
         if (!underworldSummoned
                 && random.nextInt(TABLET_FRAGMENT_DROP_CHANCE) == 0
-                && ("door".equals(pathway) || "error".equals(pathway) || "fool".equals(pathway))) {
+                && ("door".equals(_pathway) || "error".equals(_pathway) || "fool".equals(_pathway))) {
             MysteriousTabletData data = MysteriousTabletData.get(level.getServer());
             if (data.canSpawnFragment(MysteriousTabletData.FragmentType.RIGHT)) {
                 this.spawnAtLocation(ModItems.RIGHT_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
@@ -884,7 +773,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         return BeyonderData.getPathway(this);
     }
 
-    public int get_sequence() {
+    public int getSequence() {
         return BeyonderData.getSequence(this);
     }
 
