@@ -1,0 +1,10 @@
+{
+  "type": "lotmcraft:space_time_labyrinth",
+  "generator": {
+    "type": "lotmcraft:space_time_labyrinth",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "lotmcraft:space_time_labyrinth"
+    }
+  }
+}

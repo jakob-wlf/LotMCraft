@@ -212,6 +212,7 @@ public class AbilityHandler {
         abilities.add(new WanderingAbility("wandering_ability"));
         abilities.add(new SymbolizationAbility("symbolization_ability"));
         abilities.add(new SealingAbility("sealing_ability"));
+        abilities.add(new SpatialCageAbility("spatial_cage_ability"));
         abilities.add(new SpaceTearingAbility("space_tearing_ability"));
         abilities.add(new WaypointAbility("waypoint_ability"));
         abilities.add(new ReplicatingAbility("replicating_ability"));
@@ -221,6 +222,7 @@ public class AbilityHandler {
         abilities.add(new SpaceDistortionAbility("space_distortion_ability"));
         abilities.add(new PocketDimensionAbility("pocket_dimension_ability"));
         abilities.add(new BlackHoleAbility("black_hole_ability"));
+        abilities.add(new SpaceTimeLabyrinthAbility("space_time_labyrinth_ability"));
         abilities.add(new PlayerTeleportationAbility("player_teleportation_ability"));
         abilities.add(new SpaceTimeStormAbility("space_time_storm_ability"));
         abilities.add(new SpaceFragmentationAbility("space_fragmentation_ability"));

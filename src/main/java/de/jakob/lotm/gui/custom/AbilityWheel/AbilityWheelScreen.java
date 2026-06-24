@@ -56,8 +56,8 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
         boolean isSelected = index == selectedIndex;
 
         int size = isHovered ? SLOT_HOVER_SIZE : SLOT_SIZE;
-        int x = pos.x - size / 2;
-        int y = pos.y - size / 2;
+        int x = pos.x() - size / 2;
+        int y = pos.y() - size / 2;
 
         guiGraphics.fill(x, y, x + size, y + size, 0xCC000000);
 
@@ -108,8 +108,8 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
         // Draw sub-index badge in the bottom-right corner of the slot
         if (subIndex >= 0) {
             String badge = String.valueOf(subIndex);
-            int bx = pos.x + size / 2 - net.minecraft.client.Minecraft.getInstance().font.width(badge) - 2;
-            int by = pos.y + size / 2 - net.minecraft.client.Minecraft.getInstance().font.lineHeight + 1;
+            int bx = pos.x() + size / 2 - net.minecraft.client.Minecraft.getInstance().font.width(badge) - 2;
+            int by = pos.y() + size / 2 - net.minecraft.client.Minecraft.getInstance().font.lineHeight + 1;
             guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, badge, bx, by, 0xFFFFFF, false);
         }
 
@@ -131,7 +131,7 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
                 }
                 int textWidth = net.minecraft.client.Minecraft.getInstance().font.width(name);
                 guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, name,
-                        pos.x - textWidth / 2, pos.y - size / 2 - 12, 0xFFFFFF, true);
+                        pos.x() - textWidth / 2, pos.y() - size / 2 - 12, 0xFFFFFF, true);
             }
         }
     }

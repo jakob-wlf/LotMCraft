@@ -22,12 +22,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
-public class ExileDimensionChunkGenerator extends ChunkGenerator {
+public class DeepSpaceDimensionChunkGenerator extends ChunkGenerator {
 
-    public static final MapCodec<ExileDimensionChunkGenerator> CODEC =
+    public static final MapCodec<DeepSpaceDimensionChunkGenerator> CODEC =
             RecordCodecBuilder.mapCodec(instance -> instance.group(
                     BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource)
-            ).apply(instance, ExileDimensionChunkGenerator::new));
+            ).apply(instance, DeepSpaceDimensionChunkGenerator::new));
 
     private static final BlockState[] SPHERE_BLOCKS = {
             Blocks.OBSIDIAN.defaultBlockState(),
@@ -54,7 +54,7 @@ public class ExileDimensionChunkGenerator extends ChunkGenerator {
 
     private static final BlockState LAVA = Blocks.LAVA.defaultBlockState();
 
-    public ExileDimensionChunkGenerator(BiomeSource biomeSource) {
+    public DeepSpaceDimensionChunkGenerator(BiomeSource biomeSource) {
         super(biomeSource);
     }
 

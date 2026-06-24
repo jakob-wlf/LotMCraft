@@ -47,8 +47,8 @@ public class CopiedAbilityWheelScreen extends BaseAbilityWheelScreen<CopiedAbili
     @Override
     protected void renderSlot(GuiGraphics guiGraphics, SlotPosition pos, String abilityId, boolean isHovered, int index) {
         int size = isHovered ? SLOT_HOVER_SIZE : SLOT_SIZE;
-        int x = pos.x - size / 2;
-        int y = pos.y - size / 2;
+        int x = pos.x() - size / 2;
+        int y = pos.y() - size / 2;
 
         guiGraphics.fill(x, y, x + size, y + size, 0xCC000000);
 
@@ -104,7 +104,7 @@ public class CopiedAbilityWheelScreen extends BaseAbilityWheelScreen<CopiedAbili
                 Component name = ability.getNameFormatted(ClientHandler.getPlayer());
                 int textWidth = net.minecraft.client.Minecraft.getInstance().font.width(name);
                 guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, name,
-                        pos.x - textWidth / 2, pos.y - size / 2 - 12, 0xFFFFFF, true);
+                        pos.x() - textWidth / 2, pos.y() - size / 2 - 12, 0xFFFFFF, true);
             }
         }
     }

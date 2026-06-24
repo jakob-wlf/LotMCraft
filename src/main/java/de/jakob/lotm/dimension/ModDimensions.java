@@ -41,8 +41,11 @@ public class ModDimensions {
     public static final Supplier<MapCodec<NatureDimensionWorldChunkGenerator>> NATURE_WORLD_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("nature", () -> NatureDimensionWorldChunkGenerator.CODEC);
 
-    public static final DeferredHolder<MapCodec<? extends ChunkGenerator>, MapCodec<ExileDimensionChunkGenerator>> EXILE_CHUNK_GENERATOR =
-            CHUNK_GENERATORS.register("exile_chunk_generator", () -> ExileDimensionChunkGenerator.CODEC);
+    public static final Supplier<MapCodec<SpaceTimeLabyrinthChunkGenerator>> SPACE_TIME_LABYRINTH_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("space_time_labyrinth", () -> SpaceTimeLabyrinthChunkGenerator.CODEC);
+
+    public static final DeferredHolder<MapCodec<? extends ChunkGenerator>, MapCodec<DeepSpaceDimensionChunkGenerator>> EXILE_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("exile_chunk_generator", () -> DeepSpaceDimensionChunkGenerator.CODEC);
 
     // -------------------------------------------------------------------------
     // BiomeSource Registry
@@ -84,6 +87,10 @@ public class ModDimensions {
             ResourceKey.create(Registries.LEVEL_STEM,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space"));
 
+    public static final ResourceKey<Level> SPACE_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space"));
+
     public static final ResourceKey<DimensionType> SPACE_TYPE_KEY =
             ResourceKey.create(Registries.DIMENSION_TYPE,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space"));
@@ -96,17 +103,35 @@ public class ModDimensions {
     // SPACE dimension
     // =========================================================================
 
-    public static final ResourceKey<LevelStem> EXILE_LEVEL_KEY =
+    public static final ResourceKey<LevelStem> DEEP_SPACE_LEVEL_KEY =
             ResourceKey.create(Registries.LEVEL_STEM,
-                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "exile"));
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "deep_space"));
 
-    public static final ResourceKey<DimensionType> EXILE_TYPE_KEY =
+    public static final ResourceKey<DimensionType> DEEP_SPACE_TYPE_KEY =
             ResourceKey.create(Registries.DIMENSION_TYPE,
-                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "exile"));
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "deep_space"));
 
-    public static final ResourceKey<Biome> EXILE_BIOME_KEY =
+    public static final ResourceKey<Biome> DEEP_SPACE_BIOME_KEY =
             ResourceKey.create(Registries.BIOME,
-                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "exile_biome"));
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "deep_space_biome"));
+
+
+    // =========================================================================
+    // SPACE TIME LABYRINTH dimension
+    // =========================================================================
+
+    public static final ResourceKey<Biome> SPACE_TIME_LABYRINTH_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space_time_labyrinth"));
+
+    public static final ResourceKey<DimensionType> SPACE_TIME_LABYRINTH_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space_time_labyrinth"));
+
+    public static final ResourceKey<LevelStem> SPACE_TIME_LABYRINTH_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space_time_labyrinth"));
+
 
     // =========================================================================
     // NATURE / WORLD CREATION dimension

@@ -16,12 +16,12 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
-public class ExileDimensionEffects {
+public class DeepSpaceDimensionEffects {
 
     @SubscribeEvent
     public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
         event.register(
-                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "exile"),
+                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "deep_space"),
                 new ExileEffects()
         );
     }

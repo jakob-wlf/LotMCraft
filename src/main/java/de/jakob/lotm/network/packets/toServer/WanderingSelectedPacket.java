@@ -77,7 +77,7 @@ public record WanderingSelectedPacket(String dimensionId) implements CustomPacke
             }
             yValue = Math.max(minY, Math.min(yValue, maxY - 2));
 
-            player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 20 * 5, 1, false, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 20 * 10, 1, false, false, false));
             ParticleUtil.spawnParticles(currentLevel, ModParticles.STAR.get(), player.position().add(0, 1, 0), 100, .4, 1.1, .4, .05);
             ParticleUtil.spawnParticles(currentLevel, ParticleTypes.ENCHANT, player.position().add(0, 1, 0), 100, .4, 1.1, .4, .05);
             currentLevel.playSound(null, player.blockPosition(), SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1, 1);

@@ -1,10 +1,10 @@
 {
-  "type": "lotmcraft:exile",
+  "type": "lotmcraft:deep_space",
   "generator": {
     "type": "lotmcraft:exile_chunk_generator",
     "biome_source": {
       "type": "minecraft:fixed",
-      "biome": "lotmcraft:exile_biome"
+      "biome": "lotmcraft:deep_space_biome"
     }
   }
 }
