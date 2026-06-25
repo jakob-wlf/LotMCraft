@@ -55,6 +55,7 @@ public class BlinkAfterimageEntity extends Mob {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
         builder.define(OWNER_UUID, Optional.empty());
     }
 
