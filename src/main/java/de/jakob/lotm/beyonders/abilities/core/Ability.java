@@ -12,7 +12,9 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.ClientData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -124,6 +126,12 @@ public abstract class Ability {
             if(ActingTaskRegistry.getTasksFor(BeyonderData.getPathway(player), BeyonderData.getSequence(player)).isEmpty())
                 BeyonderData.digest(player, getDigestionProgressForUse(newUser), true);
         }
+
+        // Decrement ability if it was copied
+        if(!hasAbility(entity) && hasToHaveAbility) {
+            CopiedAbilityHelper.decrementUses(entity, getId());
+        }
+
 
         // Handle Cooldown
         AbilityCooldownComponent component = newUser.getData(ModAttachments.COOLDOWN_COMPONENT);
@@ -246,7 +254,9 @@ public abstract class Ability {
     }
 
     public boolean canUse(LivingEntity entity, boolean hasToHaveAbility, boolean doesConsumeSpirituality) {
-        if(!hasAbility(entity) && hasToHaveAbility) return false;
+        boolean isClientSide = entity.level().isClientSide;
+        boolean hasAbilityCopied = isClientSide ? ClientData.getCopiedAbilityIds().contains(getId()) : entity.getData(ModAttachments.COPIED_ABILITY_COMPONENT).getAbilityIds().contains(getId());
+        if(!hasAbility(entity) && hasToHaveAbility && !hasAbilityCopied) return false;
 
         if (MausoleumDomainAbility.isInsideMausoleumDomain(entity.getUUID())) {
             if (entity instanceof ServerPlayer player) {

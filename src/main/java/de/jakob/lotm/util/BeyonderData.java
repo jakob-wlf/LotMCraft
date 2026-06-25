@@ -15,6 +15,7 @@ import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncLivingEntityBeyonderDataPacket;
+import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import de.jakob.lotm.util.playerMap.*;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -246,6 +247,9 @@ public class BeyonderData {
             for(int i = sequence; i < 10; i++) {
                 component.getPathwayHistory()[i] = pathway;
             }
+
+            if(entity instanceof ServerPlayer serverPlayer)
+            CopiedAbilityHelper.clearAbilities(serverPlayer);
         }
         if(addToPathwayHistory) {
             component.getPathwayHistory()[sequence] = pathway;

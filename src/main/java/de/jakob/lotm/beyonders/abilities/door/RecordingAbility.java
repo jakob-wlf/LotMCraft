@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class RecordingAbility extends SelectableAbility {
+public class RecordingAbility extends Ability {
     public RecordingAbility(String id) {
         super(id, 3f);
         this.cannotBeStolen = true;
@@ -37,38 +37,7 @@ public class RecordingAbility extends SelectableAbility {
     }
 
     @Override
-    public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("door", 6));
-    }
-
-    @Override
-    public float getSpiritualityCost() {
-        return 0;
-    }
-
-    @Override
-    protected String[] getAbilityNames() {
-        return new String[]{
-                "ability.lotmcraft.recording.record",
-                "ability.lotmcraft.recording.use_copied"
-        };
-    }
-
-    @Override
-    protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
-        if (selectedAbility == 0) {
-            performRecording(level, entity);
-        } else if (selectedAbility == 1) {
-            openCopiedAbilityWheel(level, entity);
-        }
-    }
-
-    private void openCopiedAbilityWheel(Level level, LivingEntity entity) {
-        if (!(level instanceof ServerLevel) || !(entity instanceof ServerPlayer player)) return;
-        CopiedAbilityHelper.openCopiedAbilityWheel(player);
-    }
-
-    private void performRecording(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if (!(level instanceof ServerLevel serverLevel))
             return;
 
@@ -150,5 +119,15 @@ public class RecordingAbility extends SelectableAbility {
             ParticleUtil.spawnParticles(serverLevel, ParticleTypes.PORTAL, book.position(), 90, .3, .1);
             book.discard();
         }, serverLevel);
+    }
+
+    @Override
+    public Map<String, Integer> getRequirements() {
+        return new HashMap<>(Map.of("door", 6));
+    }
+
+    @Override
+    public float getSpiritualityCost() {
+        return 0;
     }
 }

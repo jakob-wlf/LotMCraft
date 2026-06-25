@@ -10,6 +10,7 @@ import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.UpdateSelectedAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
@@ -55,6 +56,17 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
         int selectedIndex = ClientData.getSelectedAbility();
         boolean isSelected = index == selectedIndex;
 
+        // Parse sub-ability index from abilityId (e.g. "blink:1")
+        int colonIdx = abilityId.lastIndexOf(':');
+        int subIndex = -1;
+        String baseId = abilityId;
+        if (colonIdx >= 0) {
+            try {
+                subIndex = Integer.parseInt(abilityId.substring(colonIdx + 1));
+                baseId = abilityId.substring(0, colonIdx);
+            } catch (NumberFormatException ignored) {}
+        }
+
         int size = isHovered ? SLOT_HOVER_SIZE : SLOT_SIZE;
         int x = pos.x() - size / 2;
         int y = pos.y() - size / 2;
@@ -63,6 +75,10 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
 
         int borderColor = isSelected ? 0xFFc4a8e3 : (isHovered ? 0xFFc4a8e3 : 0xFF9989ab);
         int borderWidth = isSelected ? 2 : 1;
+
+        if (CopiedAbilityHelper.isAbilityCopied(ClientHandler.getPlayer(), baseId)) {
+            borderColor = 0xFFFFFFFF;
+        }
 
         if (isHovered || isSelected) {
             int glowColor = isSelected ? 0x60c4a8e3 : 0x409989ab;
@@ -73,17 +89,6 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
         guiGraphics.fill(x, y + size - borderWidth, x + size, y + size, borderColor);
         guiGraphics.fill(x, y, x + borderWidth, y + size, borderColor);
         guiGraphics.fill(x + size - borderWidth, y, x + size, y + size, borderColor);
-
-        // Parse sub-ability index from abilityId (e.g. "someid:2")
-        int colonIdx = abilityId.lastIndexOf(':');
-        int subIndex = -1;
-        String baseId = abilityId;
-        if (colonIdx >= 0) {
-            try {
-                subIndex = Integer.parseInt(abilityId.substring(colonIdx + 1));
-                baseId = abilityId.substring(0, colonIdx);
-            } catch (NumberFormatException ignored) {}
-        }
 
         try {
             ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/abilities/" + baseId + ".png");

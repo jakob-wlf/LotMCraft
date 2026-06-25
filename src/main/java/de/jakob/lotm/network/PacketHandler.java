@@ -691,12 +691,6 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
-                UseCopiedAbilityPacket.TYPE,
-                UseCopiedAbilityPacket.STREAM_CODEC,
-                UseCopiedAbilityPacket::handle
-        );
-
-        registrar.playToServer(
                 AllyRequestResponsePacket.TYPE,
                 AllyRequestResponsePacket.STREAM_CODEC,
                 AllyRequestResponsePacket::handle
