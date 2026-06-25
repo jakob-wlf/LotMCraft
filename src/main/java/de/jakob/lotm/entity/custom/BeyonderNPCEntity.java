@@ -223,6 +223,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         builder.define(PATHWAY, "none");
         builder.define(SEQUENCE, -1);
         builder.define(QUEST_ID, "");
+        builder.define(TRADES, new CompoundTag());
         builder.define(IS_PUPPET_WARRIOR, false);
         builder.define(MAX_LIFETIME_IF_IS_PUPPET, DEFAULT_PUPPET_LIFETIME);
         builder.define(TARGET_PLAYER_UUID, Optional.empty());
