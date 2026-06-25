@@ -1,10 +1,9 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.artifacts.SealedArtifactData;
-import de.jakob.lotm.artifacts.SealedArtifactItem;
+import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
+import de.jakob.lotm.beyonders.artifacts.SealedArtifactItem;
 import de.jakob.lotm.data.ModDataComponents;
-import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

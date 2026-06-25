@@ -1,0 +1,101 @@
+package de.jakob.lotm.beyonders.abilities.visionary;
+
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryLoosingControlHandler;
+import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
+import de.jakob.lotm.util.helper.ParticleUtil;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import org.joml.Vector3f;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler.checkAsleep;
+
+public class NightmareSpectatorAbility extends Ability {
+
+    public NightmareSpectatorAbility(String id) {
+        super(id, 10f);
+    }
+
+    @Override
+    public Map<String, Integer> getRequirements() {
+        return new HashMap<>(Map.of("visionary", 5));
+    }
+
+    @Override
+    public float getSpiritualityCost() {
+        return 110;
+    }
+
+    private final DustParticleOptions dust = new DustParticleOptions(
+            new Vector3f(250 / 255f, 201 / 255f, 102 / 255f),
+            1f
+    );
+
+    @Override
+    public void onAbilityUse(Level level, LivingEntity entity) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            return;
+        }
+
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 200, 2);
+
+        if(target == null) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));
+            return;
+        }
+
+        if(level.isClientSide) {
+            ParticleUtil.spawnSphereParticles((ClientLevel) level, dust, target.getEyePosition(), 2, 50);
+            return;
+        }
+
+        if(!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
+            return;
+        }
+
+        if(checkAsleep(entity, target)) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.must_be_asleep").withColor(0xFFff124d));
+            return;
+        }
+
+        VisionaryLoosingControlHandler.applyEffect(entity, target, this);
+
+        // Damage target
+        target.hurt(new DamageSource(
+                serverLevel.registryAccess()
+                        .registryOrThrow(Registries.DAMAGE_TYPE)
+                        .getHolderOrThrow(ModDamageTypes.LOOSING_CONTROL)
+        ), (float) DamageLookup.lookupDamage(5, 1.1) * multiplier(entity));
+
+        // Add effect
+        target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, 1));
+
+        // Decrease Sanity
+        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.0165f* (int) Math.max(multiplier(entity)/4,1)), target, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(target));
+    }
+}

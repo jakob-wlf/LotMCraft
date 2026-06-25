@@ -75,7 +75,7 @@ Manage the characteristic stack for a Beyonder entity. The stack tracks how many
 
 | Subcommand | Description |
 |---|---|
-| `/characteristicstack set <target> <seq> <stack>` | Sets the characteristic stack count for the given sequence (1–9) on the target. |
+| `/characteristicstack set <target> <seq> <stack>` | Sets the characteristic stack count for the given sequence (0–9) on the target. |
 | `/characteristicstack delete <target> <seq>` | Zeroes the stack for a specific sequence. |
 | `/characteristicstack delete <target> all` | Clears all stack data for the target. |
 | `/characteristicstack delete <target> modifiers` | Removes all applied characteristic stack damage modifiers. |

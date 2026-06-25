@@ -7,8 +7,10 @@ import de.jakob.lotm.entity.custom.goals.SubordinateLoadChunksGoal;
 import de.jakob.lotm.entity.custom.goals.SubordinateTargetGoal;
 import de.jakob.lotm.entity.custom.goals.SuordinateStayGoal;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
@@ -17,6 +19,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
+import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -82,6 +85,22 @@ public class SubordinateEventHandler {
     public static void onWorldLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof ServerLevel serverLevel) {
             BeyonderData.initBeyonderMap(serverLevel);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingChangeTarget(LivingChangeTargetEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity source)) return;
+        if (source.level().isClientSide) return;
+
+        LivingEntity target = event.getNewAboutToBeSetTarget();
+        if (target == null) return;
+
+        SubordinateComponent component = source.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
+        if (!component.isSubordinate()) return;
+
+        if (!AbilityUtil.mayTarget(source, target)) {
+            event.setCanceled(true);
         }
     }
 

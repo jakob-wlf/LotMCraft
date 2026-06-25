@@ -1,10 +1,10 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.potions.PotionRecipe;
+import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
+import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.gui.custom.Recipe.RecipeMenuProvider;
-import de.jakob.lotm.potions.PotionRecipe;
-import de.jakob.lotm.potions.PotionRecipeItem;
-import de.jakob.lotm.potions.PotionRecipeItemHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -16,7 +16,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.ArrayList;
 import java.util.List;
 
-public record OpenRecipeMenuPacket(int sequence, String pathway) implements CustomPacketPayload {
+public record OpenRecipeMenuPacket(int sequence, String pathway, boolean fromCard) implements CustomPacketPayload {
     public static final Type<OpenRecipeMenuPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "open_recipe"));
 
@@ -26,6 +26,8 @@ public record OpenRecipeMenuPacket(int sequence, String pathway) implements Cust
                     OpenRecipeMenuPacket::sequence,
                     StreamCodec.of(FriendlyByteBuf::writeUtf, FriendlyByteBuf::readUtf),
                     OpenRecipeMenuPacket::pathway,
+                    StreamCodec.of(FriendlyByteBuf::writeBoolean, FriendlyByteBuf::readBoolean),
+                    OpenRecipeMenuPacket::fromCard,
                     OpenRecipeMenuPacket::new
             );
 
@@ -44,18 +46,18 @@ public record OpenRecipeMenuPacket(int sequence, String pathway) implements Cust
 
                 PotionRecipeItem potionRecipeItem = PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, sequence);
 
-                if(potionRecipeItem == null || potionRecipeItem.getRecipe() == null) {
-                    return;
+                List<ItemStack> ingredients = new ArrayList<>();
+                if (potionRecipeItem != null && potionRecipeItem.getRecipe() != null) {
+                    PotionRecipe recipe = potionRecipeItem.getRecipe();
+                    ingredients.add(recipe.supplementaryIngredient1());
+                    ingredients.add(recipe.supplementaryIngredient2());
+                    ingredients.add(recipe.mainIngredient());
                 }
 
-                PotionRecipe recipe = potionRecipeItem.getRecipe();
-
-                List<ItemStack> ingredients = new ArrayList<>();
-                ingredients.add(recipe.supplementaryIngredient1());
-                ingredients.add(recipe.supplementaryIngredient2());
-                ingredients.add(recipe.mainIngredient());
-
-                player.openMenu(new RecipeMenuProvider(ingredients, pathway, sequence));
+                player.openMenu(
+                        new RecipeMenuProvider(ingredients, pathway, sequence, packet.fromCard()),
+                        buf -> { buf.writeUtf(pathway); buf.writeVarInt(sequence); buf.writeBoolean(packet.fromCard()); }
+                );
             }
         });
     }

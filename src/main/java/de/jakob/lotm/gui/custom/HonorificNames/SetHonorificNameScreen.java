@@ -24,16 +24,19 @@ public class SetHonorificNameScreen extends Screen {
 
     private final String pathway;
     private final int sequence;
+    private final boolean sefirotOwner;
+
     private final int lineCount;
 
     private final List<EditBox> lineBoxes = new LinkedList<>();
     private String errorMessage = "";
 
-    public SetHonorificNameScreen(String pathway, int sequence) {
+    public SetHonorificNameScreen(String pathway, int sequence, boolean sefirotOwner) {
         super(Component.literal("Set Honorific Name"));
         this.pathway = pathway;
         this.sequence = sequence;
-        this.lineCount = requiredLineCount(sequence);
+        this.sefirotOwner = sefirotOwner;
+        this.lineCount = sefirotOwner ? 3 : requiredLineCount(sequence);
     }
 
     private static int requiredLineCount(int sequence) {
@@ -86,7 +89,7 @@ public class SetHonorificNameScreen extends Screen {
             lines.add(value);
         }
 
-        if (sequence >= 4) {
+        if (!sefirotOwner && sequence >= 4) {
             errorMessage = "You must be sequence 3 or higher to utilize honorific name.";
             return;
         }

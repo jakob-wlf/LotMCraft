@@ -75,7 +75,7 @@ neoForge {
             client()
             gameDirectory = project.file('run2')
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-            programArguments.addAll '--username', 'Player2'
+            programArguments.addAll '--uuid', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '--username', 'Player2'
         }
 
         server {
@@ -90,13 +90,6 @@ neoForge {
         gameTestServer {
             type = "gameTestServer"
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-        }
-
-        client2 {
-            client()
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-            gameDirectory = project.file('run2')
-            programArguments.addAll '--uuid', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '--username', 'Player2'
         }
 
         data {

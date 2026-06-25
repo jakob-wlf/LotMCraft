@@ -1,0 +1,99 @@
+package de.jakob.lotm.beyonders.abilities.fool;
+
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
+import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.helper.VectorUtil;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+public class AirBulletAbility extends Ability {
+    public AirBulletAbility(String id) {
+        super(id, 1.5f);
+    }
+
+    @Override
+    public Map<String, Integer> getRequirements() {
+        return new HashMap<>(Map.of("fool", 7));
+    }
+
+    @Override
+    public float getSpiritualityCost() {
+        return 100;
+    }
+
+    @Override
+    public void onAbilityUse(Level level, LivingEntity entity) {
+        if(level.isClientSide)
+            return;
+        float multiplier = multiplier(entity);
+        Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(-.65, .65), random.nextDouble(-.1, .6));
+        Vec3 direction = AbilityUtil.getTargetLocation(entity, 10*(int) multiplier, 1.4f).subtract(startPos).normalize();
+
+        AtomicReference<Vec3> currentPos = new AtomicReference<>(startPos);
+
+        AtomicBoolean hasHit = new AtomicBoolean(false);
+
+        level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.SNOWBALL_THROW, entity.getSoundSource(), 1.0f, 1.0f);
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        double rawDamage = Math.min(DamageLookup.lookupDamage(entitySeq, .9), DamageLookup.lookupDamage(3, .7));
+
+        ServerScheduler.scheduleForDuration(0, 1, 20 * 10, () -> {
+            if(hasHit.get())
+                return;
+
+            Vec3 pos = currentPos.get();
+
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, rawDamage * (int) multiplier(entity), pos, true, false, true, 0)) {
+                hasHit.set(true);
+                return;
+            }
+
+            if(!level.getBlockState(BlockPos.containing(pos.x, pos.y, pos.z)).isAir()) {
+                pos = pos.subtract(direction);
+                level.explode(null, pos.x, pos.y, pos.z, getExplosionPowerForSequence(entitySeq), BeyonderData.isGriefingEnabled(entity) ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE);
+                hasHit.set(true);
+                return;
+            }
+
+            ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.EFFECT, pos, direction, getRadiusForSequence(entitySeq), 25);
+
+            currentPos.set(pos.add(direction));
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(currentPos.get(), level)));
+    }
+
+    private static float getExplosionPowerForSequence(int sequence) {
+        return switch (sequence) {
+            default -> 1.3f;
+            case 6 -> 1.65f;
+            case 5 -> 2f;
+            case 4 -> 3.25f;
+            case 3, 2, 1 -> 5.5f;
+        };
+    }
+
+    private static float getRadiusForSequence(int sequence) {
+        return switch (sequence) {
+            default -> .2f;
+            case 6 -> .3f;
+            case 5 -> .45f;
+            case 4 -> .75f;
+            case 3, 2, 1 -> 1.0f;
+        };
+    }
+}

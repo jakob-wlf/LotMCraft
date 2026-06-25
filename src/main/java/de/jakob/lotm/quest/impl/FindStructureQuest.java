@@ -2,11 +2,8 @@ package de.jakob.lotm.quest.impl;
 
 import de.jakob.lotm.quest.Quest;
 import de.jakob.lotm.quest.QuestManager;
-import de.jakob.lotm.potions.BeyonderPotion;
-import de.jakob.lotm.potions.PotionItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -53,16 +50,8 @@ public class FindStructureQuest extends Quest {
 
     @Override
     public List<ItemStack> getRewards(ServerPlayer player) {
-        List<ItemStack> rewards = new ArrayList<>();
-
-        Random random = new Random();
-
-        int seq = random.nextBoolean() ? 7 : 8;
-        BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, seq);
-        if (potion != null) {
-            rewards.add(new ItemStack(potion));
-        }
-        return rewards;
+        int seq = new Random().nextBoolean() ? 7 : 8;
+        return new ArrayList<>(currencyRewardForSequence(seq, new Random()));
     }
 
     @Override

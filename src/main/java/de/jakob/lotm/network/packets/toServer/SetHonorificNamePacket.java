@@ -1,14 +1,15 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.visionary.prophecy.TokenStream;
+import de.jakob.lotm.beyonders.abilities.visionary.prophecy.TokenStream;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.HonorificName;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -57,22 +58,23 @@ public record SetHonorificNamePacket(LinkedList<String> lines) implements Custom
 
             try {
                 int sequence = BeyonderData.getSequence(player);
+                boolean isSefirotOwner = !SefirahHandler.getClaimedSefirot(player).isEmpty();
 
-                if (sequence >= 4) {
+                if (!isSefirotOwner && sequence >= 4) {
                     player.sendSystemMessage(Component.literal(
                             "You must be sequence 3 or higher to utilize honorific name!")
                             .withStyle(ChatFormatting.RED));
                     return;
                 }
 
-                if (sequence == 3 && lines.size() != 5) {
+                if (!isSefirotOwner && sequence == 3 && lines.size() != 5) {
                     player.sendSystemMessage(Component.literal(
                             "You must have 5 lines in honorific name as sequence 3")
                             .withStyle(ChatFormatting.RED));
                     return;
                 }
 
-                if (sequence == 2 && lines.size() < 4) {
+                if (!isSefirotOwner && sequence == 2 && lines.size() < 4) {
                     player.sendSystemMessage(Component.literal(
                             "You must have 4 lines in honorific name as sequence 2")
                             .withStyle(ChatFormatting.RED));

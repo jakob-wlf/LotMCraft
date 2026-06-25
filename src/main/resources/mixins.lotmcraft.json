@@ -4,8 +4,8 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "EntityAccessor",
-    "ServerGamePacketListenerImplMixin",
-    "MixinIngredient"
+    "MixinIngredient",
+    "ServerGamePacketListenerImplMixin"
   ],
   "injectors": {
     "defaultRequire": 1

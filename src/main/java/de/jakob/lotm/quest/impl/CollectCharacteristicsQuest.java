@@ -1,9 +1,7 @@
 package de.jakob.lotm.quest.impl;
 
 
-import de.jakob.lotm.potions.BeyonderCharacteristicItem;
-import de.jakob.lotm.potions.BeyonderPotion;
-import de.jakob.lotm.potions.PotionItemHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.quest.Quest;
 import de.jakob.lotm.quest.QuestManager;
 import net.minecraft.network.chat.Component;
@@ -37,16 +35,7 @@ public class CollectCharacteristicsQuest extends Quest {
 
     @Override
     public List<ItemStack> getRewards(ServerPlayer player) {
-        List<ItemStack> rewards = new ArrayList<>();
-
-        Random random = new Random();
-
-        int rewardSequence = random.nextBoolean() ? 5 : 6;
-        BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, rewardSequence);
-        if (potion != null) {
-            rewards.add(new ItemStack(potion));
-        }
-        return rewards;
+        return new ArrayList<>(currencyRewardForSequence(6, new Random()));
     }
 
     @Override

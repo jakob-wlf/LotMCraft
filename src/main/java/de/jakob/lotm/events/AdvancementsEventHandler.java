@@ -1,10 +1,10 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.artifacts.SealedArtifactItem;
+import de.jakob.lotm.beyonders.artifacts.SealedArtifactItem;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
-import de.jakob.lotm.potions.BeyonderCharacteristicItem;
-import de.jakob.lotm.potions.PotionRecipeItem;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
@@ -34,8 +34,17 @@ public class AdvancementsEventHandler {
             grantAdvancement(player, "become_beyonder");
 
             if (BeyonderData.pathwayInfos.get(BeyonderData.getPathway(player)) != null) {
-                String sequenceName = BeyonderData.pathwayInfos.get(BeyonderData.getPathway(player)).getRawSequenceName(BeyonderData.getSequence(player));
-                grantAdvancement(player, "become_" + sequenceName.toLowerCase());
+                if (BeyonderData.getSequence(player) == LOTMCraft.GREAT_OLD_ONE_SEQ) {
+                    // GOO state is legitimate — no sequence advancement to grant
+                } else if (BeyonderData.getSequence(player) >= 10) {
+                    LOTMCraft.LOGGER.info("Player is somehow both a beyonder of " + BeyonderData.getPathway(player) + " and a sequence 10+: " + player.getName().getString() + "");
+                    int charSeq = BeyonderData.getCharList(player).stream().mapToInt(c -> c.sequence()).filter(s -> s != LOTMCraft.GREAT_OLD_ONE_SEQ).max().orElse(de.jakob.lotm.LOTMCraft.NON_BEYONDER_SEQ);
+                    String charPath = BeyonderData.getCharList(player).stream().filter(c -> c.sequence() == charSeq).findFirst().map(c -> c.pathway()).orElse("none");
+                    BeyonderData.setBeyonder(player, charPath, charSeq);
+                } else {
+                    String sequenceName = BeyonderData.pathwayInfos.get(BeyonderData.getPathway(player)).getRawSequenceName(BeyonderData.getSequence(player));
+                    grantAdvancement(player, "become_" + sequenceName.toLowerCase());
+                }
             } else {
                 LOTMCraft.LOGGER.error("Advancement Error: Missing PathwayInfo for player '{}'. Pathway: '{}', Sequence: {}",
                         player.getName().getString(),

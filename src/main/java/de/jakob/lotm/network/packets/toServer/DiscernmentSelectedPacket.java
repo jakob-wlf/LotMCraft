@@ -2,7 +2,7 @@ package de.jakob.lotm.network.packets.toServer;
 
 import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.util.PureIdealismUtil;
+import de.jakob.lotm.util.helper.PureIdealismUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

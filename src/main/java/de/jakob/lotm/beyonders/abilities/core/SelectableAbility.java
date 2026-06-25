@@ -1,0 +1,125 @@
+package de.jakob.lotm.beyonders.abilities.core;
+
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+
+import java.util.HashMap;
+import java.util.UUID;
+
+public abstract class SelectableAbility extends Ability {
+
+    protected final HashMap<UUID, Integer> selectedAbilities = new HashMap<>();
+    protected final HashMap<UUID, Integer> castedSubAbility = new HashMap<>();
+
+    public SelectableAbility(String id, float cooldown, String... interactionFlags) {
+        super(id, cooldown, interactionFlags);
+    }
+
+    public int getSelectedAbilityIndex(UUID uuid) {
+        return selectedAbilities.getOrDefault(uuid, 0);
+    }
+
+    protected abstract String[] getAbilityNames();
+
+    public String[] getAbilityNamesCopy() {
+        return getAbilityNames().clone();
+    }
+
+    @Override
+    public void onAbilityUse(Level level, LivingEntity entity) {
+        if(!(entity instanceof Player)) {
+            int[] allowed = java.util.stream.IntStream.range(0, getAbilityNames().length)
+                    .filter(i -> isSubAbilityAllowed(entity, i))
+                    .toArray();
+            int index = allowed.length > 0 ? allowed[random.nextInt(allowed.length)] : 0;
+            castSelectedAbility(level, entity, index);
+            return;
+        }
+
+        if(!selectedAbilities.containsKey(entity.getUUID())) {
+            selectedAbilities.put(entity.getUUID(), 0);
+        }
+
+        int selectedAbility = selectedAbilities.get(entity.getUUID());
+        if(castedSubAbility.containsKey(entity.getUUID())) {
+            selectedAbility = castedSubAbility.get(entity.getUUID());
+            castedSubAbility.remove(entity.getUUID());
+        }
+        castSelectedAbility(level, entity, selectedAbility);
+    }
+
+    protected abstract void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility);
+
+    public void addSubAbilityOverride(LivingEntity entity, int selectedAbility) {
+        castedSubAbility.put(entity.getUUID(), selectedAbility);
+    }
+
+    public void nextAbility(LivingEntity entity) {
+        if(getAbilityNames().length == 0)
+            return;
+
+        if(!selectedAbilities.containsKey(entity.getUUID())) {
+            selectedAbilities.put(entity.getUUID(), 0);
+        }
+
+        int selectedAbility = selectedAbilities.get(entity.getUUID());
+        selectedAbility++;
+        if(selectedAbility >= getAbilityNames().length) {
+            selectedAbility = 0;
+        }
+        selectedAbilities.put(entity.getUUID(), selectedAbility);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+    }
+
+    public String getSelectedAbility(LivingEntity entity) {
+        if(getAbilityNames().length == 0)
+            return "";
+
+        if(!selectedAbilities.containsKey(entity.getUUID())) {
+            selectedAbilities.put(entity.getUUID(), 0);
+        }
+
+        int selectedAbility = selectedAbilities.get(entity.getUUID());
+        return getAbilityNames()[selectedAbility];
+    }
+
+    public void setSelectedAbility(ServerPlayer player, int selectedAbility) {
+        if(getAbilityNames().length == 0)
+            return;
+
+        if(selectedAbility < 0 || selectedAbility >= getAbilityNames().length)
+            return;
+
+        selectedAbilities.put(player.getUUID(), selectedAbility);
+    }
+
+    public boolean isSubAbilityAllowed(LivingEntity entity, int selectedAbility) {
+        return true;
+    }
+    public void setSelectedAbilityClient(java.util.UUID uuid, int selectedAbility) {
+        if(selectedAbility < 0 || selectedAbility >= getAbilityNames().length)
+            return;
+        selectedAbilities.put(uuid, selectedAbility);
+    }
+
+    public void previousAbility(LivingEntity entity) {
+        if(getAbilityNames().length == 0)
+            return;
+
+        if(!selectedAbilities.containsKey(entity.getUUID())) {
+            selectedAbilities.put(entity.getUUID(), 0);
+        }
+
+        int selectedAbility = selectedAbilities.get(entity.getUUID());
+        selectedAbility--;
+        if(selectedAbility <= -1) {
+            selectedAbility = getAbilityNames().length - 1;
+        }
+        selectedAbilities.put(entity.getUUID(), selectedAbility);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+    }
+}

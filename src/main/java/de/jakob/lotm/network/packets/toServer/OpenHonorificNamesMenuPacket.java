@@ -3,6 +3,7 @@ package de.jakob.lotm.network.packets.toServer;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.events.HonorificNamesEventHandler;
 import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesMenuProvider;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.HonorificName;
 import de.jakob.lotm.util.playerMap.PendingPrayer;
@@ -42,17 +43,19 @@ public record OpenHonorificNamesMenuPacket() implements CustomPacketPayload {
                         : HonorificName.EMPTY;
                 String pathway = BeyonderData.getPathway(player);
                 int sequence = BeyonderData.getSequence(player);
+                boolean isSefirotOwner = SefirahHandler.hasSefirot(player);
 
                 LinkedList<PendingPrayer> pendingPrayers =
                         HonorificNamesEventHandler.getPendingPrayers(player.getUUID());
 
                 player.openMenu(
-                        new HonorificNamesMenuProvider(honorificName, pathway, sequence, pendingPrayers),
+                        new HonorificNamesMenuProvider(honorificName, pathway, sequence, pendingPrayers, isSefirotOwner),
                         buf -> {
                             honorificName.toNetwork(buf);
                             buf.writeUtf(pathway, 64);
                             buf.writeInt(sequence);
                             buf.writeCollection(pendingPrayers, (b, p) -> p.toNetwork(b));
+                            buf.writeBoolean(isSefirotOwner);
                         }
                 );
             }

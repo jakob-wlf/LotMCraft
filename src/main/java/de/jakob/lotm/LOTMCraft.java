@@ -3,10 +3,14 @@ package de.jakob.lotm;
 import com.zigythebird.playeranim.animation.PlayerAnimationController;
 import com.zigythebird.playeranim.api.PlayerAnimationFactory;
 import com.zigythebird.playeranimcore.enums.PlayState;
-import de.jakob.lotm.abilities.PassiveAbilityHandler;
-import de.jakob.lotm.abilities.core.AbilityHandler;
-import de.jakob.lotm.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.AbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.beyonders.potions.PotionItemHandler;
+import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.beyonders.potions.PotionRecipes;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.data.ModDataComponents;
@@ -20,15 +24,45 @@ import de.jakob.lotm.entity.client.ability_entities.death_pathway.divine_kingdom
 import de.jakob.lotm.entity.client.ability_entities.death_pathway.underworld_gate.UnderworldGateRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.apprentice_door.ApprenticeDoorRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.black_hole.BlackHoleRenderer;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.book.ApprenticeBookRenderer;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.distortion_field.DistortionFieldRenderer;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.electric_shock.ElectricShockRenderer;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.exile_doors.ExileDoorsRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.planet.PlanetRenderer;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.return_portal.ReturnPortalRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.space_collapse.SpaceCollapseRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.travelers_door.TravelersDoorRenderer;
+import de.jakob.lotm.entity.client.ability_entities.grafting.GraftingLocationRenderer;
+import de.jakob.lotm.entity.client.ability_entities.justiciar_pathway.ancient_court.AncientCourtEntityRenderer;
+import de.jakob.lotm.entity.client.ability_entities.justiciar_pathway.judgment_sword.JudgmentSwordRenderer;
 import de.jakob.lotm.entity.client.ability_entities.meteor.MeteorRenderer;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area.BloomingAreaRenderer;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinRenderer;
+import de.jakob.lotm.entity.client.ability_entities.mother_pathway.desolate_area.DesolateAreaRenderer;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.return_from_nature.ReturnFromNaturelRenderer;
 import de.jakob.lotm.entity.client.ability_entities.original_body.OriginalBodyRenderer;
+import de.jakob.lotm.entity.client.ability_entities.red_priest_pathway.war_banner.WarBannerRenderer;
+import de.jakob.lotm.entity.client.ability_entities.sun_pathway.justice_sword.JusticeSwordRenderer;
+import de.jakob.lotm.entity.client.ability_entities.sun_pathway.sun.SunRenderer;
+import de.jakob.lotm.entity.client.ability_entities.sun_pathway.sun_kingdom.SunKingdomEntityRenderer;
+import de.jakob.lotm.entity.client.ability_entities.time_change.TimeChangeRenderer;
+import de.jakob.lotm.entity.client.ability_entities.tornado.TornadoRenderer;
+import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.electromagnetic_tornado.ElectromagneticTornadoRenderer;
+import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.giant_lightning.GiantLightningRenderer;
+import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.lightning.LightningRenderer;
+import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.lightning_branch.LightningBranchRenderer;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.strong_lightning.StrongLightningRenderer;
+import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.tsunami.TsunamiRenderer;
+import de.jakob.lotm.entity.client.ability_entities.volcano.VolcanoRenderer;
+import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.cycle_of_fate.CycleOfFateRenderer;
+import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.misfortune_words.MisfortuneWordsRenderer;
+import de.jakob.lotm.entity.client.avatar.ErrorAvatarRenderer;
+import de.jakob.lotm.entity.client.beyonder_npc.BeyonderNPCRenderer;
+import de.jakob.lotm.entity.client.damage_tracker.DamageTrackerRenderer;
+import de.jakob.lotm.entity.client.fire_raven.FireRavenRenderer;
+import de.jakob.lotm.entity.client.projectiles.fireball.FireballRenderer;
+import de.jakob.lotm.entity.client.projectiles.flaming_spear.FlamingSpearProjectileRenderer;
+import de.jakob.lotm.entity.client.projectiles.frost_spear.FrostSpearProjectileRenderer;
 import de.jakob.lotm.entity.client.projectiles.paper_dagger.PaperDaggerProjectileRenderer;
 import de.jakob.lotm.entity.client.projectiles.spear_of_destruction.SpearOfDestructionProjectileRenderer;
 import de.jakob.lotm.entity.client.projectiles.spear_of_light.SpearOfLightProjectileRenderer;
@@ -36,36 +70,6 @@ import de.jakob.lotm.entity.client.projectiles.spirit_ball.SpiritBallRenderer;
 import de.jakob.lotm.entity.client.projectiles.spirit_block.SpiritBlockProjectileRenderer;
 import de.jakob.lotm.entity.client.projectiles.unshadowed_spear.UnshadowedSpearProjectileRenderer;
 import de.jakob.lotm.entity.client.projectiles.wind_blade.WindBladeRenderer;
-import de.jakob.lotm.entity.client.ability_entities.red_priest_pathway.war_banner.WarBannerRenderer;
-import de.jakob.lotm.entity.client.ability_entities.sun_pathway.sun_kingdom.SunKingdomEntityRenderer;
-import de.jakob.lotm.entity.client.ability_entities.sun_pathway.sun.SunRenderer;
-import de.jakob.lotm.entity.client.ability_entities.time_change.TimeChangeRenderer;
-import de.jakob.lotm.entity.client.ability_entities.tornado.TornadoRenderer;
-import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.tsunami.TsunamiRenderer;
-import de.jakob.lotm.entity.client.ability_entities.volcano.VolcanoRenderer;
-import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.cycle_of_fate.CycleOfFateRenderer;
-import de.jakob.lotm.entity.client.ability_entities.mother_pathway.desolate_area.DesolateAreaRenderer;
-import de.jakob.lotm.entity.client.ability_entities.door_pathway.distortion_field.DistortionFieldRenderer;
-import de.jakob.lotm.entity.client.ability_entities.door_pathway.return_portal.ReturnPortalRenderer;
-import de.jakob.lotm.entity.client.ability_entities.door_pathway.electric_shock.ElectricShockRenderer;
-import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.electromagnetic_tornado.ElectromagneticTornadoRenderer;
-import de.jakob.lotm.entity.client.ability_entities.door_pathway.exile_doors.ExileDoorsRenderer;
-import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.giant_lightning.GiantLightningRenderer;
-import de.jakob.lotm.entity.client.ability_entities.grafting.GraftingLocationRenderer;
-import de.jakob.lotm.entity.client.ability_entities.justiciar_pathway.ancient_court.AncientCourtEntityRenderer;
-import de.jakob.lotm.entity.client.ability_entities.justiciar_pathway.judgment_sword.JudgmentSwordRenderer;
-import de.jakob.lotm.entity.client.ability_entities.sun_pathway.justice_sword.JusticeSwordRenderer;
-import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.lightning.LightningRenderer;
-import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.lightning_branch.LightningBranchRenderer;
-import de.jakob.lotm.entity.client.projectiles.fireball.FireballRenderer;
-import de.jakob.lotm.entity.client.projectiles.flaming_spear.FlamingSpearProjectileRenderer;
-import de.jakob.lotm.entity.client.projectiles.frost_spear.FrostSpearProjectileRenderer;
-import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.misfortune_words.MisfortuneWordsRenderer;
-import de.jakob.lotm.entity.client.avatar.ErrorAvatarRenderer;
-import de.jakob.lotm.entity.client.beyonder_npc.BeyonderNPCRenderer;
-import de.jakob.lotm.entity.client.damage_tracker.DamageTrackerRenderer;
-import de.jakob.lotm.entity.client.ability_entities.door_pathway.book.ApprenticeBookRenderer;
-import de.jakob.lotm.entity.client.fire_raven.FireRavenRenderer;
 import de.jakob.lotm.entity.client.spirits.bizarro_bane.SpiritBizarroBaneRenderer;
 import de.jakob.lotm.entity.client.spirits.blue_wizard.SpiritBlueWizardRenderer;
 import de.jakob.lotm.entity.client.spirits.bubbles.SpiritBubblesRenderer;
@@ -74,25 +78,31 @@ import de.jakob.lotm.entity.client.spirits.ghost.SpiritGhostRenderer;
 import de.jakob.lotm.entity.client.spirits.malmouth.SpiritMalmouthRenderer;
 import de.jakob.lotm.entity.client.spirits.spirit_bane.SpiritBaneRenderer;
 import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentWizardRenderer;
+import de.jakob.lotm.fluid.ModFluidTypes;
+import de.jakob.lotm.fluid.ModFluids;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
 import de.jakob.lotm.gui.custom.ArtifactWheel.ArtifactWheelScreen;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronScreen;
+import de.jakob.lotm.gui.custom.ChaosSeaAuthority.ChaosSeaAuthorityScreen;
 import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelScreen;
-import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
+import de.jakob.lotm.gui.custom.Gathering.GatheringScreen;
 import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesScreen;
+import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
+import de.jakob.lotm.gui.custom.Prey.PreyScreen;
 import de.jakob.lotm.gui.custom.Recipe.RecipeScreen;
+import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityScreen;
+import de.jakob.lotm.gui.custom.RiverBlessing.RiverBlessingScreen;
+import de.jakob.lotm.gui.custom.RiverSefirotAuthority.RiverSefirotAuthorityScreen;
+import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityScreen;
+import de.jakob.lotm.gui.custom.Trades.BeyonderTradeScreen;
 import de.jakob.lotm.item.ModCreativeModTabs;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.loottables.ModLootModifiers;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.particle.*;
-import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
-import de.jakob.lotm.potions.PotionItemHandler;
-import de.jakob.lotm.potions.PotionRecipeItemHandler;
-import de.jakob.lotm.potions.PotionRecipes;
 import de.jakob.lotm.quest.QuestRegistry;
 import de.jakob.lotm.rendering.GuidingBookRenderer;
 import de.jakob.lotm.sound.ModSounds;
@@ -133,6 +143,8 @@ public class LOTMCraft
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public static final Integer NON_BEYONDER_SEQ = 10;
+    /** Sequence value for a Great Old One (above seq 0). */
+    public static final int GREAT_OLD_ONE_SEQ = -1;
 
     public static KeyMapping pathwayInfosKey;
     public static KeyMapping toggleGriefingKey;
@@ -188,6 +200,8 @@ public class LOTMCraft
         ModSounds.register(modEventBus);
         ModLootModifiers.register(modEventBus);
         ModVillagers.register(modEventBus);
+        ModFluidTypes.register(modEventBus);
+        ModFluids.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModStructures.register(modEventBus);
@@ -231,7 +245,7 @@ public class LOTMCraft
 
     @SubscribeEvent
     public void onServerStarted(ServerStartedEvent event) {
-        de.jakob.lotm.abilities.black_emperor.MausoleumDomainAbility.prePlaceStructure(event.getServer());
+        de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility.prePlaceStructure(event.getServer());
     }
 
     @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
@@ -308,6 +322,8 @@ public class LOTMCraft
 
             event.enqueueWork(() -> {
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.MYSTICAL_RING.get(), RenderType.cutout());
+                ItemBlockRenderTypes.setRenderLayer(ModFluids.DROPS_OF_ETERNAL_DARKNESS_SOURCE.get(), RenderType.translucent());
+                ItemBlockRenderTypes.setRenderLayer(ModFluids.DROPS_OF_ETERNAL_DARKNESS_FLOWING.get(), RenderType.translucent());
 
                 PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(ANIMATION_LAYER_ID, 1000,
                         player -> new PlayerAnimationController(player,
@@ -339,6 +355,7 @@ public class LOTMCraft
             event.registerSpriteSet(ModParticles.LIGHTNING.get(), LightningParticle.Provider::new);
             event.registerSpriteSet(ModParticles.STAR.get(), StarParticle.Provider::new);
             event.registerSpriteSet(ModParticles.FOG_OF_WAR.get(), FogOfWarParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.GREY_SEAL.get(), GreySealParticle.Provider::new);
             event.registerSpriteSet(ModParticles.PURPLE_FLAME.get(), PurpleFlameParticle.Provider::new);
             event.registerSpriteSet(ModParticles.BLACK.get(), BlackParticle.Provider::new);
             event.registerSpriteSet(ModParticles.WHITE_FLAME.get(), WhiteFlameParticle.Provider::new);
@@ -347,12 +364,20 @@ public class LOTMCraft
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event) {
             event.register(ModMenuTypes.INTROSPECT_MENU.get(), IntrospectScreen::new);
+            event.register(ModMenuTypes.BEYONDER_TRADE_MENU.get(), BeyonderTradeScreen::new);
             event.register(ModMenuTypes.HONORIFIC_NAMES_MENU.get(), HonorificNamesScreen::new);
             event.register(ModMenuTypes.RECIPE_MENU.get(), RecipeScreen::new);
             event.register(ModMenuTypes.BREWING_CAULDRON_MENU.get(), BrewingCauldronScreen::new);
             event.register(ModMenuTypes.ABILITY_WHEEL_MENU.get(), AbilityWheelScreen::new);
             event.register(ModMenuTypes.COPIED_ABILITY_WHEEL_MENU.get(), CopiedAbilityWheelScreen::new);
             event.register(ModMenuTypes.ARTIFACT_WHEEL_MENU.get(), ArtifactWheelScreen::new);
+            event.register(ModMenuTypes.SEFIROT_AUTHORITY_MENU.get(), SefirotAuthorityScreen::new);
+            event.register(ModMenuTypes.RIVER_AUTHORITY_MENU.get(), RiverAuthorityScreen::new);
+            event.register(ModMenuTypes.RIVER_SEFIROT_AUTHORITY_MENU.get(), RiverSefirotAuthorityScreen::new);
+            event.register(ModMenuTypes.CHAOS_SEA_AUTHORITY_MENU.get(), ChaosSeaAuthorityScreen::new);
+            event.register(ModMenuTypes.GATHERING_MENU.get(), GatheringScreen::new);
+            event.register(ModMenuTypes.RIVER_BLESSING_MENU.get(), RiverBlessingScreen::new);
+            event.register(ModMenuTypes.PREY_MENU.get(), PreyScreen::new);
         }
     }
 

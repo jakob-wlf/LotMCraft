@@ -30,12 +30,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class MarionetteControllerItem extends Item {
     public MarionetteControllerItem(Properties properties) {
@@ -228,7 +223,7 @@ public class MarionetteControllerItem extends Item {
 
         String pathway = BeyonderData.getPathway(controlled);
         int sequence = BeyonderData.getSequence(controlled);
-        List<de.jakob.lotm.abilities.core.Ability> abilities = new ArrayList<>(
+        List<de.jakob.lotm.beyonders.abilities.core.Ability> abilities = new ArrayList<>(
                 LOTMCraft.abilityHandler.getByPathwayAndSequence(pathway, sequence));
         if (abilities.isEmpty()) return;
 
@@ -238,7 +233,7 @@ public class MarionetteControllerItem extends Item {
         ServerScheduler.scheduleForDuration(0, 20 * 3, 20 * 10, () -> {
             if (controlled.isRemoved() || !controlled.isAlive()) return;
             if (target.isRemoved() || !target.isAlive()) return;
-            de.jakob.lotm.abilities.core.Ability chosen = abilities.get(rand.nextInt(abilities.size()));
+            de.jakob.lotm.beyonders.abilities.core.Ability chosen = abilities.get(rand.nextInt(abilities.size()));
             chosen.useAbility(level, controlled);
         }, level);
     }

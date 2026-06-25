@@ -10,10 +10,10 @@
 
     "salt": 4367768776,
 
-    "spacing": 38,
+    "spacing": 50,
 
     "separation": 15,
-    "heightmap": "WORLD_SURFACE_WG",
+    "heightmap": "MOTION_BLOCKING_NO_LEAVES",
     "max_tries": 10
   }
 }

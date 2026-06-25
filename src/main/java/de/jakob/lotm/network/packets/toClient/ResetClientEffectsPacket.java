@@ -1,19 +1,15 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.ToggleAbility;
-import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.rendering.*;
+import de.jakob.lotm.util.ClientAccommodationCache;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.ClientData;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-import java.util.List;
 
 public record ResetClientEffectsPacket() implements CustomPacketPayload {
     public static final Type<ResetClientEffectsPacket> TYPE =
@@ -31,6 +27,7 @@ public record ResetClientEffectsPacket() implements CustomPacketPayload {
         context.enqueueWork(() -> {
             ClientBeyonderCache.clearCache();
             ClientData.clearCache();
+            ClientAccommodationCache.reset();
             ActiveToggleAbilitiesRenderer.clearCache();
             CullOverlay.clearCache();
             DangerPremonitionOverlayRenderer.clearCache();

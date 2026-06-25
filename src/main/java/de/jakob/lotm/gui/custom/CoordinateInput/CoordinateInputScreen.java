@@ -1,6 +1,6 @@
 package de.jakob.lotm.gui.custom.CoordinateInput;
 
-import de.jakob.lotm.abilities.common.DivinationAbility;
+import de.jakob.lotm.beyonders.abilities.common.DivinationAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.SyncDreamDivinationCoordinatesPacket;
 import de.jakob.lotm.network.packets.toServer.SyncTravelersDoorCoordinatesPacket;

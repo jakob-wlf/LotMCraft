@@ -7,19 +7,19 @@ import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDo
 import de.jakob.lotm.entity.custom.ability_entities.death_pathway.DeathDivineKingdomEntity;
 import de.jakob.lotm.entity.custom.ability_entities.death_pathway.UnderworldGateEntity;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.*;
+import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.AncientCourtEntity;
+import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.JudgmentSwordEntity;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.BloomingAreaEntity;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.CoffinEntity;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.DesolateAreaEntity;
-import de.jakob.lotm.entity.custom.projectiles.*;
 import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.WarBannerEntity;
-import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.AncientCourtEntity;
-import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.JudgmentSwordEntity;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.JusticeSwordEntity;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunEntity;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunKingdomEntity;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.*;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.CycleOfFateEntity;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.MisfortuneWordsEntity;
+import de.jakob.lotm.entity.custom.projectiles.*;
 import de.jakob.lotm.entity.custom.spirits.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -47,6 +47,14 @@ public class ModEntities {
     public static final Supplier<EntityType<SpearOfLightProjectileEntity>> SPEAR_OF_LIGHT =
             ENTITY_TYPES.register("spear_of_light", () -> EntityType.Builder.<SpearOfLightProjectileEntity>of(SpearOfLightProjectileEntity::new, MobCategory.MISC)
                     .sized(.35f, .35f).noSave().build("spear_of_light"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<BeyonderSpawnerEntity>> BEYONDER_SPAWNER =
+            ENTITY_TYPES.register("beyonder_spawner",
+                    () -> EntityType.Builder.of(BeyonderSpawnerEntity::new, MobCategory.MISC)
+                            .sized(0.0f, 0.0f)
+                            .clientTrackingRange(0)
+                            .updateInterval(Integer.MAX_VALUE)
+                            .build("beyonder_spawner"));
 
     public static final Supplier<EntityType<SpearOfDestructionProjectileEntity>> SPEAR_OF_DESTRUCTION =
             ENTITY_TYPES.register("spear_of_destruction", () -> EntityType.Builder.<SpearOfDestructionProjectileEntity>of(SpearOfDestructionProjectileEntity::new, MobCategory.MISC)

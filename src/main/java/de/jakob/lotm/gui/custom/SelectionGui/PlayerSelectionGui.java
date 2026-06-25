@@ -1,8 +1,8 @@
 package de.jakob.lotm.gui.custom.SelectionGui;
 
 import de.jakob.lotm.network.packets.toServer.PlayerDivinationSelectedPacket;
-import de.jakob.lotm.util.PlayerSelectionWorkType;
 import de.jakob.lotm.util.data.PlayerInfo;
+import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.network.PacketDistributor;
 

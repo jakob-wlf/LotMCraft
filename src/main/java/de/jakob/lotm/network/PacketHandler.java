@@ -4,7 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
-import net.minecraft.client.Minecraft;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,6 +14,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+
+import java.util.ArrayList;
 
 public class PacketHandler {
 
@@ -92,6 +94,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncSefirotAuthorityDataPacket.TYPE,
+                SyncSefirotAuthorityDataPacket.STREAM_CODEC,
+                SyncSefirotAuthorityDataPacket::handle
+        );
+
+        registrar.playToClient(
                 UseAbilityPacket.TYPE,
                 UseAbilityPacket.STREAM_CODEC,
                 UseAbilityPacket::handle
@@ -126,6 +134,18 @@ public class PacketHandler {
                 SyncSanityPacket.TYPE,
                 SyncSanityPacket.STREAM_CODEC,
                 SyncSanityPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncCorruptionPacket.TYPE,
+                SyncCorruptionPacket.STREAM_CODEC,
+                SyncCorruptionPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncAnchorsPacket.TYPE,
+                SyncAnchorsPacket.STREAM_CODEC,
+                SyncAnchorsPacket::handle
         );
 
 
@@ -166,6 +186,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncSefirotAccommodationPacket.TYPE,
+                SyncSefirotAccommodationPacket.STREAM_CODEC,
+                SyncSefirotAccommodationPacket::handle
+        );
+
+        registrar.playToClient(
                 AddEffectPacket.TYPE,
                 AddEffectPacket.STREAM_CODEC,
                 AddEffectPacket::handle
@@ -181,6 +207,12 @@ public class PacketHandler {
                 OpenCoordinateScreenPacket.TYPE,
                 OpenCoordinateScreenPacket.STREAM_CODEC,
                 OpenCoordinateScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenInternalUnderworldAbilityScreenPacket.TYPE,
+                OpenInternalUnderworldAbilityScreenPacket.STREAM_CODEC,
+                OpenInternalUnderworldAbilityScreenPacket::handle
         );
 
         registrar.playToClient(
@@ -539,6 +571,90 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                OpenCharSlotRollPacket.TYPE,
+                OpenCharSlotRollPacket.STREAM_CODEC,
+                OpenCharSlotRollPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenAbilitySealScreenPacket.TYPE,
+                OpenAbilitySealScreenPacket.STREAM_CODEC,
+                OpenAbilitySealScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenAboveSeqAuthorityScreenPacket.TYPE,
+                OpenAboveSeqAuthorityScreenPacket.STREAM_CODEC,
+                OpenAboveSeqAuthorityScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenDailySpinScreenPacket.TYPE,
+                OpenDailySpinScreenPacket.STREAM_CODEC,
+                OpenDailySpinScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenSellYourSoulScreenPacket.TYPE,
+                OpenSellYourSoulScreenPacket.STREAM_CODEC,
+                OpenSellYourSoulScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenSellYourSoulGatePacket.TYPE,
+                OpenSellYourSoulGatePacket.STREAM_CODEC,
+                OpenSellYourSoulGatePacket::handle
+        );
+
+        registrar.playToClient(
+                OpenCharExchangeWheelPacket.TYPE,
+                OpenCharExchangeWheelPacket.STREAM_CODEC,
+                OpenCharExchangeWheelPacket::handle
+        );
+
+        registrar.playToClient(
+                de.jakob.lotm.network.packets.toClient.OpenRiverVaultScreenPacket.TYPE,
+                de.jakob.lotm.network.packets.toClient.OpenRiverVaultScreenPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toClient.OpenRiverVaultScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                de.jakob.lotm.network.packets.toClient.SyncSummonedBlasphemyPacket.TYPE,
+                de.jakob.lotm.network.packets.toClient.SyncSummonedBlasphemyPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toClient.SyncSummonedBlasphemyPacket::handle
+        );
+
+        registrar.playToClient(
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionTriggerPacket.TYPE,
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionTriggerPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionTriggerPacket::handle
+        );
+
+        registrar.playToClient(
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionStatusPacket.TYPE,
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionStatusPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionStatusPacket::handle
+        );
+
+        registrar.playToClient(
+                de.jakob.lotm.network.packets.toClient.SyncTargetEnvisionStatusPacket.TYPE,
+                de.jakob.lotm.network.packets.toClient.SyncTargetEnvisionStatusPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toClient.SyncTargetEnvisionStatusPacket::handle
+        );
+
+        registrar.playToClient(
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionCharacteristicsPacket.TYPE,
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionCharacteristicsPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toClient.SyncEnvisionCharacteristicsPacket::handle
+        );
+
+        registrar.playToClient(
+                de.jakob.lotm.network.packets.toClient.SyncGreyFogStatusPacket.TYPE,
+                de.jakob.lotm.network.packets.toClient.SyncGreyFogStatusPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toClient.SyncGreyFogStatusPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncEnvisioningPacket.TYPE,
                 SyncEnvisioningPacket.STREAM_CODEC,
                 SyncEnvisioningPacket::handle
@@ -550,6 +666,17 @@ public class PacketHandler {
                 BecomeBeyonderPacket.TYPE,
                 BecomeBeyonderPacket.STREAM_CODEC,
                 BecomeBeyonderPacket::handle
+        );
+        registrar.playToServer(
+                ApplyBlessingPacket.TYPE,
+                ApplyBlessingPacket.STREAM_CODEC,
+                ApplyBlessingPacket::handle
+        );
+
+        registrar.playToServer(
+                ExecuteBeyonderTradePacket.TYPE,
+                ExecuteBeyonderTradePacket.STREAM_CODEC,
+                ExecuteBeyonderTradePacket::handle
         );
 
         registrar.playToServer(
@@ -649,6 +776,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                UseQueuedSoulAbilityPacket.TYPE,
+                UseQueuedSoulAbilityPacket.STREAM_CODEC,
+                UseQueuedSoulAbilityPacket::handle
+        );
+
+        registrar.playToServer(
                 UseSharedAbilityPacket.TYPE,
                 UseSharedAbilityPacket.STREAM_CODEC,
                 UseSharedAbilityPacket::handle
@@ -728,9 +861,19 @@ public class PacketHandler {
 
 
         registrar.playToServer(
+                RemoteAbilityCastPacket.TYPE,
+                RemoteAbilityCastPacket.STREAM_CODEC,
+                RemoteAbilityCastPacket::handle);
+
+        registrar.playToServer(
                 OpenHonorificNamesMenuPacket.TYPE,
                 OpenHonorificNamesMenuPacket.STREAM_CODEC,
                 OpenHonorificNamesMenuPacket::handle);
+
+        registrar.playToServer(
+                PerformPreyPacket.TYPE,
+                PerformPreyPacket.STREAM_CODEC,
+                PerformPreyPacket::handle);
 
         registrar.playToServer(
                 HonorificNamesRespondPacket.TYPE,
@@ -773,6 +916,11 @@ public class PacketHandler {
                 ReturnToMainBodyPacket::handle);
 
         registrar.playToServer(
+                StopDiscernmentPacket.TYPE,
+                StopDiscernmentPacket.STREAM_CODEC,
+                StopDiscernmentPacket::handle);
+
+        registrar.playToServer(
                 OpenArtifactWheelPacket.TYPE,
                 OpenArtifactWheelPacket.STREAM_CODEC,
                 OpenArtifactWheelPacket::handle);
@@ -790,20 +938,200 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
-                DiscernmentSelectedPacket.TYPE,
-                DiscernmentSelectedPacket.STREAM_CODEC,
-                DiscernmentSelectedPacket::handle
+                ToggleSefirotAuthorityAbilityPacket.TYPE,
+                ToggleSefirotAuthorityAbilityPacket.STREAM_CODEC,
+                ToggleSefirotAuthorityAbilityPacket::handle
         );
 
         registrar.playToServer(
-                StopDiscernmentPacket.TYPE,
-                StopDiscernmentPacket.STREAM_CODEC,
-                StopDiscernmentPacket::handle
+                RiverAuthorityActionPacket.TYPE,
+                RiverAuthorityActionPacket.STREAM_CODEC,
+                RiverAuthorityActionPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestRiverImprintScreenPacket.TYPE,
+                RequestRiverImprintScreenPacket.STREAM_CODEC,
+                RequestRiverImprintScreenPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestTranscendencePacket.TYPE,
+                RequestTranscendencePacket.STREAM_CODEC,
+                RequestTranscendencePacket::handle
+        );
+
+        registrar.playToServer(
+                RequestGatheringScreenPacket.TYPE,
+                RequestGatheringScreenPacket.STREAM_CODEC,
+                RequestGatheringScreenPacket::handle
+        );
+
+        registrar.playToServer(
+                GatheringActionPacket.TYPE,
+                GatheringActionPacket.STREAM_CODEC,
+                GatheringActionPacket::handle
+        );
+
+        registrar.playToServer(
+                GatheringMessagePacket.TYPE,
+                GatheringMessagePacket.STREAM_CODEC,
+                GatheringMessagePacket::handle
+        );
+
+        registrar.playToServer(
+                RequestRiverBlessingScreenPacket.TYPE,
+                RequestRiverBlessingScreenPacket.STREAM_CODEC,
+                RequestRiverBlessingScreenPacket::handle
+        );
+
+        registrar.playToServer(
+                RiverBlessingActionPacket.TYPE,
+                RiverBlessingActionPacket.STREAM_CODEC,
+                RiverBlessingActionPacket::handle
+        );
+
+        registrar.playToServer(
+                RiverAudienceActionPacket.TYPE,
+                RiverAudienceActionPacket.STREAM_CODEC,
+                RiverAudienceActionPacket::handle
+        );
+
+        registrar.playToServer(
+                CharSlotRollResultPacket.TYPE,
+                CharSlotRollResultPacket.STREAM_CODEC,
+                CharSlotRollResultPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestAbilitySealScreenPacket.TYPE,
+                RequestAbilitySealScreenPacket.STREAM_CODEC,
+                RequestAbilitySealScreenPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestRiverVaultScreenPacket.TYPE,
+                RequestRiverVaultScreenPacket.STREAM_CODEC,
+                RequestRiverVaultScreenPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RiverVaultActionPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RiverVaultActionPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RiverVaultActionPacket::handle
+        );
+
+        registrar.playToServer(
+                SetAbilitySealPacket.TYPE,
+                SetAbilitySealPacket.STREAM_CODEC,
+                SetAbilitySealPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestDailySpinPacket.TYPE,
+                RequestDailySpinPacket.STREAM_CODEC,
+                RequestDailySpinPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestSellYourSoulPacket.TYPE,
+                RequestSellYourSoulPacket.STREAM_CODEC,
+                RequestSellYourSoulPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestSellYourSoulInfoPacket.TYPE,
+                RequestSellYourSoulInfoPacket.STREAM_CODEC,
+                RequestSellYourSoulInfoPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestCharExchangePacket.TYPE,
+                RequestCharExchangePacket.STREAM_CODEC,
+                RequestCharExchangePacket::handle
+        );
+
+        registrar.playToServer(
+                RequestCharPathExchangePacket.TYPE,
+                RequestCharPathExchangePacket.STREAM_CODEC,
+                RequestCharPathExchangePacket::handle
+        );
+
+        registrar.playToServer(
+                RequestRecipeExchangePacket.TYPE,
+                RequestRecipeExchangePacket.STREAM_CODEC,
+                RequestRecipeExchangePacket::handle
+        );
+
+        registrar.playToServer(
+                RequestRecipePathExchangePacket.TYPE,
+                RequestRecipePathExchangePacket.STREAM_CODEC,
+                RequestRecipePathExchangePacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.EnvisionSelfTeleportPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.EnvisionSelfTeleportPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.EnvisionSelfTeleportPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.EnvisionTargetTeleportPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.EnvisionTargetTeleportPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.EnvisionTargetTeleportPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RequestSummonBlasphemyPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RequestSummonBlasphemyPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RequestSummonBlasphemyPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RequestEnvisionBlasphemyPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RequestEnvisionBlasphemyPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RequestEnvisionBlasphemyPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RequestSelfStatusActionPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RequestSelfStatusActionPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RequestSelfStatusActionPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RequestTargetStatusActionPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RequestTargetStatusActionPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RequestTargetStatusActionPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.GreyFogActionPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.GreyFogActionPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.GreyFogActionPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RequestEnvisionCharacteristicsPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RequestEnvisionCharacteristicsPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RequestEnvisionCharacteristicsPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.RequestTargetEnvisionCharacteristicsPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.RequestTargetEnvisionCharacteristicsPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.RequestTargetEnvisionCharacteristicsPacket::handle
+        );
+
+        registrar.playToServer(
+                de.jakob.lotm.network.packets.toServer.CharacteristicSplittingPacket.TYPE,
+                de.jakob.lotm.network.packets.toServer.CharacteristicSplittingPacket.STREAM_CODEC,
+                de.jakob.lotm.network.packets.toServer.CharacteristicSplittingPacket::handle
         );
     }
 
     public static void sendToServer(CustomPacketPayload packet) {
-        Minecraft.getInstance().getConnection().send(packet);
+        PacketDistributor.sendToServer(packet);
     }
 
     public static void sendToPlayer(ServerPlayer player, CustomPacketPayload packet) {
@@ -816,11 +1144,12 @@ public class PacketHandler {
         float spirituality = BeyonderData.getSpirituality(player);
         boolean griefingEnabled = BeyonderData.isGriefingEnabled(player);
         float digestionProgress = BeyonderData.getDigestionProgress(player);
-        int[] charStacks = BeyonderData.getCharStacks(player);
+        ArrayList<Characteristic> charList = BeyonderData.getCharList(player);
+        java.util.List<de.jakob.lotm.attachments.ReceivedBlessingComponent.ReceivedBlessing> blessings = player.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT).getBlessings();
 
         String[] history = BeyonderData.getPathwayHistory(player);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charStacks);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charList, blessings);
         sendToPlayer(player, packet);
     }
 
@@ -871,9 +1200,10 @@ public class PacketHandler {
         float spirituality = BeyonderData.getSpirituality(targetPlayer);
         boolean griefingEnabled = BeyonderData.isGriefingEnabled(targetPlayer);
         float digestionProgress = BeyonderData.getDigestionProgress(targetPlayer);
-        int[] charStacks = BeyonderData.getCharStacks(targetPlayer);
+        ArrayList<Characteristic> charList = BeyonderData.getCharList(targetPlayer);
+        java.util.List<de.jakob.lotm.attachments.ReceivedBlessingComponent.ReceivedBlessing> blessings = targetPlayer.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT).getBlessings();
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charStacks);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charList, blessings);
 
         targetPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
             sendToPlayer(player, packet);

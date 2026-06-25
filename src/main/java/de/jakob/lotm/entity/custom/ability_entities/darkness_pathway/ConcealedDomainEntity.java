@@ -1,6 +1,6 @@
 package de.jakob.lotm.entity.custom.ability_entities.darkness_pathway;
 
-import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AllyUtil;

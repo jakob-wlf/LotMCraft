@@ -1,0 +1,4 @@
+{
+  "parent": "neoforge:item/bucket",
+  "fluid": "lotmcraft:drops_of_eternal_darkness"
+}

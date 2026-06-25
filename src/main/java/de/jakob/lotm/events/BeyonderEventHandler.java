@@ -1,38 +1,44 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.visionary.DreamTraversalAbility;
-import de.jakob.lotm.abilities.visionary.PsychologicalInvisibilityAbility;
-import de.jakob.lotm.artifacts.SealedArtifactData;
 import de.jakob.lotm.attachments.*;
+import de.jakob.lotm.beyonders.abilities.visionary.DreamTraversalAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.PsychologicalInvisibilityAbility;
+import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.PotionIngredient;
+import de.jakob.lotm.item.custom.BlasphemyCardItem;
+import de.jakob.lotm.item.custom.BlasphemySlateHalfItem;
+import de.jakob.lotm.item.custom.BlasphemySlateItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncKillCountPacket;
 import de.jakob.lotm.network.packets.toClient.SyncPsychologicalInvisibilityPacket;
-import de.jakob.lotm.potions.BeyonderCharacteristicItem;
-import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
-import de.jakob.lotm.potions.BeyonderPotion;
-import de.jakob.lotm.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.util.PureIdealismUtil;
-import de.jakob.lotm.util.playerMap.StoredData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.PureIdealismUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
+import de.jakob.lotm.util.playerMap.Characteristic;
+import de.jakob.lotm.util.playerMap.StoredData;
+import de.jakob.lotm.util.playerMap.StoredDataBuilder;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -45,11 +51,11 @@ import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-import java.util.Objects;
-import java.util.Random;
-import java.util.UUID;
 
-import static de.jakob.lotm.util.BeyonderData.*;
+import java.util.*;
+
+import static de.jakob.lotm.util.BeyonderData.getSequence;
+import static de.jakob.lotm.util.BeyonderData.playerMap;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderEventHandler {
@@ -121,7 +127,7 @@ public class BeyonderEventHandler {
     public static void onTotemUsed(LivingUseTotemEvent event) {
         LivingEntity entity = event.getEntity();
 
-        if (BeyonderData.isBeyonder(entity)) {
+        if (BeyonderData.isBeyonder(entity) && !event.getEntity().level().getGameRules().getBoolean(ModGameRules.ALLOW_TOTEMS)) {
             event.setCanceled(true);
         }
     }
@@ -132,6 +138,9 @@ public class BeyonderEventHandler {
             // Re-sync data when changing dimensions
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
             BeyonderData.recalculateCharStackModifiers(serverPlayer);
+            // Re-sync corruption so client-side HUD/shaders don't reset to zero
+            float corruption = serverPlayer.getData(ModAttachments.CORRUPTION_COMPONENT).getCorruption();
+            PacketHandler.sendToPlayer(serverPlayer, new de.jakob.lotm.network.packets.toClient.SyncCorruptionPacket(corruption, serverPlayer.getId()));
         }
     }
 
@@ -182,6 +191,9 @@ public class BeyonderEventHandler {
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
             BeyonderData.recalculateCharStackModifiers(serverPlayer);
             serverPlayer.getData(ModAttachments.LUCK_COMPONENT.get()).setLuck(0);
+            // Re-sync corruption so client-side HUD/shaders don't reset to zero
+            float corruption = serverPlayer.getData(ModAttachments.CORRUPTION_COMPONENT).getCorruption();
+            PacketHandler.sendToPlayer(serverPlayer, new de.jakob.lotm.network.packets.toClient.SyncCorruptionPacket(corruption, serverPlayer.getId()));
             // Clear sacrifice bar if it was active when the player died
             if (serverPlayer.getPersistentData().getBoolean("sacrifice_bar_clear")) {
                 serverPlayer.getPersistentData().remove("sacrifice_bar_clear");
@@ -301,42 +313,70 @@ public class BeyonderEventHandler {
             if (!BeyonderData.isBeyonder(player)) return;
             if (playerMap.get(player).isEmpty()) return;
             if (!player.level().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)
-            && !player.getData(ModAttachments.ENVISION_SPLIT.get()).isEnvisioned()) {
+                    && !player.getData(ModAttachments.ENVISION_SPLIT.get()).isEnvisioned()) {
                 BeyonderData.recalculateCharStackModifiers(player);
+                return;
+            }
+            if (!BeyonderData.isBeyonder(player)) return;
+            if (playerMap.get(player).isEmpty()) return;
+
+            // Great Old One: only a seq-0 beyonder can end their transcendence
+            if (de.jakob.lotm.beyonders.sefirah.GreatOldOneManager.isGreatOldOne(player)) {
+                Entity killer = event.getSource().getEntity();
+                if (killer instanceof ServerPlayer killerPlayer
+                        && BeyonderData.getSequence(killerPlayer) == 0) {
+                    de.jakob.lotm.beyonders.sefirah.GreatOldOneManager.revert(player);
+                    BeyonderData.setDigestionProgress(player, 1.0f);
+                }
+                // All other deaths are ignored for GOO — no regression, no sefirot unclaim
                 return;
             }
 
             StoredData data = playerMap.get(player).get();
+            StoredData regressed;
 
-            StoredData regressed = data.regressSeq(false);
+            boolean shouldRegress = player.level().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH);
 
-            SacrificeRevertComponent revert = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);
-            if (revert.isActive()) {
-                int originalSeq = revert.getRevertToSequence();
-                // Store the original sequence so onPlayerDrops drops the right characteristic
-                player.getPersistentData().putInt("sacrifice_drop_sequence", originalSeq);
-                player.getPersistentData().putBoolean("sacrifice_bar_clear", true);
-                revert.clear();
-                // Regress from the original sequence, not the temporary sacrificed one
-                StoredData dataAtOriginalSeq = StoredData.builder.copyFrom(data).sequence(originalSeq).build();
-                playerMap.put(player, dataAtOriginalSeq.regressSeq());
+            if (shouldRegress) {
+                SacrificeRevertComponent revert = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);
+                if (revert.isActive()) {
+                    int originalSeq = revert.getRevertToSequence();
+                    // Store the original sequence so onPlayerDrops drops the right characteristic
+                    player.getPersistentData().putInt("sacrifice_drop_sequence", originalSeq);
+                    player.getPersistentData().putBoolean("sacrifice_bar_clear", true);
+                    revert.clear();
+                    // Regress from the original sequence, not the temporary sacrificed one
+                    StoredData dataAtOriginalSeq = StoredData.builder.copyFrom(data).sequence(originalSeq).build();
+                    regressed = dataAtOriginalSeq.regressSeq(false);
+                } else {
+                    boolean respectStack = player.level().getGameRules().getBoolean(ModGameRules.LOOSE_CHAR_ON_REGRESSION);
+                    regressed = data.regressSeq(respectStack);
+                }
             } else {
-                playerMap.put(player, regressed);
+                // Drop only extras logic: regressSeq(true) with same sequence also works if it removes extras
+                // But we'll manually define "no extras" state for the map.
+                StoredDataBuilder b = StoredData.builder.copyFrom(data).clearCharList();
+                for (Characteristic c : data.chars()) {
+                    if (c.pathway().equals(data.pathway()) && c.sequence() >= data.sequence() && c.sequence() < 10) {
+                        b.characteristic(1, c.sequence(), c.pathway());
+                    }
+                }
+                regressed = b.build();
             }
 
+            playerMap.put(player, regressed);
+            // We DO NOT update BeyonderComponent here, as onPlayerDrops needs to compare component (old) with playerMap (new)
+
             BeyonderData.setDigestionProgress(player, 1.0f);
-
-            BeyonderData.recalculateCharStackModifiers(player);
-
             player.getData(ModAttachments.LUCK_COMPONENT.get()).setLuck(0);
-
             SefirahHandler.unclaimSefirot(player);
 
-            if (Objects.equals(data.sequence(), LOTMCraft.NON_BEYONDER_SEQ)) {
+            if (Objects.equals(regressed.sequence(), LOTMCraft.NON_BEYONDER_SEQ)) {
                 ClientBeyonderCache.removePlayer(player.getUUID());
-            } else
+            } else {
                 ClientBeyonderCache.updateData(player.getUUID(), regressed.pathway(), regressed.sequence(),
-                        0.0f, false, true, 0.0f);
+                        0.0f, false, true, 1.0f);
+            }
         }
     }
 
@@ -372,6 +412,14 @@ public class BeyonderEventHandler {
                 if (stack.isEmpty()) continue;
 
                 Item item = stack.getItem();
+
+                // Blasphemy cards and slates are crafting ingredients — never lock them out of crafting tables
+                if (container instanceof CraftingMenu &&
+                        (item instanceof BlasphemyCardItem
+                                || item instanceof BlasphemySlateHalfItem
+                                || item instanceof BlasphemySlateItem)) {
+                    continue;
+                }
 
                 if (item instanceof PotionIngredient obj) {
                     for (var path : obj.getPathways()) {
@@ -480,12 +528,12 @@ public class BeyonderEventHandler {
         if (newDigestion <= 0f && new Random().nextFloat() < 0.01f) {
             // Capture pathway before regression changes it — the dropped characteristic belongs to the old pathway/seq
             String pathwayBeforeRegress = BeyonderData.getPathway(victim);
-            // Check if victim has a characteristic stack at their current sequence
-            boolean hasStack = BeyonderData.getCurrentCharStack(victim) > 0;
+            // Check if victim has an extra characteristic stack at their current sequence
+            boolean hasExtraStack = BeyonderData.getCurrentCharacteristicCount(victim) > 1;
 
-            if (hasStack) {
-                // Consume one stack instead of desequencing
-                BeyonderData.setCharStack(victim, BeyonderData.getCurrentCharStack(victim) - 1, getSequence(victim), true);
+            if (hasExtraStack) {
+                // Consume one extra stack instead of desequencing
+                BeyonderData.setCharacteristic(victim, BeyonderData.getCurrentCharacteristicCount(victim) - 1, getSequence(victim), true, BeyonderData.getPathway(victim));
             } else {
                 // No stack — desequence the victim, using regressSeq so domain-switched players restore to their previous pathway
                 if (victim instanceof ServerPlayer sp && BeyonderData.playerMap.get(sp).isPresent()) {

@@ -1,6 +1,6 @@
 package de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway;
 
-import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.tsunami.TsunamiRenderer;
 import de.jakob.lotm.network.PacketHandler;
