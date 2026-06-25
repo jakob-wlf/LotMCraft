@@ -81,8 +81,13 @@ public class UniquenessEntity extends Entity {
             return;
         }
 
+        if(!ACTIVE_ENTITIES.containsValue(this.getId())){
+            ACTIVE_ENTITIES.put(getPathway(), getId());
+            LOTMCraft.LOGGER.debug("added Unequness");
+        }
+
         if(!ACTIVE_ENTITIES.containsValue(this.getId()) || getPathway().isEmpty() || !ACTIVE_ENTITIES.containsKey(getPathway())) {
-            ACTIVE_ENTITIES.remove(getPathway());
+            //ACTIVE_ENTITIES.remove(getPathway());
             AABB hitbox = this.getBoundingBox().inflate(2);
             List<LivingEntity> nearby = level().getEntitiesOfClass(LivingEntity.class, hitbox);
 
@@ -113,7 +118,7 @@ public class UniquenessEntity extends Entity {
 
     private void spawnUniqueness(LivingEntity entity) {
         List<Characteristic> eligableChars = BeyonderData.getCharList(entity).stream().filter(c -> c.sequence() ==1).toList();
-        String pathway = null;
+        String pathway = "";
         for ( Characteristic i : eligableChars ){
             if (!UniquenessEntity.existsInWorld((ServerLevel) level(), i.pathway()) && ! anyPlayerHoldsUniqueness((ServerLevel) level(), i.pathway()) ) {
                 pathway = i.pathway();
@@ -210,7 +215,7 @@ public class UniquenessEntity extends Entity {
         super.remove(reason);
         if (!level().isClientSide) {
             String pathway = getPathway();
-            if (!pathway.isEmpty()) {
+            if (!pathway.isEmpty() || pathway.equals("")) {
                 ACTIVE_ENTITIES.remove(pathway);
             }
         }
