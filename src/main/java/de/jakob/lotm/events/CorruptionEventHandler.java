@@ -117,11 +117,16 @@ public class CorruptionEventHandler {
             // If you have more than 1 of fool 5, it's extra.
             // If you have fool 4, it's extra (and likely dangerous).
             
-            int expectedStack = (charPathway.equals(currentPathway) && charSeq >= currentSequence) ? 1 : 0;
+            int expectedStack = (charPathway.equals(currentPathway)) ? 1 : 0;
             int extraStack = Math.max(0, charStack - expectedStack);
 
             if (extraStack > 0) {
-                float baseGain = 0.00005f * extraStack; // Base gain per extra characteristic
+                float baseGain = 0.00005f * extraStack * ((float) (10 - charSeq) /10); // Base gain per extra characteristic
+
+                if(currentSequence <= 0){
+                    baseGain *= 0.5F;
+                }
+
 
                 if (charPathway.equals(currentPathway)) {
                     // Same pathway, extra characteristic
@@ -140,7 +145,7 @@ public class CorruptionEventHandler {
             // Scales with digestion but never fully goes away.
             // At 100% digestion (1.0), gain is reduced but still present.
             // Let's say at 100% digestion it's reduced by 50%.
-            float digestionMultiplier = 1.0f - (digestionProgress * 0.5f);
+            float digestionMultiplier = 1.0f - (digestionProgress * 0.6f);
             corruptionComp.increaseCorruptionAndSync(totalGain * digestionMultiplier, entity);
         }
     }

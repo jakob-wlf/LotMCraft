@@ -65,16 +65,7 @@ public class HonorificNamesEventHandler {
 
         UUID playerUUID = sender.getUUID();
 
-        // ── Gathering member / River-blessed sefirot access ───────────────
-        GatheringData gd = GatheringData.get(server);
-        boolean isMember  = gd.isMember(targetUUID, playerUUID);
-        boolean isBlessed = RiverBlessingManager.isBlessed(playerUUID)
-                && targetUUID.equals(RiverBlessingManager.getOwner(playerUUID));
-        if (isMember || isBlessed) {
-            handleSefirotAccess(sender, targetUUID, server);
-            return;
-        }
-        // ─────────────────────────────────────────────────────────────────
+
 
         if (targetUUID.equals(playerUUID)) {
             target.sendSystemMessage(Component.translatable("lotmcraft.own_praying")
@@ -106,6 +97,18 @@ public class HonorificNamesEventHandler {
         sender.sendSystemMessage(Component.translatable("lotmcraft.prey.success").withStyle(ChatFormatting.GREEN));
 
         storePendingPrayer(sender, target);
+
+        // ── Gathering member / River-blessed sefirot access ───────────────
+        GatheringData gd = GatheringData.get(server);
+        boolean isMember  = gd.isMember(targetUUID, playerUUID);
+        boolean isBlessed = RiverBlessingManager.isBlessed(playerUUID)
+                && targetUUID.equals(RiverBlessingManager.getOwner(playerUUID));
+        if (isMember || isBlessed) {
+            handleSefirotAccess(sender, targetUUID, server);
+            return;
+        }
+        // ─────────────────────────────────────────────────────────────────
+
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
