@@ -122,11 +122,11 @@ public class BeyonderNPCEntity extends PathfinderMob {
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String skinName) {
-        this(entityType, level, hostile, skinName, getRandomPathway(), getWeightedHighSequence(), null, false);
+        this(entityType, level, hostile, skinName, getRandomPathway(), getWeightedHighSequence(), false, false);
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile, String pathway, int sequence) {
-        this(entityType, level, hostile, getRandomBeyonderSkin(), pathway, sequence, null, false);
+        this(entityType, level, hostile, getRandomBeyonderSkin(), pathway, sequence, false, false);
     }
 
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level, boolean hostile,
