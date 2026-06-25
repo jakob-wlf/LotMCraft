@@ -483,7 +483,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.addRenderableWidget(toggleActingButton);
 
         int characteristicsButtonX = baseLeftPos - 65;
-        int characteristicsButtonY = this.topPos + 60;
+        int characteristicsButtonY = this.topPos + 180;
 
         toggleCharacteristicsButton = Button.builder(Component.literal(showCharacteristics ? "< Hide" : "Chars >"),
                         button -> {
@@ -584,7 +584,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         // Add "All Abilities" toggle button for creative + OP players
         if (isCreativeOp()) {
             int allAbilitiesButtonX = baseLeftPos - 65;
-            int allAbilitiesButtonY = this.topPos + 135;
+            int allAbilitiesButtonY = this.topPos + 155;
 
             toggleAllAbilitiesButton = Button.builder(
                             Component.literal(showAllAbilities ? "All: ON" : "All: OFF")
