@@ -77,8 +77,7 @@ public class UniquenessEventHandler {
 
     private static ServerPlayer findSeq1Player(ServerLevel level, String pathway) {
         for (ServerPlayer player : level.players()) {
-            if (BeyonderData.getSequence(player) == 1
-                    && BeyonderData.getPathway(player).equalsIgnoreCase(pathway)) {
+            if (BeyonderData.getCharList(player).stream().anyMatch(c -> c.pathway() == pathway && c.sequence() ==1)) {
                 return player;
             }
         }

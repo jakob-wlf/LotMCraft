@@ -30,6 +30,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,17 +112,26 @@ public class UniquenessEntity extends Entity {
     }
 
     private void spawnUniqueness(LivingEntity entity) {
-        String pathway = BeyonderData.getPathway(entity);
+        List<Characteristic> eligableChars = BeyonderData.getCharList(entity).stream().filter(c -> c.sequence() ==1).toList();
+        String pathway = null;
+        for ( Characteristic i : eligableChars ){
+            if (!UniquenessEntity.existsInWorld((ServerLevel) level(), i.pathway()) && ! anyPlayerHoldsUniqueness((ServerLevel) level(), i.pathway()) ) {
+                pathway = i.pathway();
+            }
+        }
+
         if (pathway.isEmpty()) return;
         if (UniquenessEntity.existsInWorld((ServerLevel) level(), pathway)) {
+
             return;
         }
 
         EffectManager.playEffect(EffectManager.Effect.UNIQUENESS_SPAWN, position().x, position().y, position().z, (ServerLevel) level());
         this.discard();
+        String finalPathway = pathway;
         ServerScheduler.scheduleDelayed(20 * 3, () -> {
             if (level() instanceof ServerLevel serverLevel) {
-                trySpawn(serverLevel, this.position(), pathway);
+                trySpawn(serverLevel, this.position(), finalPathway);
             }
         });
     }
