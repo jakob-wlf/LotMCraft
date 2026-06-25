@@ -524,6 +524,11 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(new WanderingSelectionGui(packet.dimensionIds()));
     }
 
+    public static void handleWaypointSelectionScreenPacket(OpenWaypointSelectionScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new WaypointMenuScreen(packet.waypoints(), packet.use()));
+    }
+
+
     public static void handleDiscernmentScreenPacket(OpenDiscernmentScreenPacket packet) {
         Minecraft.getInstance().setScreen(new DiscernmentSelectionGui(packet.saved()));
     }

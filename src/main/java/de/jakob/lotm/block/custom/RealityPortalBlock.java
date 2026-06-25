@@ -25,19 +25,9 @@ import java.util.Set;
 
 public class RealityPortalBlock extends Block {
 
-    private static final int TELEPORT_COOLDOWN_TICKS = 40;
 
-    public RealityPortalBlock() {
-        super(BlockBehaviour.Properties.of()
-                .mapColor(MapColor.COLOR_PURPLE)
-                .noCollission()               // passable
-                .noOcclusion()                // don't cull neighbour faces
-                .lightLevel(state -> 6)       // faint glow (level 6 / 15)
-                .strength(-1.0f, 3600000.0f)  // unbreakable like bedrock but not indestructible
-                .pushReaction(PushReaction.BLOCK)
-                .isRedstoneConductor((state, level, pos) -> false)
-                .isSuffocating((state, level, pos) -> false)
-                .isViewBlocking((state, level, pos) -> false));
+    public RealityPortalBlock(Properties properties) {
+        super(properties);
     }
 
     @Override
@@ -59,12 +49,11 @@ public class RealityPortalBlock extends Block {
 
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        System.out.println("Entity " + entity.getName().getString() + " entered Reality Portal at " + pos);
         if (level.isClientSide()) return;
         if (!(entity instanceof LivingEntity living)) return;
 
         ServerLevel serverLevel = (ServerLevel) level;
-
-        if (!serverLevel.dimension().equals(ModDimensions.SPACE_TIME_LABYRINTH_LEVEL_KEY)) return;
 
         if (entity.isOnPortalCooldown()) return;
 
@@ -86,7 +75,14 @@ public class RealityPortalBlock extends Block {
     }
 
     private double findHighestSolidGround(ServerLevel level, int x, int z) {
-        int highestY = level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BlockPos.containing(x, level.getMaxBuildHeight(), z)).getY();
-        return highestY + 1.0;
+        BlockPos startPos = new BlockPos(x, level.getMaxBuildHeight() - 1, z);
+        while (startPos.getY() > level.getMinBuildHeight()) {
+            BlockState state = level.getBlockState(startPos);
+            if (state.isSolidRender(level, startPos)) {
+                return startPos.getY() + 1;
+            }
+            startPos = startPos.below();
+        }
+        return level.getMinBuildHeight();
     }
 }

@@ -32,7 +32,7 @@ public class SpatialCageAbility extends SelectableAbility {
     private static final HashMap<UUID, HashSet<SpatialCage>> activeCages = new HashMap<>();
 
     public SpatialCageAbility(String id) {
-        super(id, 20);
+        super(id, 35);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class SpatialCageAbility extends SelectableAbility {
         cage.createCage();
         activeCages.computeIfAbsent(entity.getUUID(), k -> new HashSet<>()).add(cage);
 
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 60 * 4, () -> {
+        ServerScheduler.scheduleForDuration(0, 1,  openFront ? 20 * 20 : 20 * 60 * 2, () -> {
             cage.updateCage();
             cage.addParticles();
             cage.addSlownessToEntities();
@@ -123,15 +123,18 @@ public class SpatialCageAbility extends SelectableAbility {
 
         void addParticles() {
             for (BlockPos pos : barrierBlocks) {
-                if(level.getRandom().nextBoolean()) ParticleUtil.spawnParticles(level, ModParticles.STAR.get(), pos.getCenter(), 1, .55, 0);
-                if(level.getRandom().nextBoolean()) ParticleUtil.spawnParticles(level, new DustParticleOptions(new Vector3f(0, 0, 0), 3.5f), pos.getCenter(), 1, .55, 0);
+                if(!level.getBlockState(pos).is(Blocks.BARRIER)) {
+                    continue;
+                }
+                if(level.getRandom().nextInt(5) == 0) ParticleUtil.spawnParticles(level, ModParticles.STAR.get(), pos.getCenter(), 1, .55, 0);
+                if(level.getRandom().nextInt(3) == 0) ParticleUtil.spawnParticles(level, new DustParticleOptions(new Vector3f(0, 0, 0), 5f), pos.getCenter(), 1, .55, 0);
             }
         }
 
         void addSlownessToEntities() {
             for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new net.minecraft.world.phys.AABB(position.x - radius, position.y - radius, position.z - radius, position.x + radius, position.y + radius, position.z + radius))) {
                 if (entity.position().distanceTo(position) <= radius && !entity.getUUID().equals(owner)) {
-                    entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 9, false, false, false));
+                    entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, this.isFrontOpen ? 3 : 9, false, false, false));
                 }
             }
         }

@@ -38,6 +38,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                OpenWaypointSelectionScreenPacket.TYPE,
+                OpenWaypointSelectionScreenPacket.STREAM_CODEC,
+                OpenWaypointSelectionScreenPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncWeaknessDetectionTargetsAbilityPacket.TYPE,
                 SyncWeaknessDetectionTargetsAbilityPacket.STREAM_CODEC,
                 SyncWeaknessDetectionTargetsAbilityPacket::handle
@@ -562,6 +568,12 @@ public class PacketHandler {
                 BecomeBeyonderPacket.TYPE,
                 BecomeBeyonderPacket.STREAM_CODEC,
                 BecomeBeyonderPacket::handle
+        );
+
+        registrar.playToServer(
+                WaypointSelectedPacket.TYPE,
+                WaypointSelectedPacket.STREAM_CODEC,
+                WaypointSelectedPacket::handle
         );
 
         registrar.playToServer(

@@ -1,14 +1,13 @@
 package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.Map;
 
-public class BlinkAfterImageAbility extends ToggleAbility {
-    public BlinkAfterImageAbility(String id) {
+public class BlinkAfterimageAbility extends ToggleAbility {
+    public BlinkAfterimageAbility(String id) {
         super(id);
     }
 

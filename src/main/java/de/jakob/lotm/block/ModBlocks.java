@@ -51,7 +51,7 @@ public class ModBlocks {
     );
 
     public static final DeferredBlock<Block> REALITY_PORTAL = registerBlock("reality_portal",
-            () -> new VoidBlock(BlockBehaviour.Properties.of()
+            () -> new RealityPortalBlock(BlockBehaviour.Properties.of()
                     .noLootTable()
                     .noOcclusion()
                     .noCollission()

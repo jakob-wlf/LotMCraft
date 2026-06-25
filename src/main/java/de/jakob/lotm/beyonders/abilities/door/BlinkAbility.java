@@ -24,7 +24,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.common.EventBusSubscriber;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -141,7 +140,7 @@ public class BlinkAbility extends SelectableAbility {
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.END_ROD, targetLoc.add(0, .5, 0), 30, .4, 1, .4, 0);
 
         // Spawn Afterimage if Afterimage ability is active
-        if(!((BlinkAfterImageAbility) LOTMCraft.abilityHandler.getById("blink_afterimage_ability")).isActiveForEntity(entity))
+        if(!((BlinkAfterimageAbility) LOTMCraft.abilityHandler.getById("blink_afterimage_ability")).isActiveForEntity(entity))
             return;
 
         if(BeyonderData.getCowardWormAmount(entity) <= 0)

@@ -206,7 +206,7 @@ public class AbilityHandler {
         abilities.add(new SpaceConcealmentAbility("space_concealment_ability"));
         abilities.add(new SecretKeepingAbility("secret_keeping_ability"));
         abilities.add(new DoorTransfigurationAbility("door_transfiguration_ability"));
-        abilities.add(new BlinkAfterImageAbility("blink_afterimage_ability"));
+        abilities.add(new BlinkAfterimageAbility("blink_afterimage_ability"));
         abilities.add(new ExileAbility("exile_ability"));
         abilities.add(new DoorSubstitutionAbility("door_substitution_ability"));
         abilities.add(new WanderingAbility("wandering_ability"));

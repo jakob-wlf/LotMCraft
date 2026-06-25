@@ -16,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -47,16 +48,19 @@ public class SpaceTimeLabyrinthAbility extends Ability {
             return;
         }
 
-        Vec3 doorPos = target.position().add(VectorUtil.getPerpendicularVector(entity.getLookAngle()).scale(4));
+        Vec3 doorPos = target.position().add(VectorUtil.getPerpendicularVector(entity.getLookAngle()).scale(6));
         MysticalDoorEntity doorEntity = new MysticalDoorEntity(labyrinthLevel, doorPos, 3, 4, 40);
         doorEntity.setRotation((float) Math.toDegrees(Math.atan2(target.getZ() - doorPos.z, target.getX() - doorPos.x)) - 90);
         level.addFreshEntity(doorEntity);
 
+        level.playSound(null, BlockPos.containing(doorPos), SoundEvents.ENDER_CHEST_OPEN, entity.getSoundSource(), .75f, 2f);
+
         ServerScheduler.scheduleForDuration(0, 1, 25, () -> {
-            target.setDeltaMovement(doorEntity.position().subtract(target.position()).normalize().scale(0.5));
+            target.setDeltaMovement(doorEntity.getEyePosition().subtract(target.position()).normalize().scale(0.3));
             target.hurtMarked = true;
+            ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.STAR.get(), target.position().add(0, 1, 0), 5, .4, 0.05);
         }, () -> {
-            EffectManager.playEffect(EffectManager.Effect.TELEPORTATION, doorPos.x, doorPos.y, doorPos.z, (ServerLevel) level);
+            EffectManager.playEffect(EffectManager.Effect.TELEPORTATION, doorPos.x, doorEntity.getEyeY() - (doorEntity.getEyeHeight() / 2f), doorPos.z, (ServerLevel) level);
             BlockPos spawnPos = findSafeSpawn(labyrinthLevel, doorEntity.blockPosition(), 20).orElse(null);
             if(spawnPos == null) {
                 return;
