@@ -1,6 +1,6 @@
 package de.jakob.lotm.entity.custom.projectiles;
 
-import de.jakob.lotm.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;

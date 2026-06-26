@@ -1,0 +1,24 @@
+{
+  "type": "lotmcraft:simple_structures",
+
+  "start_pool": "lotmcraft:spirit_toadstool_tower",
+
+  "size": 1,
+
+  "max_distance_from_center": 80,
+
+  "biomes": [
+    "lotmcraft:spirit_ember_wastes"
+  ],
+
+  "step": "surface_structures",
+
+  "start_height": { "absolute": 55 },
+  "locate_offset": [0, -2, 0],
+
+  "terrain_adaptation": "none",
+
+  "liquid_settings": "apply_waterlogging",
+
+  "spawn_overrides": {}
+}

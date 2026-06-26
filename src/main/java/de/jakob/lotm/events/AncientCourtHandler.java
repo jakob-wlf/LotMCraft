@@ -1,12 +1,11 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.AbilityUseEvent;
+import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.AncientCourtEntity;
 import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.AncientCourtEntity.CourtProhibitionType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;

@@ -24,6 +24,8 @@ public class ModStructures {
      * this base structure will have the resourcelocation of structure_tutorial:sky_structures.
      */
     public static final DeferredHolder<StructureType<?>, StructureType<SimpleStructures>> SIMPLE_STRUCTURES = DEFERRED_REGISTRY_STRUCTURE.register("simple_structures", () -> explicitStructureTypeTyping(SimpleStructures.CODEC));
+    public static final DeferredHolder<StructureType<?>, StructureType<CityStructure>> CITY_STRUCTURE =
+            DEFERRED_REGISTRY_STRUCTURE.register("city_structure", () -> () -> CityStructure.CODEC);
 
     /**
      * Originally, I had a double lambda ()->()-> for the RegistryObject line above, but it turns out that

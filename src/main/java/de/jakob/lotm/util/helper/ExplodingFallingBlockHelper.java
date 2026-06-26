@@ -1,6 +1,6 @@
 package de.jakob.lotm.util.helper;
 
-import de.jakob.lotm.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;

@@ -5,9 +5,9 @@ import de.jakob.lotm.gui.custom.ArtifactWheel.ArtifactWheelMenu;
 import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesMenu;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelMenu;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
-import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelMenu;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
 import de.jakob.lotm.gui.custom.Recipe.RecipeMenu;
+import de.jakob.lotm.gui.custom.Trades.BeyonderTradeMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
@@ -24,6 +24,14 @@ public class ModMenuTypes {
             MENU_TYPES.register("introspect_menu", () ->
                     IMenuTypeExtension.create(IntrospectMenu::new));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<BeyonderTradeMenu>> BEYONDER_TRADE_MENU = MENU_TYPES.register(
+            "beyonder_trade_menu",
+            () -> IMenuTypeExtension.create((windowId, inv, data) -> {
+                int npcEntityId = data.readVarInt();
+                return new BeyonderTradeMenu(windowId, inv, npcEntityId);
+            })
+    );
+
     public static final DeferredHolder<MenuType<?>, MenuType<RecipeMenu>> RECIPE_MENU =
             MENU_TYPES.register("recipe_menu", () ->
                     IMenuTypeExtension.create(RecipeMenu::new));
@@ -39,11 +47,6 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<AbilityWheelMenu>> ABILITY_WHEEL_MENU = MENU_TYPES.register(
             "ability_wheel_menu",
             () -> new MenuType<>(AbilityWheelMenu::new, net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS)
-    );
-
-    public static final DeferredHolder<MenuType<?>, MenuType<CopiedAbilityWheelMenu>> COPIED_ABILITY_WHEEL_MENU = MENU_TYPES.register(
-            "copied_ability_wheel_menu",
-            () -> new MenuType<>(CopiedAbilityWheelMenu::new, net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS)
     );
 
     public static final DeferredHolder<MenuType<?>, MenuType<ArtifactWheelMenu>> ARTIFACT_WHEEL_MENU = MENU_TYPES.register(

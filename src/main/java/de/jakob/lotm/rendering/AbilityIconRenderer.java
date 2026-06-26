@@ -1,7 +1,7 @@
 package de.jakob.lotm.rendering;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.RequestActiveStatusOfAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;

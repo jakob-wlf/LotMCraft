@@ -1,9 +1,12 @@
 package de.jakob.lotm.attachments;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -26,30 +29,16 @@ public class WaypointComponent {
         this.waypoints = new ArrayList<>();
     }
 
-    private int selectedWaypoint = 0;
-
-    public Waypoint getSelectedWaypoint() {
-        return waypoints.size() <= selectedWaypoint ? null : waypoints.get(selectedWaypoint);
-    }
-
-    public void selectNextWaypoint() {
-        if(waypoints.isEmpty() || waypoints.size() < 2) {
-            return;
-        }
-
-        selectedWaypoint++;
-        if(selectedWaypoint >= waypoints.size()) {
-            selectedWaypoint = 0;
-        }
-    }
-
     public void createWaypoint(double x, double y, double z, ServerLevel serverLevel) {
         waypoints.add(new Waypoint(x, y, z, serverLevel));
     }
 
     public void deleteWaypoint(Waypoint waypoint) {
         waypoints.remove(waypoint);
-        selectNextWaypoint();
+    }
+
+    public List<Waypoint> getWaypoints() {
+        return waypoints;
     }
 
     public CompoundTag saveToNBT() {
@@ -91,6 +80,26 @@ public class WaypointComponent {
         return null;
     }
 
+    public Waypoint findByClientWaypoint(ClientWaypoint clientWaypoint, MinecraftServer server) {
+        ResourceKey<Level> levelKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(clientWaypoint.levelKey()));
+        ServerLevel level = server.getLevel(levelKey);
+
+        if (level == null) {
+            return null;
+        }
+
+        for (Waypoint waypoint : waypoints) {
+            if (waypoint.x() == clientWaypoint.x() &&
+                waypoint.y() == clientWaypoint.y() &&
+                waypoint.z() == clientWaypoint.z() &&
+                waypoint.serverLevel().dimension().equals(level.dimension())) {
+                return waypoint;
+            }
+        }
+
+        return null;
+    }
+
     public record Waypoint(double x, double y, double z, ServerLevel serverLevel) {
         public CompoundTag saveToNBT() {
             CompoundTag compoundTag = new CompoundTag();
@@ -120,6 +129,28 @@ public class WaypointComponent {
             }
 
             return new Waypoint(x, y, z, level);
+        }
+    }
+
+    public record ClientWaypoint(String id, double x, double y, double z, String levelKey) {
+        public static final StreamCodec<ByteBuf, ClientWaypoint> STREAM_CODEC =
+                StreamCodec.composite(
+                        ByteBufCodecs.STRING_UTF8,  ClientWaypoint::id,
+                        ByteBufCodecs.DOUBLE,       ClientWaypoint::x,
+                        ByteBufCodecs.DOUBLE,       ClientWaypoint::y,
+                        ByteBufCodecs.DOUBLE,       ClientWaypoint::z,
+                        ByteBufCodecs.STRING_UTF8,  ClientWaypoint::levelKey,
+                        ClientWaypoint::new
+                );
+
+        public static ClientWaypoint fromWaypoint(Waypoint waypoint) {
+            return new ClientWaypoint(
+                    waypoint.serverLevel().dimension().location().toString(),
+                    waypoint.x(),
+                    waypoint.y(),
+                    waypoint.z(),
+                    waypoint.serverLevel().dimension().location().toString()
+            );
         }
     }
 }

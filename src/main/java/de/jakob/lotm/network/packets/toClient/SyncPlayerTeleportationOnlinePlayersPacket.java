@@ -1,8 +1,7 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.door.PlayerTeleportationAbility;
-import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.beyonders.abilities.door.PlayerTeleportationAbility;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

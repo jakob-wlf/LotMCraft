@@ -1,24 +1,27 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.PassiveAbilityHandler;
-import de.jakob.lotm.abilities.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.acting.ActingCapHelper;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.MultiplierModifierComponent;
+import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.events.BeyonderDataTickHandler;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncLivingEntityBeyonderDataPacket;
+import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import de.jakob.lotm.util.playerMap.*;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
-import de.jakob.lotm.util.pathways.PathwayInfos;
+import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -198,13 +201,44 @@ public class BeyonderData {
         boolean griefing = !BeyonderData.isBeyonder(entity) || BeyonderData.isGriefingEnabled(entity);
 
         BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
+
+        // Detect sequence-up before data changes so we can record missed acting and update cap
+        String oldPathway = getPathway(entity);
+        int oldSeq = getSequence(entity);
+        boolean isNormalSequenceUp = isBeyonder(entity) && oldSeq > sequence && oldPathway.equals(pathway);
+        boolean isFirstTimeBeyonder = !isBeyonder(entity) && !pathway.equals("none") && sequence < LOTMCraft.NON_BEYONDER_SEQ;
+        boolean isSequenceUp = isNormalSequenceUp || isFirstTimeBeyonder;
+        if (isSequenceUp) {
+            ActingCapHelper.onSequenceUp(entity, oldPathway, oldSeq);
+        }
+        // Reaching sequence 0 (godhood) clears the cap entirely
+        if (sequence == 0 && entity instanceof Player player0) {
+            ActingCapHelper.clearCap(player0);
+        }
+
         component.setPathway(pathway);
         component.setSequence(sequence);
         if(clearCharStack) component.clearCharacteristicStack();
         else component.setCharacteristicStack(0, sequence - 1);
-        if (resetSpirituality) component.setSpirituality(getMaxSpirituality(pathway, sequence));
+        if (resetSpirituality) {
+            float maxSp = getMaxSpirituality(pathway, sequence);
+            if (entity instanceof Player player) {
+                maxSp *= ActingCapHelper.getEffectiveCap(player);
+            }
+            component.setSpirituality(maxSp);
+        }
         component.setDigestionProgress(0);
         component.setGriefingEnabled(griefing);
+        component.setCowardWormAmount(getMaxWormAmount(sequence));
+
+        // Clamp sanity down to the new effective cap after sequencing up
+        if (isSequenceUp && entity instanceof Player player && entity.level() instanceof ServerLevel) {
+            SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
+            float cap = ActingCapHelper.getEffectiveCap(player);
+            if (sanityComp.getSanity() > cap) {
+                sanityComp.setSanityAndSync(cap, entity);
+            }
+        }
 
         BeyonderDataTickHandler.invalidateCache(entity);
 
@@ -213,6 +247,9 @@ public class BeyonderData {
             for(int i = sequence; i < 10; i++) {
                 component.getPathwayHistory()[i] = pathway;
             }
+
+            if(entity instanceof ServerPlayer serverPlayer)
+            CopiedAbilityHelper.clearAbilities(serverPlayer);
         }
         if(addToPathwayHistory) {
             component.getPathwayHistory()[sequence] = pathway;
@@ -236,7 +273,7 @@ public class BeyonderData {
                 if(putIntoMap)
                     playerMap.put(serverPlayer);
 
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicStack());
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicStack(), getMaxWormAmount(sequence));
                 PacketHandler.sendToAllPlayers(packet);
 
                 TeamComponent teamComp = serverPlayer.getData(ModAttachments.TEAM_COMPONENT.get());
@@ -249,6 +286,23 @@ public class BeyonderData {
             }
         }
 
+    }
+
+    private static int getMaxWormAmount(int sequence) {
+        return switch (sequence) {
+            case 3 -> 60;
+            case 2 -> 200;
+            case 1 -> 400;
+            case 0 -> 600;
+            default -> 20;
+        };
+    }
+
+    public static int getCowardWormAmount(LivingEntity entity) {
+        if(entity.level().isClientSide) {
+            return ClientBeyonderCache.getCowardWormAmount(entity.getUUID());
+        }
+        return entity.getData(ModAttachments.BEYONDER_COMPONENT).getCowardWormAmount();
     }
 
     private static void callPassiveEffectsOnRemoved(LivingEntity entity, ServerLevel serverLevel) {
@@ -433,10 +487,9 @@ public class BeyonderData {
         ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
         if (data.isControlling()) {
             CompoundTag bodyData = data.getBodyEntity().getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
-            float sp = getMaxSpirituality(bodyData.getString("pathway"), bodyData.getInt("sequence"));
-            return sp;
+            return getMaxSpirituality(bodyData.getString("pathway"), bodyData.getInt("sequence"));
         }
-        return getMaxSpirituality(path, seq);
+        return getMaxSpirituality(path, seq) * ActingCapHelper.getEffectiveCap(player);
     }
 
     public static float getMaxSpirituality(String path, int seq){
@@ -476,7 +529,7 @@ public class BeyonderData {
         if (!entity.level().isClientSide()) {
             if(entity instanceof ServerPlayer serverPlayer) {
                 // Send empty data to clear client cache
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", 10, 0.0f, false, 0.0f, new String[10], new int[10]);
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", 10, 0.0f, false, 0.0f, new String[10], new int[10], 0);
                 PacketHandler.sendToPlayer(serverPlayer, packet);
             }
             else {
@@ -691,6 +744,22 @@ public class BeyonderData {
         if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
         }
+    }
+
+    public static void setWormAmount(LivingEntity entity, int amount) {
+        entity.getData(ModAttachments.BEYONDER_COMPONENT).setCowardWormAmount(amount);
+
+        if (!entity.level().isClientSide() && entity instanceof ServerPlayer serverPlayer) {
+            PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
+        }
+    }
+
+    public static void incrementWormAmount(LivingEntity entity, int amount) {
+        int currentAmount = getCowardWormAmount(entity);
+        if((currentAmount + amount) < 0 || (currentAmount + amount) > getMaxWormAmount(getSequence(entity)))
+            return;
+
+        setWormAmount(entity, currentAmount + amount);
     }
 
     public static void addCharStack(LivingEntity player, int sequence) {

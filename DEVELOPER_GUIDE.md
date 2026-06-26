@@ -178,7 +178,7 @@ These keys are the exact strings returned by `getAbilityNames()` in a `Selectabl
 
 ## 4. Ability System
 
-All abilities extend one of three base classes located in `de.jakob.lotm.abilities.core`:
+All abilities extend one of three base classes located in `de.jakob.lotm.beyonders.abilities.core`:
 
 ### 4.1 Base Ability
 
@@ -424,7 +424,7 @@ For NPCs, a random sub-ability is selected automatically.
 
 ### 4.4 Registering an Ability
 
-All abilities are registered in `AbilityHandler.java` located at `de.jakob.lotm.abilities.core.AbilityHandler`.
+All abilities are registered in `AbilityHandler.java` located at `de.jakob.lotm.beyonders.abilities.core.AbilityHandler`.
 
 Add your ability to the `registerAbilities()` method:
 

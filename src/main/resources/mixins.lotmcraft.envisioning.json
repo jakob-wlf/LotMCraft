@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "de.jakob.lotm.abilities.visionary.handlers.mixin",
+  "package": "de.jakob.lotm.beyonders.abilities.visionary.handlers.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "CreativeSlotMixin"

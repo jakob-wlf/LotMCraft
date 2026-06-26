@@ -1,7 +1,7 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.door.PlayerTeleportationAbility;
+import de.jakob.lotm.beyonders.abilities.door.PlayerTeleportationAbility;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -9,8 +9,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public record SyncPlayerTeleportationPlayerNamesPacket(String uuid, String name) implements CustomPacketPayload {

@@ -1,11 +1,11 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.AbilityUseEvent;
-import de.jakob.lotm.abilities.justiciar.BalancingAbility;
-import de.jakob.lotm.abilities.justiciar.ExileOfBalanceAbility;
-import de.jakob.lotm.abilities.justiciar.IndividualBalanceAbility;
-import de.jakob.lotm.abilities.justiciar.ProhibitionAbility;
+import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
+import de.jakob.lotm.beyonders.abilities.justiciar.BalancingAbility;
+import de.jakob.lotm.beyonders.abilities.justiciar.ExileOfBalanceAbility;
+import de.jakob.lotm.beyonders.abilities.justiciar.IndividualBalanceAbility;
+import de.jakob.lotm.beyonders.abilities.justiciar.ProhibitionAbility;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

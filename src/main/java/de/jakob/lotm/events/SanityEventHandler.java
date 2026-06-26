@@ -50,6 +50,9 @@ public class SanityEventHandler {
         if (hasSwitched) sanityIncrease -= 0.00025f;
         sanityComp.increaseSanityAndSync(sanityIncrease, entity);
 
+        applySpiritualityExhaustionDrain(entity, sanityComp);
+        applyInjuryDrain(entity, sanityComp);
+
         float sanity = sanityComp.getSanity();
         int sanityValue = (int)(sanity * 100); // Convert to 0-100 scale
 
@@ -201,6 +204,74 @@ public class SanityEventHandler {
             entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 2, 0, false, true));
 
         }
+    }
+
+    private static final String LOW_SPIRIT_SECONDS_KEY = "lotm_low_spirituality_seconds";
+
+    // Sitting at or below 10% max spirituality drains sanity, ramping up the longer it lasts and resetting on recovery.
+    private static void applySpiritualityExhaustionDrain(LivingEntity entity, SanityComponent sanityComp) {
+        if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) {
+            entity.getPersistentData().putInt(LOW_SPIRIT_SECONDS_KEY, 0);
+            return;
+        }
+        if (!BeyonderData.isBeyonder(entity)) {
+            entity.getPersistentData().putInt(LOW_SPIRIT_SECONDS_KEY, 0);
+            return;
+        }
+
+        float maxSpirit = BeyonderData.getMaxSpirituality(BeyonderData.getPathway(entity), BeyonderData.getSequence(entity));
+        if (maxSpirit <= 0) {
+            entity.getPersistentData().putInt(LOW_SPIRIT_SECONDS_KEY, 0);
+            return;
+        }
+
+        if (BeyonderData.getSpirituality(entity) <= maxSpirit * 0.1f) {
+            int seconds = entity.getPersistentData().getInt(LOW_SPIRIT_SECONDS_KEY) + 1;
+            entity.getPersistentData().putInt(LOW_SPIRIT_SECONDS_KEY, seconds);
+
+            float drain = getSpiritualityExhaustionDrain(seconds);
+            if (drain > 0f) {
+                sanityComp.increaseSanityAndSync(-drain, entity);
+            }
+        } else {
+            entity.getPersistentData().putInt(LOW_SPIRIT_SECONDS_KEY, 0);
+        }
+    }
+
+    private static float getSpiritualityExhaustionDrain(int seconds) {
+        if (seconds >= 60) return 0.1f;
+        if (seconds >= 35) return 0.01f;
+        if (seconds >= 25) return 0.001f;
+        if (seconds >= 15) return 0.0005f;
+        if (seconds >= 5)  return 0.00025f;
+        return 0f;
+    }
+
+    // Being injured drains sanity for sequences 9-5; lower health drains more, and sequences 9-8 drain more than 7-5.
+    private static void applyInjuryDrain(LivingEntity entity, SanityComponent sanityComp) {
+        if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) return;
+        if (!BeyonderData.isBeyonder(entity)) return;
+
+        int sequence = BeyonderData.getSequence(entity);
+        if (sequence < 5 || sequence > 9) return;
+
+        float maxHealth = entity.getMaxHealth();
+        if (maxHealth <= 0) return;
+        float healthFraction = entity.getHealth() / maxHealth;
+        if (healthFraction > 0.5f) return;
+
+        boolean higherTier = sequence >= 8;
+
+        float drain;
+        if (healthFraction <= 0.1f) {
+            drain = higherTier ? 0.01f : 0.0075f;
+        } else if (healthFraction <= 0.3f) {
+            drain = higherTier ? 0.0065f : 0.0035f;
+        } else {
+            drain = higherTier ? 0.0015f : 0.0008f;
+        }
+
+        sanityComp.increaseSanityAndSync(-drain, entity);
     }
 
     private static double getSanityMultiplier(LivingEntity entity, float sanity, int sanityValue) {

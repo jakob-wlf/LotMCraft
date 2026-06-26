@@ -1,6 +1,6 @@
 package de.jakob.lotm.gui.custom.ArtifactWheel;
 
-import de.jakob.lotm.artifacts.SealedArtifactData;
+import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.network.PacketHandler;

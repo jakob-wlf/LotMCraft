@@ -1,7 +1,7 @@
 package de.jakob.lotm.util.playerMap;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
+import de.jakob.lotm.beyonders.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.UniquenessComponent;
 import de.jakob.lotm.gamerule.ModGameRules;
