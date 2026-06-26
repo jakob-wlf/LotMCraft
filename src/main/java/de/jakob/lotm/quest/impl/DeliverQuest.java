@@ -77,9 +77,7 @@ public class DeliverQuest extends Quest {
 
     @Override
     public List<ItemStack> getRewards(ServerPlayer player) {
-        List<ItemStack> rewards = new ArrayList<>();
-        rewards.add(new ItemStack(Items.DIAMOND, 3));
-        return rewards;
+        return new ArrayList<>(currencyRewardForSequence(9, new Random()));
     }
 
     @Override

@@ -1,11 +1,11 @@
 package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.block.ModBlocks;
-import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
-import de.jakob.lotm.potions.PotionItemHandler;
-import de.jakob.lotm.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.beyonders.potions.PotionItemHandler;
+import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -34,6 +34,13 @@ public class ModCreativeModTabs {
                         output.accept(ModBlocks.BREWING_CAULDRON.get());
                         output.accept(ModBlocks.VOID);
                         output.accept(ModBlocks.SOLID_VOID);
+                        output.accept(ModBlocks.REALITY_PORTAL);
+                        output.accept(ModItems.PAPER_SWORD);
+                        output.accept(ModItems.PAPER_PICKAXE);
+                        output.accept(ModItems.PAPER_AXE);
+                        output.accept(ModItems.PAPER_SHOVEL);
+                        output.accept(ModItems.ONE_POUND);
+                        output.accept(ModItems.ONE_SOLI);
                     })
                     .build());
 

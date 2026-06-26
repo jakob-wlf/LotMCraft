@@ -10,6 +10,7 @@ import de.jakob.lotm.entity.client.ability_entities.door_pathway.travelers_door.
 import de.jakob.lotm.entity.client.ability_entities.meteor.MeteorModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area.BloomingAreaModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinModel;
+import de.jakob.lotm.entity.client.beyonder_npc.TradeIndicatorModel;
 import de.jakob.lotm.entity.client.projectiles.paper_dagger.PaperDaggerProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.spear_of_destruction.SpearOfDestructionProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.spear_of_light.SpearOfLightProjectileModel;
@@ -43,6 +44,7 @@ import de.jakob.lotm.entity.client.spirits.spirit_bane.SpiritBaneModel;
 import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentWizardModel;
 import de.jakob.lotm.entity.custom.*;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
+import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlinkAfterimageEntity;
 import de.jakob.lotm.entity.custom.spirits.*;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket;
@@ -66,7 +68,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import de.jakob.lotm.abilities.tyrant.LightningStormAbility;
+import de.jakob.lotm.beyonders.abilities.tyrant.LightningStormAbility;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -108,6 +110,7 @@ public class ModEvents {
         event.registerLayerDefinition(BloomingAreaModel.LAYER_LOCATION, BloomingAreaModel::createBodyLayer);
         event.registerLayerDefinition(DesolateAreaModel.LAYER_LOCATION, DesolateAreaModel::createBodyLayer);
         event.registerLayerDefinition(QuestMarkerModel.LAYER_LOCATION, QuestMarkerModel::createBodyLayer);
+        event.registerLayerDefinition(TradeIndicatorModel.LAYER_LOCATION, TradeIndicatorModel::createBodyLayer);
         event.registerLayerDefinition(CycleOfFateModel.LAYER_LOCATION, CycleOfFateModel::createBodyLayer);
         event.registerLayerDefinition(UnderworldGateModel.LAYER_LOCATION, UnderworldGateModel::createBodyLayer);
 
@@ -136,6 +139,7 @@ public class ModEvents {
         event.put(ModEntities.FIRE_RAVEN.get(), FireRavenEntity.createAttributes().build());
         event.put(ModEntities.BEYONDER_NPC.get(), BeyonderNPCEntity.createAttributes().build());
         event.put(ModEntities.AVATAR.get(), AvatarEntity.createAttributes().build());
+        event.put(ModEntities.BLINK_AFTERIMAGE.get(), BlinkAfterimageEntity.createAttributes().build());
         event.put(ModEntities.ORIGINAL_BODY.get(), OriginalBodyEntity.createAttributes().build());
         event.put(ModEntities.DAMAGE_TRACKER.get(), DamageTrackerEntity.createAttributes().build());
 
@@ -219,11 +223,14 @@ public class ModEvents {
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         BeyonderCommand.register(event.getDispatcher());
+        SpawnBeyonderSpawnerCommand.register(event.getDispatcher());
         LuckCheckCommand.register(event.getDispatcher());
         AllyRequestCommands.register(event.getDispatcher());
         AllyCommand.register(event.getDispatcher());
+        EnablePlayerAbilitiesCommand.register(event.getDispatcher());
         SanityCommand.register(event.getDispatcher());
         DigestionCommand.register(event.getDispatcher());
+        SpawnBeyonderCommand.register(event.getDispatcher());
         QuestCommand.register(event.getDispatcher());
         BeyonderMapCommand.register(event.getDispatcher());
         ResetCooldownsCommand.register(event.getDispatcher());
@@ -235,6 +242,7 @@ public class ModEvents {
         KillCountCommand.register(event.getDispatcher());
         UniquenessCommand.register(event.getDispatcher());
         SefirotCommand.register(event.getDispatcher());
+        ResetCapCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

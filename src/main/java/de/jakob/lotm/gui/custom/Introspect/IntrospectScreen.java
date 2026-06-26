@@ -1,13 +1,13 @@
 package de.jakob.lotm.gui.custom.Introspect;
 
+import ca.weblite.objc.Client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.Ability;
-import de.jakob.lotm.abilities.core.SelectableAbility;
-import de.jakob.lotm.acting.ActingHandler;
-import de.jakob.lotm.acting.ActingHelper;
-import de.jakob.lotm.acting.ActingTask;
-import de.jakob.lotm.acting.ActingTaskRegistry;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.acting.ActingHelper;
+import de.jakob.lotm.beyonders.acting.ActingTask;
+import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
@@ -15,9 +15,9 @@ import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.util.ClientSacrificeCache;
-import de.jakob.lotm.util.ClientQuestData;
-import de.jakob.lotm.util.ClientUniquenessCache;
+import de.jakob.lotm.util.data.ClientSacrificeCache;
+import de.jakob.lotm.util.data.ClientQuestData;
+import de.jakob.lotm.util.data.ClientUniquenessCache;
 import de.jakob.lotm.util.data.ClientData;
 import de.jakob.lotm.util.helper.ClientTeamData;
 import net.minecraft.ChatFormatting;
@@ -32,10 +32,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private ResourceLocation containerBackground;
@@ -60,10 +58,15 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private boolean showActing = false;
     private Button toggleActingButton;
 
+    private boolean showMissedActing = false;
+    private Button toggleMissedActingButton;
+
+
     private enum Tab {
         ABILITY_WHEEL,
         ABILITY_BAR,
-        SHARED_ABILITIES
+        SHARED_ABILITIES,
+        RECORDED_ABILITIES
     }
 
     private Tab currentTab = Tab.ABILITY_WHEEL;
@@ -84,6 +87,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private int draggedFromWheelIndex = -1;
     private int draggedFromBarIndex = -1;
     private boolean draggedFromAvailable = false;
+    // For copied-ability dragging: index in the copied list
+    private int draggedFromCopiedIndex = -1;
+    // "recorded" or "replicated" — which copied tab the drag started from
+    private String draggedCopiedType = null;
     private int dragOffsetX = 0;
     private int dragOffsetY = 0;
 
@@ -96,6 +103,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private static final int ABILITY_BAR_MAX = 6;
     private static final int SHARED_POOL_HEIGHT = 50;
     private static final int SHARED_WHEEL_HEIGHT = 60;
+
+    // Height of the copied-abilities list panel (replaces the normal ABILITIES_PANEL when active)
+    private static final int COPIED_PANEL_HEIGHT = 115;
 
     private static final int QUESTS_PANEL_WIDTH = 140;
     private static final int COMPLETED_QUESTS_HEIGHT = 80;
@@ -113,6 +123,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private int maxCompletedQuestsScroll = 0;
     private int sharedPoolScrollOffset = 0;
     private int maxSharedPoolScroll = 0;
+    private int copiedScrollOffset = 0;
+    private int maxCopiedScroll = 0;
 
     private record SubAbilityEntry(Ability parent, int subIndex) {}
 
@@ -123,6 +135,11 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.imageHeight = 231;
         this.imageWidth = 192;
     }
+    private boolean hasRecordAbility() {
+        return !ClientData.getCopiedAbilityIds().isEmpty();
+    }
+
+    // -----------------------------------------------------------------------
 
     private void initializeAbilities() {
         availableAbilities.clear();
@@ -132,7 +149,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (showAllAbilities) {
             availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesUpToSequenceOrdered(menu.getSequence()));
         } else {
-            // use the old system in case of controlling - will change once worms get added
             ControllingDataComponent controllingDataComponent = minecraft.player.getData(ModAttachments.CONTROLLING_DATA);
             if (controllingDataComponent.isControlling()) {
                 ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
@@ -162,7 +178,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         availableAbilities.addAll(unique);
         availableAbilities.removeIf(Ability::getShouldBeHidden);
 
-        if (showSubAbilities) {
+        // Sub-abilities toggle only applies on normal tabs (not copied tabs)
+        if (showSubAbilities && !isCopiedTab(currentTab)) {
             List<Ability> expanded = new ArrayList<>();
             for (Ability ability : availableAbilities) {
                 expanded.add(ability);
@@ -189,6 +206,22 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int rows = (int) Math.ceil((double) availableAbilities.size() / iconsPerRow);
         int visibleRows = (ABILITIES_PANEL_HEIGHT - 20) / (ABILITY_ICON_SIZE + 2);
         maxAbilitiesScroll = Math.max(0, rows - visibleRows);
+
+        // Also recompute copied scroll
+        updateCopiedScroll();
+    }
+
+    private boolean isCopiedTab(Tab tab) {
+        return tab == Tab.RECORDED_ABILITIES;
+    }
+
+    private void updateCopiedScroll() {
+        List<String> ids = ClientData.getCopiedAbilityIds();
+        int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
+        int rows = (int) Math.ceil((double) ids.size() / iconsPerRow);
+        int visibleRows = (COPIED_PANEL_HEIGHT - 20) / (ABILITY_ICON_SIZE + 2);
+        maxCopiedScroll = Math.max(0, rows - visibleRows);
+        copiedScrollOffset = Math.min(copiedScrollOffset, maxCopiedScroll);
     }
 
     private void updateCompletedQuestsScroll() {
@@ -311,6 +344,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             if (showAbilities) {
                                 showQuests = false;
                                 showActing = false;
+                                showMissedActing = false;
                             }
                             button.setMessage(Component.literal(showAbilities ? "< Hide" : "Abilities >"));
                             updateButtonPositions();
@@ -328,6 +362,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             if (showQuests) {
                                 showAbilities = false;
                                 showActing = false;
+                                showMissedActing = false;
                             }
                             button.setMessage(Component.literal(showQuests ? "< Hide" : "Quests >"));
                             updateButtonPositions();
@@ -345,6 +380,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             if (showActing) {
                                 showAbilities = false;
                                 showQuests = false;
+                                showMissedActing = false;
                             }
                             button.setMessage(Component.literal(showActing ? "< Hide" : "Acting >"));
                             updateButtonPositions();
@@ -353,8 +389,26 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 .build();
         this.addRenderableWidget(toggleActingButton);
 
+        int missedActingButtonX = baseLeftPos - 65;
+        int missedActingButtonY = this.topPos + 85;
+
+        toggleMissedActingButton = Button.builder(Component.literal(showMissedActing ? "< Hide" : "Missed >"),
+                        button -> {
+                            showMissedActing = !showMissedActing;
+                            if (showMissedActing) {
+                                showAbilities = false;
+                                showQuests = false;
+                                showActing = false;
+                            }
+                            button.setMessage(Component.literal(showMissedActing ? "< Hide" : "Missed >"));
+                            updateButtonPositions();
+                        })
+                .bounds(missedActingButtonX, missedActingButtonY, 60, 20)
+                .build();
+        this.addRenderableWidget(toggleMissedActingButton);
+
         int messageButtonX = baseLeftPos - 65;
-        int messageButtonY = this.topPos + 85;
+        int messageButtonY = this.topPos + 110;
 
         messageButton = Button.builder(Component.literal("Honorific"),
                         button -> openHonorificNamesMenu())
@@ -367,7 +421,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         if (ClientUniquenessCache.hasUniqueness() && menu.getSequence() == 1) {
             int apotheosisButtonX = baseLeftPos - 65;
-            int apotheosisButtonY = this.topPos + 110;
+            int apotheosisButtonY = this.topPos + 135;
 
             boolean canApotheosize = false;
             if (this.minecraft != null && this.minecraft.player != null) {
@@ -389,7 +443,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         if (isCreativeOp()) {
             int allAbilitiesButtonX = baseLeftPos - 65;
-            int allAbilitiesButtonY = this.topPos + 135;
+            int allAbilitiesButtonY = this.topPos + 160;
 
             toggleAllAbilitiesButton = Button.builder(
                             Component.literal(showAllAbilities ? "All: ON" : "All: OFF")
@@ -419,63 +473,97 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int tabButtonY = this.topPos;
 
         boolean showSharedTab = ClientTeamData.hasTeam();
-        int tabCount = showSharedTab ? 3 : 2;
-        int subButtonWidth = 50;
+        boolean showCopiedTab = hasRecordAbility();
+
+        // Count how many tabs we have
+        int tabCount = 2; // Wheel + Bar always present
+        if (showSharedTab) tabCount++;
+        if (showCopiedTab) tabCount++;
+
+        // Sub-abilities button only shown on non-copied tabs
+        boolean showSubToggle = !isCopiedTab(currentTab);
+        int subButtonWidth = showSubToggle ? 50 : 0;
         int remainingWidth = ABILITIES_PANEL_WIDTH - subButtonWidth;
         int tabButtonWidth = remainingWidth / tabCount;
+
+        int tabX = panelX;
 
         wheelTabButton = Button.builder(Component.literal("Wheel"),
                         button -> {
                             currentTab = Tab.ABILITY_WHEEL;
+                            copiedScrollOffset = 0;
                             updateButtonPositions();
                         })
-                .bounds(panelX, tabButtonY, tabButtonWidth, 15)
+                .bounds(tabX, tabButtonY, tabButtonWidth, 15)
                 .build();
+        this.addRenderableWidget(wheelTabButton);
+        tabX += tabButtonWidth;
 
         barTabButton = Button.builder(Component.literal("Bar"),
                         button -> {
                             currentTab = Tab.ABILITY_BAR;
+                            copiedScrollOffset = 0;
                             updateButtonPositions();
                         })
-                .bounds(panelX + tabButtonWidth, tabButtonY, tabButtonWidth, 15)
+                .bounds(tabX, tabButtonY, tabButtonWidth, 15)
                 .build();
-
-        this.addRenderableWidget(wheelTabButton);
         this.addRenderableWidget(barTabButton);
+        tabX += tabButtonWidth;
 
         if (showSharedTab) {
             Button sharedTabButton = Button.builder(Component.literal("Shared"),
                             button -> {
                                 currentTab = Tab.SHARED_ABILITIES;
                                 sharedPoolScrollOffset = 0;
+                                copiedScrollOffset = 0;
                                 updateButtonPositions();
                             })
-                    .bounds(panelX + tabButtonWidth * 2, tabButtonY, tabButtonWidth, 15)
+                    .bounds(tabX, tabButtonY, tabButtonWidth, 15)
                     .build();
             this.addRenderableWidget(sharedTabButton);
             if (currentTab == Tab.SHARED_ABILITIES) sharedTabButton.active = false;
+            tabX += tabButtonWidth;
         } else if (currentTab == Tab.SHARED_ABILITIES) {
             currentTab = Tab.ABILITY_WHEEL;
         }
 
-        if (currentTab == Tab.ABILITY_WHEEL) {
-            wheelTabButton.active = false;
-        } else if (currentTab == Tab.ABILITY_BAR) {
-            barTabButton.active = false;
+        if (showCopiedTab) {
+            Button recordedTabButton = Button.builder(
+                            Component.literal("Cop").withStyle(ChatFormatting.LIGHT_PURPLE),
+                            button -> {
+                                currentTab = Tab.RECORDED_ABILITIES;
+                                copiedScrollOffset = 0;
+                                updateCopiedScroll();
+                                updateButtonPositions();
+                            })
+                    .bounds(tabX, tabButtonY, tabButtonWidth, 15)
+                    .build();
+            this.addRenderableWidget(recordedTabButton);
+            if (currentTab == Tab.RECORDED_ABILITIES) recordedTabButton.active = false;
+            tabX += tabButtonWidth;
+        } else if (currentTab == Tab.RECORDED_ABILITIES) {
+            currentTab = Tab.ABILITY_WHEEL;
         }
 
-        toggleSubAbilitiesButton = Button.builder(
-                        Component.literal(showSubAbilities ? "Sub: ON" : "Sub: OFF")
-                                .withStyle(showSubAbilities ? ChatFormatting.AQUA : ChatFormatting.GRAY),
-                        button -> {
-                            showSubAbilities = !showSubAbilities;
-                            initializeAbilities();
-                            button.setMessage(Component.literal(showSubAbilities ? "Sub: ON" : "Sub: OFF")
-                                    .withStyle(showSubAbilities ? ChatFormatting.AQUA : ChatFormatting.GRAY));
-                        })
-                .bounds(panelX + ABILITIES_PANEL_WIDTH - subButtonWidth, tabButtonY, subButtonWidth, 15)
-                .build();
-        this.addRenderableWidget(toggleSubAbilitiesButton);
+        // Deactivate current tab's button
+        if (currentTab == Tab.ABILITY_WHEEL) wheelTabButton.active = false;
+        else if (currentTab == Tab.ABILITY_BAR) barTabButton.active = false;
+
+        // Sub-abilities toggle — only for non-copied tabs
+        if (showSubToggle) {
+            toggleSubAbilitiesButton = Button.builder(
+                            Component.literal(showSubAbilities ? "Sub: ON" : "Sub: OFF")
+                                    .withStyle(showSubAbilities ? ChatFormatting.AQUA : ChatFormatting.GRAY),
+                            button -> {
+                                showSubAbilities = !showSubAbilities;
+                                initializeAbilities();
+                                button.setMessage(Component.literal(showSubAbilities ? "Sub: ON" : "Sub: OFF")
+                                        .withStyle(showSubAbilities ? ChatFormatting.AQUA : ChatFormatting.GRAY));
+                            })
+                    .bounds(panelX + ABILITIES_PANEL_WIDTH - subButtonWidth, tabButtonY, subButtonWidth, 15)
+                    .build();
+            this.addRenderableWidget(toggleSubAbilitiesButton);
+        }
 
         int clearButtonX = baseLeftPos + this.imageWidth + 5;
         int clearButtonY;
@@ -502,6 +590,20 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                     .bounds(clearButtonX, clearButtonY, ABILITIES_PANEL_WIDTH, 20)
                     .build();
             this.addRenderableWidget(clearBarButton);
+        }
+        // Copied tabs: clear buttons for wheel/bar still shown below the drop targets
+        else if (isCopiedTab(currentTab)) {
+            int copiedSlotHeight = ABILITY_WHEEL_HEIGHT; // reuse wheel height for the drop-zone
+            clearButtonY = this.topPos + 15 + COPIED_PANEL_HEIGHT + 5 + copiedSlotHeight + 5;
+            clearWheelButton = Button.builder(Component.literal("Clear Wheel").withStyle(ChatFormatting.RED),
+                            button -> {
+                                abilityWheelSlots.clear();
+                                abilityWheelSubIndexes.clear();
+                                PacketHandler.sendToServer(new SyncAbilityWheelAbilitiesPacket(new ArrayList<>()));
+                            })
+                    .bounds(clearButtonX, clearButtonY, ABILITIES_PANEL_WIDTH / 2 - 1, 20)
+                    .build();
+            this.addRenderableWidget(clearWheelButton);
         }
     }
 
@@ -558,7 +660,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
 
         if (draggedAbility != null) {
-            renderAbilityIcon(guiGraphics, draggedAbility, mouseX - dragOffsetX, mouseY - dragOffsetY, draggedSubIndex);
+            renderAbilityIcon(guiGraphics, draggedAbility, mouseX - dragOffsetX, mouseY - dragOffsetY, draggedSubIndex, false);
         }
 
         this.renderTooltip(guiGraphics, mouseX, mouseY);
@@ -573,6 +675,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         if(showActing) {
             renderActingPanel(guiGraphics);
+        }
+
+        if (showMissedActing) {
+            renderMissedActingPanel(guiGraphics);
         }
     }
 
@@ -630,6 +736,72 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
     }
 
+    private void renderMissedActingPanel(GuiGraphics guiGraphics) {
+        int baseLeftPos = this.leftPos;
+        int panelX = baseLeftPos + this.imageWidth + 5;
+        int panelY = this.topPos;
+        int panelHeight = ACTING_PANEL_HEIGHT + 40;
+
+        guiGraphics.fill(panelX, panelY, panelX + ACTING_PANEL_WIDTH, panelY + panelHeight, 0xCC000000);
+        guiGraphics.renderOutline(panelX, panelY, ACTING_PANEL_WIDTH, panelHeight, 0xFFAAAAAA);
+
+        Component label = Component.literal("Missed Acting").withStyle(ChatFormatting.BOLD);
+        guiGraphics.drawString(this.font, label, panelX + 5, panelY + 5, 0xFFFFFFFF, true);
+
+        net.minecraft.nbt.CompoundTag missed = new net.minecraft.nbt.CompoundTag();
+        if (minecraft.player != null) {
+            missed = minecraft.player.getPersistentData()
+                    .getCompound(de.jakob.lotm.beyonders.acting.ActingCapHelper.MISSED_ACTING_KEY);
+        }
+
+        int listY = panelY + 17;
+        int lineHeight = this.font.lineHeight + 2;
+        int maxY = panelY + panelHeight - 4;
+
+        if (missed.isEmpty()) {
+            Component none = Component.literal("No missed acting").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
+            int textWidth = this.font.width(none);
+            guiGraphics.drawString(this.font, none,
+                    panelX + (ACTING_PANEL_WIDTH - textWidth) / 2,
+                    panelY + panelHeight / 2 - this.font.lineHeight / 2, 0xFF888888, false);
+            return;
+        }
+
+        List<String> groupKeys = new ArrayList<>(missed.getAllKeys());
+        groupKeys.sort((a, b) -> {
+            int sa = safeParseInt(a.contains("/") ? a.split("/", 2)[1] : "0");
+            int sb = safeParseInt(b.contains("/") ? b.split("/", 2)[1] : "0");
+            return Integer.compare(sb, sa);
+        });
+
+        int currentY = listY;
+        for (String groupKey : groupKeys) {
+            if (currentY + lineHeight > maxY) break;
+            net.minecraft.nbt.CompoundTag group = missed.getCompound(groupKey);
+            net.minecraft.nbt.CompoundTag tasks = group.getCompound("tasks");
+            if (tasks.isEmpty()) continue;
+
+            String seqStr = groupKey.contains("/") ? groupKey.split("/", 2)[1] : groupKey;
+
+            for (String taskId : tasks.getAllKeys()) {
+                if (currentY + lineHeight > maxY) break;
+
+                MutableComponent taskName = getActingTaskName(taskId).withStyle(ChatFormatting.OBFUSCATED);
+                guiGraphics.drawString(this.font,
+                        Component.literal("- ").withStyle(ChatFormatting.YELLOW)
+                                .append(Component.literal("[Seq " + seqStr + "] ")
+                                        .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD))
+                                .append(taskName),
+                        panelX + 5, currentY, 0xFFCCCCCC, false);
+                currentY += lineHeight;
+            }
+        }
+    }
+
+    private static int safeParseInt(String s) {
+        try { return Integer.parseInt(s); } catch (NumberFormatException e) { return 0; }
+    }
+
     private static final Map<String, String> SUFFIXES = Map.of(
             "_while_full_health", "lotm.acting.condition.while_full_health",
             "_while_low_health", "lotm.acting.condition.while_low_health",
@@ -638,21 +810,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     );
 
     private MutableComponent getActingTaskName(String taskId) {
-        if(taskId.startsWith("use_") && taskId.endsWith("_ability")) {
-            String abilityId = taskId.substring(4);
-            String suffixKey = null;
-            for (String suffix : SUFFIXES.keySet()) {
-                if (abilityId.endsWith(suffix)) {
-                    suffixKey = SUFFIXES.get(suffix);
-                    abilityId = abilityId.substring(0, abilityId.length() - suffix.length());
-                    break;
-                }
-            }
-
-            return Component.translatable("lotm.acting.ability_use").append(Component.translatable("lotmcraft." + abilityId))
-                    .append(suffixKey != null ? Component.translatable(suffixKey) : Component.empty());
-        }
-
         String suffixKey = null;
         for (String suffix : SUFFIXES.keySet()) {
             if (taskId.endsWith(suffix)) {
@@ -661,6 +818,23 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 break;
             }
         }
+
+        if(taskId.startsWith("use_") && taskId.contains("_ability")) {
+            String abilityId = taskId.substring(4);
+            String abilitySuffixKey = null;
+            for (String suffix : SUFFIXES.keySet()) {
+                if (abilityId.endsWith(suffix)) {
+                    abilitySuffixKey = SUFFIXES.get(suffix);
+                    abilityId = abilityId.substring(0, abilityId.length() - suffix.length());
+                    break;
+                }
+            }
+
+            return Component.translatable("lotm.acting.ability_use").append(Component.translatable("lotmcraft." + abilityId))
+                    .append(abilitySuffixKey != null ? Component.translatable(abilitySuffixKey) : Component.empty())
+                    .append(suffixKey != null ? Component.translatable(suffixKey) : Component.empty());
+        }
+
         return Component.translatable("lotm.acting." + taskId).append(suffixKey != null ? Component.translatable(suffixKey) : Component.empty());
     }
 
@@ -822,11 +996,23 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         Ability hoveredAbility = null;
         int hoveredSubIndex = -1;
 
-        int availIdx = getAbilityIndexAt(mouseX, mouseY, panelX, panelY, true);
-        if (availIdx >= 0) {
-            hoveredAbility = availableAbilities.get(availIdx);
-            hoveredSubIndex = (subAbilityEntries.size() > availIdx && subAbilityEntries.get(availIdx) != null)
-                    ? subAbilityEntries.get(availIdx).subIndex() : -1;
+        // On copied tabs, the upper panel shows the copied list, not the normal abilities list
+        if (!isCopiedTab(currentTab)) {
+            int availIdx = getAbilityIndexAt(mouseX, mouseY, panelX, panelY, true);
+            if (availIdx >= 0) {
+                hoveredAbility = availableAbilities.get(availIdx);
+                hoveredSubIndex = (subAbilityEntries.size() > availIdx && subAbilityEntries.get(availIdx) != null)
+                        ? subAbilityEntries.get(availIdx).subIndex() : -1;
+            }
+        } else {
+            // Hover over the copied-abilities list
+            int copiedIdx = getCopiedAbilityIndexAt(mouseX, mouseY, panelX, panelY);
+            if (copiedIdx >= 0) {
+                List<String> ids = ClientData.getCopiedAbilityIds();
+                if (copiedIdx < ids.size()) {
+                    hoveredAbility = LOTMCraft.abilityHandler.getById(ids.get(copiedIdx));
+                }
+            }
         }
 
         if (hoveredAbility == null) {
@@ -863,6 +1049,18 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 }
             } else if (currentTab == Tab.ABILITY_BAR) {
                 int barSlot = getAbilityBarSlot(mouseX, mouseY, panelX, slotY);
+                if (barSlot >= 0 && barSlot < abilityBarSlots.size()) {
+                    hoveredAbility = abilityBarSlots.get(barSlot);
+                    hoveredSubIndex = abilityBarSubIndexes.get(barSlot);
+                }
+            } else if (isCopiedTab(currentTab)) {
+                // Hover over wheel drop zone (reused for copied tabs)
+                int wheelSlot = getAbilityWheelSlot(mouseX, mouseY, panelX, slotY);
+                if (wheelSlot >= 0 && wheelSlot < abilityWheelSlots.size()) {
+                    hoveredAbility = abilityWheelSlots.get(wheelSlot);
+                    hoveredSubIndex = abilityWheelSubIndexes.get(wheelSlot);
+                }
+                int barSlot = getAbilityBarSlot(mouseX, mouseY, panelX, slotY + ABILITY_WHEEL_HEIGHT + 5);
                 if (barSlot >= 0 && barSlot < abilityBarSlots.size()) {
                     hoveredAbility = abilityBarSlots.get(barSlot);
                     hoveredSubIndex = abilityBarSubIndexes.get(barSlot);
@@ -942,6 +1140,11 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int panelX = baseLeftPos + this.imageWidth + 5;
         int panelY = this.topPos + 15;
 
+        if (isCopiedTab(currentTab)) {
+            renderCopiedAbilitiesPanel(guiGraphics, panelX, panelY, mouseX, mouseY);
+            return;
+        }
+
         guiGraphics.fill(panelX, panelY, panelX + ABILITIES_PANEL_WIDTH, panelY + ABILITIES_PANEL_HEIGHT, 0xCC000000);
         guiGraphics.renderOutline(panelX, panelY, ABILITIES_PANEL_WIDTH, ABILITIES_PANEL_HEIGHT, 0xFFAAAAAA);
 
@@ -960,6 +1163,92 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             renderSharedAbilitiesTab(guiGraphics, panelX, slotY, mouseX, mouseY);
         }
     }
+
+
+    private void renderCopiedAbilitiesPanel(GuiGraphics guiGraphics, int panelX, int panelY, int mouseX, int mouseY) {
+        boolean isRecorded = currentTab == Tab.RECORDED_ABILITIES;
+        List<String> ids = ClientData.getCopiedAbilityIds();
+        List<Integer> remainingUses = ClientData.getCopiedAbilityRemainingUses();
+
+        String tabLabel = "Copied";
+
+        // Upper panel – copied ability pool
+        guiGraphics.fill(panelX, panelY, panelX + ABILITIES_PANEL_WIDTH, panelY + COPIED_PANEL_HEIGHT, 0xCC000000);
+        guiGraphics.renderOutline(panelX, panelY, ABILITIES_PANEL_WIDTH, COPIED_PANEL_HEIGHT, 0xFFAAAAAA);
+        guiGraphics.drawString(this.font,
+                Component.literal(tabLabel).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.LIGHT_PURPLE),
+                panelX + 5, panelY + 5, 0xFFFFFFFF, true);
+
+        int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
+        int clipTop = panelY + 14;
+        int clipBottom = panelY + COPIED_PANEL_HEIGHT - 2;
+
+        for (int listIdx = 0; listIdx < ids.size(); listIdx++) {
+            int dataIdx = ids.get(listIdx) != null ? listIdx : -1;
+            int row = listIdx / iconsPerRow - copiedScrollOffset;
+            int col = listIdx % iconsPerRow;
+            int ix = panelX + 5 + col * (ABILITY_ICON_SIZE + 2);
+            int iy = panelY + 14 + row * (ABILITY_ICON_SIZE + 2);
+            if (iy < clipTop || iy + ABILITY_ICON_SIZE > clipBottom) continue;
+            if (draggedFromCopiedIndex == listIdx) continue; // being dragged
+
+            Ability ability = LOTMCraft.abilityHandler.getById(ids.get(dataIdx));
+            if (ability != null) {
+                int uses = dataIdx < remainingUses.size() ? remainingUses.get(dataIdx) : -1;
+                renderCopiedAbilityIcon(guiGraphics, ability, ix, iy, isRecorded, uses);
+            }
+        }
+
+        if (ids.isEmpty()) {
+            Component empty = Component.literal("No " + tabLabel.toLowerCase() + " abilities")
+                    .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
+            int w = this.font.width(empty);
+            guiGraphics.drawString(this.font, empty,
+                    panelX + (ABILITIES_PANEL_WIDTH - w) / 2,
+                    panelY + COPIED_PANEL_HEIGHT / 2 - this.font.lineHeight / 2,
+                    0xFF888888, false);
+        }
+
+        if (maxCopiedScroll > 0) {
+            Component scrollHint = Component.literal("(Scroll)").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
+            int hintWidth = this.font.width(scrollHint);
+            guiGraphics.drawString(this.font, scrollHint,
+                    panelX + ABILITIES_PANEL_WIDTH - hintWidth - 5,
+                    panelY + COPIED_PANEL_HEIGHT - 12, 0xFF888888, false);
+        }
+
+        int slotY = panelY + COPIED_PANEL_HEIGHT + 5;
+        renderAbilityWheelSection(guiGraphics, panelX, slotY, mouseX, mouseY);
+    }
+
+    /**
+     * Renders a single copied-ability icon with a purple outline.
+     * Recorded abilities show remaining uses (bottom-left badge).
+     */
+    private void renderCopiedAbilityIcon(GuiGraphics guiGraphics, Ability ability, int x, int y,
+                                         boolean isRecorded, int remainingUses) {
+        // Draw the icon
+        if (ability.getTextureLocation() != null) {
+            guiGraphics.blit(ability.getTextureLocation(), x, y, 0, 0,
+                    ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE);
+        } else {
+            guiGraphics.fill(x, y, x + ABILITY_ICON_SIZE, y + ABILITY_ICON_SIZE, 0xFFFFFFFF);
+        }
+
+        // Purple outline
+        guiGraphics.renderOutline(x, y, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, 0xFFAA00FF);
+
+        // Recorded: show remaining-uses badge (bottom-left)
+        if (isRecorded && remainingUses >= 0) {
+            String badge = String.valueOf(remainingUses);
+            int bx = x + 1;
+            int by = y + ABILITY_ICON_SIZE - font.lineHeight + 1;
+            guiGraphics.fill(bx - 1, by - 1, bx + font.width(badge) + 1, y + ABILITY_ICON_SIZE, 0x99000000);
+            guiGraphics.drawString(font, badge, bx, by, 0xFFFFFF, false);
+        }
+    }
+
+    // -----------------------------------------------------------------------
 
     private void renderAvailableAbilities(GuiGraphics guiGraphics, int panelX, int panelY, int mouseX, int mouseY) {
         int startX = panelX + 5;
@@ -986,7 +1275,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 Ability ability = displayedAbilities.get(i);
                 int si = (displayedEntries.size() > i && displayedEntries.get(i) != null)
                         ? displayedEntries.get(i).subIndex() : -1;
-                renderAbilityIcon(guiGraphics, ability, x, y, si);
+                renderAbilityIcon(guiGraphics, ability, x, y, si, false);
             }
         }
     }
@@ -1047,7 +1336,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
             if (i < abilityWheelSlots.size() && draggedFromWheelIndex != i) {
                 int si = abilityWheelSubIndexes.get(i);
-                renderAbilityIcon(guiGraphics, abilityWheelSlots.get(i), x, y, si);
+                renderAbilityIcon(guiGraphics, abilityWheelSlots.get(i), x, y, si, false);
             }
         }
     }
@@ -1067,7 +1356,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
             if (i < abilityBarSlots.size() && draggedFromBarIndex != i) {
                 int si = abilityBarSubIndexes.get(i);
-                renderAbilityIcon(guiGraphics, abilityBarSlots.get(i), x, y, si);
+                renderAbilityIcon(guiGraphics, abilityBarSlots.get(i), x, y, si, false);
             }
 
             String keybind = abbreviateKeybind(KEYBIND_LABELS[i]);
@@ -1115,7 +1404,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
             Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
             if (ability != null && draggedFromSharedPoolIndex != i) {
-                renderAbilityIcon(guiGraphics, ability, ix, iy, -1);
+                renderAbilityIcon(guiGraphics, ability, ix, iy, -1, false);
             }
         }
 
@@ -1153,7 +1442,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 if (i < sharedWheelSlots.size() && draggedFromSharedWheelIndex != i) {
                     Ability ability = LOTMCraft.abilityHandler.getById(sharedWheelSlots.get(i));
                     if (ability != null) {
-                        renderAbilityIcon(guiGraphics, ability, wx, wy, -1);
+                        renderAbilityIcon(guiGraphics, ability, wx, wy, -1, false);
                     }
                 }
             }
@@ -1180,16 +1469,16 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         return result;
     }
 
-    private void renderAbilityIcon(GuiGraphics guiGraphics, Ability ability, int x, int y) {
-        renderAbilityIcon(guiGraphics, ability, x, y, -1);
-    }
 
-    private void renderAbilityIcon(GuiGraphics guiGraphics, Ability ability, int x, int y, int subIndex) {
+    private void renderAbilityIcon(GuiGraphics guiGraphics, Ability ability, int x, int y, int subIndex, boolean copiedOutline) {
         if (ability.getTextureLocation() != null) {
             guiGraphics.blit(ability.getTextureLocation(), x, y, 0, 0, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE);
         } else {
             guiGraphics.fill(x, y, x + ABILITY_ICON_SIZE, y + ABILITY_ICON_SIZE, 0xFFFFFFFF);
             guiGraphics.renderOutline(x, y, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, 0xFF000000);
+        }
+        if (copiedOutline) {
+            guiGraphics.renderOutline(x, y, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, 0xFFAA00FF);
         }
         if (subIndex >= 0) {
             String badge = String.valueOf(subIndex);
@@ -1198,6 +1487,26 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             guiGraphics.fill(bx - 1, by - 1, x + ABILITY_ICON_SIZE, y + ABILITY_ICON_SIZE, 0x99000000);
             guiGraphics.drawString(font, badge, bx, by, 0xFFFFFF, false);
         }
+    }
+
+    private int getCopiedAbilityIndexAt(int mouseX, int mouseY, int panelX, int panelY) {
+        List<String> ids = ClientData.getCopiedAbilityIds();
+        int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
+        int clipTop = panelY + 14;
+        int clipBottom = panelY + COPIED_PANEL_HEIGHT - 2;
+
+        for (int listIdx = 0; listIdx < ids.size(); listIdx++) {
+            int row = listIdx / iconsPerRow - copiedScrollOffset;
+            int col = listIdx % iconsPerRow;
+            int ix = panelX + 5 + col * (ABILITY_ICON_SIZE + 2);
+            int iy = panelY + 14 + row * (ABILITY_ICON_SIZE + 2);
+            if (iy < clipTop || iy + ABILITY_ICON_SIZE > clipBottom) continue;
+            if (mouseX >= ix && mouseX <= ix + ABILITY_ICON_SIZE
+                    && mouseY >= iy && mouseY <= iy + ABILITY_ICON_SIZE) {
+                return listIdx;
+            }
+        }
+        return -1;
     }
 
     private boolean handleSharedTabClick(int mouseX, int mouseY, int panelX, int sectionY) {
@@ -1223,6 +1532,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 draggedFromWheelIndex = -1;
                 draggedFromBarIndex = -1;
                 draggedFromAvailable = false;
+                draggedFromCopiedIndex = -1;
+                draggedCopiedType = null;
                 dragOffsetX = mouseX - ix;
                 dragOffsetY = mouseY - iy;
                 return true;
@@ -1247,6 +1558,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                     draggedFromWheelIndex = -1;
                     draggedFromBarIndex = -1;
                     draggedFromAvailable = false;
+                    draggedFromCopiedIndex = -1;
+                    draggedCopiedType = null;
                     dragOffsetX = mouseX - wx;
                     dragOffsetY = mouseY - wy;
                     return true;
@@ -1266,6 +1579,69 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             int panelY = this.topPos + 15;
             int slotY = panelY + ABILITIES_PANEL_HEIGHT + 5;
 
+            if (isCopiedTab(currentTab)) {
+                int copiedListIdx = getCopiedAbilityIndexAt((int) mouseX, (int) mouseY, panelX, panelY);
+                if (copiedListIdx >= 0) {
+                    List<String> ids = ClientData.getCopiedAbilityIds();
+                    if (copiedListIdx < ids.size()) {
+                        Ability ability = LOTMCraft.abilityHandler.getById(ids.get(copiedListIdx));
+                        if (ability != null) {
+                            draggedAbility = ability;
+                            draggedSubIndex = -1;
+                            draggedFromCopiedIndex = copiedListIdx;
+                            draggedCopiedType = currentTab == Tab.RECORDED_ABILITIES ? "recorded" : "replicated";
+                            draggedFromWheelIndex = -1;
+                            draggedFromBarIndex = -1;
+                            draggedFromAvailable = false;
+                            draggedFromSharedPoolIndex = -1;
+                            draggedFromSharedWheelIndex = -1;
+                            // Compute icon position for offset
+                            int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
+                            int row = copiedListIdx / iconsPerRow - copiedScrollOffset;
+                            int col = copiedListIdx % iconsPerRow;
+                            int ix = panelX + 5 + col * (ABILITY_ICON_SIZE + 2);
+                            int iy = panelY + 14 + row * (ABILITY_ICON_SIZE + 2);
+                            dragOffsetX = (int) mouseX - ix;
+                            dragOffsetY = (int) mouseY - iy;
+                            return true;
+                        }
+                    }
+                }
+
+                int copiedWheelSlotY = panelY + COPIED_PANEL_HEIGHT + 5;
+                int wheelSlot = getAbilityWheelSlot((int) mouseX, (int) mouseY, panelX, copiedWheelSlotY);
+                if (wheelSlot >= 0 && wheelSlot < abilityWheelSlots.size()) {
+                    draggedAbility = abilityWheelSlots.get(wheelSlot);
+                    draggedSubIndex = abilityWheelSubIndexes.get(wheelSlot);
+                    draggedFromWheelIndex = wheelSlot;
+                    draggedFromBarIndex = -1;
+                    draggedFromAvailable = false;
+                    draggedFromCopiedIndex = -1;
+                    draggedCopiedType = null;
+                    dragOffsetX = (int) mouseX - getWheelSlotX(wheelSlot, panelX, copiedWheelSlotY);
+                    dragOffsetY = (int) mouseY - getWheelSlotY(wheelSlot, panelX, copiedWheelSlotY);
+                    return true;
+                }
+
+                int copiedBarSlotY = panelY + COPIED_PANEL_HEIGHT + 5 + ABILITY_WHEEL_HEIGHT + 5;
+                int barSlot = getAbilityBarSlot((int) mouseX, (int) mouseY, panelX, copiedBarSlotY);
+                if (barSlot >= 0 && barSlot < abilityBarSlots.size()) {
+                    draggedAbility = abilityBarSlots.get(barSlot);
+                    draggedSubIndex = abilityBarSubIndexes.get(barSlot);
+                    draggedFromBarIndex = barSlot;
+                    draggedFromWheelIndex = -1;
+                    draggedFromAvailable = false;
+                    draggedFromCopiedIndex = -1;
+                    draggedCopiedType = null;
+                    dragOffsetX = (int) mouseX - getBarSlotX(barSlot, panelX, copiedBarSlotY);
+                    dragOffsetY = (int) mouseY - getBarSlotY(barSlot, panelX, copiedBarSlotY);
+                    return true;
+                }
+
+                return super.mouseClicked(mouseX, mouseY, button);
+            }
+
+            // ---- Normal tabs ----
             if (currentTab == Tab.SHARED_ABILITIES) {
                 if (handleSharedTabClick((int) mouseX, (int) mouseY, panelX, slotY)) return true;
             }
@@ -1278,6 +1654,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                     draggedFromWheelIndex = wheelSlot;
                     draggedFromBarIndex = -1;
                     draggedFromAvailable = false;
+                    draggedFromCopiedIndex = -1;
+                    draggedCopiedType = null;
                     dragOffsetX = (int) mouseX - getWheelSlotX(wheelSlot, panelX, slotY);
                     dragOffsetY = (int) mouseY - getWheelSlotY(wheelSlot, panelX, slotY);
                     return true;
@@ -1290,6 +1668,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                     draggedFromBarIndex = barSlot;
                     draggedFromWheelIndex = -1;
                     draggedFromAvailable = false;
+                    draggedFromCopiedIndex = -1;
+                    draggedCopiedType = null;
                     dragOffsetX = (int) mouseX - getBarSlotX(barSlot, panelX, slotY);
                     dragOffsetY = (int) mouseY - getBarSlotY(barSlot, panelX, slotY);
                     return true;
@@ -1309,6 +1689,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 draggedFromWheelIndex = -1;
                 draggedFromBarIndex = -1;
                 draggedFromAvailable = true;
+                draggedFromCopiedIndex = -1;
+                draggedCopiedType = null;
                 dragOffsetX = (int) mouseX - getAbilityXByIndex(availIdx, panelX, panelY, clickableAbilities);
                 dragOffsetY = (int) mouseY - getAbilityYByIndex(availIdx, panelX, panelY);
                 return true;
@@ -1325,6 +1707,98 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             int panelX = baseLeftPos + this.imageWidth + 5;
             int panelY = this.topPos + 15;
             int slotY = panelY + ABILITIES_PANEL_HEIGHT + 5;
+
+            if (isCopiedTab(currentTab) || draggedFromCopiedIndex >= 0) {
+                int copiedWheelSlotY = panelY + COPIED_PANEL_HEIGHT + 5;
+                int copiedBarSlotY = copiedWheelSlotY + ABILITY_WHEEL_HEIGHT + 5;
+
+                if (draggedFromCopiedIndex >= 0) {
+                    if (isInAbilityWheelArea((int) mouseX, (int) mouseY, panelX, copiedWheelSlotY)) {
+                        int targetSlot = getAbilityWheelSlot((int) mouseX, (int) mouseY, panelX, copiedWheelSlotY);
+                        if (targetSlot >= 0 && targetSlot < ABILITY_WHEEL_MAX) {
+                            if (targetSlot < abilityWheelSlots.size()) {
+                                abilityWheelSlots.set(targetSlot, draggedAbility);
+                                abilityWheelSubIndexes.set(targetSlot, draggedSubIndex);
+                            } else {
+                                while (abilityWheelSlots.size() < targetSlot) {
+                                    abilityWheelSlots.add(draggedAbility);
+                                    abilityWheelSubIndexes.add(-1);
+                                }
+                                abilityWheelSlots.add(draggedAbility);
+                                abilityWheelSubIndexes.add(draggedSubIndex);
+                            }
+                            PacketHandler.sendToServer(new SyncAbilityWheelAbilitiesPacket(wheelSlotsToIdList()));
+                        }
+                    } else if (isInAbilityBarArea((int) mouseX, (int) mouseY, panelX, copiedBarSlotY)) {
+                        int targetSlot = getAbilityBarSlot((int) mouseX, (int) mouseY, panelX, copiedBarSlotY);
+                        if (targetSlot >= 0 && targetSlot < ABILITY_BAR_MAX) {
+                            if (targetSlot < abilityBarSlots.size()) {
+                                abilityBarSlots.set(targetSlot, draggedAbility);
+                                abilityBarSubIndexes.set(targetSlot, draggedSubIndex);
+                            } else {
+                                abilityBarSlots.add(draggedAbility);
+                                abilityBarSubIndexes.add(draggedSubIndex);
+                            }
+                            PacketHandler.sendToServer(new SyncAbilityBarAbilitiesPacket(barSlotsToIdList()));
+                        }
+                    }
+                } else if (draggedFromWheelIndex >= 0) {
+                    if (isInAbilityWheelArea((int) mouseX, (int) mouseY, panelX, copiedWheelSlotY)) {
+                        int targetSlot = getAbilityWheelSlot((int) mouseX, (int) mouseY, panelX, copiedWheelSlotY);
+                        if (targetSlot >= 0 && targetSlot < ABILITY_WHEEL_MAX && targetSlot != draggedFromWheelIndex) {
+                            if (targetSlot < abilityWheelSlots.size()) {
+                                Ability temp = abilityWheelSlots.get(targetSlot);
+                                int tempSi = abilityWheelSubIndexes.get(targetSlot);
+                                abilityWheelSlots.set(targetSlot, draggedAbility);
+                                abilityWheelSubIndexes.set(targetSlot, draggedSubIndex);
+                                abilityWheelSlots.set(draggedFromWheelIndex, temp);
+                                abilityWheelSubIndexes.set(draggedFromWheelIndex, tempSi);
+                            } else {
+                                abilityWheelSlots.remove(draggedFromWheelIndex);
+                                abilityWheelSubIndexes.remove(draggedFromWheelIndex);
+                                abilityWheelSlots.add(draggedAbility);
+                                abilityWheelSubIndexes.add(draggedSubIndex);
+                            }
+                        } else if (targetSlot < 0) {
+                            abilityWheelSlots.remove(draggedFromWheelIndex);
+                            abilityWheelSubIndexes.remove(draggedFromWheelIndex);
+                        }
+                    } else {
+                        abilityWheelSlots.remove(draggedFromWheelIndex);
+                        abilityWheelSubIndexes.remove(draggedFromWheelIndex);
+                    }
+                    PacketHandler.sendToServer(new SyncAbilityWheelAbilitiesPacket(wheelSlotsToIdList()));
+                } else if (draggedFromBarIndex >= 0) {
+                    if (isInAbilityBarArea((int) mouseX, (int) mouseY, panelX, copiedBarSlotY)) {
+                        int targetSlot = getAbilityBarSlot((int) mouseX, (int) mouseY, panelX, copiedBarSlotY);
+                        if (targetSlot >= 0 && targetSlot < ABILITY_BAR_MAX && targetSlot != draggedFromBarIndex) {
+                            if (targetSlot < abilityBarSlots.size()) {
+                                Ability temp = abilityBarSlots.get(targetSlot);
+                                int tempSi = abilityBarSubIndexes.get(targetSlot);
+                                abilityBarSlots.set(targetSlot, draggedAbility);
+                                abilityBarSubIndexes.set(targetSlot, draggedSubIndex);
+                                abilityBarSlots.set(draggedFromBarIndex, temp);
+                                abilityBarSubIndexes.set(draggedFromBarIndex, tempSi);
+                            } else {
+                                abilityBarSlots.remove(draggedFromBarIndex);
+                                abilityBarSubIndexes.remove(draggedFromBarIndex);
+                                abilityBarSlots.add(draggedAbility);
+                                abilityBarSubIndexes.add(draggedSubIndex);
+                            }
+                        } else if (targetSlot < 0) {
+                            abilityBarSlots.remove(draggedFromBarIndex);
+                            abilityBarSubIndexes.remove(draggedFromBarIndex);
+                        }
+                    } else {
+                        abilityBarSlots.remove(draggedFromBarIndex);
+                        abilityBarSubIndexes.remove(draggedFromBarIndex);
+                    }
+                    PacketHandler.sendToServer(new SyncAbilityBarAbilitiesPacket(barSlotsToIdList()));
+                }
+
+                clearDragState();
+                return true;
+            }
 
             if (currentTab == Tab.ABILITY_WHEEL) {
                 if (isInAbilityWheelArea((int) mouseX, (int) mouseY, panelX, slotY)) {
@@ -1482,18 +1956,23 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             }
 
             ClientData.setSharedWheelAbilities(sharedWheelSlots);
-
-            draggedAbility = null;
-            draggedSubIndex = -1;
-            draggedFromWheelIndex = -1;
-            draggedFromBarIndex = -1;
-            draggedFromSharedWheelIndex = -1;
-            draggedFromSharedPoolIndex = -1;
-            draggedFromAvailable = false;
+            clearDragState();
             return true;
         }
 
         return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    private void clearDragState() {
+        draggedAbility = null;
+        draggedSubIndex = -1;
+        draggedFromWheelIndex = -1;
+        draggedFromBarIndex = -1;
+        draggedFromSharedWheelIndex = -1;
+        draggedFromSharedPoolIndex = -1;
+        draggedFromAvailable = false;
+        draggedFromCopiedIndex = -1;
+        draggedCopiedType = null;
     }
 
     @Override
@@ -1503,18 +1982,27 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             int panelX = baseLeftPos + this.imageWidth + 5;
             int panelY = this.topPos + 15;
 
-            if (mouseX >= panelX && mouseX <= panelX + ABILITIES_PANEL_WIDTH &&
-                    mouseY >= panelY && mouseY <= panelY + ABILITIES_PANEL_HEIGHT - 15) {
-                abilitiesScrollOffset = Math.max(0, Math.min(maxAbilitiesScroll, abilitiesScrollOffset - (int) scrollY));
-                return true;
-            }
-
-            if (currentTab == Tab.SHARED_ABILITIES) {
-                int slotY = this.topPos + 15 + ABILITIES_PANEL_HEIGHT + 5;
+            if (isCopiedTab(currentTab)) {
+                // Scroll the copied-ability pool
                 if (mouseX >= panelX && mouseX <= panelX + ABILITIES_PANEL_WIDTH &&
-                        mouseY >= slotY && mouseY <= slotY + SHARED_POOL_HEIGHT) {
-                    sharedPoolScrollOffset = Math.max(0, Math.min(maxSharedPoolScroll, sharedPoolScrollOffset - (int) scrollY));
+                        mouseY >= panelY && mouseY <= panelY + COPIED_PANEL_HEIGHT) {
+                    copiedScrollOffset = Math.max(0, Math.min(maxCopiedScroll, copiedScrollOffset - (int) scrollY));
                     return true;
+                }
+            } else {
+                if (mouseX >= panelX && mouseX <= panelX + ABILITIES_PANEL_WIDTH &&
+                        mouseY >= panelY && mouseY <= panelY + ABILITIES_PANEL_HEIGHT - 15) {
+                    abilitiesScrollOffset = Math.max(0, Math.min(maxAbilitiesScroll, abilitiesScrollOffset - (int) scrollY));
+                    return true;
+                }
+
+                if (currentTab == Tab.SHARED_ABILITIES) {
+                    int slotY = this.topPos + 15 + ABILITIES_PANEL_HEIGHT + 5;
+                    if (mouseX >= panelX && mouseX <= panelX + ABILITIES_PANEL_WIDTH &&
+                            mouseY >= slotY && mouseY <= slotY + SHARED_POOL_HEIGHT) {
+                        sharedPoolScrollOffset = Math.max(0, Math.min(maxSharedPoolScroll, sharedPoolScrollOffset - (int) scrollY));
+                        return true;
+                    }
                 }
             }
         }
@@ -1704,8 +2192,19 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private void renderSanityLabel(GuiGraphics guiGraphics, int x, int y) {
-        Component digestionText = Component.translatable("lotm.sanity").withStyle(ChatFormatting.BOLD);
-        guiGraphics.drawString(this.font, digestionText, x + 7, y + 115, 0xDDDDDD, true);
+        Component sanityText = Component.translatable("lotm.sanity").withStyle(ChatFormatting.BOLD);
+        guiGraphics.drawString(this.font, sanityText, x + 7, y + 115, 0xDDDDDD, true);
+
+        if (minecraft.player != null) {
+            float capReduction = minecraft.player.getPersistentData()
+                    .getFloat(de.jakob.lotm.beyonders.acting.ActingCapHelper.CAP_REDUCTION_KEY);
+            if (capReduction > 0.001f) {
+                int capPct = Math.round((1f - capReduction) * 100);
+                Component capText = Component.literal(" (Cap: " + capPct + "%)").withStyle(ChatFormatting.GOLD);
+                guiGraphics.drawString(this.font, capText,
+                        x + 7 + this.font.width(sanityText), y + 115, 0xFFAA00, false);
+            }
+        }
     }
 
     private void renderSanityProgress(GuiGraphics guiGraphics, int x, int y) {

@@ -31,6 +31,7 @@ public class PaperDaggerProjectileRenderer extends EntityRenderer<PaperDaggerPro
         boolean petrified = entity.getTags().contains("petrified");
 
         poseStack.pushPose();
+        poseStack.scale(.6f, .6f, .6f);
         poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F));
         poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.getXRot()) + 90.0F));
 

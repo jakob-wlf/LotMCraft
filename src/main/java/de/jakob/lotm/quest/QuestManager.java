@@ -43,7 +43,7 @@ public class QuestManager {
         float digestionReward = component.getLockedQuestDigestionRewards().getOrDefault(questId, quest.getDigestionReward(player));
         if(quest.shouldScaleDigestionBySequence() && BeyonderData.getSequence(player) < quest.sequence) {
             int sequenceDifference = quest.sequence - BeyonderData.getSequence(player);
-            digestionReward *= (1 / ((float) Math.pow(sequenceDifference, 2.25) + 1));
+            digestionReward *= (1 / ((float) Math.pow(sequenceDifference, 2.25) + 1)) * .5f;
         }
 
         component.getQuestProgress().remove(questId);

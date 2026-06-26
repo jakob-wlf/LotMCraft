@@ -1,9 +1,7 @@
 package de.jakob.lotm.util.playerMap;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.visionary.prophecy.Prophecy;
-import de.jakob.lotm.util.playerMap.HonorificName;
-import de.jakob.lotm.util.playerMap.StoredDataBuilder;
+import de.jakob.lotm.beyonders.abilities.visionary.prophecy.Prophecy;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.*;
 import net.minecraft.world.phys.Vec3;

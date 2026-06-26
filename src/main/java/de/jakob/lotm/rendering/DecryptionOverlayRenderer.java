@@ -2,7 +2,7 @@ package de.jakob.lotm.rendering;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.error.handler.TheftHandler;
+import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;

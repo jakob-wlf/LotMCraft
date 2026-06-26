@@ -48,6 +48,21 @@ public class ModEntities {
             ENTITY_TYPES.register("spear_of_light", () -> EntityType.Builder.<SpearOfLightProjectileEntity>of(SpearOfLightProjectileEntity::new, MobCategory.MISC)
                     .sized(.35f, .35f).noSave().build("spear_of_light"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<BeyonderSpawnerEntity>> BEYONDER_SPAWNER =
+            ENTITY_TYPES.register("beyonder_spawner",
+                    () -> EntityType.Builder.of(BeyonderSpawnerEntity::new, MobCategory.MISC)
+                            .sized(0.0f, 0.0f)
+                            .clientTrackingRange(0)
+                            .updateInterval(Integer.MAX_VALUE)
+                            .build("beyonder_spawner"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<MysticalDoorEntity>> MYSTICAL_DOOR =
+            ENTITY_TYPES.register("mystical_door",
+                    () -> EntityType.Builder.<MysticalDoorEntity>of(MysticalDoorEntity::new, MobCategory.MISC)
+                            .sized(.6f, 1f)
+                            .noSave()
+                            .build("mystical_door"));
+
     public static final Supplier<EntityType<SpearOfDestructionProjectileEntity>> SPEAR_OF_DESTRUCTION =
             ENTITY_TYPES.register("spear_of_destruction", () -> EntityType.Builder.<SpearOfDestructionProjectileEntity>of(SpearOfDestructionProjectileEntity::new, MobCategory.MISC)
                     .sized(.35f, .35f).noSave().build("spear_of_destruction"));
@@ -361,7 +376,7 @@ public class ModEntities {
 
     public static final Supplier<EntityType<FireRavenEntity>> FIRE_RAVEN =
             ENTITY_TYPES.register("fire_raven", () -> EntityType.Builder.<FireRavenEntity>of(FireRavenEntity::new, MobCategory.CREATURE)
-                    .sized(.6f, .8f).build("fire_raven"));
+                    .sized(.6f, .8f).noSave().build("fire_raven"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<BeyonderNPCEntity>> BEYONDER_NPC =
             ENTITY_TYPES.register("beyonder_npc", () -> EntityType.Builder.<BeyonderNPCEntity>of(BeyonderNPCEntity::new, MobCategory.MONSTER)
@@ -376,7 +391,17 @@ public class ModEntities {
                     .clientTrackingRange(32)
                     .updateInterval(2)
                     .noSummon()
+                    .noSave()
                     .build("avatar"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<BlinkAfterimageEntity>> BLINK_AFTERIMAGE =
+            ENTITY_TYPES.register("blink_afterimage", () -> EntityType.Builder.<BlinkAfterimageEntity>of(BlinkAfterimageEntity::new, MobCategory.MONSTER)
+                    .sized(0.6f, 1.95f)
+                    .clientTrackingRange(32)
+                    .updateInterval(2)
+                    .noSummon()
+                    .noSave()
+                    .build("blink_afterimage"));
 
     public static final Supplier<EntityType<OriginalBodyEntity>> ORIGINAL_BODY =
             ENTITY_TYPES.register("original_body", () -> EntityType.Builder.<OriginalBodyEntity>of(OriginalBodyEntity::new, MobCategory.MISC)

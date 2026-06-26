@@ -1,6 +1,6 @@
 package de.jakob.lotm.entity.custom;
 
-import de.jakob.lotm.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -188,7 +188,7 @@ public class FireRavenEntity extends Animal {
             this.setupAnimationStates();
         }
         else {
-            if(tickCount > 20 * 60) {
+            if(tickCount > 20 * 30) {
                 this.discard();
                 return;
             }

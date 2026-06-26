@@ -1,9 +1,9 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.common.DivinationAbility;
-import de.jakob.lotm.abilities.core.ToggleAbility;
-import de.jakob.lotm.abilities.darkness.NightmareAbility;
+import de.jakob.lotm.beyonders.abilities.common.DivinationAbility;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.darkness.NightmareAbility;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -15,8 +15,8 @@ import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.ResetClientEffectsPacket;
 import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
-import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
-import de.jakob.lotm.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.util.helper.AllyUtil;
@@ -28,6 +28,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -67,7 +68,7 @@ public class PlayerEvents {
             if(BeyonderData.isBeyonder(player))
                 BeyonderData.playerMap.addLastPosition(player);
 
-            de.jakob.lotm.abilities.death.InternalUnderworldAbility.recallSoulsOnLogout(player);
+            de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility.recallSoulsOnLogout(player);
 
             // Revert sacrifice upgrade if active when logging out
             SacrificeRevertComponent revert = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);
@@ -130,7 +131,7 @@ public class PlayerEvents {
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            de.jakob.lotm.abilities.death.InternalUnderworldAbility.despawnSoulsOnDeath(player);
+            de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility.despawnSoulsOnDeath(player);
         }
         if(!(event.getEntity().level() instanceof ServerLevel level)) {
             return;
@@ -153,10 +154,17 @@ public class PlayerEvents {
             return;
 
         if(DivinationAbility.dangerPremonitionActive.contains(event.getEntity().getUUID()) && random.nextFloat() < .1) {
-            event.setCanceled(true);
-            if(event.getEntity() instanceof ServerPlayer player) {
-                Component actionBarText = Component.literal("Dodged Attack").withStyle(ChatFormatting.DARK_PURPLE);
-                sendActionBar(player, actionBarText);
+            Entity damager = event.getSource().getEntity();
+            if(damager != null &&
+                    (!(damager instanceof LivingEntity damagerLiving) ||
+                            BeyonderData.getSequence(damagerLiving) - BeyonderData.getSequence(event.getEntity()) >= -2
+            )) {
+
+                event.setCanceled(true);
+                if (event.getEntity() instanceof ServerPlayer player) {
+                    Component actionBarText = Component.literal("Dodged Attack").withStyle(ChatFormatting.DARK_PURPLE);
+                    sendActionBar(player, actionBarText);
+                }
             }
         }
         if(NightmareAbility.hasActiveNightmare(event.getEntity())) {

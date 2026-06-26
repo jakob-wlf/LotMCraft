@@ -3,7 +3,7 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.PotionIngredient;
-import de.jakob.lotm.potions.*;
+import de.jakob.lotm.beyonders.potions.*;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.villager.ModVillagers;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;

@@ -1,7 +1,7 @@
 package de.jakob.lotm.quest.impl;
 
-import de.jakob.lotm.potions.BeyonderPotion;
-import de.jakob.lotm.potions.PotionItemHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
+import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.quest.Quest;
 import de.jakob.lotm.quest.QuestManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -72,7 +72,6 @@ public class KillPlayerQuest extends Quest {
 
     @Override
     public List<ItemStack> getRewards(ServerPlayer player) {
-        List<ItemStack> rewards = new ArrayList<>();
         int rewardSequence = Math.min(9, BeyonderData.getSequence(player) + 1);
         UUID targetUuid = targetByPlayer.get(player.getUUID());
         if (targetUuid != null) {
@@ -81,19 +80,10 @@ public class KillPlayerQuest extends Quest {
                 rewardSequence = BeyonderData.getSequence(targetOnline);
             } else {
                 Optional<StoredData> data = BeyonderData.playerMap.get(targetUuid);
-                if (data.isPresent()) {
-                    rewardSequence = data.get().sequence();
-                }
+                if (data.isPresent()) rewardSequence = data.get().sequence();
             }
         }
-
-        Random random = new Random();
-
-        BeyonderPotion potion = PotionItemHandler.selectRandomPotionOfSequence(random, rewardSequence);
-        if (potion != null) {
-            rewards.add(new ItemStack(potion));
-        }
-        return rewards;
+        return new ArrayList<>(currencyRewardForSequence(rewardSequence, new Random()));
     }
 
     @Override
