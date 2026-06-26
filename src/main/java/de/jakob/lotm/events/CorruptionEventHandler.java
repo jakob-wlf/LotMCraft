@@ -53,8 +53,10 @@ public class CorruptionEventHandler {
 
         if(entity.level() instanceof ServerLevel serverLevel) {
             Entity npc = serverLevel.getEntity(corruptedComp.getNpcUUID());
-            if (corruptedComp.isFullyCorrupted() && corruptedComp.getNpcUUID() != null && entity.distanceTo(npc) > 30) {
-                entity.teleportTo(npc.getX(), npc.getY(), npc.getZ());
+            if(npc != null) {
+                if (corruptedComp.isFullyCorrupted() && corruptedComp.getNpcUUID() != null && entity.distanceTo(npc) > 30) {
+                    entity.teleportTo(npc.getX(), npc.getY(), npc.getZ());
+                }
             }
         }
 
