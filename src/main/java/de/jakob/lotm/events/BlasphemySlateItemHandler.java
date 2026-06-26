@@ -36,10 +36,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,7 +53,7 @@ BlasphemySlateItemHandler {
     private static final int CLEANUP_INTERVAL      = 20;
     private static final long UNSEEN_TICKS         = 40L;
 
-    public static Map<String, Boolean> BlashphemyMap;
+    public static HashMap<String, Boolean> BlashphemyMap;
 
     // ─── Tick events (uniqueness sync) ───────────────────────────────────────
 
@@ -417,6 +414,7 @@ BlasphemySlateItemHandler {
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
             for (UUID uuid : uuids) {
+                if(BlashphemyMap == null) BlashphemyMap = new HashMap<String, Boolean>();
                 if(BlashphemyMap.get(itemId)) return true;
                 if (server.getPlayerList().getPlayer(uuid) != null) continue; // online — already checked
                 CompoundTag root = readPlayerNbt(server, uuid);
