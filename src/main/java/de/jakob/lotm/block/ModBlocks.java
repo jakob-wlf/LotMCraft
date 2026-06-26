@@ -3,6 +3,7 @@ package de.jakob.lotm.block;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.block.custom.BrewingCauldronBlock;
 import de.jakob.lotm.block.custom.MysticalRingBlock;
+import de.jakob.lotm.block.custom.RealityPortalBlock;
 import de.jakob.lotm.block.custom.VoidBlock;
 import de.jakob.lotm.item.ModItems;
 import net.minecraft.world.item.BlockItem;
@@ -48,6 +49,16 @@ public class ModBlocks {
                     .isSuffocating((state, level, pos) -> false)
             )
     );
+
+    public static final DeferredBlock<Block> REALITY_PORTAL = registerBlock("reality_portal",
+            () -> new RealityPortalBlock(BlockBehaviour.Properties.of()
+                    .noLootTable()
+                    .noOcclusion()
+                    .noCollission()
+                    .isSuffocating((state, world, pos) -> false)
+                    .isViewBlocking((state, world, pos) -> false)
+                    .strength(-1.0f, 3600000.0F)
+            ));
 
     public static final DeferredBlock<Block> SOLID_VOID = registerBlock("solid_void_block",
             () -> new VoidBlock(BlockBehaviour.Properties.of()

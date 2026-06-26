@@ -2,11 +2,11 @@ package de.jakob.lotm.network.packets.handlers;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.Ability;
-import de.jakob.lotm.abilities.core.SelectableAbility;
-import de.jakob.lotm.abilities.core.ToggleAbility;
-import de.jakob.lotm.abilities.visionary.prophecy.VisionaryAbilityMenus;
-import de.jakob.lotm.acting.ActingHelper;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.prophecy.VisionaryAbilityMenus;
+import de.jakob.lotm.beyonders.acting.ActingHelper;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -22,7 +22,8 @@ import de.jakob.lotm.quest.QuestRegistry;
 import de.jakob.lotm.rendering.*;
 import de.jakob.lotm.rendering.effectRendering.impl.VFXRenderer;
 import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.util.ClientSacrificeCache;
+import de.jakob.lotm.util.data.ClientSacrificeCache;
+import de.jakob.lotm.util.data.ClientSpiritCache;
 import de.jakob.lotm.util.helper.AnimationUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
@@ -73,7 +74,8 @@ public class ClientHandler {
                     packet.spirituality(),
                     false,
                     false,
-                    0.0f
+                    0.0f,
+                    0
             );
         }
     }
@@ -518,6 +520,15 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(new ShapeShiftingSelectionGui(packet.entityTypes()));
     }
 
+    public static void handleWanderingSelectionScreenPacket(OpenWanderingSelectionScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new WanderingSelectionGui(packet.dimensionIds()));
+    }
+
+    public static void handleWaypointSelectionScreenPacket(OpenWaypointSelectionScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new WaypointMenuScreen(packet.waypoints(), packet.use()));
+    }
+
+
     public static void handleDiscernmentScreenPacket(OpenDiscernmentScreenPacket packet) {
         Minecraft.getInstance().setScreen(new DiscernmentSelectionGui(packet.saved()));
     }
@@ -572,7 +583,7 @@ public class ClientHandler {
         }
     }
 
-    public static void handleAddClientSideTagPacket(AddClientSideTagPacket packet) {
+    public static void handleAddClientSideTagPacket(AddEntityTagPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -627,7 +638,7 @@ public class ClientHandler {
     }
 
     public static void handleSpiritChannelingPacket(de.jakob.lotm.network.packets.toClient.SyncSpiritChannelingPacket packet) {
-        de.jakob.lotm.util.ClientSpiritCache.setSpiritTypeOrdinal(packet.spiritType());
+        ClientSpiritCache.setSpiritTypeOrdinal(packet.spiritType());
     }
 
     public static void handleSyncIntrospectMenuPacket(SyncIntrospectMenuPacket packet, UUID playerUUID) {
@@ -636,6 +647,16 @@ public class ClientHandler {
             screen.updateMenuData(packet.sequence(), packet.pathway(), ClientBeyonderCache.getDigestionProgress(playerUUID), packet.sanity());
         }
     }
+
+    public static void handleActingCapPacket(de.jakob.lotm.network.packets.toClient.SyncActingCapPacket packet) {
+        net.minecraft.client.player.LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return;
+        player.getPersistentData().putFloat(
+                de.jakob.lotm.beyonders.acting.ActingCapHelper.CAP_REDUCTION_KEY, packet.capReduction());
+        player.getPersistentData().put(
+                de.jakob.lotm.beyonders.acting.ActingCapHelper.MISSED_ACTING_KEY, packet.missedActing());
+    }
+
     public static void handleApotheosisPacket(SyncApotheosisPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;

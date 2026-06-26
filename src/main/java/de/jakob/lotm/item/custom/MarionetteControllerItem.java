@@ -228,7 +228,7 @@ public class MarionetteControllerItem extends Item {
 
         String pathway = BeyonderData.getPathway(controlled);
         int sequence = BeyonderData.getSequence(controlled);
-        List<de.jakob.lotm.abilities.core.Ability> abilities = new ArrayList<>(
+        List<de.jakob.lotm.beyonders.abilities.core.Ability> abilities = new ArrayList<>(
                 LOTMCraft.abilityHandler.getByPathwayAndSequence(pathway, sequence));
         if (abilities.isEmpty()) return;
 
@@ -238,7 +238,7 @@ public class MarionetteControllerItem extends Item {
         ServerScheduler.scheduleForDuration(0, 20 * 3, 20 * 10, () -> {
             if (controlled.isRemoved() || !controlled.isAlive()) return;
             if (target.isRemoved() || !target.isAlive()) return;
-            de.jakob.lotm.abilities.core.Ability chosen = abilities.get(rand.nextInt(abilities.size()));
+            de.jakob.lotm.beyonders.abilities.core.Ability chosen = abilities.get(rand.nextInt(abilities.size()));
             chosen.useAbility(level, controlled);
         }, level);
     }

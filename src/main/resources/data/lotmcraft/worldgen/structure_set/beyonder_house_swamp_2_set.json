@@ -1,0 +1,17 @@
+{
+  "structures": [
+    {
+      "structure": "lotmcraft:beyonder_house_swamp_2",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+
+    "salt": 526776776,
+    "spacing": 40,
+    "separation": 12,
+    "heightmap": "WORLD_SURFACE_WG",
+    "max_tries": 10
+  }
+}

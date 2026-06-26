@@ -1,19 +1,16 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.PassiveAbilityHandler;
-import de.jakob.lotm.abilities.PassiveAbilityItem;
-import de.jakob.lotm.abilities.PhysicalEnhancementsAbility;
-import de.jakob.lotm.abilities.core.Ability;
-import de.jakob.lotm.abilities.core.ToggleAbility;
-import de.jakob.lotm.abilities.door.passives.VoidImmunityAbility;
-import de.jakob.lotm.abilities.visionary.PsychologicalInvisibilityAbility;
-import de.jakob.lotm.abilities.wheel_of_fortune.passives.PassiveLuckAbility;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.door.passives.VoidImmunityAbility;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveLuckAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.effect.FoolingEffect;
 import de.jakob.lotm.effect.ModEffects;
-import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.AllyUtil;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import de.jakob.lotm.item.ModItems;
@@ -26,7 +23,6 @@ import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -131,6 +127,10 @@ public class BeyonderDataTickHandler {
                 invalidateCache(livingEntity);
                 PhysicalEnhancementsAbility.resetEnhancements(event.getEntity().getUUID(), livingEntity, false);
                 invalidateCache(livingEntity);
+            }
+
+            if(entity.tickCount % (20 * 30) == 0) {
+                BeyonderData.incrementWormAmount(livingEntity, 1);
             }
 
             // Tick Passive Abilities, and onHold for currently selected Ability and tick luck

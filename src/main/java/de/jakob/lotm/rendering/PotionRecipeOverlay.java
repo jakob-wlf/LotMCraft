@@ -1,8 +1,8 @@
 package de.jakob.lotm.rendering;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.potions.PotionRecipe;
-import de.jakob.lotm.potions.PotionRecipeItem;
+import de.jakob.lotm.beyonders.potions.PotionRecipe;
+import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;

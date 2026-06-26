@@ -63,18 +63,6 @@ public class CopiedAbilityComponent implements INBTSerializable<CompoundTag> {
         return abilities;
     }
 
-    public void decrementUses(int index) {
-        if (index < 0 || index >= abilities.size()) return;
-        CopiedAbilityData data = abilities.get(index);
-        if (data.remainingUses() == -1) return;
-        int newUses = data.remainingUses() - 1;
-        if (newUses <= 0) {
-            abilities.remove(index);
-        } else {
-            abilities.set(index, data.withRemainingUses(newUses));
-        }
-    }
-
     public int size() {
         return abilities.size();
     }

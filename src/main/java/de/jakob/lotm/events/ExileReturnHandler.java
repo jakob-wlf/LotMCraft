@@ -36,7 +36,8 @@ public class ExileReturnHandler {
         if(gameTime % 20 != 0)
             return;
 
-        ServerLevel endLevel = server.getLevel(Level.END);
+        ServerLevel endLevel = server.getLevel(ResourceKey.create(Registries.DIMENSION,
+                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "exile")));
         if(endLevel == null)
             return;
 

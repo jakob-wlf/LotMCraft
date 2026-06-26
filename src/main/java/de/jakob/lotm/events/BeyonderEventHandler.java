@@ -1,9 +1,9 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.visionary.DreamTraversalAbility;
-import de.jakob.lotm.abilities.visionary.PsychologicalInvisibilityAbility;
-import de.jakob.lotm.artifacts.SealedArtifactData;
+import de.jakob.lotm.beyonders.abilities.visionary.DreamTraversalAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.PsychologicalInvisibilityAbility;
+import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.data.ModDataComponents;
@@ -13,13 +13,13 @@ import de.jakob.lotm.item.PotionIngredient;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncKillCountPacket;
 import de.jakob.lotm.network.packets.toClient.SyncPsychologicalInvisibilityPacket;
-import de.jakob.lotm.potions.BeyonderCharacteristicItem;
-import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
-import de.jakob.lotm.potions.BeyonderPotion;
-import de.jakob.lotm.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.util.PureIdealismUtil;
+import de.jakob.lotm.util.helper.PureIdealismUtil;
 import de.jakob.lotm.util.playerMap.StoredData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
@@ -47,7 +47,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.Objects;
 import java.util.Random;
-import java.util.UUID;
 
 import static de.jakob.lotm.util.BeyonderData.*;
 
@@ -336,7 +335,7 @@ public class BeyonderEventHandler {
                 ClientBeyonderCache.removePlayer(player.getUUID());
             } else
                 ClientBeyonderCache.updateData(player.getUUID(), regressed.pathway(), regressed.sequence(),
-                        0.0f, false, true, 0.0f);
+                        0.0f, false, true, 0.0f, 0);
         }
     }
 

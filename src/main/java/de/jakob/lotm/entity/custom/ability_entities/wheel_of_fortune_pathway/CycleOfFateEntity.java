@@ -1,6 +1,6 @@
 package de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway;
 
-import de.jakob.lotm.util.ControllingUtil;
+import de.jakob.lotm.util.helper.ControllingUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

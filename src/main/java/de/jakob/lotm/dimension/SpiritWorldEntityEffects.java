@@ -95,7 +95,6 @@ public class SpiritWorldEntityEffects {
         }
     }
     
-    // Clean up cooldown map periodically to prevent memory leaks
     @SubscribeEvent
     public static void onLivingDeath(net.neoforged.neoforge.event.entity.living.LivingDeathEvent event) {
         effectCooldowns.remove(event.getEntity().getUUID());

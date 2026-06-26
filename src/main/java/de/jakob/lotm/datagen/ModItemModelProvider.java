@@ -1,13 +1,13 @@
 package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
-import de.jakob.lotm.potions.BeyonderCharacteristicItem;
-import de.jakob.lotm.potions.BeyonderCharacteristicItemHandler;
-import de.jakob.lotm.potions.PotionItemHandler;
-import de.jakob.lotm.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.beyonders.potions.PotionItemHandler;
+import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
@@ -33,7 +33,14 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.MOON_ITEM.get());
         basicItem(ModItems.GUIDING_BOOK.get());
         basicItem(ModItems.CRYSTAL_BALL.get());
+        basicItem(ModItems.ONE_POUND.get());
+        basicItem(ModItems.ONE_SOLI.get());
         basicItem(ModItems.CANE.get());
+
+        handheldItem(ModItems.PAPER_SWORD.get());
+        handheldItem(ModItems.PAPER_PICKAXE.get());
+        handheldItem(ModItems.PAPER_AXE.get());
+        handheldItem(ModItems.PAPER_SHOVEL.get());
 
         tintableItem(ModItems.SEALED_ARTIFACT.get());
         tintableItem(ModItems.SEALED_ARTIFACT_BELL.get());

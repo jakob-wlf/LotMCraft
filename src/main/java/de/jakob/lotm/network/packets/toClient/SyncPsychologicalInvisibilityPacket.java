@@ -1,8 +1,7 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.door.PlayerTeleportationAbility;
-import de.jakob.lotm.abilities.visionary.PsychologicalInvisibilityAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.PsychologicalInvisibilityAbility;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

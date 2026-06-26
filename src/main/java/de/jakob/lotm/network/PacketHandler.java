@@ -38,6 +38,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                OpenWaypointSelectionScreenPacket.TYPE,
+                OpenWaypointSelectionScreenPacket.STREAM_CODEC,
+                OpenWaypointSelectionScreenPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncWeaknessDetectionTargetsAbilityPacket.TYPE,
                 SyncWeaknessDetectionTargetsAbilityPacket.STREAM_CODEC,
                 SyncWeaknessDetectionTargetsAbilityPacket::handle
@@ -77,6 +83,12 @@ public class PacketHandler {
                 SyncToggleAbilityPacket.TYPE,
                 SyncToggleAbilityPacket.STREAM_CODEC,
                 SyncToggleAbilityPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncActingCapPacket.TYPE,
+                SyncActingCapPacket.STREAM_CODEC,
+                SyncActingCapPacket::handle
         );
 
         registrar.playToClient(
@@ -179,7 +191,7 @@ public class PacketHandler {
 
         registrar.playToClient(
                 OpenCoordinateScreenPacket.TYPE,
-                OpenCoordinateScreenPacket.STREAM_CODEC,
+                OpenCoordinateScreenPacket.CODEC,
                 OpenCoordinateScreenPacket::handle
         );
 
@@ -461,9 +473,9 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                AddClientSideTagPacket.TYPE,
-                AddClientSideTagPacket.STREAM_CODEC,
-                AddClientSideTagPacket::handle
+                AddEntityTagPacket.TYPE,
+                AddEntityTagPacket.STREAM_CODEC,
+                AddEntityTagPacket::handle
         );
 
         registrar.playToClient(
@@ -539,6 +551,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                OpenWanderingSelectionScreenPacket.TYPE,
+                OpenWanderingSelectionScreenPacket.STREAM_CODEC,
+                OpenWanderingSelectionScreenPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncEnvisioningPacket.TYPE,
                 SyncEnvisioningPacket.STREAM_CODEC,
                 SyncEnvisioningPacket::handle
@@ -550,6 +568,24 @@ public class PacketHandler {
                 BecomeBeyonderPacket.TYPE,
                 BecomeBeyonderPacket.STREAM_CODEC,
                 BecomeBeyonderPacket::handle
+        );
+
+        registrar.playToServer(
+                WaypointSelectedPacket.TYPE,
+                WaypointSelectedPacket.STREAM_CODEC,
+                WaypointSelectedPacket::handle
+        );
+
+        registrar.playToServer(
+                UseTeleportationAuthorityPacket.TYPE,
+                UseTeleportationAuthorityPacket.STREAM_CODEC,
+                UseTeleportationAuthorityPacket::handle
+        );
+
+        registrar.playToServer(
+                ExecuteBeyonderTradePacket.TYPE,
+                ExecuteBeyonderTradePacket.STREAM_CODEC,
+                ExecuteBeyonderTradePacket::handle
         );
 
         registrar.playToServer(
@@ -655,12 +691,6 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
-                UseCopiedAbilityPacket.TYPE,
-                UseCopiedAbilityPacket.STREAM_CODEC,
-                UseCopiedAbilityPacket::handle
-        );
-
-        registrar.playToServer(
                 AllyRequestResponsePacket.TYPE,
                 AllyRequestResponsePacket.STREAM_CODEC,
                 AllyRequestResponsePacket::handle
@@ -763,6 +793,12 @@ public class PacketHandler {
                 HistoricalVoidBorrowingSelectedPacket::handle);
 
         registrar.playToServer(
+                WanderingSelectedPacket.TYPE,
+                WanderingSelectedPacket.STREAM_CODEC,
+                WanderingSelectedPacket::handle
+        );
+
+        registrar.playToServer(
                 ShapeShiftingSelectedPacket.TYPE,
                 ShapeShiftingSelectedPacket.STREAM_CODEC,
                 ShapeShiftingSelectedPacket::handle);
@@ -817,10 +853,11 @@ public class PacketHandler {
         boolean griefingEnabled = BeyonderData.isGriefingEnabled(player);
         float digestionProgress = BeyonderData.getDigestionProgress(player);
         int[] charStacks = BeyonderData.getCharStacks(player);
+        int cowardWormAmount = BeyonderData.getCowardWormAmount(player);
 
         String[] history = BeyonderData.getPathwayHistory(player);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charStacks);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charStacks, cowardWormAmount);
         sendToPlayer(player, packet);
     }
 
@@ -872,8 +909,9 @@ public class PacketHandler {
         boolean griefingEnabled = BeyonderData.isGriefingEnabled(targetPlayer);
         float digestionProgress = BeyonderData.getDigestionProgress(targetPlayer);
         int[] charStacks = BeyonderData.getCharStacks(targetPlayer);
+        int wormAmount = BeyonderData.getCowardWormAmount(targetPlayer);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charStacks);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charStacks, wormAmount);
 
         targetPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
             sendToPlayer(player, packet);

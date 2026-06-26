@@ -1,6 +1,6 @@
 package de.jakob.lotm.network.packets.toClient;
 
-import de.jakob.lotm.util.ClientQuestData;
+import de.jakob.lotm.util.data.ClientQuestData;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

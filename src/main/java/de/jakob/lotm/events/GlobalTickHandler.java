@@ -1,7 +1,7 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.attachments.DoorAuthorityData;
 import de.jakob.lotm.attachments.SealedDimensionData;
 import net.minecraft.server.level.ServerLevel;

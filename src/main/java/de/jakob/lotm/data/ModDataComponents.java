@@ -2,7 +2,7 @@ package de.jakob.lotm.data;
 
 import com.mojang.serialization.Codec;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.artifacts.SealedArtifactData;
+import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;

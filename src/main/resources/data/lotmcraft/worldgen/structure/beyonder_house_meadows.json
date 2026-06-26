@@ -1,0 +1,31 @@
+{
+  "type": "lotmcraft:simple_structures",
+
+  "start_pool": "lotmcraft:beyonder_house_meadows",
+
+  "size": 1,
+
+  "max_distance_from_center": 80,
+
+  "biomes": [
+    "minecraft:meadow",
+    "minecraft:sunflower_plains",
+    "minecraft:flower_forest"
+  ],
+
+  "step": "surface_structures",
+
+  "start_height": {
+    "absolute": -1
+  },
+
+  "terrain_adaptation": "beard_thin",
+
+  "locate_offset": [0, -1, 0],
+
+  "project_start_to_heightmap": "MOTION_BLOCKING_NO_LEAVES",
+
+  "liquid_settings": "apply_waterlogging",
+
+  "spawn_overrides": {}
+}

@@ -4,8 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.SetBeyonderAuditLog;
+import de.jakob.lotm.util.helper.SetBeyonderAuditLog;
 import de.jakob.lotm.util.playerMap.StoredData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -71,8 +72,13 @@ public class BeyonderCommand {
                 return 0;
             }
             
-            // Call the setBeyonder method
-            BeyonderData.setBeyonder(target, pathway, sequence, false, true, true, true);
+            // Call the setBeyonder method. Skip acting cap so admin commands don't penalise players
+            ActingCapHelper.skipNextCapApplication = true;
+            try {
+                BeyonderData.setBeyonder(target, pathway, sequence, false, true, true, true);
+            } finally {
+                ActingCapHelper.skipNextCapApplication = false;
+            }
 
             if(target instanceof Player player) {
                 var optional = BeyonderData.playerMap.get(player);

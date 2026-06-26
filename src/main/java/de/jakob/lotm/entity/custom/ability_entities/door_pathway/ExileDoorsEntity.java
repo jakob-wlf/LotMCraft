@@ -8,6 +8,7 @@ import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.TemporaryChunkLoader;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -15,10 +16,14 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -119,11 +124,12 @@ public class ExileDoorsEntity extends Entity {
                 double origY = entity.getY();
                 double origZ = entity.getZ();
 
-                ServerLevel endLevel = serverLevel.getServer().getLevel(Level.END);
-                if (endLevel != null) {
+                ServerLevel exileLevel = serverLevel.getServer().getLevel(ResourceKey.create(Registries.DIMENSION,
+                        ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "exile")));
+                if (exileLevel != null) {
                     double randomX = (serverLevel.random.nextDouble() - 0.5) * 200;
                     double randomZ = (serverLevel.random.nextDouble() - 0.5) * 200;
-                    double y = 64;
+                    double y = 110;
 
                     // Persist exile data
                     CompoundTag tag = entity.getPersistentData();
@@ -140,11 +146,12 @@ public class ExileDoorsEntity extends Entity {
 
                     level().playSound(null, entity.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 2.0f, 0.5f + level().random.nextFloat());
 
-                    TemporaryChunkLoader.forceChunksTemporarily(endLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
-                    entity.teleportTo(endLevel, randomX, y, randomZ, Set.of(), entity.getYRot(), entity.getXRot());
-                    TemporaryChunkLoader.forceChunksTemporarily(endLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
+                    TemporaryChunkLoader.forceChunksTemporarily(exileLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
+                    entity.teleportTo(exileLevel, randomX, y, randomZ, Set.of(), entity.getYRot(), entity.getXRot());
+                    TemporaryChunkLoader.forceChunksTemporarily(exileLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
 
                     entity.resetFallDistance();
+                    entity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, exileTicks, 1, false, false));
                     ParticleUtil.spawnParticles((ServerLevel) entity.level(), ModParticles.STAR.get(), entity.position(), 100, 1, 2, 1, .1);
                     ParticleUtil.spawnParticles((ServerLevel) entity.level(), ParticleTypes.PORTAL, entity.position(), 100, 1, 2, 1, .1);
                     entity.level().playSound(null, entity.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 2.0f, 0.5f + entity.level().random.nextFloat());
