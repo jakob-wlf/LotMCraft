@@ -243,6 +243,7 @@ public class ModEvents {
         UniquenessCommand.register(event.getDispatcher());
         SefirotCommand.register(event.getDispatcher());
         ResetCapCommand.register(event.getDispatcher());
+        FactionCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

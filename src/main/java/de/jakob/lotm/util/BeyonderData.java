@@ -1,6 +1,7 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.factions.FactionStorage;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
@@ -42,6 +43,7 @@ public class BeyonderData {
     public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>();
 
     public static PlayerMap playerMap;
+    public static FactionStorage factionStorage;
 
     static {
         implementedRecipes.put("fool", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
@@ -129,6 +131,8 @@ public class BeyonderData {
     public static void initBeyonderMap(ServerLevel level){
         playerMap = PlayerMap.get(level);
         playerMap.setLevel(level);
+
+        factionStorage = FactionStorage.get(level);
     }
 
     public static void initPathwayInfos() {
