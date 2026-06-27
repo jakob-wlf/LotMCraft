@@ -89,8 +89,10 @@ public class KeyInputHandler {
                 }
 
                 String abilityId = ClientData.getAbilityWheelAbilities().get(ClientData.getSelectedAbility());
-                if(abilityId.contains(":")) return;
-                Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+                String baseId = abilityId.split(":")[0];
+                int subIndex = getIndex(abilityId);
+                if(subIndex > 0) return;
+                Ability ability = LOTMCraft.abilityHandler.getById(baseId);
                 if(!(ability instanceof SelectableAbility selectableAbility)) {
                     return;
                 }
@@ -130,8 +132,10 @@ public class KeyInputHandler {
                 }
 
                 String abilityId = ClientData.getAbilityWheelAbilities().get(ClientData.getSelectedAbility());
-                if(abilityId.contains(":")) return;
-                Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+                String baseId = abilityId.split(":")[0];
+                int subIndex = getIndex(abilityId);
+                if(subIndex >= 0) return;
+                Ability ability = LOTMCraft.abilityHandler.getById(baseId);
                 if(!(ability instanceof SelectableAbility selectableAbility)) {
                     return;
                 }
@@ -238,6 +242,18 @@ public class KeyInputHandler {
             PacketHandler.sendToServer(new NextArtifactAbilityPacket());
         }
     }
+
+    private static int getIndex(String s) {
+        String[] parts = s.split(":");
+        if (parts.length < 2) return -1;
+        try {
+            return Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+
 
     @SubscribeEvent
     public static void onKeyReleased(ScreenEvent.KeyReleased.Post event) {

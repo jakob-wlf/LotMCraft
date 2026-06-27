@@ -57,15 +57,10 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
         boolean isSelected = index == selectedIndex;
 
         // Parse sub-ability index from abilityId (e.g. "blink:1")
-        int colonIdx = abilityId.lastIndexOf(':');
-        int subIndex = -1;
-        String baseId = abilityId;
-        if (colonIdx >= 0) {
-            try {
-                subIndex = Integer.parseInt(abilityId.substring(colonIdx + 1));
-                baseId = abilityId.substring(0, colonIdx);
-            } catch (NumberFormatException ignored) {}
-        }
+        System.out.println(abilityId);
+        String baseId = abilityId.split(":")[0];
+        int subIndex = getIndex(abilityId);
+        boolean isCopied = isCopied(abilityId);
 
         int size = isHovered ? SLOT_HOVER_SIZE : SLOT_SIZE;
         int x = pos.x() - size / 2;
@@ -76,7 +71,7 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
         int borderColor = isSelected ? 0xFFc4a8e3 : (isHovered ? 0xFFc4a8e3 : 0xFF9989ab);
         int borderWidth = isSelected ? 2 : 1;
 
-        if (CopiedAbilityHelper.isAbilityCopied(ClientHandler.getPlayer(), baseId)) {
+        if (isCopied) {
             borderColor = 0xFFFFFFFF;
         }
 
@@ -139,6 +134,22 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
                         pos.x() - textWidth / 2, pos.y() - size / 2 - 12, 0xFFFFFF, true);
             }
         }
+    }
+
+    private static int getIndex(String s) {
+        String[] parts = s.split(":");
+        if (parts.length < 2) return -1;
+        try {
+            return Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    private static boolean isCopied(String s) {
+        String[] parts = s.split(":");
+        if (parts.length < 3) return false;
+        return parts[2].equals("copied");
     }
 
     @Override

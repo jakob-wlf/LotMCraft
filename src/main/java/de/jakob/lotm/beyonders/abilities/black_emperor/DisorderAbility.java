@@ -332,7 +332,7 @@ public class DisorderAbility extends SelectableAbility {
         );
 
         if (randomAbility != null) {
-            randomAbility.useAbility(serverLevel, entity, true, true, true);
+            randomAbility.useAbility(serverLevel, entity, true, true, true, false);
         }
 
         int remaining = charges - 1;

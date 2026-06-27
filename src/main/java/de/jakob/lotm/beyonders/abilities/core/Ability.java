@@ -81,12 +81,12 @@ public abstract class Ability {
         return BeyonderData.pathwayInfos.containsKey(pathway) ? BeyonderData.pathwayInfos.get(pathway).color() : 0xFFFFFF;
     }
 
-    public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements) {
+    public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements, boolean isCopied) {
         if(LOTMCraft.abilityHandler.isDisabled(this)) {
             return;
         }
 
-        if(!canUse(entity, hasToHaveAbility, consumeSpirituality) && hasToMeetRequirements) {
+        if(!canUse(entity, hasToHaveAbility, consumeSpirituality, isCopied) && hasToMeetRequirements) {
             return;
         }
 
@@ -99,7 +99,7 @@ public abstract class Ability {
         }
 
         LivingEntity newUser = event.getEntity();
-        if(!canUse(newUser, false, consumeSpirituality)) {
+        if(!canUse(newUser, false, consumeSpirituality, isCopied)) {
             return;
         }
 
@@ -128,7 +128,7 @@ public abstract class Ability {
         }
 
         // Decrement ability if it was copied
-        if(!hasAbility(entity) && hasToHaveAbility) {
+        if(!isCopied) {
             CopiedAbilityHelper.decrementUses(entity, getId());
         }
 
@@ -173,7 +173,7 @@ public abstract class Ability {
     }
 
     public void useAbility(ServerLevel serverLevel, LivingEntity entity) {
-        useAbility(serverLevel, entity, true, true, true);
+        useAbility(serverLevel, entity, true, true, true, false);
     }
 
     public void clearArtifactScaling(LivingEntity entity){
@@ -250,13 +250,11 @@ public abstract class Ability {
     }
 
     public boolean canUse(LivingEntity entity) {
-        return canUse(entity, true, true);
+        return canUse(entity, true, true, false);
     }
 
-    public boolean canUse(LivingEntity entity, boolean hasToHaveAbility, boolean doesConsumeSpirituality) {
-        boolean isClientSide = entity.level().isClientSide;
-        boolean hasAbilityCopied = isClientSide ? ClientData.getCopiedAbilityIds().contains(getId()) : entity.getData(ModAttachments.COPIED_ABILITY_COMPONENT).getAbilityIds().contains(getId());
-        if(!hasAbility(entity) && hasToHaveAbility && !hasAbilityCopied) return false;
+    public boolean canUse(LivingEntity entity, boolean hasToHaveAbility, boolean doesConsumeSpirituality, boolean isCopied) {
+        if(!hasAbility(entity) && hasToHaveAbility && !isCopied) return false;
 
         if (MausoleumDomainAbility.isInsideMausoleumDomain(entity.getUUID())) {
             if (entity instanceof ServerPlayer player) {

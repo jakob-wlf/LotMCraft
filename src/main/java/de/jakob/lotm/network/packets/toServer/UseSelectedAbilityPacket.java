@@ -63,7 +63,8 @@ public record UseSelectedAbilityPacket() implements CustomPacketPayload {
 
                     if (ability != null && serverPlayer.level() instanceof ServerLevel serverLevel) {
                         boolean isSharedAbility = isSharedAbility(serverPlayer, abilityId);
-                        ability.useAbility(serverLevel, serverPlayer, true, !isSharedAbility, true);
+                        boolean isCopied = isCopied(component.getAbilities().get(selectedIndex));
+                        ability.useAbility(serverLevel, serverPlayer, true, !isSharedAbility, true, isCopied);
                     }
                 }
             }
@@ -78,6 +79,12 @@ public record UseSelectedAbilityPacket() implements CustomPacketPayload {
         } catch (NumberFormatException e) {
             return -1;
         }
+    }
+
+    private static boolean isCopied(String s) {
+        String[] parts = s.split(":");
+        if (parts.length < 3) return false;
+        return parts[2].equals("copied");
     }
 
     private static boolean isSharedAbility(ServerPlayer player, String abilityId) {
