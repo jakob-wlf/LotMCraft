@@ -11,9 +11,14 @@ import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PathwayInfos;
 import de.jakob.lotm.util.playerMap.Characteristic;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -21,6 +26,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.GameType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
@@ -56,6 +62,8 @@ public class CorruptionEventHandler {
             if(npc != null) {
                 if (corruptedComp.isFullyCorrupted() && corruptedComp.getNpcUUID() != null && entity.distanceTo(npc) > 30) {
                     entity.teleportTo(npc.getX(), npc.getY(), npc.getZ());
+                }else{
+
                 }
             }
         }
@@ -98,7 +106,7 @@ public class CorruptionEventHandler {
 
         if (isCogitating) {
             // Cogitation decreases corruption very slightly
-            corruptionComp.increaseCorruptionAndSync(-0.0001f, entity);
+            corruptionComp.increaseCorruptionAndSync(-0.000001f, entity);
             return;
         }
 
@@ -174,7 +182,10 @@ public class CorruptionEventHandler {
         // Status effects
         if (corruptionValue >= 20) {
             if (random.nextInt(1000) < corruptionValue) {
+                entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 2.0f);
                 //entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, corruptionValue / 20));
+
+
             }
         }
         if (corruptionValue >= 40) {
@@ -182,6 +193,7 @@ public class CorruptionEventHandler {
                 entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 10, 1));
             }
             if (random.nextInt(1000) < corruptionValue) {
+                entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 10.0f);
                 //entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 1));
             }
         }

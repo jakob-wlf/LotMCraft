@@ -415,7 +415,7 @@ BlasphemySlateItemHandler {
                     .collect(Collectors.toList());
             for (UUID uuid : uuids) {
                 if(BlashphemyMap == null) BlashphemyMap = new HashMap<String, Boolean>();
-                if(BlashphemyMap.get(itemId)) return true;
+                if(BlashphemyMap.get(itemId) != null) return true;
                 if (server.getPlayerList().getPlayer(uuid) != null) continue; // online — already checked
                 CompoundTag root = readPlayerNbt(server, uuid);
                 if (root != null && nbtInventoryContains(root, itemId)){
