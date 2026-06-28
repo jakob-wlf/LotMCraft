@@ -7,6 +7,7 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.TemporaryChunkLoader;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -28,6 +29,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -147,6 +149,9 @@ public class ExileDoorsEntity extends Entity {
                     level().playSound(null, entity.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 2.0f, 0.5f + level().random.nextFloat());
 
                     TemporaryChunkLoader.forceChunksTemporarily(exileLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
+                    if(exileLevel.getBlockState(BlockPos.containing(randomX, y, randomZ)).isAir()) {
+                        exileLevel.setBlockAndUpdate(BlockPos.containing(randomX, y - 1, randomZ), Blocks.END_STONE.defaultBlockState());
+                    }
                     entity.teleportTo(exileLevel, randomX, y, randomZ, Set.of(), entity.getYRot(), entity.getXRot());
                     TemporaryChunkLoader.forceChunksTemporarily(exileLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
 

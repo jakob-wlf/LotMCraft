@@ -1,7 +1,9 @@
 package de.jakob.lotm.gamerule;
 
+import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.GameRules;
 
@@ -9,6 +11,7 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_GRIEFING;
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_BEYONDER_SPAWNING;
     public static GameRules.Key<GameRules.IntegerValue> DIGESTION_RATE;
+    public static GameRules.Key<GameRules.BooleanValue> APPLY_NOT_ACTING_PENALTY;
     public static GameRules.Key<GameRules.BooleanValue> REDUCE_REGEN_IN_BEYONDER_FIGHT;
     public static GameRules.Key<GameRules.BooleanValue> SPAWN_WITH_STARTING_CHARACTERISTIC;
     public static GameRules.Key<GameRules.BooleanValue> REGRESS_SEQUENCE_ON_DEATH;
@@ -41,6 +44,16 @@ public class ModGameRules {
                 "disableFlightInCombat",
                 GameRules.Category.MISC,
                 GameRules.BooleanValue.create(true)
+        );
+
+        APPLY_NOT_ACTING_PENALTY = GameRules.register(
+                "applyNotActingPenalty",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(false, (server, rule) -> {
+                    for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                        ActingCapHelper.syncToClient(player);
+                    }
+                })
         );
 
         ALLOW_BEYONDER_SPAWNING = GameRules.register(

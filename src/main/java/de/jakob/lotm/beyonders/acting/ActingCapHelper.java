@@ -1,9 +1,12 @@
 package de.jakob.lotm.beyonders.acting;
 
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncActingCapPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -15,11 +18,14 @@ public class ActingCapHelper {
     public static final String CAP_REDUCTION_KEY = "lotm_acting_cap_reduction";
     public static final String MISSED_ACTING_KEY = "lotm_missed_acting";
 
-    static final float[] INCREMENTS = {0.05f, 0.04f, 0.03f, 0.02f, 0.01f};
+    static final float[] INCREMENTS = {0.04f, 0.025f, 0.01f};
     public static final float CAP_PER_SEQUENCE_UP = 0.15f;
 
-    // Set true immediately before a command-driven setBeyonder call; cleared in onSequenceUp.
     public static boolean skipNextCapApplication = false;
+
+    public static boolean isCapSuppressed(ServerLevel level) {
+        return level.getGameRules().getBoolean(ModGameRules.APPLY_NOT_ACTING_PENALTY);
+    }
 
     public static float getCapReduction(Player player) {
         return player.getPersistentData().getFloat(CAP_REDUCTION_KEY);
@@ -49,17 +55,17 @@ public class ActingCapHelper {
         syncToClient(player);
     }
 
-    /**
-     * Called when a player sequences up. Applies flat 15% cap and records missed acting.
-     * Only the first INCREMENTS.length (5) tasks matter for cap; extras are ignored.
-     * Must be called BEFORE the player's sequence/pathway data is updated.
-     */
     public static void onSequenceUp(LivingEntity entity, String oldPathway, int oldSeq) {
         if (!(entity instanceof Player player)) return;
         if (player.isCreative()) return;
 
         if (skipNextCapApplication) {
             skipNextCapApplication = false;
+            return;
+        }
+
+        if (player.level() instanceof ServerLevel serverLevel && isCapSuppressed(serverLevel)) {
+            syncToClient(player);
             return;
         }
 
@@ -75,7 +81,6 @@ public class ActingCapHelper {
                 }
             }
 
-            // Only store missed tasks that still have a restoration slot (up to 5 total)
             int maxMissed = INCREMENTS.length - completedCount;
             CompoundTag tasksTag = new CompoundTag();
             int missedCount = 0;
@@ -102,12 +107,10 @@ public class ActingCapHelper {
         syncToClient(player);
     }
 
-    /**
-     * Called after a task is newly unlocked at the player's current sequence.
-     * Only the first 5 completions affect the cap.
-     */
     public static void onActingUnlocked(Player player, String pathway, int sequence, String taskId) {
         if (player.isCreative()) return;
+
+        if (player.level() instanceof ServerLevel serverLevel && isCapSuppressed(serverLevel)) return;
 
         List<ActingTask> tasks = ActingTaskRegistry.getTasksFor(pathway, sequence);
 
@@ -125,10 +128,6 @@ public class ActingCapHelper {
         }
     }
 
-    /**
-     * Checks if taskId matches any missed acting group for the player's current pathway.
-     * Restoration is determined dynamically by completion order within the group.
-     */
     public static boolean tryCompleteMissedActing(Player player, String taskId) {
         CompoundTag missed = getMissedActing(player);
         if (missed.isEmpty()) return false;
@@ -178,10 +177,6 @@ public class ActingCapHelper {
         return found;
     }
 
-    /**
-     * On death/respawn: wipe all cap data and reinstate fresh for the player's current sequence only.
-     * This clears missed acting from sequences the player no longer holds, avoiding stale data.
-     */
     public static void reinstateCapForCurrentSequence(Player player) {
         player.getPersistentData().remove(CAP_REDUCTION_KEY);
         player.getPersistentData().remove(MISSED_ACTING_KEY);
@@ -194,10 +189,13 @@ public class ActingCapHelper {
             return;
         }
 
-        // Re-apply cap for current sequence
+        if (player.level() instanceof ServerLevel serverLevel && isCapSuppressed(serverLevel)) {
+            syncToClient(player);
+            return;
+        }
+
         setCapReduction(player, CAP_PER_SEQUENCE_UP);
 
-        // Reduce for each completed task (first 5 only)
         List<ActingTask> tasks = ActingTaskRegistry.getTasksFor(pathway, seq);
         int completed = 0;
         for (ActingTask task : tasks) {
@@ -208,7 +206,6 @@ public class ActingCapHelper {
             }
         }
 
-        // Store remaining missed tasks (only slots that still exist)
         int maxMissed = INCREMENTS.length - completed;
         if (maxMissed > 0 && !tasks.isEmpty()) {
             CompoundTag tasksTag = new CompoundTag();
@@ -236,8 +233,14 @@ public class ActingCapHelper {
 
     public static void syncToClient(Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
+            float capReduction = getCapReduction(player);
+
+            if (player.level() instanceof ServerLevel serverLevel && isCapSuppressed(serverLevel)) {
+                capReduction = 0f;
+            }
+
             PacketHandler.sendToPlayer(serverPlayer, new SyncActingCapPacket(
-                    getCapReduction(player),
+                    capReduction,
                     getMissedActing(player)
             ));
         }
