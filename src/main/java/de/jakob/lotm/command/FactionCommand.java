@@ -21,36 +21,37 @@ public class FactionCommand {
                 .then(get())
                 .then(claim())
                 .then(here())
+                .then(permission())
         );
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> create() {
         return Commands.literal("create")
                 .then(Commands.literal("nation")
-                    .then(Commands.argument("name", StringArgumentType.string())
-                        .executes(context -> {
-                            CommandSourceStack source = context.getSource();
-                            var name = StringArgumentType.getString(context, "name");
+                        .then(Commands.argument("name", StringArgumentType.string())
+                                .executes(context -> {
+                                    CommandSourceStack source = context.getSource();
+                                    var name = StringArgumentType.getString(context, "name");
 
-                            if (!BeyonderData.factionStorage.isNameUnique(name)) {
-                                source.sendFailure(Component.literal("Name is already taken!"));
-                                return 0;
-                            }
+                                    if (!BeyonderData.factionStorage.isNameUnique(name)) {
+                                        source.sendFailure(Component.literal("Name is already taken!"));
+                                        return 0;
+                                    }
 
-                            if (!(source.getEntity() instanceof ServerPlayer player)) {
-                                source.sendFailure(Component.literal("Player must use this command!"));
-                                return 0;
-                            }
+                                    if (!(source.getEntity() instanceof ServerPlayer player)) {
+                                        source.sendFailure(Component.literal("Player must use this command!"));
+                                        return 0;
+                                    }
 
-                            if(BeyonderData.factionStorage.hasAnyByType(player.getName().getString(), 1)){
-                                source.sendFailure(Component.literal("You are already part of such type of faction!"));
-                                return 0;
-                            }
+                                    if (BeyonderData.factionStorage.hasAnyByType(player.getName().getString(), 1)) {
+                                        source.sendFailure(Component.literal("You are already part of such type of faction!"));
+                                        return 0;
+                                    }
 
-                            BeyonderData.factionStorage.createFaction(player.getName().getString(), name, 1);
+                                    BeyonderData.factionStorage.createFaction(player.getName().getString(), name, 1);
 
-                            return 1;
-                        })))
+                                    return 1;
+                                })))
                 .then(Commands.literal("church")
                         .then(Commands.argument("name", StringArgumentType.string())
                                 .executes(context -> {
@@ -67,7 +68,7 @@ public class FactionCommand {
                                         return 0;
                                     }
 
-                                    if(BeyonderData.factionStorage.hasAnyByType(player.getName().getString(), 2)){
+                                    if (BeyonderData.factionStorage.hasAnyByType(player.getName().getString(), 2)) {
                                         source.sendFailure(Component.literal("You are already part of such type of faction!"));
                                         return 0;
                                     }
@@ -97,7 +98,7 @@ public class FactionCommand {
                     StringBuilder builder = new StringBuilder("You are part of this factions:\n");
 
                     for (var faction : result) {
-                        builder.append(faction.getAllInfo());
+                        builder.append(faction.getAllInfo()).append("\n---------\n");
                     }
 
                     source.sendSystemMessage(Component.literal(
@@ -120,44 +121,96 @@ public class FactionCommand {
     private static LiteralArgumentBuilder<CommandSourceStack> claim() {
         return Commands.literal("claim")
                 .then(Commands.literal("nation")
-                .then(Commands.argument("level", IntegerArgumentType.integer(1, 9))
-                .executes(context -> {
-                            CommandSourceStack source = context.getSource();
-                            var player = source.getPlayer();
-                            if(player == null){
-                                source.sendFailure(Component.literal("Must be a player!"));
-                                return 0;
-                            }
+                        .then(Commands.argument("level", IntegerArgumentType.integer(1, 9))
+                                .executes(context -> {
+                                            CommandSourceStack source = context.getSource();
+                                            var player = source.getPlayer();
+                                            if (player == null) {
+                                                source.sendFailure(Component.literal("Must be a player!"));
+                                                return 0;
+                                            }
 
-                            int level = IntegerArgumentType.getInteger(context, "level");
-                            var pos = source.getLevel().getChunk(player.blockPosition()).getPos();
+                                            int level = IntegerArgumentType.getInteger(context, "level");
+                                            var pos = source.getLevel().getChunk(player.blockPosition()).getPos();
 
-                            if(BeyonderData.factionStorage.isClaimedType(pos, 1)){
-                                source.sendFailure(Component.literal("Chunk is already claimed by another nation!"));
-                                return 0;
-                            }
+                                            if (BeyonderData.factionStorage.isClaimedType(pos, 1)) {
+                                                source.sendFailure(Component.literal("Chunk is already claimed!"));
+                                                return 0;
+                                            }
 
-                            String name = player.getName().getString();
-                            var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
-                            if(faction == null){
-                                source.sendFailure(Component.literal("You are not part of faction with such type!"));
-                                return 0;
-                            }
+                                            String name = player.getName().getString();
+                                            var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
+                                            if (faction == null) {
+                                                source.sendFailure(Component.literal("You are not part of faction with such type!"));
+                                                return 0;
+                                            }
 
-                            int playerLevel = faction.getPlayerLevel(name);
+                                            int playerLevel = faction.getPlayerLevel(name);
 
-                            if(playerLevel == 1 || playerLevel < level){
-                                source.sendFailure(Component.literal("You don`t have permission to claim this chunk!"));
-                                return 0;
-                            }
+                                            if (playerLevel == 1 || playerLevel < level) {
+                                                source.sendFailure(Component.literal("You don`t have permission to claim this chunk!"));
+                                                return 0;
+                                            }
 
-                            BeyonderData.factionStorage.claim(faction.getId(), pos, level);
+                                            BeyonderData.factionStorage.claim(faction.getId(), pos, level);
 
-                            source.sendSystemMessage(Component.literal("Successfully claimed chunk at " + pos.toString() + " with level " + level + '\n').withStyle(ChatFormatting.GREEN));
+                                            source.sendSystemMessage(Component.literal("Successfully claimed chunk at " + pos.toString() + " with level " + level + '\n').withStyle(ChatFormatting.GREEN));
 
-                            return 1;
-                        }
-                )));
+                                            return 1;
+                                        }
+                                )))
+                .then(Commands.literal("church")
+                        .then(Commands.argument("level", IntegerArgumentType.integer(1, 9))
+                                .executes(context -> {
+                                            CommandSourceStack source = context.getSource();
+                                            var player = source.getPlayer();
+                                            if (player == null) {
+                                                source.sendFailure(Component.literal("Must be a player!"));
+                                                return 0;
+                                            }
+
+                                            int level = IntegerArgumentType.getInteger(context, "level");
+                                            var pos = source.getLevel().getChunk(player.blockPosition()).getPos();
+
+                                            if (BeyonderData.factionStorage.isClaimedType(pos, 2)) {
+                                                source.sendFailure(Component.literal("Chunk is already claimed!"));
+                                                return 0;
+                                            }
+
+                                            String name = player.getName().getString();
+                                            var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 2);
+                                            if (faction == null) {
+                                                source.sendFailure(Component.literal("You are not part of faction with such type!"));
+                                                return 0;
+                                            }
+
+                                            var factions = BeyonderData.factionStorage.getFaction(pos);
+                                            if(factions.isEmpty()){
+                                                source.sendFailure(Component.literal("Church can claim chunks only in nation!"));
+                                                return 0;
+                                            }
+
+                                            var nation = factions.stream().filter(obj -> obj.getType() == 1).findFirst().get();
+
+                                            if(!faction.hasPermission(nation.getId())){
+                                                source.sendFailure(Component.literal("Your church does not have permission to be in this nation"));
+                                                return 0;
+                                            }
+
+                                            int playerLevel = faction.getPlayerLevel(name);
+
+                                            if (playerLevel == 1 || playerLevel < level) {
+                                                source.sendFailure(Component.literal("You don`t have permission to claim this chunk!"));
+                                                return 0;
+                                            }
+
+                                            BeyonderData.factionStorage.claim(faction.getId(), pos, level);
+
+                                            source.sendSystemMessage(Component.literal("Successfully claimed chunk at " + pos.toString() + " with level " + level + '\n').withStyle(ChatFormatting.GREEN));
+
+                                            return 1;
+                                        }
+                                )));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> here() {
@@ -180,7 +233,7 @@ public class FactionCommand {
                     StringBuilder builder = new StringBuilder("Claimed by:\n");
 
                     for (var faction : result) {
-                        builder.append(faction.getShortInfo());
+                        builder.append(faction.getShortInfo()).append("\n--------\n");
                     }
 
                     source.sendSystemMessage(Component.literal(
@@ -188,5 +241,82 @@ public class FactionCommand {
 
                     return 1;
                 });
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> permission() {
+        return Commands.literal("permission")
+                .then(Commands.literal("add")
+                        .then(Commands.argument("id", IntegerArgumentType.integer())
+                                .executes(context -> {
+                                    CommandSourceStack source = context.getSource();
+                                    int id = IntegerArgumentType.getInteger(context, "id");
+                                    if (!(source.getEntity() instanceof ServerPlayer player)) {
+                                        source.sendFailure(Component.literal("Must be a player!"));
+                                        return 0;
+                                    }
+
+                                    String name = player.getName().getString();
+                                    var nation = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
+                                    if(nation == null){
+                                        source.sendFailure(Component.literal("You must be part of nation!"));
+                                        return 0;
+                                    }
+
+                                    if(nation.getPlayerLevel(name) < 8){
+                                        source.sendFailure(Component.literal("You have insufficient permission level!"));
+                                        return 0;
+                                    }
+
+                                    if(!BeyonderData.factionStorage.contains(id)){
+                                        source.sendFailure(Component.literal("Incorrect id!"));
+                                        return 0;
+                                    }
+
+                                    var church = BeyonderData.factionStorage.getFaction(id);
+                                    if(church.getType() == 1){
+                                        source.sendFailure(Component.literal("You can grant permissions only to church type factions!"));
+                                        return 0;
+                                    }
+
+                                    BeyonderData.factionStorage.addPermission(church.getId(), nation.getId());
+
+                                    source.sendSystemMessage(Component.literal("Successfully granted permission for \"" + church.getName() + "\""));
+
+                                    return 1;
+                                })))
+                .then(Commands.literal("remove")
+                        .then(Commands.argument("id", IntegerArgumentType.integer())
+                                .executes(context -> {
+                                    CommandSourceStack source = context.getSource();
+                                    int id = IntegerArgumentType.getInteger(context, "id");
+                                    if (!(source.getEntity() instanceof ServerPlayer player)) {
+                                        source.sendFailure(Component.literal("Must be a player!"));
+                                        return 0;
+                                    }
+
+                                    String name = player.getName().getString();
+                                    var nation = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
+                                    if(nation == null){
+                                        source.sendFailure(Component.literal("You must be part of nation!"));
+                                        return 0;
+                                    }
+
+                                    if(nation.getPlayerLevel(name) < 8){
+                                        source.sendFailure(Component.literal("You have insufficient permission level!"));
+                                        return 0;
+                                    }
+
+                                    if(!BeyonderData.factionStorage.contains(id)){
+                                        source.sendFailure(Component.literal("Incorrect id!"));
+                                        return 0;
+                                    }
+
+                                    var church = BeyonderData.factionStorage.getFaction(id);
+                                    BeyonderData.factionStorage.removePermission(church.getId(), nation.getId());
+
+                                    source.sendSystemMessage(Component.literal("Successfully removed permission from \"" + church.getName() + "\""));
+
+                                    return 1;
+                                })));
     }
 }

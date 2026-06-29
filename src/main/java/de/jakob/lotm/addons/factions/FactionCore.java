@@ -10,6 +10,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.querz.mca.Chunk;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FactionCore {
     private final int id;
@@ -22,6 +23,8 @@ public class FactionCore {
     private List<String> citizens;
     private Set<ChunkInfo> claimed;
 
+    private Set<Integer> hasPermission; // for churches only
+
     public FactionCore(String leader, int id, int type){
         this.id = id;
         level = 0;
@@ -31,6 +34,7 @@ public class FactionCore {
         citizens = new LinkedList<>();
         claimed = new HashSet<>();
         this.type = type;
+        hasPermission = new HashSet<>();
     }
 
     public static int noblesAmountPerLevel(int level){
@@ -61,6 +65,10 @@ public class FactionCore {
             case 3 -> 3;
             default -> 0;
         };
+    }
+
+    public static int getMaxLevel(){
+        return 3;
     }
 
     public boolean isOutOfSlotsCitizens(){
@@ -160,6 +168,26 @@ public class FactionCore {
         return false;
     }
 
+    public void addPermission(Integer id){
+        hasPermission.add(id);
+    }
+
+    public void removePermission(Integer id){
+        hasPermission.remove(id);
+    }
+
+    public boolean hasPermission(Integer id){
+        return hasPermission.contains(id);
+    }
+
+    public Set<ChunkPos> getClaimed(){
+        return claimed.stream().map(ChunkInfo::pos).collect(Collectors.toSet());
+    }
+
+    public void removeClaimed(Set<ChunkPos> set){
+        claimed.removeIf(obj -> set.contains(obj.pos()));
+    }
+
     public int getClaimLevel(ChunkPos pos){
         if(!isClaimed(pos)) return -1;
 
@@ -199,14 +227,15 @@ public class FactionCore {
     }
 
     public String getAllInfo(){
-        return "Leader: " + leader
+        return "ID: " + id
+                + "\nLeader: " + leader
                 + "\nName: " + name
                 + "\nLevel: " + level
                 + "\nType: " + (type == 1 ? "Nation" : "Church");
     }
 
     public String getShortInfo(){
-        return "Leader: " + leader + " Name: " + name + " Type: " + (type == 1 ? "Nation" : "Church");
+        return "ID: " + id + " --Leader: " + leader + " --Name: " + name + " --Type: " + (type == 1 ? "Nation" : "Church");
     }
 
     public boolean canDoAnything(String name, ChunkPos pos){
@@ -267,6 +296,8 @@ public class FactionCore {
 
         tag.putInt("type", type);
 
+        tag.putIntArray("HasPermission", hasPermission.stream().mapToInt(Integer::intValue).toArray());
+
         return tag;
     }
 
@@ -300,6 +331,10 @@ public class FactionCore {
         }
 
         faction.name = tag.getString("name");
+
+        faction.hasPermission = Arrays.stream(tag.getIntArray("HasPermission"))
+                .boxed()
+                .collect(Collectors.toSet());
 
         return faction;
     }

@@ -183,7 +183,7 @@ public class FactionStorage extends SavedData {
         return storage;
     }
 
-    public @Nullable List<FactionCore> getFaction(ChunkPos pos){
+    public List<FactionCore> getFaction(ChunkPos pos){
         List<FactionCore> result = new LinkedList<>();
 
         for(var obj : factions.values()){
@@ -192,5 +192,42 @@ public class FactionStorage extends SavedData {
         }
 
         return result;
+    }
+
+    public void addPermission(int church, int nation){
+        if(!factions.containsKey(nation) && !factions.containsKey(church)) return;
+
+        var faction = factions.get(church);
+        faction.addPermission(nation);
+
+        factions.put(church, faction);
+
+        setDirty();
+    }
+
+    public void removePermission(int church, int nation){
+        if(!factions.containsKey(nation) && !factions.containsKey(church)) return;
+
+        var faction = factions.get(church);
+        if(!faction.hasPermission(nation)) return;
+
+        faction.removePermission(nation);
+
+        var nationF = factions.get(nation);
+        faction.removeClaimed(nationF.getClaimed());
+
+        factions.put(church, faction);
+
+        setDirty();
+    }
+
+    public boolean hasPermission(int church, int nation){
+        if(!factions.containsKey(nation) && !factions.containsKey(church)) return false;
+
+        return factions.get(church).hasPermission(nation);
+    }
+
+    public boolean contains(int id){
+        return factions.containsKey(id);
     }
 }
