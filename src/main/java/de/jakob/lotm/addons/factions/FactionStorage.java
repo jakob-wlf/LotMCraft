@@ -178,12 +178,20 @@ public class FactionStorage extends SavedData {
         return tag;
     }
 
-    public boolean isClaimed(ChunkPos pos) {
+    public boolean isClaimed(ChunkPos pos, int type) {
         for (var faction : factions.values()) {
-            if (faction.isClaimed(pos)) return true;
+            if (faction.isClaimed(pos) && faction.getType() == type) return true;
         }
 
         return false;
+    }
+
+    public int getClaimLevel(ChunkPos pos, int type) {
+        for (var faction : factions.values()) {
+            if (faction.isClaimed(pos) && faction.getType() == type) return faction.getClaimLevel(pos);
+        }
+
+        return 0;
     }
 
     public boolean isClaimedType(ChunkPos pos, int type) {

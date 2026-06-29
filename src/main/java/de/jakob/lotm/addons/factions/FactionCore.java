@@ -68,6 +68,26 @@ public class FactionCore {
         };
     }
 
+    public static int claimsPerLevelNation(int level){
+        return switch (level){
+            case 0 -> 1;
+            case 1 -> 30;
+            case 2 -> 100;
+            case 3 -> 300;
+            default -> 0;
+        };
+    }
+
+    public static int claimsPerLevelChurch(int level){
+        return switch (level){
+            case 0 -> 0;
+            case 1 -> 10;
+            case 2 -> 25;
+            case 3 -> 50;
+            default -> 0;
+        };
+    }
+
     public static int getMaxLevel(){
         return 3;
     }
