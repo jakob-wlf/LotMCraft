@@ -24,6 +24,7 @@ public class FactionCore {
     private Set<ChunkInfo> claimed;
 
     private Set<Integer> hasPermission; // for churches only
+    private ChunkPos coreClaim; //for nation only
 
     public FactionCore(String leader, int id, int type){
         this.id = id;
@@ -188,6 +189,10 @@ public class FactionCore {
         claimed.removeIf(obj -> set.contains(obj.pos()));
     }
 
+    public void unclaim(ChunkPos pos){
+        claimed.removeIf(obj -> obj.pos().equals(pos));
+    }
+
     public int getClaimLevel(ChunkPos pos){
         if(!isClaimed(pos)) return -1;
 
@@ -298,6 +303,9 @@ public class FactionCore {
 
         tag.putIntArray("HasPermission", hasPermission.stream().mapToInt(Integer::intValue).toArray());
 
+        tag.putInt("core_x", coreClaim.x);
+        tag.putInt("core_z", coreClaim.z);
+
         return tag;
     }
 
@@ -335,6 +343,11 @@ public class FactionCore {
         faction.hasPermission = Arrays.stream(tag.getIntArray("HasPermission"))
                 .boxed()
                 .collect(Collectors.toSet());
+
+        int x = tag.getInt("core_x");
+        int z = tag.getInt("core_z");
+
+        faction.coreClaim = new ChunkPos(x, z);
 
         return faction;
     }

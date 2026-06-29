@@ -51,7 +51,7 @@ public class FactionStorage extends SavedData {
         setDirty();
     }
 
-    public void createFaction(String leader, String factionName, int type){
+    public void createFaction(String leader, String factionName, int type) {
         FactionCore core = new FactionCore(leader, factions.size(), type);
         core.setName(factionName);
 
@@ -60,57 +60,57 @@ public class FactionStorage extends SavedData {
         setDirty();
     }
 
-    public boolean isNameUnique(String name){
-        for(var obj : factions.values()){
-            if(obj.getName().equalsIgnoreCase(name))
+    public boolean isNameUnique(String name) {
+        for (var obj : factions.values()) {
+            if (obj.getName().equalsIgnoreCase(name))
                 return false;
         }
 
         return true;
     }
 
-    public boolean hasAnyByType(String name, int type){
-        for(var faction : factions.values()){
-            if(faction.isPartOfFaction(name) && faction.getType() == type)
+    public boolean hasAnyByType(String name, int type) {
+        for (var faction : factions.values()) {
+            if (faction.isPartOfFaction(name) && faction.getType() == type)
                 return true;
         }
 
         return false;
     }
 
-    public List<FactionCore> getPartOfFaction(String name){
+    public List<FactionCore> getPartOfFaction(String name) {
         List<FactionCore> result = new LinkedList<>();
 
-        for(var obj : factions.values()){
-            if(obj.isPartOfFaction(name))
+        for (var obj : factions.values()) {
+            if (obj.isPartOfFaction(name))
                 result.add(obj);
         }
 
         return result;
     }
 
-    public @Nullable FactionCore getPartOfFactionType(String name, int type){
-        for(var obj : factions.values()){
-            if(obj.isPartOfFaction(name) && obj.getType() == type)
+    public @Nullable FactionCore getPartOfFactionType(String name, int type) {
+        for (var obj : factions.values()) {
+            if (obj.isPartOfFaction(name) && obj.getType() == type)
                 return obj;
         }
 
         return null;
     }
 
-    public String getAllShortInfo(){
+    public String getAllShortInfo() {
         StringBuilder builder = new StringBuilder("Factions: " + factions.size() + "\n");
 
-        if(factions.isEmpty()) return builder.toString();
+        if (factions.isEmpty()) return builder.toString();
 
-        for(var faction : factions.values()){
+        for (var faction : factions.values()) {
             builder.append(faction.getShortInfo());
         }
 
         return builder.toString();
     }
 
-    public void claim(int id, ChunkPos pos, int level){
+    public void claim(int id, ChunkPos pos, int level) {
         var faction = factions.get(id);
 
         faction.addClaim(pos, level);
@@ -118,6 +118,40 @@ public class FactionStorage extends SavedData {
         factions.put(id, faction);
 
         setDirty();
+    }
+
+    public void unclaim(int id, ChunkPos pos) {
+        var factionsChunk = getFaction(pos);
+
+        var faction = getFaction(id);
+
+        faction.unclaim(pos);
+
+        if(faction.getType() != 1) return;
+        for (var obj : factionsChunk) {
+            if(obj.getId() == id) continue;
+
+            obj.unclaim(pos);
+        }
+    }
+
+    public boolean canClaimNation(int id, ChunkPos pos){
+        var faction = getFaction(id);
+        var claimedChunks = faction.getClaimed();
+
+        if(claimedChunks.isEmpty()) return true;
+
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                if (dx == 0 && dz == 0) continue;
+
+                if (claimedChunks.contains(new ChunkPos(pos.x + dx, pos.z + dz))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -144,17 +178,17 @@ public class FactionStorage extends SavedData {
         return tag;
     }
 
-    public boolean isClaimed(ChunkPos pos){
-        for(var faction : factions.values()){
-            if(faction.isClaimed(pos)) return true;
+    public boolean isClaimed(ChunkPos pos) {
+        for (var faction : factions.values()) {
+            if (faction.isClaimed(pos)) return true;
         }
 
         return false;
     }
 
-    public boolean isClaimedType(ChunkPos pos, int type){
-        for(var faction : factions.values()){
-            if(faction.getType() == type && faction.isClaimed(pos)) return true;
+    public boolean isClaimedType(ChunkPos pos, int type) {
+        for (var faction : factions.values()) {
+            if (faction.getType() == type && faction.isClaimed(pos)) return true;
         }
 
         return false;
@@ -183,19 +217,19 @@ public class FactionStorage extends SavedData {
         return storage;
     }
 
-    public List<FactionCore> getFaction(ChunkPos pos){
+    public List<FactionCore> getFaction(ChunkPos pos) {
         List<FactionCore> result = new LinkedList<>();
 
-        for(var obj : factions.values()){
-            if(obj.isClaimed(pos))
+        for (var obj : factions.values()) {
+            if (obj.isClaimed(pos))
                 result.add(obj);
         }
 
         return result;
     }
 
-    public void addPermission(int church, int nation){
-        if(!factions.containsKey(nation) && !factions.containsKey(church)) return;
+    public void addPermission(int church, int nation) {
+        if (!factions.containsKey(nation) && !factions.containsKey(church)) return;
 
         var faction = factions.get(church);
         faction.addPermission(nation);
@@ -205,11 +239,11 @@ public class FactionStorage extends SavedData {
         setDirty();
     }
 
-    public void removePermission(int church, int nation){
-        if(!factions.containsKey(nation) && !factions.containsKey(church)) return;
+    public void removePermission(int church, int nation) {
+        if (!factions.containsKey(nation) && !factions.containsKey(church)) return;
 
         var faction = factions.get(church);
-        if(!faction.hasPermission(nation)) return;
+        if (!faction.hasPermission(nation)) return;
 
         faction.removePermission(nation);
 
@@ -221,13 +255,13 @@ public class FactionStorage extends SavedData {
         setDirty();
     }
 
-    public boolean hasPermission(int church, int nation){
-        if(!factions.containsKey(nation) && !factions.containsKey(church)) return false;
+    public boolean hasPermission(int church, int nation) {
+        if (!factions.containsKey(nation) && !factions.containsKey(church)) return false;
 
         return factions.get(church).hasPermission(nation);
     }
 
-    public boolean contains(int id){
+    public boolean contains(int id) {
         return factions.containsKey(id);
     }
 }
