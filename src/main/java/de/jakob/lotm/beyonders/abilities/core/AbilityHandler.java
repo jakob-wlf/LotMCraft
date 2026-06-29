@@ -138,7 +138,7 @@ public class AbilityHandler {
         abilities.add(new ShapeShiftingAbility("shapeshifting_ability"));
         abilities.add(new PuppeteeringAbility("puppeteering_ability"));
         abilities.add(new MarionetteControllingAbility("marionette_controlling_ability"));
-        abilities.add(new HistoricalVoidSummoningAbility("historical_void_summoning_ability"));
+        //abilities.add(new HistoricalVoidSummoningAbility("historical_void_summoning_ability"));
         abilities.add(new HistoricalVoidHidingAbility("historical_void_hiding_ability"));
         abilities.add(new MiracleCreationAbility("miracle_creation_ability"));
         abilities.add(new GraftingAbility("grafting_ability"));

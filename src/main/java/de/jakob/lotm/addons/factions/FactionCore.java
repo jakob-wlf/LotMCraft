@@ -36,6 +36,8 @@ public class FactionCore {
         claimed = new HashSet<>();
         this.type = type;
         hasPermission = new HashSet<>();
+
+        coreClaim = new ChunkPos(0, 0);
     }
 
     public static int noblesAmountPerLevel(int level){
