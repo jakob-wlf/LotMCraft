@@ -49,7 +49,6 @@ public class RealityPortalBlock extends Block {
 
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        System.out.println("Entity " + entity.getName().getString() + " entered Reality Portal at " + pos);
         if (level.isClientSide()) return;
         if (!(entity instanceof LivingEntity living)) return;
 

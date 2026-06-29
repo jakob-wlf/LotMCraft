@@ -6,170 +6,91 @@ package de.jakob.lotm.entity.client.ability_entities.door_pathway.exile_doors;//
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.LOTMCraft;
-import net.minecraft.client.model.EntityModel;
+import de.jakob.lotm.entity.custom.ability_entities.door_pathway.ExileDoorsEntity;
+import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 
-public class ExileDoorsModel<T extends Entity> extends EntityModel<T> {
+public class ExileDoorsModel<T extends ExileDoorsEntity> extends HierarchicalModel<T> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
 	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "exile_doors"), "main");
-	private final ModelPart door_1;
-	private final ModelPart door_10;
-	private final ModelPart door_7;
-	private final ModelPart door_11;
-	private final ModelPart door_2;
-	private final ModelPart door_12;
-	private final ModelPart door_6;
-	private final ModelPart door_13;
-	private final ModelPart door_8;
-	private final ModelPart door_14;
-	private final ModelPart door_9;
-	private final ModelPart door_15;
-	private final ModelPart door_3;
-	private final ModelPart door_4;
-	private final ModelPart door_17;
-	private final ModelPart door_5;
-	private final ModelPart door_18;
+	private final ModelPart root;
+	private final ModelPart bone1;
+	private final ModelPart bone2;
+	private final ModelPart bone3;
+	private final ModelPart bone4;
+	private final ModelPart bone5;
 
 	public ExileDoorsModel(ModelPart root) {
-		this.door_1 = root.getChild("door_1");
-		this.door_10 = root.getChild("door_10");
-		this.door_7 = root.getChild("door_7");
-		this.door_11 = root.getChild("door_11");
-		this.door_2 = root.getChild("door_2");
-		this.door_12 = root.getChild("door_12");
-		this.door_6 = root.getChild("door_6");
-		this.door_13 = root.getChild("door_13");
-		this.door_8 = root.getChild("door_8");
-		this.door_14 = root.getChild("door_14");
-		this.door_9 = root.getChild("door_9");
-		this.door_15 = root.getChild("door_15");
-		this.door_3 = root.getChild("door_3");
-		this.door_4 = root.getChild("door_4");
-		this.door_17 = root.getChild("door_17");
-		this.door_5 = root.getChild("door_5");
-		this.door_18 = root.getChild("door_18");
+		this.root = root;
+		this.bone1 = root.getChild("bone1");
+		this.bone2 = this.bone1.getChild("bone2");
+		this.bone3 = this.bone1.getChild("bone3");
+		this.bone4 = this.bone1.getChild("bone4");
+		this.bone5 = root.getChild("bone5");
 	}
 
 	public static LayerDefinition createBodyLayer() {
 		MeshDefinition meshdefinition = new MeshDefinition();
 		PartDefinition partdefinition = meshdefinition.getRoot();
 
-		PartDefinition door_1 = partdefinition.addOrReplaceChild("door_1", CubeListBuilder.create().texOffs(95, 41).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(59, 13).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(95, 13).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(95, 29).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(27.0F, 9.875F, 0.0F));
+		PartDefinition bone1 = partdefinition.addOrReplaceChild("bone1", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
 
-		PartDefinition door_10 = partdefinition.addOrReplaceChild("door_10", CubeListBuilder.create().texOffs(36, 28).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 0).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 0).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 16).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(22.0F, 11.875F, -26.0F, 0.0F, 0.5236F, 0.0F));
+		PartDefinition bone2 = bone1.addOrReplaceChild("bone2", CubeListBuilder.create().texOffs(0, 0).addBox(-24.0F, -41.0F, -24.0F, 48.0F, 0.0F, 48.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
 
-		PartDefinition door_7 = partdefinition.addOrReplaceChild("door_7", CubeListBuilder.create().texOffs(36, 76).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 48).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 48).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 64).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-10.0F, 9.875F, -4.0F, 0.0F, 2.3562F, 0.0F));
+		PartDefinition bone3 = bone1.addOrReplaceChild("bone3", CubeListBuilder.create().texOffs(0, 48).addBox(-16.4396F, -29.0F, -16.0927F, 32.0F, 0.0F, 32.0F, new CubeDeformation(0.0F))
+				.texOffs(0, 48).addBox(-16.4396F, -51.0F, -16.0927F, 32.0F, 0.0F, 32.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
 
-		PartDefinition door_11 = partdefinition.addOrReplaceChild("door_11", CubeListBuilder.create().texOffs(95, 41).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(59, 13).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(95, 13).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(95, 29).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(16.0F, -2.125F, 12.0F, 2.8495F, 0.7401F, 2.7222F));
+		PartDefinition bone4 = bone1.addOrReplaceChild("bone4", CubeListBuilder.create().texOffs(0, 80).addBox(-8.0F, -13.0F, -8.0F, 16.0F, 0.0F, 16.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
 
-		PartDefinition door_2 = partdefinition.addOrReplaceChild("door_2", CubeListBuilder.create().texOffs(36, 28).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 0).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 0).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 16).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-5.0F, 9.875F, -22.0F, 0.0F, 1.3963F, 0.0F));
+		PartDefinition bone5 = partdefinition.addOrReplaceChild("bone5", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
 
-		PartDefinition door_12 = partdefinition.addOrReplaceChild("door_12", CubeListBuilder.create().texOffs(36, 76).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 48).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 48).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 64).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-5.0F, 0.875F, -28.0F, 0.0F, 1.3963F, 0.0F));
+		PartDefinition cube_r1 = bone5.addOrReplaceChild("cube_r1", CubeListBuilder.create().texOffs(-1, 220).addBox(-8.5F, -17.0F, -1.0F, 17.0F, 34.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(14.1901F, -67.3293F, 19.103F, 3.0839F, 0.8253F, -0.7539F));
 
-		PartDefinition door_6 = partdefinition.addOrReplaceChild("door_6", CubeListBuilder.create().texOffs(95, 41).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(59, 13).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(95, 13).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(95, 29).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-36.0F, 9.875F, -19.0F, 2.5563F, 0.9275F, 2.4498F));
+		PartDefinition cube_r2 = bone5.addOrReplaceChild("cube_r2", CubeListBuilder.create().texOffs(-1, 220).addBox(-6.9621F, -30.5F, 22.2937F, 17.0F, 34.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -62.0F, 4.0F, 2.2771F, 0.5943F, -0.2601F));
 
-		PartDefinition door_13 = partdefinition.addOrReplaceChild("door_13", CubeListBuilder.create().texOffs(36, 28).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 0).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 0).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 16).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-31.0F, -3.125F, -32.0F, 2.5563F, 0.9275F, 2.4498F));
+		PartDefinition cube_r3 = bone5.addOrReplaceChild("cube_r3", CubeListBuilder.create().texOffs(-1, 220).addBox(-6.9621F, -30.5F, 22.2937F, 17.0F, 34.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -57.0F, 0.0F, 0.0F, 0.829F, -2.618F));
 
-		PartDefinition door_8 = partdefinition.addOrReplaceChild("door_8", CubeListBuilder.create().texOffs(36, 76).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 48).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 48).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 64).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-25.0F, 9.875F, 2.0F, 0.4411F, 0.547F, 0.0638F));
+		PartDefinition cube_r4 = bone5.addOrReplaceChild("cube_r4", CubeListBuilder.create().texOffs(-1, 220).mirror().addBox(-6.9621F, -30.5F, 22.2937F, 17.0F, 34.0F, 2.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offsetAndRotation(0.0F, -57.0F, -4.0F, -3.1416F, -0.5672F, -0.5236F));
 
-		PartDefinition door_14 = partdefinition.addOrReplaceChild("door_14", CubeListBuilder.create().texOffs(95, 41).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(59, 13).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(95, 13).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(95, 29).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-25.0F, -7.125F, 49.0F, 0.4411F, 0.547F, 0.0638F));
+		PartDefinition cube_r5 = bone5.addOrReplaceChild("cube_r5", CubeListBuilder.create().texOffs(-1, 220).mirror().addBox(-6.9621F, -30.5F, 22.2937F, 17.0F, 34.0F, 2.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offsetAndRotation(14.0F, -63.0F, 11.0F, 0.5387F, -0.2261F, 3.0084F));
 
-		PartDefinition door_9 = partdefinition.addOrReplaceChild("door_9", CubeListBuilder.create().texOffs(36, 28).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 0).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 0).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 16).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-9.0F, 3.875F, 27.0F, 0.1894F, 0.4899F, -0.538F));
+		PartDefinition cube_r6 = bone5.addOrReplaceChild("cube_r6", CubeListBuilder.create().texOffs(-1, 220).addBox(-6.9621F, -30.5F, 22.2937F, 17.0F, 34.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -17.0F, 0.0F, -0.3645F, -0.28F, 0.1212F));
 
-		PartDefinition door_15 = partdefinition.addOrReplaceChild("door_15", CubeListBuilder.create().texOffs(36, 76).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 48).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 48).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 64).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-9.0F, -33.125F, 29.0F, 0.1894F, 0.4899F, -0.538F));
+		PartDefinition cube_r7 = bone5.addOrReplaceChild("cube_r7", CubeListBuilder.create().texOffs(-1, 220).mirror().addBox(-6.9621F, -30.5F, 22.2937F, 17.0F, 34.0F, 2.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offsetAndRotation(0.0F, -18.0F, 0.0F, 2.7909F, 0.0756F, 3.0979F));
 
-		PartDefinition door_3 = partdefinition.addOrReplaceChild("door_3", CubeListBuilder.create().texOffs(95, 41).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(59, 13).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(95, 13).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(95, 29).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-5.0F, -14.125F, -16.0F, -1.2725F, 0.9386F, -1.3277F));
+		PartDefinition cube_r8 = bone5.addOrReplaceChild("cube_r8", CubeListBuilder.create().texOffs(-1, 220).mirror().addBox(-9.0F, -17.0F, -1.0F, 17.0F, 34.0F, 2.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offsetAndRotation(-27.0F, -26.0F, -8.0F, -3.0975F, -1.3095F, 2.7058F));
 
-		PartDefinition door_4 = partdefinition.addOrReplaceChild("door_4", CubeListBuilder.create().texOffs(36, 28).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 0).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 0).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 16).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-5.0F, 9.875F, 17.0F, 0.0F, -2.0071F, 0.0F));
+		PartDefinition cube_r9 = bone5.addOrReplaceChild("cube_r9", CubeListBuilder.create().texOffs(-1, 220).addBox(-9.0F, -17.0F, -1.0F, 17.0F, 34.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(27.0F, -17.0F, 0.0F, 0.0F, 1.4835F, 0.5236F));
 
-		PartDefinition door_17 = partdefinition.addOrReplaceChild("door_17", CubeListBuilder.create().texOffs(36, 76).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 48).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 48).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 64).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-5.0F, -27.125F, 19.0F, 2.1176F, -0.6219F, -1.9116F));
-
-		PartDefinition door_5 = partdefinition.addOrReplaceChild("door_5", CubeListBuilder.create().texOffs(95, 41).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(59, 13).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(95, 13).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(95, 29).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-23.0F, 9.875F, 17.0F, 2.6349F, -1.0663F, -2.5765F));
-
-		PartDefinition door_18 = partdefinition.addOrReplaceChild("door_18", CubeListBuilder.create().texOffs(36, 28).addBox(-1.0F, -22.875F, -3.0F, 2.0F, 1.0F, 6.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 0).addBox(-1.0F, -17.875F, -8.0F, 2.0F, 32.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 0).addBox(-1.0F, -19.875F, -7.0F, 2.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(36, 16).addBox(-1.0F, -21.875F, -5.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-23.0F, -27.125F, 19.0F, 2.6349F, -1.0663F, -2.5765F));
-
-		return LayerDefinition.create(meshdefinition, 128, 128);
+		return LayerDefinition.create(meshdefinition, 256, 256);
 	}
 
 	@Override
-	public void setupAnim(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	public void setupAnim(ExileDoorsEntity entity, float limbSwing, float limbSwingAmount,
+						  float ageInTicks, float netHeadYaw, float headPitch) {
+		this.root().getAllParts().forEach(ModelPart::resetPose);
 
+		if (!entity.IDLE.isStarted()) {
+			entity.IDLE.start(0);
+		}
+
+		this.animate(entity.IDLE, ExileDoorsAnimation.idle, ageInTicks, 1f);
 	}
+
+
 
 	@Override
 	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-		door_1.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_10.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_7.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_11.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_2.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_12.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_6.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_13.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_8.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_14.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_9.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_15.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_3.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_4.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_17.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_5.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		door_18.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+		bone1.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+		bone5.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+	}
+
+	@Override
+	public ModelPart root() {
+		return this.root;
 	}
 }

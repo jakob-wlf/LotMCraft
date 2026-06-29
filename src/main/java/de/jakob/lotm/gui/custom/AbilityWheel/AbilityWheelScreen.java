@@ -56,8 +56,6 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
         int selectedIndex = ClientData.getSelectedAbility();
         boolean isSelected = index == selectedIndex;
 
-        // Parse sub-ability index from abilityId (e.g. "blink:1")
-        System.out.println(abilityId);
         String baseId = abilityId.split(":")[0];
         int subIndex = getIndex(abilityId);
         boolean isCopied = isCopied(abilityId);

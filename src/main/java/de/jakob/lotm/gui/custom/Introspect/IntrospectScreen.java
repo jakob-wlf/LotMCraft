@@ -86,7 +86,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private static final int ABILITY_BAR_HEIGHT = 60;
     private static final int ABILITY_ICON_SIZE = 16;
     private static final int ABILITY_WHEEL_MAX = 24;
-    private static final int ABILITY_BAR_MAX = 6;
+    private static final int ABILITY_BAR_MAX = 10;
     private static final int SHARED_POOL_HEIGHT = 50;
     private static final int SHARED_WHEEL_HEIGHT = 60;
 
@@ -101,7 +101,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private static final int ACTING_PANEL_WIDTH = 140;
     private static final int ACTING_PANEL_HEIGHT = 120;
 
-    private static final String[] KEYBIND_LABELS = {"1", "2", "3", "4", "5", "6"};
+    private static final String[] KEYBIND_LABELS = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"};
 
     private int abilitiesScrollOffset = 0;
     private int maxAbilitiesScroll = 0;

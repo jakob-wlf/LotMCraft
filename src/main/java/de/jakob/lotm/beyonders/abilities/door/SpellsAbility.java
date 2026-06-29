@@ -243,8 +243,6 @@ public class SpellsAbility extends SelectableAbility {
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.FLAME, pos.above().getBottomCenter(), 100, .5, .5, .5, 0.05);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SMOKE, pos.above().getBottomCenter(), 50, .5, .5, .5, 0.05);
 
-        System.out.println(pos.above() + " " + level.getBlockState(pos.above()).canBeReplaced() + " " + level.getBlockState(pos.above()).isEmpty() + " " + level.getBlockState(pos.above()).getBlock());
-
         if(level.getBlockState(pos.above()).canBeReplaced() || level.getBlockState(pos.above()).isEmpty()) {
             level.setBlockAndUpdate(pos.above(), Blocks.FIRE.defaultBlockState());
         }
@@ -266,8 +264,6 @@ public class SpellsAbility extends SelectableAbility {
 
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.FLAME, pos.above().getBottomCenter(), 100, .5, .5, .5, 0.05);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SMOKE, pos.above().getBottomCenter(), 50, .5, .5, .5, 0.05);
-
-        System.out.println(pos.above() + " " + level.getBlockState(pos.above()).canBeReplaced() + " " + level.getBlockState(pos.above()).isEmpty() + " " + level.getBlockState(pos.above()).getBlock());
 
         if(level.getBlockState(pos.above()).canBeReplaced() || level.getBlockState(pos.above()).isEmpty()) {
             level.setBlockAndUpdate(pos.above(), Blocks.FIRE.defaultBlockState());

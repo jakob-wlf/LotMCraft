@@ -230,6 +230,19 @@ public class KeyInputHandler {
         if(LOTMCraft.useAbilityBarAbility6 != null && LOTMCraft.useAbilityBarAbility6.consumeClick()) {
             PacketHandler.sendToServer(new UseKeyboundAbilityPacket(5));
         }
+        if(LOTMCraft.useAbilityBarAbility7 != null && LOTMCraft.useAbilityBarAbility7.consumeClick()) {
+            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(6));
+        }
+        if(LOTMCraft.useAbilityBarAbility8 != null && LOTMCraft.useAbilityBarAbility8.consumeClick()) {
+            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(7));
+        }
+        if(LOTMCraft.useAbilityBarAbility9 != null && LOTMCraft.useAbilityBarAbility9.consumeClick()) {
+            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(8));
+        }
+        if(LOTMCraft.useAbilityBarAbility0 != null && LOTMCraft.useAbilityBarAbility0.consumeClick()) {
+            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(9));
+        }
+
 
         if (LOTMCraft.returnToMainBody != null && LOTMCraft.returnToMainBody.consumeClick()) {
             PacketHandler.sendToServer(new ReturnToMainBodyPacket());
