@@ -16,6 +16,9 @@
   "item.lotmcraft.paper_axe": "Paper Axe",
   "item.lotmcraft.paper_shovel": "Paper Shovel",
   "item.lotmcraft.spacer": "",
+  "item.lotmcraft.uniqueness_map": "Mysterious Temple Map",
+  "item.lotmcraft.city_map": "Beyonder Gathering Map (Underground)",
+  "item.lotmcraft.structure_map.not_found": "Structure not found. Try somewhere else.",
 
 
   "creativetab.lotmcraft.lotm_tab": "Lord of the Mysteries",

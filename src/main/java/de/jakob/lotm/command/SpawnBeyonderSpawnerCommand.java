@@ -46,7 +46,7 @@ public class SpawnBeyonderSpawnerCommand {
             .requires(source -> source.hasPermission(2))
 
             .then(Commands.argument("triggerRadius", DoubleArgumentType.doubleArg(1.0, 128.0))
-            .then(Commands.argument("minSequence", IntegerArgumentType.integer(0, 9))
+            .then(Commands.argument("minSequence", IntegerArgumentType.integer(0, 10))
             .then(Commands.argument("pathway", StringArgumentType.string())
                 .suggests(PATHWAY_SUGGESTIONS)
 

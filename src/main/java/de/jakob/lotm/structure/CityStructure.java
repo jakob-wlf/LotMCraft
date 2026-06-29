@@ -109,6 +109,36 @@ public class CityStructure extends Structure {
                     context.randomState());
         }
 
+        int checkRadius = this.maxDistanceFromCenter / 16; // in chunks
+        int waterCount = 0;
+
+        for (int dx = -checkRadius; dx <= checkRadius; dx += 1) {
+            for (int dz = -checkRadius; dz <= checkRadius; dz += 1) {
+                int checkX = chunkPos.getMinBlockX() + (dx * 16);
+                int checkZ = chunkPos.getMinBlockZ() + (dz * 16);
+
+                int solidY = context.chunkGenerator().getFirstOccupiedHeight(
+                        checkX, checkZ,
+                        Heightmap.Types.OCEAN_FLOOR_WG,
+                        context.heightAccessor(),
+                        context.randomState());
+
+                int liquidY = context.chunkGenerator().getFirstOccupiedHeight(
+                        checkX, checkZ,
+                        Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                        context.heightAccessor(),
+                        context.randomState());
+
+                if (liquidY > solidY) {
+                    waterCount++;
+                }
+            }
+        }
+
+        if (waterCount > 3) {
+            return Optional.empty();
+        }
+
         // The structure pieces themselves spawn foundationDepth blocks underground...
         BlockPos placementPos = new BlockPos(chunkPos.getMinBlockX(), surfaceY - this.foundationDepth, chunkPos.getMinBlockZ());
 
