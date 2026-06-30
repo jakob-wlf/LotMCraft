@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "de.jakob.lotm.addons.factions.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "FactionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

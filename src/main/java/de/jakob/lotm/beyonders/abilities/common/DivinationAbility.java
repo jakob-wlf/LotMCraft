@@ -71,7 +71,7 @@ public class DivinationAbility extends SelectableAbility {
     protected String[] getAbilityNames() {
         return new String[] {
                 "ability.lotmcraft.divination.danger_premonition",
-                "ability.lotmcraft.divination.dream_divination",
+                //"ability.lotmcraft.divination.dream_divination",
                 "ability.lotmcraft.divination.structure_divination",
                 "ability.lotmcraft.divination.biome_divination",
                 "ability.lotmcraft.divination.player_divination",
@@ -83,11 +83,11 @@ public class DivinationAbility extends SelectableAbility {
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch(abilityIndex) {
             case 0 -> dangerPremonition(level, entity);
-            case 1 -> dreamDivination(level, entity);
-            case 2 -> structureDivination(level, entity);
-            case 3 -> biomeDivination(level, entity);
-            case 4 -> playerDivination(level, entity);
-            case 5 -> antiDivination(level, entity);
+            //case 1 -> dreamDivination(level, entity);
+            case 1 -> structureDivination(level, entity);
+            case 2 -> biomeDivination(level, entity);
+            case 3 -> playerDivination(level, entity);
+            case 4 -> antiDivination(level, entity);
         }
     }
 

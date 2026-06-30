@@ -12,9 +12,11 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 
 public class FactionCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -133,6 +135,11 @@ public class FactionCommand {
                                                 source.sendFailure(Component.literal("Must be a player!"));
                                                 return 0;
                                             }
+                                            ServerLevel serverLevel = source.getLevel();
+                                            if (serverLevel.dimension() != Level.OVERWORLD) {
+                                                source.sendFailure(Component.literal("Any claim must be in the overworld!"));
+                                                return 0;
+                                            }
 
                                             int level = IntegerArgumentType.getInteger(context, "level");
                                             var pos = source.getLevel().getChunk(player.blockPosition()).getPos();
@@ -156,7 +163,7 @@ public class FactionCommand {
                                                 return 0;
                                             }
 
-                                            if(!BeyonderData.factionStorage.canClaimNation(faction.getId(), pos)){
+                                            if (!BeyonderData.factionStorage.canClaimNation(faction.getId(), pos)) {
                                                 source.sendFailure(Component.literal("Your faction must have claimed chunks nearby!"));
                                                 return 0;
                                             }
@@ -175,6 +182,11 @@ public class FactionCommand {
                                             var player = source.getPlayer();
                                             if (player == null) {
                                                 source.sendFailure(Component.literal("Must be a player!"));
+                                                return 0;
+                                            }
+                                            ServerLevel serverLevel = source.getLevel();
+                                            if (serverLevel.dimension() != Level.OVERWORLD) {
+                                                source.sendFailure(Component.literal("Any claim must be in the overworld!"));
                                                 return 0;
                                             }
 
@@ -433,43 +445,43 @@ public class FactionCommand {
     private static LiteralArgumentBuilder<CommandSourceStack> map() {
         return Commands.literal("map")
                 .then(Commands.literal("nation")
-                .executes(context -> {
-                    CommandSourceStack source = context.getSource();
-                    if (!(source.getEntity() instanceof ServerPlayer player)) {
-                        source.sendFailure(Component.literal("Must be a player!"));
-                        return 0;
-                    }
-
-                    ChunkPos center = player.chunkPosition();
-
-                    int width = 25;
-                    int height = 15;
-
-                    int startX = center.x - width / 2;
-                    int startZ = center.z - height / 2;
-
-                    player.sendSystemMessage(Component.literal("\nNation Mode\n \"-\" - unclaimed, \"N\" - level of claim, \"P\" - player\n"
-                    + "----------------------------------------------").withStyle(ChatFormatting.GREEN));
-
-                    for (int z = startZ; z < startZ + height; z++) {
-                        MutableComponent line = Component.empty();
-
-                        for (int x = startX; x < startX + width; x++) {
-                            ChunkPos pos = new ChunkPos(x, z);
-
-                            boolean claimedN = BeyonderData.factionStorage.isClaimed(pos, 1);
-
-                            line.append(Component.literal(claimedN ? ("" + BeyonderData.factionStorage.getClaimLevel(pos, 1)) : pos.equals(center)? "P" : "-")
-                                    .withStyle(pos.equals(center)? ChatFormatting.GOLD :(claimedN ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY)));
+                        .executes(context -> {
+                            CommandSourceStack source = context.getSource();
+                            if (!(source.getEntity() instanceof ServerPlayer player)) {
+                                source.sendFailure(Component.literal("Must be a player!"));
+                                return 0;
                             }
 
-                        player.sendSystemMessage(line);
-                    }
+                            ChunkPos center = player.chunkPosition();
 
-                    player.sendSystemMessage(Component.literal("\n"));
+                            int width = 25;
+                            int height = 15;
 
-                    return 1;
-                }))
+                            int startX = center.x - width / 2;
+                            int startZ = center.z - height / 2;
+
+                            player.sendSystemMessage(Component.literal("\nNation Mode\n \"-\" - unclaimed, \"N\" - level of claim, \"P\" - player\n"
+                                    + "----------------------------------------------").withStyle(ChatFormatting.GREEN));
+
+                            for (int z = startZ; z < startZ + height; z++) {
+                                MutableComponent line = Component.empty();
+
+                                for (int x = startX; x < startX + width; x++) {
+                                    ChunkPos pos = new ChunkPos(x, z);
+
+                                    boolean claimedN = BeyonderData.factionStorage.isClaimed(pos, 1);
+
+                                    line.append(Component.literal(claimedN ? ("" + BeyonderData.factionStorage.getClaimLevel(pos, 1)) : pos.equals(center) ? "P" : "-")
+                                            .withStyle(pos.equals(center) ? ChatFormatting.GOLD : (claimedN ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY)));
+                                }
+
+                                player.sendSystemMessage(line);
+                            }
+
+                            player.sendSystemMessage(Component.literal("\n"));
+
+                            return 1;
+                        }))
                 .then(Commands.literal("church")
                         .executes(context -> {
                             CommandSourceStack source = context.getSource();
@@ -497,8 +509,8 @@ public class FactionCommand {
 
                                     boolean claimed = BeyonderData.factionStorage.isClaimed(pos, 2);
 
-                                    line.append(Component.literal(claimed ? ("" + BeyonderData.factionStorage.getClaimLevel(pos, 2)) : pos.equals(center)? "P" : "-")
-                                            .withStyle(pos.equals(center)? ChatFormatting.GOLD :(claimed ? ChatFormatting.BLUE : ChatFormatting.DARK_GRAY)));
+                                    line.append(Component.literal(claimed ? ("" + BeyonderData.factionStorage.getClaimLevel(pos, 2)) : pos.equals(center) ? "P" : "-")
+                                            .withStyle(pos.equals(center) ? ChatFormatting.GOLD : (claimed ? ChatFormatting.BLUE : ChatFormatting.DARK_GRAY)));
                                 }
 
                                 player.sendSystemMessage(line);

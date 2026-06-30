@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.visionary;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncEnvisioningPacket;
 import net.minecraft.core.BlockPos;
@@ -48,6 +49,9 @@ public class MindWorldAuthorityEnvisioningAbility extends ToggleAbility {
         serverPlayer.setNoGravity(true);
 
         serverPlayer.onUpdateAbilities();
+
+        if(serverPlayer.level().dimension() != ModDimensions.DREAM_MAZE_DIMENSION_KEY)
+            serverPlayer.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityAndSync(0.3f, serverPlayer);
     }
 
     @Override
@@ -107,14 +111,5 @@ public class MindWorldAuthorityEnvisioningAbility extends ToggleAbility {
             level.destroyBlock(pos, true);
             event.setCanceled(true);
         }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if(!(event.getEntity() instanceof ServerPlayer player)) return;
-
-        if(!active.contains(player.getUUID())) return;
-
-        player.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityAndSync(0.3f,player);
     }
 }
