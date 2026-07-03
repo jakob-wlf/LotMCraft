@@ -37,17 +37,44 @@ public class FactionStorage extends SavedData {
         return level.getServer().overworld().getDataStorage().computeIfAbsent(FACTORY, NBT_CLASS);
     }
 
-    public FactionCore getFaction(int id) {
+    public @Nullable FactionCore getFaction(int id) {
         return factions.get(id);
     }
 
-    public void setFaction(int id, FactionCore faction) {
-        factions.put(id, faction);
-        setDirty();
-    }
+    public void promote(int id, String name, int level){
+        var faction = factions.get(id);
+        if(!faction.isPartOfFaction(name)) return;
 
-    public void removeFaction(int id) {
-        factions.remove(id);
+        int pLevel = faction.getPlayerLevel(name);
+
+        if(pLevel == 1){
+            faction.removeCitizen(name);
+        }
+        else if(pLevel > 1 && pLevel < 8){
+            faction.removeNoble(name);
+        }
+        else if(pLevel == 8){
+            faction.removeCoLeader(name);
+        }
+        else if(pLevel == 9){
+            faction.setLeader("NONE");
+        }
+
+        if(level == 1){
+            faction.addCitizen(name);
+        }
+        else if(level > 1 && level < 8){
+            faction.addNoble(name, level - 1);
+        }
+        else if(level == 8){
+            faction.addCoLeader(name);
+        }
+        else if(level == 9){
+            faction.setLeader(name);
+        }
+
+        factions.put(id, faction);
+
         setDirty();
     }
 
@@ -58,6 +85,16 @@ public class FactionStorage extends SavedData {
         factions.put(core.getId(), core);
 
         setDirty();
+    }
+
+    public boolean isCore(ChunkPos pos, int type){
+        var factions = getFaction(pos);
+        if(factions.isEmpty()) return false;
+
+        var factionOp = factions.stream().filter(obj -> obj.getType() == type).findFirst();
+        if(factionOp.isEmpty()) return false;
+
+        return factionOp.get().getCore().equals(pos);
     }
 
     public boolean isNameUnique(String name) {
@@ -104,7 +141,7 @@ public class FactionStorage extends SavedData {
         if (factions.isEmpty()) return builder.toString();
 
         for (var faction : factions.values()) {
-            builder.append(faction.getShortInfo());
+            builder.append(faction.getShortInfo()).append("\n");
         }
 
         return builder.toString();
@@ -135,6 +172,12 @@ public class FactionStorage extends SavedData {
         }
     }
 
+    public void disband(int id){
+        factions.remove(id);
+
+        setDirty();
+    }
+
     public boolean canClaimNation(int id, ChunkPos pos){
         var faction = getFaction(id);
         var claimedChunks = faction.getClaimed();
@@ -152,6 +195,35 @@ public class FactionStorage extends SavedData {
         }
 
         return false;
+    }
+
+    public void addCitizen(int id, String name){
+        var faction = factions.get(id);
+
+        faction.addCitizen(name);
+
+        factions.put(id, faction);
+
+        setDirty();
+    }
+
+    public void leave(int id, String name){
+        var faction = factions.get(id);
+        int level = faction.getPlayerLevel(name);
+
+        if(level == 1){
+            faction.removeCitizen(name);
+        }
+        else if(level > 1 && level < 8){
+            faction.removeNoble(name);
+        }
+        else if(level == 8){
+            faction.removeCoLeader(name);
+        }
+
+        factions.put(id, faction);
+
+        setDirty();
     }
 
     @Override

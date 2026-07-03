@@ -41,7 +41,7 @@ public class FactionEvents {
 
         if(church == null){
             var data = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(nation.getLeader())).get();
-            int leaderSeq = data.pathway().equals("justicar") ? data.sequence() - 1 : data.sequence();
+            int leaderSeq = data.pathway().equals("justiciar") ? data.sequence() - 1 : data.sequence();
 
             if(!nation.isPartOfFaction(name)){
                 if(seq <= 2 && seq <= leaderSeq) return false;
@@ -51,7 +51,7 @@ public class FactionEvents {
         }
         else{
             var data = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(nation.getLeader())).get();
-            int leaderSeq = data.pathway().equals("justicar") ? data.sequence() - 1 : data.sequence();
+            int leaderSeq = data.pathway().equals("justiciar") ? data.sequence() - 1 : data.sequence();
 
             if(!nation.isPartOfFaction(name) && !church.isPartOfFaction(name)){
                 if(seq <= 2 && seq <= leaderSeq) return false;

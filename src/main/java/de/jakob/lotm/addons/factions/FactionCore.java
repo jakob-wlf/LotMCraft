@@ -6,8 +6,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.saveddata.SavedData;
-import net.querz.mca.Chunk;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,7 +38,7 @@ public class FactionCore {
         coreClaim = new ChunkPos(0, 0);
     }
 
-    public static int noblesAmountPerLevel(int level){
+    public static int getNoblesAmountPerLevel(int level){
         return switch (level){
           case 0 -> 0;
           case 1 -> 5;
@@ -50,7 +48,7 @@ public class FactionCore {
         };
     }
 
-    public static int citizensAmountPerLevel(int level){
+    public static int getCitizensAmountPerLevel(int level){
         return switch (level){
             case 0 -> 0;
             case 1 -> 30;
@@ -60,7 +58,7 @@ public class FactionCore {
         };
     }
 
-    public static int coLeadersAmountPerLevel(int level){
+    public static int getCoLeadersAmountPerLevel(int level){
         return switch (level){
             case 0 -> 0;
             case 1 -> 1;
@@ -70,7 +68,7 @@ public class FactionCore {
         };
     }
 
-    public static int claimsPerLevelNation(int level){
+    public static int getClaimsPerLevelNation(int level){
         return switch (level){
             case 0 -> 1;
             case 1 -> 30;
@@ -80,9 +78,9 @@ public class FactionCore {
         };
     }
 
-    public static int claimsPerLevelChurch(int level){
+    public static int getClaimsPerLevelChurch(int level){
         return switch (level){
-            case 0 -> 0;
+            case 0 -> 1;
             case 1 -> 10;
             case 2 -> 25;
             case 3 -> 50;
@@ -95,15 +93,15 @@ public class FactionCore {
     }
 
     public boolean isOutOfSlotsCitizens(){
-        return citizens.size() >= citizensAmountPerLevel(level);
+        return citizens.size() >= getCitizensAmountPerLevel(level);
     }
 
     public boolean isOutOfSlotsCoLeaders(){
-        return coLeaders.size() >= coLeadersAmountPerLevel(level);
+        return coLeaders.size() >= getCoLeadersAmountPerLevel(level);
     }
 
     public boolean isOutOfSlotsNobles(){
-        return nobles.size() >= noblesAmountPerLevel(level);
+        return nobles.size() >= getNoblesAmountPerLevel(level);
     }
 
     public boolean isPartOfFaction(String name){
@@ -156,6 +154,14 @@ public class FactionCore {
         this.level = level;
     }
 
+    public void setCore(ChunkPos pos){
+        this.coreClaim = pos;
+    }
+
+    public ChunkPos getCore(){
+        return coreClaim;
+    }
+
     public void setName(String name){
         this.name = name;
     }
@@ -165,20 +171,14 @@ public class FactionCore {
     }
 
     public void addCoLeader(String name){
-        if(isOutOfSlotsCoLeaders()) return;
-
         coLeaders.add(name);
     }
 
     public void addNoble(String name, int level){
-        if(isOutOfSlotsNobles()) return;
-
         nobles.put(name, level);
     }
 
     public void addCitizen(String name){
-        if(isOutOfSlotsCitizens()) return;
-
         citizens.add(name);
     }
 
@@ -233,6 +233,11 @@ public class FactionCore {
             claimed.remove(obj);
         }
 
+        if(claimed.isEmpty()) {
+            coreClaim = pos;
+            level = 9;
+        }
+
         claimed.add(new ChunkInfo(pos, level));
     }
 
@@ -258,7 +263,36 @@ public class FactionCore {
                 + "\nLeader: " + leader
                 + "\nName: " + name
                 + "\nLevel: " + level
-                + "\nType: " + (type == 1 ? "Nation" : "Church");
+                + "\nType: " + (type == 1 ? "Nation" : "Church")
+                + "\nClaims: " + claimed.size() + "/" + (type == 1? getClaimsPerLevelNation(level) : getClaimsPerLevelChurch(level))
+                + "\nCo-leaders:" + convertCoLeaders()
+                + "\nNobles: " + convertNobles()
+                + "\nCitizens: " +convertCitizens()
+                ;
+    }
+
+    private String convertCoLeaders(){
+        StringBuilder builder = new StringBuilder("\n");
+        for(var obj : coLeaders){
+            builder.append("  ").append(obj).append('\n');
+        }
+        return builder.toString();
+    }
+
+    private String convertNobles(){
+        StringBuilder builder = new StringBuilder("\n");
+        for(var obj : nobles.entrySet()){
+            builder.append("  ").append(obj.getKey()).append(" -- ").append(obj.getValue()).append('\n');
+        }
+        return builder.toString();
+    }
+
+    private String convertCitizens(){
+        StringBuilder builder = new StringBuilder("\n");
+        for(var obj : citizens){
+            builder.append("  ").append(obj).append('\n');
+        }
+        return builder.toString();
     }
 
     public String getShortInfo(){
@@ -285,6 +319,15 @@ public class FactionCore {
 
         if(citizens.contains(name)) return 1;
         return 0;
+    }
+
+    public List<String> getAllPlayers(){
+        List<String> result = new LinkedList<>();
+        result.add(leader);
+        result.addAll(coLeaders);
+        result.addAll(nobles.keySet());
+        result.addAll(citizens);
+        return result;
     }
 
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {

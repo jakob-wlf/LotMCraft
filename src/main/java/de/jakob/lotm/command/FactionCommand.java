@@ -9,16 +9,39 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.GameProfileArgument;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+
 public class FactionCommand {
+
+    private static Map<UUID, Integer> inviteMap = new HashMap<>();
+
+    private static final MutableComponent accept = Component.literal("[ACCEPT]")
+            .withStyle(style -> style
+                    .withColor(ChatFormatting.GREEN)
+                    .withClickEvent(new ClickEvent(
+                            ClickEvent.Action.RUN_COMMAND,
+                            "/faction invite accept"
+                    )));
+
+    private static final MutableComponent decline = Component.literal("[DECLINE]")
+            .withStyle(style -> style
+                    .withColor(ChatFormatting.RED)
+                    .withClickEvent(new ClickEvent(
+                            ClickEvent.Action.RUN_COMMAND,
+                            "/faction invite decline"
+                    )));
+
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("faction")
                 .then(create())
@@ -28,6 +51,12 @@ public class FactionCommand {
                 .then(permission())
                 .then(unclaim())
                 .then(map())
+                .then(disband())
+                .then(invite())
+                .then(leave())
+                .then(kick())
+                .then(promote())
+                .then(passLeadership())
         );
     }
 
@@ -56,6 +85,8 @@ public class FactionCommand {
 
                                     BeyonderData.factionStorage.createFaction(player.getName().getString(), name, 1);
 
+                                    source.sendSystemMessage(Component.literal("Successfully created faction named: \"" + name + "\"" + '\n').withStyle(ChatFormatting.GREEN));
+
                                     return 1;
                                 })))
                 .then(Commands.literal("church")
@@ -81,6 +112,8 @@ public class FactionCommand {
 
                                     BeyonderData.factionStorage.createFaction(player.getName().getString(), name, 2);
 
+                                    source.sendSystemMessage(Component.literal("Successfully created faction named: \"" + name + "\"" + '\n').withStyle(ChatFormatting.GREEN));
+
                                     return 1;
                                 })));
     }
@@ -104,7 +137,7 @@ public class FactionCommand {
                     StringBuilder builder = new StringBuilder("You are part of this factions:\n");
 
                     for (var faction : result) {
-                        builder.append(faction.getAllInfo()).append("\n---------\n");
+                        builder.append(faction.getShortInfo()).append("\n---------\n");
                     }
 
                     source.sendSystemMessage(Component.literal(
@@ -112,6 +145,48 @@ public class FactionCommand {
 
                     return 1;
                 })
+                .then(Commands.literal("nation")
+                        .executes(context -> {
+                            CommandSourceStack source = context.getSource();
+                            if (!(source.getEntity() instanceof ServerPlayer player)) {
+                                source.sendFailure(Component.literal("Must be a player!"));
+                                return 0;
+                            }
+
+                            var result = BeyonderData.factionStorage.getPartOfFactionType(player.getName().getString(), 1);
+
+                            if (result == null) {
+                                source.sendFailure(Component.literal("You are not in any faction!"));
+                                return 0;
+                            }
+
+                            source.sendSystemMessage(Component.literal(
+                                    "You are part of this nation:\n" + result.getAllInfo() + "\n"));
+
+                            return 1;
+                        })
+                )
+                .then(Commands.literal("church")
+                        .executes(context -> {
+                            CommandSourceStack source = context.getSource();
+                            if (!(source.getEntity() instanceof ServerPlayer player)) {
+                                source.sendFailure(Component.literal("Must be a player!"));
+                                return 0;
+                            }
+
+                            var result = BeyonderData.factionStorage.getPartOfFactionType(player.getName().getString(), 2);
+
+                            if (result == null) {
+                                source.sendFailure(Component.literal("You are not in any faction!"));
+                                return 0;
+                            }
+
+                            source.sendSystemMessage(Component.literal(
+                                    "You are part of this church:\n" + result.getAllInfo() + "\n"));
+
+                            return 1;
+                        })
+                )
                 .then(Commands.literal("all")
                         .requires(source -> source.hasPermission(2))
                         .executes(context -> {
@@ -381,6 +456,11 @@ public class FactionCommand {
                                         return 0;
                                     }
 
+                                    if (faction.getCore().equals(pos)) {
+                                        source.sendFailure(Component.literal("You can't unclaim the core chunk!"));
+                                        return 0;
+                                    }
+
                                     BeyonderData.factionStorage.unclaim(faction.getId(), pos);
 
                                     source.sendSystemMessage(Component.literal("Successfully unclaimed chunk at " + pos.toString() + '\n').withStyle(ChatFormatting.GREEN));
@@ -433,6 +513,11 @@ public class FactionCommand {
                                         return 0;
                                     }
 
+                                    if (faction.getCore().equals(pos)) {
+                                        source.sendFailure(Component.literal("You can't unclaim the core chunk!"));
+                                        return 0;
+                                    }
+
                                     BeyonderData.factionStorage.unclaim(faction.getId(), pos);
 
                                     source.sendSystemMessage(Component.literal("Successfully unclaimed chunk at " + pos.toString() + '\n').withStyle(ChatFormatting.GREEN));
@@ -460,7 +545,7 @@ public class FactionCommand {
                             int startX = center.x - width / 2;
                             int startZ = center.z - height / 2;
 
-                            player.sendSystemMessage(Component.literal("\nNation Mode\n \"-\" - unclaimed, \"N\" - level of claim, \"P\" - player\n"
+                            player.sendSystemMessage(Component.literal("\nNation Mode\n \"-\" - unclaimed, \"N\" - level of claim, \"P\" - player, \"C\" - core\n"
                                     + "----------------------------------------------").withStyle(ChatFormatting.GREEN));
 
                             for (int z = startZ; z < startZ + height; z++) {
@@ -469,10 +554,26 @@ public class FactionCommand {
                                 for (int x = startX; x < startX + width; x++) {
                                     ChunkPos pos = new ChunkPos(x, z);
 
-                                    boolean claimedN = BeyonderData.factionStorage.isClaimed(pos, 1);
+                                    boolean claimed = BeyonderData.factionStorage.isClaimed(pos, 1);
 
-                                    line.append(Component.literal(claimedN ? ("" + BeyonderData.factionStorage.getClaimLevel(pos, 1)) : pos.equals(center) ? "P" : "-")
-                                            .withStyle(pos.equals(center) ? ChatFormatting.GOLD : (claimedN ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY)));
+                                    String symbol = "-";
+                                    ChatFormatting format = ChatFormatting.DARK_GRAY;
+
+                                    if (BeyonderData.factionStorage.isCore(pos, 1)) {
+                                        symbol = "C";
+                                    } else if (claimed) {
+                                        symbol = ("" + BeyonderData.factionStorage.getClaimLevel(pos, 1));
+                                    } else if (pos.equals(center))
+                                        symbol = "P";
+
+                                    if (claimed) {
+                                        format = ChatFormatting.GREEN;
+                                    }
+                                    if (pos.equals(center)) {
+                                        format = ChatFormatting.GOLD;
+                                    }
+
+                                    line.append(Component.literal(symbol).withStyle(format));
                                 }
 
                                 player.sendSystemMessage(line);
@@ -498,7 +599,7 @@ public class FactionCommand {
                             int startX = center.x - width / 2;
                             int startZ = center.z - height / 2;
 
-                            player.sendSystemMessage(Component.literal("\nChurch Mode\n \"-\" - unclaimed, \"N\" - level of claim, \"P\" - player\n"
+                            player.sendSystemMessage(Component.literal("\nChurch Mode\n \"-\" - unclaimed, \"N\" - level of claim, \"P\" - player, \"C\" - core\n"
                                     + "----------------------------------------------").withStyle(ChatFormatting.GREEN));
 
                             for (int z = startZ; z < startZ + height; z++) {
@@ -509,8 +610,24 @@ public class FactionCommand {
 
                                     boolean claimed = BeyonderData.factionStorage.isClaimed(pos, 2);
 
-                                    line.append(Component.literal(claimed ? ("" + BeyonderData.factionStorage.getClaimLevel(pos, 2)) : pos.equals(center) ? "P" : "-")
-                                            .withStyle(pos.equals(center) ? ChatFormatting.GOLD : (claimed ? ChatFormatting.BLUE : ChatFormatting.DARK_GRAY)));
+                                    String symbol = "-";
+                                    ChatFormatting format = ChatFormatting.DARK_GRAY;
+
+                                    if (BeyonderData.factionStorage.isCore(pos, 2)) {
+                                        symbol = "C";
+                                    } else if (claimed) {
+                                        symbol = ("" + BeyonderData.factionStorage.getClaimLevel(pos, 2));
+                                    } else if (pos.equals(center))
+                                        symbol = "P";
+
+                                    if (claimed) {
+                                        format = ChatFormatting.BLUE;
+                                    }
+                                    if (pos.equals(center)) {
+                                        format = ChatFormatting.GOLD;
+                                    }
+
+                                    line.append(Component.literal(symbol).withStyle(format));
                                 }
 
                                 player.sendSystemMessage(line);
@@ -521,4 +638,674 @@ public class FactionCommand {
                             return 1;
                         }));
     }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> disband() {
+        return Commands.literal("disband")
+                .then(Commands.literal("nation")
+                        .executes(context -> {
+                                    CommandSourceStack source = context.getSource();
+                                    var player = source.getPlayer();
+                                    if (player == null) {
+                                        source.sendFailure(Component.literal("Must be a player!"));
+                                        return 0;
+                                    }
+
+                                    String name = player.getName().getString();
+
+                                    var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
+                                    if (faction == null) {
+                                        source.sendFailure(Component.literal("You must be part of faction!"));
+                                        return 0;
+                                    }
+
+                                    if (!faction.getLeader().equals(name)) {
+                                        source.sendFailure(Component.literal("You must be faction leader!"));
+                                        return 0;
+                                    }
+
+                                    BeyonderData.factionStorage.disband(faction.getId());
+
+                                    source.sendSystemMessage(Component.literal("Successfully disbanded \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+
+                                    return 1;
+                                }
+                        ))
+                .then(Commands.literal("church")
+                        .executes(context -> {
+                                    CommandSourceStack source = context.getSource();
+                                    var player = source.getPlayer();
+                                    if (player == null) {
+                                        source.sendFailure(Component.literal("Must be a player!"));
+                                        return 0;
+                                    }
+
+                                    String name = player.getName().getString();
+
+                                    var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 2);
+                                    if (faction == null) {
+                                        source.sendFailure(Component.literal("You must be part of faction!"));
+                                        return 0;
+                                    }
+
+                                    if (!faction.getLeader().equals(name)) {
+                                        source.sendFailure(Component.literal("You must be faction leader!"));
+                                        return 0;
+                                    }
+
+                                    BeyonderData.factionStorage.disband(faction.getId());
+
+                                    source.sendSystemMessage(Component.literal("Successfully disbanded \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+
+                                    return 1;
+                                }
+                        ));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> invite() {
+        return Commands.literal("invite")
+                .then(Commands.literal("nation")
+                        .then(Commands.argument("target", EntityArgument.entity())
+                                .executes(context -> {
+                                            CommandSourceStack source = context.getSource();
+                                            var player = source.getPlayer();
+                                            if (player == null) {
+                                                source.sendFailure(Component.literal("Must be a player!"));
+                                                return 0;
+                                            }
+
+                                            String name = player.getName().getString();
+
+                                            var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
+                                            if (faction == null) {
+                                                source.sendFailure(Component.literal("You must be part of faction!"));
+                                                return 0;
+                                            }
+
+                                            if (faction.getPlayerLevel(name) <= 1) {
+                                                source.sendFailure(Component.literal("You don't have permission to invite people!"));
+                                                return 0;
+                                            }
+
+                                            var target = EntityArgument.getEntity(context, "target");
+                                            if (!(target instanceof ServerPlayer)) {
+                                                source.sendFailure(Component.literal("Target must be a player!"));
+                                                return 0;
+                                            }
+
+                                            if (faction.isPartOfFaction(target.getName().getString())) {
+                                                source.sendFailure(Component.literal("Target is part of faction!"));
+                                                return 0;
+                                            }
+
+                                            if (target.equals(player)) {
+                                                source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
+                                                return 0;
+                                            }
+
+                                            inviteMap.put(target.getUUID(), faction.getId());
+
+                                            source.sendSystemMessage(Component.literal("Successfully invited " + target.getName().getString() +
+                                                    " into \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+
+                                            target.sendSystemMessage(
+                                                    Component.literal(name + " invited you to \"" + faction.getName() + "\"\n")
+                                                            .append(accept)
+                                                            .append(Component.literal(" | "))
+                                                            .append(decline)
+                                            );
+
+                                            return 1;
+                                        }
+                                ))
+                )
+                .then(Commands.literal("church")
+                        .then(Commands.argument("target", EntityArgument.entity())
+                                .executes(context -> {
+                                            CommandSourceStack source = context.getSource();
+                                            var player = source.getPlayer();
+                                            if (player == null) {
+                                                source.sendFailure(Component.literal("Must be a player!"));
+                                                return 0;
+                                            }
+
+                                            String name = player.getName().getString();
+
+                                            var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 2);
+                                            if (faction == null) {
+                                                source.sendFailure(Component.literal("You must be part of faction!"));
+                                                return 0;
+                                            }
+
+                                            if (faction.getPlayerLevel(name) <= 1) {
+                                                source.sendFailure(Component.literal("You don't have permission to invite people!"));
+                                                return 0;
+                                            }
+
+                                            var target = EntityArgument.getEntity(context, "target");
+                                            if (!(target instanceof ServerPlayer)) {
+                                                source.sendFailure(Component.literal("Target must be a player!"));
+                                                return 0;
+                                            }
+
+                                            if (faction.isPartOfFaction(target.getName().getString())) {
+                                                source.sendFailure(Component.literal("Target is part of faction!"));
+                                                return 0;
+                                            }
+
+                                            if (target.equals(player)) {
+                                                source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
+                                                return 0;
+                                            }
+
+                                            inviteMap.put(target.getUUID(), faction.getId());
+
+                                            source.sendSystemMessage(Component.literal("Successfully invited " + target.getName().getString() +
+                                                    " into \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+
+                                            target.sendSystemMessage(
+                                                    Component.literal(name + " invited you to \"" + faction.getName() + "\"\n")
+                                                            .append(accept)
+                                                            .append(Component.literal(" | "))
+                                                            .append(decline)
+                                            );
+
+                                            return 1;
+                                        }
+                                ))
+                )
+                .then(Commands.literal("accept")
+                        .executes(context -> {
+                            CommandSourceStack source = context.getSource();
+                            var player = source.getPlayer();
+                            if (player == null) {
+                                source.sendFailure(Component.literal("Must be a player!"));
+                                return 0;
+                            }
+
+                            String name = player.getName().getString();
+
+                            if (!inviteMap.containsKey(player.getUUID())) {
+                                source.sendFailure(Component.literal("You don't have any pending invites!"));
+                                return 0;
+                            }
+
+                            var faction = BeyonderData.factionStorage.getFaction(inviteMap.get(player.getUUID()));
+                            if (faction == null) {
+                                source.sendFailure(Component.literal("Faction cannot be found!"));
+                                inviteMap.remove(player.getUUID());
+                                return 0;
+                            }
+
+                            var partOf = BeyonderData.factionStorage.getPartOfFactionType(name, faction.getType());
+                            if (partOf != null) {
+                                source.sendFailure(Component.literal("You must leave your current faction to join another!"));
+                                return 0;
+                            }
+
+                            var allPlayers = faction.getAllPlayers();
+
+                            BeyonderData.factionStorage.addCitizen(faction.getId(), name);
+
+                            inviteMap.remove(player.getUUID());
+
+                            for (var obj : allPlayers) {
+                                var target = source.getLevel().getPlayerByUUID(Objects.requireNonNull(BeyonderData.playerMap.getKeyByName(obj)));
+                                if (target == null) continue;
+
+                                target.sendSystemMessage(Component.literal(name + " joined \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+                            }
+
+                            source.sendSystemMessage(Component.literal("Successfully joined into \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+
+                            return 1;
+                        })
+                )
+                .then(Commands.literal("decline")
+                        .executes(context -> {
+                            CommandSourceStack source = context.getSource();
+                            var player = source.getPlayer();
+                            if (player == null) {
+                                source.sendFailure(Component.literal("Must be a player!"));
+                                return 0;
+                            }
+
+                            String name = player.getName().getString();
+
+                            if (!inviteMap.containsKey(player.getUUID())) {
+                                source.sendFailure(Component.literal("You don't have any pending invites!"));
+                                return 0;
+                            }
+
+                            inviteMap.remove(player.getUUID());
+
+                            source.sendSystemMessage(Component.literal("Successfully declined\n").withStyle(ChatFormatting.GREEN));
+
+                            return 1;
+                        })
+                )
+                ;
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> leave() {
+        return Commands.literal("leave")
+                .then(Commands.literal("nation")
+                        .executes(context -> {
+                                    CommandSourceStack source = context.getSource();
+                                    var player = source.getPlayer();
+                                    if (player == null) {
+                                        source.sendFailure(Component.literal("Must be a player!"));
+                                        return 0;
+                                    }
+
+                                    String name = player.getName().getString();
+
+                                    var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
+                                    if (faction == null) {
+                                        source.sendFailure(Component.literal("You must be part of faction!"));
+                                        return 0;
+                                    }
+
+                                    if (faction.getLeader().equals(name)) {
+                                        BeyonderData.factionStorage.disband(faction.getId());
+                                    }
+
+                                    BeyonderData.factionStorage.leave(faction.getId(), name);
+
+                                    source.sendSystemMessage(Component.literal("Successfully left \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+
+                                    return 1;
+                                }
+                        ))
+                .then(Commands.literal("church")
+                        .executes(context -> {
+                                    CommandSourceStack source = context.getSource();
+                                    var player = source.getPlayer();
+                                    if (player == null) {
+                                        source.sendFailure(Component.literal("Must be a player!"));
+                                        return 0;
+                                    }
+
+                                    String name = player.getName().getString();
+
+                                    var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 2);
+                                    if (faction == null) {
+                                        source.sendFailure(Component.literal("You must be part of faction!"));
+                                        return 0;
+                                    }
+
+                                    if (faction.getLeader().equals(name)) {
+                                        BeyonderData.factionStorage.disband(faction.getId());
+                                    }
+
+                                    BeyonderData.factionStorage.leave(faction.getId(), name);
+
+                                    source.sendSystemMessage(Component.literal("Successfully left \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+
+                                    return 1;
+                                }
+                        ));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> kick() {
+        return Commands.literal("kick")
+                .then(Commands.literal("nation")
+                        .then(Commands.argument("target", EntityArgument.entity())
+                                .executes(context -> {
+                                            CommandSourceStack source = context.getSource();
+                                            var player = source.getPlayer();
+                                            if (player == null) {
+                                                source.sendFailure(Component.literal("Must be a player!"));
+                                                return 0;
+                                            }
+
+                                            String name = player.getName().getString();
+
+                                            var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
+                                            if (faction == null) {
+                                                source.sendFailure(Component.literal("You must be part of faction!"));
+                                                return 0;
+                                            }
+
+                                            int level = faction.getPlayerLevel(name);
+                                            if (level <= 1) {
+                                                source.sendFailure(Component.literal("You don't have permission to kick people!"));
+                                                return 0;
+                                            }
+
+                                            var target = EntityArgument.getEntity(context, "target");
+                                            if (!(target instanceof ServerPlayer)) {
+                                                source.sendFailure(Component.literal("Target must be a player!"));
+                                                return 0;
+                                            }
+
+                                            if (!faction.isPartOfFaction(target.getName().getString())) {
+                                                source.sendFailure(Component.literal("Target must be part of faction!"));
+                                                return 0;
+                                            }
+
+                                            int targetLevel = faction.getPlayerLevel(target.getName().getString());
+                                            if (targetLevel == 9 || targetLevel >= level) {
+                                                source.sendFailure(Component.literal("You can't kick target!"));
+                                                return 0;
+                                            }
+
+                                            if (target.equals(player)) {
+                                                source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
+                                                return 0;
+                                            }
+
+                                            BeyonderData.factionStorage.leave(faction.getId(), target.getName().getString());
+
+                                            source.sendSystemMessage(Component.literal("Successfully kicked " + target.getName().getString() + "\n").withStyle(ChatFormatting.GREEN));
+
+                                            target.sendSystemMessage(Component.literal("You were kicked from \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.RED));
+
+                                            return 1;
+                                        }
+                                ))
+                )
+                .then(Commands.literal("church")
+                        .then(Commands.argument("target", EntityArgument.entity())
+                                .executes(context -> {
+                                            CommandSourceStack source = context.getSource();
+                                            var player = source.getPlayer();
+                                            if (player == null) {
+                                                source.sendFailure(Component.literal("Must be a player!"));
+                                                return 0;
+                                            }
+
+                                            String name = player.getName().getString();
+
+                                            var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 2);
+                                            if (faction == null) {
+                                                source.sendFailure(Component.literal("You must be part of faction!"));
+                                                return 0;
+                                            }
+
+                                            int level = faction.getPlayerLevel(name);
+                                            if (level <= 1) {
+                                                source.sendFailure(Component.literal("You don't have permission to kick people!"));
+                                                return 0;
+                                            }
+
+                                            var target = EntityArgument.getEntity(context, "target");
+                                            if (!(target instanceof ServerPlayer)) {
+                                                source.sendFailure(Component.literal("Target must be a player!"));
+                                                return 0;
+                                            }
+
+                                            if (!faction.isPartOfFaction(target.getName().getString())) {
+                                                source.sendFailure(Component.literal("Target must be part of faction!"));
+                                                return 0;
+                                            }
+
+                                            int targetLevel = faction.getPlayerLevel(target.getName().getString());
+                                            if (targetLevel == 9 || targetLevel >= level) {
+                                                source.sendFailure(Component.literal("You can't kick target!"));
+                                                return 0;
+                                            }
+
+                                            if (target.equals(player)) {
+                                                source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
+                                                return 0;
+                                            }
+
+                                            BeyonderData.factionStorage.leave(faction.getId(), target.getName().getString());
+
+                                            source.sendSystemMessage(Component.literal("Successfully kicked " + target.getName().getString() + "\n").withStyle(ChatFormatting.GREEN));
+
+                                            target.sendSystemMessage(Component.literal("You were kicked from \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.RED));
+
+
+                                            return 1;
+                                        }
+                                ))
+                );
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> promote() {
+        return Commands.literal("promote")
+                .then(Commands.literal("nation")
+                        .then(Commands.argument("target", EntityArgument.entity())
+                                .then(Commands.argument("level", IntegerArgumentType.integer(1, 8))
+                                        .executes(context -> {
+                                                    CommandSourceStack source = context.getSource();
+                                                    var player = source.getPlayer();
+                                                    if (player == null) {
+                                                        source.sendFailure(Component.literal("Must be a player!"));
+                                                        return 0;
+                                                    }
+
+                                                    String name = player.getName().getString();
+
+                                                    var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
+                                                    if (faction == null) {
+                                                        source.sendFailure(Component.literal("You must be part of faction!"));
+                                                        return 0;
+                                                    }
+
+                                                    int level = faction.getPlayerLevel(name);
+                                                    int promoteLevel = IntegerArgumentType.getInteger(context, "level");
+
+                                                    if (level <= 4) {
+                                                        source.sendFailure(Component.literal("You don't have permission to promote people!"));
+                                                        return 0;
+                                                    }
+
+                                                    var target = EntityArgument.getEntity(context, "target");
+                                                    if (!(target instanceof ServerPlayer)) {
+                                                        source.sendFailure(Component.literal("Target must be a player!"));
+                                                        return 0;
+                                                    }
+
+                                                    String targetName = target.getName().getString();
+
+                                                    if (!faction.isPartOfFaction(targetName)) {
+                                                        source.sendFailure(Component.literal("Target must be part of faction!"));
+                                                        return 0;
+                                                    }
+
+                                                    int targetLevel = faction.getPlayerLevel(target.getName().getString());
+                                                    if (targetLevel == 9 || targetLevel >= level) {
+                                                        source.sendFailure(Component.literal("You can't promote target!"));
+                                                        return 0;
+                                                    }
+
+                                                    if (promoteLevel >= level) {
+                                                        source.sendFailure(Component.literal("You can't promote target to such level!"));
+                                                        return 0;
+                                                    }
+
+                                                    if (target.equals(player)) {
+                                                        source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
+                                                        return 0;
+                                                    }
+
+                                                    BeyonderData.factionStorage.promote(faction.getId(), target.getName().getString(), level);
+
+                                                    source.sendSystemMessage(Component.literal("Successfully promoted " + target.getName().getString() + " to " + level + "\n").withStyle(ChatFormatting.GREEN));
+
+                                                    target.sendSystemMessage(Component.literal("You were promoted in \"" + faction.getName() + "\" to " + level + "\n").withStyle(ChatFormatting.GREEN));
+
+                                                    return 1;
+                                                }
+                                        )))
+                )
+                .then(Commands.literal("nation")
+                        .then(Commands.argument("target", EntityArgument.entity())
+                                .then(Commands.argument("level", IntegerArgumentType.integer(1, 8))
+                                        .executes(context -> {
+                                                    CommandSourceStack source = context.getSource();
+                                                    var player = source.getPlayer();
+                                                    if (player == null) {
+                                                        source.sendFailure(Component.literal("Must be a player!"));
+                                                        return 0;
+                                                    }
+
+                                                    String name = player.getName().getString();
+
+                                                    var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 2);
+                                                    if (faction == null) {
+                                                        source.sendFailure(Component.literal("You must be part of faction!"));
+                                                        return 0;
+                                                    }
+
+                                                    int level = faction.getPlayerLevel(name);
+                                                    int promoteLevel = IntegerArgumentType.getInteger(context, "level");
+
+                                                    if (level <= 4) {
+                                                        source.sendFailure(Component.literal("You don't have permission to promote people!"));
+                                                        return 0;
+                                                    }
+
+                                                    var target = EntityArgument.getEntity(context, "target");
+                                                    if (!(target instanceof ServerPlayer)) {
+                                                        source.sendFailure(Component.literal("Target must be a player!"));
+                                                        return 0;
+                                                    }
+
+                                                    if (target.equals(player)) {
+                                                        source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
+                                                        return 0;
+                                                    }
+
+                                                    String targetName = target.getName().getString();
+
+                                                    if (!faction.isPartOfFaction(targetName)) {
+                                                        source.sendFailure(Component.literal("Target must be part of faction!"));
+                                                        return 0;
+                                                    }
+
+                                                    int targetLevel = faction.getPlayerLevel(target.getName().getString());
+                                                    if (targetLevel == 9 || targetLevel >= level) {
+                                                        source.sendFailure(Component.literal("You can't promote target!"));
+                                                        return 0;
+                                                    }
+
+                                                    if (promoteLevel >= level) {
+                                                        source.sendFailure(Component.literal("You can't promote target to such level!"));
+                                                        return 0;
+                                                    }
+
+                                                    if (target.equals(player)) {
+                                                        source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
+                                                        return 0;
+                                                    }
+
+                                                    BeyonderData.factionStorage.promote(faction.getId(), target.getName().getString(), level);
+
+                                                    source.sendSystemMessage(Component.literal("Successfully promoted " + target.getName().getString() + " to " + level + "\n").withStyle(ChatFormatting.GREEN));
+
+                                                    target.sendSystemMessage(Component.literal("You were promoted in \"" + faction.getName() + "\" to " + level + "\n").withStyle(ChatFormatting.GREEN));
+
+                                                    return 1;
+                                                }
+                                        )))
+                );
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> passLeadership() {
+        return Commands.literal("pass_leadership")
+                .then(Commands.literal("nation")
+                        .then(Commands.argument("target", EntityArgument.entity())
+                                .executes(context -> {
+                                            CommandSourceStack source = context.getSource();
+                                            var player = source.getPlayer();
+                                            if (player == null) {
+                                                source.sendFailure(Component.literal("Must be a player!"));
+                                                return 0;
+                                            }
+
+                                            String name = player.getName().getString();
+
+                                            var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
+                                            if (faction == null) {
+                                                source.sendFailure(Component.literal("You must be part of faction!"));
+                                                return 0;
+                                            }
+
+                                            if (!faction.getLeader().equals(name)) {
+                                                source.sendFailure(Component.literal("You are not the faction leader!"));
+                                                return 0;
+                                            }
+
+                                            var target = EntityArgument.getEntity(context, "target");
+                                            if (!(target instanceof ServerPlayer)) {
+                                                source.sendFailure(Component.literal("Target must be a player!"));
+                                                return 0;
+                                            }
+
+                                            if (!faction.isPartOfFaction(target.getName().getString())) {
+                                                source.sendFailure(Component.literal("Target must be part of faction!"));
+                                                return 0;
+                                            }
+
+                                            if (target.equals(player)) {
+                                                source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
+                                                return 0;
+                                            }
+
+                                            BeyonderData.factionStorage.promote(faction.getId(), name, 1);
+                                            BeyonderData.factionStorage.promote(faction.getId(), target.getName().getString(), 9);
+
+                                            source.sendSystemMessage(Component.literal("Successfully passed leadership to " + target.getName().getString() + "\n").withStyle(ChatFormatting.GREEN));
+
+                                            target.sendSystemMessage(Component.literal("You are now a leader of \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+
+                                            return 1;
+                                        }
+                                ))
+                )
+                .then(Commands.literal("nation")
+                        .then(Commands.argument("target", EntityArgument.entity())
+                                .executes(context -> {
+                                            CommandSourceStack source = context.getSource();
+                                            var player = source.getPlayer();
+                                            if (player == null) {
+                                                source.sendFailure(Component.literal("Must be a player!"));
+                                                return 0;
+                                            }
+
+                                            String name = player.getName().getString();
+
+                                            var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 2);
+                                            if (faction == null) {
+                                                source.sendFailure(Component.literal("You must be part of faction!"));
+                                                return 0;
+                                            }
+
+                                            if (!faction.getLeader().equals(name)) {
+                                                source.sendFailure(Component.literal("You are not the faction leader!"));
+                                                return 0;
+                                            }
+
+                                            var target = EntityArgument.getEntity(context, "target");
+                                            if (!(target instanceof ServerPlayer)) {
+                                                source.sendFailure(Component.literal("Target must be a player!"));
+                                                return 0;
+                                            }
+
+                                            if (!faction.isPartOfFaction(target.getName().getString())) {
+                                                source.sendFailure(Component.literal("Target must be part of faction!"));
+                                                return 0;
+                                            }
+
+                                            if (target.equals(player)) {
+                                                source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
+                                                return 0;
+                                            }
+
+                                            BeyonderData.factionStorage.promote(faction.getId(), name, 1);
+                                            BeyonderData.factionStorage.promote(faction.getId(), target.getName().getString(), 9);
+
+                                            source.sendSystemMessage(Component.literal("Successfully passed leadership to " + target.getName().getString() + "\n").withStyle(ChatFormatting.GREEN));
+
+                                            target.sendSystemMessage(Component.literal("You are now a leader of \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+
+                                            return 1;
+                                        }
+                                ))
+                );
+    }
+
 }
