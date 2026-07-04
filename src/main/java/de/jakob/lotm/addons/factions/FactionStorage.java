@@ -31,6 +31,24 @@ public class FactionStorage extends SavedData {
         factions = new HashMap<>(300);
     }
 
+    public void setFaction(int id, FactionCore faction){
+        factions.put(id, faction);
+        setDirty();
+    }
+
+    public void levelUp(int id){
+        var faction = factions.get(id);
+
+        int currentLevel = faction.getLevel();
+        int soliN = FactionCore.getLevelUpSoli(currentLevel);
+        int poundsN = FactionCore.getLevelUpPounds(currentLevel);
+
+        faction.setLevel(currentLevel + 1);
+        faction.setSoli(faction.getSoli() - soliN);
+        faction.setPound(faction.getPound() - poundsN);
+
+        factions.put(id, faction);
+    }
 
     public static FactionStorage get(ServerLevel level) {
         LOTMCraft.LOGGER.info("Loading Factions");

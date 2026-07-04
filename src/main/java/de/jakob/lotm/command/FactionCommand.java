@@ -4,6 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import de.jakob.lotm.addons.factions.FactionCore;
+import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -14,8 +16,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +61,8 @@ public class FactionCommand {
                 .then(kick())
                 .then(promote())
                 .then(passLeadership())
+                .then(bank())
+                .then(levelUp())
         );
     }
 
@@ -80,6 +86,11 @@ public class FactionCommand {
 
                                     if (BeyonderData.factionStorage.hasAnyByType(player.getName().getString(), 1)) {
                                         source.sendFailure(Component.literal("You are already part of such type of faction!"));
+                                        return 0;
+                                    }
+
+                                    if (BeyonderData.getSequence(player) > FactionCore.getMinSeqNation()) {
+                                        source.sendFailure(Component.literal("You have to be at least " + FactionCore.getMinSeqNation() + " sequence!"));
                                         return 0;
                                     }
 
@@ -107,6 +118,11 @@ public class FactionCommand {
 
                                     if (BeyonderData.factionStorage.hasAnyByType(player.getName().getString(), 2)) {
                                         source.sendFailure(Component.literal("You are already part of such type of faction!"));
+                                        return 0;
+                                    }
+
+                                    if (BeyonderData.getSequence(player) > FactionCore.getMinSeqChurch()) {
+                                        source.sendFailure(Component.literal("You have to be at least " + FactionCore.getMinSeqChurch() + " sequence!"));
                                         return 0;
                                     }
 
@@ -243,6 +259,11 @@ public class FactionCommand {
                                                 return 0;
                                             }
 
+                                            if (faction.getClaimed().size() + 1 > FactionCore.getClaimsPerLevelNation(faction.getLevel())) {
+                                                source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
+                                                return 0;
+                                            }
+
                                             BeyonderData.factionStorage.claim(faction.getId(), pos, level);
 
                                             source.sendSystemMessage(Component.literal("Successfully claimed chunk at " + pos.toString() + " with level " + level + '\n').withStyle(ChatFormatting.GREEN));
@@ -297,6 +318,11 @@ public class FactionCommand {
 
                                             if (playerLevel == 1 || playerLevel < level || nation.getClaimLevel(pos) >= 2) {
                                                 source.sendFailure(Component.literal("You don`t have permission to claim this chunk!"));
+                                                return 0;
+                                            }
+
+                                            if (faction.getClaimed().size() + 1 > FactionCore.getClaimsPerLevelChurch(faction.getLevel())) {
+                                                source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
                                                 return 0;
                                             }
 
@@ -742,6 +768,11 @@ public class FactionCommand {
                                                 return 0;
                                             }
 
+                                            if (faction.getAllCitizens().size() + 1 > FactionCore.getCitizensAmountPerLevel(faction.getLevel())) {
+                                                source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
+                                                return 0;
+                                            }
+
                                             inviteMap.put(target.getUUID(), faction.getId());
 
                                             source.sendSystemMessage(Component.literal("Successfully invited " + target.getName().getString() +
@@ -796,6 +827,11 @@ public class FactionCommand {
                                                 source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
                                                 return 0;
                                             }
+
+                                    if (faction.getAllCitizens().size() + 1 > FactionCore.getCitizensAmountPerLevel(faction.getLevel())) {
+                                        source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
+                                        return 0;
+                                    }
 
                                             inviteMap.put(target.getUUID(), faction.getId());
 
@@ -1121,11 +1157,30 @@ public class FactionCommand {
                                                         return 0;
                                                     }
 
-                                                    BeyonderData.factionStorage.promote(faction.getId(), target.getName().getString(), level);
+                                                    if(promoteLevel == 1){
+                                                        if (faction.getAllCitizens().size() + 1 > FactionCore.getCitizensAmountPerLevel(faction.getLevel())) {
+                                                            source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
+                                                            return 0;
+                                                        }
+                                                    }
+                                                    else if(promoteLevel > 1 && promoteLevel < 8){
+                                                        if (faction.getAllNobles().size() + 1 > FactionCore.getNoblesAmountPerLevel(faction.getLevel())) {
+                                                            source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
+                                                            return 0;
+                                                        }
+                                                    }
+                                                    else if (promoteLevel == 8){
+                                                        if (faction.getAllCoLeaders().size() + 1 > FactionCore.getCoLeadersAmountPerLevel(faction.getLevel())) {
+                                                            source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
+                                                            return 0;
+                                                        }
+                                                    }
 
-                                                    source.sendSystemMessage(Component.literal("Successfully promoted " + target.getName().getString() + " to " + level + "\n").withStyle(ChatFormatting.GREEN));
+                                                    BeyonderData.factionStorage.promote(faction.getId(), target.getName().getString(), promoteLevel);
 
-                                                    target.sendSystemMessage(Component.literal("You were promoted in \"" + faction.getName() + "\" to " + level + "\n").withStyle(ChatFormatting.GREEN));
+                                                    source.sendSystemMessage(Component.literal("Successfully promoted " + target.getName().getString() + " to " + promoteLevel + "\n").withStyle(ChatFormatting.GREEN));
+
+                                                    target.sendSystemMessage(Component.literal("You were promoted in \"" + faction.getName() + "\" to " + promoteLevel + "\n").withStyle(ChatFormatting.GREEN));
 
                                                     return 1;
                                                 }
@@ -1192,11 +1247,30 @@ public class FactionCommand {
                                                         return 0;
                                                     }
 
-                                                    BeyonderData.factionStorage.promote(faction.getId(), target.getName().getString(), level);
+                                            if(promoteLevel == 1){
+                                                if (faction.getAllCitizens().size() + 1 > FactionCore.getCitizensAmountPerLevel(faction.getLevel())) {
+                                                    source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
+                                                    return 0;
+                                                }
+                                            }
+                                            else if(promoteLevel > 1 && promoteLevel < 8){
+                                                if (faction.getAllNobles().size() + 1 > FactionCore.getNoblesAmountPerLevel(faction.getLevel())) {
+                                                    source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
+                                                    return 0;
+                                                }
+                                            }
+                                            else if (promoteLevel == 8){
+                                                if (faction.getAllCoLeaders().size() + 1 > FactionCore.getCoLeadersAmountPerLevel(faction.getLevel())) {
+                                                    source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
+                                                    return 0;
+                                                }
+                                            }
 
-                                                    source.sendSystemMessage(Component.literal("Successfully promoted " + target.getName().getString() + " to " + level + "\n").withStyle(ChatFormatting.GREEN));
+                                                    BeyonderData.factionStorage.promote(faction.getId(), target.getName().getString(), promoteLevel);
 
-                                                    target.sendSystemMessage(Component.literal("You were promoted in \"" + faction.getName() + "\" to " + level + "\n").withStyle(ChatFormatting.GREEN));
+                                                    source.sendSystemMessage(Component.literal("Successfully promoted " + target.getName().getString() + " to " + promoteLevel + "\n").withStyle(ChatFormatting.GREEN));
+
+                                                    target.sendSystemMessage(Component.literal("You were promoted in \"" + faction.getName() + "\" to " + promoteLevel + "\n").withStyle(ChatFormatting.GREEN));
 
                                                     return 1;
                                                 }
@@ -1300,12 +1374,341 @@ public class FactionCommand {
 
                                             source.sendSystemMessage(Component.literal("Successfully passed leadership to " + target.getName().getString() + "\n").withStyle(ChatFormatting.GREEN));
 
-                                            target.sendSystemMessage(Component.literal("You are now a leader of \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+                                            target.sendSystemMessage(Component.literal("You are now leader of \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
 
                                             return 1;
                                         }
                                 ))
                 );
+    }
+
+
+    private static LiteralArgumentBuilder<CommandSourceStack> bank() {
+        return Commands.literal("bank")
+                .then(Commands.literal("nation")
+                        .then(Commands.literal("deposit")
+                                .then(Commands.argument("soli", IntegerArgumentType.integer(0))
+                                        .then(Commands.argument("pound", IntegerArgumentType.integer(0))
+                                                .executes(context -> {
+                                                            CommandSourceStack source = context.getSource();
+                                                            var player = source.getPlayer();
+                                                            if (player == null) {
+                                                                source.sendFailure(Component.literal("Must be a player!"));
+                                                                return 0;
+                                                            }
+
+                                                            int soli = IntegerArgumentType.getInteger(context, "soli");
+                                                            int pounds = IntegerArgumentType.getInteger(context, "pound");
+
+                                                            String name = player.getName().getString();
+                                                            var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
+                                                            if (faction == null) {
+                                                                source.sendFailure(Component.literal("You are not part of faction with such type!"));
+                                                                return 0;
+                                                            }
+
+                                                            int removedSoli = player.getInventory().clearOrCountMatchingItems(
+                                                                    stack -> stack.is(ModItems.ONE_SOLI),
+                                                                    soli,
+                                                                    player.inventoryMenu.getCraftSlots()
+                                                            );
+
+                                                            int removedPound = player.getInventory().clearOrCountMatchingItems(
+                                                                    stack -> stack.is(ModItems.ONE_POUND),
+                                                                    pounds,
+                                                                    player.inventoryMenu.getCraftSlots()
+                                                            );
+
+                                                            player.containerMenu.broadcastChanges();
+
+                                                            faction.setSoli(faction.getSoli() + removedSoli);
+                                                            faction.setPound(faction.getPound() + removedPound);
+
+                                                            BeyonderData.factionStorage.setFaction(faction.getId(), faction);
+
+                                                            source.sendSystemMessage(Component.literal("Successfully deposit " + removedSoli + " soli and " + removedPound + " pounds" + '\n').withStyle(ChatFormatting.GREEN));
+
+                                                            return 1;
+                                                        }
+                                                ))))
+                        .then(Commands.literal("withdrew")
+                                .then(Commands.argument("soli", IntegerArgumentType.integer(0))
+                                        .then(Commands.argument("pound", IntegerArgumentType.integer(0))
+                                                .executes(context -> {
+                                                            CommandSourceStack source = context.getSource();
+                                                            var player = source.getPlayer();
+                                                            if (player == null) {
+                                                                source.sendFailure(Component.literal("Must be a player!"));
+                                                                return 0;
+                                                            }
+
+                                                            int soli = IntegerArgumentType.getInteger(context, "soli");
+                                                            int pounds = IntegerArgumentType.getInteger(context, "pound");
+
+                                                            String name = player.getName().getString();
+                                                            var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
+                                                            if (faction == null) {
+                                                                source.sendFailure(Component.literal("You are not part of faction with such type!"));
+                                                                return 0;
+                                                            }
+
+                                                            if (faction.getPlayerLevel(name) <= 7) {
+                                                                source.sendFailure(Component.literal("You don't have permission to withdrew!"));
+                                                                return 0;
+                                                            }
+
+                                                            int soliR = Math.min(soli, faction.getSoli());
+                                                            int poundsR = Math.min(pounds, faction.getPound());
+
+                                                            faction.setSoli(faction.getSoli() - soliR);
+                                                            faction.setPound(faction.getPound() - poundsR);
+
+                                                            BeyonderData.factionStorage.setFaction(faction.getId(), faction);
+
+                                                            int remainingSoli = soliR;
+                                                            while (remainingSoli > 0) {
+                                                                int give = Math.min(remainingSoli, ModItems.ONE_SOLI.get().getDefaultMaxStackSize());
+                                                                ItemHandlerHelper.giveItemToPlayer(
+                                                                        player,
+                                                                        new ItemStack(ModItems.ONE_SOLI.get(), give)
+                                                                );
+                                                                remainingSoli -= give;
+                                                            }
+
+                                                            int remainingPounds = poundsR;
+                                                            while (remainingPounds > 0) {
+                                                                int give = Math.min(remainingPounds, ModItems.ONE_POUND.get().getDefaultMaxStackSize());
+                                                                ItemHandlerHelper.giveItemToPlayer(
+                                                                        player,
+                                                                        new ItemStack(ModItems.ONE_POUND.get(), give)
+                                                                );
+                                                                remainingPounds -= give;
+                                                            }
+
+                                                            source.sendSystemMessage(Component.literal("Successfully withdrew " + soliR + " soli and " + poundsR + " pounds" + '\n').withStyle(ChatFormatting.GREEN));
+
+                                                            return 1;
+                                                        }
+                                                ))
+                                )))
+                .then(Commands.literal("church")
+                        .then(Commands.literal("deposit")
+                                .then(Commands.argument("soli", IntegerArgumentType.integer(0))
+                                        .then(Commands.argument("pound", IntegerArgumentType.integer(0))
+                                                .executes(context -> {
+                                                            CommandSourceStack source = context.getSource();
+                                                            var player = source.getPlayer();
+                                                            if (player == null) {
+                                                                source.sendFailure(Component.literal("Must be a player!"));
+                                                                return 0;
+                                                            }
+
+                                                            int soli = IntegerArgumentType.getInteger(context, "soli");
+                                                            int pounds = IntegerArgumentType.getInteger(context, "pound");
+
+                                                            String name = player.getName().getString();
+                                                            var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 2);
+                                                            if (faction == null) {
+                                                                source.sendFailure(Component.literal("You are not part of faction with such type!"));
+                                                                return 0;
+                                                            }
+
+                                                            int removedSoli = player.getInventory().clearOrCountMatchingItems(
+                                                                    stack -> stack.is(ModItems.ONE_SOLI),
+                                                                    soli,
+                                                                    player.inventoryMenu.getCraftSlots()
+                                                            );
+
+                                                            int removedPound = player.getInventory().clearOrCountMatchingItems(
+                                                                    stack -> stack.is(ModItems.ONE_POUND),
+                                                                    pounds,
+                                                                    player.inventoryMenu.getCraftSlots()
+                                                            );
+
+                                                            player.containerMenu.broadcastChanges();
+
+                                                            faction.setSoli(faction.getSoli() + removedSoli);
+                                                            faction.setPound(faction.getPound() + removedPound);
+
+                                                            BeyonderData.factionStorage.setFaction(faction.getId(), faction);
+
+                                                            source.sendSystemMessage(Component.literal("Successfully deposit " + removedSoli + " soli and " + removedPound + " pounds" + '\n').withStyle(ChatFormatting.GREEN));
+
+                                                            return 1;
+                                                        }
+                                                ))))
+                        .then(Commands.literal("withdrew")
+                                .then(Commands.argument("soli", IntegerArgumentType.integer(0))
+                                        .then(Commands.argument("pound", IntegerArgumentType.integer(0))
+                                                .executes(context -> {
+                                                            CommandSourceStack source = context.getSource();
+                                                            var player = source.getPlayer();
+                                                            if (player == null) {
+                                                                source.sendFailure(Component.literal("Must be a player!"));
+                                                                return 0;
+                                                            }
+
+                                                            int soli = IntegerArgumentType.getInteger(context, "soli");
+                                                            int pounds = IntegerArgumentType.getInteger(context, "pound");
+
+                                                            String name = player.getName().getString();
+                                                            var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 2);
+                                                            if (faction == null) {
+                                                                source.sendFailure(Component.literal("You are not part of faction with such type!"));
+                                                                return 0;
+                                                            }
+
+                                                            if (faction.getPlayerLevel(name) <= 7) {
+                                                                source.sendFailure(Component.literal("You don't have permission to withdrew!"));
+                                                                return 0;
+                                                            }
+
+                                                            int soliR = Math.min(soli, faction.getSoli());
+                                                            int poundsR = Math.min(pounds, faction.getPound());
+
+                                                            faction.setSoli(faction.getSoli() - soliR);
+                                                            faction.setPound(faction.getPound() - poundsR);
+
+                                                            BeyonderData.factionStorage.setFaction(faction.getId(), faction);
+
+                                                            int remainingSoli = soliR;
+                                                            while (remainingSoli > 0) {
+                                                                int give = Math.min(remainingSoli, ModItems.ONE_SOLI.get().getDefaultMaxStackSize());
+                                                                ItemHandlerHelper.giveItemToPlayer(
+                                                                        player,
+                                                                        new ItemStack(ModItems.ONE_SOLI.get(), give)
+                                                                );
+                                                                remainingSoli -= give;
+                                                            }
+
+                                                            int remainingPounds = poundsR;
+                                                            while (remainingPounds > 0) {
+                                                                int give = Math.min(remainingPounds, ModItems.ONE_POUND.get().getDefaultMaxStackSize());
+                                                                ItemHandlerHelper.giveItemToPlayer(
+                                                                        player,
+                                                                        new ItemStack(ModItems.ONE_POUND.get(), give)
+                                                                );
+                                                                remainingPounds -= give;
+                                                            }
+
+                                                            source.sendSystemMessage(Component.literal("Successfully withdrew " + soliR + " soli and " + poundsR + " pounds" + '\n').withStyle(ChatFormatting.GREEN));
+
+                                                            return 1;
+                                                        }
+                                                ))
+                                )));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> levelUp() {
+        return Commands.literal("levelup")
+                .then(Commands.literal("nation")
+                        .executes(context -> {
+                                    CommandSourceStack source = context.getSource();
+                                    var player = source.getPlayer();
+                                    if (player == null) {
+                                        source.sendFailure(Component.literal("Must be a player!"));
+                                        return 0;
+                                    }
+
+                                    String name = player.getName().getString();
+
+                                    var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
+                                    if (faction == null) {
+                                        source.sendFailure(Component.literal("You must be part of faction!"));
+                                        return 0;
+                                    }
+
+                                    if (faction.getPlayerLevel(name) < 8) {
+                                        source.sendFailure(Component.literal("You don't have permission to execute this command!"));
+                                        return 0;
+                                    }
+
+                                    if (FactionCore.getMaxLevel() <= faction.getLevel()) {
+                                        source.sendFailure(Component.literal("Your faction has the max level!"));
+                                        return 0;
+                                    }
+
+                                    boolean failed = false;
+                                    if (faction.getAllPlayers().size() < FactionCore.getLevelUpPeople(faction.getLevel())) {
+                                        failed = true;
+                                    } else if (faction.getClaimed().size() < FactionCore.getLevelUpChunks(faction.getLevel())) {
+                                        failed = true;
+                                    } else if (faction.getSoli() < FactionCore.getLevelUpSoli(faction.getLevel())
+                                            || faction.getPound() < FactionCore.getLevelUpPounds(faction.getLevel())) {
+                                        failed = true;
+                                    }
+
+                                    if (failed) {
+                                        source.sendFailure(Component.literal("Your faction has not met the requirements to level up!"
+                                                + "\nChunks: " + faction.getClaimed().size() + "/" + FactionCore.getLevelUpChunks(faction.getLevel())
+                                                + "\nPeople: " + faction.getAllPlayers().size() + "/" + FactionCore.getLevelUpPeople(faction.getLevel())
+                                                + "\nPounds: " + faction.getPound() + "/" + FactionCore.getLevelUpPounds(faction.getLevel())
+                                                + " -- Soli: " + faction.getSoli() + "/" + FactionCore.getLevelUpSoli(faction.getLevel()
+                                        )));
+                                        return 0;
+                                    }
+
+                                    BeyonderData.factionStorage.levelUp(faction.getId());
+
+                                    source.sendSystemMessage(Component.literal("Successfully leveled up \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+
+                                    return 1;
+                                }
+                        ))
+                .then(Commands.literal("church")
+                        .executes(context -> {
+                                    CommandSourceStack source = context.getSource();
+                                    var player = source.getPlayer();
+                                    if (player == null) {
+                                        source.sendFailure(Component.literal("Must be a player!"));
+                                        return 0;
+                                    }
+
+                                    String name = player.getName().getString();
+
+                                    var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 2);
+                                    if (faction == null) {
+                                        source.sendFailure(Component.literal("You must be part of faction!"));
+                                        return 0;
+                                    }
+
+                                    if (faction.getPlayerLevel(name) < 8) {
+                                        source.sendFailure(Component.literal("You don't have permission to execute this command!"));
+                                        return 0;
+                                    }
+
+                                    if (FactionCore.getMaxLevel() <= faction.getLevel()) {
+                                        source.sendFailure(Component.literal("Your faction has the max level!"));
+                                        return 0;
+                                    }
+
+                                    boolean failed = false;
+                                    if (faction.getAllPlayers().size() < FactionCore.getLevelUpPeople(faction.getLevel())) {
+                                        failed = true;
+                                    } else if (faction.getClaimed().size() < FactionCore.getLevelUpChunks(faction.getLevel())) {
+                                        failed = true;
+                                    } else if (faction.getSoli() < FactionCore.getLevelUpSoli(faction.getLevel())
+                                            || faction.getPound() < FactionCore.getLevelUpPounds(faction.getLevel())) {
+                                        failed = true;
+                                    }
+
+                                    if (failed) {
+                                        source.sendFailure(Component.literal("Your faction has not met the requirements to level up!"
+                                                + "\nChunks: " + faction.getClaimed().size() + "/" + FactionCore.getLevelUpChunks(faction.getLevel())
+                                                + "\nPeople: " + faction.getAllPlayers().size() + "/" + FactionCore.getLevelUpPeople(faction.getLevel())
+                                                + "\nPounds: " + faction.getPound() + "/" + FactionCore.getLevelUpPounds(faction.getLevel())
+                                                + " -- Soli: " + faction.getSoli() + "/" + FactionCore.getLevelUpSoli(faction.getLevel()
+                                        )));
+                                        return 0;
+                                    }
+
+                                    BeyonderData.factionStorage.levelUp(faction.getId());
+
+                                    source.sendSystemMessage(Component.literal("Successfully leveled up \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+
+                                    return 1;
+                                }
+                        ));
     }
 
 }

@@ -1,5 +1,6 @@
 package de.jakob.lotm.addons.factions;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -20,6 +21,7 @@ public class FactionCore {
     private Map<String, Integer> nobles;
     private List<String> citizens;
     private Set<ChunkInfo> claimed;
+    private Map<Integer, Integer> bank;
 
     private Set<Integer> hasPermission; // for churches only
     private ChunkPos coreClaim; //for nation only
@@ -34,26 +36,30 @@ public class FactionCore {
         claimed = new HashSet<>();
         this.type = type;
         hasPermission = new HashSet<>();
+        bank = new HashMap<>();
 
         coreClaim = new ChunkPos(0, 0);
+
+        bank.put(1, 0);
+        bank.put(2, 0);
     }
 
     public static int getNoblesAmountPerLevel(int level){
         return switch (level){
           case 0 -> 0;
-          case 1 -> 5;
-          case 2 -> 10;
-          case 3 -> 20;
+          case 1 -> 1;
+          case 2 -> 2;
+          case 3 -> 4;
           default -> 0;
         };
     }
 
     public static int getCitizensAmountPerLevel(int level){
         return switch (level){
-            case 0 -> 0;
-            case 1 -> 30;
-            case 2 -> 45;
-            case 3 -> 60;
+            case 0 -> 2;
+            case 1 -> 5;
+            case 2 -> 9;
+            case 3 -> 13;
             default -> 0;
         };
     }
@@ -62,8 +68,8 @@ public class FactionCore {
         return switch (level){
             case 0 -> 0;
             case 1 -> 1;
-            case 2 -> 2;
-            case 3 -> 3;
+            case 2 -> 1;
+            case 3 -> 2;
             default -> 0;
         };
     }
@@ -71,9 +77,9 @@ public class FactionCore {
     public static int getClaimsPerLevelNation(int level){
         return switch (level){
             case 0 -> 1;
-            case 1 -> 30;
-            case 2 -> 100;
-            case 3 -> 300;
+            case 1 -> 20;
+            case 2 -> 60;
+            case 3 -> 110;
             default -> 0;
         };
     }
@@ -81,15 +87,59 @@ public class FactionCore {
     public static int getClaimsPerLevelChurch(int level){
         return switch (level){
             case 0 -> 1;
-            case 1 -> 10;
-            case 2 -> 25;
-            case 3 -> 50;
+            case 1 -> 15;
+            case 2 -> 40;
+            case 3 -> 80;
             default -> 0;
+        };
+    }
+
+    public static int getLevelUpPeople(int level){
+        return switch (level){
+            case 0 -> 2;
+            case 1 -> 6;
+            case 2 -> 10;
+            default -> 0;
+        };
+    }
+
+    public static int getLevelUpChunks(int level){
+        return switch (level){
+            case 0 -> 1;
+            case 1 -> 15;
+            case 2 -> 40;
+            default -> 0;
+        };
+    }
+
+    public static int getLevelUpPounds(int level){
+        return switch (level){
+          case 0 -> 250;
+          case 1 -> 10000;
+          case 2 -> 25000;
+          default -> 0;
+        };
+    }
+
+    public static int getLevelUpSoli(int level){
+        return switch (level){
+          case 0 -> 100;
+          case 1 -> 5000;
+          case 2 -> 15000;
+          default -> 0;
         };
     }
 
     public static int getMaxLevel(){
         return 3;
+    }
+
+    public static int getMinSeqNation(){
+        return 8;
+    }
+
+    public static int getMinSeqChurch(){
+        return 6;
     }
 
     public boolean isOutOfSlotsCitizens(){
@@ -225,6 +275,18 @@ public class FactionCore {
         return claimed.stream().filter(i -> i.pos().equals(pos)).findFirst().get();
     }
 
+    public List<String> getAllCitizens(){
+        return citizens;
+    }
+
+    public Map<String, Integer> getAllNobles(){
+        return nobles;
+    }
+
+    public List<String> getAllCoLeaders(){
+        return coLeaders;
+    }
+
     public void addClaim(ChunkPos pos, int level){
         if(isClaimed(pos)){
             var obj = getClaim(pos);
@@ -248,6 +310,22 @@ public class FactionCore {
         claimed.remove(getClaim(pos));
     }
 
+    public void setSoli(int amount){
+        bank.put(1, amount);
+    }
+
+    public void setPound(int amount){
+        bank.put(2, amount);
+    }
+
+    public int getSoli(){
+        return bank.get(1);
+    }
+
+    public int getPound(){
+        return bank.get(2);
+    }
+
     public void removeCoLeader(String name){
         coLeaders.remove(name);
     }
@@ -259,20 +337,29 @@ public class FactionCore {
     }
 
     public String getAllInfo(){
+        BlockPos center = new BlockPos(
+                coreClaim.getMiddleBlockX(),
+                0,
+                coreClaim.getMiddleBlockZ()
+        );
+
         return "ID: " + id
                 + "\nLeader: " + leader
                 + "\nName: " + name
                 + "\nLevel: " + level
                 + "\nType: " + (type == 1 ? "Nation" : "Church")
+                + "\nCore: " + coreClaim.toString() + " - " + center.toString()
                 + "\nClaims: " + claimed.size() + "/" + (type == 1? getClaimsPerLevelNation(level) : getClaimsPerLevelChurch(level))
-                + "\nCo-leaders:" + convertCoLeaders()
+                + "\nBank: " + bank.get(1) + " soli, " + bank.get(2) + " pounds"
+                + "\nTotal people: " + getAllPlayers().size()
+                + "\nCo-leaders: " + convertCoLeaders()
                 + "\nNobles: " + convertNobles()
-                + "\nCitizens: " +convertCitizens()
+                + "\nCitizens: " + convertCitizens()
                 ;
     }
 
     private String convertCoLeaders(){
-        StringBuilder builder = new StringBuilder("\n");
+        StringBuilder builder = new StringBuilder(coLeaders.size() +"/" + getCoLeadersAmountPerLevel(level) + "\n");
         for(var obj : coLeaders){
             builder.append("  ").append(obj).append('\n');
         }
@@ -280,7 +367,7 @@ public class FactionCore {
     }
 
     private String convertNobles(){
-        StringBuilder builder = new StringBuilder("\n");
+        StringBuilder builder = new StringBuilder(nobles.size() + "/" + getNoblesAmountPerLevel(level) + "\n");
         for(var obj : nobles.entrySet()){
             builder.append("  ").append(obj.getKey()).append(" -- ").append(obj.getValue()).append('\n');
         }
@@ -288,7 +375,7 @@ public class FactionCore {
     }
 
     private String convertCitizens(){
-        StringBuilder builder = new StringBuilder("\n");
+        StringBuilder builder = new StringBuilder(citizens.size() + "/" + getCitizensAmountPerLevel(level) + "\n");
         for(var obj : citizens){
             builder.append("  ").append(obj).append('\n');
         }
@@ -342,7 +429,7 @@ public class FactionCore {
         tag.put("co_leaders", coLeaderList);
 
         ListTag nobleList = new ListTag();
-        for (Map.Entry<String, Integer> entry : nobles.entrySet()) {
+        for (var entry : nobles.entrySet()) {
             CompoundTag noble = new CompoundTag();
             noble.putString("name", entry.getKey());
             noble.putInt("level", entry.getValue());
@@ -371,6 +458,15 @@ public class FactionCore {
         tag.putInt("core_x", coreClaim.x);
         tag.putInt("core_z", coreClaim.z);
 
+        ListTag bankList = new ListTag();
+        for (var entry : bank.entrySet()) {
+            CompoundTag obj = new CompoundTag();
+            obj.putInt("type", entry.getKey());
+            obj.putInt("amount", entry.getValue());
+            bankList.add(obj);
+        }
+        tag.put("bank", bankList);
+
         return tag;
     }
 
@@ -378,6 +474,15 @@ public class FactionCore {
         FactionCore faction = new FactionCore(tag.getString("leader"), tag.getInt("id"), tag.getInt("type"));
 
         faction.level = tag.getInt("level");
+
+        ListTag bankList = tag.getList("bank", Tag.TAG_COMPOUND);
+        for (Tag t : bankList) {
+            CompoundTag obj = (CompoundTag) t;
+            faction.bank.put(
+                    obj.getInt("type"),
+                    obj.getInt("amount")
+            );
+        }
 
         ListTag coLeaderList = tag.getList("co_leaders", Tag.TAG_STRING);
         for (Tag t : coLeaderList) {
