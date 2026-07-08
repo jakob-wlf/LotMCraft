@@ -97,7 +97,7 @@ public class ClientData {
     }
 
     public static List<String> getCopiedAbilityIds() {
-        return copiedAbilityIds;
+        return copiedAbilityIds.stream().map(s -> s.split(":")[0] + ":-1:copied").toList();
     }
 
     public static List<String> getCopiedAbilityCopyTypes() {

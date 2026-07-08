@@ -17,6 +17,7 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
     private float spirituality = 0;
     private float digestionProgress = 0;
     private boolean isGriefingEnabled = true;
+    private int cowardWormAmount = 0;
 
     public int getSequence() {
         return sequence;
@@ -168,6 +169,14 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
         isGriefingEnabled = griefingEnabled;
     }
 
+    public int getCowardWormAmount() {
+        return cowardWormAmount;
+    }
+
+    public void setCowardWormAmount(int cowardWormAmount) {
+        this.cowardWormAmount = cowardWormAmount;
+    }
+
     @Override
     public @UnknownNullability CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
@@ -193,6 +202,7 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
         tag.putFloat("spirituality", spirituality);
         tag.putFloat("digestionProgress", digestionProgress);
         tag.putBoolean("isGriefingEnabled", isGriefingEnabled);
+        tag.putInt("cowardWormAmount", cowardWormAmount);
         return tag;
     }
 
@@ -323,6 +333,7 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
         this.spirituality = compoundTag.getFloat("spirituality");
         this.digestionProgress = compoundTag.getFloat("digestionProgress");
         this.isGriefingEnabled = compoundTag.getBoolean("isGriefingEnabled");
+        this.cowardWormAmount = compoundTag.getInt("cowardWormAmount");
         syncHighest();
     }
 }

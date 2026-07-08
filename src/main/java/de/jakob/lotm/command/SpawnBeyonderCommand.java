@@ -94,8 +94,8 @@ public class SpawnBeyonderCommand {
             }
 
             BeyonderNPCEntity beyonder = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), target.level(), false, BeyonderNPCEntity.getRandomBeyonderSkin(), pathway, sequence, hasQuest, hasTrades);
-            target.level().addFreshEntity(beyonder);
             beyonder.setPos(target.getX(), target.getY(), target.getZ());
+            target.level().addFreshEntity(beyonder);
 
             source.sendSuccess(() -> Component.literal("Spawned Beyonder with pathway: " + pathway + " and sequence: " + sequence), false);
 

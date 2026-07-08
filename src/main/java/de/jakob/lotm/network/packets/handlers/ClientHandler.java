@@ -9,6 +9,7 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.VisionaryAbilityMenus;
+import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.acting.ActingHelper;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
@@ -106,7 +107,8 @@ public class ClientHandler {
                     packet.spirituality(),
                     false,
                     false,
-                    0.0f
+                    0.0f,
+                    0
             );
         }
     }
@@ -566,6 +568,15 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(new ShapeShiftingSelectionGui(packet.entityTypes()));
     }
 
+    public static void handleWanderingSelectionScreenPacket(OpenWanderingSelectionScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new WanderingSelectionGui(packet.dimensionIds()));
+    }
+
+    public static void handleWaypointSelectionScreenPacket(OpenWaypointSelectionScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new WaypointMenuScreen(packet.waypoints(), packet.use()));
+    }
+
+
     public static void handleDiscernmentScreenPacket(OpenDiscernmentScreenPacket packet) {
         Minecraft.getInstance().setScreen(new DiscernmentSelectionGui(packet.saved()));
     }
@@ -620,7 +631,7 @@ public class ClientHandler {
         }
     }
 
-    public static void handleAddClientSideTagPacket(AddClientSideTagPacket packet) {
+    public static void handleAddClientSideTagPacket(AddEntityTagPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -698,6 +709,16 @@ public class ClientHandler {
             screen.refreshAvailableAbilities();
         }
     }
+
+    public static void handleActingCapPacket(SyncActingCapPacket packet) {
+        net.minecraft.client.player.LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return;
+        player.getPersistentData().putFloat(
+                ActingCapHelper.CAP_REDUCTION_KEY, packet.capReduction());
+        player.getPersistentData().put(
+                ActingCapHelper.MISSED_ACTING_KEY, packet.missedActing());
+    }
+
 
     public static void handleSyncBeyonderData(SyncBeyonderDataPacket packet, IPayloadContext context) {
         Player player = context.player();

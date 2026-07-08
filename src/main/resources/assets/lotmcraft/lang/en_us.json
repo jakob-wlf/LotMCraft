@@ -16,6 +16,9 @@
   "item.lotmcraft.paper_axe": "Paper Axe",
   "item.lotmcraft.paper_shovel": "Paper Shovel",
   "item.lotmcraft.spacer": "",
+  "item.lotmcraft.uniqueness_map": "Mysterious Temple Map",
+  "item.lotmcraft.city_map": "Beyonder Gathering Map (Underground)",
+  "item.lotmcraft.structure_map.not_found": "Structure not found. Try somewhere else.",
   "item.lotmcraft.upper_fragment_of_a_mysterious_tablet": "Upper Fragment of a Mysterious Tablet",
   "item.lotmcraft.right_fragment_of_a_mysterious_tablet": "Right Fragment of a Mysterious Tablet",
   "item.lotmcraft.left_fragment_of_a_mysterious_tablet": "Left Fragment of a Mysterious Tablet",
@@ -49,6 +52,10 @@
   "key.beyonders.use_ability_bar_ability_4": "Use Ability Bar Ability 4",
   "key.beyonders.use_ability_bar_ability_5": "Use Ability Bar Ability 5",
   "key.beyonders.use_ability_bar_ability_6": "Use Ability Bar Ability 6",
+  "key.beyonders.use_ability_bar_ability_7": "Use Ability Bar Ability 7",
+  "key.beyonders.use_ability_bar_ability_8": "Use Ability Bar Ability 8",
+  "key.beyonders.use_ability_bar_ability_9": "Use Ability Bar Ability 9",
+  "key.beyonders.use_ability_bar_ability_0": "Use Ability Bar Ability 10",
   "key.beyonders.return_to_main_body": "Return to Main Body",
   "key.beyonders.next_artifact_ability": "Use next Artifact Ability",
   "key.beyonders.openArtifactWheel": "Open Artifact Wheel",
@@ -708,13 +715,19 @@
   "lotmcraft.travelers_door_ability.description": "Travel through Spirit World to reach your destination, or enter it by yourself",
   "ability.lotmcraft.travelers_door.coordinates": "Set Coordinates",
   "ability.lotmcraft.travelers_door.spirit_world": "Spirit World",
+  "lotmcraft.blink_afterimage_ability": "Blink Afterimages",
+  "lotmcraft.blink_afterimage_ability.description": "When activated an afterimage will be left behind each time you blink, and will attack your opponent with recorded abilities. Will consume a Worm of Stars. ",
+  "lotmcraft.door_transfiguration_ability": "Door Transfiguration",
+  "lotmcraft.door_transfiguration_ability.description": "Transform into illusory doors to avoid incoming damage",
+  "lotmcraft.secret_keeping_ability": "Secret Keeping",
+  "lotmcraft.secret_keeping_ability.description": "Grant yourself and your nearby allies a certain level of concealment against divination.",
   "lotmcraft.space_concealment_ability": "Space Concealment",
   "lotmcraft.space_concealment_ability.description": "Separate a fixed space. Sneak while using to remove all concealed spaces. Use Collapse spaces to destroy anything inside and hurt entities.",
   "ability.lotmcraft.space_concealment.other": "Target Other",
   "ability.lotmcraft.space_concealment.self": "Target Self",
   "ability.lotmcraft.space_concealment.collapse": "Collapse Spaces",
   "lotmcraft.exile_ability": "Exile",
-  "lotmcraft.exile_ability.description": "Banish your enemy to End, they will come back shortly after",
+  "lotmcraft.exile_ability.description": "Banish your enemy to a chaotic Space, they will come back shortly after",
   "lotmcraft.door_substitution_ability": "Door Substitution",
   "lotmcraft.door_substitution_ability.description": "Create a Door Substitute, next damage will be transferred to door, saving you from it",
   "lotmcraft.wandering_ability": "Wandering",
@@ -724,16 +737,27 @@
   "lotmcraft.symbolization_ability.description": "Transform into collection of symbols, gaining ability to fly and massively increase your move speed",
   "lotmcraft.sealing_ability": "Sealing",
   "lotmcraft.sealing_ability.description": "Seal your enemies. In this state they won't be able to move and use their abilities",
+  "lotmcraft.spatial_cage_ability": "Spatial Cage",
+  "lotmcraft.spatial_cage_ability.description": "Trap your enemies in a spatial cage, they won't be able to break out of. YOu can also chose to leave the front open to only restrict their movement",
+  "ability.lotmcraft.spatial_cage.surround": "Surround",
+  "ability.lotmcraft.spatial_cage.open_front": "Open Front",
   "lotmcraft.space_tearing_ability": "Space Tearing",
   "lotmcraft.space_tearing_ability.description": "Tear the space and make it become swallowed by the void",
   "lotmcraft.waypoint_ability": "Waypoint",
   "lotmcraft.waypoint_ability.description": "Set Waypoints that you can then teleport to. Cycle through the waypoints by sneaking.",
   "ability.lotmcraft.waypoint.teleport": "Teleport to Waypoint",
   "ability.lotmcraft.waypoint.set": "Create new Waypoint",
-  "ability.lotmcraft.waypoint.delete": "Delete current Waypoint",
+  "ability.lotmcraft.waypoint.select": "Select Waypoint",
+  "ability.lotmcraft.waypoint.delete": "Delete Waypoint",
   "ability.lotmcraft.waypoint.created": "Created new Waypoint",
   "ability.lotmcraft.waypoint.deleted": "Deleted Waypoint",
   "ability.lotmcraft.waypoint.no_waypoints": "You don't have any waypoints",
+  "lotmcraft.teleportation_authority_ability": "Teleportation Authority",
+  "lotmcraft.teleportation_authority_ability.description": "Initial Control over the Teleportation Authority allows you to teleport yourself and others instantaneously",
+  "ability.lotmcraft.teleportation_authority.self": "Teleport Self",
+  "ability.lotmcraft.teleportation_authority.self_and_nearby": "Self and Surrounding",
+  "ability.lotmcraft.teleportation_authority.targets": "Teleport Targets",
+  "ability.lotmcraft.teleportation_authority.banish": "Banish Targets",
   "lotmcraft.black_hole_ability": "Black Hole",
   "lotmcraft.black_hole_ability.description": "Bend and Shatter space, time and light to create a Black Hole",
   "lotmcraft.replicating_ability": "Replicating",
@@ -761,6 +785,8 @@
   "ability.lotmcraft.space_time_storm.targeted": "Targeted",
   "lotmcraft.player_teleportation_ability": "Player Teleportation",
   "lotmcraft.player_teleportation_ability.description": "Teleport to a Selected Player",
+  "lotmcraft.space_time_labyrinth_ability": "Space Time Labyrinth",
+  "lotmcraft.space_time_labyrinth_ability.description": "Trap your opponents in a Space Time Labyrinth. If they are not quick enough, they won't be able to survive.",
   "lotmcraft.space_fragmentation_ability": "Space Fragmentation",
   "lotmcraft.space_fragmentation_ability.description": "Summon illusory planets to create massive gravitational pull, distorting time and shattering the space before you",
   "lotmcraft.conceptualization_ability": "Conceptualization",
@@ -1219,7 +1245,7 @@
 
   "lotmcraft.combat_mastery_ability": "Combat Mastery",
   "lotmcraft.combat_mastery_ability.description": "When activating this ability the next attack you do deals a critical hit",
-  
+
 
 
 
@@ -1286,6 +1312,8 @@
   "item.lotmcraft.passive_luck_accumulation_ability": "Passive Luck Accumulation",
   "item.lotmcraft.passive_luck_accumulation_ability.description": "Passively accumulate luck",
 
+  "item.lotmcraft.danger_premonition_ability": "Danger Premonition",
+  "item.lotmcraft.danger_premonition_ability.description": "There is a chance you can foresee attacks and dodge",
   "item.lotmcraft.acrobatics_ability": "Acrobatics",
   "item.lotmcraft.acrobatics_ability.description": "While Sneaking, you can jump twice as high",
   "item.lotmcraft.paper_dagger_ability": "Paper Daggers",
@@ -1349,16 +1377,16 @@
   "item.lotmcraft.pure_idealism_ability": "Pure Idealism",
   "item.lotmcraft.pure_idealism_ability.description": "The better your mental state - the stronger you are",
 
-  
-  
+
+
   "item.lotmcraft.weapon_mastery_ability": "Weapon Mastery",
   "item.lotmcraft.weapon_mastery_ability.description": "Holding a weapon boosts attack damage and attack speed. Bows, crossbows, and tridents charge faster.",
   "lotmcraft.supernatural_resistance_ability": "Supernatural Resistance",
   "lotmcraft.supernatural_resistance_ability.description": "A self buff skill that grants Resistance and clears negative effects",
-  
-  
-  
-  
+
+
+
+
   "_comment003": "Effects-----------------------------------------------------------------------------",
   "effect.lotmcraft.asleep": "Asleep",
   "effect.lotmcraft.loosing_control": "Loosing Control",
@@ -1436,8 +1464,10 @@
   "block.lotmcraft.void_block": "Void",
   "block.lotmcraft.solid_void_block": "Solid Void",
   "block.lotmcraft.mystical_ring": "Mystical Ring",
+  "block.lotmcraft.reality_portal": "Reality Portal",
 
-  "_comment009": "Ingredients-----------------------------------------------------------------------------",
+
+"_comment009": "Ingredients-----------------------------------------------------------------------------",
   "item.lotmcraft.lavos_squid_blood": "Lavos Squid Blood",
   "item.lotmcraft.hornacis_gray_mountain_goat_horn": "Horn of a Gray Hornacis Mountain Goat",
   "item.lotmcraft.true_root_of_mist_treant": "True Root of a Mist Treant",
@@ -2269,6 +2299,7 @@
   "lotm.copied_ability_wheel.no_abilities": "No copied abilities available",
   "lotmcraft.griefing_enabled_required": "Enable griefing for this ability to work",
   "lotm.accept": "Accept",
+  "lotm.dodged_attack": "Dodged Attack",
 
   "lotmcraft.own_praying": "You have heard your own praying",
   "lotmcraft.gui.prey.title": "Select Target to Pray To",

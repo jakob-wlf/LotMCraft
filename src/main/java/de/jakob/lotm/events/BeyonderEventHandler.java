@@ -375,7 +375,7 @@ public class BeyonderEventHandler {
                 ClientBeyonderCache.removePlayer(player.getUUID());
             } else {
                 ClientBeyonderCache.updateData(player.getUUID(), regressed.pathway(), regressed.sequence(),
-                        0.0f, false, true, 1.0f);
+                        0.0f, false, true, 1.0f, 0);
             }
         }
     }

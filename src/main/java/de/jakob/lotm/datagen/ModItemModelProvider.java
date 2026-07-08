@@ -37,6 +37,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.CRYSTAL_BALL.get());
         basicItem(ModItems.ONE_POUND.get());
         basicItem(ModItems.ONE_SOLI.get());
+        basicItem(ModItems.UNIQUENESS_MAP.get());
+        basicItem(ModItems.CITY_MAP.get());
         basicItem(ModItems.CANE.get());
         basicItem(ModItems.UPPER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
         basicItem(ModItems.RIGHT_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());

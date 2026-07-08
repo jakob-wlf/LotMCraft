@@ -26,7 +26,9 @@ public class SanityComponent {
     }
 
     public void setSanityAndSync(float sanity, LivingEntity entity) {
-        this.sanity = Math.clamp(sanity, 0.0f, 1.0f);
+        float maxSanity = entity instanceof net.minecraft.world.entity.player.Player p
+                ? de.jakob.lotm.beyonders.acting.ActingCapHelper.getEffectiveCap(p) : 1.0f;
+        this.sanity = Math.clamp(sanity, 0.0f, maxSanity);
 
         if (entity instanceof ServerPlayer player) {
             PacketHandler.sendToPlayer(player, new SyncSanityPacket(this.sanity, entity.getId()));
@@ -54,7 +56,9 @@ public class SanityComponent {
 
         this.sanity += amount;
 
-        if (this.sanity > 1.0f) this.sanity = 1.0f;
+        float maxSanity = entity instanceof net.minecraft.world.entity.player.Player p
+                ? de.jakob.lotm.beyonders.acting.ActingCapHelper.getEffectiveCap(p) : 1.0f;
+        if (this.sanity > maxSanity) this.sanity = maxSanity;
         else if (this.sanity < 0.0f) this.sanity = 0.0f;
 
         if (entity instanceof ServerPlayer player) {
@@ -81,7 +85,9 @@ public class SanityComponent {
 
         this.sanity += amount;
 
-        if (this.sanity > 1.0f) this.sanity = 1.0f;
+        float maxSanitySeq = entity instanceof net.minecraft.world.entity.player.Player p
+                ? de.jakob.lotm.beyonders.acting.ActingCapHelper.getEffectiveCap(p) : 1.0f;
+        if (this.sanity > maxSanitySeq) this.sanity = maxSanitySeq;
         else if (this.sanity < 0.0f) this.sanity = 0.0f;
 
         if (entity instanceof ServerPlayer player) {

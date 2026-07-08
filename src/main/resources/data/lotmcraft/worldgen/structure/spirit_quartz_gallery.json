@@ -13,9 +13,10 @@
 
   "step": "surface_structures",
 
-  "start_height": { "absolute": 64 },
+  "start_height": { "absolute": 55 },
+  "locate_offset": [0, -3, 0],
 
-  "terrain_adaptation": "beard_thin",
+  "terrain_adaptation": "none",
 
   "liquid_settings": "apply_waterlogging",
 

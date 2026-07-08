@@ -39,12 +39,15 @@ public class ModCreativeModTabs {
                         output.accept(ModBlocks.BREWING_CAULDRON.get());
                         output.accept(ModBlocks.VOID);
                         output.accept(ModBlocks.SOLID_VOID);
+                        output.accept(ModBlocks.REALITY_PORTAL);
                         output.accept(ModItems.PAPER_SWORD);
                         output.accept(ModItems.PAPER_PICKAXE);
                         output.accept(ModItems.PAPER_AXE);
                         output.accept(ModItems.PAPER_SHOVEL);
                         output.accept(ModItems.ONE_POUND);
                         output.accept(ModItems.ONE_SOLI);
+                        output.accept(ModItems.UNIQUENESS_MAP);
+                        output.accept(ModItems.CITY_MAP);
                         output.accept(ModItems.DROPS_OF_ETERNAL_DARKNESS_BUCKET.get());
                         output.accept(ModItems.SEALED_BOTTLE.get());
                         output.accept(ModItems.ETERNAL_DARKNESS_RIVER_WATER_BOTTLE.get());

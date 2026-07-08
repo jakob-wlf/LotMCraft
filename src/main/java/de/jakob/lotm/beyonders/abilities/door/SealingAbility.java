@@ -43,7 +43,7 @@ public class SealingAbility extends Ability {
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("door", 3));
+        return new HashMap<>(Map.of("door", 2));
     }
 
     @Override

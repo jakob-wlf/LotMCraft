@@ -97,6 +97,7 @@ public class PassiveAbilityHandler {
 
     public static final DeferredItem<Item> PAPER_DAGGERS = ITEMS.registerItem("paper_dagger_ability", PaperDaggersAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> ACROBATICS = ITEMS.registerItem("acrobatics_ability", AcrobaticsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> DANGER_PREMONITION = ITEMS.registerItem("danger_premonition_ability", DangerPremonitionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PUPPETEERING_ENHANCEMENTS = ITEMS.registerItem("puppeteering_enhancements_ability", PuppeteeringEnhancementsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> MIRACLE_OF_RESURRECTION = ITEMS.registerItem("miracle_of_resurrection_ability", MiracleOfResurrectionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 

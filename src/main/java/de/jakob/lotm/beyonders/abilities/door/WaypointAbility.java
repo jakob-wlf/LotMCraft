@@ -3,23 +3,24 @@ package de.jakob.lotm.beyonders.abilities.door;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.WaypointComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.OpenWaypointSelectionScreenPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class WaypointAbility extends SelectableAbility {
     public WaypointAbility(String id) {
         super(id, 1);
-
         canBeCopied = false;
         canBeUsedByNPC = false;
         canBeReplicated = false;
@@ -39,32 +40,38 @@ public class WaypointAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.waypoint.teleport", "ability.lotmcraft.waypoint.set", "ability.lotmcraft.waypoint.delete"};
+        return new String[]{
+                "ability.lotmcraft.waypoint.set",
+                "ability.lotmcraft.waypoint.delete",
+                "ability.lotmcraft.waypoint.select"
+        };
     }
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
-        if(!(level instanceof ServerLevel serverLevel)) {
-            return;
-        }
+        if (!(level instanceof ServerLevel serverLevel)) return;
 
-        switch(abilityIndex) {
-            case 0 -> teleportToWaypoint(serverLevel, entity);
-            case 1 -> createWaypoint(serverLevel, entity);
-            case 2 -> deleteWaypoint(serverLevel, entity);
+        switch (abilityIndex) {
+            case 0 -> createWaypoint(serverLevel, entity);
+            case 1 -> deleteWaypoint(entity);
+            case 2 -> selectWaypoint(entity);
         }
     }
 
-    private void deleteWaypoint(ServerLevel serverLevel, LivingEntity entity) {
-        WaypointComponent waypointComponent = entity.getData(ModAttachments.WAYPOINT_COMPONENT);
-        WaypointComponent.Waypoint waypoint = waypointComponent.getSelectedWaypoint();
+    public void selectWaypoint(LivingEntity entity) {
+        if (!(entity instanceof ServerPlayer serverPlayer)) return;
 
-        if(waypoint == null) {
-            return;
-        }
+        List<WaypointComponent.ClientWaypoint> waypoints = entity.getData(ModAttachments.WAYPOINT_COMPONENT).getWaypoints().stream().map(WaypointComponent.ClientWaypoint::fromWaypoint).toList();
 
-        waypointComponent.deleteWaypoint(waypoint);
-        AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.waypoint.deleted").withColor(0x91f6ff));
+        PacketHandler.sendToPlayer(serverPlayer, new OpenWaypointSelectionScreenPacket(waypoints, "teleport"));
+    }
+
+    private void deleteWaypoint(LivingEntity entity) {
+        if (!(entity instanceof ServerPlayer serverPlayer)) return;
+
+        List<WaypointComponent.ClientWaypoint> waypoints = entity.getData(ModAttachments.WAYPOINT_COMPONENT).getWaypoints().stream().map(WaypointComponent.ClientWaypoint::fromWaypoint).toList();
+
+        PacketHandler.sendToPlayer(serverPlayer, new OpenWaypointSelectionScreenPacket(waypoints, "delete"));
     }
 
     private void createWaypoint(ServerLevel serverLevel, LivingEntity entity) {
@@ -73,43 +80,5 @@ public class WaypointAbility extends SelectableAbility {
 
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.waypoint.created").withColor(0x91f6ff));
         EffectManager.playEffect(EffectManager.Effect.WAYPOINT, entity.getX(), entity.getY() + 1, entity.getZ(), serverLevel);
-    }
-
-    private void teleportToWaypoint(ServerLevel serverLevel, LivingEntity entity) {
-        WaypointComponent waypointComponent = entity.getData(ModAttachments.WAYPOINT_COMPONENT);
-        WaypointComponent.Waypoint waypoint = waypointComponent.getSelectedWaypoint();
-
-        if(waypoint == null) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.waypoint.no_waypoints").withColor(0x91f6ff));
-            return;
-        }
-
-        serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 1, 1);
-        entity.teleportTo(waypoint.serverLevel(), waypoint.x(), waypoint.y(), waypoint.z(), Set.of(), entity.getYRot(), entity.getXRot());
-        serverLevel.playSound(null, waypoint.x(), waypoint.y(), waypoint.z(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 1, 1);
-        EffectManager.playEffect(EffectManager.Effect.WAYPOINT, waypoint.x(), waypoint.y() + 1, waypoint.z(), serverLevel);
-        EffectManager.playEffect(EffectManager.Effect.WAYPOINT, entity.getX(), entity.getY() + 1, entity.getZ(), serverLevel);
-
-    }
-
-    long abilitySwitchCooldown = 0;
-
-    @Override
-    public void onHold(Level level, LivingEntity entity) {
-        WaypointComponent waypointComponent = entity.getData(ModAttachments.WAYPOINT_COMPONENT);
-
-        WaypointComponent.Waypoint waypoint = waypointComponent.getSelectedWaypoint();
-
-        if(waypoint == null) {
-            return;
-        }
-
-        AbilityUtil.sendActionBar(entity, Component.translatable("lotm.selected").append(": X: " + Math.round(waypoint.x()) + ", Y: " + Math.round(waypoint.y()) + ", Z: " + Math.round(waypoint.z())).withColor(0x91f6ff));
-
-        if(entity.isShiftKeyDown() && abilitySwitchCooldown <= System.currentTimeMillis()) {
-            waypointComponent.selectNextWaypoint();
-
-            abilitySwitchCooldown = System.currentTimeMillis() + 500;
-        }
     }
 }

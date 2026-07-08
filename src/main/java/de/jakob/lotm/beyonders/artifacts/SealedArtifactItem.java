@@ -71,7 +71,7 @@ public class SealedArtifactItem extends Item {
         AbilityUtil.setArtifactScaling(player, data.pathway(), data.sequence());
 
         // Use the ability
-        ability.useAbility((ServerLevel) level, player, true, false, true);
+        ability.useAbility((ServerLevel) level, player, true, false, true, false);
 
         // Apply Use-Only Negative Effects
         for (NegativeEffect effect : data.negativeEffect()) {

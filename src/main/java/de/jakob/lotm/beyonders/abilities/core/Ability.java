@@ -5,11 +5,18 @@ import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility;
 import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
+import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
+import de.jakob.lotm.attachments.AbilityCooldownComponent;
+import de.jakob.lotm.attachments.ControllingDataComponent;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.ClientData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -22,6 +29,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
+import de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,12 +84,12 @@ public abstract class Ability {
         return BeyonderData.pathwayInfos.containsKey(pathway) ? BeyonderData.pathwayInfos.get(pathway).color() : 0xFFFFFF;
     }
 
-    public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements) {
+    public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements, boolean isCopied) {
         if(LOTMCraft.abilityHandler.isDisabled(this)) {
             return;
         }
 
-        if(!canUse(entity, hasToHaveAbility, consumeSpirituality) && hasToMeetRequirements) {
+        if(!canUse(entity, hasToHaveAbility, consumeSpirituality, isCopied) && hasToMeetRequirements) {
             return;
         }
 
@@ -94,13 +102,26 @@ public abstract class Ability {
         }
 
         LivingEntity newUser = event.getEntity();
-        if(!canUse(newUser, false, consumeSpirituality)) {
+        if(!canUse(newUser, false, consumeSpirituality, isCopied)) {
             return;
         }
 
         // Consume spirituality
         if(shouldConsumeSpirituality(newUser) && consumeSpirituality) {
-            BeyonderData.reduceSpirituality(newUser, getInflatedSpiritualityCost(newUser, serverLevel));
+            float cost = getInflatedSpiritualityCost(newUser, serverLevel);
+            float current = BeyonderData.getSpirituality(newUser);
+
+            // A spirituality shortfall (up to 30%) is paid in sanity: deeper deficits and pricier abilities cost more,
+            // capped at 0.1. Applied directly (bypassing the per-sequence resistance) so it bites at any sequence.
+            if(cost > 0 && current < cost && newUser instanceof Player) {
+                float deficitScale = Math.min(0.3f, (cost - current) / cost) / 0.3f;
+                float costScale = (float) Math.log10(Math.max(10f, cost));
+                float sanityCost = Math.min(0.1f, deficitScale * costScale * 0.025f);
+                SanityComponent sanityComp = newUser.getData(ModAttachments.SANITY_COMPONENT);
+                sanityComp.setSanityAndSync(sanityComp.getSanity() - sanityCost, newUser);
+            }
+
+            BeyonderData.reduceSpirituality(newUser, cost);
         }
 
         // Digest potion
@@ -108,6 +129,12 @@ public abstract class Ability {
             if(ActingTaskRegistry.getTasksFor(BeyonderData.getPathway(player), BeyonderData.getSequence(player)).isEmpty())
                 BeyonderData.digest(player, getDigestionProgressForUse(newUser), true);
         }
+
+        // Decrement ability if it was copied
+        if(!isCopied) {
+            CopiedAbilityHelper.decrementUses(entity, getId());
+        }
+
 
         // Handle Cooldown
         AbilityCooldownComponent component = newUser.getData(ModAttachments.COOLDOWN_COMPONENT);
@@ -149,7 +176,7 @@ public abstract class Ability {
     }
 
     public void useAbility(ServerLevel serverLevel, LivingEntity entity) {
-        useAbility(serverLevel, entity, true, true, true);
+        useAbility(serverLevel, entity, true, true, true, false);
     }
 
     public void clearArtifactScaling(LivingEntity entity){
@@ -239,11 +266,11 @@ public abstract class Ability {
     }
 
     public boolean canUse(LivingEntity entity) {
-        return canUse(entity, true, true);
+        return canUse(entity, true, true, false);
     }
 
-    public boolean canUse(LivingEntity entity, boolean hasToHaveAbility, boolean doesConsumeSpirituality) {
-        if(!hasAbility(entity) && hasToHaveAbility) return false;
+    public boolean canUse(LivingEntity entity, boolean hasToHaveAbility, boolean doesConsumeSpirituality, boolean isCopied) {
+        if(!hasAbility(entity) && hasToHaveAbility && !isCopied) return false;
 
         if (MausoleumDomainAbility.isInsideMausoleumDomain(entity.getUUID())) {
             if (entity instanceof ServerPlayer player) {
@@ -256,7 +283,8 @@ public abstract class Ability {
         AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
         if(component.isOnCooldown(id)) return false;
 
-        if(shouldConsumeSpirituality(entity) && doesConsumeSpirituality && BeyonderData.getSpirituality(entity) <= getSpiritualityCost()) return false;
+        // Allow use down to a 30% spirituality deficit; the shortfall is paid in sanity on use
+        if(shouldConsumeSpirituality(entity) && doesConsumeSpirituality && BeyonderData.getSpirituality(entity) < getSpiritualityCost() * 0.7f) return false;
 
         if(!(entity instanceof Player) && !canBeUsedByNPC) return false;
 

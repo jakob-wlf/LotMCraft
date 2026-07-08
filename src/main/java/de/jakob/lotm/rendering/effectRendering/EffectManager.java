@@ -108,7 +108,9 @@ public class EffectManager {
         ANCIENT_COURT(37),
         NATION_OF_THE_DEAD(38),
         HOLY_IMPACT(39),
-        UNIQUENESS_SPAWN(40);
+        UNIQUENESS_SPAWN(40),
+        TELEPORTATION(41),
+        BANISHMENT(42);
 
         private final int index;
 

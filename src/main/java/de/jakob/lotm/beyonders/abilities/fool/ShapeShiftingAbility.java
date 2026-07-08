@@ -18,6 +18,10 @@ public class ShapeShiftingAbility extends SelectableAbility {
     public ShapeShiftingAbility(String id) {
         super(id, 5);
         canBeUsedByNPC = false;
+        canBeCopied = false;
+        canBeReplicated = false;
+        canBeUsedInArtifact = false;
+        cannotBeStolen = false;
     }
 
     @Override

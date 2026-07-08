@@ -16,6 +16,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -122,6 +123,22 @@ public class SefirahHandler {
         if(sefirotData.isInSefirot(player)) {
             ServerLocation returnLocation = sefirotData.getReturnLocationForPlayer(player);
             if(returnLocation == null) {
+                return;
+            }
+
+            if(returnLocation.getLevel().dimension().equals(player.level().dimension())) {
+                ServerLevel level = player.serverLevel();
+                Vec3 newPos = level.getServer().overworld().getSharedSpawnPos().getCenter();
+                ServerLevel returnLevel = level.getServer().overworld();
+                player.teleportTo(returnLevel, newPos.x, newPos.y, newPos.z, 0, 0);
+
+                sefirotData.setIsInSefirot(player.getUUID(), false);
+                sefirotData.setLastReturnLocation(player);
+
+                if(playTeleportEffect) {
+                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, returnLocation.getPosition().x, returnLocation.getPosition().y, returnLocation.getPosition().z, returnLocation.getLevel());
+                }
+
                 return;
             }
 

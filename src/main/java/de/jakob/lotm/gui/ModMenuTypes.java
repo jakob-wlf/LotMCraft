@@ -60,11 +60,6 @@ public class ModMenuTypes {
             () -> new MenuType<>(AbilityWheelMenu::new, net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS)
     );
 
-    public static final DeferredHolder<MenuType<?>, MenuType<CopiedAbilityWheelMenu>> COPIED_ABILITY_WHEEL_MENU = MENU_TYPES.register(
-            "copied_ability_wheel_menu",
-            () -> new MenuType<>(CopiedAbilityWheelMenu::new, net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS)
-    );
-
     public static final DeferredHolder<MenuType<?>, MenuType<ArtifactWheelMenu>> ARTIFACT_WHEEL_MENU = MENU_TYPES.register(
             "artifact_wheel_menu",
             () -> IMenuTypeExtension.create((windowId, inv, data) -> {

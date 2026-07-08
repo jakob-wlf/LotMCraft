@@ -5,6 +5,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.SyncDreamDivinationCoordinatesPacket;
 import de.jakob.lotm.network.packets.toServer.SyncTravelersDoorCoordinatesPacket;
 import de.jakob.lotm.network.packets.toServer.TeleportPlayerToLocationPacket;
+import de.jakob.lotm.network.packets.toServer.UseTeleportationAuthorityPacket;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -92,8 +93,8 @@ public class CoordinateInputScreen extends Screen {
                     PacketHandler.sendToServer(new SyncDreamDivinationCoordinatesPacket(x, y, z, entity.getId()));
                     DivinationAbility.performDreamDivination(player.level(), player, new BlockPos(x, y, z));
                 }
-                case "teleportation" -> PacketHandler.sendToServer(new TeleportPlayerToLocationPacket(x, y, z, entity.getId()));
-                case "envision_location" -> PacketHandler.sendToServer(new TeleportPlayerToLocationPacket(x, y, z, entity.getId()));
+                case "teleportation", "envision_location" -> PacketHandler.sendToServer(new TeleportPlayerToLocationPacket(x, y, z, entity.getId()));
+                case "teleportation_authority_self", "teleportation_authority_self_and_nearby", "teleportation_authority_targets" -> PacketHandler.sendToServer(new UseTeleportationAuthorityPacket(use, x, y, z, entity.getId()));
             }
 
             this.onClose();

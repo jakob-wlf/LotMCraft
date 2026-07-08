@@ -22,6 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -302,10 +303,17 @@ public class PlayerEvents {
         }
 
         if(DivinationAbility.dangerPremonitionActive.contains(event.getEntity().getUUID()) && random.nextFloat() < .1) {
-            event.setCanceled(true);
-            if(event.getEntity() instanceof ServerPlayer player) {
-                Component actionBarText = Component.literal("Dodged Attack").withStyle(ChatFormatting.DARK_PURPLE);
-                sendActionBar(player, actionBarText);
+            Entity damager = event.getSource().getEntity();
+            if(damager != null &&
+                    (!(damager instanceof LivingEntity damagerLiving) ||
+                            BeyonderData.getSequence(damagerLiving) - BeyonderData.getSequence(event.getEntity()) >= -2
+            )) {
+
+                event.setCanceled(true);
+                if (event.getEntity() instanceof ServerPlayer player) {
+                    Component actionBarText = Component.literal("Dodged Attack").withStyle(ChatFormatting.DARK_PURPLE);
+                    sendActionBar(player, actionBarText);
+                }
             }
         }
         if(NightmareAbility.hasActiveNightmare(event.getEntity())) {

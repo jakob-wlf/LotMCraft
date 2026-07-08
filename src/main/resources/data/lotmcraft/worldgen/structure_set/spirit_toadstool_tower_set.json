@@ -1,0 +1,16 @@
+{
+  "structures": [
+    {
+      "structure": "lotmcraft:spirit_toadstool_tower",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+
+    "salt": 433876,
+    "spacing": 10,
+    "separation": 2,
+    "max_tries": 100
+  }
+}

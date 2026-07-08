@@ -1,0 +1,17 @@
+{
+  "structures": [
+    {
+      "structure": "lotmcraft:victorian_city",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+
+    "salt": 41670986,
+    "spacing": 31,
+    "separation": 12,
+    "heightmap": "MOTION_BLOCKING_NO_LEAVES",
+    "max_tries": 30
+  }
+}

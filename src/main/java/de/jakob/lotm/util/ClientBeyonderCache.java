@@ -3,7 +3,9 @@ package de.jakob.lotm.util;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gamerule.ClientGameruleCache;
 import de.jakob.lotm.util.playerMap.Characteristic;
+import de.jakob.lotm.util.playerMap.Characteristic;
 
+import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
@@ -12,12 +14,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ClientBeyonderCache {
     private static final Map<UUID, BeyonderClientData> dataCache = new ConcurrentHashMap<>();
 
-    public static void updateData(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, boolean isPlayer, float digestionProgress) {
-        updateData(playerUUID, pathway, sequence, spirituality, griefingEnabled, isPlayer, digestionProgress, new String[10], new ArrayList<>());
+    public static void updateData(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, boolean isPlayer, float digestionProgress, int cowardWormAmmount) {
+        updateData(playerUUID, pathway, sequence, spirituality, griefingEnabled, isPlayer, digestionProgress, new String[10], new ArrayList<>(), cowardWormAmmount);
     }
 
-    public static void updateData(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, boolean isPlayer, float digestionProgress, String[] pathwayHistory, ArrayList<Characteristic> charList) {
-        dataCache.put(playerUUID, new BeyonderClientData(pathway, sequence, spirituality, griefingEnabled, digestionProgress, pathwayHistory, charList));
+    public static void updateData(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, boolean isPlayer, float digestionProgress, String[] pathwayHistory, ArrayList<Characteristic> charList, int cowardWormAmount) {
+        dataCache.put(playerUUID, new BeyonderClientData(pathway, sequence, spirituality, griefingEnabled, digestionProgress, pathwayHistory, charList), cowardWormAmount);
     }
 
     public static String getPathway(UUID playerUUID) {
@@ -65,6 +67,11 @@ public class ClientBeyonderCache {
             }
             dataCache.put(playerUUID, new BeyonderClientData(data.pathway(), data.sequence(), data.spirituality(), data.griefingEnabled(), data.digestionProgress(), data.pathwayHistory(), newList));
         }
+    }
+
+    public static int getCowardWormAmount(UUID playerUUID) {
+        BeyonderClientData data = dataCache.get(playerUUID);
+        return data != null ? data.cowardWormAmount : 0;
     }
 
     public static float getDigestionProgress(UUID playerUUID) {
@@ -135,5 +142,5 @@ public class ClientBeyonderCache {
     }
 
     // Inner record to store client-side beyonder data
-    private record BeyonderClientData(String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress, String[] pathwayHistory, ArrayList<Characteristic> charList) {}
+    private record BeyonderClientData(String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress, String[] pathwayHistory, ArrayList<Characteristic> charList, int cowardWormAmount) {}
 }

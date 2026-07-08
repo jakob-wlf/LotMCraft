@@ -40,6 +40,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                OpenWaypointSelectionScreenPacket.TYPE,
+                OpenWaypointSelectionScreenPacket.STREAM_CODEC,
+                OpenWaypointSelectionScreenPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncWeaknessDetectionTargetsAbilityPacket.TYPE,
                 SyncWeaknessDetectionTargetsAbilityPacket.STREAM_CODEC,
                 SyncWeaknessDetectionTargetsAbilityPacket::handle
@@ -79,6 +85,12 @@ public class PacketHandler {
                 SyncToggleAbilityPacket.TYPE,
                 SyncToggleAbilityPacket.STREAM_CODEC,
                 SyncToggleAbilityPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncActingCapPacket.TYPE,
+                SyncActingCapPacket.STREAM_CODEC,
+                SyncActingCapPacket::handle
         );
 
         registrar.playToClient(
@@ -205,7 +217,7 @@ public class PacketHandler {
 
         registrar.playToClient(
                 OpenCoordinateScreenPacket.TYPE,
-                OpenCoordinateScreenPacket.STREAM_CODEC,
+                OpenCoordinateScreenPacket.CODEC,
                 OpenCoordinateScreenPacket::handle
         );
 
@@ -493,9 +505,9 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                AddClientSideTagPacket.TYPE,
-                AddClientSideTagPacket.STREAM_CODEC,
-                AddClientSideTagPacket::handle
+                AddEntityTagPacket.TYPE,
+                AddEntityTagPacket.STREAM_CODEC,
+                AddEntityTagPacket::handle
         );
 
         registrar.playToClient(
@@ -568,6 +580,12 @@ public class PacketHandler {
                 SyncDiscernmentDataPacket.TYPE,
                 SyncDiscernmentDataPacket.STREAM_CODEC,
                 SyncDiscernmentDataPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenWanderingSelectionScreenPacket.TYPE,
+                OpenWanderingSelectionScreenPacket.STREAM_CODEC,
+                OpenWanderingSelectionScreenPacket::handle
         );
 
         registrar.playToClient(
@@ -671,6 +689,18 @@ public class PacketHandler {
                 ApplyBlessingPacket.TYPE,
                 ApplyBlessingPacket.STREAM_CODEC,
                 ApplyBlessingPacket::handle
+        );
+
+        registrar.playToServer(
+                WaypointSelectedPacket.TYPE,
+                WaypointSelectedPacket.STREAM_CODEC,
+                WaypointSelectedPacket::handle
+        );
+
+        registrar.playToServer(
+                UseTeleportationAuthorityPacket.TYPE,
+                UseTeleportationAuthorityPacket.STREAM_CODEC,
+                UseTeleportationAuthorityPacket::handle
         );
 
         registrar.playToServer(
@@ -788,12 +818,6 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
-                UseCopiedAbilityPacket.TYPE,
-                UseCopiedAbilityPacket.STREAM_CODEC,
-                UseCopiedAbilityPacket::handle
-        );
-
-        registrar.playToServer(
                 AllyRequestResponsePacket.TYPE,
                 AllyRequestResponsePacket.STREAM_CODEC,
                 AllyRequestResponsePacket::handle
@@ -904,6 +928,12 @@ public class PacketHandler {
                 HistoricalVoidBorrowingSelectedPacket.TYPE,
                 HistoricalVoidBorrowingSelectedPacket.STREAM_CODEC,
                 HistoricalVoidBorrowingSelectedPacket::handle);
+
+        registrar.playToServer(
+                WanderingSelectedPacket.TYPE,
+                WanderingSelectedPacket.STREAM_CODEC,
+                WanderingSelectedPacket::handle
+        );
 
         registrar.playToServer(
                 ShapeShiftingSelectedPacket.TYPE,
@@ -1146,10 +1176,11 @@ public class PacketHandler {
         float digestionProgress = BeyonderData.getDigestionProgress(player);
         ArrayList<Characteristic> charList = BeyonderData.getCharList(player);
         java.util.List<de.jakob.lotm.attachments.ReceivedBlessingComponent.ReceivedBlessing> blessings = player.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT).getBlessings();
+        int cowardWormAmount = BeyonderData.getCowardWormAmount(player);
 
         String[] history = BeyonderData.getPathwayHistory(player);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charList, blessings);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charList, blessings, cowardWormAmount);
         sendToPlayer(player, packet);
     }
 
@@ -1202,8 +1233,9 @@ public class PacketHandler {
         float digestionProgress = BeyonderData.getDigestionProgress(targetPlayer);
         ArrayList<Characteristic> charList = BeyonderData.getCharList(targetPlayer);
         java.util.List<de.jakob.lotm.attachments.ReceivedBlessingComponent.ReceivedBlessing> blessings = targetPlayer.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT).getBlessings();
+        int wormAmount = BeyonderData.getCowardWormAmount(targetPlayer);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charList, blessings);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charList, blessings, wormAmount);
 
         targetPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
             sendToPlayer(player, packet);

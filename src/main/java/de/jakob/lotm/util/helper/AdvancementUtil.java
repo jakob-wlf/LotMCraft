@@ -145,6 +145,7 @@ public class AdvancementUtil {
         ServerScheduler.scheduleDelayed(finalDuration, () -> {
             if (!activeAdvancements.containsKey(entity.getUUID())) return;
             activeAdvancements.remove(entity.getUUID());
+            if (entity.isDeadOrDying()) return;
             BeyonderData.addCharacteristic(entity, finalSequence, finalPathway);
             sendThirdPersonPacket(entity);
         });
@@ -172,6 +173,7 @@ public class AdvancementUtil {
         ServerScheduler.scheduleDelayed(finalDuration, () -> {
             if (!activeAdvancements.containsKey(entity.getUUID())) return;
             activeAdvancements.remove(entity.getUUID());
+            if (entity.isDeadOrDying()) return; // died mid-advancement; don't apply the sequence-up
             if (onSuccessPreSet != null) onSuccessPreSet.run();
             setBeyonder(entity, finalPathway, finalSequence);
             sendThirdPersonPacket(entity);

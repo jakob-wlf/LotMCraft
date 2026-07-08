@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ReplicatingAbility extends SelectableAbility {
+public class ReplicatingAbility extends Ability {
     public ReplicatingAbility(String id) {
         super(id, 3f);
 
@@ -39,38 +39,7 @@ public class ReplicatingAbility extends SelectableAbility {
     }
 
     @Override
-    public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("door", 2));
-    }
-
-    @Override
-    public float getSpiritualityCost() {
-        return 0;
-    }
-
-    @Override
-    protected String[] getAbilityNames() {
-        return new String[]{
-                "ability.lotmcraft.replicating.replicate",
-                "ability.lotmcraft.replicating.use_copied"
-        };
-    }
-
-    @Override
-    protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
-        if (selectedAbility == 0) {
-            performReplicating(level, entity);
-        } else if (selectedAbility == 1) {
-            openCopiedAbilityWheel(level, entity);
-        }
-    }
-
-    private void openCopiedAbilityWheel(Level level, LivingEntity entity) {
-        if (!(level instanceof ServerLevel) || !(entity instanceof ServerPlayer player)) return;
-        CopiedAbilityHelper.openCopiedAbilityWheel(player);
-    }
-
-    private void performReplicating(Level level, LivingEntity entity) {
+    public void onAbilityUse(Level level, LivingEntity entity) {
         if (!(level instanceof ServerLevel serverLevel))
             return;
 
@@ -151,5 +120,15 @@ public class ReplicatingAbility extends SelectableAbility {
             ParticleUtil.spawnParticles(serverLevel, ParticleTypes.PORTAL, book.position(), 90, .3, .1);
             book.discard();
         }, serverLevel);
+    }
+
+    @Override
+    public Map<String, Integer> getRequirements() {
+        return new HashMap<>(Map.of("door", 2));
+    }
+
+    @Override
+    public float getSpiritualityCost() {
+        return 0;
     }
 }

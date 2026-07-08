@@ -5,6 +5,7 @@ import de.jakob.lotm.attachments.MysteriousTabletData;
 import de.jakob.lotm.beyonders.artifacts.SealedArtifactItem;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.fluid.ModFluids;
+import de.jakob.lotm.data.ModTags;
 import de.jakob.lotm.item.custom.*;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.*;
@@ -39,6 +40,20 @@ public class ModItems {
     public static final DeferredItem<Item> MIRROR = ITEMS.registerItem("mirror", Item::new, new Item.Properties().stacksTo(1));
     public static final DeferredItem<Item> BLOOD = ITEMS.registerItem("blood", Item::new, new Item.Properties().stacksTo(1));
     public static final DeferredItem<Item> STORY_BOOK = ITEMS.registerItem("story_book", StoryBookItem::new, new Item.Properties().stacksTo(1));
+
+    public static final DeferredItem<StructureMapItem> CITY_MAP =
+            ITEMS.register("city_map", () -> new StructureMapItem(
+                    ModTags.Structures.HIDEOUT,
+                    "item.lotmcraft.city_map",
+                    new Item.Properties()
+            ));
+
+    public static final DeferredItem<StructureMapItem> UNIQUENESS_MAP =
+            ITEMS.register("uniqueness_map", () -> new StructureMapItem(
+                    ModTags.Structures.UNIQUENESS_TEMPLE,
+                    "item.lotmcraft.uniqueness_map",
+                    new Item.Properties()
+            ));
 
     public static final DeferredItem<Item> PAPER_SWORD = ITEMS.registerItem("paper_sword", props -> new SwordItem(PAPER_TOOL_TIER, props.attributes(SwordItem.createAttributes(PAPER_TOOL_TIER, 3, -2.4f))), new Item.Properties().durability(15));
     public static final DeferredItem<Item> PAPER_PICKAXE = ITEMS.registerItem("paper_pickaxe", props -> new PickaxeItem(PAPER_TOOL_TIER, props.attributes(PickaxeItem.createAttributes(PAPER_TOOL_TIER, 1, -2.8f))), new Item.Properties().durability(15));

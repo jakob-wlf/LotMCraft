@@ -15,7 +15,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.ArrayList;
 import java.util.List;
 
-public record SyncBeyonderDataPacket(String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress, String[] pathwayHistory, ArrayList<Characteristic> charList, List<ReceivedBlessingComponent.ReceivedBlessing> blessings) implements CustomPacketPayload {
+public record SyncBeyonderDataPacket(String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress, String[] pathwayHistory, ArrayList<Characteristic> charList, List<ReceivedBlessingComponent.ReceivedBlessing> blessings, int cowardWormAmount) implements CustomPacketPayload {
     public static final Type<SyncBeyonderDataPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sync_beyonder_data"));
 
@@ -102,6 +102,7 @@ public record SyncBeyonderDataPacket(String pathway, int sequence, float spiritu
                         PATHWAY_HISTORY_CODEC.encode(buf, packet.pathwayHistory());
                         CHAR_LIST_CODEC.encode(buf, packet.charList());
                         BLESSING_LIST_CODEC.encode(buf, packet.blessings());
+                        ByteBufCodecs.VAR_INT.encode(buf, packet.cowardWormAmount);
                     },
                     buf -> new SyncBeyonderDataPacket(
                             ByteBufCodecs.STRING_UTF8.decode(buf),
@@ -111,7 +112,8 @@ public record SyncBeyonderDataPacket(String pathway, int sequence, float spiritu
                             ByteBufCodecs.FLOAT.decode(buf),
                             PATHWAY_HISTORY_CODEC.decode(buf),
                             CHAR_LIST_CODEC.decode(buf),
-                            BLESSING_LIST_CODEC.decode(buf)
+                            BLESSING_LIST_CODEC.decode(buf),
+                            ByteBufCodecs.VAR_INT.decode(buf)
                     )
             );
 

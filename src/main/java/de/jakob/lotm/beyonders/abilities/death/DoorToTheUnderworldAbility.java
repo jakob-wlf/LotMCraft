@@ -69,13 +69,13 @@ public class DoorToTheUnderworldAbility extends SelectableAbility {
     }
 
     @Override
-    public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements) {
+    public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements, boolean isCopied) {
         // Release sub-ability bypasses cooldown and spirituality cost
-        if (getSelectedAbilityIndex(entity.getUUID()) == 1) {
+        if (getSelectedAbilityIndex(entity.getUUID()) == 2) {
             onAbilityUse(serverLevel, entity);
             return;
         }
-        super.useAbility(serverLevel, entity, consumeSpirituality, hasToHaveAbility, hasToMeetRequirements);
+        super.useAbility(serverLevel, entity, consumeSpirituality, hasToHaveAbility, hasToMeetRequirements, isCopied);
     }
 
     @Override

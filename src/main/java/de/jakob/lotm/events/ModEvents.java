@@ -48,6 +48,7 @@ import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.entity.custom.DamageTrackerEntity;
 import de.jakob.lotm.entity.custom.FireRavenEntity;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
+import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlinkAfterimageEntity;
 import de.jakob.lotm.entity.custom.spirits.*;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket;
@@ -142,6 +143,7 @@ public class ModEvents {
         event.put(ModEntities.FIRE_RAVEN.get(), FireRavenEntity.createAttributes().build());
         event.put(ModEntities.BEYONDER_NPC.get(), BeyonderNPCEntity.createAttributes().build());
         event.put(ModEntities.AVATAR.get(), AvatarEntity.createAttributes().build());
+        event.put(ModEntities.BLINK_AFTERIMAGE.get(), BlinkAfterimageEntity.createAttributes().build());
         event.put(ModEntities.ORIGINAL_BODY.get(), OriginalBodyEntity.createAttributes().build());
         event.put(ModEntities.DAMAGE_TRACKER.get(), DamageTrackerEntity.createAttributes().build());
 
@@ -245,6 +247,7 @@ public class ModEvents {
         KillCountCommand.register(event.getDispatcher());
         UniquenessCommand.register(event.getDispatcher());
         SefirotCommand.register(event.getDispatcher());
+        ResetCapCommand.register(event.getDispatcher());
         SequenceSlotsCommand.register(event.getDispatcher());
         AncientTraderCommand.register(event.getDispatcher());
         FragmentCommand.register(event.getDispatcher());

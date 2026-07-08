@@ -51,6 +51,23 @@ public class DimensionProvider {
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
                                                     .build());
 
+                                    bootstrap.register(ModDimensions.DEEP_SPACE_BIOME_KEY,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.0f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x000000)
+                                                            .fogColor(0x000000)
+                                                            .waterColor(0x1b5ee3)
+                                                            .waterFogColor(0x050533)
+                                                            .grassColorOverride(0x4ad145)
+                                                            .foliageColorOverride(0x30BB00)
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
                                     bootstrap.register(ModDimensions.WORLD_CREATION_BIOME_KEY,
                                             new Biome.BiomeBuilder()
                                                     .hasPrecipitation(false)
@@ -155,6 +172,27 @@ public class DimensionProvider {
                                                             .ambientParticle(new AmbientParticleSettings(
                                                                     ParticleTypes.END_ROD,
                                                                     0.003f))
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
+                                    bootstrap.register(ModDimensions.SPACE_TIME_LABYRINTH_BIOME_KEY,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.0f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x050010)          // near-black with a violet tint
+                                                            .fogColor(0x0D0025)          // deep indigo fog (short render distance feel)
+                                                            .waterColor(0x6600CC)        // electric purple water
+                                                            .waterFogColor(0x220044)     // void purple water fog
+                                                            .grassColorOverride(0x3B006B)
+                                                            .foliageColorOverride(0x4D0088)
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .ambientParticle(new AmbientParticleSettings(
+                                                                    new DustParticleOptions(
+                                                                            new Vector3f(0.45f, 0.05f, 0.9f), 1.0f), // purple dust
+                                                                    0.007f))
                                                             .build())
                                                     .mobSpawnSettings(new MobSpawnSettings.Builder().build())
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
@@ -341,6 +379,31 @@ public class DimensionProvider {
                                             1.0f,
                                             new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 7), 0)));
 
+                                    bootstrap.register(ModDimensions.DEEP_SPACE_TYPE_KEY, new DimensionType(
+                                            OptionalLong.empty(), true, false, false, false,
+                                            1.0, true, false, -64, 384, 384,
+                                            BlockTags.INFINIBURN_OVERWORLD,
+                                            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "deep_space"),
+                                            1.0f,
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 7), 0)));
+
+                                    bootstrap.register(ModDimensions.SPACE_TIME_LABYRINTH_TYPE_KEY, new DimensionType(
+                                            OptionalLong.of(18000),   // always "night" (fixed time)
+                                            false,                    // hasSkylight – false: no daylight cycle lighting
+                                            false,                    // hasCeiling
+                                            false,                    // ultraWarm
+                                            false,                    // natural
+                                            1.0,                      // coordinateScale
+                                            false,                    // bedWorks
+                                            false,                    // respawnAnchorWorks
+                                            0,                        // minY
+                                            256,                      // height
+                                            256,                      // logicalHeight
+                                            BlockTags.INFINIBURN_OVERWORLD,
+                                            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space_time_labyrinth"),
+                                            0.05f,                    // ambientLight – very dark
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
+
                                     bootstrap.register(ModDimensions.WORLD_CREATION_TYPE_KEY, new DimensionType(
                                             OptionalLong.empty(), true, false, false, false,
                                             1.0, true, false, -64, 384, 384,
@@ -400,6 +463,13 @@ public class DimensionProvider {
                                                             new FixedBiomeSource(
                                                                     biomeRegistry.getOrThrow(ModDimensions.SPACE_BIOME_KEY)))));
 
+                                    bootstrap.register(ModDimensions.DEEP_SPACE_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.DEEP_SPACE_TYPE_KEY),
+                                                    new DeepSpaceDimensionChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.DEEP_SPACE_BIOME_KEY)))));
+
                                     bootstrap.register(ModDimensions.WORLD_CREATION_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.WORLD_CREATION_TYPE_KEY),
@@ -436,6 +506,13 @@ public class DimensionProvider {
                                                     new EmptyChunkGenerator(
                                                             new FixedBiomeSource(
                                                                     biomeRegistry.getOrThrow(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.SPACE_TIME_LABYRINTH_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.SPACE_TIME_LABYRINTH_TYPE_KEY),
+                                                    new SpaceTimeLabyrinthChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.SPACE_TIME_LABYRINTH_BIOME_KEY)))));
 
                                     bootstrap.register(ModDimensions.CONCEALMENT_WORLD_LEVEL_KEY,
                                             new LevelStem(

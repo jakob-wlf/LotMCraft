@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,6 +21,10 @@ public class SpiritVisionOverlayRenderer {
 
     public static final HashMap<UUID, LivingEntity> entitiesLookedAt = new HashMap<>();
 
+    private static final int ACCENT       = 0xFFb57bee;
+    private static final int ACCENT_LIGHT = 0xFFcfa0f5;
+    private static final int BG_DARK      = 0xCC0a0612;
+
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_vision_overlay"), (guiGraphics, deltaTracker) -> {
@@ -34,88 +39,91 @@ public class SpiritVisionOverlayRenderer {
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
 
-        if (entitiesLookedAt.containsKey(mc.player.getUUID())) {
-            ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/spirit_vision_overlay.png");
-            // Push the current pose
-            guiGraphics.pose().pushPose();
+        if (!entitiesLookedAt.containsKey(mc.player.getUUID())) return;
 
-            // Set up alpha blending
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
+        ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/spirit_vision_overlay.png");
+        guiGraphics.pose().pushPose();
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        guiGraphics.blit(backgroundTexture, 0, 0, screenWidth, screenHeight, 0, 0, 44, 256, 44, 256);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.disableBlend();
+        guiGraphics.pose().popPose();
 
-            // Blit the texture with transparency
-            guiGraphics.blit(backgroundTexture, 0, 0, screenWidth, screenHeight, 0, 0, 44, 256, 44, 256);
+        LivingEntity entity = entitiesLookedAt.get(mc.player.getUUID());
+        if (entity == null) return;
 
-            // Reset blend settings and shader color
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f); // Reset to opaque
-            RenderSystem.disableBlend();
+        int width = screenWidth / 3;
+        int height = 42;
+        int x = screenWidth / 2 - width / 2;
+        int y = 12;
 
-            // Pop the pose to avoid affecting later rendering
-            guiGraphics.pose().popPose();
+        renderPanel(guiGraphics, x, y, width, height);
 
-            LivingEntity entity = entitiesLookedAt.get(mc.player.getUUID());
-            if(entity != null) {
-                int width =  (screenWidth / 3);
-                int height = 35;
+        String name = entity.getName().getString();
+        guiGraphics.drawString(mc.font, name, x + width / 2 - mc.font.width(name) / 2 + 1, y + 7 + 1, 0x55000000);
+        guiGraphics.drawCenteredString(mc.font, name, x + width / 2, y + 7, ACCENT_LIGHT);
 
-                int x = screenWidth / 2 - width / 2;
-                int y = 15;
+        int barWidth = (int) (width / 1.3);
+        int barHeight = 12;
+        int barX = x + (width - barWidth) / 2;
+        int barY = y + height - barHeight - 7;
 
-                guiGraphics.fill(x, y, x + width, y + height, 0x77000000);
+        renderHealthBar(guiGraphics, mc.font, barX, barY, barWidth, barHeight,
+                entity.getHealth(), entity.getMaxHealth());
+    }
 
-                //Entity name
-                String name = entity.getName().getString();
-                int nameX = x + (width / 2);
-                int nameY = y + 5;
-                guiGraphics.drawCenteredString(mc.font, name, nameX, nameY, 0xFFFFFFFF);
+    private static void renderPanel(GuiGraphics guiGraphics, int x, int y, int width, int height) {
+        guiGraphics.fill(x + 2, y + 2, x + width - 2, y + height - 2, BG_DARK);
+        guiGraphics.fill(x + 2, y + 2, x + width - 2, y + 10, 0x220d0a1a);
 
-                //Health Bar
-                int barWidth = (int) (width / 1.3);
-                int barHeight = 14;
+        guiGraphics.fill(x,             y + 2,          x + 2,         y + height - 2, ACCENT);
+        guiGraphics.fill(x + width - 2, y + 2,          x + width,     y + height - 2, ACCENT);
+        guiGraphics.fill(x + 2,         y,              x + width - 2, y + 2,          ACCENT);
+        guiGraphics.fill(x + 2,         y + height - 2, x + width - 2, y + height,     ACCENT);
 
-                int barX = x + ((width - barWidth) / 2);
-                int barY = y + height - barHeight - 5;
+        guiGraphics.fill(x,             y,              x + 2,         y + 2,          0x00000000);
+        guiGraphics.fill(x + width - 2, y,              x + width,     y + 2,          0x00000000);
+        guiGraphics.fill(x,             y + height - 2, x + 2,         y + height,     0x00000000);
+        guiGraphics.fill(x + width - 2, y + height - 2, x + width,    y + height,     0x00000000);
 
-                guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0x88000000);
+        guiGraphics.fill(x + 2,         y + 2,          x + 4,         y + 4,          ACCENT);
+        guiGraphics.fill(x + width - 4, y + 2,          x + width - 2, y + 4,          ACCENT);
+        guiGraphics.fill(x + 2,         y + height - 4, x + 4,         y + height - 2, ACCENT);
+        guiGraphics.fill(x + width - 4, y + height - 4, x + width - 2, y + height - 2, ACCENT);
+    }
 
-                double fillPercentage = entity.getHealth() / entity.getMaxHealth();
-                int filledBarWidth = (int) (barWidth * fillPercentage);
+    private static void renderHealthBar(GuiGraphics guiGraphics, Font font, int barX, int barY, int barWidth, int barHeight,
+                                        float health, float maxHealth) {
+        guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0xAA000000);
 
-                if(filledBarWidth > 0)
-                    drawHorizontalGradient(guiGraphics, barX, barY, filledBarWidth, barHeight, 0xFFFF0000, 0xFFe43fa3);
-
-                //Health String
-                guiGraphics.drawString(mc.font, entity.getHealth() + " ❤", barX + 3, barY + 1 + ((barHeight - mc.font.lineHeight) / 2), 0xFFFFFFFF);
-            }
+        int filledWidth = (int) (barWidth * (health / maxHealth));
+        if (filledWidth > 0) {
+            drawHorizontalGradient(guiGraphics, barX, barY, filledWidth, barHeight, ACCENT, ACCENT_LIGHT);
+            guiGraphics.fill(barX, barY, barX + filledWidth, barY + 2, 0x33FFFFFF);
         }
+
+        guiGraphics.fill(barX, barY,                 barX + barWidth, barY + 1,        0x44FFFFFF);
+        guiGraphics.fill(barX, barY + barHeight - 1, barX + barWidth, barY + barHeight, 0x44000000);
+
+        String healthText = health + " ❤";
+        guiGraphics.drawString(font, healthText, barX + 4 + 1, barY + 1 + (barHeight - font.lineHeight) / 2 + 1, 0x55000000);
+        guiGraphics.drawString(font, healthText, barX + 4,     barY + 1 + (barHeight - font.lineHeight) / 2,     0xFFFFFFFF);
     }
 
     private static void drawHorizontalGradient(GuiGraphics guiGraphics, int x, int y, int width, int height,
-                                             int startColor, int endColor) {
+                                               int startColor, int endColor) {
         for (int i = 0; i < width; i++) {
             float ratio = (float) i / width;
-            int color = interpolateColor(startColor, endColor, ratio);
-            guiGraphics.fill(x + i, y, x + i + 1, y + height, color);
+            guiGraphics.fill(x + i, y, x + i + 1, y + height, interpolateColor(startColor, endColor, ratio));
         }
     }
 
     private static int interpolateColor(int color1, int color2, float ratio) {
-        int a1 = (color1 >> 24) & 0xFF;
-        int r1 = (color1 >> 16) & 0xFF;
-        int g1 = (color1 >> 8) & 0xFF;
-        int b1 = color1 & 0xFF;
-
-        int a2 = (color2 >> 24) & 0xFF;
-        int r2 = (color2 >> 16) & 0xFF;
-        int g2 = (color2 >> 8) & 0xFF;
-        int b2 = color2 & 0xFF;
-
-        int a = (int) (a1 + (a2 - a1) * ratio);
-        int r = (int) (r1 + (r2 - r1) * ratio);
-        int g = (int) (g1 + (g2 - g1) * ratio);
-        int b = (int) (b1 + (b2 - b1) * ratio);
-
-        return (a << 24) | (r << 16) | (g << 8) | b;
+        int a1 = (color1 >> 24) & 0xFF, r1 = (color1 >> 16) & 0xFF, g1 = (color1 >> 8) & 0xFF, b1 = color1 & 0xFF;
+        int a2 = (color2 >> 24) & 0xFF, r2 = (color2 >> 16) & 0xFF, g2 = (color2 >> 8) & 0xFF, b2 = color2 & 0xFF;
+        return ((int)(a1 + (a2 - a1) * ratio) << 24) | ((int)(r1 + (r2 - r1) * ratio) << 16)
+                | ((int)(g1 + (g2 - g1) * ratio) << 8) | (int)(b1 + (b2 - b1) * ratio);
     }
 
     public static void clearCache() {
