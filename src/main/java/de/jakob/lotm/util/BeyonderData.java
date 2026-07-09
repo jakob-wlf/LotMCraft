@@ -368,6 +368,7 @@ public class BeyonderData {
             if (adjustAmount != 0 && adjustSequence == 0) seq0 += adjustAmount;
             if (seq0 >= level.getServer().getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)) return false;
         }
+    }
 
     private static int getMaxWormAmount(int sequence) {
         return switch (sequence) {

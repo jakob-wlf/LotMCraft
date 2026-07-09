@@ -197,38 +197,39 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             } else {
                 var discernmentComponent = minecraft.player.getData(ModAttachments.DISCERNMENT_DATA);
 
-            if (discernmentComponent.isDiscerning()) {
-                ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
-                availableAbilities.addAll(controllerPathwayAbilities);
-            } else {
-                String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
-                ArrayList<Characteristic> charList = ClientBeyonderCache.getCharList(minecraft.player.getUUID());
-                // GOO (seq -1) owns everything from seq 0 upward; clamp start index to 0
-                int historyStart = Math.max(0, menu.getSequence());
-                for (int i = historyStart; i < pathwayHistory.length; i++) {
-                    String pathway = pathwayHistory[i];
-                    if (pathway != null) {
-                        ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
-                        availableAbilities.addAll(pathwayAbilities);
-                    }
-                }
-
-                for (Characteristic characteristic : charList) {
-                    if (characteristic.stack() <= 0) {
-                        continue;
-                    }
-                    // Skip the GOO marker entry — it has no ability row of its own
-                    if (characteristic.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) {
-                        continue;
+                if (discernmentComponent.isDiscerning()) {
+                    ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
+                    availableAbilities.addAll(controllerPathwayAbilities);
+                } else {
+                    String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
+                    ArrayList<Characteristic> charList = ClientBeyonderCache.getCharList(minecraft.player.getUUID());
+                    // GOO (seq -1) owns everything from seq 0 upward; clamp start index to 0
+                    int historyStart = Math.max(0, menu.getSequence());
+                    for (int i = historyStart; i < pathwayHistory.length; i++) {
+                        String pathway = pathwayHistory[i];
+                        if (pathway != null) {
+                            ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
+                            availableAbilities.addAll(pathwayAbilities);
+                        }
                     }
 
-                    ArrayList<Ability> characteristicAbilities =
-                            LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(
-                                    characteristic.pathway(),
-                                    characteristic.sequence()
-                            );
+                    for (Characteristic characteristic : charList) {
+                        if (characteristic.stack() <= 0) {
+                            continue;
+                        }
+                        // Skip the GOO marker entry — it has no ability row of its own
+                        if (characteristic.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) {
+                            continue;
+                        }
 
-                    availableAbilities.addAll(characteristicAbilities);
+                        ArrayList<Ability> characteristicAbilities =
+                                LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(
+                                        characteristic.pathway(),
+                                        characteristic.sequence()
+                                );
+
+                        availableAbilities.addAll(characteristicAbilities);
+                    }
                 }
             }
         }

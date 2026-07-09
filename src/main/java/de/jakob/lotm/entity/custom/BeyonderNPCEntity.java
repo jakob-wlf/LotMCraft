@@ -295,7 +295,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
                         BeyonderData.getMaxSpirituality(pathway, sequence),
                         false,
                         false,
-                        0.0f
+                        0.0f,
+                        0
                 );
             }
         }
@@ -311,67 +312,9 @@ public class BeyonderNPCEntity extends PathfinderMob {
         }
     }
 
-    // ========================= NBT Data Persistence =========================
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putBoolean("IsHostile", isHostile());
-        compound.putBoolean("DefaultHostile", defaultHostile);
-        compound.putString("SkinName", getSkinName());
-        compound.putString("Pathway", getPathway());
-        compound.putInt("Sequence", getSequence());
-        compound.putString("QuestId", getQuestId());
-        compound.putBoolean("IsPuppetWarrior", isPuppetWarrior());
-        compound.putInt("MaxLifetimeIfPuppet", getMaxLifetimeIfPuppet());
-        compound.putBoolean("IsPersistentNPC", isPersistentNPC());
-        if (getTargetPlayerUUID().isPresent()) {
-            compound.putUUID("TargetPlayerUUID", getTargetPlayerUUID().get());
-        }
-    }
 
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
 
-        this.defaultHostile = compound.getBoolean("DefaultHostile");
-        setPuppetWarrior(compound.getBoolean("IsPuppetWarrior"));
-        setMaxLifetimeIfPuppet(compound.getInt("MaxLifetimeIfPuppet"));
 
-        if (compound.contains("QuestId")) {
-            setQuestId(compound.getString("QuestId"));
-        }
-
-        if (compound.contains("IsHostile")) {
-            setHostile(compound.getBoolean("IsHostile"));
-        }
-
-        if (compound.contains("SkinName")) {
-            setSkinName(compound.getString("SkinName"));
-        }
-
-        if (compound.contains("Pathway") && compound.contains("Sequence")) {
-            this._pathway = compound.getString("Pathway");
-            this._sequence = compound.getInt("Sequence");
-
-            if (!this.level().isClientSide) {
-                BeyonderData.setBeyonder(this, this._pathway, this._sequence);
-                this.entityData.set(PATHWAY, this._pathway);
-                this.entityData.set(SEQUENCE, this._sequence);
-            }
-        }
-
-        if (compound.contains("IsPersistentNPC")) {
-            setPersistentNPC(compound.getBoolean("IsPersistentNPC"));
-        }
-
-        if (compound.contains("TargetPlayerUUID")) {
-            setTargetPlayerUUID(compound.getUUID("TargetPlayerUUID"));
-        }
-
-        if (!getPathway().isEmpty() && !getPathway().equals("none")) {
-
-        }
-    }
 
     // ========================= AI Goals =========================
     @Override
@@ -721,6 +664,9 @@ public class BeyonderNPCEntity extends PathfinderMob {
     // ========================= Synced Data and Persistence =========================
 
 
+
+
+
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
@@ -731,6 +677,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         compound.put("Trades", getTrades());
         compound.putBoolean("IsPuppetWarrior", isPuppetWarrior());
         compound.putInt("MaxLifetimeIfPuppet", getMaxLifetimeIfPuppet());
+        compound.putBoolean("IsPersistentNPC", isPersistentNPC());
         if (getTargetPlayerUUID().isPresent()) {
             compound.putUUID("TargetPlayerUUID", getTargetPlayerUUID().get());
         }
@@ -739,7 +686,14 @@ public class BeyonderNPCEntity extends PathfinderMob {
         compound.putInt("Sequence", _sequence);
     }
 
+    @Override
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
 
+        this.defaultHostile = compound.getBoolean("DefaultHostile");
+        setPuppetWarrior(compound.getBoolean("IsPuppetWarrior"));
+        setMaxLifetimeIfPuppet(compound.getInt("MaxLifetimeIfPuppet"));
+        setTrades(compound.getCompound("Trades"));
 
         if (compound.contains("QuestId"))  setQuestId(compound.getString("QuestId"));
         if (compound.contains("IsHostile")) setHostile(compound.getBoolean("IsHostile"));
@@ -748,7 +702,10 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
         if (compound.contains("Pathway")) _pathway = compound.getString("Pathway");
         if (compound.contains("Sequence")) _sequence = compound.getInt("Sequence");
+        if (compound.contains("IsPersistentNPC")) setPersistentNPC(compound.getBoolean("IsPersistentNPC"));
+
     }
+
 
     // ========================= Getters and Setters =========================
     public boolean isHostile() {

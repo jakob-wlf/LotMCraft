@@ -5,7 +5,6 @@ import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelMenu;
 import de.jakob.lotm.gui.custom.ArtifactWheel.ArtifactWheelMenu;
 import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
 import de.jakob.lotm.gui.custom.ChaosSeaAuthority.ChaosSeaAuthorityMenu;
-import de.jakob.lotm.gui.custom.CopiedAbilityWheel.CopiedAbilityWheelMenu;
 import de.jakob.lotm.gui.custom.Gathering.GatheringMenu;
 import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesMenu;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
