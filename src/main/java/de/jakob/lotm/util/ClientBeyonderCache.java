@@ -19,7 +19,7 @@ public class ClientBeyonderCache {
     }
 
     public static void updateData(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, boolean isPlayer, float digestionProgress, String[] pathwayHistory, ArrayList<Characteristic> charList, int cowardWormAmount) {
-        dataCache.put(playerUUID, new BeyonderClientData(pathway, sequence, spirituality, griefingEnabled, digestionProgress, pathwayHistory, charList), cowardWormAmount);
+        dataCache.put(playerUUID, new BeyonderClientData(pathway, sequence, spirituality, griefingEnabled, digestionProgress, pathwayHistory, charList, cowardWormAmount));
     }
 
     public static String getPathway(UUID playerUUID) {
@@ -65,13 +65,13 @@ public class ClientBeyonderCache {
             if (charStack > 0) {
                 newList.add(new Characteristic(pathway, charStack, seq));
             }
-            dataCache.put(playerUUID, new BeyonderClientData(data.pathway(), data.sequence(), data.spirituality(), data.griefingEnabled(), data.digestionProgress(), data.pathwayHistory(), newList));
+            dataCache.put(playerUUID, new BeyonderClientData(data.pathway(), data.sequence(), data.spirituality(), data.griefingEnabled(), data.digestionProgress(), data.pathwayHistory(), newList, data.cowardWormAmount()));
         }
     }
 
     public static int getCowardWormAmount(UUID playerUUID) {
         BeyonderClientData data = dataCache.get(playerUUID);
-        return data != null ? data.cowardWormAmount : 0;
+        return data != null ? data.cowardWormAmount() : 0;
     }
 
     public static float getDigestionProgress(UUID playerUUID) {

@@ -368,6 +368,8 @@ public class BeyonderData {
             if (adjustAmount != 0 && adjustSequence == 0) seq0 += adjustAmount;
             if (seq0 >= level.getServer().getGameRules().getInt(ModGameRules.SEQ_0_AMOUNT)) return false;
         }
+
+        return true;
     }
 
     private static int getMaxWormAmount(int sequence) {
@@ -385,10 +387,6 @@ public class BeyonderData {
             return ClientBeyonderCache.getCowardWormAmount(entity.getUUID());
         }
         return entity.getData(ModAttachments.BEYONDER_COMPONENT).getCowardWormAmount();
-    }
-
-    private static void callPassiveEffectsOnRemoved(LivingEntity entity, ServerLevel serverLevel) {
-        return true;
     }
 
     private static int countStoredSouls(ServerLevel level, String pathway, int sequence) {
@@ -755,7 +753,7 @@ public class BeyonderData {
         if (!entity.level().isClientSide()) {
             if(entity instanceof ServerPlayer serverPlayer) {
                 // Send empty data to clear client cache
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", 10, 0.0f, false, 0.0f, new String[10], new ArrayList<>(), new ArrayList<>());
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", 10, 0.0f, false, 0.0f, new String[10], new ArrayList<>(), new ArrayList<>(), 0);
                 PacketHandler.sendToPlayer(serverPlayer, packet);
             }
             else {

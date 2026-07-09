@@ -731,7 +731,8 @@ public class ClientHandler {
                 true,
                 packet.digestionProgress(),
                 packet.pathwayHistory(),
-                packet.charList()
+                packet.charList(),
+                packet.cowardWormAmount()
         );
 
         // Update received blessings

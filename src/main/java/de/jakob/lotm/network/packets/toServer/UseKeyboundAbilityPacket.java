@@ -65,7 +65,7 @@ public record UseKeyboundAbilityPacket(int selectedAbility) implements CustomPac
 
             if (isSoulAbility) {
                 // Cast as a soul ability: skip hasAbility and requirements checks.
-                ability.useAbility(player.serverLevel(), player, true, false, false);
+                ability.useAbility(player.serverLevel(), player, true, false, false, false);
             } else {
                 ability.useAbility(player.serverLevel(), player);
             }

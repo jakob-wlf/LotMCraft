@@ -1338,7 +1338,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
         Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
         if (ability == null) return;
 
-        ability.useAbility(level, player, true, false, false);
+        ability.useAbility(level, player, true, false, false, false);
     }
 
     private static void queueSoulAbility(ServerPlayer player, String abilityId) {

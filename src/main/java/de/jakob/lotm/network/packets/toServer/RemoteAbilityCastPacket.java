@@ -59,7 +59,7 @@ public record RemoteAbilityCastPacket(UUID targetUUID) implements CustomPacketPa
                             }
 
                             // Use the ability - usually this calls getTargetEntity/Location internally
-                            ability.useAbility(serverLevel, serverPlayer, true, true, true);
+                            ability.useAbility(serverLevel, serverPlayer, true, true, true, false);
                         } finally {
                             // Always clear the remote target
                             AbilityUtil.clearRemoteCastTargetUUID();

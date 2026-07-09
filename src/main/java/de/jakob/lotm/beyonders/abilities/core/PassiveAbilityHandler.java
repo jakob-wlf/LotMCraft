@@ -31,6 +31,7 @@ import de.jakob.lotm.beyonders.abilities.door.passives.VoidImmunityAbility;
 import de.jakob.lotm.beyonders.abilities.error.passives.PassiveTheftAbility;
 import de.jakob.lotm.beyonders.abilities.error.passives.PhysicalEnhancementsErrorAbility;
 import de.jakob.lotm.beyonders.abilities.fool.passives.AcrobaticsAbility;
+import de.jakob.lotm.beyonders.abilities.fool.passives.DangerPremonitionAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.ChaosHuntingAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.EnhancedMentalAttributesAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.OrderJusticiarAbility;

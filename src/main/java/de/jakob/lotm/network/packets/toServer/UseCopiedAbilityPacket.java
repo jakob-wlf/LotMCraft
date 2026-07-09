@@ -41,7 +41,7 @@ public record UseCopiedAbilityPacket(int abilityIndex) implements CustomPacketPa
                 if (ability == null) return;
 
                 if (serverPlayer.level() instanceof ServerLevel serverLevel) {
-                    ability.useAbility(serverLevel, serverPlayer, true, false, false);
+                    ability.useAbility(serverLevel, serverPlayer, true, false, false, true);
 
                     component.decrementUses(packet.abilityIndex());
 
