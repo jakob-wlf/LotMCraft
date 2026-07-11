@@ -106,7 +106,13 @@ public class BeyonderEventHandler {
         float digestionsProgress = serverPlayer.getPersistentData().contains("beyonder_digestion_progress") ? serverPlayer.getPersistentData().getFloat("beyonder_digestion_progress") : 0f;
         boolean griefingEnabled = serverPlayer.getPersistentData().contains("beyonder_griefing_enabled") || !serverPlayer.getPersistentData().getBoolean("beyonder_griefing_enabled");
 
-        BeyonderData.setBeyonder(serverPlayer, oldPathway, oldSequence, true, true, true, true);
+        // Migrating existing data, not becoming a beyonder — must not trigger the acting cap
+        de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = true;
+        try {
+            BeyonderData.setBeyonder(serverPlayer, oldPathway, oldSequence, true, true, true, true);
+        } finally {
+            de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = false;
+        }
         BeyonderData.setDigestionProgress(serverPlayer, digestionsProgress);
         BeyonderData.setGriefingEnabled(serverPlayer, griefingEnabled);
 

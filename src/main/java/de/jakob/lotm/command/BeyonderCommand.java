@@ -93,6 +93,9 @@ public class BeyonderCommand {
                         return 0;
                     }
                 }
+
+                // Command-set sequences start with a fresh slate, same as /resetcap
+                ActingCapHelper.clearCap(player);
             }
 
             // Send success message
