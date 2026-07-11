@@ -105,7 +105,13 @@ public class SacrificeAbility extends Ability {
         int animationTicks = 35;
         ServerScheduler.scheduleDelayed(animationTicks, () -> {
             float savedDigestion = BeyonderData.getDigestionProgress(player);
-            BeyonderData.setBeyonder(player, pathway, tempSeq, true, false, true, false);
+            // Temporary advance that reverts after the duration — must not trigger the acting cap
+            de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = true;
+            try {
+                BeyonderData.setBeyonder(player, pathway, tempSeq, true, false, true, false);
+            } finally {
+                de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = false;
+            }
             // Temp sequence starts at 0 digestion — prevents drinking potions to exploit the advance
             BeyonderData.setDigestionProgress(player, 0);
             PacketHandler.syncBeyonderDataToPlayer(player);

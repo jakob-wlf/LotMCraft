@@ -2,6 +2,7 @@ package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
+import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.entity.ModEntities;
@@ -317,8 +318,16 @@ public class ControllingUtil {
                     : source.getData(ModAttachments.BEYONDER_COMPONENT).getDigestionProgress();
             int sourceLuck = source.getData(ModAttachments.LUCK_COMPONENT).getLuck();
 
-            BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source),
-                    false, false, false, false, false);
+            // This is a data copy between bodies, not a real advancement — it must not
+            // trigger the acting cap (e.g. restoring the player after controlling a non-beyonder
+            // would otherwise look like becoming a beyonder for the first time)
+            ActingCapHelper.skipNextCapApplication = true;
+            try {
+                BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source),
+                        false, false, false, false, false);
+            } finally {
+                ActingCapHelper.skipNextCapApplication = false;
+            }
 
             // Restore spirituality, digestion, and luck that setBeyonder wiped
             BeyonderData.setSpirituality(target, sourceSpirituality);
