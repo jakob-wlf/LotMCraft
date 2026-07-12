@@ -25,6 +25,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
@@ -212,11 +213,19 @@ public abstract class Ability {
     }
 
     public boolean shouldUseAbility(LivingEntity entity) {
+        if (entity instanceof Mob mob) {
+            if (mob.getTarget() != null && hasOptimalDistance) {
+                double distance = entity.distanceTo(mob.getTarget());
+                return distance <= optimalDistance + 5.0; // Increased buffer
+            }
+        }
         return true;
     }
 
     public boolean hasAbility(LivingEntity entity) {
-        if(!BeyonderData.isBeyonder(entity)) return false;
+        if(!BeyonderData.isBeyonder(entity)) {
+            return false;
+        }
 
         // Check sefirot-authority-granted abilities (server-side only)
         if (!entity.level().isClientSide()
@@ -246,14 +255,6 @@ public abstract class Ability {
                 return true;
         }
 
-        // Check pathway
-        /*for(int i = sequence; i < BeyonderData.getPathwayHistory(entity).length; i++) {
-            if(BeyonderData.getPathwayHistory(entity)[i] == null) continue;
-            String userPath = BeyonderData.getPathwayHistory(entity)[i];
-            if(getRequirements().containsKey(userPath) && getRequirements().get(userPath) == i) {
-                return true;
-            }
-        }*/
         // Check for received blessings
         if (entity.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT).getBlessings().stream()
                 .anyMatch(b -> getRequirements().containsKey(b.pathway()) && getRequirements().get(b.pathway()) >= b.sequence())) {
@@ -270,7 +271,13 @@ public abstract class Ability {
     }
 
     public boolean canUse(LivingEntity entity, boolean hasToHaveAbility, boolean doesConsumeSpirituality, boolean isCopied) {
-        if(!hasAbility(entity) && hasToHaveAbility && !isCopied) return false;
+        if(!(entity instanceof Player) && !canBeUsedByNPC) {
+            return false;
+        }
+
+        if(!hasAbility(entity) && hasToHaveAbility && !isCopied) {
+            return true;
+        }
 
         if (MausoleumDomainAbility.isInsideMausoleumDomain(entity.getUUID())) {
             if (entity instanceof ServerPlayer player) {
@@ -281,19 +288,25 @@ public abstract class Ability {
         }
 
         AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
-        if(component.isOnCooldown(id)) return false;
+        if(component.isOnCooldown(id)) {
+            return false;
+        }
 
         // Allow use down to a 30% spirituality deficit; the shortfall is paid in sanity on use
-        if(shouldConsumeSpirituality(entity) && doesConsumeSpirituality && BeyonderData.getSpirituality(entity) < getSpiritualityCost() * 0.7f) return false;
-
-        if(!(entity instanceof Player) && !canBeUsedByNPC) return false;
+        if(shouldConsumeSpirituality(entity) && doesConsumeSpirituality && BeyonderData.getSpirituality(entity) < getSpiritualityCost() * 0.7f) {
+            return false;
+        }
 
         if(entity instanceof Player player && player.isSpectator() && !ParasitationAbility.isConcealed(player.getUUID())) return false;
 
         DisabledAbilitiesComponent disabledComponent = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        if((disabledComponent.isAbilityUsageDisabled() || disabledComponent.isSpecificAbilityDisabled(this.getId())) && !this.canAlwaysBeUsed) return false;
+        if((disabledComponent.isAbilityUsageDisabled() || disabledComponent.isSpecificAbilityDisabled(this.getId())) && !this.canAlwaysBeUsed) {
+            return false;
+        }
 
-        if(LOTMCraft.abilityHandler.isDisabled(this)) return false;
+        if(LOTMCraft.abilityHandler.isDisabled(this)) {
+            return false;
+        }
 
         return true;
     }
