@@ -703,7 +703,7 @@ public class BeyonderData {
     // for getting the spirituality of the main body instead, works on both client and server side
     public static float getMaxSpirituality(String path, int seq, Player player){
         ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
-        float sp = 0;
+        float sp = 1;
         if (data.isControlling()) {
             CompoundTag bodyData = data.getBodyEntity().getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
             return getMaxSpirituality(bodyData.getString("pathway"), bodyData.getInt("sequence"));
@@ -717,7 +717,7 @@ public class BeyonderData {
     public static float getMaxSpirituality(String path, int seq){
         if (seq == LOTMCraft.GREAT_OLD_ONE_SEQ) return 500000f; // Great Old One has vast spirituality
         if(seq >= LOTMCraft.NON_BEYONDER_SEQ || !(seq < spiritualityLookup.length) || seq < 0)
-            return 0f;
+            return 1f;
 
         return switch (path){
             case "darkness", "fool", "wheel_of_fortune" -> getMaxSpirituality(seq, 3.5f);
