@@ -503,9 +503,10 @@ public class DimensionProvider {
                                     bootstrap.register(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_TYPE_KEY),
-                                                    new EmptyChunkGenerator(
+                                                    new PreGeneratedChunkGenerator(
                                                             new FixedBiomeSource(
-                                                                    biomeRegistry.getOrThrow(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_BIOME_KEY)))));
+                                                                    biomeRegistry.getOrThrow(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_BIOME_KEY)),
+                                                                    "data/lotmcraft/dimension_data/river_of_eternal_darkness/")));
 
                                     bootstrap.register(ModDimensions.SPACE_TIME_LABYRINTH_LEVEL_KEY,
                                             new LevelStem(

@@ -16,7 +16,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
+//@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class RiverOfEternalDarknessDimensionHandler {
 
     private static final int FLOOR_Y = 64;
