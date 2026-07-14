@@ -857,7 +857,7 @@ public class ActingTaskRegistry {
 
         register("death", 9, new EventActingTask("place_mob_head", 0.15f, 20 * 10));
         register("death", 9, new EventActingTask("mine_ore", 0.05f, 20 * 10));
-        register("death", 9, new EventActingTask("use_eye_of_death_ability", 0.2f, 20 * 15));
+        //register("death", 9, new EventActingTask("use_eye_of_death_ability", 0.2f, 20 * 15));
         register("death", 9, new EventActingTask("pickup_bone", 0.1f, 20 * 5));
         register("death", 9, new EventActingTask("pickup_rotten_flesh", 0.08f, 20 * 5));
         register("death", 9, new EventActingTask("kill_undead", 0.06f, 20 * 5));
