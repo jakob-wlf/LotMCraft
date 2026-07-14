@@ -143,10 +143,10 @@ public class CorruptionEventHandler {
                     totalGain += baseGain;
                 } else if (neighboring.contains(charPathway)) {
                     // Neighboring pathway
-                    totalGain += baseGain * 2.0f;
+                    totalGain += baseGain * 4.0f;
                 } else {
                     // Non-neighboring pathway
-                    totalGain += baseGain * 10.0f;
+                    totalGain += baseGain * 100.0f;
                 }
             }
         }
