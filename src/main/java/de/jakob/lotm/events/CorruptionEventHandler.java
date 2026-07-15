@@ -153,13 +153,14 @@ public class CorruptionEventHandler {
             // At 100% digestion (1.0), gain is reduced but still present.
             // Let's say at 100% digestion it's reduced by 50%.
             float digestionMultiplier = 1.0f - (digestionProgress * 0.6f);
+            totalGain = totalGain * digestionMultiplier;
             if (isCogitating) {
                 // Cogitation decreases corruption very slightly
 
                 totalGain = totalGain/8;
                 totalGain -= 0.000001f;
             }
-            corruptionComp.increaseCorruptionAndSync(totalGain * digestionMultiplier, entity);
+            corruptionComp.increaseCorruptionAndSync(totalGain, entity);
         }
     }
 
