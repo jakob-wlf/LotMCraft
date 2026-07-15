@@ -104,11 +104,7 @@ public class CorruptionEventHandler {
             }
         }
 
-        if (isCogitating) {
-            // Cogitation decreases corruption very slightly
-            corruptionComp.increaseCorruptionAndSync(-0.000001f, entity);
-            return;
-        }
+
 
         float totalGain = 0;
         float digestionProgress = beyonderComp.getDigestionProgress(); // 0 to 1
@@ -131,7 +127,7 @@ public class CorruptionEventHandler {
             int extraStack = Math.max(0, charStack - expectedStack);
 
             if (extraStack > 0) {
-                float baseGain = 0.00005f * extraStack * ((float) (10 - charSeq) /10); // Base gain per extra characteristic
+                float baseGain = 0.0005f * extraStack * ((float) (10 - charSeq) /10); // Base gain per extra characteristic
 
                 if(currentSequence <= 0){
                     baseGain *= 0.5F;
@@ -143,19 +139,26 @@ public class CorruptionEventHandler {
                     totalGain += baseGain;
                 } else if (neighboring.contains(charPathway)) {
                     // Neighboring pathway
-                    totalGain += baseGain * 4.0f;
+                    totalGain += baseGain * 10.0f;
                 } else {
                     // Non-neighboring pathway
-                    totalGain += baseGain * 100.0f;
+                    totalGain += baseGain * 1000.0f;
                 }
             }
         }
+
 
         if (totalGain > 0) {
             // Scales with digestion but never fully goes away.
             // At 100% digestion (1.0), gain is reduced but still present.
             // Let's say at 100% digestion it's reduced by 50%.
             float digestionMultiplier = 1.0f - (digestionProgress * 0.6f);
+            if (isCogitating) {
+                // Cogitation decreases corruption very slightly
+
+                totalGain = totalGain/8;
+                totalGain -= 0.000001f;
+            }
             corruptionComp.increaseCorruptionAndSync(totalGain * digestionMultiplier, entity);
         }
     }
