@@ -18,13 +18,13 @@ public class ActingCapHelper {
     public static final String CAP_REDUCTION_KEY = "lotm_acting_cap_reduction";
     public static final String MISSED_ACTING_KEY = "lotm_missed_acting";
 
-    static final float[] INCREMENTS = {0.04f, 0.025f, 0.01f};
+    static final float[] INCREMENTS = {0.07f, 0.05f, 0.03f};
     public static final float CAP_PER_SEQUENCE_UP = 0.15f;
 
     public static boolean skipNextCapApplication = false;
 
     public static boolean isCapSuppressed(ServerLevel level) {
-        return level.getGameRules().getBoolean(ModGameRules.APPLY_NOT_ACTING_PENALTY);
+        return !level.getGameRules().getBoolean(ModGameRules.APPLY_NOT_ACTING_PENALTY);
     }
 
     public static float getCapReduction(Player player) {
@@ -32,11 +32,16 @@ public class ActingCapHelper {
     }
 
     static void setCapReduction(Player player, float amount) {
-        player.getPersistentData().putFloat(CAP_REDUCTION_KEY, Math.clamp(amount, 0f, 1f));
+        // Snap to 0.1% steps: the increments are whole percents, but float residue from
+        // 0.15 - 0.07 - 0.05 - 0.03 otherwise leaves the cap fractionally below 100%
+        float rounded = Math.round(amount * 1000f) / 1000f;
+        player.getPersistentData().putFloat(CAP_REDUCTION_KEY, Math.clamp(rounded, 0f, 1f));
     }
 
     public static float getEffectiveCap(Player player) {
         if (BeyonderData.getSequence(player) == 0) return 1f;
+        if (player.isCreative()) return 1f;
+        if (player.level() instanceof ServerLevel serverLevel && isCapSuppressed(serverLevel)) return 1f;
         return Math.max(0f, 1f - getCapReduction(player));
     }
 
@@ -57,7 +62,11 @@ public class ActingCapHelper {
 
     public static void onSequenceUp(LivingEntity entity, String oldPathway, int oldSeq) {
         if (!(entity instanceof Player player)) return;
-        if (player.isCreative()) return;
+        if (player.isCreative()) {
+            // Creative players are exempt from the acting cap; drop any cap they carried over
+            clearCap(player);
+            return;
+        }
 
         if (skipNextCapApplication) {
             skipNextCapApplication = false;
@@ -177,57 +186,24 @@ public class ActingCapHelper {
         return found;
     }
 
+    /**
+     * Applies a fresh cap for the player's current sequence, discarding all previous
+     * cap and missed-acting data. Used on death, where the acting-method unlocks are
+     * also reset — the player restores the cap by redoing the methods of their current
+     * sequence, so nothing needs to be tracked as missed.
+     */
     public static void reinstateCapForCurrentSequence(Player player) {
         player.getPersistentData().remove(CAP_REDUCTION_KEY);
         player.getPersistentData().remove(MISSED_ACTING_KEY);
 
-        String pathway = BeyonderData.getPathway(player);
-        int seq = BeyonderData.getSequence(player);
-
-        if (seq == 0 || !BeyonderData.isBeyonder(player)) {
-            syncToClient(player);
-            return;
-        }
-
-        if (player.level() instanceof ServerLevel serverLevel && isCapSuppressed(serverLevel)) {
+        if (!BeyonderData.isBeyonder(player) || BeyonderData.getSequence(player) == 0
+                || player.isCreative()
+                || (player.level() instanceof ServerLevel serverLevel && isCapSuppressed(serverLevel))) {
             syncToClient(player);
             return;
         }
 
         setCapReduction(player, CAP_PER_SEQUENCE_UP);
-
-        List<ActingTask> tasks = ActingTaskRegistry.getTasksFor(pathway, seq);
-        int completed = 0;
-        for (ActingTask task : tasks) {
-            if (completed >= INCREMENTS.length) break;
-            if (ActingHelper.isTriggerUnlocked(pathway, seq, player, task.getId())) {
-                setCapReduction(player, Math.max(0f, getCapReduction(player) - INCREMENTS[completed]));
-                completed++;
-            }
-        }
-
-        int maxMissed = INCREMENTS.length - completed;
-        if (maxMissed > 0 && !tasks.isEmpty()) {
-            CompoundTag tasksTag = new CompoundTag();
-            int missedCount = 0;
-            for (ActingTask task : tasks) {
-                if (missedCount >= maxMissed) break;
-                if (!ActingHelper.isTriggerUnlocked(pathway, seq, player, task.getId())) {
-                    tasksTag.putString(task.getId(), "");
-                    missedCount++;
-                }
-            }
-            if (!tasksTag.isEmpty()) {
-                CompoundTag group = new CompoundTag();
-                group.putInt("startIndex", completed);
-                group.putInt("initialCount", tasksTag.size());
-                group.put("tasks", tasksTag);
-                CompoundTag missed = new CompoundTag();
-                missed.put(pathway + "/" + seq, group);
-                player.getPersistentData().put(MISSED_ACTING_KEY, missed);
-            }
-        }
-
         syncToClient(player);
     }
 
@@ -235,7 +211,8 @@ public class ActingCapHelper {
         if (player instanceof ServerPlayer serverPlayer) {
             float capReduction = getCapReduction(player);
 
-            if (player.level() instanceof ServerLevel serverLevel && isCapSuppressed(serverLevel)) {
+            if (player.isCreative()
+                    || (player.level() instanceof ServerLevel serverLevel && isCapSuppressed(serverLevel))) {
                 capReduction = 0f;
             }
 

@@ -927,11 +927,11 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         guiGraphics.drawString(this.font, label, panelX + 5, panelY + 5, 0xFFFFFFFF, true);
 
         int listY = panelY + 15;
-        int listHeight = COMPLETED_QUESTS_HEIGHT - 20;
+        int listHeight = COMPLETED_QUESTS_HEIGHT ;
 
         List<ActingTask> actingRequirements = new ArrayList<>(ActingTaskRegistry.getTasksFor(menu.getPathway(), menu.getSequence()));
         int skipLineAmount = 0;
-        int lineHeight = this.font.lineHeight + 2;
+        int lineHeight = this.font.lineHeight ;
 
         int startIndex = 0;
         int endIndex = Math.min(actingRequirements.size(), startIndex + (listHeight / lineHeight));

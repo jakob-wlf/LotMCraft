@@ -3,16 +3,23 @@ package de.jakob.lotm.util.helper;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
+import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncOriginalBodyOwnerPacket;
 import de.jakob.lotm.network.packets.toClient.UpdateAbilityBarPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityWheelHelper;
+import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.playerMap.Characteristic;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -209,6 +216,7 @@ public class ControllingUtil {
 
             // Carry over digestion progress (stored in persistent data, not NPC fields)
             if (targetEntity instanceof LivingEntity targetLiving) {
+                BeyonderData.setDigestionProgress(targetLiving, BeyonderData.getDigestionProgress(player));
                 restoredTarget = targetLiving;
             }
 
@@ -413,8 +421,16 @@ public class ControllingUtil {
                         : source.getData(ModAttachments.BEYONDER_COMPONENT).getDigestionProgress();
                 int sourceLuck = source.getData(ModAttachments.LUCK_COMPONENT).getLuck();
 
+            // This is a data copy between bodies, not a real advancement — it must not
+            // trigger the acting cap (e.g. restoring the player after controlling a non-beyonder
+            // would otherwise look like becoming a beyonder for the first time)
+            ActingCapHelper.skipNextCapApplication = true;
+            try {
                 BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source),
                         false, false, false, false, false);
+            } finally {
+                ActingCapHelper.skipNextCapApplication = false;
+            }
 
                 // Restore spirituality, digestion, and luck that setBeyonder wiped
                 BeyonderData.setSpirituality(target, sourceSpirituality);

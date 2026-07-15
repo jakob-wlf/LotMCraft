@@ -95,7 +95,7 @@ public class ModGameRules {
         APPLY_NOT_ACTING_PENALTY = GameRules.register(
                 "applyNotActingPenalty",
                 GameRules.Category.MISC,
-                GameRules.BooleanValue.create(false, (server, rule) -> {
+                GameRules.BooleanValue.create(true, (server, rule) -> {
                     for (ServerPlayer player : server.getPlayerList().getPlayers()) {
                         ActingCapHelper.syncToClient(player);
                     }

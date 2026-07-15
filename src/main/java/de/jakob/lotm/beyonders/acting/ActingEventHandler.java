@@ -416,18 +416,18 @@ public class ActingEventHandler {
 
     @SubscribeEvent
     public static void onItemPickup(ItemEntityPickupEvent.Post event) {
-        ActingHandler.onActingEvent(event.getPlayer(), "pickup_item");
+        //ActingHandler.onActingEvent(event.getPlayer(), "pickup_item");
 
-        if (event.getItemEntity().getItem().is(Items.GOLD_INGOT)
+        if (event.getOriginalStack().is(Items.GOLD_INGOT)
                 || event.getItemEntity().getItem().is(Items.GOLD_NUGGET)
                 || event.getItemEntity().getItem().is(Items.GOLDEN_APPLE))
             ActingHandler.onActingEvent(event.getPlayer(), "pickup_gold");
 
-        if (event.getItemEntity().getItem().is(Items.BONE)
+        if (event.getOriginalStack().is(Items.BONE)
                 || event.getItemEntity().getItem().is(Items.BONE_MEAL))
             ActingHandler.onActingEvent(event.getPlayer(), "pickup_bone");
 
-        if (event.getItemEntity().getItem().is(Items.ROTTEN_FLESH))
+        if (event.getOriginalStack().is(Items.ROTTEN_FLESH))
             ActingHandler.onActingEvent(event.getPlayer(), "pickup_rotten_flesh");
     }
 
