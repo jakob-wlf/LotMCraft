@@ -473,6 +473,9 @@ public class ActingEventHandler {
         if (player.getHealth() >= player.getMaxHealth())
             fire(player, "kill_while_full_health");
 
+        if (player.getHealth()/player.getMaxHealth() <= 0.5)
+            fire(player, "kill_while_low_health");
+
         if (player.getY() > 100)
             fire(player, "kill_at_high_altitude");
 
