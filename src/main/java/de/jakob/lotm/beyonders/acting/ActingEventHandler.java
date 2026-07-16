@@ -2,6 +2,8 @@ package de.jakob.lotm.beyonders.acting;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.events.custom.ContainerCraftingEvent;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.tags.BlockTags;
@@ -13,6 +15,7 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
@@ -216,6 +219,21 @@ public class ActingEventHandler {
 
         if (event.getEntityBeingMounted() instanceof Boat)             ActingHandler.onActingEvent(player, "ride_boat");
         if (event.getEntityBeingMounted() instanceof AbstractMinecart) ActingHandler.onActingEvent(player, "ride_minecart");
+    }
+
+
+    @SubscribeEvent
+    public static void ContainerCraftingEvent(ContainerCraftingEvent event){
+        if (event.getContainer() instanceof SmithingMenu menu) {
+            if (event.getEntity() instanceof Player player) {
+                Item item =  event.getItem();
+                if (item instanceof TieredItem tiered) {
+                    Tier tier = tiered.getTier();
+                    if (tier == Tiers.NETHERITE) ActingHandler.onActingEvent(player, "craft_netherite_tool");
+                }
+            }
+        }
+
     }
 
     @SubscribeEvent
@@ -471,6 +489,9 @@ public class ActingEventHandler {
 
         if (player.getHealth() >= player.getMaxHealth())
             fire(player, "kill_while_full_health");
+
+        if (player.getHealth()/player.getMaxHealth() <= 0.5)
+            fire(player, "kill_while_low_health");
 
         if (player.getY() > 100)
             fire(player, "kill_at_high_altitude");

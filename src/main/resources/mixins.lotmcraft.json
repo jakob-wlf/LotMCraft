@@ -3,6 +3,7 @@
   "package": "de.jakob.lotm.util.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "ContainerCraftingListenerMixin",
     "EntityAccessor",
     "MixinIngredient",
     "ServerGamePacketListenerImplMixin"
