@@ -916,6 +916,123 @@ public class ActingTaskRegistry {
         register("death", 1, new EventActingTask("kill_boss", 0.2f, 20 * 60));
         register("death", 1, new EventActingTask("kill_undead", 0.1f, 20 * 5));
         register("death", 1, new EventActingTask("place_mob_head", 0.08f, 20 * 10));
+
+        register("black_emperor", 9, new EventActingTask("eat_golden_apple", 0.1f, 20 * 10));
+        register("black_emperor", 9, new EventActingTask("eat_suspicious_stew", 0.05f, 20 * 5));
+        register("black_emperor", 9, new EventActingTask("drink_potion", 0.1f, 20 * 10));
+        register("black_emperor", 9, new EventActingTask("break_chest", 0.08f, 20 * 10));
+        register("black_emperor", 9, new EventActingTask("pickup_gold", 0.06f, 20 * 5));
+        register("black_emperor", 9, new EventActingTask("sneak_kill", 0.06f, 20 * 5));
+        register("black_emperor", 9, new EventActingTask("pickup_rotten_flesh", 0.03f, 20 * 5));
+                  
+        register("black_emperor", 8, new EventActingTask("use_note_block", 0.1f, 20 * 10));
+        register("black_emperor", 8, new EventActingTask("trade_with_villager", 0.1f, 20 * 15));
+        register("black_emperor", 8, new EventActingTask("use_language_of_foulness_ability", 0.2f, 20 * 15));
+        register("black_emperor", 8, new EventActingTask("eat_rotten_flesh", 0.05f, 20 * 5));
+        register("black_emperor", 8, new EventActingTask("stand_at_high_altitude", 0.03f, 20 * 20));
+
+        register("black_emperor", 7, new EventActingTask("feed_animal", 0.1f, 20 * 10));
+        register("black_emperor", 7, new EventActingTask("tame_animal", 0.1f, 20 * 15));
+        register("black_emperor", 7, new EventActingTask("trade_with_villager", 0.1f, 20 * 15));
+        register("black_emperor", 7, new EventActingTask("pickup_gold", 0.06f, 20 * 5));
+        register("black_emperor", 7, new EventActingTask("interact_with_villager", 0.06f, 20 * 10));
+
+        register("black_emperor", 6, new EventActingTask("use_enchanting_table", 0.1f, 20 * 10));
+        register("black_emperor", 6, new EventActingTask("brew_potion", 0.1f, 20 * 15));
+        register("black_emperor", 6, new EventActingTask("use_defiling_seed_ability", 0.2f, 20 * 20));
+        register("black_emperor", 6, new EventActingTask("eat_cake", 0.06f, 20 * 10));
+        register("black_emperor", 6, new EventActingTask("eat_golden_apple", 0.06f, 20 * 10));
+        register("black_emperor", 6, new EventActingTask("pickup_gold", 0.05f, 20 * 5));
+
+        register("black_emperor", 5, new EventActingTask("kill_strong_mobs", 0.1f, 20 * 5));
+        register("black_emperor", 5, new EventActingTask("kill_while_full_health", 0.1f, 20 * 2));
+        register("black_emperor", 5, new EventActingTask("attack_stronger_mob", 0.1f, 20 * 5));
+        register("black_emperor", 5, new EventActingTask("kill_unarmed", 0.06f, 20 * 5));
+        register("black_emperor", 5, new EventActingTask("stand_near_lava", 0.02f, 20 * 10));
+
+        register("black_emperor", 4, new EventActingTask("kill_in_darkness", 0.1f, 20 * 2));
+        register("black_emperor", 4, new EventActingTask("outnumbered_kill", 0.1f, 20 * 5));
+        register("black_emperor", 4, new EventActingTask("use_mind_fog_ability", 0.2f, 20 * 20));
+        register("black_emperor", 4, new EventActingTask("eat_rotten_flesh", 0.05f, 20 * 5));
+        register("black_emperor", 4, new EventActingTask("place_sign", 0.05f, 20 * 10));
+
+        register("black_emperor", 3, new EventActingTask("kill_strong_mobs", 0.15f, 20 * 5));
+        register("black_emperor", 3, new EventActingTask("place_mob_head", 0.1f, 20 * 10));
+        register("black_emperor", 3, new EventActingTask("use_fear_aura_ability", 0.2f, 20 * 20));
+        register("black_emperor", 3, new EventActingTask("place_banner", 0.06f, 20 * 20));
+        register("black_emperor", 3, new EventActingTask("kill_undead", 0.05f, 20 * 5));
+
+        register("black_emperor", 2, new EventActingTask("set_fire", 0.1f, 20 * 5));
+        register("black_emperor", 2, new EventActingTask("kill_burning_mob", 0.1f, 20 * 5));
+        register("black_emperor", 2, new EventActingTask("use_flames_of_the_abyss_ability", 0.3f, 20 * 20));
+        register("black_emperor", 2, new EventActingTask("enter_nether", 0.08f, 20 * 30));
+        register("black_emperor", 2, new EventActingTask("kill_boss", 0.15f, 20 * 60));
+
+        register("black_emperor", 1, new EventActingTask("kill_strong_mobs", 0.15f, 20 * 5));
+        register("black_emperor", 1, new EventActingTask("place_tnt", 0.1f, 20 * 10));
+        register("black_emperor", 1, new EventActingTask("use_corrupting_voice_ability", 0.3f, 20 * 20));
+        register("black_emperor", 1, new EventActingTask("stand_in_complete_darkness", 0.04f, 20 * 20));
+        register("black_emperor", 1, new EventActingTask("kill_boss", 0.2f, 20 * 60));
+
+        register("twilight_giant", 9, new EventActingTask("eat_golden_apple", 0.1f, 20 * 10));
+        register("twilight_giant", 9, new EventActingTask("eat_suspicious_stew", 0.05f, 20 * 5));
+        register("twilight_giant", 9, new EventActingTask("drink_potion", 0.1f, 20 * 10));
+        register("twilight_giant", 9, new EventActingTask("break_chest", 0.08f, 20 * 10));
+        register("twilight_giant", 9, new EventActingTask("pickup_gold", 0.06f, 20 * 5));
+        register("twilight_giant", 9, new EventActingTask("sneak_kill", 0.06f, 20 * 5));
+        register("twilight_giant", 9, new EventActingTask("pickup_rotten_flesh", 0.03f, 20 * 5));
+
+        register("twilight_giant", 8, new EventActingTask("use_note_block", 0.1f, 20 * 10));
+        register("twilight_giant", 8, new EventActingTask("trade_with_villager", 0.1f, 20 * 15));
+        register("twilight_giant", 8, new EventActingTask("use_language_of_foulness_ability", 0.2f, 20 * 15));
+        register("twilight_giant", 8, new EventActingTask("eat_rotten_flesh", 0.05f, 20 * 5));
+        register("twilight_giant", 8, new EventActingTask("stand_at_high_altitude", 0.03f, 20 * 20));
+
+        register("twilight_giant", 7, new EventActingTask("feed_animal", 0.1f, 20 * 10));
+        register("twilight_giant", 7, new EventActingTask("tame_animal", 0.1f, 20 * 15));
+        register("twilight_giant", 7, new EventActingTask("trade_with_villager", 0.1f, 20 * 15));
+        register("twilight_giant", 7, new EventActingTask("pickup_gold", 0.06f, 20 * 5));
+        register("twilight_giant", 7, new EventActingTask("interact_with_villager", 0.06f, 20 * 10));
+
+        register("twilight_giant", 6, new EventActingTask("use_enchanting_table", 0.1f, 20 * 10));
+        register("twilight_giant", 6, new EventActingTask("brew_potion", 0.1f, 20 * 15));
+        register("twilight_giant", 6, new EventActingTask("use_defiling_seed_ability", 0.2f, 20 * 20));
+        register("twilight_giant", 6, new EventActingTask("eat_cake", 0.06f, 20 * 10));
+        register("twilight_giant", 6, new EventActingTask("eat_golden_apple", 0.06f, 20 * 10));
+        register("twilight_giant", 6, new EventActingTask("pickup_gold", 0.05f, 20 * 5));
+
+        register("twilight_giant", 5, new EventActingTask("kill_strong_mobs", 0.1f, 20 * 5));
+        register("twilight_giant", 5, new EventActingTask("kill_while_full_health", 0.1f, 20 * 2));
+        register("twilight_giant", 5, new EventActingTask("attack_stronger_mob", 0.1f, 20 * 5));
+        register("twilight_giant", 5, new EventActingTask("kill_unarmed", 0.06f, 20 * 5));
+        register("twilight_giant", 5, new EventActingTask("stand_near_lava", 0.02f, 20 * 10));
+
+        register("twilight_giant", 4, new EventActingTask("kill_in_darkness", 0.1f, 20 * 2));
+        register("twilight_giant", 4, new EventActingTask("outnumbered_kill", 0.1f, 20 * 5));
+        register("twilight_giant", 4, new EventActingTask("use_mind_fog_ability", 0.2f, 20 * 20));
+        register("twilight_giant", 4, new EventActingTask("eat_rotten_flesh", 0.05f, 20 * 5));
+        register("twilight_giant", 4, new EventActingTask("place_sign", 0.05f, 20 * 10));
+
+        register("twilight_giant", 3, new EventActingTask("kill_strong_mobs", 0.15f, 20 * 5));
+        register("twilight_giant", 3, new EventActingTask("place_mob_head", 0.1f, 20 * 10));
+        register("twilight_giant", 3, new EventActingTask("use_fear_aura_ability", 0.2f, 20 * 20));
+        register("twilight_giant", 3, new EventActingTask("place_banner", 0.06f, 20 * 20));
+        register("twilight_giant", 3, new EventActingTask("kill_undead", 0.05f, 20 * 5));
+
+        register("twilight_giant", 2, new EventActingTask("set_fire", 0.1f, 20 * 5));
+        register("twilight_giant", 2, new EventActingTask("kill_burning_mob", 0.1f, 20 * 5));
+        register("twilight_giant", 2, new EventActingTask("use_flames_of_the_abyss_ability", 0.3f, 20 * 20));
+        register("twilight_giant", 2, new EventActingTask("enter_nether", 0.08f, 20 * 30));
+        register("twilight_giant", 2, new EventActingTask("kill_boss", 0.15f, 20 * 60));
+
+        register("twilight_giant", 1, new EventActingTask("kill_strong_mobs", 0.15f, 20 * 5));
+        register("twilight_giant", 1, new EventActingTask("place_tnt", 0.1f, 20 * 10));
+        register("twilight_giant", 1, new EventActingTask("use_corrupting_voice_ability", 0.3f, 20 * 20));
+        register("twilight_giant", 1, new EventActingTask("stand_in_complete_darkness", 0.04f, 20 * 20));
+        register("twilight_giant", 1, new EventActingTask("kill_boss", 0.2f, 20 * 60));
+
+
+
     }
 
     record PathwaySequenceKey(String pathway, int sequence) {
