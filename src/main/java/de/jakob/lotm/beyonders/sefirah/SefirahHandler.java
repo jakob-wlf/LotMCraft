@@ -187,9 +187,9 @@ public class SefirahHandler {
                 }
 
                 player.teleportTo(riverLevel,
-                        0,
-                        65,
-                        -90,
+                        -101,
+                        76,
+                        -538,
                         0,
                         0);
             }
