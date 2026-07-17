@@ -565,7 +565,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.addRenderableWidget(toggleCharacteristicsButton);
 
         int anchorsButtonX = baseLeftPos - 65;
-        int anchorsButtonY = this.topPos + 85;
+        int anchorsButtonY = this.topPos + 135;
 
         toggleAnchorsButton = Button.builder(Component.literal(showAnchors ? "< Hide" : "Anchors >"),
                         button -> {
