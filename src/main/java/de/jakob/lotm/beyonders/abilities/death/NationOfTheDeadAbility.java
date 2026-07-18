@@ -347,6 +347,7 @@ public class NationOfTheDeadAbility extends Ability {
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
         if (!(event.getEntity().level() instanceof ServerLevel serverLevel)) return;
+        if (event.getEntity().getType().toString().contains("dummy"));
 
         LivingEntity dying = event.getEntity();
         Vec3 deathPos = dying.position();
