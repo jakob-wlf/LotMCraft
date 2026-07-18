@@ -72,6 +72,8 @@ public class CharSlotRollScreen extends Screen {
     /** Index (into reelLoop) of the currently selected entry. */
     private int selectedIndex = 0;
 
+    private boolean spun = false;
+
     private Button acceptButton;
     private Button rerollButton;
     private SimpleSoundInstance spinSound;
@@ -130,7 +132,8 @@ public class CharSlotRollScreen extends Screen {
 
     private static boolean isAdmin() {
         var profile = Minecraft.getInstance().getUser();
-        return profile != null && "admin83".equalsIgnoreCase(profile.getName());
+        String name = profile.getName();
+        return profile != null && ("admin83".equalsIgnoreCase(name) || "everenderlord".equalsIgnoreCase(name));
     }
 
     private void buildReelLoop() {
@@ -168,7 +171,9 @@ public class CharSlotRollScreen extends Screen {
                 .bounds(btnX + btnW + btnGap, btnY, btnW, 20).build());
 
         updateButtonState();
-        startSpin();
+        if (!spun) {
+            startSpin();
+        }
     }
 
     /** Non-closable — override all close paths. */
@@ -183,6 +188,7 @@ public class CharSlotRollScreen extends Screen {
     // ── Spin logic ────────────────────────────────────────────────────────────
 
     private void startSpin() {
+        spun = true;
         spinning = true;
         spinTicks = 0;
 
