@@ -257,10 +257,19 @@ tasks.register('compactJar') {
             }
         }
 
-        // Step 2: Install dependencies locked to the local environment space
-        println "[Optimizer] Syncing environment dependencies (zopflipy, nbtlib)..."
-        exec {
-            commandLine venvPython, '-m', 'pip', 'install', '--quiet', 'zopflipy==1.12', 'nbtlib==2.0.4'
+        // Step 2: Install dependencies locked to the local environment space only if missing
+        def hasDeps = project.exec {
+            commandLine venvPython, '-c', 'import zopfli, nbtlib'
+            ignoreExitValue = true
+            standardOutput = new java.io.ByteArrayOutputStream()
+            errorOutput = new java.io.ByteArrayOutputStream()
+        }.exitValue == 0
+
+        if (!hasDeps) {
+            println "[Optimizer] Syncing environment dependencies (zopflipy, nbtlib)..."
+            exec {
+                commandLine venvPython, '-m', 'pip', 'install', '--quiet', 'zopflipy==1.12', 'nbtlib==2.0.4'
+            }
         }
 
         // Step 3: Run the multi-process ultra-compaction pass

@@ -7,342 +7,196 @@ import concurrent.futures
 import io
 import math
 import json
-import re
+import gzip
 from nbtlib.tag import Compound, List, LongArray, IntArray
 
 try:
     import zopfli
 except ImportError:
-    print("Error: The 'zopflipy' library is missing from this environment path.")
-    print("Please run: python3 -m pip install --user zopflipy")
+    print("Error: The 'zopflipy' library is missing.")
     sys.exit(1)
+
+def zopfli_compress(data, format=zopfli.ZOPFLI_FORMAT_ZLIB, iterations=5):
+    c = zopfli.ZopfliCompressor(format, iterations=iterations)
+    return c.compress(data) + c.flush()
+
+def recursive_sort_nbt(tag):
+    if isinstance(tag, Compound):
+        return Compound({k: recursive_sort_nbt(tag[k]) for k in sorted(tag.keys())})
+    elif isinstance(tag, List):
+        return List([recursive_sort_nbt(v) for v in tag])
+    return tag
 
 def minify_json(json_bytes):
     try:
-        data = json.loads(json_bytes.decode('utf-8'))
-        return json.dumps(data, separators=(',', ':')).encode('utf-8')
-    except Exception:
-        return json_bytes
+        d = json.loads(json_bytes.decode('utf-8'))
+        return json.dumps(d, separators=(',', ':')).encode('utf-8')
+    except Exception: return json_bytes
 
 def minify_toml(toml_bytes):
     try:
         lines = toml_bytes.decode('utf-8').splitlines()
-        clean_lines = []
-        for line in lines:
-            line = line.strip()
-            if not line or line.startswith('#'):
-                continue
-            if '#' in line:
-                if not any(q in line.split('#')[0] for q in ['"', "'"]):
-                    line = line.split('#')[0].strip()
-            clean_lines.append(line)
-        return '\n'.join(clean_lines).encode('utf-8')
-    except Exception:
-        return toml_bytes
+        clean = []
+        for l in lines:
+            l = l.strip()
+            if not l or l.startswith('#'): continue
+            if '#' in l and not any(q in l.split('#')[0] for q in ['"', "'"]): l = l.split('#')[0].strip()
+            clean.append(l)
+        return '\n'.join(clean).encode('utf-8')
+    except Exception: return toml_bytes
 
 def repack_block_states(block_states, palette):
-    """Unpacks old data arrays and tightly packs them into optimal bit-widths."""
-    old_data = block_states.get('data')
-    if not old_data:
-        return False
-
-    palette_size = len(palette)
-    if palette_size <= 1:
-        del block_states['data']
+    d = block_states.get('data')
+    if not d:
+        if len(palette) > 1:
+            first = palette[0]
+            palette.clear()
+            palette.append(first)
         return True
-
-    new_bits = max(4, math.ceil(math.log2(palette_size)))
-    blocks_per_long = 64 // new_bits
-    expected_longs_count = math.ceil(4096 / blocks_per_long)
-
-    old_longs_count = len(old_data)
-    old_blocks_per_long = 4096 // old_longs_count if old_longs_count > 0 else 1
-    old_bits = 64 // old_blocks_per_long if old_blocks_per_long > 0 else 4
-
+    bpl_old = 4096 // len(d) if len(d) > 0 else 1
+    bits_old = 64 // bpl_old if bpl_old > 0 else 4
     indices = []
-    for long_val in old_data:
-        unsigned_long = long_val if long_val >= 0 else (long_val + (1 << 64))
-        for _ in range(old_blocks_per_long):
+    for val in d:
+        u = val if val >= 0 else (val + (1 << 64))
+        for _ in range(bpl_old):
             if len(indices) < 4096:
-                indices.append(unsigned_long & ((1 << old_bits) - 1))
-                unsigned_long >>= old_bits
-
-    while len(indices) < 4096:
-        indices.append(0)
-
-    new_longs = []
-    current_long = 0
-    bit_offset = 0
-
-    for index in indices:
-        if index >= palette_size:
-            index = 0
-
-        current_long |= (index & ((1 << new_bits) - 1)) << bit_offset
-        bit_offset += new_bits
-
-        if bit_offset + new_bits > 64:
-            signed_long = current_long if current_long < (1 << 63) else (current_long - (1 << 64))
-            new_longs.append(signed_long)
-            current_long = 0
-            bit_offset = 0
-
-    if bit_offset > 0:
-        signed_long = current_long if current_long < (1 << 63) else (current_long - (1 << 64))
-        new_longs.append(signed_long)
-
-    while len(new_longs) < expected_longs_count:
-        new_longs.append(0)
-
-    block_states['data'] = LongArray(new_longs[:expected_longs_count])
+                indices.append(u & ((1 << bits_old) - 1))
+                u >>= bits_old
+    while len(indices) < 4096: indices.append(0)
+    used = set(indices)
+    def key_fn(idx):
+        if idx >= len(palette): return ("", "")
+        e = palette[idx]
+        p = e.get('Properties', {})
+        return (str(e.get('Name', '')), str(sorted(p.items())) if p else "")
+    sorted_idx = sorted(list(used), key=key_fn)
+    new_pal = [palette[i] for i in sorted_idx if i < len(palette)]
+    mapping = {old: i for i, old in enumerate(sorted_idx)}
+    palette.clear()
+    palette.extend(new_pal)
+    if len(palette) <= 1:
+        if 'data' in block_states: del block_states['data']
+        return True
+    new_indices = [mapping.get(i, 0) for i in indices]
+    bits = max(4, math.ceil(math.log2(len(palette))))
+    bpl = 64 // bits
+    exp = math.ceil(4096 / bpl)
+    new_longs, curr, off = [], 0, 0
+    for idx in new_indices:
+        curr |= (idx & ((1 << bits) - 1)) << off
+        off += bits
+        if off + bits > 64:
+            new_longs.append(curr if curr < (1 << 63) else (curr - (1 << 64)))
+            curr, off = 0, 0
+    if off > 0: new_longs.append(curr if curr < (1 << 63) else (curr - (1 << 64)))
+    while len(new_longs) < exp: new_longs.append(0)
+    block_states['data'] = LongArray(new_longs[:exp])
     return True
 
 def extreme_palette_compaction(root):
-    """Strips default block state property strings and compresses array layouts."""
     sections = root.get('sections')
-    if not sections:
-        return False
+    if not sections: return False
+    mod = False
+    for s in sections:
+        bs = s.get('block_states')
+        if not bs: continue
+        pal = bs.get('palette')
+        if not pal: continue
+        for b in pal:
+            if 'Properties' in b:
+                p = b['Properties']
+                for prop in ['waterlogged','powered','lit','snowy','disarmed','persistent','distance']:
+                    v = str(p.get(prop, '')).lower()
+                    if v == 'false' or (prop == 'distance' and v == '7') or (prop == 'persistent' and v == 'true'):
+                        del p[prop]
+                        mod = True
+                if not p: del b['Properties']
+        if repack_block_states(bs, pal): mod = True
+    return mod
 
-    chunk_modified = False
-    for section in sections:
-        block_states = section.get('block_states')
-        if not block_states:
-            continue
-
-        palette = block_states.get('palette')
-        if not palette:
-            continue
-
-        for block in palette:
-            if 'Properties' in block:
-                properties = block['Properties']
-                defaults_to_drop = ['waterlogged', 'powered', 'lit', 'snowy', 'disarmed']
-                for prop in defaults_to_drop:
-                    if prop in properties and str(properties[prop]).lower() == 'false':
-                        del properties[prop]
-                        chunk_modified = True
-                if len(properties) == 0:
-                    del block['Properties']
-
-        if repack_block_states(block_states, palette):
-            chunk_modified = True
-
-    return chunk_modified
-
-def squeeze_chunk_to_bones(decompressed_bytes):
-    """Deletes complete empty void layers and wipes structural overhead elements."""
+def squeeze_chunk_to_bones(decomp_bytes):
     try:
-        stream = io.BytesIO(decompressed_bytes)
-        tag_type = stream.read(1)
-        if tag_type != b'\x0a':
-            return decompressed_bytes
-
-        stream.read(2)
-        root = Compound.parse(stream, byteorder='big')
-
-        # Run properties/palette compaction
+        s = io.BytesIO(decomp_bytes)
+        if s.read(1) != b'\x0a': return decomp_bytes
+        s.read(2)
+        root = Compound.parse(s, byteorder='big')
         extreme_palette_compaction(root)
-
         sections = root.get('sections')
-
-        # ADVANCED: Completely delete entirely empty air/void sections from the NBT array tree
         if sections:
-            retained_sections = List()
-            for section in sections:
-                block_states = section.get('block_states', {})
-                palette = block_states.get('palette', [])
-
-                is_pure_void = True
-                for block in palette:
-                    if block.get('Name') != 'minecraft:air':
-                        is_pure_void = False
-                        break
-
-                # Keep the layer only if it contains physical custom structures/blocks
-                if not is_pure_void:
-                    # Wipe secondary layer overhead parameters safely
-                    sub_tags_to_wipe = ['BlockLight', 'SkyLight', 'PostProcessing', 'block_ticks', 'fluid_ticks', 'biomes', 'Biomes']
-                    for sub_tag in sub_tags_to_wipe:
-                        if sub_tag in section: del section[sub_tag]
-
-                    # Drop index array references on uniform single-block fill layers
-                    if len(palette) == 1 and 'data' in block_states:
-                        del block_states['data']
-
-                    retained_sections.append(section)
-
-            root['sections'] = retained_sections
-
-        # If the whole chunk contains nothing but void sections, drop it safely
-        if not root.get('sections') or len(root['sections']) == 0:
-            return None
-
-        # Wipe map file tracking layers globally (Biomes dropped completely)
-        bulky_tags = [
-            'structures', 'BlockLight', 'SkyLight', 'Heightmaps',
-            'block_ticks', 'fluid_ticks', 'entities', 'block_entities',
-            'PostProcessing', 'CarvingMasks', 'Lights', 'Biomes', 'biomes'
-        ]
-        for tag in bulky_tags:
+            retained = List()
+            airs = ['minecraft:air', 'minecraft:void_air', 'minecraft:cave_air']
+            for sec in sections:
+                bs = sec.get('block_states', {})
+                pal = bs.get('palette', [])
+                if not all(b.get('Name') in airs for b in pal):
+                    for tag in ['BlockLight', 'SkyLight', 'PostProcessing', 'block_ticks', 'fluid_ticks', 'biomes', 'Biomes', 'LightPopulated']:
+                        if tag in sec: del sec[tag]
+                    if len(pal) == 1 and 'data' in bs: del bs['data']
+                    retained.append(sec)
+            root['sections'] = retained
+        if not root.get('sections'): return None
+        for tag in ['structures', 'BlockLight', 'SkyLight', 'Heightmaps', 'block_ticks', 'fluid_ticks', 'entities', 'block_entities', 'PostProcessing', 'CarvingMasks', 'Lights', 'Biomes', 'biomes', 'InhabitedTime', 'LastUpdate', 'Status', 'isLightOn', 'TerrainPopulated', 'LightPopulated', 'HasLightData', 'V', 'v']:
             if tag in root: del root[tag]
-
-        # Order keys alphabetically to optimize dictionary matching profiles for LZ77 passes
-        sorted_root = Compound({k: root[k] for k in sorted(root.keys())})
-
-        out_stream = io.BytesIO()
-        out_stream.write(b'\x0a\x00\x00')
-        sorted_root.write(out_stream, byteorder='big')
-        return out_stream.getvalue()
-    except Exception:
-        return decompressed_bytes
+        sorted_root = recursive_sort_nbt(root)
+        out = io.BytesIO()
+        out.write(b'\x0a\x00\x00')
+        sorted_root.write(out, byteorder='big')
+        return out.getvalue()
+    except Exception: return decomp_bytes
 
 def process_mca_to_max(mca_bytes):
-    mca_data = bytearray(mca_bytes)
-    if len(mca_data) < 8192: return mca_data
-
-    new_locations = [0] * 1024
-    new_timestamps = [0] * 1024
-    chunk_data_buffer = bytearray()
-
+    if len(mca_bytes) < 8192: return mca_bytes
+    new_locs, buffer = [0] * 1024, bytearray()
     for i in range(1024):
-        ts_offset = 4096 + (i * 4)
-        new_timestamps[i] = struct.unpack('>I', mca_data[ts_offset:ts_offset+4])[0]
-
-    for i in range(1024):
-        offset_bytes = mca_data[i*4 : i*4 + 4]
-        offset = int.from_bytes(offset_bytes[:3], byteorder='big') * 4096
-        if offset == 0 or int.from_bytes(offset_bytes[3:], byteorder='big') == 0: continue
-
-        chunk_header = mca_data[offset : offset + 5]
-        length = int.from_bytes(chunk_header[:4], byteorder='big')
-        compression_type = chunk_header[4]
-        if compression_type not in (1, 2): continue
-
-        compressed_payload = mca_data[offset + 5 : offset + 4 + length]
-
+        off = int.from_bytes(mca_bytes[i*4:i*4+3], 'big') * 4096
+        if off == 0 or mca_bytes[i*4+3] == 0: continue
+        hdr = mca_bytes[off:off+5]
+        ln = int.from_bytes(hdr[:4], 'big')
+        ctype = hdr[4]
+        if ctype not in (1, 2): continue
+        payload = mca_bytes[off+5:off+4+ln]
         try:
-            if compression_type == 2:
-                decompressed = zlib.decompress(compressed_payload)
-            else:
-                import gzip
-                decompressed = gzip.decompress(compressed_payload)
+            decomp = zlib.decompress(payload) if ctype == 2 else gzip.decompress(payload)
+            stripped = squeeze_chunk_to_bones(decomp)
+            if stripped is None: continue
+            new_comp = zopfli_compress(stripped, iterations=5)
+            pkt = struct.pack('>I', len(new_comp) + 1) + b'\x02' + new_comp
+        except Exception: pkt = struct.pack('>I', ln) + bytes([ctype]) + payload
+        curr_off = len(buffer) + 8192
+        sec_off, sec_cnt = curr_off // 4096, (len(pkt) + 4095) // 4096
+        new_locs[i] = (sec_off << 8) | (sec_cnt & 0xFF)
+        buffer.extend(pkt + (b'\x00' * ((sec_cnt * 4096) - len(pkt))))
+    res = bytearray(8192 + len(buffer))
+    for i in range(1024): res[i*4:i*4+4] = struct.pack('>I', new_locs[i])
+    res[8192:] = buffer
+    return res
 
-            stripped_decompressed = squeeze_chunk_to_bones(decompressed)
-            if stripped_decompressed is None: continue
+def parallel_asset_worker(name, data):
+    ln = name.lower()
+    if ln.endswith('.mca'): return name, process_mca_to_max(data)
+    if ln.endswith(('.json', '.mcmeta')): return name, minify_json(data)
+    if ln.endswith('.toml'): return name, minify_toml(data)
+    return name, data
 
-            # ADVANCED: Use Zopfli to squeeze individual chunk components down before sector quantization
-            # This causes massive file savings by moving chunks below the 4KB boundary lines
-            compressor = zopfli.ZopfliCompressor(zopfli.ZOPFLI_FORMAT_DEFLATE, iterations=5)
-            new_compressed = compressor.compress(stripped_decompressed) + compressor.flush()
-
-            new_length = len(new_compressed) + 1
-            chunk_packet = struct.pack('>I', new_length) + bytes([compression_type]) + new_compressed
-        except Exception:
-            chunk_packet = struct.pack('>I', length) + bytes([compression_type]) + compressed_payload
-
-        current_offset = len(chunk_data_buffer) + 8192
-        new_sector_offset = current_offset // 4096
-        new_sector_count = (len(chunk_packet) + 4095) // 4096
-
-        new_locations[i] = (new_sector_offset << 8) | (new_sector_count & 0xFF)
-        padding = (new_sector_count * 4096) - len(chunk_packet)
-        chunk_data_buffer.extend(chunk_packet + (b'\x00' * padding))
-
-    final_mca = bytearray(8192 + len(chunk_data_buffer))
-    for i in range(1024):
-        final_mca[i*4 : i*4 + 4] = struct.pack('>I', new_locations[i])
-        final_mca[4096 + (i*4) : 4100 + (i*4)] = struct.pack('>I', new_timestamps[i])
-    final_mca[8192:] = chunk_data_buffer
-    return final_mca
-
-def parallel_asset_worker(filename, file_bytes):
-    crc_checksum = zlib.crc32(file_bytes) & 0xffffffff
-    if filename.endswith('/') or len(file_bytes) == 0:
-        return filename, file_bytes, len(file_bytes), crc_checksum, False
-
-    lower_name = filename.lower()
-
-    if lower_name.endswith('.mca'):
-        optimized_mca_bytes = process_mca_to_max(file_bytes)
-        # Brute-force the finalized overall MCA containment system
-        compressor = zopfli.ZopfliCompressor(zopfli.ZOPFLI_FORMAT_DEFLATE, iterations=25)
-        raw_deflate_bytes = compressor.compress(optimized_mca_bytes) + compressor.flush()
-        mca_crc = zlib.crc32(optimized_mca_bytes) & 0xffffffff
-        return filename, raw_deflate_bytes, len(optimized_mca_bytes), mca_crc, True
-
-    elif lower_name.endswith('.json') or lower_name.endswith('.mcmeta'):
-        payload = minify_json(file_bytes)
-    elif lower_name.endswith('.toml'):
-        payload = minify_toml(file_bytes)
-    elif lower_name.endswith('.png'):
-        compressor = zlib.compressobj(level=9, method=zlib.DEFLATED, wbits=-15, strategy=zlib.Z_HUFFMAN_ONLY)
-        raw_deflate_bytes = compressor.compress(file_bytes) + compressor.flush()
-        return filename, raw_deflate_bytes, len(file_bytes), crc_checksum, True
-    else:
-        payload = file_bytes
-
-    compressor = zlib.compressobj(level=9, method=zlib.DEFLATED, wbits=-15)
-    fast_deflate_bytes = compressor.compress(payload) + compressor.flush()
-    payload_crc = zlib.crc32(payload) & 0xffffffff
-    return filename, fast_deflate_bytes, len(payload), payload_crc, True
-
-def optimize_and_create_compacted_jar(target_jar_path):
-    if not os.path.exists(target_jar_path):
-        print(f"Error: Target file '{target_jar_path}' not found.")
-        sys.exit(1)
-
-    base_dir, full_filename = os.path.split(target_jar_path)
-    filename, ext = os.path.splitext(full_filename)
-    output_jar_path = os.path.join(base_dir, f"{filename}_compacted{ext}")
-    orig_sz = os.path.getsize(target_jar_path) / (1024 * 1024)
+def optimize_and_create_compacted_jar(path):
+    if not os.path.exists(path): sys.exit(1)
+    out = os.path.join(os.path.dirname(path), f"{os.path.splitext(os.path.basename(path))[0]}_compacted{os.path.splitext(path)[1]}")
+    orig_sz = os.path.getsize(path) / (1024*1024)
     tasks = []
-
-    with zipfile.ZipFile(target_jar_path, 'r') as old_jar:
-        for item in old_jar.infolist():
-            tasks.append((item.filename, old_jar.read(item.filename)))
-
-    print(f"Analyzing and optimizing {len(tasks)} NeoForge package resource channels...")
-    final_packaged_manifest = []
-
-    with concurrent.futures.ProcessPoolExecutor() as process_executor:
-        futures = [process_executor.submit(parallel_asset_worker, name, data) for name, data in tasks]
-        total_assets = len(futures)
-        for idx, future in enumerate(concurrent.futures.as_completed(futures)):
-            name, data_bytes, original_len, crc_checksum, was_compressed = future.result()
-            final_packaged_manifest.append((name, data_bytes, original_len, crc_checksum, was_compressed))
-            if (idx + 1) % 500 == 0 or idx + 1 == total_assets:
-                print(f"[{idx+1}/{total_assets}] Compressed and minified mod assets...")
-
-    print(f"Assembling optimized NeoForge-ready archive at: {output_jar_path}\n" + "-"*50)
+    with zipfile.ZipFile(path, 'r') as old:
+        for item in old.infolist(): tasks.append((item.filename, old.read(item.filename)))
+    final = []
+    with concurrent.futures.ProcessPoolExecutor() as ex:
+        futs = [ex.submit(parallel_asset_worker, n, d) for n, d in tasks]
+        for idx, f in enumerate(concurrent.futures.as_completed(futs)): final.append(f.result())
     try:
-        with zipfile.ZipFile(output_jar_path, 'w', zipfile.ZIP_STORED) as new_jar:
-            for name, data_bytes, original_len, crc_checksum, was_compressed in final_packaged_manifest:
-                zinfo = zipfile.ZipInfo(name)
-                if was_compressed:
-                    zinfo.compress_type = zipfile.ZIP_DEFLATED
-                    zinfo.compress_size = len(data_bytes)
-                else:
-                    zinfo.compress_type = zipfile.ZIP_STORED
-                    zinfo.compress_size = original_len
-                zinfo.file_size = original_len
-                zinfo.CRC = crc_checksum
-                new_jar.writestr(zinfo, data_bytes)
-
-        new_sz = os.path.getsize(output_jar_path) / (1024 * 1024)
-        print("\n" + "="*50)
-        print(f"Successfully generated ultimate NeoForge-compacted JAR file!")
-        print(f"Original JAR Size:   {orig_sz:.2f} MB")
-        print(f"Compacted JAR Size:  {new_sz:.2f} MB (Saved {(orig_sz - new_sz):.2f} MB)")
-        print("="*50)
+        with zipfile.ZipFile(out, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as new:
+            for n, d in final: new.writestr(n, d)
+        print(f"Done! {orig_sz:.2f}MB -> {os.path.getsize(out)/(1024*1024):.2f}MB")
     except Exception as e:
-        if os.path.exists(output_jar_path):
-            os.remove(output_jar_path)
-        print(f"Packaging failed: {e}")
-        sys.exit(1)
+        if os.path.exists(out): os.remove(out)
+        print(f"Failed: {e}"); sys.exit(1)
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python compress_jar.py <path_to_jar_file>")
-        sys.exit(1)
+    if len(sys.argv) < 2: sys.exit(1)
     optimize_and_create_compacted_jar(sys.argv[1])
-
