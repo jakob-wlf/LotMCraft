@@ -158,7 +158,7 @@ public class CorruptionEventHandler {
                 // Cogitation decreases corruption very slightly
 
                 totalGain = totalGain/8;
-                totalGain -= 0.000001f;
+                totalGain -= 0.0001f;
             }
             corruptionComp.increaseCorruptionAndSync(totalGain, entity);
         }

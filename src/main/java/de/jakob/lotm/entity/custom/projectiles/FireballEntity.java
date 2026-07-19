@@ -115,7 +115,7 @@ public class FireballEntity extends AbstractArrow {
         if(!(result.getEntity() instanceof LivingEntity target) || result.getEntity() == owner)
             return;
 
-        level.explode(owner, target.position().x, target.position().y, target.position().z, 3.5f, griefing, Level.ExplosionInteraction.NONE);
+        level.explode(owner, target.position().x, target.position().y, target.position().z, 1f, griefing, Level.ExplosionInteraction.NONE);
         // check if the owner exists before - to not crash
         if (this.getOwner() instanceof LivingEntity livingOwner) {
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, livingOwner), (float) damage);
