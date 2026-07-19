@@ -148,8 +148,6 @@ public class EnvisioningScreen extends Screen {
             Minecraft.getInstance().setScreen(new SelfBlasphemyScreen());
         } else if (index == 2) {
             Minecraft.getInstance().setScreen(new SelfStatusScreen());
-        } else if (index == 3) {
-            Minecraft.getInstance().setScreen(new SelfCharacteristicsScreen());
         }
         // other indices – TODO
     }
@@ -161,8 +159,6 @@ public class EnvisioningScreen extends Screen {
             Minecraft.getInstance().setScreen(new TargetBlasphemyScreen());
         } else if (index == 2) {
             Minecraft.getInstance().setScreen(new TargetStatusScreen());
-        } else if (index == 3) {
-            Minecraft.getInstance().setScreen(new TargetCharacteristicsScreen());
         }
         // other indices – TODO
     }

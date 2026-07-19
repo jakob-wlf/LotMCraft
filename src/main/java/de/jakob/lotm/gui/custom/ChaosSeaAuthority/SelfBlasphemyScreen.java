@@ -67,20 +67,10 @@ public class SelfBlasphemyScreen extends Screen {
     private static final int C_TEXT_IDLE     = 0xFFCCDDFF;
     private static final int C_TEXT_LOCKED   = 0xFF996666;
     private static final int C_USES          = 0xFF88FFAA;
-    // Locked-and-summoned state (amber tones)
-    private static final int C_CELL_LOCKED_ACT   = 0xFF3A2808;
-    private static final int C_BORDER_LOCK_ACT   = 0xFFDD9900;
-    private static final int C_TEXT_LOCK_ACT     = 0xFFFFAA33;
-    // Cooldown state (dark teal)
-    private static final int C_CELL_COOLDOWN  = 0xFF0A1E20;
-    private static final int C_BORDER_CD      = 0xFF204040;
-    private static final int C_TEXT_CD        = 0xFF558899;
 
     // ── Local optimistic state ────────────────────────────────────────────────
     /** Local copy of the server state, updated when sync arrives or optimistically on click. */
     private final java.util.LinkedHashMap<String, Integer> localState = new java.util.LinkedHashMap<>();
-    /** Client-local cooldown expiry map (epoch ms), refreshed each frame from the sync cache. */
-    private final java.util.HashMap<String, Long> localCooldowns = new java.util.HashMap<>();
 
     public SelfBlasphemyScreen() {
         super(Component.literal("Envisioning – Blasphemy"));
@@ -118,8 +108,6 @@ public class SelfBlasphemyScreen extends Screen {
             localState.clear();
             localState.putAll(cache);
         }
-        localCooldowns.clear();
-        localCooldowns.putAll(SyncSummonedBlasphemyPacket.CLIENT_COOLDOWNS);
 
         renderBackground(g, mouseX, mouseY, partialTick);
 
@@ -133,20 +121,17 @@ public class SelfBlasphemyScreen extends Screen {
         // Title
         g.drawCenteredString(font, "Blasphemy Cards", lx + PANEL_W / 2, ty + 8, C_TITLE);
 
-        // Summoned count (summoned + cooldown slots both count toward the cap)
+        // Summoned count
         int active = localState.size();
-        long now = System.currentTimeMillis();
-        int cooldownSlots = (int) localCooldowns.values().stream().filter(expiry -> expiry > now).count();
-        int occupied = active + cooldownSlots;
-        String countText = occupied + " / " + SummonedBlasphemyData.MAX_CARDS + " summoned";
-        int countColor = occupied >= SummonedBlasphemyData.MAX_CARDS ? 0xFFFF8866 : C_HINT;
+        String countText = active + " / " + SummonedBlasphemyData.MAX_CARDS + " summoned";
+        int countColor = active >= SummonedBlasphemyData.MAX_CARDS ? 0xFFFF8866 : C_HINT;
         g.drawCenteredString(font, countText, lx + PANEL_W / 2, ty + 19, countColor);
 
         // Divider
         g.fill(lx + PAD, ty + HEADER_H - 2, lx + PANEL_W - PAD, ty + HEADER_H - 1, C_OUTLINE);
 
         // Card grid
-        boolean limitReached = occupied >= SummonedBlasphemyData.MAX_CARDS;
+        boolean limitReached = active >= SummonedBlasphemyData.MAX_CARDS;
         for (int i = 0; i < PATHWAYS.size(); i++) {
             String pathway = PATHWAYS.get(i);
             int col = i % COLS;
@@ -154,26 +139,16 @@ public class SelfBlasphemyScreen extends Screen {
             int cx = lx + PAD + col * (CELL_W + CELL_GAP);
             int cy = ty + HEADER_H + row * (CELL_H + CELL_GAP);
 
-            boolean summoned     = localState.containsKey(pathway);
-            boolean cardLocked   = summoned && SyncSummonedBlasphemyPacket.CLIENT_LOCKED.contains(pathway);
-            boolean onCooldown   = !summoned && localCooldowns.containsKey(pathway)
-                                    && System.currentTimeMillis() < localCooldowns.getOrDefault(pathway, 0L);
-            boolean limitBlocked = !summoned && !onCooldown && limitReached;
-            boolean hovered      = mouseX >= cx && mouseX < cx + CELL_W
-                                && mouseY >= cy && mouseY < cy + CELL_H
-                                && !cardLocked && !limitBlocked && !onCooldown;
+            boolean summoned = localState.containsKey(pathway);
+            boolean locked   = !summoned && limitReached;
+            boolean hovered  = mouseX >= cx && mouseX < cx + CELL_W
+                            && mouseY >= cy && mouseY < cy + CELL_H;
 
-            int bgColor     = summoned     ? (cardLocked ? C_CELL_LOCKED_ACT : C_CELL_SUMMONED)
-                            : onCooldown   ? C_CELL_COOLDOWN
-                            : limitBlocked ? C_CELL_LOCKED : C_CELL_IDLE;
-            int borderColor = summoned     ? (cardLocked ? C_BORDER_LOCK_ACT : C_BORDER_SUMMON)
-                            : onCooldown   ? C_BORDER_CD
-                            : limitBlocked ? C_BORDER_LOCKED : C_BORDER_IDLE;
-            int textColor   = summoned     ? (cardLocked ? C_TEXT_LOCK_ACT : C_TEXT_SUMMON)
-                            : onCooldown   ? C_TEXT_CD
-                            : limitBlocked ? C_TEXT_LOCKED : C_TEXT_IDLE;
+            int bgColor     = summoned ? C_CELL_SUMMONED : locked ? C_CELL_LOCKED : C_CELL_IDLE;
+            int borderColor = summoned ? C_BORDER_SUMMON : locked ? C_BORDER_LOCKED : C_BORDER_IDLE;
+            int textColor   = summoned ? C_TEXT_SUMMON   : locked ? C_TEXT_LOCKED   : C_TEXT_IDLE;
 
-            if (hovered) bgColor = brighten(bgColor);
+            if (hovered && !locked) bgColor = brighten(bgColor);
 
             g.fill(cx, cy, cx + CELL_W, cy + CELL_H, bgColor);
             drawOutline(g, cx, cy, CELL_W, CELL_H, borderColor);
@@ -184,19 +159,9 @@ public class SelfBlasphemyScreen extends Screen {
             if (summoned) {
                 // Name on top half, uses on bottom half
                 int uses = localState.get(pathway);
-                String usesStr = uses + " use" + (uses != 1 ? "s" : "") + (cardLocked ? " §8(locked)" : " left");
+                String usesStr = uses + " use" + (uses != 1 ? "s" : "") + " left";
                 g.drawCenteredString(font, label,   textX, cy + 5,           textColor);
-                g.drawCenteredString(font, usesStr, textX, cy + CELL_H - 13, cardLocked ? C_TEXT_LOCK_ACT : C_USES);
-            } else if (onCooldown) {
-                // Name on top, countdown on bottom
-                long remaining = localCooldowns.getOrDefault(pathway, 0L) - System.currentTimeMillis();
-                long totalSecs = Math.max(0, remaining / 1000);
-                long hours = totalSecs / 3600;
-                long minutes = (totalSecs % 3600) / 60;
-                long secs = totalSecs % 60;
-                String cdStr = hours > 0 ? hours + "h " + minutes + "m" : minutes > 0 ? minutes + "m " + secs + "s" : secs + "s";
-                g.drawCenteredString(font, label,  textX, cy + 5,           textColor);
-                g.drawCenteredString(font, cdStr, textX, cy + CELL_H - 13, C_TEXT_CD);
+                g.drawCenteredString(font, usesStr, textX, cy + CELL_H - 13, C_USES);
             } else {
                 // Single centred name — always fits (CELL_W=110 > longest label)
                 g.drawCenteredString(font, label, textX, cy + (CELL_H - 8) / 2, textColor);
@@ -213,9 +178,7 @@ public class SelfBlasphemyScreen extends Screen {
 
         int lx = lx();
         int ty = ty();
-        long nowClick = System.currentTimeMillis();
-        int cooldownSlotsClick = (int) localCooldowns.values().stream().filter(e -> e > nowClick).count();
-        boolean limitReached = (localState.size() + cooldownSlotsClick) >= SummonedBlasphemyData.MAX_CARDS;
+        boolean limitReached = localState.size() >= SummonedBlasphemyData.MAX_CARDS;
 
         for (int i = 0; i < PATHWAYS.size(); i++) {
             String pathway = PATHWAYS.get(i);
@@ -225,17 +188,8 @@ public class SelfBlasphemyScreen extends Screen {
             int cy = ty + HEADER_H + row * (CELL_H + CELL_GAP);
 
             if (mx >= cx && mx < cx + CELL_W && my >= cy && my < cy + CELL_H) {
-                boolean summoned   = localState.containsKey(pathway);
-                boolean cardLocked = summoned && SyncSummonedBlasphemyPacket.CLIENT_LOCKED.contains(pathway);
-                boolean onCooldown = !summoned && localCooldowns.containsKey(pathway)
-                                      && System.currentTimeMillis() < localCooldowns.getOrDefault(pathway, 0L);
+                boolean summoned = localState.containsKey(pathway);
 
-                if (onCooldown) return true; // silently block
-                if (cardLocked) {
-                    // Send to server anyway so it can show the locked message
-                    PacketHandler.sendToServer(new RequestSummonBlasphemyPacket(pathway));
-                    return true;
-                }
                 if (summoned) {
                     // Dismiss optimistically
                     localState.remove(pathway);
@@ -253,8 +207,6 @@ public class SelfBlasphemyScreen extends Screen {
 
     @Override
     public void onClose() {
-        // Lock all currently active cards when the player closes this GUI
-        PacketHandler.sendToServer(new RequestSummonBlasphemyPacket("__lock__"));
         minecraft.setScreen(new EnvisioningScreen());
     }
 
