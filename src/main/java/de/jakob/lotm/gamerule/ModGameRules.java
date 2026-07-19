@@ -59,13 +59,13 @@ public class ModGameRules {
         DO_CHAR_EXCHANGE_WHEEL = GameRules.register(
                 "doCharExchangeWheel",
                 GameRules.Category.MISC,
-                GameRules.BooleanValue.create(true)
+                GameRules.BooleanValue.create(false)
         );
 
         DO_CHAR_SLOT_ROLL_WHEEL = GameRules.register(
                 "doCharSlotRollWheel",
                 GameRules.Category.MISC,
-                GameRules.BooleanValue.create(true)
+                GameRules.BooleanValue.create(false)
         );
 
         DO_DAILY_SPIN_WHEEL = GameRules.register(
@@ -77,13 +77,13 @@ public class ModGameRules {
         DO_SELL_YOUR_SOUL_WHEEL = GameRules.register(
                 "doSellYourSoulWheel",
                 GameRules.Category.MISC,
-                GameRules.BooleanValue.create(true)
+                GameRules.BooleanValue.create(false)
         );
 
         LOOSE_CHAR_ON_REGRESSION= GameRules.register(
                 "looseCharStackOnRegression",
                 GameRules.Category.MISC,
-                GameRules.BooleanValue.create(false)
+                GameRules.BooleanValue.create(true)
         );
 
         DISABLE_FLIGHT_IN_COMBAT = GameRules.register(
