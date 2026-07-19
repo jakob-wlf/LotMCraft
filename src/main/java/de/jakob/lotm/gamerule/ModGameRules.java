@@ -8,6 +8,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.GameRules;
 
 public class ModGameRules {
+    public static GameRules.Key<GameRules.BooleanValue> DO_RECIPIE_EXCHANGE_WHEEL;
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_GRIEFING;
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_BEYONDER_SPAWNING;
     public static GameRules.Key<GameRules.IntegerValue> DIGESTION_RATE;
@@ -43,6 +44,12 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.IntegerValue> ANCHOR_PASSIVE_CORRUPTION_DECREASE;
 
     public static void register() {
+
+        DO_RECIPIE_EXCHANGE_WHEEL = GameRules.register(
+            "doRecipieExchange",
+            GameRules.Category.MISC,
+            GameRules.BooleanValue.create(true)
+        );
 
         ALLOW_TOTEMS = GameRules.register(
           "allowTotems",

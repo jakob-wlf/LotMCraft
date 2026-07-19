@@ -26,7 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class RecipeExchangeHandler {
 
     public static void processExchange(ServerPlayer player, int slotIndex) {
-        if (!player.level().getGameRules().getBoolean(de.jakob.lotm.gamerule.ModGameRules.DO_CHAR_EXCHANGE_WHEEL)) {
+        if (!player.level().getGameRules().getBoolean(de.jakob.lotm.gamerule.ModGameRules.DO_RECIPIE_EXCHANGE_WHEEL)) {
             player.sendSystemMessage(Component.literal("§cRecipe Exchange is disabled."));
             return;
         }
