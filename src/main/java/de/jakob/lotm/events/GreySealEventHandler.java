@@ -344,7 +344,7 @@ public class GreySealEventHandler {
         // Push-back: non-exempt players are teleported back inside
         if (tick % 5 != 0) return;
         if (isExempt(player)) return;
-        if (dist > RADIUS + 2) {
+        if (dist < RADIUS + 2) {
             double angle = Math.atan2(player.getZ() - activeSeal.center.z,
                                       player.getX() - activeSeal.center.x);
             double bx = activeSeal.center.x + (RADIUS - 2) * Math.cos(angle);
