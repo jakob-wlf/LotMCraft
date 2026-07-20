@@ -2,14 +2,17 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.common.CogitationAbility;
+import de.jakob.lotm.beyonders.abilities.common.MythicalCreatureFormAbility;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.*;
+import de.jakob.lotm.beyonders.abilities.core.AbilityHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PathwayInfos;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -170,6 +173,15 @@ public class CorruptionEventHandler {
         float corruption = corruptionComp.getCorruption();
         int corruptionValue = (int) (corruption * 100);
 
+        if (corruptionValue < 50) {
+            if (entity instanceof ServerPlayer player) {
+                revertFullCorruption(player);
+
+            }
+
+        }
+
+
         if (corruptionValue <= 20) {
             return;
         }
@@ -214,18 +226,23 @@ public class CorruptionEventHandler {
 
         
 
-        if (corruptionValue < 50) {
-            if (entity instanceof ServerPlayer player) {
-                revertFullCorruption(player);
-            }
-        }
+
 
         if (corruptionValue >= 100) {
 
 
             if (entity instanceof ServerPlayer sp && sp.server != null) {
-                sp.addEffect(new MobEffectInstance(ModEffects.CORRUPTED));
+                sp.addEffect(new MobEffectInstance(ModEffects.CORRUPTED, 2000));
+                sp.getData(ModAttachments.SANITY_COMPONENT).setSanity(1);
+                sp.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 200, 20));
+                sp.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, 4));
 
+
+                MythicalCreatureFormAbility ability = (MythicalCreatureFormAbility) LOTMCraft.abilityHandler.getById("mythical_creature_form_ability");
+
+                if(!ability.isActiveForEntity(sp)){
+                    ability.useAbility(sp.serverLevel(), sp, false, false, false, false);
+                }
 
                 // If this player is a non-original sefirot owner, reclaim the sefirot for the original owner
                 SefirotData sd = SefirotData.get(sp.server);
@@ -242,7 +259,14 @@ public class CorruptionEventHandler {
         }
     }
 
-    private static void revertFullCorruption(ServerPlayer player) {
+    public static void revertFullCorruption(ServerPlayer player) {
+        player.removeEffect(ModEffects.CORRUPTED);
+
+        MythicalCreatureFormAbility ability = (MythicalCreatureFormAbility) LOTMCraft.abilityHandler.getById("mythical_creature_form_ability");
+
+        if(ability.isActiveForEntity(player)){
+            ability.useAbility(player.serverLevel(), player, false, false, false, false);
+        }
         CorruptedPlayerComponent corruptedComp = player.getData(ModAttachments.CORRUPTED_PLAYER_COMPONENT);
         if (corruptedComp.isFullyCorrupted()) {
             corruptedComp.setFullyCorrupted(false);

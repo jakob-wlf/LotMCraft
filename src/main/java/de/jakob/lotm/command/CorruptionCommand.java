@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import de.jakob.lotm.attachments.CorruptedPlayerComponent;
 import de.jakob.lotm.attachments.CorruptionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.events.CorruptionEventHandler;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -42,6 +43,7 @@ public class CorruptionCommand {
                             var targetEntity = EntityArgument.getEntity(context, "target");
 
                             if (targetEntity instanceof ServerPlayer player) {
+                                CorruptionEventHandler.revertFullCorruption(player);
                                 CorruptedPlayerComponent corruptedComp = player.getData(ModAttachments.CORRUPTED_PLAYER_COMPONENT);
                                 corruptedComp.setFullyCorrupted(false);
                                 corruptedComp.setNpcUUID(null);
