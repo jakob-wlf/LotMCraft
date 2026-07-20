@@ -258,7 +258,7 @@ public class BeyonderEventHandler {
 
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
-        if (!BeyonderData.isBeyonder(player)) return;
+        //if (!BeyonderData.isBeyonder(player)) return;
         if (!player.serverLevel().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)) return;
 
         // onDeath (LivingDeathEvent) already handled regression and cleared the revert component.
@@ -281,6 +281,17 @@ public class BeyonderEventHandler {
         BeyonderData.setBeyonder(player, data.pathway(), data.sequence(), true, false, false, false);
 
         if (charItem == null) return;
+
+        int current = BeyonderData.getCharList(player).stream()
+                .filter(c -> c.sequence() == dropSequence && c.pathway().equals(BeyonderData.getPathway(player))).mapToInt(Characteristic::stack).findFirst().orElse(0);
+
+        BeyonderData.setCharacteristic(player,
+                current != 0 ?  current-1 : 0,
+                dropSequence,
+                true,
+                BeyonderData.getPathway(player)
+        );
+
 
         if(PureIdealismUtil.died.containsKey(player.getUUID())){
             return;

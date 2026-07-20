@@ -184,7 +184,7 @@ public class BeyonderData {
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack) {
-        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, true, true, true);
+        setBeyonder(entity, pathway, sequence, skipCheck, clearPathwayHistory, addToPathwayHistory, clearCharStack, true, true, false);
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack, boolean resetSpirituality) {

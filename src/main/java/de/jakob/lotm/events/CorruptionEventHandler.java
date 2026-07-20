@@ -124,10 +124,10 @@ public class CorruptionEventHandler {
             // If you have fool 4, it's extra (and likely dangerous).
             
             int expectedStack = (charPathway.equals(currentPathway)) ? 1 : 0;
-            int extraStack = Math.max(0, charStack - expectedStack);
+            int extraStack = Math.max(0, charStack - (1 + expectedStack));
 
             if (extraStack > 0) {
-                float baseGain = 0.0005f * extraStack * ((float) (10 - charSeq) /10); // Base gain per extra characteristic
+                float baseGain = 0.00005f * extraStack * ((float) (10 - charSeq) /10); // Base gain per extra characteristic
 
                 if(currentSequence <= 0){
                     baseGain *= 0.5F;
@@ -142,7 +142,7 @@ public class CorruptionEventHandler {
                     totalGain += baseGain * 10.0f;
                 } else {
                     // Non-neighboring pathway
-                    totalGain += baseGain * 1000.0f;
+                    totalGain += baseGain * 10000.0f;
                 }
             }
         }
