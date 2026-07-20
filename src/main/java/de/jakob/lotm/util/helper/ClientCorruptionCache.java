@@ -2,6 +2,7 @@ package de.jakob.lotm.util.helper;
 
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.effect.ModEffects;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
 import net.neoforged.api.distmarker.Dist;
@@ -15,6 +16,7 @@ public class ClientCorruptionCache {
     @SubscribeEvent
     public static void onMovementInputUpdate(MovementInputUpdateEvent event) {
         if (!(event.getEntity() instanceof LocalPlayer player)) return;
+        if (!player.hasEffect(ModEffects.CORRUPTED)) return;
 
         Input input = event.getInput();
 

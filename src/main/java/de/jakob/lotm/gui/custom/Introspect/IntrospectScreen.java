@@ -2854,4 +2854,17 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         guiGraphics.drawString(this.font, this.title.getString(), this.titleLabelX, this.titleLabelY, 0xCCCCCC, true);
     }
+
+
+    // overrides to prevent emi/rei etc from rendering on introspect
+    @Override
+    public int getXSize() {
+        return this.width;
+    }
+
+    @Override
+    public int getYSize() {
+        return this.height;
+    }
+
 }

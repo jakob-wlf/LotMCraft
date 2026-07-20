@@ -224,8 +224,7 @@ public class CorruptionEventHandler {
 
 
             if (entity instanceof ServerPlayer sp && sp.server != null) {
-
-
+                sp.addEffect(new MobEffectInstance(ModEffects.CORRUPTED));
 
 
                 // If this player is a non-original sefirot owner, reclaim the sefirot for the original owner

@@ -50,6 +50,9 @@ public class ModEffects {
     public static final Holder<MobEffect> FOOLING = MOB_EFFECTS.register("fooling",
             () -> new FoolingEffect(MobEffectCategory.HARMFUL, 0xE040FB));
 
+    public static final Holder<MobEffect> CORRUPTED = MOB_EFFECTS.register("corrupted",
+            () -> new CorruptedEffect(MobEffectCategory.HARMFUL, 0xFFFFFF));
+
     public static void register(IEventBus eventBus) {
         MOB_EFFECTS.register(eventBus);
     }
