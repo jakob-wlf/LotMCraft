@@ -221,8 +221,14 @@ public class CorruptionEventHandler {
         }
 
         if (corruptionValue >= 100) {
-            // If this player is a non-original sefirot owner, reclaim the sefirot for the original owner
+
+
             if (entity instanceof ServerPlayer sp && sp.server != null) {
+
+
+
+
+                // If this player is a non-original sefirot owner, reclaim the sefirot for the original owner
                 SefirotData sd = SefirotData.get(sp.server);
                 String ownedSef = sd.getClaimedSefirot(sp.getUUID());
                 if (ownedSef != null && !ownedSef.isEmpty()) {
@@ -233,7 +239,7 @@ public class CorruptionEventHandler {
                     }
                 }
             }
-            handleFullCorruption(entity);
+            //handleFullCorruption(entity);
         }
     }
 
