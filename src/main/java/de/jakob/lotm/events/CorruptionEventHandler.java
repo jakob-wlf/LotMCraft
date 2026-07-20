@@ -314,6 +314,7 @@ public class CorruptionEventHandler {
                     // Kill the player
                     player.hurt(ModDamageTypes.source(player.level(), ModDamageTypes.LOOSING_CONTROL), Float.MAX_VALUE);
                     corruptedComp.setFullyCorrupted(false);
+                    player.getData(ModAttachments.CORRUPTION_COMPONENT).setCorruption(0.5f);
                     corruptedComp.setNpcUUID(null);
                     player.setGameMode(GameType.SURVIVAL); // Reset game mode so they can respawn normally
                 }
