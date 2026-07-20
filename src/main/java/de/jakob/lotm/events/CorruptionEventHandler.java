@@ -60,12 +60,12 @@ public class CorruptionEventHandler {
         BeyonderComponent beyonderComp = entity.getData(ModAttachments.BEYONDER_COMPONENT);
         CorruptedPlayerComponent corruptedComp = entity.getData(ModAttachments.CORRUPTED_PLAYER_COMPONENT);
 
-        if(entity.level() instanceof ServerLevel serverLevel) {
+        if (entity.level() instanceof ServerLevel serverLevel) {
             Entity npc = serverLevel.getEntity(corruptedComp.getNpcUUID());
-            if(npc != null) {
+            if (npc != null) {
                 if (corruptedComp.isFullyCorrupted() && corruptedComp.getNpcUUID() != null && entity.distanceTo(npc) > 30) {
                     entity.teleportTo(npc.getX(), npc.getY(), npc.getZ());
-                }else{
+                } else {
 
                 }
             }
@@ -79,21 +79,6 @@ public class CorruptionEventHandler {
         //    if (de.jakob.lotm.attachments.DeathImprintData.get(sp.server).isGlobalLeakageOff()) return;
         //}
 
-        // Original sefirot owner inside their own dimension is shielded from all corruption gain
-        if (entity instanceof ServerPlayer sp && sp.server != null) {
-            SefirotData sd = SefirotData.get(sp.server);
-            String ownedSefirot = sd.getClaimedSefirot(sp.getUUID());
-            if (ownedSefirot != null && !ownedSefirot.isEmpty()) {
-                java.util.UUID firstOwner = sd.getFirstOwner(ownedSefirot);
-                if (firstOwner != null && firstOwner.equals(sp.getUUID())) {
-                    net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dim =
-                            de.jakob.lotm.beyonders.sefirah.SefirahHandler.getSefirotDimensionKey(ownedSefirot);
-                    if (dim != null && sp.level().dimension().equals(dim)) {
-                        return;
-                    }
-                }
-            }
-        }
 
         String currentPathway = beyonderComp.getPathway();
         int currentSequence = beyonderComp.getSequence();
@@ -106,7 +91,6 @@ public class CorruptionEventHandler {
                 isCogitating = true;
             }
         }
-
 
 
         float totalGain = 0;
@@ -125,14 +109,14 @@ public class CorruptionEventHandler {
             // Actually, if you are a sequence 5 fool, you should have characteristics for fool 9, 8, 7, 6, 5.
             // If you have more than 1 of fool 5, it's extra.
             // If you have fool 4, it's extra (and likely dangerous).
-            
+
             int expectedStack = (charPathway.equals(currentPathway)) ? 1 : 0;
             int extraStack = Math.max(0, charStack - (1 + expectedStack));
 
             if (extraStack > 0) {
-                float baseGain = 0.00005f * extraStack * ((float) (10 - charSeq) /10); // Base gain per extra characteristic
+                float baseGain = 0.00005f * extraStack * ((float) (10 - charSeq) / 10); // Base gain per extra characteristic
 
-                if(currentSequence <= 0){
+                if (currentSequence <= 0) {
                     baseGain *= 0.5F;
                 }
 
@@ -150,21 +134,35 @@ public class CorruptionEventHandler {
             }
         }
 
-
-        if (totalGain > 0) {
-            // Scales with digestion but never fully goes away.
-            // At 100% digestion (1.0), gain is reduced but still present.
-            // Let's say at 100% digestion it's reduced by 50%.
-            float digestionMultiplier = 1.0f - (digestionProgress * 0.6f);
-            totalGain = totalGain * digestionMultiplier;
-            if (isCogitating) {
-                // Cogitation decreases corruption very slightly
-
-                totalGain = totalGain/8;
-                totalGain -= 0.0001f;
+        // Original sefirot owner inside their own dimension is shielded from all corruption gain
+        if (entity instanceof ServerPlayer sp && sp.server != null) {
+            SefirotData sd = SefirotData.get(sp.server);
+            String ownedSefirot = sd.getClaimedSefirot(sp.getUUID());
+            if (ownedSefirot != null && !ownedSefirot.isEmpty()) {
+                java.util.UUID firstOwner = sd.getFirstOwner(ownedSefirot);
+                if (firstOwner != null && firstOwner.equals(sp.getUUID())) {
+                    net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dim =
+                            de.jakob.lotm.beyonders.sefirah.SefirahHandler.getSefirotDimensionKey(ownedSefirot);
+                    if (dim != null && sp.level().dimension().equals(dim)) {
+                        totalGain = 0;
+                    }
+                }
             }
-            corruptionComp.increaseCorruptionAndSync(totalGain, entity);
         }
+
+        // Scales with digestion but never fully goes away.
+        // At 100% digestion (1.0), gain is reduced but still present.
+        // Let's say at 100% digestion it's reduced by 50%.
+        float digestionMultiplier = 1.0f - (digestionProgress * 0.6f);
+        totalGain = totalGain * digestionMultiplier;
+        if (isCogitating) {
+            // Cogitation decreases corruption very slightly
+
+            totalGain = totalGain / 8;
+            totalGain -= 0.0001f;
+        }
+        totalGain -= 0.00001f;
+        corruptionComp.increaseCorruptionAndSync(totalGain, entity);
     }
 
     private static void handleCorruptionEffects(LivingEntity entity) {
