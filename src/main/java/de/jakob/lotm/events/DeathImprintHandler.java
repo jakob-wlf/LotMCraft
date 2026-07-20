@@ -178,7 +178,7 @@ public class DeathImprintHandler {
                                 }
                             }
                         }
-                        if (!shielded) {
+                        if (!shielded && DeathImprintData.get(player.server).isGlobalLeakageOff()) {
                             int riverMentalImprint = sefirotData.getMentalImprint("river_of_eternal_darkness");
                             if (riverMentalImprint > 0) {
                                 // tier 1 + 100% mental imprint = 1% per 10 min; scales with both
