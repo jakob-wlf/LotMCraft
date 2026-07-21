@@ -100,6 +100,22 @@ public class ModDimensions {
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space_biome"));
 
     // =========================================================================
+    // MAUSOLEUM dimension
+    // =========================================================================
+
+    public static final ResourceKey<LevelStem> MAUSOLEUM_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mausoleum"));
+
+    public static final ResourceKey<Level> MAUSOLEUM_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mausoleum"));
+
+    public static final ResourceKey<DimensionType> MAUSOLEUM_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mausoleum"));
+
+    // =========================================================================
     // SPACE dimension
     // =========================================================================
 
@@ -132,6 +148,10 @@ public class ModDimensions {
             ResourceKey.create(Registries.LEVEL_STEM,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space_time_labyrinth"));
 
+    public static final ResourceKey<Level> SPACE_TIME_LABYRINTH_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space_time_labyrinth"));
+
 
     // =========================================================================
     // NATURE / WORLD CREATION dimension
@@ -139,6 +159,10 @@ public class ModDimensions {
 
     public static final ResourceKey<LevelStem> WORLD_CREATION_LEVEL_KEY =
             ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "nature"));
+
+    public static final ResourceKey<Level> WORLD_CREATION_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "nature"));
 
     public static final ResourceKey<DimensionType> WORLD_CREATION_TYPE_KEY =

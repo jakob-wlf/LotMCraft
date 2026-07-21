@@ -1,6 +1,8 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
+import de.jakob.lotm.dimension.ModDimensions;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -55,6 +57,12 @@ public record EnvisionTargetTeleportPacket(String playerName, double x, double y
             }
 
             ResourceKey<Level> key = ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, loc);
+            if (key.equals(ModDimensions.SPACE_DIMENSION_KEY) || EnvisionSelfTeleportPacket.isBlacklistedDimension(key)) {
+                sender.sendSystemMessage(
+                        net.minecraft.network.chat.Component.literal("§cEnvision Position cannot target that dimension."));
+                return;
+            }
+
             ServerLevel targetLevel = sender.getServer().getLevel(key);
             if (targetLevel == null) {
                 sender.sendSystemMessage(
@@ -67,6 +75,12 @@ public record EnvisionTargetTeleportPacket(String playerName, double x, double y
             if (target == null) {
                 sender.sendSystemMessage(
                         net.minecraft.network.chat.Component.literal("§cPlayer not found: " + packet.playerName()));
+                return;
+            }
+
+                        if (SefirotAuthorityManager.blocksEnvisioningTarget(target, sender)) {
+                sender.sendSystemMessage(
+                        net.minecraft.network.chat.Component.literal("§cThat player cannot be targeted by Envision Position."));
                 return;
             }
 

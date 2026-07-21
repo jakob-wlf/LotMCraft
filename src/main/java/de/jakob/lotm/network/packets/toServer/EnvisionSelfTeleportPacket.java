@@ -1,6 +1,8 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
+import de.jakob.lotm.dimension.ModDimensions;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -12,7 +14,9 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Client → Server: teleport the sending player to (x, y, z) in the given dimension.
@@ -20,6 +24,15 @@ import java.util.Map;
  */
 public record EnvisionSelfTeleportPacket(double x, double y, double z, String dimensionId)
         implements CustomPacketPayload {
+
+    private static final Set<ResourceKey<Level>> BLACKLISTED_DIMENSIONS = new HashSet<>(Set.of(
+        ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY,
+        ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY,
+        ModDimensions.WORLD_CREATION_DIMENSION_KEY,
+        ModDimensions.MAUSOLEUM_DIMENSION_KEY,
+        ModDimensions.DREAM_MAZE_DIMENSION_KEY,
+        ModDimensions.SPACE_TIME_LABYRINTH_DIMENSION_KEY
+    ));
 
     public static final Type<EnvisionSelfTeleportPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "envision_self_teleport"));
@@ -63,7 +76,17 @@ public record EnvisionSelfTeleportPacket(double x, double y, double z, String di
         aliases.put("dream_maze",              "lotmcraft:dream_maze");
         aliases.put("dream",                   "lotmcraft:dream_maze");
         aliases.put("space",                   "lotmcraft:space");
+        aliases.put("space_time_labyrinth",    "lotmcraft:space_time_labyrinth");
+        aliases.put("labyrinth",               "lotmcraft:space_time_labyrinth");
+        aliases.put("door_labyrinth",          "lotmcraft:space_time_labyrinth");
         aliases.put("nature",                  "lotmcraft:nature");
+        aliases.put("mothers_world",           "lotmcraft:nature");
+        aliases.put("mother_world",            "lotmcraft:nature");
+        aliases.put("concealment_world",       "lotmcraft:concealment_world");
+        aliases.put("concealment",             "lotmcraft:concealment_world");
+        aliases.put("mausoleum",               "lotmcraft:mausoleum");
+        aliases.put("black_emperor_world",     "lotmcraft:mausoleum");
+        aliases.put("black_emperor",           "lotmcraft:mausoleum");
         aliases.put("spirit_world",            "lotmcraft:spirit_world");
         aliases.put("spirit",                  "lotmcraft:spirit_world");
 
@@ -72,6 +95,10 @@ public record EnvisionSelfTeleportPacket(double x, double y, double z, String di
         if (lower.contains(":")) return lower;
         // Otherwise assume lotmcraft namespace
         return "lotmcraft:" + lower;
+    }
+
+    public static boolean isBlacklistedDimension(ResourceKey<Level> key) {
+        return BLACKLISTED_DIMENSIONS.contains(key) || SefirotAuthorityManager.isSefirotDimension(key);
     }
 
     // ── Server handler ────────────────────────────────────────────────────────
@@ -89,6 +116,12 @@ public record EnvisionSelfTeleportPacket(double x, double y, double z, String di
             }
 
             ResourceKey<Level> key = ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, loc);
+            if (isBlacklistedDimension(key)) {
+                player.sendSystemMessage(
+                        net.minecraft.network.chat.Component.literal("§cEnvision Position cannot target that dimension."));
+                return;
+            }
+
             ServerLevel target = player.getServer().getLevel(key);
             if (target == null) {
                 player.sendSystemMessage(
