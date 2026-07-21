@@ -44,32 +44,14 @@ public record RequestSummonBlasphemyPacket(String pathway)
             SummonedBlasphemyData data = SummonedBlasphemyData.get(player.getServer());
 
             String pathway = packet.pathway().trim();
-
-            if (pathway.equals("__lock__")) {
-                // Lock all currently summoned cards when the GUI is closed
-                data.lockAll(player.getUUID());
-            } else if (!pathway.isEmpty()) {
+            if (!pathway.isEmpty()) {
                 if (data.hasSummoned(player.getUUID(), pathway)) {
-                    // Already summoned → try to dismiss (blocked if locked)
-                    boolean removed = data.dismiss(player.getUUID(), pathway);
-                    if (removed) {
-                        removeEnvisionCard(player, pathway);
-                    } else {
-                        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                                "§cThis card is locked — use it up or destroy the item to remove it."));
-                    }
+                    // Already summoned → dismiss: remove the tagged item from inventory
+                    data.dismiss(player.getUUID(), pathway);
+                    removeEnvisionCard(player, pathway);
                 } else {
-                    // Not summoned → check cooldown first
-                    long cdMs = data.getCooldownRemainingMs(player.getUUID(), pathway);
-                    if (cdMs > 0) {
-                        long totalSecs = cdMs / 1000;
-                        long hours = totalSecs / 3600;
-                        long minutes = (totalSecs % 3600) / 60;
-                        long secs = totalSecs % 60;
-                        String timeStr = hours > 0 ? hours + "h " + minutes + "m" : minutes > 0 ? minutes + "m " + secs + "s" : secs + "s";
-                        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                                "§cThis card is on cooldown for " + timeStr + "."));
-                    } else if (data.occupiedSlots(player.getUUID()) >= SummonedBlasphemyData.MAX_CARDS) {
+                    // Not summoned → try to summon
+                    if (data.activeCount(player.getUUID()) >= SummonedBlasphemyData.MAX_CARDS) {
                         player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
                                 "§cYou can only have " + SummonedBlasphemyData.MAX_CARDS +
                                 " blasphemy cards summoned at a time."));
@@ -81,7 +63,10 @@ public record RequestSummonBlasphemyPacket(String pathway)
 
             // Always send updated state back to client
             PacketHandler.sendToPlayer(player,
-                    new SyncSummonedBlasphemyPacket(data.getCards(player.getUUID()), data.getLockedCards(player.getUUID()), data.getCooldownExpiryMap(player.getUUID())));
+                    new SyncSummonedBlasphemyPacket(
+                        data.getCards(player.getUUID()),
+                        data.getLockedCards(player.getUUID()),
+                        data.getCooldownExpiryMap(player.getUUID())));
         });
     }
 
