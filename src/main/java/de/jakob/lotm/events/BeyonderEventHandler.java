@@ -370,8 +370,7 @@ public class BeyonderEventHandler {
                     regressed = data.regressSeq(respectStack);
                 }
             } else {
-                // Drop only extras logic: regressSeq(true) with same sequence also works if it removes extras
-                // But we'll manually define "no extras" state for the map.
+
                 StoredDataBuilder b = StoredData.builder.copyFrom(data).clearCharList();
                 for (Characteristic c : data.chars()) {
                     if (c.pathway().equals(data.pathway()) && c.sequence() >= data.sequence() && c.sequence() < 10) {

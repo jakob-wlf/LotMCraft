@@ -111,6 +111,11 @@ public class CorruptionEventHandler {
             // If you have fool 4, it's extra (and likely dangerous).
 
             int expectedStack = (charPathway.equals(currentPathway)) ? 1 : 0;
+
+            if (currentSequence <= 0 && Arrays.stream(BeyonderData.pathwayInfos.get(charPathway).neighboringPathways()).filter(p -> p.equals(currentPathway)).toString() == currentPathway){
+                expectedStack = 2;
+            }
+            
             int extraStack = Math.max(0, charStack - (1 + expectedStack));
 
             if (extraStack > 0) {
@@ -196,7 +201,8 @@ public class CorruptionEventHandler {
         // Status effects
         if (corruptionValue >= 20) {
             if (random.nextInt(1000) < corruptionValue) {
-                entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 2.0f);
+                //entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 2.0f);
+                ModDamageTypes.trueDamage(entity, 2);
                 //entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, corruptionValue / 20));
 
 
@@ -207,7 +213,8 @@ public class CorruptionEventHandler {
                 entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 10, 1));
             }
             if (random.nextInt(1000) < corruptionValue) {
-                entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 10.0f);
+                //entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 10.0f);
+                ModDamageTypes.trueDamage(entity, 10);
                 //entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 1));
             }
         }

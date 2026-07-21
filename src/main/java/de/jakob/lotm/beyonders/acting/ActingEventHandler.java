@@ -434,7 +434,7 @@ public class ActingEventHandler {
 
     @SubscribeEvent
     public static void onItemPickup(ItemEntityPickupEvent.Post event) {
-        //ActingHandler.onActingEvent(event.getPlayer(), "pickup_item");
+        ActingHandler.onActingEvent(event.getPlayer(), "pickup_item");
 
         if (event.getOriginalStack().is(Items.GOLD_INGOT)
                 || event.getItemEntity().getItem().is(Items.GOLD_NUGGET)
