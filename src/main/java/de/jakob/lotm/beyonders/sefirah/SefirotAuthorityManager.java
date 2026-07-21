@@ -9,7 +9,9 @@ import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSefirotAuthorityDataPacket;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Neighbouring paths per sefirot (edit these lists to customise):
  *   sefirah_castle              → fool, error, door
  *   river_of_eternal_darkness   → darkness, death, twilight_giant
+ *   chaos_sea                   → sun, tyrant, visionary, hanged_man, white_tower
  */
 public class SefirotAuthorityManager {
 
@@ -39,7 +42,7 @@ public class SefirotAuthorityManager {
         Map<String, List<String>> m = new HashMap<>();
         m.put("sefirah_castle",            Arrays.asList("fool", "error", "door"));
         m.put("river_of_eternal_darkness", Arrays.asList("darkness", "death", "twilight_giant"));
-        m.put("chaos_sea",                 Arrays.asList("sun", "tyrant", "visionary"));
+        m.put("chaos_sea",                 Arrays.asList("sun", "tyrant", "visionary", "hanged_man", "white_tower"));
         NEIGHBORING_PATHS = Collections.unmodifiableMap(m);
     }
 
@@ -71,6 +74,15 @@ public class SefirotAuthorityManager {
             if (!p.equals(playerPathway)) result.add(p);
         }
         return result;
+    }
+
+    public static boolean isSefirotDimension(ResourceKey<Level> dimension) {
+        return NEIGHBORING_PATHS.containsKey(dimension.location().getPath());
+    }
+
+    public static boolean blocksEnvisioningTarget(ServerPlayer target, ServerPlayer caster) {
+        return isSefirotDimension(target.level().dimension())
+                || blocksConcealment(target.getUUID(), caster);
     }
 
     /**

@@ -10,7 +10,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * Envisioning screen – two-column layout.
- * Both Self and Target expose the same 8 categories.
+ * Both Self and Target expose the implemented categories.
  */
 @OnlyIn(Dist.CLIENT)
 public class EnvisioningScreen extends Screen {
@@ -22,10 +22,9 @@ public class EnvisioningScreen extends Screen {
     private static final int ROW_GAP   = 4;
     private static final int HEADER_H  = 56;   // space before first row
 
-    // 8 entries shared by both columns
     private static final String[] ENTRY_LABELS = {
             "Position", "Blasphemy", "Status",
-            "Characteristics", "Sequence", "Abilities",
+            "Characteristics",
             "Life", "Death"
     };
     private static final int[] ENTRY_COLORS = {
@@ -33,8 +32,6 @@ public class EnvisioningScreen extends Screen {
             0xFFFFAA55, // Blasphemy    – amber
             0xFF55EEFF, // Status       – teal
             0xFFDDDDDD, // Characteristics – light grey
-            0xFFCC88FF, // Sequence     – violet
-            0xFF66FF99, // Abilities    – green
             0xFFFF6688, // Life         – rose
             0xFF8899CC, // Death        – slate blue
     };
@@ -148,8 +145,9 @@ public class EnvisioningScreen extends Screen {
             Minecraft.getInstance().setScreen(new SelfBlasphemyScreen());
         } else if (index == 2) {
             Minecraft.getInstance().setScreen(new SelfStatusScreen());
+        } else if (index == 3) {
+            Minecraft.getInstance().setScreen(new SelfCharacteristicsScreen());
         }
-        // other indices – TODO
     }
 
     private void onTargetClicked(int index) {
@@ -159,8 +157,9 @@ public class EnvisioningScreen extends Screen {
             Minecraft.getInstance().setScreen(new TargetBlasphemyScreen());
         } else if (index == 2) {
             Minecraft.getInstance().setScreen(new TargetStatusScreen());
+        } else if (index == 3) {
+            Minecraft.getInstance().setScreen(new TargetCharacteristicsScreen());
         }
-        // other indices – TODO
     }
 
     @Override

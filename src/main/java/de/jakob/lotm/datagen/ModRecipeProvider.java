@@ -80,7 +80,7 @@ public class ModRecipeProvider extends RecipeProvider {
             .unlockedBy("has_upper_fragment", has(ModItems.UPPER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get()))
             .save(recipeOutput);
 
-        // ─── Blasphemy Slate — Left Half (sun, tyrant, visionary, justiciar, twilight_giant, death, abyss) ───
+        // ─── Blasphemy Slate — Left Half ───
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.BLASPHEMY_SLATE_LEFT_HALF.get())
                 .requires(ModItems.SUN_BLASPHEMY_CARD.get())
                 .requires(ModItems.TYRANT_BLASPHEMY_CARD.get())
@@ -89,10 +89,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModItems.TWILIGHT_GIANT_BLASPHEMY_CARD.get())
                 .requires(ModItems.DEATH_BLASPHEMY_CARD.get())
                 .requires(ModItems.ABYSS_BLASPHEMY_CARD.get())
+                .requires(ModItems.WHEEL_OF_FORTUNE_BLASPHEMY_CARD.get())
                 .unlockedBy("has_sun_blasphemy_card", has(ModItems.SUN_BLASPHEMY_CARD.get()))
                 .save(recipeOutput);
 
-        // ─── Blasphemy Slate — Right Half (red_priest/hunter, demoness, error, door, fool, mother, black_emperor) ───
+        // ─── Blasphemy Slate — Right Half ───
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.BLASPHEMY_SLATE_RIGHT_HALF.get())
                 .requires(ModItems.RED_PRIEST_BLASPHEMY_CARD.get())
                 .requires(ModItems.DEMONESS_BLASPHEMY_CARD.get())
@@ -101,6 +102,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModItems.FOOL_BLASPHEMY_CARD.get())
                 .requires(ModItems.MOTHER_BLASPHEMY_CARD.get())
                 .requires(ModItems.BLACK_EMPEROR_BLASPHEMY_CARD.get())
+                .requires(ModItems.DARKNESS_BLASPHEMY_CARD.get())
                 .unlockedBy("has_red_priest_blasphemy_card", has(ModItems.RED_PRIEST_BLASPHEMY_CARD.get()))
                 .save(recipeOutput);
 

@@ -27,9 +27,7 @@ public class SummonedBlasphemyData extends SavedData {
 
     // playerUUID -> (pathway -> usesRemaining), insertion-ordered
     private final Map<UUID, LinkedHashMap<String, Integer>> playerCards = new HashMap<>();
-    /** playerUUID -> set of pathways that are locked (cannot be dismissed via GUI) */
     private final Map<UUID, Set<String>> lockedCards = new HashMap<>();
-    /** playerUUID -> (pathway -> expiry epoch ms): pathway cannot be summoned again until that time. */
     private final Map<UUID, Map<String, Long>> cardCooldowns = new HashMap<>();
 
     // ─── Factory ─────────────────────────────────────────────────────────────
@@ -60,17 +58,16 @@ public class SummonedBlasphemyData extends SavedData {
         return map == null ? 0 : map.size();
     }
 
-    /** Returns the number of slots occupied by either a summoned card or an active cooldown. */
     public int occupiedSlots(UUID player) {
         int summoned = activeCount(player);
-        Map<String, Long> cds = cardCooldowns.get(player);
-        if (cds == null) return summoned;
+        Map<String, Long> cooldowns = cardCooldowns.get(player);
+        if (cooldowns == null) return summoned;
+
         long now = System.currentTimeMillis();
-        // Count cooldown entries that haven't expired and aren't already in playerCards
         LinkedHashMap<String, Integer> active = playerCards.get(player);
-        long cooldownCount = cds.entrySet().stream()
-                .filter(e -> e.getValue() > now)
-                .filter(e -> active == null || !active.containsKey(e.getKey()))
+        long cooldownCount = cooldowns.entrySet().stream()
+                .filter(entry -> entry.getValue() > now)
+                .filter(entry -> active == null || !active.containsKey(entry.getKey()))
                 .count();
         return summoned + (int) cooldownCount;
     }
@@ -79,7 +76,7 @@ public class SummonedBlasphemyData extends SavedData {
 
     /**
      * Summon a card for the given player.
-     * @return {@code true} if successful, {@code false} if limit reached, already summoned, or on cooldown.
+     * @return {@code true} if successful, {@code false} if limit reached or already summoned.
      */
     public boolean summon(UUID player, String pathway) {
         if (isOnCooldown(player, pathway)) return false;
@@ -92,19 +89,14 @@ public class SummonedBlasphemyData extends SavedData {
     }
 
     /**
-     * Dismiss a summoned card voluntarily.
-     * Returns {@code false} if the card is locked — locked cards can only be removed
-     * when their uses run out or the physical item is destroyed.
+     * Dismiss a summoned card.
+     * @return {@code true} if the card was present and removed.
      */
     public boolean dismiss(UUID player, String pathway) {
         if (isLocked(player, pathway)) return false;
         return dismissInternal(player, pathway);
     }
 
-    /**
-     * Force-remove a summoned card regardless of lock status.
-     * Use this when the physical item has been confirmed destroyed or gone from the world.
-     */
     public boolean forceDismiss(UUID player, String pathway) {
         Set<String> locked = lockedCards.get(player);
         if (locked != null) {
@@ -125,7 +117,7 @@ public class SummonedBlasphemyData extends SavedData {
 
     /**
      * Decrement the use count for an active card.
-     * Automatically dismisses the card (and clears its lock) when uses reach 0.
+     * Automatically dismisses the card when uses reach 0.
      * @return remaining uses after decrement (-1 if card not found).
      */
     public int consumeUse(UUID player, String pathway) {
@@ -135,7 +127,6 @@ public class SummonedBlasphemyData extends SavedData {
         if (remaining <= 0) {
             cards.remove(pathway);
             if (cards.isEmpty()) playerCards.remove(player);
-            // Also clear the lock when all uses are consumed
             Set<String> locked = lockedCards.get(player);
             if (locked != null) {
                 locked.remove(pathway);
@@ -148,13 +139,6 @@ public class SummonedBlasphemyData extends SavedData {
         return Math.max(0, remaining);
     }
 
-    // ─── Locking ──────────────────────────────────────────────────────────────
-
-    /**
-     * Lock all currently summoned cards for this player.
-     * Called when the Blasphemy GUI is closed — locked cards cannot be dismissed
-     * via the GUI and must be used up or have their physical item destroyed.
-     */
     public void lockAll(UUID player) {
         LinkedHashMap<String, Integer> cards = playerCards.get(player);
         if (cards == null || cards.isEmpty()) return;
@@ -172,11 +156,8 @@ public class SummonedBlasphemyData extends SavedData {
         return locked == null ? Collections.emptySet() : Collections.unmodifiableSet(locked);
     }
 
-    // ─── Slot cooldowns ───────────────────────────────────────────────────────
+    public static final long DESTROYED_COOLDOWN_MS = 5L * 60 * 60 * 1000;
 
-    public static final long DESTROYED_COOLDOWN_MS = 5L * 60 * 60 * 1000; // 5 hours
-
-    /** Put a pathway on cooldown for this player for the given duration. */
     public void putOnCooldown(UUID player, String pathway, long durationMs) {
         cardCooldowns.computeIfAbsent(player, k -> new HashMap<>())
                 .put(pathway, System.currentTimeMillis() + durationMs);
@@ -184,32 +165,30 @@ public class SummonedBlasphemyData extends SavedData {
     }
 
     public boolean isOnCooldown(UUID player, String pathway) {
-        Map<String, Long> map = cardCooldowns.get(player);
-        if (map == null) return false;
-        Long expiry = map.get(pathway);
+        Map<String, Long> cooldowns = cardCooldowns.get(player);
+        if (cooldowns == null) return false;
+        Long expiry = cooldowns.get(pathway);
         return expiry != null && System.currentTimeMillis() < expiry;
     }
 
-    /** Returns remaining cooldown in ms, or 0 if not on cooldown. */
     public long getCooldownRemainingMs(UUID player, String pathway) {
-        Map<String, Long> map = cardCooldowns.get(player);
-        if (map == null) return 0L;
-        Long expiry = map.get(pathway);
+        Map<String, Long> cooldowns = cardCooldowns.get(player);
+        if (cooldowns == null) return 0L;
+        Long expiry = cooldowns.get(pathway);
         if (expiry == null) return 0L;
         return Math.max(0L, expiry - System.currentTimeMillis());
     }
 
-    /**
-     * Returns a snapshot of pathway → expiry epoch ms for this player.
-     * Only includes entries that are still active (expiry in the future).
-     */
     public Map<String, Long> getCooldownExpiryMap(UUID player) {
-        Map<String, Long> map = cardCooldowns.get(player);
-        if (map == null) return Collections.emptyMap();
+        Map<String, Long> cooldowns = cardCooldowns.get(player);
+        if (cooldowns == null) return Collections.emptyMap();
+
         long now = System.currentTimeMillis();
-        Map<String, Long> result = new HashMap<>();
-        map.forEach((pathway, expiry) -> { if (expiry > now) result.put(pathway, expiry); });
-        return result;
+        Map<String, Long> activeCooldowns = new HashMap<>();
+        cooldowns.forEach((pathway, expiry) -> {
+            if (expiry > now) activeCooldowns.put(pathway, expiry);
+        });
+        return activeCooldowns;
     }
 
     // ─── NBT ─────────────────────────────────────────────────────────────────
@@ -225,24 +204,26 @@ public class SummonedBlasphemyData extends SavedData {
             playersTag.put(entry.getKey().toString(), playerTag);
         }
         tag.put("players", playersTag);
-        // Save locked cards
+
         CompoundTag lockedTag = new CompoundTag();
         for (Map.Entry<UUID, Set<String>> entry : lockedCards.entrySet()) {
             if (entry.getValue().isEmpty()) continue;
             ListTag list = new ListTag();
-            for (String p : entry.getValue()) list.add(StringTag.valueOf(p));
+            for (String pathway : entry.getValue()) {
+                list.add(StringTag.valueOf(pathway));
+            }
             lockedTag.put(entry.getKey().toString(), list);
         }
         tag.put("locked", lockedTag);
-        // Save cooldowns
+
         CompoundTag cooldownsTag = new CompoundTag();
         long now = System.currentTimeMillis();
         for (Map.Entry<UUID, Map<String, Long>> entry : cardCooldowns.entrySet()) {
-            CompoundTag playerCdTag = new CompoundTag();
+            CompoundTag playerCooldownsTag = new CompoundTag();
             entry.getValue().forEach((pathway, expiry) -> {
-                if (expiry > now) playerCdTag.putLong(pathway, expiry);
+                if (expiry > now) playerCooldownsTag.putLong(pathway, expiry);
             });
-            if (!playerCdTag.isEmpty()) cooldownsTag.put(entry.getKey().toString(), playerCdTag);
+            if (!playerCooldownsTag.isEmpty()) cooldownsTag.put(entry.getKey().toString(), playerCooldownsTag);
         }
         tag.put("cooldowns", cooldownsTag);
         return tag;
@@ -250,51 +231,54 @@ public class SummonedBlasphemyData extends SavedData {
 
     public static SummonedBlasphemyData load(CompoundTag tag, HolderLookup.Provider registries) {
         SummonedBlasphemyData data = new SummonedBlasphemyData();
-        if (!tag.contains("players")) return data;
-        CompoundTag playersTag = tag.getCompound("players");
-        for (String uuidStr : playersTag.getAllKeys()) {
-            try {
-                UUID uuid = UUID.fromString(uuidStr);
-                CompoundTag playerTag = playersTag.getCompound(uuidStr);
-                LinkedHashMap<String, Integer> cards = new LinkedHashMap<>();
-                for (String pathway : playerTag.getAllKeys()) {
-                    int uses = playerTag.getInt(pathway);
-                    if (uses > 0) cards.put(pathway, uses);
+        if (tag.contains("players")) {
+            CompoundTag playersTag = tag.getCompound("players");
+            for (String uuidStr : playersTag.getAllKeys()) {
+                try {
+                    UUID uuid = UUID.fromString(uuidStr);
+                    CompoundTag playerTag = playersTag.getCompound(uuidStr);
+                    LinkedHashMap<String, Integer> cards = new LinkedHashMap<>();
+                    for (String pathway : playerTag.getAllKeys()) {
+                        int uses = playerTag.getInt(pathway);
+                        if (uses > 0) cards.put(pathway, uses);
+                    }
+                    if (!cards.isEmpty()) data.playerCards.put(uuid, cards);
+                } catch (IllegalArgumentException ignored) {
                 }
-                if (!cards.isEmpty()) data.playerCards.put(uuid, cards);
-            } catch (IllegalArgumentException ignored) { /* bad UUID, skip */ }
+            }
         }
-        // Load locked cards
+
         if (tag.contains("locked")) {
             CompoundTag lockedTag = tag.getCompound("locked");
             for (String uuidStr : lockedTag.getAllKeys()) {
                 try {
                     UUID uuid = UUID.fromString(uuidStr);
-                    ListTag list = lockedTag.getList(uuidStr, 8); // TAG_String = 8
+                    ListTag list = lockedTag.getList(uuidStr, 8);
                     Set<String> locked = new HashSet<>();
-                    for (int i = 0; i < list.size(); i++) locked.add(list.getString(i));
-                    // Only keep locks for cards that are actually still summoned
-                    LinkedHashMap<String, Integer> active = data.playerCards.get(uuid);
-                    if (active != null) locked.retainAll(active.keySet());
+                    for (int i = 0; i < list.size(); i++) {
+                        locked.add(list.getString(i));
+                    }
                     if (!locked.isEmpty()) data.lockedCards.put(uuid, locked);
-                } catch (IllegalArgumentException ignored) {}
+                } catch (IllegalArgumentException ignored) {
+                }
             }
         }
-        // Load cooldowns
+
         if (tag.contains("cooldowns")) {
-            long now = System.currentTimeMillis();
             CompoundTag cooldownsTag = tag.getCompound("cooldowns");
+            long now = System.currentTimeMillis();
             for (String uuidStr : cooldownsTag.getAllKeys()) {
                 try {
                     UUID uuid = UUID.fromString(uuidStr);
-                    CompoundTag playerCdTag = cooldownsTag.getCompound(uuidStr);
-                    Map<String, Long> cdMap = new HashMap<>();
-                    for (String pathway : playerCdTag.getAllKeys()) {
-                        long expiry = playerCdTag.getLong(pathway);
-                        if (expiry > now) cdMap.put(pathway, expiry);
+                    CompoundTag playerCooldownsTag = cooldownsTag.getCompound(uuidStr);
+                    Map<String, Long> cooldowns = new HashMap<>();
+                    for (String pathway : playerCooldownsTag.getAllKeys()) {
+                        long expiry = playerCooldownsTag.getLong(pathway);
+                        if (expiry > now) cooldowns.put(pathway, expiry);
                     }
-                    if (!cdMap.isEmpty()) data.cardCooldowns.put(uuid, cdMap);
-                } catch (IllegalArgumentException ignored) {}
+                    if (!cooldowns.isEmpty()) data.cardCooldowns.put(uuid, cooldowns);
+                } catch (IllegalArgumentException ignored) {
+                }
             }
         }
         return data;

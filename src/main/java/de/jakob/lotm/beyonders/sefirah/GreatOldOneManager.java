@@ -22,7 +22,7 @@ import java.util.Map;
  *
  * Requirements to transform into a Great Old One:
  *   1. Own a sefirot that has a GOO form (sefirah_castle → Lord of Mysteries,
- *      river_of_eternal_darkness → Eternal Darkness).
+ *      river_of_eternal_darkness → Eternal Darkness, chaos_sea → God Almighty).
  *   2. Be seq 0 of your OWN path (charList contains own-path entry at seq 0).
  *   3. Have ≥3 seq-1 characteristics of your own path in the charList.
  *   4. Be seq 0 of EVERY neighboring path (charList has each neighbor at seq 0).
@@ -49,6 +49,7 @@ public class GreatOldOneManager {
         Map<String, String> s = new HashMap<>();
         s.put("sefirah_castle",            "Lord of Mysteries");
         s.put("river_of_eternal_darkness", "Eternal Darkness");
+        s.put("chaos_sea",                 "God Almighty");
         SEFIROT_TO_NAME = Collections.unmodifiableMap(s);
 
         Map<String, String> p = new HashMap<>();
@@ -60,6 +61,12 @@ public class GreatOldOneManager {
         p.put("darkness",      "Eternal Darkness");
         p.put("death",         "Eternal Darkness");
         p.put("twilight_giant","Eternal Darkness");
+        // Chaos Sea neighbors (sun, tyrant, visionary, hanged_man, white_tower)
+        p.put("sun",           "God Almighty");
+        p.put("tyrant",        "God Almighty");
+        p.put("visionary",     "God Almighty");
+        p.put("hanged_man",    "God Almighty");
+        p.put("white_tower",   "God Almighty");
         PATHWAY_TO_NAME = Collections.unmodifiableMap(p);
     }
 
@@ -101,7 +108,7 @@ public class GreatOldOneManager {
 
         String sefirot = SefirahHandler.getClaimedSefirot(player);
         if (!SEFIROT_TO_NAME.containsKey(sefirot)) {
-            missing.add("You do not own a GOO-eligible sefirot (sefirah_castle or river_of_eternal_darkness). Current: \"" + sefirot + "\"");
+            missing.add("You do not own a GOO-eligible sefirot (sefirah_castle, river_of_eternal_darkness, or chaos_sea). Current: \"" + sefirot + "\"");
             return missing; // rest of checks are meaningless without a sefirot
         }
 
@@ -180,11 +187,13 @@ public class GreatOldOneManager {
 
     /**
      * OP/admin force-transform. {@code gooType} must be either
-     * {@code "lord-of-mysteries"} or {@code "eternal-darkness"}.
+     * {@code "lord-of-mysteries"}, {@code "eternal-darkness"}, or {@code "god-almighty"}.
      */
     public static void transformAs(ServerPlayer player, String gooType) {
         String pathway = BeyonderData.getPathway(player);
-        String gooName = gooType.equalsIgnoreCase("eternal-darkness") ? "Eternal Darkness" : "Lord of Mysteries";
+        String gooName = gooType.equalsIgnoreCase("god-almighty") || gooType.equalsIgnoreCase("god_almighty")
+                ? "God Almighty"
+                : gooType.equalsIgnoreCase("eternal-darkness") ? "Eternal Darkness" : "Lord of Mysteries";
         transformInternal(player, pathway, gooName);
     }
 

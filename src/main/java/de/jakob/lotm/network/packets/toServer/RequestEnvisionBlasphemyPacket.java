@@ -2,6 +2,7 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.tyrant.LightningStormAbility;
+import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.attachments.EnvisionBlasphemyTriggerData;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncEnvisionTriggerPacket;
@@ -78,6 +79,11 @@ public record RequestEnvisionBlasphemyPacket(String targetName, String triggerWo
                     "§cTarget player not found: " + targetName));
             return;
         }
+        if (SefirotAuthorityManager.blocksEnvisioningTarget(target, sender)) {
+            sender.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+                "§cThat player cannot be targeted by Envisioning."));
+            return;
+        }
         fireLeoderoOn(target, sender.getUUID(), sender);
     }
 
@@ -88,6 +94,14 @@ public record RequestEnvisionBlasphemyPacket(String targetName, String triggerWo
      */
     public static void fireLeoderoOn(ServerPlayer victim, UUID casterUUID, ServerPlayer casterForFeedback) {
         EnvisionBlasphemyTriggerData data = EnvisionBlasphemyTriggerData.get(victim.getServer());
+        ServerPlayer caster = victim.getServer().getPlayerList().getPlayer(casterUUID);
+        if (caster != null && SefirotAuthorityManager.blocksEnvisioningTarget(victim, caster)) {
+            if (casterForFeedback != null) {
+                casterForFeedback.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+                        "§cThat player cannot be targeted by Envisioning."));
+            }
+            return;
+        }
 
         if (!data.canFire(casterUUID)) {
             long secs = data.getCooldownRemainingSeconds(casterUUID);

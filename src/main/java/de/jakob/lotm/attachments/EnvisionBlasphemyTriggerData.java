@@ -9,6 +9,7 @@ import net.minecraft.world.level.storage.DimensionDataStorage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * Stores per-Chaos-Sea-authority LEODERO trigger words set via the Envisioning > Target > Blasphemy screen.
@@ -57,17 +58,27 @@ public class EnvisionBlasphemyTriggerData extends SavedData {
     public boolean check(UUID caster, String message) {
         String word = triggers.get(caster);
         if (word == null) return false;
-        return message.trim().equalsIgnoreCase(word);
+        return matchesTrigger(message, word);
     }
 
     /** Iterate all registered trigger words and check {@code message} against each. */
     public java.util.List<UUID> findMatches(String message) {
         java.util.List<UUID> matched = new java.util.ArrayList<>();
-        String m = message.trim().toLowerCase();
         for (Map.Entry<UUID, String> e : triggers.entrySet()) {
-            if (m.equalsIgnoreCase(e.getValue())) matched.add(e.getKey());
+            if (matchesTrigger(message, e.getValue())) matched.add(e.getKey());
         }
         return matched;
+    }
+
+    private static boolean matchesTrigger(String message, String trigger) {
+        if (message == null || trigger == null) return false;
+        String normalizedMessage = message.trim();
+        String normalizedTrigger = trigger.trim();
+        if (normalizedMessage.equalsIgnoreCase(normalizedTrigger)) return true;
+        if (normalizedTrigger.isEmpty()) return false;
+        return Pattern.compile("(?iu)(^|[^\\p{L}\\p{N}_])" + Pattern.quote(normalizedTrigger) + "($|[^\\p{L}\\p{N}_])")
+                .matcher(normalizedMessage)
+                .find();
     }
 
     public boolean hasTrigger(UUID caster) {

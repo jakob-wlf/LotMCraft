@@ -7,6 +7,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.beyonders.sefirah.GreatOldOneManager;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PathwayInfos;
 import de.jakob.lotm.util.playerMap.Characteristic;
@@ -79,6 +80,7 @@ public record RequestTargetEnvisionCharacteristicsPacket(
             switch (packet.action()) {
                 case "SYNC" -> {
                     if (target == null) return;
+                    if (SefirotAuthorityManager.blocksEnvisioningTarget(target, owner)) return;
                     EnvisionedCharacteristicsData.sendTargetSync(owner, target,
                             EnvisionedCharacteristicsData.get(owner.getServer()));
                     return;
@@ -87,6 +89,10 @@ public record RequestTargetEnvisionCharacteristicsPacket(
                 case "ENVISION" -> {
                     if (target == null) {
                         owner.sendSystemMessage(Component.literal("§cTarget player is not online."));
+                        break;
+                    }
+                    if (SefirotAuthorityManager.blocksEnvisioningTarget(target, owner)) {
+                        owner.sendSystemMessage(Component.literal("§cThat player cannot be targeted by Envisioning."));
                         break;
                     }
 
@@ -168,6 +174,10 @@ public record RequestTargetEnvisionCharacteristicsPacket(
                 case "RELEASE" -> {
                     if (target == null) {
                         owner.sendSystemMessage(Component.literal("§cTarget player is not online."));
+                        break;
+                    }
+                    if (SefirotAuthorityManager.blocksEnvisioningTarget(target, owner)) {
+                        owner.sendSystemMessage(Component.literal("§cThat player cannot be targeted by Envisioning."));
                         break;
                     }
 

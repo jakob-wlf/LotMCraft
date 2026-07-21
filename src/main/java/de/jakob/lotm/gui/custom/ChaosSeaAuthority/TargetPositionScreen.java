@@ -159,7 +159,7 @@ public class TargetPositionScreen extends Screen {
         // Dimension hint lines
         int dimHintY = startY + rowStep * 4 + 14;
         g.drawString(font, "e.g. overworld, nether, end",            labelX, dimHintY,     C_HINT, false);
-        g.drawString(font, "chaos_sea, river, dream, spirit, space",  labelX, dimHintY + 9, C_HINT, false);
+        g.drawString(font, "chaos_sea, river, dream, spirit",        labelX, dimHintY + 9, C_HINT, false);
 
         // Render EditBoxes and buttons first
         super.render(g, mouseX, mouseY, partialTick);
