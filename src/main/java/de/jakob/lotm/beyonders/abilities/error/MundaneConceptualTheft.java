@@ -1,15 +1,17 @@
 package de.jakob.lotm.beyonders.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.CorruptionComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
+import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -54,7 +56,8 @@ public class MundaneConceptualTheft extends SelectableAbility {
         return new String[]{"ability.lotmcraft.mundane_conceptual_theft.steal_walk",
                 "ability.lotmcraft.mundane_conceptual_theft.steal_sight",
                 "ability.lotmcraft.mundane_conceptual_theft.steal_health",
-                "ability.lotmcraft.mundane_conceptual_theft.steal_distance"
+                "ability.lotmcraft.mundane_conceptual_theft.steal_distance",
+                "ability.lotmcraft.mundane_conceptual_theft.steal_corruption"
                 //"ability.lotmcraft.mundane_conceptual_theft.steal_thoughts"
         };
     }
@@ -111,8 +114,22 @@ public class MundaneConceptualTheft extends SelectableAbility {
             case 0 -> stealWalk(target, getTheftDuration(entitySeq, targetSeq));
             case 1 -> stealSight(target, getTheftDuration(entitySeq, targetSeq));
             case 2 -> stealHealth(entity, target);
+            case 3 -> stealCorruption(entity);
 
         }
+    }
+
+    private void stealCorruption(LivingEntity entity) {
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 1.5f, false, true);
+        CorruptionComponent targetComp = target.getData(ModAttachments.CORRUPTION_COMPONENT);
+        CorruptionComponent casterComp = entity.getData(ModAttachments.CORRUPTION_COMPONENT);
+
+        if(targetComp == null && casterComp == null && targetComp.getCorruption() !=0){
+            float transfer = Math.min( targetComp.getCorruption(), 10);
+            targetComp.decreaseCorruptionAndSync(transfer, target);
+            casterComp.increaseCorruptionAndSync(transfer, entity);
+        }
+
     }
 
     private void stealDistance(ServerLevel level, LivingEntity entity) {

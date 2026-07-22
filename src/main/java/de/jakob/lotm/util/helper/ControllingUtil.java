@@ -1,16 +1,21 @@
 package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
+import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
+import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncOriginalBodyOwnerPacket;
+import de.jakob.lotm.network.packets.toClient.UpdateAbilityBarPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -26,9 +31,15 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.*;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.GameType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -45,7 +56,7 @@ import java.util.*;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ControllingUtil {
 
-    public static void possess(ServerPlayer player, LivingEntity target, boolean spawnOriginalBody) {
+    public static void possess(ServerPlayer player, LivingEntity target, boolean spawnOriginalBody, boolean swapData) {
         // checks
         if (player == null) return;
         ServerLevel level = (ServerLevel) player.level();
@@ -66,23 +77,60 @@ public class ControllingUtil {
 
         data.setTargetUUID(target.getUUID());
         data.setControlling(true, player);
+        data.setMovementOnly(!swapData);
 
         //copy the player and his position to original body
         copyEntities(player, originalBody);
         copyPosition(player, originalBody);
 
         // copy the target and his position to the player
-        copyEntities(target, player);
+        // Capture target data BEFORE we start overwriting things,
+        // to ensure we have a clean copy if we need to swap it into the originalBody.
+        ArrayList<Characteristic> targetChars = new ArrayList<>();
+        String targetPathway = BeyonderData.getPathway(target);
+        int targetSequence = BeyonderData.getSequence(target);
+        String[] targetHistory = BeyonderData.getPathwayHistory(target).clone();
+        if (swapData && BeyonderData.isBeyonder(target)) {
+            for (Characteristic c : BeyonderData.getCharList(target)) {
+                targetChars.add(new Characteristic(c.pathway(), c.stack(), c.sequence()));
+            }
+        }
+
+        // Force overwriting Beyonder data on the player so the controller temporarily assumes the target's pathway/sequence/characteristics
+        copyEntities(target, player, swapData);
         copyPosition(target, player);
+
+        // swap the target with the player's original body state if the target is a Beyonder
+        if (swapData && !targetChars.isEmpty() && !isTargetPlayer) {
+            // Restore the player's original data to the target entity (completing the swap)
+            copyEntities(originalBody, target, true);
+        }
 
         // save the target to the player
         if (!isTargetPlayer){
             CompoundTag targetTag = new CompoundTag();
+            // Temporarily restore target's true Beyonder state for saving to NBT
+            // so when the player stops controlling, the target is restored with its own data
+            // instead of the player's data (which it currently has due to the swap).
+            if (swapData && !targetChars.isEmpty()) {
+                // Use skipCheck=true, putIntoMap=false, and updateCharacteristics=false to avoid side effects during temporary restoration.
+                // Also copy back target's pathway history.
+                BeyonderData.setBeyonder(target, targetPathway, targetSequence, true, false, false, true, false, false, false);
+                target.getData(ModAttachments.BEYONDER_COMPONENT).setPathwayHistory(targetHistory);
+                target.getData(ModAttachments.BEYONDER_COMPONENT).setCharacteristicList(targetChars);
+            }
+
             target.saveWithoutId(targetTag);
 
             ResourceLocation targetId = BuiltInRegistries.ENTITY_TYPE.getKey(target.getType());
             targetTag.putString("id", targetId.toString());
             data.setTargetEntity(targetTag);
+
+            // Re-apply the swap if it was active, so the discarded/controlled entity stays in swapped state
+            // (though for non-player targets it's about to be discarded anyway, it's cleaner)
+            if (swapData && !targetChars.isEmpty()) {
+                copyEntities(originalBody, target, true);
+            }
         }
 
         // save the main body to the player
@@ -123,6 +171,8 @@ public class ControllingUtil {
             serverTarget.setGameMode(GameType.SPECTATOR);
             serverTarget.setCamera(player);
         }
+
+        syncIntrospectData(player);
     }
 
     public static void reset(ServerPlayer player, ServerLevel level, boolean resetData){
@@ -130,31 +180,18 @@ public class ControllingUtil {
         ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
         CompoundTag targetTag = data.getTargetEntity();
 
+        // Capture the host's characteristics from the player (who is currently the host)
+        // to merge them back into the player's original body later.
+        ArrayList<Characteristic> hostChars = new ArrayList<>();
+        for (Characteristic c : BeyonderData.getCharList(player)) {
+            hostChars.add(new Characteristic(c.pathway(), c.stack(), c.sequence()));
+        }
+
         // remove body from allies (to clean it up)
         AllyUtil.removeAllyOneWay(player, data.getBodyUUID());
 
         // Track the restored target so we can update its controller item after the body is restored
         LivingEntity restoredTarget = null;
-
-        // returning the target before returning to main body
-        if (targetTag != null) {
-            // Patch the saved tag with the player's current Beyonder state so sequence regressions persist
-            String currentPathway = BeyonderData.getPathway(player);
-            int currentSequence = BeyonderData.getSequence(player);
-            if (!currentPathway.isEmpty() && currentSequence >= 0) {
-                // idk why that is here, "Will" added it and idk why so i'll leave it here anyways
-                targetTag.putString("Pathway", currentPathway);
-                targetTag.putInt("Sequence", currentSequence);
-
-                // also patch NeoForgeData persistent data inside the tag
-                if (targetTag.contains("neoforge:attachments")) {
-                    CompoundTag nfd = targetTag.getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
-                    nfd.putString("pathway", currentPathway);
-                    nfd.putInt("sequence", currentSequence);
-                    nfd.putFloat("digestionProgress", BeyonderData.getDigestionProgress(player));
-                }
-            }
-        }
 
         Entity targetEntity = null;
         if (targetTag != null) {
@@ -168,10 +205,11 @@ public class ControllingUtil {
 
         // copying some (important) data from the player to the target
         if (targetEntity != null) {
-
-            // copy player inventory to the target
             if (targetEntity instanceof LivingEntity target) {
-                copyInventories(player, target);
+                // Restore the target's original body/items/attributes from the player (who currently holds them).
+                // Beyonder data will be overwritten with the swap data later if available.
+                // If it was movement only, we do NOT want to overwrite the target's original items/Beyonder data with the parasite's state.
+                copyEntities(player, target, !data.isMovementOnly());
             }
 
             level.addFreshEntity(targetEntity);
@@ -185,13 +223,13 @@ public class ControllingUtil {
             // copy wheel abilities
             AbilityWheelComponent sourceWheelData = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
             AbilityWheelComponent targetWheelData = targetEntity.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
-            targetWheelData.setAbilities(sourceWheelData.getAbilities());
+            targetWheelData.setAbilities(new ArrayList<>(sourceWheelData.getAbilities()));
             AbilityWheelHelper.syncToClient(player);
 
             // copy bar abilities
             AbilityBarComponent sourceBarData = player.getData(ModAttachments.ABILITY_BAR_COMPONENT);
             AbilityBarComponent targetBarData = targetEntity.getData(ModAttachments.ABILITY_BAR_COMPONENT);
-            targetBarData.setAbilities(sourceBarData.getAbilities());
+            targetBarData.setAbilities(new ArrayList<>(sourceBarData.getAbilities()));
 
             // preserve the targets health
             if (targetEntity instanceof LivingEntity target) {
@@ -199,6 +237,14 @@ public class ControllingUtil {
             }
 
             if (targetEntity instanceof ServerPlayer serverTarget) {
+                if (!data.isMovementOnly()) {
+                    // If it's a player, they were swapped. We need to restore them from the originalBody
+                    // because we don't have a NBT tag for them.
+                    Entity originalBodyForPlayer = level.getEntity(data.getBodyUUID());
+                    if (originalBodyForPlayer instanceof LivingEntity ob) {
+                         copyData(ob, serverTarget, true);
+                    }
+                }
                 ControllingDataComponent targetData = serverTarget.getData(ModAttachments.CONTROLLING_DATA);
                 targetData.setIsControlled(false);
                 targetData.setOwnerUUID(null);
@@ -214,17 +260,33 @@ public class ControllingUtil {
 
         Entity originalBodyEntity = level.getEntity(data.getBodyUUID());
 
-        // returning to main body
+        // returning to main body and swapping characteristics
         if (originalBodyEntity != null) {
             if (originalBodyEntity instanceof LivingEntity originalBody) {
-                copyEntities(originalBody, player);
+                // SWAP: Target receives its original characteristics back if we had a swap
+                if (!data.isMovementOnly() && targetEntity instanceof LivingEntity targetLiving) {
+                    LOTMCraft.LOGGER.info("reset: restoring original target Beyonder data to restored target {}", targetEntity.getUUID());
+                    // We don't need to copy from originalBody here because the targetTag
+                    // should already contain the correct original target data if we saved it correctly in possess()
+                    // or if it's a player, they already have their data (wait, no, players are also swapped).
+                }
+
+                // SWAP: Player returns to their original body/items, but merges the host's characteristics.
+                copyEntities(originalBody, player, !data.isMovementOnly());
+                if (!data.isMovementOnly()) {
+                    // mergeBeyonderCharacteristics(hostChars, player);
+                }
+
+                // We must move the player back to their original body's position.
                 copyPosition(originalBody, player);
             }
             originalBodyEntity.discard();
         } else {
-            // only a fallback in case the body didn't exist or was unloaded for some reason
+            // fallback if body is missing
             CompoundTag bodyTag = data.getBodyEntity();
             if (bodyTag != null) {
+                // In fallback we don't have the target entity easily to swap to,
+                // but we can try to restore player from the tag.
                 Entity bodyEntity = EntityType.loadEntityRecursive(bodyTag, level, (entity) -> {
                     ListTag posList = bodyTag.getList("Pos", 6);
                     if (posList.size() >= 3) {
@@ -236,7 +298,13 @@ public class ControllingUtil {
                 });
                 if (bodyEntity != null) {
                     if (bodyEntity instanceof LivingEntity originalBody) {
-                        copyEntities(originalBody, player);
+                        if (!data.isMovementOnly() && targetEntity instanceof LivingEntity targetLiving) {
+                            //LOTMCraft.LOGGER.info("249 - removed");
+                            //copyData(originalBody, targetLiving, true);
+                        }
+                        //LOTMCraft.LOGGER.info("252");
+                        copyEntities(originalBody, player, !data.isMovementOnly());
+                        //mergeBeyonderCharacteristics(hostChars, player);
                         copyPosition(originalBody, player);
 
                         PhysicalEnhancementsAbility.resetEnhancements(player.getUUID(), player, true);
@@ -267,14 +335,42 @@ public class ControllingUtil {
         // resetting shape
         ShapeShiftingUtil.resetShape(player);
 
+        syncIntrospectData(player);
+
+        // Sync restored Beyonder state into the PlayerMap so saved map reflects entity data immediately
+        try {
+            if (BeyonderData.playerMap != null) {
+                BeyonderData.playerMap.put(player);
+            } else {
+                LOTMCraft.LOGGER.info("PlayerMap not initialized while resetting {}; will initialize.", player.getUUID());
+                if (level != null) BeyonderData.initBeyonderMap(level);
+                if (BeyonderData.playerMap != null) BeyonderData.playerMap.put(player);
+            }
+        } catch (Exception e) {
+            LOTMCraft.LOGGER.warn("Failed to sync PlayerMap for player {}: {}", player.getUUID(), e.toString());
+        }
+
         // clearing data
         data.setBodyEntity(null, player);
         data.setControlling(false, player);
+        data.setMovementOnly(false);
         if (resetData) {
             data.setOwnerUUID(null);
             data.setBodyUUID(null);
             data.setTargetUUID(null);
         }
+
+
+        if(targetEntity instanceof LivingEntity){
+            LivingEntity target = (LivingEntity) targetEntity;
+            BeyonderData.getCharList((LivingEntity) targetEntity).forEach(c -> {
+                if (Objects.equals(c.pathway(), BeyonderData.getPathway(target)) && c.sequence() == BeyonderData.getSequence(target)) {
+                    c.setStack(c.stack() - 1);
+                    BeyonderData.setCharacteristic(target,c.stack(),c.sequence(),true,c.pathway());
+                }
+            });
+        }
+
     }
 
     private static void copyPosition(LivingEntity source, LivingEntity target) {
@@ -292,14 +388,16 @@ public class ControllingUtil {
         target.setYBodyRot(source.yBodyRot);
     }
 
-    private static void copyData(LivingEntity source, LivingEntity target) {
+    private static void copyData(LivingEntity source, LivingEntity target, boolean forceBeyonderCopy) {
+        if (!forceBeyonderCopy) return;
+
         // copy togglable abilities
         ToggleAbility.setActiveAbilities(target, new HashSet<>(ToggleAbility.getActiveAbilitiesForEntity(source)));
 
         // copy wheel abilities
         AbilityWheelComponent sourceWheelData = source.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
         AbilityWheelComponent targetWheelData = target.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
-        targetWheelData.setAbilities(sourceWheelData.getAbilities());
+        targetWheelData.setAbilities(new ArrayList<>(sourceWheelData.getAbilities()));
         if (target instanceof ServerPlayer player) {
             AbilityWheelHelper.syncToClient(player);
         }
@@ -307,36 +405,90 @@ public class ControllingUtil {
         // copy bar abilities
         AbilityBarComponent sourceBarData = source.getData(ModAttachments.ABILITY_BAR_COMPONENT);
         AbilityBarComponent targetBarData = target.getData(ModAttachments.ABILITY_BAR_COMPONENT);
-        targetBarData.setAbilities(sourceBarData.getAbilities());
+        targetBarData.setAbilities(new ArrayList<>(sourceBarData.getAbilities()));
 
-        if (BeyonderData.isBeyonder(source)) {
-            // Preserve source's spirituality and digestion before setBeyonder resets them
-            float sourceSpirituality = BeyonderData.getSpirituality(source);
-            float sourceDigestion = source instanceof Player sp
-                    ? BeyonderData.getDigestionProgress(sp)
-                    : source.getData(ModAttachments.BEYONDER_COMPONENT).getDigestionProgress();
-            int sourceLuck = source.getData(ModAttachments.LUCK_COMPONENT).getLuck();
+        // Determine whether to copy/overwrite Beyonder data:
+        // - If forced, always copy source's Beyonder state (even if source is non-beyonder)
+        // - Otherwise only copy if source is a Beyonder
+        if (forceBeyonderCopy || BeyonderData.isBeyonder(source)) {
+            LOTMCraft.LOGGER.info("copyData: copying Beyonder from {} ({}) to {} ({})", source.getDisplayName().getString(), source.getUUID(), target.getDisplayName().getString(), target.getUUID());
 
-            BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source),
-                    false, false, false, false, false);
+            if (BeyonderData.isBeyonder(source)) {
+                // Preserve source's spirituality and digestion before setBeyonder resets them
+                float sourceSpirituality = BeyonderData.getSpirituality(source);
+                float sourceDigestion = source instanceof Player sp
+                        ? BeyonderData.getDigestionProgress(sp)
+                        : source.getData(ModAttachments.BEYONDER_COMPONENT).getDigestionProgress();
+                int sourceLuck = source.getData(ModAttachments.LUCK_COMPONENT).getLuck();
 
-            // Restore spirituality, digestion, and luck that setBeyonder wiped
-            BeyonderData.setSpirituality(target, sourceSpirituality);
-            target.getData(ModAttachments.BEYONDER_COMPONENT).setDigestionProgress(sourceDigestion);
-            target.getData(ModAttachments.LUCK_COMPONENT).setLuck(sourceLuck);
-
-            if (target instanceof Player targetPlayer) {
-                BeyonderData.setGriefingEnabled(targetPlayer, BeyonderData.isGriefingEnabled(source instanceof Player sp ? sp : targetPlayer));
+            // This is a data copy between bodies, not a real advancement — it must not
+            // trigger the acting cap (e.g. restoring the player after controlling a non-beyonder
+            // would otherwise look like becoming a beyonder for the first time)
+            ActingCapHelper.skipNextCapApplication = true;
+            try {
+                BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source),
+                        false, false, false, false, false);
+            } finally {
+                ActingCapHelper.skipNextCapApplication = false;
             }
-        } else {
-            BeyonderData.clearBeyonderData(target);
+
+                // Restore spirituality, digestion, and luck that setBeyonder wiped
+                BeyonderData.setSpirituality(target, sourceSpirituality);
+                target.getData(ModAttachments.BEYONDER_COMPONENT).setDigestionProgress(sourceDigestion);
+                target.getData(ModAttachments.LUCK_COMPONENT).setLuck(sourceLuck);
+
+                if (target instanceof Player targetPlayer) {
+                    BeyonderData.setGriefingEnabled(targetPlayer, BeyonderData.isGriefingEnabled(source instanceof Player sp ? sp : targetPlayer));
+                    // Build a defensive deep-copy of the characteristic list.
+                    ArrayList<Characteristic> charCopy = new ArrayList<>();
+                    for (Characteristic characteristic : BeyonderData.getCharList(source)) {
+                        charCopy.add(new Characteristic(characteristic.pathway(), characteristic.stack(), characteristic.sequence()));
+                    }
+
+                    // Set the pathway/sequence/etc using the standard setter to keep PlayerMap and passive effects consistent.
+                    // Use skipCheck=true to allow copying even if slots are "full" (it's a copy, not a new acquisition).
+                    // Use updateCharacteristics=false because we're about to set the characteristic list manually via setCharacteristicList.
+                    // Use putIntoMap=false so the global map is only updated when players are restored.
+                    BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source), true, false, false, true, false, false, false);
+
+                    // Copy pathway history to ensure client-side UI (like Introspect screen) works correctly
+                    target.getData(ModAttachments.BEYONDER_COMPONENT).setPathwayHistory(source.getData(ModAttachments.BEYONDER_COMPONENT).getPathwayHistory().clone());
+
+                    // Overwrite the characteristic list with the exact copy from source
+                    target.getData(ModAttachments.BEYONDER_COMPONENT).setCharacteristicList(charCopy);
+
+                    // Sync digestion/griefing for players
+                    if (source instanceof Player sourcePlayer) {
+                        //BeyonderData.digest(targetPlayer, BeyonderData.getDigestionProgress(sourcePlayer), false);
+                        BeyonderData.setGriefingEnabled(targetPlayer, BeyonderData.isGriefingEnabled(sourcePlayer));
+                    }
+                    BeyonderData.setDigestionProgress(target, BeyonderData.getDigestionProgress(source));
+                    target.getData(ModAttachments.BEYONDER_COMPONENT).setDigestionProgress(BeyonderData.getDigestionProgress(source));
+
+                    if (target instanceof ServerPlayer serverPlayer) {
+                        syncIntrospectData(serverPlayer);
+                        LOTMCraft.LOGGER.info("copyData: synced Beyonder data for player {}", serverPlayer.getUUID());
+                    }
+                } else if (BeyonderData.isBeyonder(target)) {
+                    // Source is not a Beyonder and not forced -> preserve target's existing Beyonder data
+                    LOTMCraft.LOGGER.info("copyData: source {} is not Beyonder; preserving existing Beyonder data on target {}", source.getUUID(), target.getUUID());
+                } else {
+                    BeyonderData.clearBeyonderData(target);
+                }
+            }
         }
     }
 
-    private static void copyEntities (LivingEntity source, LivingEntity target) {
-        copyInventories(source, target);
+    private static void copyEntities(LivingEntity source, LivingEntity target) {
+        copyEntities(source, target, true);
+    }
 
-        copyData(source, target);
+    private static void copyEntities(LivingEntity source, LivingEntity target, boolean forceBeyonderCopy) {
+        if (forceBeyonderCopy) {
+            copyInventories(source, target);
+        }
+
+        copyData(source, target, forceBeyonderCopy);
 
         AttributeMap sourceMap = source.getAttributes();
         AttributeMap targetMap = target.getAttributes();
@@ -446,6 +598,45 @@ public class ControllingUtil {
                 targetInst.getModifiers().forEach(mod -> targetInst.removeModifier(mod.id()));
             }
         }
+    }
+
+    /**
+     * Consolidates multiple sync packets to ensure the client-side UI and caches
+     * are fully updated with the latest Beyonder state.
+     */
+    public static void syncIntrospectData(ServerPlayer player) {
+        if (player == null) return;
+
+        // Refresh client-side Beyonder cache (pathway, sequence, characteristics, etc.)
+        PacketHandler.syncBeyonderDataToPlayer(player);
+
+        // Refresh Uniqueness data
+        PacketHandler.syncUniquenessToPlayer(player);
+
+        // Refresh Ability Wheel
+        AbilityWheelHelper.syncToClient(player);
+
+        // Refresh Ability Bar
+        ArrayList<String> barAbilities = player.getData(ModAttachments.ABILITY_BAR_COMPONENT).getAbilities();
+        PacketHandler.sendToPlayer(player, new UpdateAbilityBarPacket(barAbilities));
+
+        // Refresh Kill Count
+        int killCount = player.getData(ModAttachments.KILL_COUNT_COMPONENT).getKillCount();
+        PacketHandler.sendToPlayer(player, new de.jakob.lotm.network.packets.toClient.SyncKillCountPacket(killCount));
+
+        // Refresh Sefirot Authority
+        de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager.syncToClient(player);
+
+        // Refresh Sanity
+        float sanity = player.getData(ModAttachments.SANITY_COMPONENT).getSanity();
+
+        float corruption = player.getData(ModAttachments.CORRUPTION_COMPONENT).getCorruption();
+        PacketHandler.sendToPlayer(player, new de.jakob.lotm.network.packets.toClient.SyncIntrospectMenuPacket(
+                BeyonderData.getHighestSequence(player),
+                BeyonderData.getHighestPathway(player),
+                sanity,
+                corruption
+        ));
     }
 
     private static void copyInventories(LivingEntity source, LivingEntity target) {

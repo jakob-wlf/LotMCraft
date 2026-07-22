@@ -5,12 +5,12 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
+import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.custom.StartAdvanceSequencePathwayEvent;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.ChangePlayerPerspectivePacket;
-import de.jakob.lotm.beyonders.potions.BeyonderPotion;
-import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -42,7 +42,8 @@ public class AdvancementUtil {
             new HashSet<>(Set.of("fool", "error", "door")),
             new HashSet<>(Set.of("red_priest", "demoness")),
             new HashSet<>(Set.of("sun", "tyrant", "visionary")),
-            new HashSet<>(Set.of("darkness", "death"))
+            new HashSet<>(Set.of("darkness", "death", "twilight_giant")),
+            new HashSet<>(Set.of("black_emperor", "justiciar"))
     );
 
 
@@ -115,13 +116,13 @@ public class AdvancementUtil {
 
     private static void advancePathwaySwitch(LivingEntity entity, String pathway, int sequence,
                                              String prevPathway, int prevSequence) {
-        boolean isSameDomainSwitch = prevSequence <= 5 && sequence == (prevSequence - 1) && sameDomain(prevPathway, pathway);
-        double failureChance = isSameDomainSwitch && !hasSwitchedPathway(entity) ? 0.0 : 1.0;
+        boolean isSameDomainSwitch = sequence == (prevSequence - 1) && sameDomain(prevPathway, pathway);
+        double failureChance = isSameDomainSwitch ? 0.0 : 1.0;
 
         Runnable onSuccess = isSameDomainSwitch
                 ? () -> playerMap.recordPathwaySwitch(entity, prevSequence, prevPathway)
                 : null;
-
+        failureChance = 0;
         executeAdvancement(entity, pathway, sequence, failureChance, onSuccess);
     }
 
@@ -145,7 +146,7 @@ public class AdvancementUtil {
             if (!activeAdvancements.containsKey(entity.getUUID())) return;
             activeAdvancements.remove(entity.getUUID());
             if (entity.isDeadOrDying()) return;
-            BeyonderData.addCharStack(entity, sequence);
+            BeyonderData.addCharacteristic(entity, finalSequence, finalPathway);
             sendThirdPersonPacket(entity);
         });
     }

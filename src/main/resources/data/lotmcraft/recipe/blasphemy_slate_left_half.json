@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "lotmcraft:sun_blasphemy_card"},
+    {"item": "lotmcraft:tyrant_blasphemy_card"},
+    {"item": "lotmcraft:visionary_blasphemy_card"},
+    {"item": "lotmcraft:justiciar_blasphemy_card"},
+    {"item": "lotmcraft:twilight_giant_blasphemy_card"},
+    {"item": "lotmcraft:death_blasphemy_card"},
+    {"item": "lotmcraft:abyss_blasphemy_card"},
+    {"item": "lotmcraft:wheel_of_fortune_blasphemy_card"}
+  ],
+  "result": {
+    "id": "lotmcraft:blasphemy_slate_left_half",
+    "count": 1
+  },
+  "category": "misc"
+}

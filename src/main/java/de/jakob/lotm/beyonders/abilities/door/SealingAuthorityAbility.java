@@ -2,9 +2,12 @@ package de.jakob.lotm.beyonders.abilities.door;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.FogComponent;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SealedDimensionData;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.TimeChangeEntity;
@@ -296,6 +299,13 @@ public class SealingAuthorityAbility extends SelectableAbility {
         SealedDimensionData data = SealedDimensionData.get(level);
         if(!data.isActive() || (!data.getDimensionLocation().equals(dimensionLocation) && !data.getDimensionLocation().equals(level.dimension().location().toString()))) {
             return;
+        }
+
+        // Gathering members of any castle and River-blessed players bypass the dimension lock
+        if (event.getEntity() instanceof ServerPlayer sp) {
+            de.jakob.lotm.attachments.GatheringData gd = de.jakob.lotm.attachments.GatheringData.get(sp.getServer());
+            if (gd.isMemberOfAnyCastle(sp.getUUID())) return;
+            if (de.jakob.lotm.beyonders.sefirah.RiverBlessingManager.isBlessed(sp.getUUID())) return;
         }
 
         event.setCanceled(true);

@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.artifacts;
 
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.item.ModItems;
-import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;

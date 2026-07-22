@@ -6,6 +6,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
+import de.jakob.lotm.item.custom.BlasphemySlateHalfItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.ClientBeyonderCache;
@@ -22,6 +23,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -89,8 +91,10 @@ public class KeyInputHandler {
                 }
 
                 String abilityId = ClientData.getAbilityWheelAbilities().get(ClientData.getSelectedAbility());
-                if(abilityId.contains(":")) return;
-                Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+                String baseId = abilityId.split(":")[0];
+                int subIndex = getIndex(abilityId);
+                if(subIndex > 0) return;
+                Ability ability = LOTMCraft.abilityHandler.getById(baseId);
                 if(!(ability instanceof SelectableAbility selectableAbility)) {
                     return;
                 }
@@ -130,8 +134,10 @@ public class KeyInputHandler {
                 }
 
                 String abilityId = ClientData.getAbilityWheelAbilities().get(ClientData.getSelectedAbility());
-                if(abilityId.contains(":")) return;
-                Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
+                String baseId = abilityId.split(":")[0];
+                int subIndex = getIndex(abilityId);
+                if(subIndex >= 0) return;
+                Ability ability = LOTMCraft.abilityHandler.getById(baseId);
                 if(!(ability instanceof SelectableAbility selectableAbility)) {
                     return;
                 }
@@ -226,6 +232,19 @@ public class KeyInputHandler {
         if(LOTMCraft.useAbilityBarAbility6 != null && LOTMCraft.useAbilityBarAbility6.consumeClick()) {
             PacketHandler.sendToServer(new UseKeyboundAbilityPacket(5));
         }
+        if(LOTMCraft.useAbilityBarAbility7 != null && LOTMCraft.useAbilityBarAbility7.consumeClick()) {
+            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(6));
+        }
+        if(LOTMCraft.useAbilityBarAbility8 != null && LOTMCraft.useAbilityBarAbility8.consumeClick()) {
+            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(7));
+        }
+        if(LOTMCraft.useAbilityBarAbility9 != null && LOTMCraft.useAbilityBarAbility9.consumeClick()) {
+            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(8));
+        }
+        if(LOTMCraft.useAbilityBarAbility0 != null && LOTMCraft.useAbilityBarAbility0.consumeClick()) {
+            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(9));
+        }
+
 
         if (LOTMCraft.returnToMainBody != null && LOTMCraft.returnToMainBody.consumeClick()) {
             PacketHandler.sendToServer(new ReturnToMainBodyPacket());
@@ -237,6 +256,26 @@ public class KeyInputHandler {
         if(LOTMCraft.nextArtifactAbilityKey != null && LOTMCraft.nextArtifactAbilityKey.consumeClick()) {
             PacketHandler.sendToServer(new NextArtifactAbilityPacket());
         }
+    }
+
+    private static int getIndex(String s) {
+        String[] parts = s.split(":");
+        if (parts.length < 2) return -1;
+        try {
+            return Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+
+
+    @SubscribeEvent
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        ItemStack stack = event.getItemStack();
+        if (!(stack.getItem() instanceof BlasphemySlateHalfItem half)) return;
+        event.setCanceled(true);
+        de.jakob.lotm.network.packets.handlers.ClientHandler.openSlateHalfPathwayScreen(half.getHalfType());
     }
 
     @SubscribeEvent

@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -49,51 +50,78 @@ public class EyeOfDeathOverlayRenderer {
         if (entity == null) return;
 
         int width = screenWidth / 3;
-        int height = 35;
+        int height = 42;
         int x = screenWidth / 2 - width / 2;
-        int y = 15;
+        int y = 12;
 
-        guiGraphics.fill(x, y, x + width, y + height, 0x77000000);
+        renderPanel(guiGraphics, x, y, width, height, 0xFF6897cc);
 
-        // Entity name
         String name = entity.getName().getString();
-        guiGraphics.drawCenteredString(mc.font, name, x + width / 2, y + 5, 0xFF6897cc);
+        guiGraphics.drawString(mc.font, name, x + width / 2 - mc.font.width(name) / 2 + 1, y + 7 + 1, 0x55000000);
+        guiGraphics.drawCenteredString(mc.font, name, x + width / 2, y + 7, 0xFF95bfed);
 
-        // Health bar
         int barWidth = (int) (width / 1.3);
-        int barHeight = 14;
+        int barHeight = 12;
         int barX = x + (width - barWidth) / 2;
-        int barY = y + height - barHeight - 5;
+        int barY = y + height - barHeight - 7;
 
-        guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0x88000000);
+        renderHealthBar(guiGraphics, mc.font, barX, barY, barWidth, barHeight,
+                entity.getHealth(), entity.getMaxHealth(),
+                0xFF6897cc, 0xFF95bfed);
+    }
 
-        double fillPercentage = entity.getHealth() / entity.getMaxHealth();
-        int filledBarWidth = (int) (barWidth * fillPercentage);
+    private static void renderPanel(GuiGraphics guiGraphics, int x, int y, int width, int height, int accentColor) {
+        guiGraphics.fill(x + 2, y + 2, x + width - 2, y + height - 2, 0xCC06080f);
+        guiGraphics.fill(x + 2, y + 2, x + width - 2, y + 10, 0x220a0c18);
 
-        if (filledBarWidth > 0)
-            drawHorizontalGradient(guiGraphics, barX, barY, filledBarWidth, barHeight, 0xFF6897cc, 0xFF95bfed);
+        guiGraphics.fill(x, y + 2, x + 2, y + height - 2, accentColor);
+        guiGraphics.fill(x + width - 2, y + 2, x + width, y + height - 2, accentColor);
+        guiGraphics.fill(x + 2, y, x + width - 2, y + 2, accentColor);
+        guiGraphics.fill(x + 2, y + height - 2, x + width - 2, y + height, accentColor);
 
-        // Health text
-        guiGraphics.drawString(mc.font, (int) entity.getHealth() + " / " + (int) entity.getMaxHealth() + " ❤", barX + 3, barY + 1 + (barHeight - mc.font.lineHeight) / 2, 0xFFFFFFFF);
+        guiGraphics.fill(x, y, x + 2, y + 2, 0x00000000);
+        guiGraphics.fill(x + width - 2, y, x + width, y + 2, 0x00000000);
+        guiGraphics.fill(x, y + height - 2, x + 2, y + height, 0x00000000);
+        guiGraphics.fill(x + width - 2, y + height - 2, x + width, y + height, 0x00000000);
+
+        guiGraphics.fill(x + 2, y + 2, x + 4, y + 4, accentColor);
+        guiGraphics.fill(x + width - 4, y + 2, x + width - 2, y + 4, accentColor);
+        guiGraphics.fill(x + 2, y + height - 4, x + 4, y + height - 2, accentColor);
+        guiGraphics.fill(x + width - 4, y + height - 4, x + width - 2, y + height - 2, accentColor);
+    }
+
+    private static void renderHealthBar(GuiGraphics guiGraphics, Font font, int barX, int barY, int barWidth, int barHeight,
+                                        float health, float maxHealth, int colorStart, int colorEnd) {
+        guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0xAA000000);
+
+        double fillPct = health / maxHealth;
+        int filledWidth = (int) (barWidth * fillPct);
+        if (filledWidth > 0) {
+            drawHorizontalGradient(guiGraphics, barX, barY, filledWidth, barHeight, colorStart, colorEnd);
+            guiGraphics.fill(barX, barY, barX + filledWidth, barY + 2, 0x33FFFFFF);
+        }
+
+        guiGraphics.fill(barX, barY, barX + barWidth, barY + 1, 0x44FFFFFF);
+        guiGraphics.fill(barX, barY + barHeight - 1, barX + barWidth, barY + barHeight, 0x44000000);
+
+        String healthText = (int) health + " / " + (int) maxHealth + " ❤";
+        guiGraphics.drawString(font, healthText, barX + 4 + 1, barY + 1 + (barHeight - font.lineHeight) / 2 + 1, 0x55000000);
+        guiGraphics.drawString(font, healthText, barX + 4, barY + 1 + (barHeight - font.lineHeight) / 2, 0xFFFFFFFF);
     }
 
     private static void drawHorizontalGradient(GuiGraphics guiGraphics, int x, int y, int width, int height,
                                                int startColor, int endColor) {
         for (int i = 0; i < width; i++) {
             float ratio = (float) i / width;
-            int color = interpolateColor(startColor, endColor, ratio);
-            guiGraphics.fill(x + i, y, x + i + 1, y + height, color);
+            guiGraphics.fill(x + i, y, x + i + 1, y + height, interpolateColor(startColor, endColor, ratio));
         }
     }
 
     private static int interpolateColor(int color1, int color2, float ratio) {
         int a1 = (color1 >> 24) & 0xFF, r1 = (color1 >> 16) & 0xFF, g1 = (color1 >> 8) & 0xFF, b1 = color1 & 0xFF;
         int a2 = (color2 >> 24) & 0xFF, r2 = (color2 >> 16) & 0xFF, g2 = (color2 >> 8) & 0xFF, b2 = color2 & 0xFF;
-        int a = (int) (a1 + (a2 - a1) * ratio);
-        int r = (int) (r1 + (r2 - r1) * ratio);
-        int g = (int) (g1 + (g2 - g1) * ratio);
-        int b = (int) (b1 + (b2 - b1) * ratio);
-        return (a << 24) | (r << 16) | (g << 8) | b;
+        return ((int)(a1 + (a2 - a1) * ratio) << 24) | ((int)(r1 + (r2 - r1) * ratio) << 16)
+                | ((int)(g1 + (g2 - g1) * ratio) << 8) | (int)(b1 + (b2 - b1) * ratio);
     }
 
     public static void clearCache() {

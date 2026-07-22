@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.death;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
@@ -348,8 +348,14 @@ public class NationOfTheDeadAbility extends Ability {
     public static void onLivingDeath(LivingDeathEvent event) {
         if (!(event.getEntity().level() instanceof ServerLevel serverLevel)) return;
 
+        String name = event.getEntity().getType().toString();
+
+        if (name.contains("dummy")) return;
+
         LivingEntity dying = event.getEntity();
         Vec3 deathPos = dying.position();
+
+
 
         for (ActiveDomain domain : activeDomains.values()) {
             if (domain.level != serverLevel) continue;

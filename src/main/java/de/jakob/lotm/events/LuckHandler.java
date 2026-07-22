@@ -1,9 +1,6 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -15,10 +12,12 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -32,6 +31,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
@@ -84,8 +85,8 @@ public class LuckHandler {
     );
 
     private static final ItemDrop[] POSSIBLE_LUCK_DROPS = {
-            //new ItemDrop(Items.GOLDEN_CARROT,  32, 0.30),
-            //new ItemDrop(Items.DIAMOND,         6, 0.05),
+            new ItemDrop(Items.GOLDEN_CARROT,  32, 0.30),
+            new ItemDrop(Items.DIAMOND,         6, 0.05),
             new ItemDrop(Items.GOLD_INGOT,     22, 0.15),
             new ItemDrop(Items.EMERALD,        22, 0.15),
             new ItemDrop(Items.LAPIS_LAZULI,   22, 0.12),
@@ -116,7 +117,7 @@ public class LuckHandler {
     }
 
     private static void handleLuckBlockBreak(BlockDropsEvent event, LivingEntity entity, ServerLevel level, int luck) {
-        /*if (Math.random() < getChanceForRandomDrop(luck)) {
+        if (Math.random() < getChanceForRandomDrop(luck)) {
             if (new Random().nextBoolean())
                 ParticleUtil.spawnParticles(level, LUCK_DUST, event.getPos().getCenter(), 12, .6, .6, .6, 0);
             dropRandomLuckItem(event.getPos().getCenter(), level);
@@ -130,10 +131,12 @@ public class LuckHandler {
             if (new Random().nextBoolean())
                 ParticleUtil.spawnParticles(level, LUCK_DUST, event.getPos().getCenter(), 12, .6, .6, .6, 0);
 
-            ItemStack copy = drops.get(level.getRandom().nextInt(drops.size())).getItem().copy();
+            // Strip all NBT/data components so storage block contents are never duplicated
+            ItemStack original = drops.get(level.getRandom().nextInt(drops.size())).getItem();
+            ItemStack copy = new ItemStack(original.getItem(), original.getCount());
             Block.popResource(level, event.getPos(), copy);
             Block.popResource(level, event.getPos(), copy.copy());
-        }*/
+        }
     }
 
     private static void handleUnluckBlockBreak(BlockDropsEvent event, LivingEntity entity, ServerLevel level, int luck) {

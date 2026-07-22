@@ -1,7 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.error.passives;
 
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
-import de.jakob.lotm.util.BeyonderData;
 
 import java.util.HashMap;
 import java.util.List;
@@ -116,8 +115,4 @@ public class PhysicalEnhancementsErrorAbility extends PhysicalEnhancementsAbilit
         };
     }
 
-    @Override
-    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
-    }
 }

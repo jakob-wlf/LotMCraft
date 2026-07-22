@@ -1,8 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.fool;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PuppeteeringAbility extends Ability {
 
@@ -136,6 +138,13 @@ public class PuppeteeringAbility extends Ability {
         if(level.isClientSide)
             return;
 
+        // Block Puppeteering during dream divination — the caster's body is a ghost observer
+        TransformationComponent transformation = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
+        if (transformation.isTransformed() &&
+                transformation.getTransformationIndex() == TransformationComponent.TransformationType.DREAM_DIVINATION.getIndex()) {
+            return;
+        }
+
         if(entitiesBeingManipulated.containsKey(entity.getUUID())) {
             entitiesBeingManipulated.remove(entity.getUUID());
             return;
@@ -148,7 +157,13 @@ public class PuppeteeringAbility extends Ability {
 
 
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, getManipulationDistance(sequence), 3);
+        LivingEntity targetRaw = AbilityUtil.getTargetEntity(entity, getManipulationDistance(sequence), 3);
+        // Validate range: TargetEntityEvent handlers (e.g. Grafting Mode 3) can override the target
+        // to an entity beyond the actual manipulation distance.  Reject it if it is out of range.
+        if (targetRaw != null && targetRaw.distanceTo(entity) > getManipulationDistance(sequence)) {
+            targetRaw = null;
+        }
+        final LivingEntity target = targetRaw;
         if(target == null || target == entity || target instanceof Phantom) {
             if(entity instanceof ServerPlayer player) {
                 ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("ability.lotmcraft.puppeteering.no_entity_found").withColor(0xFFff124d));
@@ -170,6 +185,9 @@ public class PuppeteeringAbility extends Ability {
         entitiesBeingManipulated.put(entity.getUUID(), target);
 
         AtomicBoolean stopped = new AtomicBoolean(false);
+        AtomicInteger elapsedTicks = new AtomicInteger(0);
+        int totalTicks = Math.max(1, time);
+        AtomicBoolean completed = new AtomicBoolean(false);
 
         Vec3 startTemp = entity.getEyePosition().add(entity.getLookAngle().normalize());
         Vec3 endTemp = target.getEyePosition();
@@ -184,25 +202,25 @@ public class PuppeteeringAbility extends Ability {
 
         AtomicDouble health = new AtomicDouble(target.getHealth());
         AtomicDouble casterHealth = new AtomicDouble(entity.getHealth());
-
+        LivingEntity finalTarget = target;
         ServerScheduler.scheduleForDuration(0, 2, time, () -> {
             if(stopped.get()) {
                 return;
             }
 
-            if(!target.isAlive() || target.isRemoved() || target.level() != level) {
+            if(!finalTarget.isAlive() || finalTarget.isRemoved() || finalTarget.level() != level) {
                 entitiesBeingManipulated.remove(entity.getUUID());
                 stopped.set(true);
                 return;
             }
 
-            if(target.distanceTo(entity) >= getManipulationDistance(sequence) * 1.75f) {
+            if(finalTarget.distanceTo(entity) >= getManipulationDistance(sequence) * 1.75f) {
                 entitiesBeingManipulated.remove(entity.getUUID());
                 stopped.set(true);
                 return;
             }
 
-            if(target.getHealth() < health.get()) {
+            if(finalTarget.getHealth() < health.get()) {
                 entitiesBeingManipulated.remove(entity.getUUID());
                 stopped.set(true);
                 return;
@@ -220,7 +238,13 @@ public class PuppeteeringAbility extends Ability {
                 return;
             }
 
-            Vec3 end = target.getEyePosition();
+            if (entity instanceof ServerPlayer player) {
+                int elapsed = Math.min(totalTicks, elapsedTicks.addAndGet(2));
+                int percent = Math.min(100, Math.round(elapsed * 100.0f / totalTicks));
+                AbilityUtil.sendActionBar(player, Component.literal(percent + "%").withColor(0xFFa26fc9));
+            }
+
+            Vec3 end = finalTarget.getEyePosition();
 
             for(int i = 0; i < 3; i++) {
                 double right = i == 0 ? -2 : (i == 1 ? 1.4 : 2.2);
@@ -240,21 +264,28 @@ public class PuppeteeringAbility extends Ability {
                 }
             }
 
-            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 4, false, false, false));
-            target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 5, false, false, false));
+            finalTarget.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 4, false, false, false));
+            finalTarget.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 5, false, false, false));
 
-            health.set(target.getHealth());
+            health.set(finalTarget.getHealth());
         }, () -> {
             entitiesBeingManipulated.remove(entity.getUUID());
             if(stopped.get()) {
+                if (entity instanceof ServerPlayer player) {
+                    AbilityUtil.sendActionBar(player, Component.literal("Failed").withColor(0xFFff124d));
+                }
                 return;
+            }
+            completed.set(true);
+            if (entity instanceof ServerPlayer player) {
+                AbilityUtil.sendActionBar(player, Component.literal("Success").withColor(0xFF4CAF50));
             }
             MarionetteComponent component = entity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
             if(entity instanceof Player player && !component.isMarionette()) {
-                turnIntoMarionette(target, player);
+                turnIntoMarionette(finalTarget, player);
             }
             else
-                target.setHealth(0);
+                finalTarget.setHealth(0);
         }, (ServerLevel) level);
     }
 
@@ -274,11 +305,13 @@ public class PuppeteeringAbility extends Ability {
 
             target.setPos(pos);
             target.level().addFreshEntity(target);
+            ((BeyonderNPCEntity) target).setPersistenceRequired();
         }
         target.setHealth(target.getMaxHealth());
         if(target instanceof Mob mob) {
             mob.setTarget(null);
             mob.getNavigation().stop();
+            mob.setPersistenceRequired();
         }
         if (MarionetteUtils.turnEntityIntoMarionette(target, player)) {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned").withColor(0xa26fc9));

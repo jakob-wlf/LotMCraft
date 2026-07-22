@@ -61,6 +61,7 @@ public class CleansingAbility extends SelectableAbility {
                     .stream()
                     .map(MobEffectInstance::getEffect)
                     .filter(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL)
+                    .filter(effect -> !effect.getKey().toString().equals("cataclism:ghost_sickness"))
                     .forEach(e::removeEffect);
 
             if(e instanceof Player player) {
@@ -85,7 +86,7 @@ public class CleansingAbility extends SelectableAbility {
         entity.getActiveEffects().stream()
                 .map(MobEffectInstance::getEffect)
                 .filter(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL)
-                .toList()
+                .filter(effect -> !effect.getKey().toString().equals("cataclysm:ghost_sickness"))
                 .forEach(entity::removeEffect);
 
 

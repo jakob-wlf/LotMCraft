@@ -3,9 +3,7 @@ package de.jakob.lotm.attachments;
 import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncControllingDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncDiscernmentDataPacket;
-import jdk.jfr.Frequency;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -13,12 +11,9 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
-import org.joml.sampling.BestCandidateSampling;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DiscernmentComponent {
     private boolean isDiscerning = false;

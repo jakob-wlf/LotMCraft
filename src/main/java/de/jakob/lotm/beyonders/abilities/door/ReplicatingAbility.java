@@ -1,9 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.door;
 
+import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUseTracker;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.ApprenticeBookEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;

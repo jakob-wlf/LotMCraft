@@ -1,9 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.common.passives.FateResistanceAbility;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -94,7 +95,11 @@ public class SpiritualBaptismAbility extends SelectableAbility {
 
         LuckComponent luckComponent = target.getData(ModAttachments.LUCK_COMPONENT);
         if(luckComponent.getLuck() < 0) {
-            luckComponent.setLuck(0);
+            // Fate Resistance: only seq 1 can change this target's luck
+            int casterSeq = AbilityUtil.getSeqWithArt(caster, this);
+            if (!FateResistanceAbility.blocksLuckChange(target.getUUID(), casterSeq)) {
+                luckComponent.setLuck(0);
+            }
         }
 
         SanityComponent sanityComponent = target.getData(ModAttachments.SANITY_COMPONENT);

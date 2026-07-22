@@ -6,9 +6,9 @@ import de.jakob.lotm.entity.custom.ability_entities.door_pathway.TravelersDoorEn
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenCoordinateScreenTravelersDoorPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -117,6 +117,11 @@ public class TravelersDoorAbility extends SelectableAbility {
                 BlockPos pos = new BlockPos((int) validatedPos.x,(int) validatedPos.y,(int) validatedPos.z);
 
                 travelersDoorUsers.remove(player.getUUID());
+
+                if (de.jakob.lotm.beyonders.sefirah.SefirahCastleEventHandler.isAccommodating(player)) {
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("lotm.sefirot.sefirah_castle_spirit_world_locked"));
+                    return;
+                }
 
                 int spiritualityCost = getCostForDistance(player.position(), validatedPos);
                 if(BeyonderData.getSpirituality(player) < spiritualityCost) {

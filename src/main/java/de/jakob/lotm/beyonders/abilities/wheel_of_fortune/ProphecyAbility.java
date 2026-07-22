@@ -1,12 +1,12 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.GiantLightningEntity;
 import de.jakob.lotm.entity.custom.ability_entities.MeteorEntity;
 import de.jakob.lotm.entity.custom.ability_entities.TornadoEntity;
+import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.GiantLightningEntity;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.TsunamiEntity;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;

@@ -45,6 +45,8 @@ public class WanderingAbility extends Ability {
         List<String> dimensionIds = StreamSupport.stream(serverLevel.getServer().getAllLevels().spliterator(), false)
                 .filter(s -> !s.dimension().equals(ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY))
                 .filter(s -> !s.dimension().equals(ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY))
+                .filter(s -> !s.dimension().equals(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_DIMENSION_KEY))
+                .filter(s -> !s.dimension().equals(ModDimensions.CHAOS_SEA_DIMENSION_KEY))
                 .filter(s -> !s.dimension().equals(ModDimensions.DREAM_MAZE_DIMENSION_KEY))
                 .filter(s -> !s.dimension().equals(ModDimensions.SPACE_DIMENSION_KEY))
                 .filter(s -> !s.dimension().equals(serverLevel.dimension()))

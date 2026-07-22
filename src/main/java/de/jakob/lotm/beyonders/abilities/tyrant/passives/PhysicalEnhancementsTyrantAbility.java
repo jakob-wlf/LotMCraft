@@ -1,7 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.tyrant.passives;
 
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
-import de.jakob.lotm.util.BeyonderData;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,13 +31,15 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
             case 9 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 1),
                     new PhysicalEnhancement(EnhancementType.RESISTANCE, 1),
-                    new PhysicalEnhancement(EnhancementType.SPEED, 1)
+                    new PhysicalEnhancement(EnhancementType.SPEED, 1),
+                    new PhysicalEnhancement(EnhancementType.OXYGEN_BONUS, 1)
             );
 
             case 8 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
+                    new PhysicalEnhancement(EnhancementType.OXYGEN_BONUS,2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 5)
             );
             case 7 -> List.of(
@@ -47,7 +48,7 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
                     new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 6),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
-                    new PhysicalEnhancement(EnhancementType.OXYGEN_BONUS,1),
+                    new PhysicalEnhancement(EnhancementType.OXYGEN_BONUS,3),
                     new PhysicalEnhancement(EnhancementType.DOLPHINS_GRACE,1)
             );
 
@@ -58,7 +59,7 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
                     new PhysicalEnhancement(EnhancementType.HEALTH, 7),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION,1),
-                    new PhysicalEnhancement(EnhancementType.OXYGEN_BONUS,3),
+                    new PhysicalEnhancement(EnhancementType.OXYGEN_BONUS,4),
                     new PhysicalEnhancement(EnhancementType.DOLPHINS_GRACE,2)
             );
 
@@ -132,8 +133,4 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
         };
     }
 
-    @Override
-    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
-    }
 }

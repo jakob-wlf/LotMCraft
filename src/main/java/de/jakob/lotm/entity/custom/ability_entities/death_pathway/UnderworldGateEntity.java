@@ -1,7 +1,6 @@
 package de.jakob.lotm.entity.custom.ability_entities.death_pathway;
 
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlackHoleEntity;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;

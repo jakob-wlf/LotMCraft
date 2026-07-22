@@ -1,15 +1,12 @@
 package de.jakob.lotm.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TeamComponent;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PendingTeamInvitePacket;
-import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.TeamInviteManager;
 import de.jakob.lotm.util.helper.TeamUtils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -17,7 +14,6 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -96,13 +92,23 @@ public class TeamCommand {
         ControllingDataComponent controlling = player.getData(ModAttachments.CONTROLLING_DATA);
         if (controlling.isControlling()) {
             net.minecraft.nbt.CompoundTag bodyTag = controlling.getBodyEntity();
-            String pathway = bodyTag != null ? bodyTag.getCompound("NeoForgeData").getString("beyonder_pathway") : "";
-            int sequence = bodyTag != null ? bodyTag.getCompound("NeoForgeData").getInt("beyonder_sequence") : LOTMCraft.NON_BEYONDER_SEQ;
-            if (!pathway.equals("red_priest") || sequence > 3) {
-                source.sendFailure(Component.literal("Only Red Priest Beyonders at sequence 3 or higher can use this command."));
-                return false;
+            if (bodyTag != null && bodyTag.contains("neoforge:attachments")) {
+                net.minecraft.nbt.CompoundTag attachments = bodyTag.getCompound("neoforge:attachments");
+                if (attachments.contains("lotmcraft:beyonder_component")) {
+                    net.minecraft.nbt.CompoundTag component = attachments.getCompound("lotmcraft:beyonder_component");
+                    if (component.contains("characteristic_list")) {
+                        net.minecraft.nbt.ListTag list = component.getList("characteristic_list", net.minecraft.nbt.Tag.TAG_COMPOUND);
+                        for (int i = 0; i < list.size(); i++) {
+                            net.minecraft.nbt.CompoundTag c = list.getCompound(i);
+                            if (c.getString("pathway").equals("red_priest") && c.getInt("sequence") <= 3 && c.getInt("stack") > 0) {
+                                return true;
+                            }
+                        }
+                    }
+                }
             }
-            return true;
+            source.sendFailure(Component.literal("Only Red Priest Beyonders at sequence 3 or higher can use this command."));
+            return false;
         }
         if (!TeamUtils.isEligibleLeader(player)) {
             source.sendFailure(Component.literal("Only Red Priest Beyonders at sequence 3 or higher can use this command."));
@@ -119,7 +125,14 @@ public class TeamCommand {
         }
 
         TeamComponent leaderTeam = leader.getData(ModAttachments.TEAM_COMPONENT.get());
-        int maxSize = TeamUtils.getMaxTeamSize(BeyonderData.getSequence(leader));
+        
+        int sequence = de.jakob.lotm.util.BeyonderData.getCharList(leader).stream()
+                .filter(c -> c.pathway().equals("red_priest") && c.sequence() <= 3 && c.stack() > 0)
+                .mapToInt(de.jakob.lotm.util.playerMap.Characteristic::sequence)
+                .min()
+                .orElse(LOTMCraft.NON_BEYONDER_SEQ);
+
+        int maxSize = TeamUtils.getMaxTeamSize(sequence);
 
         if (leaderTeam.memberCount() >= maxSize) {
             source.sendFailure(Component.literal("Your team is full (" + maxSize + " members max at your sequence)."));

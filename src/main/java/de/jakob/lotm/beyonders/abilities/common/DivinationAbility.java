@@ -1,14 +1,15 @@
 package de.jakob.lotm.beyonders.abilities.common;
 
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toClient.*;
+import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import de.jakob.lotm.util.data.PlayerInfo;
+import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import de.jakob.lotm.util.scheduling.ClientScheduler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -188,6 +189,7 @@ public class DivinationAbility extends SelectableAbility {
                 .stream()
                 .filter(p -> p != player)
                 .filter(p -> !DIVINATION_IMMUNE.contains(p.getUUID()))
+                .filter(p -> !SefirotAuthorityManager.blocksConcealment(p.getUUID(), player))
                 .map(p -> new PlayerInfo(p.getUUID(), p.getGameProfile().getName()))
                 .toList();
 

@@ -1,10 +1,10 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SharedAbilitiesComponent;
 import de.jakob.lotm.attachments.TeamComponent;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -60,7 +60,7 @@ public record UseSharedAbilityPacket(String abilityId) implements CustomPacketPa
             if (reqSeq >= 0 && playerSeq > reqSeq) return;
 
             boolean isShared = isSharedAbility(serverPlayer, abilityId);
-            ability.useAbility(serverLevel, serverPlayer, true, !isShared, true);
+            ability.useAbility(serverLevel, serverPlayer, true, !isShared, true, false);
         });
     }
 

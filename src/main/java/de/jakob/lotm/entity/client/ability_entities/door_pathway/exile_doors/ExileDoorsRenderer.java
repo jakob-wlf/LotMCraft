@@ -31,23 +31,16 @@ public class ExileDoorsRenderer extends EntityRenderer<ExileDoorsEntity> {
 
         poseStack.pushPose();
 
-        float time = entity.tickCount + partialTicks;
-
-        poseStack.translate(0.0D, 0.05 * Mth.sin(time * 0.1F) + 1.75, 0.0D);
-        poseStack.mulPose(Axis.YP.rotationDegrees(.75F * Mth.sin(time * 0.2F)));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(.25F * Mth.cos(time * 0.15F)));
-
         poseStack.scale(1.5F, -1.5F, 1.5F);
 
-        float flicker = 0.8F + 0.2F * Mth.sin(time * 0.3F + entity.getId() % 10);
-        float alpha = Math.clamp(0.5F + 0.5F * flicker, 0.0F, 1.0F);
 
         RenderType renderType = petrified ? RenderType.entityTranslucent(LOTMCraft.STONE_TEXTURE) : RenderType.entityTranslucent(this.getTextureLocation(entity));
         VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
 
-        int color = ((int)(alpha * 255) << 24) | 0xFFFFFF;
 
-        this.model.renderToBuffer(poseStack, vertexConsumer, 0xF000F0, OverlayTexture.NO_OVERLAY, color);
+        float ageInTicks = entity.tickCount + partialTicks;
+        this.model.setupAnim(entity, 0, 0, ageInTicks, 0, 0);
+        this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
 
         poseStack.popPose();
 

@@ -19,6 +19,10 @@ public class ModEffects {
             () -> new AsleepEffect(MobEffectCategory.HARMFUL, 0x2E2E5C)
                     .addAttributeModifier(Attributes.MOVEMENT_SPEED, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "asleep"), -10f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)); // Dark blue color
 
+    public static final Holder<MobEffect> SLEEP_RESISTANCE = MOB_EFFECTS.register("sleep_resistabce",
+            () -> new SleepResistanceEffect(MobEffectCategory.BENEFICIAL, 0xFFFFFF)
+                    .addAttributeModifier(Attributes.MOVEMENT_SPEED, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "asleep"), -10f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+
     public static final Holder<MobEffect> MENTAL_PLAGUE = MOB_EFFECTS.register("mental_plague",
             () -> new MentalPlagueEffect(MobEffectCategory.HARMFUL, 0xf0b05d));
 
@@ -45,6 +49,9 @@ public class ModEffects {
 
     public static final Holder<MobEffect> FOOLING = MOB_EFFECTS.register("fooling",
             () -> new FoolingEffect(MobEffectCategory.HARMFUL, 0xE040FB));
+
+    public static final Holder<MobEffect> CORRUPTED = MOB_EFFECTS.register("corrupted",
+            () -> new CorruptedEffect(MobEffectCategory.HARMFUL, 0xFFFFFF));
 
     public static void register(IEventBus eventBus) {
         MOB_EFFECTS.register(eventBus);

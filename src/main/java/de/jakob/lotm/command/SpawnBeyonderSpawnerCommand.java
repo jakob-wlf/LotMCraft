@@ -14,7 +14,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.LivingEntity;
 
 public class SpawnBeyonderSpawnerCommand {
 
@@ -46,7 +45,7 @@ public class SpawnBeyonderSpawnerCommand {
             .requires(source -> source.hasPermission(2))
 
             .then(Commands.argument("triggerRadius", DoubleArgumentType.doubleArg(1.0, 128.0))
-            .then(Commands.argument("minSequence", IntegerArgumentType.integer(0, 9))
+            .then(Commands.argument("minSequence", IntegerArgumentType.integer(0, 10))
             .then(Commands.argument("pathway", StringArgumentType.string())
                 .suggests(PATHWAY_SUGGESTIONS)
 

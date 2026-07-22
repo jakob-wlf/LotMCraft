@@ -16,9 +16,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
-import static de.jakob.lotm.beyonders.abilities.visionary.TelepathyAbility.performTelepaty;
+import static de.jakob.lotm.beyonders.abilities.visionary.TelepathyAbility.performTelepathy;
 
 public class DiscernmentAbility extends ToggleAbility {
     private final HashMap<UUID, Set<Entity>> glowingEntities = new HashMap<>();
@@ -73,7 +76,7 @@ public class DiscernmentAbility extends ToggleAbility {
         PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
 
         if(lookedAt != null)
-            performTelepaty(player, lookedAt, seq);
+            performTelepathy(player, lookedAt, seq);
 
 
         AbilityUseTracker.AbilityUseRecord tracker = AbilityUseTracker.getRecentUseInArea(

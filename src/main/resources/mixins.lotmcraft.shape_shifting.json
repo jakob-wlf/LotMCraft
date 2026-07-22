@@ -7,9 +7,10 @@
   ],
   "client": [
     "AbstractClientPlayerMixin",
+    "ItemInHandRendererMixin",
     "LimbAnimatorAccessor",
     "PlayerRendererMixin",
-    "ItemInHandRendererMixin"
+    "WanderingTraderRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -2,7 +2,6 @@ package de.jakob.lotm.beyonders.abilities.darkness.passives;
 
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
-import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.HashMap;
@@ -134,8 +133,4 @@ public class PhysicalEnhancementsDarknessAbility extends PhysicalEnhancementsAbi
         };
     }
 
-    @Override
-    protected int getCurrentSequenceLevel(LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
-    }
 }

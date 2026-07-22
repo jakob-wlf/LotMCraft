@@ -3,15 +3,15 @@ package de.jakob.lotm.beyonders.abilities.death;
 import de.jakob.lotm.beyonders.abilities.common.DivinationAbility;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.util.data.PlayerSelectionWorkType;
-import de.jakob.lotm.util.data.EntityLocation;
-import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenPlayerDivinationScreenPacket;
 import de.jakob.lotm.network.packets.toClient.OpenStructureDivinationScreenPacket;
 import de.jakob.lotm.network.packets.toClient.SyncDangerPremonitionAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.EntityLocation;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.data.PlayerInfo;
+import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -115,6 +115,7 @@ public class SpiritCommunicationAbility extends SelectableAbility {
 
         List<PlayerInfo> players = server.getPlayerList().getPlayers().stream()
                 .filter(p -> p != player)
+                .filter(p -> !de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager.blocksConcealment(p.getUUID(), player))
                 .map(p -> new PlayerInfo(p.getUUID(), p.getGameProfile().getName()))
                 .toList();
 

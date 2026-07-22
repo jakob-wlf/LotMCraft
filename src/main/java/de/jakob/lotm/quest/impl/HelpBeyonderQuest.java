@@ -1,43 +1,28 @@
 package de.jakob.lotm.quest.impl;
 
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.QuestComponent;
-import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
-import de.jakob.lotm.entity.custom.goals.KillOutsideRadiusGoal;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.beyonders.potions.PotionItemHandler;
+import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.entity.custom.goals.KillOutsideRadiusGoal;
 import de.jakob.lotm.quest.Quest;
 import de.jakob.lotm.quest.QuestManager;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.monster.Husk;
-import net.minecraft.world.entity.monster.Pillager;
-import net.minecraft.world.entity.monster.Ravager;
-import net.minecraft.world.entity.monster.Skeleton;
-import net.minecraft.world.entity.monster.Spider;
-import net.minecraft.world.entity.monster.Vindicator;
-import net.minecraft.world.entity.monster.Witch;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class HelpBeyonderQuest extends Quest {
 

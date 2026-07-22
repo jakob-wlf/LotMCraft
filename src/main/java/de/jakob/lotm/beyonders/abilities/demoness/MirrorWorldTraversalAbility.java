@@ -1,9 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.demoness;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.MirrorWorldTraversalComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncMirrorWorldPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;

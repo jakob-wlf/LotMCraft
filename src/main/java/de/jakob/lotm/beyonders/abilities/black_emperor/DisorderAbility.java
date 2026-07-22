@@ -1,8 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.black_emperor;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -18,17 +20,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.effect.ModEffects;
-
-
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+
 import java.util.*;
 
-//@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class DisorderAbility extends SelectableAbility {
 
     // NBT keys — public so DistortionAbility.breakBonds can clear them
@@ -308,6 +308,9 @@ public class DisorderAbility extends SelectableAbility {
     @SubscribeEvent
     public static void onAbilityUsed(AbilityUsedEvent event) {
         LivingEntity entity = event.getEntity();
+        if(entity == null){
+            return;
+        }
         if (!entity.getPersistentData().getBoolean(DISORDERED_PERCEPTION_KEY)) return;
         if (!(entity.level() instanceof ServerLevel serverLevel)) return;
 
@@ -332,7 +335,7 @@ public class DisorderAbility extends SelectableAbility {
         );
 
         if (randomAbility != null) {
-            randomAbility.useAbility(serverLevel, entity, true, true, true);
+            randomAbility.useAbility(serverLevel, entity, true, true, true, false);
         }
 
         int remaining = charges - 1;

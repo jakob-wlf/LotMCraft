@@ -2,7 +2,6 @@ package de.jakob.lotm.entity.client.spirits.translucent_wizard;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.custom.spirits.SpiritBlueWizardEntity;
 import de.jakob.lotm.entity.custom.spirits.SpiritTranslucentWizardEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;

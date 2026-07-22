@@ -1,11 +1,11 @@
 package de.jakob.lotm.beyonders.abilities.core.interaction;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.DoorAuthorityData;
 import de.jakob.lotm.beyonders.abilities.abyss.DefilingSeedAbility;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.tyrant.TorrentialDownpourAbility;
-import de.jakob.lotm.attachments.DoorAuthorityData;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.server.level.ServerLevel;

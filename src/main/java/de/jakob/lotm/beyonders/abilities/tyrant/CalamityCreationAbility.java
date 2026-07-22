@@ -1,12 +1,12 @@
 package de.jakob.lotm.beyonders.abilities.tyrant;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ActiveShaderComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.TornadoEntity;
 import de.jakob.lotm.entity.custom.ability_entities.VolcanoEntity;

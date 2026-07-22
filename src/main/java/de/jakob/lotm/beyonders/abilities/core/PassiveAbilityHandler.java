@@ -1,6 +1,15 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedConcealmentAbility;
+import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedDivinationAbility;
+import de.jakob.lotm.beyonders.abilities.common.passives.FateResistanceAbility;
+import de.jakob.lotm.beyonders.abilities.fool.passives.MiracleOfResurrectionAbility;
+import de.jakob.lotm.beyonders.abilities.fool.passives.PaperDaggersAbility;
+import de.jakob.lotm.beyonders.abilities.fool.passives.PhysicalEnhancementsFoolAbility;
+import de.jakob.lotm.beyonders.abilities.fool.passives.PuppeteeringEnhancementsAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.Passives.PhysicalEnhancementsTwilightGiantAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.Passives.WeaponMasteryPassiveAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.FireResistanceAbyssAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.PhysicalEnhancementsAbyssAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.WordImmunityAbility;
@@ -21,7 +30,8 @@ import de.jakob.lotm.beyonders.abilities.door.passives.SpiritWorldAwarenessAbili
 import de.jakob.lotm.beyonders.abilities.door.passives.VoidImmunityAbility;
 import de.jakob.lotm.beyonders.abilities.error.passives.PassiveTheftAbility;
 import de.jakob.lotm.beyonders.abilities.error.passives.PhysicalEnhancementsErrorAbility;
-import de.jakob.lotm.beyonders.abilities.fool.passives.*;
+import de.jakob.lotm.beyonders.abilities.fool.passives.AcrobaticsAbility;
+import de.jakob.lotm.beyonders.abilities.fool.passives.DangerPremonitionAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.ChaosHuntingAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.EnhancedMentalAttributesAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.OrderJusticiarAbility;
@@ -64,6 +74,8 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_VISIONARY = ITEMS.registerItem("physical_enhancements_visionary_ability", PhysicalEnhancementsVisionaryAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_WHEEL_OF_FORTUNE = ITEMS.registerItem("physical_enhancements_wheel_of_fortune_ability", PhysicalEnhancementsWheelOfFortuneAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_JUSTICIAR = ITEMS.registerItem("physical_enhancements_justiciar_ability", PhysicalEnhancementsJusticiarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_Twilight_Giant = ITEMS.registerItem("physical_enhancements_twilight_giant_ability", PhysicalEnhancementsTwilightGiantAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
 
     public static final DeferredItem<Item> ORDER_JUSTICIAR = ITEMS.registerItem("order_justiciar_ability", OrderJusticiarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> ENHANCED_MENTAL_ATTRIBUTES_JUSTICIAR = ITEMS.registerItem("enhanced_mental_attributes_justiciar_ability", EnhancedMentalAttributesAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
@@ -109,6 +121,16 @@ public class PassiveAbilityHandler {
 
     public static final DeferredItem<Item> META_AWARENESS = ITEMS.registerItem("meta_awareness_ability", MetaAwarenessAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PURE_IDEALISM = ITEMS.registerItem("pure_idealism_ability", PureIdealism::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
+    public static final DeferredItem<Item> WEAPON_MASTERY_PASSIVE = ITEMS.registerItem("weapon_mastery_ability", WeaponMasteryPassiveAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
+    // Sefirot passives
+    public static final DeferredItem<Item> ELEVATED_DIVINATION_PASSIVE = ITEMS.registerItem("elevated_divination_ability", ElevatedDivinationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static final DeferredItem<Item> ELEVATED_CONCEALMENT_PASSIVE = ITEMS.registerItem("elevated_concealment_ability", ElevatedConcealmentAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    // General tier passives
+    public static final DeferredItem<Item> FATE_RESISTANCE_PASSIVE = ITEMS.registerItem("fate_resistance_ability", FateResistanceAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+
 
     public static void registerAbilities(IEventBus eventBus) {
         ITEMS.register(eventBus);

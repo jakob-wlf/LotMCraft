@@ -1,16 +1,16 @@
 package de.jakob.lotm.beyonders.abilities.fool;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.CopiedInventoryComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.HistoricalVoidComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.network.packets.toClient.OpenHistoricalVoidBorrowingScreenPacket;
-import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
-import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.Config;
 import de.jakob.lotm.util.helper.AllyUtil;
@@ -554,13 +554,18 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         // Try direct UUID lookup first
         Entity entity = level.getEntity(entityUUID);
 
-        if(entity != null && entity.getPersistentData().getBoolean("VoidSummoned")) {
-            long entitySummonTime = entity.getPersistentData().getLong("VoidSummonTime");
-            UUID ownerId = entity.getPersistentData().getUUID("VoidSummonOwner");
+        if(entity != null) {
+            CompoundTag entityData = entity.getPersistentData();
+            if(entityData.getBoolean("VoidSummoned")
+                    && entityData.contains("VoidSummonTime", Tag.TAG_LONG)
+                    && entityData.contains("VoidSummonOwner", Tag.TAG_INT_ARRAY)) {
+                long entitySummonTime = entityData.getLong("VoidSummonTime");
+                UUID ownerId = entityData.getUUID("VoidSummonOwner");
 
-            if(entitySummonTime == summonTime && ownerId.equals(player.getUUID())) {
-                entity.remove(Entity.RemovalReason.DISCARDED);
-                removed = true;
+                if(entitySummonTime == summonTime && ownerId.equals(player.getUUID())) {
+                    entity.remove(Entity.RemovalReason.DISCARDED);
+                    removed = true;
+                }
             }
         }
 
@@ -568,9 +573,12 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         if(!removed) {
             AABB searchBox = new AABB(player.blockPosition()).inflate(100);
             List<Entity> entities = level.getEntities((Entity)null, searchBox, e -> {
-                if(e.getPersistentData().getBoolean("VoidSummoned")) {
-                    long entitySummonTime = e.getPersistentData().getLong("VoidSummonTime");
-                    UUID ownerId = e.getPersistentData().getUUID("VoidSummonOwner");
+                CompoundTag entityData = e.getPersistentData();
+                if(entityData.getBoolean("VoidSummoned")
+                        && entityData.contains("VoidSummonTime", Tag.TAG_LONG)
+                        && entityData.contains("VoidSummonOwner", Tag.TAG_INT_ARRAY)) {
+                    long entitySummonTime = entityData.getLong("VoidSummonTime");
+                    UUID ownerId = entityData.getUUID("VoidSummonOwner");
                     return entitySummonTime == summonTime && ownerId.equals(player.getUUID());
                 }
                 return false;
@@ -782,7 +790,9 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                 CompoundTag tag = specificInfo.originalBeforeBorrowing();
                 if (tag.getBoolean("WalkStolen")) {
                     AttributeInstance movementSpeed = player.getAttribute(Attributes.MOVEMENT_SPEED);
-                    movementSpeed.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk"), -100, AttributeModifier.Operation.ADD_VALUE));
+                    if(!movementSpeed.hasModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk"))) {
+                        movementSpeed.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk"), -100, AttributeModifier.Operation.ADD_VALUE));
+                    }
                     ServerScheduler.scheduleDelayed(20 * 20, () -> {
                         AttributeInstance movementSpeedInner = player.getAttribute(Attributes.MOVEMENT_SPEED);
 
@@ -1063,12 +1073,20 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         if (entity.tickCount % 600 != 0) return;
         if (level.isClientSide || !(level instanceof ServerLevel serverLevel)) return;
 
-        if(entity.getPersistentData().getBoolean("VoidSummoned")) {
-            if (entity.getPersistentData().getLong("VoidSummonTime") < serverLevel.getGameTime()) {
-                entity.remove(Entity.RemovalReason.DISCARDED);
-            }
-            if (serverLevel.getPlayerByUUID(entity.getPersistentData().getUUID("VoidSummonOwner")) instanceof ServerPlayer serverPlayer) {
-                decrementSummonedCount(serverPlayer, entity.getPersistentData().getLong("VoidSummonTime"));
+        CompoundTag data = entity.getPersistentData();
+        if (!data.getBoolean("VoidSummoned")) {
+            return;
+        }
+
+        boolean hasSummonTime = data.contains("VoidSummonTime", Tag.TAG_LONG);
+        if (hasSummonTime && data.getLong("VoidSummonTime") < serverLevel.getGameTime()) {
+            entity.remove(Entity.RemovalReason.DISCARDED);
+        }
+
+        if (hasSummonTime && data.contains("VoidSummonOwner", Tag.TAG_INT_ARRAY)) {
+            Player owner = serverLevel.getPlayerByUUID(data.getUUID("VoidSummonOwner"));
+            if (owner instanceof ServerPlayer serverPlayer) {
+                decrementSummonedCount(serverPlayer, data.getLong("VoidSummonTime"));
             }
         }
     }

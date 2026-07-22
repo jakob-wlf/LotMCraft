@@ -1,4 +1,4 @@
-// 1.21.1	2026-06-17T13:50:52.0839012	Item Models: lotmcraft
+// 1.21.1	2026-06-29T15:43:41.0750263	Item Models: lotmcraft
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 d79ff3aedef37faf54603234b4a98f66afb8991f assets/lotmcraft/models/item/abyss_uniqueness.json
 4e7075a5dc34701bda2cb5db71047fdcdb9a3de6 assets/lotmcraft/models/item/acrobatics_ability.json
@@ -65,6 +65,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/chaos_hunt
 e1396d2298b4fd0656171a2e981e1eabd2f16fa2 assets/lotmcraft/models/item/chaos_hunter_characteristic.json
 a40b41d0f0d432ce5dc55afd236726ac24e6b6b7 assets/lotmcraft/models/item/chaos_hunter_potion.json
 e117fead2babe5a18d8583ee00df43a6a22a3d46 assets/lotmcraft/models/item/chaos_hunting_justiciar_ability.json
+38aa5c4f01f27574fd85d25b171f03843172faa0 assets/lotmcraft/models/item/city_map.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/classical_alchemist.json
 e90ee5d776f7b0a3fc4cb8dcd0e2d7c499dbff4b assets/lotmcraft/models/item/classical_alchemist_characteristic.json
 fbd38936d8ca772d2f628b7a10e1fcccae80453b assets/lotmcraft/models/item/classical_alchemist_potion.json
@@ -473,6 +474,7 @@ cc5b98b6b28588c85a8d1630a9edf1bf253f5276 assets/lotmcraft/models/item/undead_ign
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/undying.json
 1d12da569d45b1ca02f7363182037f2c7ef04263 assets/lotmcraft/models/item/undying_characteristic.json
 933a6209a63ff56e170e5b63115e38b3e226b4b9 assets/lotmcraft/models/item/undying_potion.json
+6585ab6173ce0a29879110368b5e3a26366a2f99 assets/lotmcraft/models/item/uniqueness_map.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/unshadowed.json
 99cff99f102c193420828c35a0e5ec906cc5fbc3 assets/lotmcraft/models/item/unshadowed_characteristic.json
 7ccce73dc8adb99f9b4c611fa6c78aa3e1b15c6f assets/lotmcraft/models/item/unshadowed_potion.json

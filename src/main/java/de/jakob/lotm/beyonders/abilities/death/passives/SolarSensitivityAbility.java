@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.death.passives;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.damage.ModDamageTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -37,6 +38,11 @@ public class SolarSensitivityAbility extends PassiveAbilityItem {
         if (level.isDay()) {
             entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 30, 0, false, false, true));
         }
+    }
+
+    @Override
+    public void onPassiveAbilityRemoved(LivingEntity entity, ServerLevel serverLevel) {
+        affectedEntities.remove(entity);
     }
 
     @SubscribeEvent

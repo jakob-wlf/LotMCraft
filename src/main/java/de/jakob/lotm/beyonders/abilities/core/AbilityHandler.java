@@ -1,14 +1,33 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.beyonders.abilities.abyss.*;
-import de.jakob.lotm.beyonders.abilities.common.*;
-import de.jakob.lotm.beyonders.abilities.justiciar.*;
+import de.jakob.lotm.beyonders.abilities.black_emperor.*;
 import de.jakob.lotm.beyonders.abilities.darkness.*;
 import de.jakob.lotm.beyonders.abilities.death.*;
 import de.jakob.lotm.beyonders.abilities.demoness.*;
 import de.jakob.lotm.beyonders.abilities.door.*;
 import de.jakob.lotm.beyonders.abilities.error.*;
 import de.jakob.lotm.beyonders.abilities.fool.*;
+import de.jakob.lotm.beyonders.abilities.justiciar.*;
+import de.jakob.lotm.beyonders.abilities.mother.*;
+import de.jakob.lotm.beyonders.abilities.red_priest.*;
+import de.jakob.lotm.beyonders.abilities.sefirah.AboveTheSequenceAuthorityAbility;
+import de.jakob.lotm.beyonders.abilities.sefirah.SefirotAuthorityAbility;
+import de.jakob.lotm.beyonders.abilities.sun.*;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.CombatMasteryAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.SupernaturalResistanceAbility;
+import de.jakob.lotm.beyonders.abilities.tyrant.*;
+import de.jakob.lotm.beyonders.abilities.visionary.*;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.*;
+import de.jakob.lotm.beyonders.abilities.abyss.*;
+import de.jakob.lotm.beyonders.abilities.common.*;
+import de.jakob.lotm.beyonders.abilities.darkness.*;
+import de.jakob.lotm.beyonders.abilities.death.*;
+import de.jakob.lotm.beyonders.abilities.demoness.*;
+import de.jakob.lotm.beyonders.abilities.door.*;
+import de.jakob.lotm.beyonders.abilities.error.*;
+import de.jakob.lotm.beyonders.abilities.fool.*;
+import de.jakob.lotm.beyonders.abilities.justiciar.*;
 import de.jakob.lotm.beyonders.abilities.mother.*;
 import de.jakob.lotm.beyonders.abilities.red_priest.*;
 import de.jakob.lotm.beyonders.abilities.sun.*;
@@ -311,18 +330,18 @@ public class AbilityHandler {
         abilities.add(new TimeManipulationAbility("time_manipulation_ability"));
 
         // BLACK EMPEROR PATHWAY
-//        abilities.add(new Eloquence("eloquence_ability"));
-//        abilities.add(new MausoleumDomainAbility("mausoleum_domain_ability"));
-//        abilities.add(new BriberAbility("briber_ability"));
-//        abilities.add(new WeaknessDetectionAbility("weakness_detection_ability"));
-//        abilities.add(new DistortionAbility("distortion_ability"));
-//        abilities.add(new CorrosionAbility("corrosion_ability"));
-//        abilities.add(new DisorderAbility("disorder_ability"));
-//        abilities.add(new CommandingPresenceAbility("commanding_presence_ability"));
-//        abilities.add(new ExploitAbility("exploit_ability"));
-//        abilities.add(new BestowmentAbility("bestowment_ability"));
-//        abilities.add(new MagnifyAbility("magnify_ability"));
-//        abilities.add(new CommandingOrdersAbility("commanding_orders_ability"));
+        abilities.add(new Eloquence("eloquence_ability"));
+        abilities.add(new MausoleumDomainAbility("mausoleum_domain_ability"));
+        abilities.add(new BriberAbility("briber_ability"));
+        abilities.add(new WeaknessDetectionAbility("weakness_detection_ability"));
+        abilities.add(new DistortionAbility("distortion_ability"));
+        abilities.add(new CorrosionAbility("corrosion_ability"));
+        abilities.add(new DisorderAbility("disorder_ability"));
+        abilities.add(new CommandingPresenceAbility("commanding_presence_ability"));
+        abilities.add(new ExploitAbility("exploit_ability"));
+        abilities.add(new BestowmentAbility("bestowment_ability"));
+        abilities.add(new MagnifyAbility("magnify_ability"));
+        abilities.add(new CommandingOrdersAbility("commanding_orders_ability"));
 
         // DEATH PATHWAY
         abilities.add(new EyeOfDeathAbility("eye_of_death_ability"));
@@ -341,6 +360,27 @@ public class AbilityHandler {
         abilities.add(new HandOfDeathAbility("hand_of_death_ability"));
         abilities.add(new DeathFlameAbility("death_flame_ability"));
         abilities.add(new NationOfTheDeadAbility("nation_of_the_dead_ability"));
+        abilities.add(new WordOfSpiritAbility("word_of_spirit_ability"));
+
+        //Twilight Giant Pathway
+        abilities.add(new CombatMasteryAbility("combat_mastery_ability"));
+        abilities.add(new SupernaturalResistanceAbility("supernatural_resistance_ability"));
+
+        // Sefirot Abilities
+        abilities.add(new SefirotAuthorityAbility("sefirot_authority_ability"));
+        abilities.add(new AboveTheSequenceAuthorityAbility("above_the_sequence_authority_ability"));
+
+
+
+
+
+
+
+
+
+
+
+
 
         //abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
     }

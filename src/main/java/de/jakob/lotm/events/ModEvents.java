@@ -3,37 +3,38 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TeamComponent;
+import de.jakob.lotm.beyonders.abilities.tyrant.LightningStormAbility;
 import de.jakob.lotm.command.*;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.ability_entities.death_pathway.underworld_gate.UnderworldGateModel;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.apprentice_door.ApprenticeDoorModel;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.book.ApprenticeBookModel;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.exile_doors.ExileDoorsModel;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.return_portal.HighSequenceDoorsModel;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.travelers_door.TravelersDoorModel;
+import de.jakob.lotm.entity.client.ability_entities.justiciar_pathway.judgment_sword.JudgmentSwordModel;
 import de.jakob.lotm.entity.client.ability_entities.meteor.MeteorModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area.BloomingAreaModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinModel;
+import de.jakob.lotm.entity.client.ability_entities.mother_pathway.desolate_area.DesolateAreaModel;
+import de.jakob.lotm.entity.client.ability_entities.red_priest_pathway.war_banner.WarBannerModel;
+import de.jakob.lotm.entity.client.ability_entities.sun_pathway.justice_sword.JusticeSwordModel;
+import de.jakob.lotm.entity.client.ability_entities.tornado.TornadoModel;
+import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.tsunami.TsunamiModel;
+import de.jakob.lotm.entity.client.ability_entities.volcano.VolcanoModel;
+import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.cycle_of_fate.CycleOfFateModel;
+import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.misfortune_words.MisfortuneWordsModel;
+import de.jakob.lotm.entity.client.beyonder_npc.QuestMarkerModel;
 import de.jakob.lotm.entity.client.beyonder_npc.TradeIndicatorModel;
+import de.jakob.lotm.entity.client.fire_raven.FireRavenModel;
+import de.jakob.lotm.entity.client.projectiles.fireball.FireballModel;
+import de.jakob.lotm.entity.client.projectiles.flaming_spear.FlamingSpearProjectileModel;
+import de.jakob.lotm.entity.client.projectiles.frost_spear.FrostSpearProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.paper_dagger.PaperDaggerProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.spear_of_destruction.SpearOfDestructionProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.spear_of_light.SpearOfLightProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.unshadowed_spear.UnshadowedSpearProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.wind_blade.WindBladeModel;
-import de.jakob.lotm.entity.client.ability_entities.red_priest_pathway.war_banner.WarBannerModel;
-import de.jakob.lotm.entity.client.ability_entities.tornado.TornadoModel;
-import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.tsunami.TsunamiModel;
-import de.jakob.lotm.entity.client.ability_entities.volcano.VolcanoModel;
-import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.cycle_of_fate.CycleOfFateModel;
-import de.jakob.lotm.entity.client.ability_entities.mother_pathway.desolate_area.DesolateAreaModel;
-import de.jakob.lotm.entity.client.ability_entities.door_pathway.exile_doors.ExileDoorsModel;
-import de.jakob.lotm.entity.client.ability_entities.door_pathway.return_portal.HighSequenceDoorsModel;
-import de.jakob.lotm.entity.client.ability_entities.justiciar_pathway.judgment_sword.JudgmentSwordModel;
-import de.jakob.lotm.entity.client.ability_entities.sun_pathway.justice_sword.JusticeSwordModel;
-import de.jakob.lotm.entity.client.projectiles.fireball.FireballModel;
-import de.jakob.lotm.entity.client.projectiles.flaming_spear.FlamingSpearProjectileModel;
-import de.jakob.lotm.entity.client.projectiles.frost_spear.FrostSpearProjectileModel;
-import de.jakob.lotm.entity.client.ability_entities.door_pathway.apprentice_door.ApprenticeDoorModel;
-import de.jakob.lotm.entity.client.ability_entities.door_pathway.book.ApprenticeBookModel;
-import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.misfortune_words.MisfortuneWordsModel;
-import de.jakob.lotm.entity.client.beyonder_npc.QuestMarkerModel;
-import de.jakob.lotm.entity.client.fire_raven.FireRavenModel;
 import de.jakob.lotm.entity.client.spirits.bizarro_bane.SpiritBizarroBaneModel;
 import de.jakob.lotm.entity.client.spirits.blue_wizard.SpiritBlueWizardModel;
 import de.jakob.lotm.entity.client.spirits.bubbles.SpiritBubblesModel;
@@ -42,20 +43,23 @@ import de.jakob.lotm.entity.client.spirits.ghost.SpiritGhostModel;
 import de.jakob.lotm.entity.client.spirits.malmouth.SpiritMalmouthModel;
 import de.jakob.lotm.entity.client.spirits.spirit_bane.SpiritBaneModel;
 import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentWizardModel;
-import de.jakob.lotm.entity.custom.*;
+import de.jakob.lotm.entity.custom.AvatarEntity;
+import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.entity.custom.DamageTrackerEntity;
+import de.jakob.lotm.entity.custom.FireRavenEntity;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlinkAfterimageEntity;
 import de.jakob.lotm.entity.custom.spirits.*;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket;
 import de.jakob.lotm.rendering.models.door.DoorHighMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.door.DoorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.fool.FoolMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.red_priest.RedPriestMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.sun.SunMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.tyrant.TyrantMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.wheel_of_fortune.WheelOfFortuneMythicalCreatureModel;
 import de.jakob.lotm.util.helper.TeamUtils;
-import de.jakob.lotm.rendering.models.door.DoorMythicalCreatureModel;
-import de.jakob.lotm.rendering.models.tyrant.TyrantMythicalCreatureModel;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
@@ -65,10 +69,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import de.jakob.lotm.beyonders.abilities.tyrant.LightningStormAbility;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -229,6 +233,7 @@ public class ModEvents {
         AllyCommand.register(event.getDispatcher());
         EnablePlayerAbilitiesCommand.register(event.getDispatcher());
         SanityCommand.register(event.getDispatcher());
+        CorruptionCommand.register(event.getDispatcher());
         DigestionCommand.register(event.getDispatcher());
         SpawnBeyonderCommand.register(event.getDispatcher());
         QuestCommand.register(event.getDispatcher());
@@ -243,6 +248,14 @@ public class ModEvents {
         UniquenessCommand.register(event.getDispatcher());
         SefirotCommand.register(event.getDispatcher());
         ResetCapCommand.register(event.getDispatcher());
+        SequenceSlotsCommand.register(event.getDispatcher());
+        AncientTraderCommand.register(event.getDispatcher());
+        FragmentCommand.register(event.getDispatcher());
+        GreatOldOneCommand.register(event.getDispatcher());
+        SlotsCommand.register(event.getDispatcher());
+        BlasphemyCommand.register(event.getDispatcher());
+        PreyCommand.register(event.getDispatcher());
+        ImprintCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent
@@ -283,6 +296,14 @@ public class ModEvents {
 
         // Sync uniqueness data on login
         PacketHandler.syncUniquenessToPlayer(player);
+
+        // Sync any registered LEODERO trigger word so the screen pre-fills it
+        de.jakob.lotm.attachments.EnvisionBlasphemyTriggerData triggerData =
+                de.jakob.lotm.attachments.EnvisionBlasphemyTriggerData.get(server);
+        String word = triggerData.getTriggerWord(player.getUUID());
+        PacketHandler.sendToPlayer(player,
+                new de.jakob.lotm.network.packets.toClient.SyncEnvisionTriggerPacket(
+                        word != null ? word : ""));
 
         TeamComponent team = player.getData(ModAttachments.TEAM_COMPONENT.get());
 
@@ -335,4 +356,21 @@ public class ModEvents {
 
         }
     }*/
+
+    @SubscribeEvent
+    public static void onEnvisionBlasphemyChat(ServerChatEvent event) {
+        ServerPlayer speaker = event.getPlayer();
+        String message = event.getMessage().getString();
+
+        de.jakob.lotm.attachments.EnvisionBlasphemyTriggerData triggerData =
+                de.jakob.lotm.attachments.EnvisionBlasphemyTriggerData.get(speaker.getServer());
+
+        // findMatches returns all caster UUIDs whose registered word matches this message.
+        // The trigger persists — fires every time the word is said.
+        java.util.List<UUID> matched = triggerData.findMatches(message);
+        for (UUID casterUUID : matched) {
+            de.jakob.lotm.network.packets.toServer.RequestEnvisionBlasphemyPacket
+                    .fireLeoderoOn(speaker, casterUUID, null);
+        }
+    }
 }

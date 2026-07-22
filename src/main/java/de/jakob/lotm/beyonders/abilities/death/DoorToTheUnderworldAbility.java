@@ -20,21 +20,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.Drowned;
-import net.minecraft.world.entity.monster.Husk;
-import net.minecraft.world.entity.monster.Skeleton;
-import net.minecraft.world.entity.monster.Stray;
-import net.minecraft.world.entity.monster.WitherSkeleton;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DoorToTheUnderworldAbility extends SelectableAbility {
@@ -78,13 +69,13 @@ public class DoorToTheUnderworldAbility extends SelectableAbility {
     }
 
     @Override
-    public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements) {
+    public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements, boolean isCopied) {
         // Release sub-ability bypasses cooldown and spirituality cost
-        if (getSelectedAbilityIndex(entity.getUUID()) == 1) {
+        if (getSelectedAbilityIndex(entity.getUUID()) == 2) {
             onAbilityUse(serverLevel, entity);
             return;
         }
-        super.useAbility(serverLevel, entity, consumeSpirituality, hasToHaveAbility, hasToMeetRequirements);
+        super.useAbility(serverLevel, entity, consumeSpirituality, hasToHaveAbility, hasToMeetRequirements, isCopied);
     }
 
     @Override

@@ -1,7 +1,5 @@
 package de.jakob.lotm.attachments;
 
-import com.mojang.datafixers.util.Pair;
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
@@ -11,8 +9,6 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 
@@ -20,7 +16,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 public class VirtualPersonaComponent {
     private List<VirtualPersona> affectedBy = new LinkedList<>();
