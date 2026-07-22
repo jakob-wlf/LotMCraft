@@ -118,7 +118,7 @@ public class IllusionaryTortureDevicesAbility extends SelectableAbility {
                     double damage = DamageLookup.lookupDamage(7, 0.2) * (int )Math.max (multiplier(entity),1);
                     target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) damage);
                     target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 200, 0));
-                    applySanity(entity, target, 0.12f);
+                    applySanity(entity, target, 0.04f);
 
                     serverLevel.playSound(null, target.blockPosition(), SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 1.0f, 0.8f);
                     serverLevel.playSound(null, target.blockPosition(), SoundEvents.BLAZE_HURT, SoundSource.PLAYERS, 0.6f, 1.2f);
