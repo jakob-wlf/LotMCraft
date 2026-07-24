@@ -686,6 +686,11 @@ public class PacketHandler {
                 BecomeBeyonderPacket::handle
         );
         registrar.playToServer(
+                ConsumeCharacteristicPacket.TYPE,
+                ConsumeCharacteristicPacket.STREAM_CODEC,
+                ConsumeCharacteristicPacket::handle
+        );
+        registrar.playToServer(
                 ApplyBlessingPacket.TYPE,
                 ApplyBlessingPacket.STREAM_CODEC,
                 ApplyBlessingPacket::handle

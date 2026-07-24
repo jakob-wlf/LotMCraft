@@ -22,6 +22,7 @@ import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.Quest.QuestAcceptanceScreen;
 import de.jakob.lotm.gui.custom.SelectionGui.*;
 import de.jakob.lotm.network.packets.toClient.*;
+import de.jakob.lotm.network.packets.toServer.ConsumeCharacteristicPacket;
 import de.jakob.lotm.quest.Quest;
 import de.jakob.lotm.quest.QuestRegistry;
 import de.jakob.lotm.rendering.*;
@@ -36,6 +37,7 @@ import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -43,6 +45,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -852,5 +855,18 @@ public class ClientHandler {
 
     public static void openSlateHalfPathwayScreen(de.jakob.lotm.item.custom.BlasphemySlateHalfItem.HalfType halfType) {
         Minecraft.getInstance().setScreen(new de.jakob.lotm.gui.custom.BlasphemySlate.SlateHalfPathwayScreen(halfType));
+    }
+
+    public static void openCharacteristicConfirmation(InteractionHand hand) {
+        Minecraft.getInstance().setScreen(new ConfirmScreen(
+                (confirmed) -> {
+                    if (confirmed) {
+                        de.jakob.lotm.network.PacketHandler.sendToServer(new ConsumeCharacteristicPacket(hand));
+                    }
+                    Minecraft.getInstance().setScreen(null);
+                },
+                Component.translatable("lotm.confirm_consumption.title"),
+                Component.translatable("lotm.confirm_consumption.description")
+        ));
     }
 }

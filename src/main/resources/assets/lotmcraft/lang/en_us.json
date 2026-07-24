@@ -34,6 +34,8 @@
   "creativetab.lotmcraft.beyonder_ingredients_tab": "Potion Ingredients",
   "creativetab.lotmcraft.beyonder_recipes_tab": "Potion Recipes",
   "creativetab.lotmcraft.beyonder_characteristic_tab": "Beyonder Characteristics",
+  "lotm.confirm_consumption.title": "Confirm Consumption",
+  "lotm.confirm_consumption.description": "Are you sure you want to consume this Beyonder Characteristic? This action is irreversible.",
 
   "_comment000": "Key Binds-------------------------------------------------------------------------------------",
   "key.beyonders.pathway_infos": "Open Introspect",

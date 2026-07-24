@@ -273,9 +273,15 @@ public class KeyInputHandler {
     @SubscribeEvent
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
         ItemStack stack = event.getItemStack();
-        if (!(stack.getItem() instanceof BlasphemySlateHalfItem half)) return;
-        event.setCanceled(true);
-        de.jakob.lotm.network.packets.handlers.ClientHandler.openSlateHalfPathwayScreen(half.getHalfType());
+        if (stack.getItem() instanceof BlasphemySlateHalfItem half) {
+            event.setCanceled(true);
+            de.jakob.lotm.network.packets.handlers.ClientHandler.openSlateHalfPathwayScreen(half.getHalfType());
+            return;
+        }
+        if (stack.getItem() instanceof de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem) {
+            event.setCanceled(true);
+            de.jakob.lotm.network.packets.handlers.ClientHandler.openCharacteristicConfirmation(event.getHand());
+        }
     }
 
     @SubscribeEvent
