@@ -2,6 +2,7 @@ package de.jakob.lotm.entity.custom.ability_entities.mother_pathway;
 
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.RegionSnapshot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -47,10 +48,13 @@ public class BloomingAreaEntity extends Entity {
     private int lastBonemealApplication = 0;
     private static final int BONEMEAL_INTERVAL = 20; // Apply bonemeal every second
 
+    private final RegionSnapshot snapshot;
+
     public BloomingAreaEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
         this.noPhysics = true;
         this.noCulling = true;
+        this.snapshot = new RegionSnapshot(level, blockPosition(), RADIUS);
     }
 
     @Override
@@ -194,6 +198,7 @@ public class BloomingAreaEntity extends Entity {
                         && aboveState.isAir()) {
 
                     BlockPos spawnPos = mutablePos.above();
+                    snapshot.captureBlock(spawnPos);
 
                     if (type.equals("mushroom")) {
                         // Spawn red or brown mushroom
@@ -280,6 +285,8 @@ public class BloomingAreaEntity extends Entity {
         }
 
         if(bonemealableBlock.isBonemealSuccess(serverLevel, serverLevel.random, blockPos, blockState)) {
+            // Saplings can grow into multi-block trees affecting a wide area, so snapshot the surroundings first
+            snapshot.captureSphere(serverLevel, blockPos, 8);
             bonemealableBlock.performBonemeal(serverLevel, serverLevel.random, blockPos, blockState);
         }
     }
@@ -293,6 +300,7 @@ public class BloomingAreaEntity extends Entity {
 
         // Try to grow if not at max height (3 blocks)
         if (mutablePos.getY() - blockPos.getY() < 2 && serverLevel.getBlockState(mutablePos.above()).isAir()) {
+            snapshot.captureBlock(mutablePos.above());
             serverLevel.setBlock(mutablePos.above(), Blocks.SUGAR_CANE.defaultBlockState(), 3);
         }
     }
@@ -379,9 +387,11 @@ public class BloomingAreaEntity extends Entity {
             BlockState state = entry.getValue();
 
             if (state.getBlock() instanceof CropBlock crop && level.getBlockState(pos).getBlock() instanceof CropBlock) {
+                snapshot.captureBlock(pos);
                 level.setBlock(pos, state.trySetValue(CropBlock.AGE, crop.getMaxAge()), 2);
             } else if (state.getBlock() instanceof SaplingBlock sapling && level.getBlockState(pos).getBlock() instanceof SaplingBlock) {
-                // Force sapling to grow into a tree
+                // Force sapling to grow into a tree; trees can span a wide area, so snapshot the surroundings first
+                snapshot.captureSphere(level, pos, 8);
                 sapling.advanceTree(level, pos, state, level.random);
             }
         }
@@ -418,5 +428,13 @@ public class BloomingAreaEntity extends Entity {
     @Override
     protected boolean canAddPassenger(Entity passenger) {
         return false;
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        if (this.level() instanceof ServerLevel serverLevel) {
+            snapshot.restore(serverLevel);
+        }
+        super.remove(reason);
     }
 }

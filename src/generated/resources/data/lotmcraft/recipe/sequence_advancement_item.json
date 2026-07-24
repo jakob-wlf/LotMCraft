@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "lotmcraft:beyonder_potions"
+    },
+    {
+      "tag": "lotmcraft:beyonder_potions"
+    },
+    {
+      "tag": "lotmcraft:beyonder_potions"
+    },
+    {
+      "tag": "lotmcraft:beyonder_potions"
+    },
+    {
+      "tag": "lotmcraft:beyonder_potions"
+    },
+    {
+      "tag": "lotmcraft:beyonder_potions"
+    },
+    {
+      "tag": "lotmcraft:beyonder_potions"
+    },
+    {
+      "tag": "lotmcraft:beyonder_potions"
+    },
+    {
+      "tag": "lotmcraft:beyonder_potions"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "lotmcraft:sequence_advancement_item"
+  }
+}

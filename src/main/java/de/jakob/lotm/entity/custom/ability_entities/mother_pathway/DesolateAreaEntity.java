@@ -3,6 +3,7 @@ package de.jakob.lotm.entity.custom.ability_entities.mother_pathway;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.DamageLookup;
+import de.jakob.lotm.util.helper.RegionSnapshot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -39,6 +40,7 @@ public class DesolateAreaEntity extends Entity {
     private int tickCounter = 0;
     private int corruptionProgress = 0;
     private Random random = new Random();
+    private RegionSnapshot snapshot;
 
     // Block conversion maps
     private static final Map<Block, Block> BLOCK_CONVERSIONS = new HashMap<>();
@@ -63,6 +65,7 @@ public class DesolateAreaEntity extends Entity {
         super(entityType, level);
         this.noPhysics = true;
         this.noCulling = true;
+        this.snapshot = new RegionSnapshot(level, blockPosition(), RADIUS);
     }
 
     @Override
@@ -162,6 +165,8 @@ public class DesolateAreaEntity extends Entity {
     private void corruptBlock(ServerLevel level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         Block block = state.getBlock();
+
+        snapshot.captureBlock(pos);
 
         // Convert grass blocks using Perlin-like noise for natural patches
         if (block == Blocks.GRASS_BLOCK ||
@@ -387,5 +392,13 @@ public class DesolateAreaEntity extends Entity {
     @Override
     protected boolean canAddPassenger(Entity passenger) {
         return false;
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        if (this.level() instanceof ServerLevel serverLevel) {
+            snapshot.restore(serverLevel);
+        }
+        super.remove(reason);
     }
 }

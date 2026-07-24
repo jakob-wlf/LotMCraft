@@ -1,6 +1,7 @@
 package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.data.ModTags;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
 import net.minecraft.core.HolderLookup;
@@ -85,6 +86,19 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('C', Items.PURPLE_CARPET)
                 .define('W', Ingredient.of(ItemTags.PLANKS))
                 .unlockedBy("has_planks", has(ItemTags.PLANKS))
+                .save(recipeOutput);
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.SEQUENCE_ADVANCEMENT_ITEM.get())
+                .requires(ModTags.Items.BEYONDER_POTIONS)
+                .requires(ModTags.Items.BEYONDER_POTIONS)
+                .requires(ModTags.Items.BEYONDER_POTIONS)
+                .requires(ModTags.Items.BEYONDER_POTIONS)
+                .requires(ModTags.Items.BEYONDER_POTIONS)
+                .requires(ModTags.Items.BEYONDER_POTIONS)
+                .requires(ModTags.Items.BEYONDER_POTIONS)
+                .requires(ModTags.Items.BEYONDER_POTIONS)
+                .requires(ModTags.Items.BEYONDER_POTIONS)
+                .unlockedBy("has_beyonder_potion", has(ModTags.Items.BEYONDER_POTIONS))
                 .save(recipeOutput);
     }
 }

@@ -30,6 +30,8 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.CRYSTAL_BALL.get());
                         output.accept(ModItems.CANE.get());
                         output.accept(ModItems.GUIDING_BOOK.get());
+                        output.accept(ModItems.CHARACTERISTIC_ESSENCE.get());
+                        output.accept(ModItems.SEQUENCE_ADVANCEMENT_ITEM.get());
                         output.accept(ModItems.MYSTICAL_RING.get());
                         output.accept(ModBlocks.BREWING_CAULDRON.get());
                         output.accept(ModBlocks.VOID);

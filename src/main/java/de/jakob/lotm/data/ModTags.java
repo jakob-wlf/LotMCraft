@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.levelgen.structure.Structure;
 
 public class ModTags {
@@ -12,5 +13,10 @@ public class ModTags {
             TagKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "beyonder_hideout"));
         public static final TagKey<Structure> UNIQUENESS_TEMPLE =
             TagKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "uniqueness_temple"));
+    }
+
+    public static class Items {
+        public static final TagKey<Item> BEYONDER_POTIONS =
+            TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "beyonder_potions"));
     }
 }

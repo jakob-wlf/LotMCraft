@@ -384,9 +384,11 @@ public class AdvancementUtil {
     }
 
     private static double calculateFailureChanceForFirstTime(int sequence, float sanity) {
+        if (sequence >= 7) return 0.0;
+
         if (sanity < 0.2f) return 1.0;
 
-        double baseChance = sequence >= 9 ? 0.0 : sequence >= 7 ? 0.85 : 1.0;
+        double baseChance = 1.0;
         double sanityPenalty = sanity < 0.8f ? (0.8f - sanity) * 0.4 : 0;
 
         return Math.min(1.0, Math.max(0.0, baseChance + sanityPenalty));

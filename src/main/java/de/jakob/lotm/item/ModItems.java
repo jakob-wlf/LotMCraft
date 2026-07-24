@@ -83,6 +83,12 @@ public class ModItems {
                     .stacksTo(1)
             )
     );
+    public static final Supplier<Item> CHARACTERISTIC_ESSENCE = ITEMS.register("characteristic_essence",
+            () -> new CharacteristicEssenceItem(new Item.Properties())
+    );
+    public static final Supplier<Item> SEQUENCE_ADVANCEMENT_ITEM = ITEMS.register("sequence_advancement_item",
+            () -> new SequenceAdvancementItem(new Item.Properties())
+    );
 
     public static final DeferredHolder<Item, Item> SEALED_ARTIFACT = ITEMS.register("sealed_artifact",
             () -> new SealedArtifactItem(new Item.Properties()

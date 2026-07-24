@@ -41,7 +41,7 @@ public class IllusionaryTortureDevicesAbility extends SelectableAbility {
     private static final DustParticleOptions PSYCHIC_DUST     = new DustParticleOptions(new Vector3f(0.9f, 0.7f, 1.0f), 1.0f);
 
     public IllusionaryTortureDevicesAbility(String id) {
-        super(id, 1.5f);
+        super(id, 5f);
         canBeUsedByNPC = true;
     }
 
@@ -118,7 +118,7 @@ public class IllusionaryTortureDevicesAbility extends SelectableAbility {
                     double damage = DamageLookup.lookupDamage(7, 0.2) * (int )Math.max (multiplier(entity),1);
                     target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) damage);
                     target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 200, 0));
-                    applySanity(entity, target, 0.12f);
+                    applySanity(entity, target, 0.05f);
 
                     serverLevel.playSound(null, target.blockPosition(), SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 1.0f, 0.8f);
                     serverLevel.playSound(null, target.blockPosition(), SoundEvents.BLAZE_HURT, SoundSource.PLAYERS, 0.6f, 1.2f);
@@ -190,7 +190,7 @@ public class IllusionaryTortureDevicesAbility extends SelectableAbility {
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 120, 1));
         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 120, 1));
         target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 0));
-        applySanity(entity, target, 0.1f);
+        applySanity(entity, target, 0.05f);
 
         serverLevel.playSound(null, entity.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.5f, 0.6f);
         serverLevel.playSound(null, target.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.0f, 1.4f);
