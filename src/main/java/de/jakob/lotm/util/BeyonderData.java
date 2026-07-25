@@ -546,8 +546,9 @@ public class BeyonderData {
         if (entity.level().isClientSide) {
             return ClientBeyonderCache.getHighestSequence(entity.getUUID()); // Client cache should already have highest if we sync it correctly
         }
-        var data = playerMap.get(entity);
-        return data.map(StoredData::getHighestSequence).orElse(10);
+
+        BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
+        return component.getSequence();
     }
 
     public static String getHighestPathway(LivingEntity entity) {

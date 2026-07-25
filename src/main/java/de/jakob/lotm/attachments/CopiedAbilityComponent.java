@@ -43,6 +43,10 @@ public class CopiedAbilityComponent implements INBTSerializable<CompoundTag> {
         if (abilities.size() >= MAX_ABILITIES) {
             abilities.remove(0);
         }
+        CopiedAbilityData duplicate = abilities.stream().filter(a -> a.abilityId.equals(data.abilityId)).findFirst();
+        if(duplicate != null){
+            data = new CopiedAbilityData(duplicate.abilityId, duplicate.copyType, duplicate.remainingUses + data.remainingUses, duplicate.originalOwnerUUID);
+        }
         abilities.add(data);
     }
 
