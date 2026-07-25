@@ -256,6 +256,7 @@ public class ModEvents {
         BlasphemyCommand.register(event.getDispatcher());
         PrayCommand.register(event.getDispatcher());
         ImprintCommand.register(event.getDispatcher());
+        TestCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent
