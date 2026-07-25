@@ -58,6 +58,6 @@ public class SefrotInvasionAbility extends Ability {
     @Override
     public ResourceLocation getTextureLocation() {
         return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
-                "textures/abilities/sefirot_authority_ability.png");
+                "textures/abilities/sefrot_invasion_ability.png");
     }
 }

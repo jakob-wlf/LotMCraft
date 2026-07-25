@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.abyss;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.beyonders.sefirah.SefrotInvasionManager;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -154,6 +155,12 @@ public class MaliceSeedAbility extends Ability {
         if (!(targetEntity instanceof LivingEntity target) || !target.isAlive()) {
             casterTarget.remove(casterUUID);
             seedGrowth.remove(targetUUID);
+            return;
+        }
+
+        if (caster instanceof net.minecraft.server.level.ServerPlayer player
+                && SefrotInvasionManager.forfeitForResurrection(player)) {
+            event.setCanceled(true);
             return;
         }
 

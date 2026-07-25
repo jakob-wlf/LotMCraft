@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.GatheringData;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.SefrotInvasionManager;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -51,6 +52,7 @@ public class GatheringEventHandler {
      * Authorised entries:
      *   1. The sefirah_castle owner (uses U-key teleport).
      *   2. Players already marked as currently gathered (pulled in by CALL action).
+    *   3. Players participating in an active Sefrot invasion of the castle.
      *
      * Everyone else is immediately returned to overworld spawn with a warning.
      */
@@ -61,8 +63,10 @@ public class GatheringEventHandler {
 
         boolean isOwner    = "sefirah_castle".equals(SefirahHandler.getClaimedSefirot(player));
         boolean isGathered = GatheringData.isGathered(player.getUUID());
+        boolean isInvading = SefrotInvasionManager.isAuthorizedInvasionEntry(
+            player, ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY);
 
-        if (isOwner || isGathered) return;
+        if (isOwner || isGathered || isInvading) return;
 
         // Unauthorised — teleport back to overworld spawn
         player.sendSystemMessage(Component.literal(

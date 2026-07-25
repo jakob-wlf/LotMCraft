@@ -87,6 +87,9 @@ public class ChaosSeaEventHandler {
         // The owner may always enter their own dimension
         if (SEFIROT_ID.equals(SefirahHandler.getClaimedSefirot(player))) return;
 
+        // An active invader may enter only the Sefrot targeted by their invasion
+        if (SefrotInvasionManager.isAuthorizedInvasionEntry(player, target)) return;
+
         // Gathering members (blessed by the owner) may freely enter and exit
         UUID ownerUUID = SefirotData.get(player.server).getHolderOf(SEFIROT_ID);
         if (ownerUUID != null && GatheringData.get(player.server).isMember(ownerUUID, player.getUUID())) return;

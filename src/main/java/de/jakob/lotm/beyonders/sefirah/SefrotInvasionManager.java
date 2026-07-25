@@ -127,6 +127,41 @@ public final class SefrotInvasionManager {
         return ACTIVE_INVASIONS.containsKey(playerId);
     }
 
+    /** Include this check in new Sefrot dimension entry guards alongside their normal authorization rules. */
+    public static boolean isAuthorizedInvasionEntry(ServerPlayer player, ResourceKey<Level> targetDimension) {
+        Invasion invasion = ACTIVE_INVASIONS.get(player.getUUID());
+        return invasion != null && invasion.dimension().equals(targetDimension);
+    }
+
+    public static boolean forfeitForResurrection(ServerPlayer player) {
+        Invasion invasion = ACTIVE_INVASIONS.get(player.getUUID());
+        if (invasion == null) return false;
+
+        ServerLocation returnLocation = SefirotData.get(player.server).getReturnLocationForPlayer(player);
+        finishInvasion(player.server, invasion, player.getUUID(), "attempted to resurrect");
+
+        player.setHealth(player.getMaxHealth());
+        player.deathTime = 0;
+        player.hurtTime = 0;
+        player.invulnerableTime = 0;
+        player.fallDistance = 0;
+
+        if (returnLocation != null && !returnLocation.getLevel().dimension().equals(invasion.dimension())) {
+            Vec3 position = returnLocation.getPosition();
+            player.teleportTo(returnLocation.getLevel(), position.x, position.y, position.z,
+                    player.getYRot(), player.getXRot());
+        } else {
+            ServerLevel overworld = player.server.overworld();
+            Vec3 spawn = overworld.getSharedSpawnPos().getCenter();
+            player.teleportTo(overworld, spawn.x, spawn.y, spawn.z, player.getYRot(), player.getXRot());
+        }
+
+        player.sendSystemMessage(Component.literal(
+                "Resurrection is forbidden during a Sefrot invasion. You have been defeated.")
+                .withStyle(ChatFormatting.DARK_RED));
+        return true;
+    }
+
     @SubscribeEvent
     public static void onPlayerTick(EntityTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player) || player.tickCount % 20 != 0) return;

@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.common;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
@@ -15,6 +16,7 @@ import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -33,6 +35,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DivinationAbility extends SelectableAbility {
     public static final Set<UUID> dangerPremonitionActive = new HashSet<>();
     public static final Set<UUID> DIVINATION_IMMUNE = Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+    private static final Set<ResourceLocation> UNDIVINABLE_STRUCTURES = Set.of(
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "fragment_structure"),
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "river_of_eternal_darkness_well")
+    );
 
     public DivinationAbility(String id) {
         super(id, 1);
@@ -206,8 +212,9 @@ public class DivinationAbility extends SelectableAbility {
                 .registry(Registries.STRUCTURE).orElseThrow();
 
         List<String> structureIds = registry.holders()
-                .map(holder -> holder.key().location().toString())
-                .filter(id -> !id.contains("uniqueness"))
+            .map(holder -> holder.key().location())
+            .filter(DivinationAbility::isStructureDivinable)
+            .map(ResourceLocation::toString)
                 .sorted()
                 .toList();
 
@@ -215,6 +222,11 @@ public class DivinationAbility extends SelectableAbility {
                 player,
                 new OpenStructureDivinationScreenPacket(structureIds)
         );
+    }
+
+    public static boolean isStructureDivinable(ResourceLocation structureId) {
+        return !structureId.getPath().contains("uniqueness")
+                && !UNDIVINABLE_STRUCTURES.contains(structureId);
     }
 
     private void antiDivination(Level level, LivingEntity entity) {

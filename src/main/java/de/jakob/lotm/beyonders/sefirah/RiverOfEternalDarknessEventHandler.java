@@ -87,6 +87,7 @@ public class RiverOfEternalDarknessEventHandler {
      *   1. The River sefirot owner (uses U-key teleport or River's Call).
      *   2. Players trapped by River's Call (already teleported in by executeRiversCall).
      *   3. Players currently marked as the owner's invited audience.
+    *   4. Players participating in an active invasion of the River.
      *
      * Everyone else is immediately returned to overworld spawn with a warning.
      */
@@ -108,7 +109,8 @@ public class RiverOfEternalDarknessEventHandler {
         boolean isOwner    = isRiverOwner(player);
         boolean isTrapped  = DeathImprintData.get(player.server).isTrappedInRiver(player.getUUID());
         boolean isAudience = RiverBlessingManager.isInAudience(player.getUUID());
-        boolean isInvading = SefrotInvasionManager.isActiveParticipant(player.getUUID());
+        boolean isInvading = SefrotInvasionManager.isAuthorizedInvasionEntry(
+            player, de.jakob.lotm.dimension.ModDimensions.RIVER_OF_ETERNAL_DARKNESS_DIMENSION_KEY);
 
         if (isOwner || isTrapped || isAudience || isInvading) return;
 
