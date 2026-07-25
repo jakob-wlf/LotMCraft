@@ -85,7 +85,7 @@ public record RequestRiverBlessingScreenPacket() implements CustomPacketPayload 
             }
 
             List<UUID> blessed = new ArrayList<>(alreadyBlessed);
-            int maxBlessings = RiverBlessingManager.getMaxBlessings(BeyonderData.getSequence(player));
+            int maxBlessings = RiverBlessingManager.getMaxActiveBlessingSlots(BeyonderData.getSequence(player));
 
             player.openMenu(
                     new SimpleMenuProvider(

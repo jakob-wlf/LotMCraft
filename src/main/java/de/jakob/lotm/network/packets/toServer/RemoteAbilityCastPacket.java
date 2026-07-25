@@ -67,7 +67,8 @@ public record RemoteAbilityCastPacket(UUID targetUUID) implements CustomPacketPa
                             }
 
                             // Use the ability - usually this calls getTargetEntity/Location internally
-                            ability.useAbility(serverLevel, serverPlayer, true, true, true, false);
+                            boolean isCopied = isCopied(entry);
+                            ability.useAbility(serverLevel, serverPlayer, true, true, true, isCopied);
                         } finally {
                             // Always clear the remote target
                             AbilityUtil.clearRemoteCastTargetUUID();
@@ -76,6 +77,11 @@ public record RemoteAbilityCastPacket(UUID targetUUID) implements CustomPacketPa
                 }
             }
         });
+    }
+
+    private static boolean isCopied(String entry) {
+        String[] parts = entry.split(":");
+        return parts.length >= 3 && parts[2].equals("copied");
     }
 
     private static int getIndex(String s) {

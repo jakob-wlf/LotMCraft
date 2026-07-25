@@ -36,6 +36,8 @@ public class SefirotData extends SavedData {
     private final HashMap<String, Long> originalOwnerSecondsOnline = new HashMap<>();
     /** sefirot name → total game-seconds the current non-original owner has been online reducing it. */
     private final HashMap<String, Long> currentOwnerSecondsOnline = new HashMap<>();
+    /** sefirot name → real seconds the current non-original owner has been offline reducing it. */
+    private final HashMap<String, Long> currentOwnerSecondsOffline = new HashMap<>();
     /** sefirot name → UUID of original owner when a reclaim is pending (original owner was offline). */
     private final HashMap<String, UUID> pendingReclaims = new HashMap<>();
     /**
@@ -43,6 +45,8 @@ public class SefirotData extends SavedData {
      * last seen online. Used to accumulate imprint growth while the original owner is offline.
      */
     private final HashMap<String, Long> originalOwnerLastEpoch = new HashMap<>();
+    /** sefirot name → epoch-second when the current non-original owner was last seen online. */
+    private final HashMap<String, Long> currentOwnerLastEpoch = new HashMap<>();
 
     public static SefirotData get(MinecraftServer server) {
         DimensionDataStorage storage = server.overworld().getDataStorage();
@@ -170,7 +174,10 @@ public class SefirotData extends SavedData {
         mentalImprintPercent.remove(sefirot);
         originalOwnerSecondsOnline.remove(sefirot);
         currentOwnerSecondsOnline.remove(sefirot);
+        currentOwnerSecondsOffline.remove(sefirot);
         pendingReclaims.remove(sefirot);
+        originalOwnerLastEpoch.remove(sefirot);
+        currentOwnerLastEpoch.remove(sefirot);
         setDirty();
     }
 
@@ -263,6 +270,43 @@ public class SefirotData extends SavedData {
         return gained;
     }
 
+    /** Keeps the offline-reduction clock fresh while the current non-original owner is online. */
+    public void updateCurrentOwnerEpoch(String sefirot) {
+        currentOwnerLastEpoch.put(sefirot, System.currentTimeMillis() / 1000L);
+        setDirty();
+    }
+
+    /**
+     * Applies offline reduction at one imprint point per four real hours, retaining partial time
+     * and respecting the established 10% imprint floor.
+     *
+     * @return the number of imprint-percentage points removed from offline time.
+     */
+    public int applyOfflineCurrentOwnerTime(String sefirot) {
+        Long lastEpoch = currentOwnerLastEpoch.get(sefirot);
+        if (lastEpoch == null) {
+            updateCurrentOwnerEpoch(sefirot);
+            return 0;
+        }
+
+        long now = System.currentTimeMillis() / 1000L;
+        long delta = Math.max(0L, now - lastEpoch);
+        delta = Math.min(delta, 30L * 24L * 3600L);
+        if (delta == 0L) return 0;
+
+        long prev = currentOwnerSecondsOffline.getOrDefault(sefirot, 0L);
+        long next = prev + delta;
+        int elapsedPoints = (int) (next / 14_400L - prev / 14_400L);
+        int current = mentalImprintPercent.getOrDefault(sefirot, 0);
+        int reduced = Math.min(elapsedPoints, Math.max(0, current - 10));
+
+        currentOwnerSecondsOffline.put(sefirot, next);
+        if (reduced > 0) mentalImprintPercent.put(sefirot, current - reduced);
+        updateCurrentOwnerEpoch(sefirot);
+        setDirty();
+        return reduced;
+    }
+
     /** Returns all sefirot names for which {@code uuid} is the original first owner. */
     public List<String> getSefirotOwnedByFirst(UUID uuid) {
         List<String> result = new ArrayList<>();
@@ -275,6 +319,8 @@ public class SefirotData extends SavedData {
     /** Resets the current-owner reduction counter (call when a new non-original owner takes the sefirot). */
     public void resetCurrentOwnerSeconds(String sefirot) {
         currentOwnerSecondsOnline.remove(sefirot);
+        currentOwnerSecondsOffline.remove(sefirot);
+        currentOwnerLastEpoch.remove(sefirot);
         setDirty();
     }
 
@@ -375,6 +421,15 @@ public class SefirotData extends SavedData {
         }
         tag.put("currentOwnerSecondsOnline", currSecondsList);
 
+        ListTag currOfflineSecondsList = new ListTag();
+        for (Map.Entry<String, Long> entry : currentOwnerSecondsOffline.entrySet()) {
+            CompoundTag e = new CompoundTag();
+            e.putString("Sefirot", entry.getKey());
+            e.putLong("Seconds", entry.getValue());
+            currOfflineSecondsList.add(e);
+        }
+        tag.put("currentOwnerSecondsOffline", currOfflineSecondsList);
+
         ListTag pendingReclaimsList = new ListTag();
         for (Map.Entry<String, UUID> entry : pendingReclaims.entrySet()) {
             CompoundTag e = new CompoundTag();
@@ -392,6 +447,15 @@ public class SefirotData extends SavedData {
             lastEpochList.add(e);
         }
         tag.put("originalOwnerLastEpoch", lastEpochList);
+
+        ListTag currentOwnerEpochList = new ListTag();
+        for (Map.Entry<String, Long> entry : currentOwnerLastEpoch.entrySet()) {
+            CompoundTag e = new CompoundTag();
+            e.putString("Sefirot", entry.getKey());
+            e.putLong("Epoch", entry.getValue());
+            currentOwnerEpochList.add(e);
+        }
+        tag.put("currentOwnerLastEpoch", currentOwnerEpochList);
 
         return tag;
     }
@@ -458,6 +522,14 @@ public class SefirotData extends SavedData {
             }
         }
 
+        if (tag.contains("currentOwnerSecondsOffline")) {
+            ListTag list = tag.getList("currentOwnerSecondsOffline", Tag.TAG_COMPOUND);
+            for (int i = 0; i < list.size(); i++) {
+                CompoundTag e = list.getCompound(i);
+                data.currentOwnerSecondsOffline.put(e.getString("Sefirot"), e.getLong("Seconds"));
+            }
+        }
+
         if (tag.contains("pendingReclaims")) {
             ListTag list = tag.getList("pendingReclaims", Tag.TAG_COMPOUND);
             for (int i = 0; i < list.size(); i++) {
@@ -471,6 +543,14 @@ public class SefirotData extends SavedData {
             for (int i = 0; i < list.size(); i++) {
                 CompoundTag e = list.getCompound(i);
                 data.originalOwnerLastEpoch.put(e.getString("Sefirot"), e.getLong("Epoch"));
+            }
+        }
+
+        if (tag.contains("currentOwnerLastEpoch")) {
+            ListTag list = tag.getList("currentOwnerLastEpoch", Tag.TAG_COMPOUND);
+            for (int i = 0; i < list.size(); i++) {
+                CompoundTag e = list.getCompound(i);
+                data.currentOwnerLastEpoch.put(e.getString("Sefirot"), e.getLong("Epoch"));
             }
         }
 

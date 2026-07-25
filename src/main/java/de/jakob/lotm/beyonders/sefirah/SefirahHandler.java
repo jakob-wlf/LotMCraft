@@ -59,9 +59,9 @@ public class SefirahHandler {
             // apply the initial corruption burst and reset their reduction counter.
             UUID firstOwner = data.getFirstOwner(sefirot);
             if (!player.getUUID().equals(firstOwner)) {
+                data.resetCurrentOwnerSeconds(sefirot);
                 int imprint = data.getMentalImprint(sefirot);
                 if (imprint > 0) {
-                    data.resetCurrentOwnerSeconds(sefirot);
                     SefirotImprintEventHandler.applyInitialImprintCorruption(player, imprint);
                 }
             }
@@ -69,6 +69,7 @@ public class SefirahHandler {
 
         // Grant Sefirot Authority ability to anyone who owns a sefirot
         if (hasSefirot(player)) {
+            removeSefrotInvasionAbility(player);
             AbilityWheelHelper.addAbility(player, "sefirot_authority_ability");
             SefirotAuthorityManager.updatePlayerAuthority(player);
         }
@@ -78,6 +79,11 @@ public class SefirahHandler {
 
     public static boolean hasSefirot(ServerPlayer player) {
         return !SefirotData.get(player.server).getClaimedSefirot(player.getUUID()).isEmpty();
+    }
+
+    public static void removeSefrotInvasionAbility(ServerPlayer player) {
+        AbilityWheelHelper.removeAbility(player, "sefrot_invasion_ability");
+        AbilityBarHelper.removeAbility(player, "sefrot_invasion_ability");
     }
 
     public static String getSefirot(ServerPlayer player){
@@ -98,6 +104,18 @@ public class SefirahHandler {
         RiverBlessingManager.clearAudience(player.server);
         // Clear all ability seals that this sefirot owner had placed
         DeathImprintData.get(player.server).clearAllSealedAbilitiesAndUnapply(player.server);
+    }
+
+    public static void transferOwnership(ServerPlayer winner, @Nullable ServerPlayer loser, String sefirot) {
+        if (loser != null && sefirot.equals(getClaimedSefirot(loser))) {
+            unclaimSefirot(loser);
+        } else {
+            SefirotData.get(winner.server).unclaimAllByString(sefirot);
+        }
+        if (hasSefirot(winner)) {
+            unclaimSefirot(winner);
+        }
+        claimSefirot(winner, sefirot, true);
     }
 
     public static void teleportToSefirot(ServerPlayer player) {
@@ -175,6 +193,8 @@ public class SefirahHandler {
                         90,
                         0);
 
+                    SefrotInvasionManager.recordOwnerEntry(player);
+
                 if(playTeleportEffect) {
                     EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 24, -57, 0, sefirotLevel);
                 }
@@ -187,11 +207,12 @@ public class SefirahHandler {
                 }
 
                 player.teleportTo(riverLevel,
-                        -101,
-                        76,
-                        -538,
+                        RiverBlessingManager.AUDIENCE_X,
+                        RiverBlessingManager.AUDIENCE_Y,
+                        RiverBlessingManager.AUDIENCE_Z,
                         0,
                         0);
+                    SefrotInvasionManager.recordOwnerEntry(player);
             }
             case "chaos_sea" -> {
                 ServerLevel chaosSeaLevel = player.serverLevel().getServer().getLevel(
@@ -206,6 +227,8 @@ public class SefirahHandler {
                         299,
                         -90,
                         0);
+
+                    SefrotInvasionManager.recordOwnerEntry(player);
 
                 if (playTeleportEffect) {
                     EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, chaosSeaLevel);

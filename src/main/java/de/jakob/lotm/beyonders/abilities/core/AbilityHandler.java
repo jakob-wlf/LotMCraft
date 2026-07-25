@@ -57,6 +57,7 @@ public class AbilityHandler {
         abilities.add(new AngelAuthorityAbility("angel_authority_ability"));
         abilities.add(new AngelFlightAbility("angel_authority_flight"));
         abilities.add(new MythicalCreatureFormAbility("mythical_creature_form_ability"));
+        abilities.add(new SefrotInvasionAbility("sefrot_invasion_ability"));
 
         // SUN PATHWAY
         abilities.add(new HolySongAbility("holy_song_ability"));

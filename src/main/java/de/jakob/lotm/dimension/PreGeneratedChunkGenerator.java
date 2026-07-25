@@ -3,6 +3,7 @@ package de.jakob.lotm.dimension;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import de.jakob.lotm.fluid.ModFluids;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -34,6 +35,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
 public class PreGeneratedChunkGenerator extends ChunkGenerator {
+    private static final String RIVER_REGION_PATH = "data/lotmcraft/dimension_data/river_of_eternal_darkness/";
+
     public static final MapCodec<PreGeneratedChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
                     BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource),
@@ -245,7 +248,9 @@ public class PreGeneratedChunkGenerator extends ChunkGenerator {
             for (int j = 0; j < palette.size(); j++) {
                 CompoundTag blockTag = palette.getCompound(j);
                 String blockName = blockTag.getString("Name");
-                BlockState state = parseBlockState(blockName, blockTag);
+                BlockState state = RIVER_REGION_PATH.equals(regionPath) && "minecraft:water".equals(blockName)
+                        ? ModFluids.DROPS_OF_ETERNAL_DARKNESS_SOURCE.get().defaultFluidState().createLegacyBlock()
+                        : parseBlockState(blockName, blockTag);
                 paletteArray[j] = state != null ? state : Blocks.AIR.defaultBlockState();
             }
 

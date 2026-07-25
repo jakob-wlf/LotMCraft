@@ -7,6 +7,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.SefrotConvergenceHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.StoredData;
 import net.minecraft.commands.CommandSourceStack;
@@ -102,7 +103,39 @@ public class SefirotCommand {
                 .then(clear())
                 .then(imprint())
         );
+                dispatcher.register(Commands.literal("sefrot")
+                                .requires(source -> source.hasPermission(2))
+                                .then(convergence())
+                );
     }
+
+        private static LiteralArgumentBuilder<CommandSourceStack> convergence() {
+                return Commands.literal("convergence")
+                                .executes(context -> {
+                                        CommandSourceStack source = context.getSource();
+                                        ServerPlayer player = source.getPlayerOrException();
+                                        SefrotConvergenceHandler.ConvergenceResult result =
+                                                        SefrotConvergenceHandler.triggerManualConvergence(player);
+
+                                        return switch (result) {
+                                                case SUCCESS -> {
+                                                        source.sendSuccess(() -> Component.literal("Manual Sefrot convergence triggered."), false);
+                                                        yield 1;
+                                                }
+                                                case NO_PIECES -> {
+                                                        source.sendFailure(Component.literal(
+                                                                        "You are not carrying a Sefrot piece associated with your pathway."));
+                                                        yield 0;
+                                                }
+                                                case NO_TARGET -> {
+                                                        source.sendFailure(Component.literal(
+                                                                        "No online player in this dimension carries a missing piece of that Sefrot."));
+                                                        yield 0;
+                                                }
+                                                case CHANCE_FAILED -> 0;
+                                        };
+                                });
+        }
 
     // ── /sefirot imprint ──────────────────────────────────────────────────────
 

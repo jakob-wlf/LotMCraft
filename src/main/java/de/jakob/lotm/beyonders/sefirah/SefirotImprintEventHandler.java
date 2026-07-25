@@ -25,7 +25,7 @@ import java.util.UUID;
  * while holding it returns the Sefirot to the original owner.
  *
  * <p>Imprint growth (original owner): +1% per real-time hour whether online OR offline.
- * <p>Imprint reduction (non-original owner): −1% per real-time hour ONLY while online.
+ * <p>Imprint reduction (non-original owner): -1% per online hour and -0.25% per offline hour.
  * <p>Floor: the imprint can never drop below 10% once it has been established.
  *
  * <p>Corruption values:
@@ -90,6 +90,7 @@ public class SefirotImprintEventHandler {
         } else if (imprint > 0) {
             // Non-original owner: apply passive corruption and tick their reduction counter
             // At 100% imprint: 0.001f/sec = 1% corruption every 10 seconds, scaling with imprint.
+            data.updateCurrentOwnerEpoch(sefirot);
             float passiveCorruption = imprint * 0.00001f;
             CorruptionComponent corruptComp = player.getData(ModAttachments.CORRUPTION_COMPONENT);
             corruptComp.increaseCorruptionAndSync(passiveCorruption, player);
@@ -133,6 +134,21 @@ public class SefirotImprintEventHandler {
         if (server == null) return;
 
         SefirotData data = SefirotData.get(server);
+
+        String heldSefirot = data.getClaimedSefirot(player.getUUID());
+        if (heldSefirot != null && !heldSefirot.isEmpty()) {
+            UUID firstOwner = data.getFirstOwner(heldSefirot);
+            if (firstOwner != null && !player.getUUID().equals(firstOwner)) {
+                int reduced = data.applyOfflineCurrentOwnerTime(heldSefirot);
+                if (reduced > 0) {
+                    int newImprint = data.getMentalImprint(heldSefirot);
+                    player.sendSystemMessage(Component.literal(
+                            "While you were away, your hold eroded the mental imprint by " + reduced
+                                    + "% ... (" + newImprint + "% remaining)")
+                            .withStyle(ChatFormatting.GOLD));
+                }
+            }
+        }
 
         // Apply offline imprint growth for any sefirot this player originally claimed.
         for (String sefirot : data.getSefirotOwnedByFirst(player.getUUID())) {

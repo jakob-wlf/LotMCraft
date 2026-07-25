@@ -26,6 +26,11 @@ public class SefirotAuthorityEventHandler {
         if (entity.level().isClientSide()) return;
         if (player.tickCount % 20 != 0) return;
         if (!SefirahHandler.hasSefirot(player)) return;
+        if (SefrotInvasionManager.isDefenderLocked(player)) {
+            SefirotAuthorityManager.SEFIROT_DIVINATION_IMMUNE.remove(player.getUUID());
+            SefirotAuthorityManager.RIVER_CONCEALMENT_ACTIVE.remove(player.getUUID());
+            return;
+        }
 
         SefirotAuthorityManager.updatePlayerAuthority(player);
     }
