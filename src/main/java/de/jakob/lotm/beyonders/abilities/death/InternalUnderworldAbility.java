@@ -90,6 +90,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
             "ally_ability",
             "spirit_vision_ability",
             "spirit_world_traversal_ability",
+                "sefrot_invasion_ability",
             "mythical_creature_form_ability"
     );
     // Base passive timings; scaled per sequence below.

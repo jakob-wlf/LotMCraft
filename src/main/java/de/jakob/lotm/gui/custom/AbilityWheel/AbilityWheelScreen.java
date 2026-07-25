@@ -84,7 +84,10 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
         guiGraphics.fill(x + size - borderWidth, y, x + size, y + size, borderColor);
 
         try {
-            ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/abilities/" + baseId + ".png");
+            Ability ability = LOTMCraft.abilityHandler.getById(baseId);
+            ResourceLocation texture = ability != null
+                    ? ability.getTextureLocation()
+                    : ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/abilities/" + baseId + ".png");
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, texture);
 

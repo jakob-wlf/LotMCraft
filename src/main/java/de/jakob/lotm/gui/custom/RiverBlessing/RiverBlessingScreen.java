@@ -121,10 +121,8 @@ public class RiverBlessingScreen extends AbstractContainerScreen<RiverBlessingMe
     private void updateButtonStates() {
         boolean hasTarget  = selectedUUID != null;
         boolean isBlessed  = hasTarget && menu.getBlessed().contains(selectedUUID);
-        int     usedSlots  = menu.getBlessed().size();
-        int     maxSlots   = menu.getMaxBlessings();
 
-        blessButton.active   = hasTarget && !isBlessed && usedSlots < maxSlots;
+        blessButton.active   = hasTarget && !isBlessed;
         unblessButton.active = hasTarget && isBlessed;
     }
 
@@ -148,9 +146,9 @@ public class RiverBlessingScreen extends AbstractContainerScreen<RiverBlessingMe
                leftPos + DETAIL_X - 5, topPos + PANEL_HEIGHT - 8, 0xFF333355);
 
         // Slot counter (left) | Prayers Received header (right of divider) — on same sub-header row
-        int used = menu.getBlessed().size();
+        int used = Math.min(menu.getBlessed().size(), menu.getMaxBlessings());
         int max  = menu.getMaxBlessings();
-        Component slotText = Component.literal("Blessing Slots: " + used + " / " + max)
+        Component slotText = Component.literal("Active Effects: " + used + " / " + max)
                 .withStyle(used >= max ? ChatFormatting.RED : ChatFormatting.GRAY);
         g.drawString(font, slotText, leftPos + DETAIL_X, topPos + 22, 0xFFAAAAAA, false);
 

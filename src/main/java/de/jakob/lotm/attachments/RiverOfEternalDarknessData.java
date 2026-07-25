@@ -19,6 +19,7 @@ public class RiverOfEternalDarknessData extends SavedData {
     private BlockPos wellPos = null;
     private String wellDimension = "";
     private boolean riverBuilt = false;
+    private final Set<Long> convertedWaterChunks = new HashSet<>();
 
     /** owner UUID → set of blessed player UUIDs (persistent) */
     private final Map<UUID, Set<UUID>> blessingsByOwner = new HashMap<>();
@@ -26,7 +27,7 @@ public class RiverOfEternalDarknessData extends SavedData {
     // ── Blessing persistence API ──────────────────────────────────────────────
 
     public void addBlessing(UUID ownerUUID, UUID targetUUID) {
-        blessingsByOwner.computeIfAbsent(ownerUUID, k -> new HashSet<>()).add(targetUUID);
+        blessingsByOwner.computeIfAbsent(ownerUUID, k -> new LinkedHashSet<>()).add(targetUUID);
         setDirty();
     }
 
@@ -85,10 +86,21 @@ public class RiverOfEternalDarknessData extends SavedData {
         setDirty();
     }
 
+    public boolean isWaterChunkConverted(long chunkPos) {
+        return convertedWaterChunks.contains(chunkPos);
+    }
+
+    public void markWaterChunkConverted(long chunkPos) {
+        if (convertedWaterChunks.add(chunkPos)) {
+            setDirty();
+        }
+    }
+
     @Override
     public CompoundTag save(CompoundTag tag, net.minecraft.core.HolderLookup.Provider provider) {
         tag.putBoolean("wellPlaced", wellPlaced);
         tag.putBoolean("riverBuilt", riverBuilt);
+        tag.putLongArray("convertedWaterChunks", convertedWaterChunks.stream().mapToLong(Long::longValue).toArray());
 
         if (wellPos != null) {
             tag.putInt("wellX", wellPos.getX());
@@ -120,6 +132,9 @@ public class RiverOfEternalDarknessData extends SavedData {
         RiverOfEternalDarknessData data = new RiverOfEternalDarknessData();
         data.wellPlaced = tag.getBoolean("wellPlaced");
         data.riverBuilt = tag.getBoolean("riverBuilt");
+        for (long chunkPos : tag.getLongArray("convertedWaterChunks")) {
+            data.convertedWaterChunks.add(chunkPos);
+        }
 
         if (tag.contains("wellX")) {
             int x = tag.getInt("wellX");
@@ -138,7 +153,7 @@ public class RiverOfEternalDarknessData extends SavedData {
             for (int i = 0; i < blessingList.size(); i++) {
                 CompoundTag bt = blessingList.getCompound(i);
                 UUID owner = bt.getUUID("owner");
-                Set<UUID> targets = new HashSet<>();
+                Set<UUID> targets = new LinkedHashSet<>();
                 ListTag tl = bt.getList("targets", 8 /* STRING */);
                 for (int j = 0; j < tl.size(); j++) {
                     try { targets.add(UUID.fromString(tl.getString(j))); }

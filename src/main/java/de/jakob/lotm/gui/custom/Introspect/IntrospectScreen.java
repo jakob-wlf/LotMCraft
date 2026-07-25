@@ -262,6 +262,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         availableAbilities.addAll(unique);
 
         availableAbilities.removeIf(Ability::getShouldBeHidden);
+        if (de.jakob.lotm.util.data.ClientData.isOwningSefirot()) {
+            availableAbilities.removeIf(ability -> ability.getId().equals("sefrot_invasion_ability"));
+        }
 
         // Sub-abilities toggle only applies on normal tabs (not copied tabs)
         if (showSubAbilities && !isCopiedTab(currentTab)) {

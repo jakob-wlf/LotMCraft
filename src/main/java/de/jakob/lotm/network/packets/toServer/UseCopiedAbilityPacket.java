@@ -41,10 +41,13 @@ public record UseCopiedAbilityPacket(int abilityIndex) implements CustomPacketPa
                 if (ability == null) return;
 
                 if (serverPlayer.level() instanceof ServerLevel serverLevel) {
-                    ability.useAbility(serverLevel, serverPlayer, true, false, false, true);
+                    // This path decrements the exact selected entry below; wheel casts use the
+                    // shared copied-use path, which identifies copies by ability ID.
+                    ability.useAbility(serverLevel, serverPlayer, true, false, false, false);
 
                     component.decrementUses(packet.abilityIndex());
 
+                    de.jakob.lotm.util.helper.AbilityWheelHelper.removeUnusableAbilities(serverPlayer);
                     CopiedAbilityHelper.syncToClient(serverPlayer);
                 }
             }

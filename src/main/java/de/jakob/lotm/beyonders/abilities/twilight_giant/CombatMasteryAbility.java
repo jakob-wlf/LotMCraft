@@ -59,7 +59,7 @@ public class CombatMasteryAbility extends Ability {
         UUID uuid = entity.getUUID();
         int sequence = BeyonderData.getSequence(entity);
         // Charges per sequence: 9→2, 8→4, 7→8, 6→10, 5→15, 4→20, 3→25, 2→35, 1→45, 0→50
-        int[] chargeTable = {50, 45, 35, 25, 20, 15, 10, 8, 4, 2};
+        int[] chargeTable = {55, 45, 35, 25, 20, 15, 10, 8, 4, 2};
         int charges = (sequence >= 0 && sequence <= 9) ? chargeTable[sequence] : 2;
         Crit_Charges.put(uuid, charges);
         AbilityUtil.sendActionBar(entity, Component.literal("Combat Mastery: " + charges + " crits"));

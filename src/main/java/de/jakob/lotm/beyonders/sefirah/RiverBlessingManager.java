@@ -54,7 +54,7 @@ public class RiverBlessingManager {
         RiverOfEternalDarknessData data = RiverOfEternalDarknessData.get(server);
         for (var entry : data.getAllBlessings().entrySet()) {
             UUID owner = entry.getKey();
-            Set<UUID> set = ConcurrentHashMap.newKeySet();
+            Set<UUID> set = Collections.synchronizedSet(new LinkedHashSet<>());
             set.addAll(entry.getValue());
             blessingsByOwner.put(owner, set);
             for (UUID t : entry.getValue()) blessedToOwner.put(t, owner);
@@ -63,15 +63,16 @@ public class RiverBlessingManager {
     // ── Sequence-based limit ──────────────────────────────────────────────────
 
     /**
-     * Returns the maximum number of players the River owner may bless,
-     * given their current sequence.
+    * Returns the number of designated blessed players who may receive active
+    * River effects at the owner's current sequence.
      *
      * @param ownerSequence the River owner's sequence number (lower = stronger)
      */
-    public static int getMaxBlessings(int ownerSequence) {
-        if (ownerSequence <= 2) return 2;   // Seq 2 or stronger (seq 2, 1, 0, GOO)
-        if (ownerSequence <= 4) return 1;   // Seq 4 or 3
-        return 0;                            // Below seq 4 → no blessings
+    public static int getMaxActiveBlessingSlots(int ownerSequence) {
+        if (ownerSequence <= 0) return 3;
+        if (ownerSequence == 1) return 2;
+        if (ownerSequence == 2) return 1;
+        return 0;
     }
 
     // ── Blessing management ───────────────────────────────────────────────────
@@ -79,18 +80,14 @@ public class RiverBlessingManager {
     /**
      * Attempts to bless {@code targetUUID} on behalf of {@code owner}.
      *
-     * @return {@code true} if the blessing was applied; {@code false} if the
-     *         owner has no available slots or the target is already blessed.
+    * @return {@code true} if the designation was applied; {@code false} if the
+    *         target is already designated as blessed.
      */
     public static boolean blessPlayer(ServerPlayer owner, UUID targetUUID) {
-        int max = getMaxBlessings(BeyonderData.getSequence(owner));
-        if (max == 0) return false;
-
         Set<UUID> blessed = blessingsByOwner.computeIfAbsent(owner.getUUID(),
-                k -> ConcurrentHashMap.newKeySet());
+            k -> Collections.synchronizedSet(new LinkedHashSet<>()));
 
         if (blessed.contains(targetUUID)) return false; // already blessed
-        if (blessed.size() >= max) return false;        // no free slots
 
         blessed.add(targetUUID);
         blessedToOwner.put(targetUUID, owner.getUUID());
@@ -124,6 +121,29 @@ public class RiverBlessingManager {
      */
     public static boolean isBlessed(UUID playerUUID) {
         return blessedToOwner.containsKey(playerUUID);
+    }
+
+    /** Returns whether this designated blessed player currently occupies an active effect slot. */
+    public static boolean hasActiveBlessingEffects(UUID playerUUID) {
+        UUID ownerUUID = blessedToOwner.get(playerUUID);
+        if (ownerUUID == null) return false;
+
+        int ownerSequence = BeyonderData.playerMap.get(ownerUUID)
+                .map(data -> data.sequence())
+                .orElse(LOTMCraft.NON_BEYONDER_SEQ);
+        int activeSlots = getMaxActiveBlessingSlots(ownerSequence);
+        if (activeSlots <= 0) return false;
+
+        Set<UUID> designated = blessingsByOwner.get(ownerUUID);
+        if (designated == null) return false;
+        synchronized (designated) {
+            int index = 0;
+            for (UUID blessedUUID : designated) {
+                if (index++ >= activeSlots) break;
+                if (blessedUUID.equals(playerUUID)) return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -163,9 +183,9 @@ public class RiverBlessingManager {
     // ── River audience ────────────────────────────────────────────────────────
 
     /** Audience safe landing spot (above the fluid, separate from River's Call trap zone). */
-    public static final double AUDIENCE_X = 0;
+    public static final double AUDIENCE_X = -100;
     public static final double AUDIENCE_Y = 65;
-    public static final double AUDIENCE_Z = -50;
+    public static final double AUDIENCE_Z = 903;
 
     /** Players currently present in the river as the owner's invited audience. */
     private static final Set<UUID> CURRENTLY_IN_AUDIENCE = ConcurrentHashMap.newKeySet();
@@ -286,7 +306,7 @@ public class RiverBlessingManager {
      * (divinerSeq &lt;= blessedSeq - 4) can pierce the protection.
      */
     public static boolean blocksDivination(UUID targetUUID, ServerPlayer diviner) {
-        if (!blessedToOwner.containsKey(targetUUID)) return false;
+        if (!hasActiveBlessingEffects(targetUUID)) return false;
 
         int divinerSeq = BeyonderData.getSequence(diviner);
         int targetSeq = BeyonderData.playerMap != null

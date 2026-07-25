@@ -375,6 +375,11 @@ Two selectable modes:
 **Mode 0 — Coordinates**
 - Opens a UI to enter target X/Y/Z coordinates.
 - Creates a **door** at the caster's position leading to those coordinates.
+- Living entities travel instantly within **100 / 250 / 500 blocks** at Sequences **5 / 4 / 3**.
+- Longer journeys glide through the Spirit World at **1 / 2 / 4 blocks per tick** at Sequences **5 / 4 / 3**.
+- At Sequence **2 or stronger**, all coordinate travel becomes instant.
+- Coordinate travel also works within the Spirit World; entered coordinates target that dimension directly.
+- Dropped items always pass directly to the entered destination.
 - Door lasts **10 seconds**.
 
 **Mode 1 — Spirit World**

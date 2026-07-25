@@ -55,14 +55,21 @@ public record RiverBlessingActionPacket(int actionType, UUID targetUUID) impleme
                         // Notify the blessed player
                         ServerPlayer blessed = owner.getServer().getPlayerList().getPlayer(target);
                         if (blessed != null) {
-                            blessed.sendSystemMessage(Component.literal(
-                                    "You have received the blessing of the River of Eternal Darkness. " +
-                                    "Sleep cannot claim you, and your presence is veiled.")
-                                    .withStyle(net.minecraft.ChatFormatting.AQUA));
+                            if (RiverBlessingManager.hasActiveBlessingEffects(target)) {
+                                blessed.sendSystemMessage(Component.literal(
+                                        "You have received an active blessing of the River of Eternal Darkness. " +
+                                        "Sleep cannot claim you, and your presence is veiled.")
+                                        .withStyle(net.minecraft.ChatFormatting.AQUA));
+                            } else {
+                                blessed.sendSystemMessage(Component.literal(
+                                        "You have been designated as blessed by the River of Eternal Darkness, " +
+                                        "but its effects are dormant until an active slot is available.")
+                                        .withStyle(net.minecraft.ChatFormatting.DARK_AQUA));
+                            }
                         }
                     } else {
                         owner.sendSystemMessage(Component.literal(
-                                "You cannot grant any more blessings at your current sequence.")
+                                "That player is already designated as blessed.")
                                 .withStyle(net.minecraft.ChatFormatting.RED));
                     }
                 }

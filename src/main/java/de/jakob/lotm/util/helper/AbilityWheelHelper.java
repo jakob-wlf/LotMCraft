@@ -2,6 +2,7 @@ package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
+import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
@@ -86,9 +87,15 @@ public class AbilityWheelHelper {
 
     public static void removeUnusableAbilities(ServerPlayer player) {
         AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
+        CopiedAbilityComponent copiedComponent = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         for(String abilityId : new ArrayList<>(component.getAbilities())) {
-            Ability ability = LOTMCraft.abilityHandler.getById(abilityId.split(":")[0]);
-            if((ability == null || !ability.hasAbility(player)) && (abilityId.split(":").length < 3 || !abilityId.split(":")[2].equals("copied"))) {
+            String[] parts = abilityId.split(":");
+            String baseId = parts[0];
+            boolean isCopied = parts.length >= 3 && parts[2].equals("copied");
+            Ability ability = LOTMCraft.abilityHandler.getById(baseId);
+            boolean hasBackingCopy = copiedComponent.getAbilities().stream()
+                    .anyMatch(data -> data.abilityId().equals(baseId));
+            if (ability == null || (isCopied ? !hasBackingCopy : !ability.hasAbility(player))) {
                 component.getAbilities().remove(abilityId);
             }
         }

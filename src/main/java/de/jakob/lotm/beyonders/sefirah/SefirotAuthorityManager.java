@@ -196,6 +196,8 @@ public class SefirotAuthorityManager {
             return;
         }
 
+        SefirahHandler.removeSefrotInvasionAbility(player);
+
         // Remove any unlocked abilities that are no longer available
         Set<String> available = getAvailableAbilityIds(player);
         SefirotUnlockedAbilitiesComponent comp = player.getData(ModAttachments.SEFIROT_UNLOCKED_ABILITIES);

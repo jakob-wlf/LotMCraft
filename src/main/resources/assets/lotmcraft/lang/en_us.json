@@ -77,6 +77,8 @@
   "lotmcraft.ally_ability.description": "Designate an entity as your ally",
   "lotmcraft.cogitation_ability": "Cogitation",
   "lotmcraft.cogitation_ability.description": "Cogitate to replenish your Spirituality",
+  "lotmcraft.sefrot_invasion_ability": "Sefrot Invasion",
+  "lotmcraft.sefrot_invasion_ability.description": "Invade a nearby neighboring Sefrot within 15 seconds of its owner entering",
   "lotmcraft.divination_ability": "Divination",
   "lotmcraft.spirit_vision_ability": "Spirit Vision",
   "lotmcraft.eye_of_death_ability": "Eye of Death",

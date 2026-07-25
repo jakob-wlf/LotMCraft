@@ -108,8 +108,9 @@ public class RiverOfEternalDarknessEventHandler {
         boolean isOwner    = isRiverOwner(player);
         boolean isTrapped  = DeathImprintData.get(player.server).isTrappedInRiver(player.getUUID());
         boolean isAudience = RiverBlessingManager.isInAudience(player.getUUID());
+        boolean isInvading = SefrotInvasionManager.isActiveParticipant(player.getUUID());
 
-        if (isOwner || isTrapped || isAudience) return;
+        if (isOwner || isTrapped || isAudience || isInvading) return;
 
         // Unauthorised — teleport back to overworld spawn
         player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
@@ -135,7 +136,7 @@ public class RiverOfEternalDarknessEventHandler {
     public static void onMobEffectApplicable(MobEffectEvent.Applicable event) {
         if (event.getEffectInstance().getEffect() == ModEffects.ASLEEP) {
             UUID uuid = event.getEntity().getUUID();
-            if (RiverBlessingManager.isBlessed(uuid)) {
+            if (RiverBlessingManager.hasActiveBlessingEffects(uuid)) {
                 event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
                 return;
             }

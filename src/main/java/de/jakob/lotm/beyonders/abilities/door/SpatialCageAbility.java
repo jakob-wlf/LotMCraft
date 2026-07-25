@@ -30,6 +30,8 @@ import java.util.*;
 public class SpatialCageAbility extends SelectableAbility {
 
     private static final HashMap<UUID, HashSet<SpatialCage>> activeCages = new HashMap<>();
+    private static final int OPEN_CAGE_DURATION = 20 * 20;
+    private static final int CLOSED_CAGE_DURATION = 20 * 30;
 
     public SpatialCageAbility(String id) {
         super(id, 35);
@@ -60,11 +62,17 @@ public class SpatialCageAbility extends SelectableAbility {
     }
 
     private void createSpatialCage(LivingEntity entity, Level level, Vec3 targetLoc, boolean openFront, Direction frontDirection) {
+        HashSet<SpatialCage> ownerCages = activeCages.computeIfAbsent(entity.getUUID(), k -> new HashSet<>());
+        for (SpatialCage existingCage : new HashSet<>(ownerCages)) {
+            existingCage.removeCage();
+        }
+        ownerCages = activeCages.computeIfAbsent(entity.getUUID(), k -> new HashSet<>());
+
         SpatialCage cage = new SpatialCage((ServerLevel) level, targetLoc, openFront, 5, new ArrayList<>(), frontDirection, entity.getUUID());
         cage.createCage();
-        activeCages.computeIfAbsent(entity.getUUID(), k -> new HashSet<>()).add(cage);
+        ownerCages.add(cage);
 
-        ServerScheduler.scheduleForDuration(0, 1,  openFront ? 20 * 20 : 20 * 60 * 2, () -> {
+        ServerScheduler.scheduleForDuration(0, 1, openFront ? OPEN_CAGE_DURATION : CLOSED_CAGE_DURATION, () -> {
             cage.updateCage();
             cage.addParticles();
             cage.addSlownessToEntities();
@@ -107,9 +115,16 @@ public class SpatialCageAbility extends SelectableAbility {
 
         void removeCage() {
             for (BlockPos pos : barrierBlocks) {
-                level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+                if (level.getBlockState(pos).is(Blocks.BARRIER)) {
+                    level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+                }
             }
-            activeCages.getOrDefault(owner, new HashSet<>()).remove(this);
+            HashSet<SpatialCage> ownerCages = activeCages.get(owner);
+            if (ownerCages != null) {
+                ownerCages.remove(this);
+                if (ownerCages.isEmpty()) activeCages.remove(owner);
+            }
+            barrierBlocks.clear();
         }
 
         void updateCage() {
@@ -143,12 +158,12 @@ public class SpatialCageAbility extends SelectableAbility {
     @SubscribeEvent
     public static void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
         UUID playerUUID = event.getEntity().getUUID();
-        if (activeCages.containsKey(playerUUID)) {
-            for (SpatialCage cage : activeCages.get(playerUUID)) {
+        HashSet<SpatialCage> cages = activeCages.remove(playerUUID);
+        if (cages != null) {
+            for (SpatialCage cage : new HashSet<>(cages)) {
                 if(cage != null)
                     cage.removeCage();
             }
-            activeCages.remove(playerUUID);
         }
     }
 }
