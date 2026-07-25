@@ -325,6 +325,7 @@ public class BeyonderEventHandler {
                 LOTMCraft.LOGGER.info("{} was killed by {} with {}", player.getGameProfile().getName(), event.getSource().getEntity().getName(), event.getSource());
             } else {
                 LOTMCraft.LOGGER.info("{} was killed with {}", player.getGameProfile().getName(), event.getSource());
+                LOTMCraft.LOGGER.info("event {}", event.toString());
             }
 
             if (!BeyonderData.isBeyonder(player)) return;
