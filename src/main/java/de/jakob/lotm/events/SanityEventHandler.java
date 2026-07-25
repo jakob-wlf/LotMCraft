@@ -197,7 +197,7 @@ public class SanityEventHandler {
                         random.nextBoolean() ? 2 : -2, false, false));
             }
 
-            if(entity instanceof Player player && random.nextInt(10) == 0) {
+            if(entity instanceof Player player && random.nextInt(10) == 0 && player.level().isClientSide) {
                 ClientHandler.applyCameraShakeToPlayer(1, 20, player);
             }
 

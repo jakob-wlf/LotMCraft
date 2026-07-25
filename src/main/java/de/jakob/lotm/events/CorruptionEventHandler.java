@@ -244,6 +244,7 @@ public class CorruptionEventHandler {
 
 
                 MythicalCreatureFormAbility ability = (MythicalCreatureFormAbility) LOTMCraft.abilityHandler.getById("mythical_creature_form_ability");
+                
 
                 if(!ability.isActiveForEntity(sp)){
                     ability.useAbility(sp.serverLevel(), sp, false, false, false, false);
