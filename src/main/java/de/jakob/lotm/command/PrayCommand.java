@@ -14,10 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class PreyCommand {
+public class PrayCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("prey")
+        dispatcher.register(Commands.literal("pray")
                 .requires(source -> source.getPlayer() != null)
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();

@@ -102,11 +102,8 @@ public class SefirotCommand {
                 .then(set())
                 .then(clear())
                 .then(imprint())
+                .then(convergence())
         );
-                dispatcher.register(Commands.literal("sefrot")
-                                .requires(source -> source.hasPermission(2))
-                                .then(convergence())
-                );
     }
 
         private static LiteralArgumentBuilder<CommandSourceStack> convergence() {

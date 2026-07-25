@@ -254,7 +254,7 @@ public class ModEvents {
         GreatOldOneCommand.register(event.getDispatcher());
         SlotsCommand.register(event.getDispatcher());
         BlasphemyCommand.register(event.getDispatcher());
-        PreyCommand.register(event.getDispatcher());
+        PrayCommand.register(event.getDispatcher());
         ImprintCommand.register(event.getDispatcher());
     }
 
