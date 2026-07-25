@@ -5,6 +5,7 @@ import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.sefirah.SefrotInvasionManager;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
@@ -90,6 +91,11 @@ public class ReincarnationAbility extends PassiveAbilityItem {
             long remainingMinutes = (cooldownUntil - now) / 60000;
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.reincarnation.on_cooldown",
                     remainingMinutes).withStyle(ChatFormatting.DARK_RED));
+            return;
+        }
+
+        if (SefrotInvasionManager.forfeitForResurrection(player)) {
+            event.setCanceled(true);
             return;
         }
 

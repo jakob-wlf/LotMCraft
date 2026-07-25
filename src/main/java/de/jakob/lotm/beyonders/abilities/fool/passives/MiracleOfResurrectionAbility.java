@@ -8,6 +8,7 @@ import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidHidingAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
+import de.jakob.lotm.beyonders.sefirah.SefrotInvasionManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -82,6 +83,10 @@ public class MiracleOfResurrectionAbility extends PassiveAbilityItem {
             if (LawAbility.SOLACE_KILLED.contains(entity.getUUID())) return;
             MiracleOfResurrectionComponent data = serverPlayer.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
             if (data.getResurrectionAttempts() > 0) {
+                if (SefrotInvasionManager.forfeitForResurrection(serverPlayer)) {
+                    event.setCanceled(true);
+                    return;
+                }
                 data.setResurrectionAttempts(data.getResurrectionAttempts() - 1);
                 // cancel the death
 
