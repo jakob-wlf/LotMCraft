@@ -8,6 +8,7 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CopiedAbilityComponent implements INBTSerializable<CompoundTag> {
 
@@ -43,9 +44,11 @@ public class CopiedAbilityComponent implements INBTSerializable<CompoundTag> {
         if (abilities.size() >= MAX_ABILITIES) {
             abilities.remove(0);
         }
-        CopiedAbilityData duplicate = abilities.stream().filter(a -> a.abilityId.equals(data.abilityId)).findFirst();
-        if(duplicate != null){
-            data = new CopiedAbilityData(duplicate.abilityId, duplicate.copyType, duplicate.remainingUses + data.remainingUses, duplicate.originalOwnerUUID);
+        CopiedAbilityData finaldat = data;
+        Optional<CopiedAbilityData> duplicate = abilities.stream().filter(a -> a.abilityId.equals(finaldat.abilityId)).findFirst();
+        if(duplicate.isPresent()){
+            CopiedAbilityData fresh =  duplicate.get();
+            data = new CopiedAbilityData(fresh.abilityId, fresh.copyType, fresh.remainingUses + data.remainingUses, fresh.originalOwnerUUID);
         }
         abilities.add(data);
     }
