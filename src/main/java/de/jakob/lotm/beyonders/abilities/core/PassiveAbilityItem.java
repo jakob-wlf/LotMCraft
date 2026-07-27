@@ -45,6 +45,10 @@ public abstract class PassiveAbilityItem extends Item {
                 if (minSeq != null && c.sequence() <= minSeq) return true;
             }
 
+            if(charList.stream().anyMatch(c -> getRequirements().containsKey(c.pathway()) && c.sequence() <= getRequirements().get(c.pathway()))){
+                return true;
+            }
+
             // Fallback to primary pathway/sequence and history
             String pathway = ClientBeyonderCache.getPathway(entity.getUUID());
             int sequence = ClientBeyonderCache.getSequence(entity.getUUID());
