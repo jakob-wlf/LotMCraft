@@ -1,12 +1,15 @@
 package de.jakob.lotm.addons.factions;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.PlayerMap;
 import de.jakob.lotm.util.playerMap.StoredData;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -19,6 +22,8 @@ public class FactionStorage extends SavedData {
     public static final String NBT_CLASS = "factions";
     private final Map<Integer, FactionCore> factions;
 
+    private final Map<Integer, Long> lastOnline;
+
     public static final SavedData.Factory<FactionStorage> FACTORY = new SavedData.Factory<>(
             FactionStorage::new,
             FactionStorage::load,
@@ -29,14 +34,19 @@ public class FactionStorage extends SavedData {
         super();
 
         factions = new HashMap<>(300);
+        lastOnline = new HashMap<>(300);
     }
 
-    public void setFaction(int id, FactionCore faction){
+    public void setFaction(int id, FactionCore faction) {
         factions.put(id, faction);
         setDirty();
     }
 
-    public void levelUp(int id){
+    public Set<Map.Entry<Integer, Long>> getLastOnlineEntrySet(){
+        return lastOnline.entrySet();
+    }
+
+    public void levelUp(int id) {
         var faction = factions.get(id);
 
         int currentLevel = faction.getLevel();
@@ -59,35 +69,29 @@ public class FactionStorage extends SavedData {
         return factions.get(id);
     }
 
-    public void promote(int id, String name, int level){
+    public void promote(int id, String name, int level) {
         var faction = factions.get(id);
-        if(!faction.isPartOfFaction(name)) return;
+        if (!faction.isPartOfFaction(name)) return;
 
         int pLevel = faction.getPlayerLevel(name);
 
-        if(pLevel == 1){
+        if (pLevel == 1) {
             faction.removeCitizen(name);
-        }
-        else if(pLevel > 1 && pLevel < 8){
+        } else if (pLevel > 1 && pLevel < 8) {
             faction.removeNoble(name);
-        }
-        else if(pLevel == 8){
+        } else if (pLevel == 8) {
             faction.removeCoLeader(name);
-        }
-        else if(pLevel == 9){
+        } else if (pLevel == 9) {
             faction.setLeader("NONE");
         }
 
-        if(level == 1){
+        if (level == 1) {
             faction.addCitizen(name);
-        }
-        else if(level > 1 && level < 8){
+        } else if (level > 1 && level < 8) {
             faction.addNoble(name, level - 1);
-        }
-        else if(level == 8){
+        } else if (level == 8) {
             faction.addCoLeader(name);
-        }
-        else if(level == 9){
+        } else if (level == 9) {
             faction.setLeader(name);
         }
 
@@ -97,7 +101,12 @@ public class FactionStorage extends SavedData {
     }
 
     public void createFaction(String leader, String factionName, int type) {
-        FactionCore core = new FactionCore(leader, factions.size(), type);
+        int id = 0;
+
+        if (!factions.isEmpty())
+            id = Collections.max(factions.keySet()) + 1;
+
+        FactionCore core = new FactionCore(leader, id, type);
         core.setName(factionName);
 
         factions.put(core.getId(), core);
@@ -105,12 +114,12 @@ public class FactionStorage extends SavedData {
         setDirty();
     }
 
-    public boolean isCore(ChunkPos pos, int type){
+    public boolean isCore(ChunkPos pos, int type) {
         var factions = getFaction(pos);
-        if(factions.isEmpty()) return false;
+        if (factions.isEmpty()) return false;
 
         var factionOp = factions.stream().filter(obj -> obj.getType() == type).findFirst();
-        if(factionOp.isEmpty()) return false;
+        if (factionOp.isEmpty()) return false;
 
         return factionOp.get().getCore().equals(pos);
     }
@@ -182,25 +191,26 @@ public class FactionStorage extends SavedData {
 
         faction.unclaim(pos);
 
-        if(faction.getType() != 1) return;
+        if (faction.getType() != 1) return;
         for (var obj : factionsChunk) {
-            if(obj.getId() == id) continue;
+            if (obj.getId() == id) continue;
 
             obj.unclaim(pos);
         }
     }
 
-    public void disband(int id){
+    public void disband(int id) {
         factions.remove(id);
+        lastOnline.remove(id);
 
         setDirty();
     }
 
-    public boolean canClaimNation(int id, ChunkPos pos){
+    public boolean canClaimNation(int id, ChunkPos pos) {
         var faction = getFaction(id);
         var claimedChunks = faction.getClaimed();
 
-        if(claimedChunks.isEmpty()) return true;
+        if (claimedChunks.isEmpty()) return true;
 
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
@@ -215,7 +225,7 @@ public class FactionStorage extends SavedData {
         return false;
     }
 
-    public void addCitizen(int id, String name){
+    public void addCitizen(int id, String name) {
         var faction = factions.get(id);
 
         faction.addCitizen(name);
@@ -225,17 +235,15 @@ public class FactionStorage extends SavedData {
         setDirty();
     }
 
-    public void leave(int id, String name){
+    public void leave(int id, String name) {
         var faction = factions.get(id);
         int level = faction.getPlayerLevel(name);
 
-        if(level == 1){
+        if (level == 1) {
             faction.removeCitizen(name);
-        }
-        else if(level > 1 && level < 8){
+        } else if (level > 1 && level < 8) {
             faction.removeNoble(name);
-        }
-        else if(level == 8){
+        } else if (level == 8) {
             faction.removeCoLeader(name);
         }
 
@@ -264,6 +272,16 @@ public class FactionStorage extends SavedData {
         }
 
         tag.put("factions", list);
+
+        for (Map.Entry<Integer, Long> entry : lastOnline.entrySet()) {
+            CompoundTag entryTag = new CompoundTag();
+            entryTag.putInt("key", entry.getKey());
+            entryTag.putLong("value", entry.getValue());
+            list.add(entryTag);
+        }
+
+        tag.put("last_online", list);
+
 
         return tag;
     }
@@ -310,6 +328,18 @@ public class FactionStorage extends SavedData {
             );
 
             storage.factions.put(id, faction);
+        }
+
+        storage.lastOnline.clear();
+
+        ListTag list2 = tag.getList("last_online", Tag.TAG_COMPOUND);
+        for (int i = 0; i < list2.size(); i++) {
+            CompoundTag entryTag = list2.getCompound(i);
+
+            int key = entryTag.getInt("key");
+            long value = entryTag.getLong("value");
+
+            storage.lastOnline.put(key, value);
         }
 
         return storage;
@@ -361,5 +391,138 @@ public class FactionStorage extends SavedData {
 
     public boolean contains(int id) {
         return factions.containsKey(id);
+    }
+
+    public void messageEveryoneInFaction(ServerLevel level, int id, Component msg) {
+        var faction = factions.get(id);
+        var all = faction.getAllPlayers();
+
+        for (var obj : all) {
+            var pId = BeyonderData.playerMap.getKeyByName(obj);
+            if (pId == null) continue;
+
+            var player = level.getPlayerByUUID(pId);
+            if (player == null) continue;
+
+            player.sendSystemMessage(msg);
+        }
+    }
+
+    // 0 - no war, 1 - war against nation, 2 - war against church
+    public int isAtWar(String playerName, ChunkPos pos) {
+        var partOf = getPartOfFaction(playerName);
+        var factions = getFaction(pos);
+
+        if (factions.isEmpty()) return 0;
+
+        for (var obj : partOf) {
+            if (obj.isAtWar(factions.getFirst().getId())) return 1;
+            if (obj.isAtWar(factions.getLast().getId())) return 2;
+        }
+
+        return 0;
+    }
+
+    public boolean isPartOfAndClaimed(String name, ChunkPos pos){
+        var factions = getPartOfFaction(name);
+
+        for(var obj : factions){
+            if(obj.isClaimed(pos)) return true;
+        }
+
+        return false;
+    }
+
+    public int getFactionIdFromPosType(ChunkPos pos, int type){
+        var list = getFaction(pos);
+        for(var obj : list){
+            if(obj.getType() == type) return obj.getId();
+        }
+
+        return -1;
+    }
+
+    public void declareWar(int aggressor, int victim) {
+        var a = factions.get(aggressor);
+        var v = factions.get(victim);
+
+        a.addAtWar(victim, true);
+        v.addAtWar(aggressor, false);
+
+        if (a.hasPermission(victim)) {
+            a.removePermission(victim);
+        } else if (v.hasPermission(aggressor)) {
+            v.removePermission(aggressor);
+        }
+
+        factions.put(aggressor, a);
+        factions.put(victim, v);
+
+        setDirty();
+    }
+
+    public void winWar(List<Integer> winnersId, int looserId, ServerLevel level) {
+        for(var winnerId : winnersId) {
+            var winner = factions.get(winnerId);
+
+            winner.setTotalWins(winner.getTotalWins() + 1);
+            winner.removeAtWar(looserId);
+
+            factions.put(winnerId, winner);
+
+            messageEveryoneInFaction(level, winnerId, Component.literal("Your faction has won the war against \"" + factions.get(looserId).getName() + "\"").withStyle(ChatFormatting.GREEN));
+        }
+
+        factions.remove(looserId);
+
+        setDirty();
+    }
+
+    public void stopWar(int id1, int id2) {
+        var faction1 = factions.get(id1);
+        var faction2 = factions.get(id2);
+
+        faction1.removeAtWar(id2);
+        faction2.removeAtWar(id1);
+
+        factions.put(id1, faction1);
+        factions.put(id2, faction2);
+
+        setDirty();
+    }
+
+    //returns the timestamp of when at least half of members of faction were online
+    public long getLastOnline(int id){
+        if(lastOnline.containsKey(id)){
+            return lastOnline.get(id);
+        }
+
+        return System.currentTimeMillis();
+    }
+
+    public void setLastOnline(int id, long value){
+        lastOnline.put(id, value);
+    }
+
+    public boolean isAtAnyWar(int id){
+        var faction = factions.get(id);
+        return !faction.getAllAtWar().isEmpty();
+    }
+
+    public void updateLastOnline(int id, ServerLevel level){
+        var faction = factions.get(id);
+
+        int online = 0;
+        for(var obj : level.players()){
+            var name = obj.getName().getString();
+
+            if(faction.isPartOfFaction(name)){
+                online++;
+            }
+        }
+
+        if(online >= faction.getAllPlayers().size() / 2){
+            lastOnline.put(id, System.currentTimeMillis());
+        }
     }
 }

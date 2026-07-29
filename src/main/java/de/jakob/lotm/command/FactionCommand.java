@@ -63,6 +63,7 @@ public class FactionCommand {
                 .then(passLeadership())
                 .then(bank())
                 .then(levelUp())
+                .then(war())
         );
     }
 
@@ -828,10 +829,10 @@ public class FactionCommand {
                                                 return 0;
                                             }
 
-                                    if (faction.getAllCitizens().size() + 1 > FactionCore.getCitizensAmountPerLevel(faction.getLevel())) {
-                                        source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
-                                        return 0;
-                                    }
+                                            if (faction.getAllCitizens().size() + 1 > FactionCore.getCitizensAmountPerLevel(faction.getLevel())) {
+                                                source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
+                                                return 0;
+                                            }
 
                                             inviteMap.put(target.getUUID(), faction.getId());
 
@@ -1157,19 +1158,17 @@ public class FactionCommand {
                                                         return 0;
                                                     }
 
-                                                    if(promoteLevel == 1){
+                                                    if (promoteLevel == 1) {
                                                         if (faction.getAllCitizens().size() + 1 > FactionCore.getCitizensAmountPerLevel(faction.getLevel())) {
                                                             source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
                                                             return 0;
                                                         }
-                                                    }
-                                                    else if(promoteLevel > 1 && promoteLevel < 8){
+                                                    } else if (promoteLevel > 1 && promoteLevel < 8) {
                                                         if (faction.getAllNobles().size() + 1 > FactionCore.getNoblesAmountPerLevel(faction.getLevel())) {
                                                             source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
                                                             return 0;
                                                         }
-                                                    }
-                                                    else if (promoteLevel == 8){
+                                                    } else if (promoteLevel == 8) {
                                                         if (faction.getAllCoLeaders().size() + 1 > FactionCore.getCoLeadersAmountPerLevel(faction.getLevel())) {
                                                             source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
                                                             return 0;
@@ -1247,24 +1246,22 @@ public class FactionCommand {
                                                         return 0;
                                                     }
 
-                                            if(promoteLevel == 1){
-                                                if (faction.getAllCitizens().size() + 1 > FactionCore.getCitizensAmountPerLevel(faction.getLevel())) {
-                                                    source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
-                                                    return 0;
-                                                }
-                                            }
-                                            else if(promoteLevel > 1 && promoteLevel < 8){
-                                                if (faction.getAllNobles().size() + 1 > FactionCore.getNoblesAmountPerLevel(faction.getLevel())) {
-                                                    source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
-                                                    return 0;
-                                                }
-                                            }
-                                            else if (promoteLevel == 8){
-                                                if (faction.getAllCoLeaders().size() + 1 > FactionCore.getCoLeadersAmountPerLevel(faction.getLevel())) {
-                                                    source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
-                                                    return 0;
-                                                }
-                                            }
+                                                    if (promoteLevel == 1) {
+                                                        if (faction.getAllCitizens().size() + 1 > FactionCore.getCitizensAmountPerLevel(faction.getLevel())) {
+                                                            source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
+                                                            return 0;
+                                                        }
+                                                    } else if (promoteLevel > 1 && promoteLevel < 8) {
+                                                        if (faction.getAllNobles().size() + 1 > FactionCore.getNoblesAmountPerLevel(faction.getLevel())) {
+                                                            source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
+                                                            return 0;
+                                                        }
+                                                    } else if (promoteLevel == 8) {
+                                                        if (faction.getAllCoLeaders().size() + 1 > FactionCore.getCoLeadersAmountPerLevel(faction.getLevel())) {
+                                                            source.sendFailure(Component.literal("Your faction is out of slots for this operation!"));
+                                                            return 0;
+                                                        }
+                                                    }
 
                                                     BeyonderData.factionStorage.promote(faction.getId(), target.getName().getString(), promoteLevel);
 
@@ -1709,6 +1706,210 @@ public class FactionCommand {
                                     return 1;
                                 }
                         ));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> war() {
+        return Commands.literal("war")
+                .then(Commands.literal("nation")
+                        .then(Commands.literal("declare")
+                                .then(Commands.argument("id", IntegerArgumentType.integer(0))
+                                        .executes(context -> {
+                                                    CommandSourceStack source = context.getSource();
+                                                    var player = source.getPlayer();
+                                                    if (player == null) {
+                                                        source.sendFailure(Component.literal("Must be a player!"));
+                                                        return 0;
+                                                    }
+
+                                                    int id = IntegerArgumentType.getInteger(context, "id");
+
+                                                    String name = player.getName().getString();
+                                                    var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
+                                                    if (faction == null) {
+                                                        source.sendFailure(Component.literal("You are not part of faction with such type!"));
+                                                        return 0;
+                                                    }
+
+                                                    int playerLevel = faction.getPlayerLevel(name);
+
+                                                    if (playerLevel < 8) {
+                                                        source.sendFailure(Component.literal("You don`t have permission to declare the war!"));
+                                                        return 0;
+                                                    }
+
+                                                    var targetFaction = BeyonderData.factionStorage.getFaction(id);
+                                                    if (targetFaction == null) {
+                                                        source.sendFailure(Component.literal("Incorrect target faction id!"));
+                                                        return 0;
+                                                    }
+
+                                                    if(faction.getId() == id){
+                                                        source.sendFailure(Component.literal("Incorrect target faction id. You can't declare war to yourself!"));
+                                                        return 0;
+                                                    }
+
+                                                    BeyonderData.factionStorage.declareWar(faction.getId(), targetFaction.getId());
+
+                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), faction.getId(), Component.literal("Declared war to \"" + targetFaction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), targetFaction.getId(), Component.literal( "\"" + faction.getName() + "\" declared war\n").withStyle(ChatFormatting.RED));
+
+                                                    return 1;
+                                                }
+                                        ))
+                        )
+                        .then(Commands.literal("stop")
+                                .then(Commands.argument("id", IntegerArgumentType.integer(0))
+                                        .executes(context -> {
+                                                    CommandSourceStack source = context.getSource();
+                                                    var player = source.getPlayer();
+                                                    if (player == null) {
+                                                        source.sendFailure(Component.literal("Must be a player!"));
+                                                        return 0;
+                                                    }
+
+                                                    int id = IntegerArgumentType.getInteger(context, "id");
+
+                                                    String name = player.getName().getString();
+                                                    var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
+                                                    if (faction == null) {
+                                                        source.sendFailure(Component.literal("You are not part of faction with such type!"));
+                                                        return 0;
+                                                    }
+
+                                                    int playerLevel = faction.getPlayerLevel(name);
+
+                                                    if (playerLevel < 8) {
+                                                        source.sendFailure(Component.literal("You don`t have permission to stop the war!"));
+                                                        return 0;
+                                                    }
+
+                                                    var targetFaction = BeyonderData.factionStorage.getFaction(id);
+                                                    if (targetFaction == null) {
+                                                        source.sendFailure(Component.literal("Incorrect target faction id!"));
+                                                        return 0;
+                                                    }
+
+                                                    if(faction.getId() == id){
+                                                        source.sendFailure(Component.literal("Incorrect target faction id. You can't stop war against yourself!"));
+                                                        return 0;
+                                                    }
+
+                                                    if(!faction.isAggressor(targetFaction.getId())){
+                                                        source.sendFailure(Component.literal("Your faction must be aggressor of the war!"));
+                                                        return 0;
+                                                    }
+
+                                                    BeyonderData.factionStorage.stopWar(faction.getId(), targetFaction.getId());
+
+                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), faction.getId(), Component.literal("Stopped war against \"" + targetFaction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), targetFaction.getId(), Component.literal( "\"" + faction.getName() + "\" stopped war\n").withStyle(ChatFormatting.GREEN));
+
+                                                    return 1;
+                                                }
+                                        ))
+                        )
+
+                ) //nation part end
+                .then(Commands.literal("church")
+                        .then(Commands.literal("declare")
+                                .then(Commands.argument("id", IntegerArgumentType.integer(0))
+                                        .executes(context -> {
+                                                    CommandSourceStack source = context.getSource();
+                                                    var player = source.getPlayer();
+                                                    if (player == null) {
+                                                        source.sendFailure(Component.literal("Must be a player!"));
+                                                        return 0;
+                                                    }
+
+                                                    int id = IntegerArgumentType.getInteger(context, "id");
+
+                                                    String name = player.getName().getString();
+                                                    var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 2);
+                                                    if (faction == null) {
+                                                        source.sendFailure(Component.literal("You are not part of faction with such type!"));
+                                                        return 0;
+                                                    }
+
+                                                    int playerLevel = faction.getPlayerLevel(name);
+
+                                                    if (playerLevel < 8) {
+                                                        source.sendFailure(Component.literal("You don`t have permission to declare the war!"));
+                                                        return 0;
+                                                    }
+
+                                                    var targetFaction = BeyonderData.factionStorage.getFaction(id);
+                                                    if (targetFaction == null) {
+                                                        source.sendFailure(Component.literal("Incorrect target faction id!"));
+                                                        return 0;
+                                                    }
+
+                                                    if(faction.getId() == id){
+                                                        source.sendFailure(Component.literal("Incorrect target faction id. You can't declare war to yourself!"));
+                                                        return 0;
+                                                    }
+
+                                                    BeyonderData.factionStorage.declareWar(faction.getId(), targetFaction.getId());
+
+                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), faction.getId(), Component.literal("Declared war to \"" + targetFaction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), targetFaction.getId(), Component.literal( "\"" + faction.getName() + "\" declared war\n").withStyle(ChatFormatting.RED));
+
+                                                    return 1;
+                                                }
+                                        ))
+                        )
+                        .then(Commands.literal("stop")
+                                .then(Commands.argument("id", IntegerArgumentType.integer(0))
+                                        .executes(context -> {
+                                                    CommandSourceStack source = context.getSource();
+                                                    var player = source.getPlayer();
+                                                    if (player == null) {
+                                                        source.sendFailure(Component.literal("Must be a player!"));
+                                                        return 0;
+                                                    }
+
+                                                    int id = IntegerArgumentType.getInteger(context, "id");
+
+                                                    String name = player.getName().getString();
+                                                    var faction = BeyonderData.factionStorage.getPartOfFactionType(name, 2);
+                                                    if (faction == null) {
+                                                        source.sendFailure(Component.literal("You are not part of faction with such type!"));
+                                                        return 0;
+                                                    }
+
+                                                    int playerLevel = faction.getPlayerLevel(name);
+
+                                                    if (playerLevel < 8) {
+                                                        source.sendFailure(Component.literal("You don`t have permission to stop the war!"));
+                                                        return 0;
+                                                    }
+
+                                                    var targetFaction = BeyonderData.factionStorage.getFaction(id);
+                                                    if (targetFaction == null) {
+                                                        source.sendFailure(Component.literal("Incorrect target faction id!"));
+                                                        return 0;
+                                                    }
+
+                                                    if(faction.getId() == id){
+                                                        source.sendFailure(Component.literal("Incorrect target faction id. You can't stop war against yourself!"));
+                                                        return 0;
+                                                    }
+
+                                                    if(!faction.isAggressor(targetFaction.getId())){
+                                                        source.sendFailure(Component.literal("Your faction must be aggressor of the war!"));
+                                                        return 0;
+                                                    }
+
+                                                    BeyonderData.factionStorage.stopWar(faction.getId(), targetFaction.getId());
+
+                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), faction.getId(), Component.literal("Stopped war against \"" + targetFaction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), targetFaction.getId(), Component.literal( "\"" + faction.getName() + "\" stopped war\n").withStyle(ChatFormatting.GREEN));
+
+                                                    return 1;
+                                                }
+                                        ))
+                        )
+
+                );
     }
 
 }

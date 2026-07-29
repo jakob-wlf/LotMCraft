@@ -2,30 +2,43 @@ package de.jakob.lotm.addons.factions;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.level.ChunkPos;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityMobGriefingEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
-import java.util.LinkedList;
-import java.util.List;
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class FactionEvents {
+    private static int ticks = 0;
 
-    private static boolean shouldFail(ServerPlayer player, ChunkPos pos){
+    public static Map<ChunkPos, Tuple<Integer, Integer>> warProgress = new HashMap<>();
+
+    public static Map<ChunkPos, List<String>> posToPlayerMap = new ConcurrentHashMap<>();
+    public static Map<String, ChunkPos> playerToPosMap = new ConcurrentHashMap<>();
+
+    private static boolean shouldFail(ServerPlayer player, ChunkPos pos) {
         var factions = BeyonderData.factionStorage.getFaction(pos);
 
-        if(factions.isEmpty()) return false;
+        if (factions.isEmpty()) return false;
 
-        if(player.isCreative()) return false;
+        if (player.isCreative()) return false;
 
         var name = player.getName().getString();
 
@@ -33,38 +46,36 @@ public class FactionEvents {
         var churchOP = factions.stream().filter(obj -> obj.getType() == 2).findFirst();
         FactionCore church = null;
 
-        if(churchOP.isPresent()){
+        if (churchOP.isPresent()) {
             church = churchOP.get();
         }
 
         int seq = BeyonderData.playerMap.get(player.getUUID()).get().sequence();
 
-        if(church == null){
-            var data = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(nation.getLeader())).get();
-            int leaderSeq = data.pathway().equals("justiciar") ? data.sequence() - 1 : data.sequence();
-
-            if(!nation.isPartOfFaction(name)){
-                if(seq <= 2 && seq <= leaderSeq) return false;
-            }
+        if (church == null) {
+//            var data = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(nation.getLeader())).get();
+//            int leaderSeq = data.pathway().equals("justiciar") ? data.sequence() - 1 : data.sequence();
+//
+//            if (!nation.isPartOfFaction(name)) {
+//                if (seq <= 2 && seq <= leaderSeq) return false;
+//            }
 
             return !nation.canDoAnything(name, pos);
-        }
-        else{
-            var data = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(nation.getLeader())).get();
-            int leaderSeq = data.pathway().equals("justiciar") ? data.sequence() - 1 : data.sequence();
-
-            if(!nation.isPartOfFaction(name) && !church.isPartOfFaction(name)){
-                if(seq <= 2 && seq <= leaderSeq) return false;
-            }
+        } else {
+//            var data = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(nation.getLeader())).get();
+//            int leaderSeq = data.pathway().equals("justiciar") ? data.sequence() - 1 : data.sequence();
+//
+//            if (!nation.isPartOfFaction(name) && !church.isPartOfFaction(name)) {
+//                if (seq <= 2 && seq <= leaderSeq) return false;
+//            }
 
             int playerLevelNation = nation.getPlayerLevel(name);
             int playerLevelChurch = church.getPlayerLevel(name);
             boolean checkToNation = playerLevelNation >= playerLevelChurch;
 
-            if(checkToNation){
+            if (checkToNation) {
                 return !(playerLevelNation != 1 && church.getClaimLevel(pos) - 3 <= playerLevelNation);
-            }
-            else
+            } else
                 return !church.canDoAnything(name, pos);
 
         }
@@ -72,57 +83,57 @@ public class FactionEvents {
 
     @SubscribeEvent
     public static void onBreak(BlockEvent.BreakEvent event) {
-        if(!(event.getPlayer() instanceof ServerPlayer player)) return;
+        if (!(event.getPlayer() instanceof ServerPlayer player)) return;
 
         var pos = player.level().getChunkAt(event.getPos()).getPos();
 
-        if(!shouldFail(player, pos)) return;
+        if (!shouldFail(player, pos)) return;
 
         event.setCanceled(true);
     }
 
     @SubscribeEvent
     public static void onLeftClick(PlayerInteractEvent.LeftClickBlock event) {
-        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
         var pos = player.level().getChunkAt(event.getPos()).getPos();
 
-        if(!shouldFail(player, pos)) return;
+        if (!shouldFail(player, pos)) return;
 
         event.setCanceled(true);
     }
 
     @SubscribeEvent
     public static void onRightClick(PlayerInteractEvent.RightClickBlock event) {
-        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
         var pos = player.level().getChunkAt(event.getPos()).getPos();
 
-        if(!shouldFail(player, pos)) return;
+        if (!shouldFail(player, pos)) return;
 
         event.setCanceled(true);
     }
 
     @SubscribeEvent
     public static void onUseItemOnBlock(UseItemOnBlockEvent event) {
-        if(!(event.getPlayer() instanceof ServerPlayer player)) return;
+        if (!(event.getPlayer() instanceof ServerPlayer player)) return;
 
         var pos = player.level().getChunkAt(event.getPos()).getPos();
 
-        if(!shouldFail(player, pos)) return;
+        if (!shouldFail(player, pos)) return;
 
         event.setCanceled(true);
     }
 
     @SubscribeEvent
     public static void onExplosion(ExplosionEvent.Detonate event) {
-        if(!(event.getLevel() instanceof ServerLevel serverLevel)) return;
+        if (!(event.getLevel() instanceof ServerLevel serverLevel)) return;
 
         List<BlockPos> buff = new LinkedList<>();
-        for(var block : event.getAffectedBlocks()){
+        for (var block : event.getAffectedBlocks()) {
             var pos = serverLevel.getChunk(block).getPos();
 
-            if(BeyonderData.factionStorage.isClaimed(pos, 1)
+            if (BeyonderData.factionStorage.isClaimed(pos, 1)
                     || BeyonderData.factionStorage.isClaimed(pos, 2))
                 buff.add(block);
         }
@@ -139,4 +150,153 @@ public class FactionEvents {
             event.setCanGrief(false);
         }
     }
+
+    @SubscribeEvent
+    public static void onServerTick(ServerTickEvent.Post event) {
+        ticks++;
+
+        for (var entry : posToPlayerMap.entrySet()) {
+
+            for (var player : entry.getValue()) {
+                int type = BeyonderData.factionStorage.isAtWar(player, entry.getKey());
+                if (type != 0) {
+
+                    int attackers = 1;
+                    int defenders = 0;
+
+                    for (var obj : entry.getValue()) {
+                        int value = BeyonderData.factionStorage.isAtWar(obj, entry.getKey());
+
+                        if (value != 0) {
+                            attackers += 1;
+                            if (value == 1)
+                                type = 1;
+                        } else if (BeyonderData.factionStorage.isPartOfAndClaimed(obj, entry.getKey()))
+                            defenders += 1;
+                    }
+
+                    var faction = BeyonderData.factionStorage.getFactionIdFromPosType(entry.getKey(), type);
+
+                    var factionObj = BeyonderData.factionStorage.getFaction(faction);
+                    if (factionObj == null) {
+                        break;
+                    }
+
+                    int amount = 0;
+                    var onlinePlayers = new LinkedList<String>(List.of(event.getServer().getPlayerNames()));
+                    for (var obj : factionObj.getAllPlayers()) {
+                        if (onlinePlayers.contains(obj))
+                            amount++;
+                    }
+
+                    if (factionObj.getAllPlayers().size() / 2 > amount) break;
+
+                    if (defenders != 0) break;
+
+                    if (ticks % (20 * 10) * BeyonderData.factionStorage.getClaimLevel(entry.getKey(), type) == 0) {
+                        Tuple<Integer, Integer> pair;
+
+                        if (warProgress.containsKey(entry.getKey())) {
+                            pair = warProgress.get(entry.getKey());
+                        } else {
+                            pair = new Tuple<>(type, 0);
+                        }
+
+                        pair.setA(type);
+                        pair.setB(pair.getB() + 1);
+
+                        warProgress.put(entry.getKey(), pair);
+
+                        if (pair.getB() == 100) {
+                            var blockpos = entry.getKey().getWorldPosition();
+                            BeyonderData.factionStorage.messageEveryoneInFaction(event.getServer().overworld(), faction,
+                                    Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() +"] was lost").withStyle(ChatFormatting.RED));
+                            BeyonderData.factionStorage.unclaim(faction, entry.getKey());
+                        } else {
+                            if (pair.getB() % 25 == 0) {
+                                var blockpos = entry.getKey().getWorldPosition();
+                                BeyonderData.factionStorage.messageEveryoneInFaction(event.getServer().overworld(), faction,
+                                        Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() +"] is under attack").withStyle(ChatFormatting.RED));
+                            }
+                        }
+
+                        if (factionObj.getCore().equals(entry.getKey())) {
+                            BeyonderData.factionStorage.winWar(factionObj.getAllAtWar(), faction, event.getServer().overworld());
+                        }
+                    }
+
+                    break;
+                }
+            }
+
+        }
+
+        long oneWeekMillis = 7L * 24 * 60 * 60 * 1000;
+        var set = BeyonderData.factionStorage.getLastOnlineEntrySet();
+        for (var obj : set) {
+            if (BeyonderData.factionStorage.isAtAnyWar(obj.getKey()) &&
+                    (System.currentTimeMillis() - obj.getValue() >= oneWeekMillis)) {
+                BeyonderData.factionStorage.messageEveryoneInFaction(event.getServer().overworld(), obj.getKey(),
+                        Component.literal("Your faction was disbanded due to inactivity during the war").withStyle(ChatFormatting.RED));
+
+                BeyonderData.factionStorage.disband(obj.getKey());
+            }
+        }
+
+    }
+
+    @SubscribeEvent
+    public static void playerTick(PlayerTickEvent.Post event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        var pos = player.chunkPosition();
+        var id = player.getName().getString();
+
+        if (playerToPosMap.containsKey(id)) {
+            var previousPos = playerToPosMap.get(id);
+
+            if (previousPos.equals(pos)) return;
+
+            var plist = posToPlayerMap.get(previousPos);
+            plist.remove(id);
+            posToPlayerMap.put(previousPos, plist);
+        }
+
+        List<String> list;
+        if (posToPlayerMap.containsKey(pos)) {
+            list = posToPlayerMap.get(pos);
+        } else {
+            list = new LinkedList<>();
+        }
+
+        list.add(id);
+        posToPlayerMap.put(pos, list);
+
+        playerToPosMap.put(id, pos);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!(player.level() instanceof ServerLevel level)) return;
+
+        var list = BeyonderData.factionStorage.getPartOfFaction(player.getName().getString());
+        for (var obj : list) {
+            BeyonderData.factionStorage.updateLastOnline(obj.getId(), level);
+        }
+
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!(player.level() instanceof ServerLevel level)) return;
+
+        var list = BeyonderData.factionStorage.getPartOfFaction(player.getName().getString());
+        for (var obj : list) {
+            BeyonderData.factionStorage.updateLastOnline(obj.getId(), level);
+        }
+
+    }
+
 }

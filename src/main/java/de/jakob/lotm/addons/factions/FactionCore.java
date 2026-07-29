@@ -26,6 +26,9 @@ public class FactionCore {
     private Set<Integer> hasPermission; // for churches only
     private ChunkPos coreClaim; //for nation only
 
+    private List<WarInfo> atWar;
+    private int totalWins;
+
     public FactionCore(String leader, int id, int type){
         this.id = id;
         level = 0;
@@ -42,6 +45,9 @@ public class FactionCore {
 
         bank.put(1, 0);
         bank.put(2, 0);
+
+        atWar = new LinkedList<>();
+        totalWins = 0;
     }
 
     public static int getNoblesAmountPerLevel(int level){
@@ -355,6 +361,8 @@ public class FactionCore {
                 + "\nCo-leaders: " + convertCoLeaders()
                 + "\nNobles: " + convertNobles()
                 + "\nCitizens: " + convertCitizens()
+                + "\nTotal wins: " + totalWins
+                + "\nAt war: " + convertAtWar()
                 ;
     }
 
@@ -362,6 +370,14 @@ public class FactionCore {
         StringBuilder builder = new StringBuilder(coLeaders.size() +"/" + getCoLeadersAmountPerLevel(level) + "\n");
         for(var obj : coLeaders){
             builder.append("  ").append(obj).append('\n');
+        }
+        return builder.toString();
+    }
+
+    private String convertAtWar(){
+        StringBuilder builder = new StringBuilder("\n");
+        for(var obj : atWar){
+            builder.append("  ").append(obj.id()).append(" -- ").append(obj.isAggressor() ? "Aggressor" : "Victim").append("\n");
         }
         return builder.toString();
     }
@@ -417,6 +433,37 @@ public class FactionCore {
         return result;
     }
 
+    public List<Integer> getAllAtWar(){
+        return atWar.stream().map(WarInfo::id).toList();
+    }
+
+    public void addAtWar(int id, boolean isAggressor){
+        atWar.add(new WarInfo(id, isAggressor));
+    }
+
+    public void removeAtWar(int id){
+        var data = atWar.stream().filter(obj -> obj.id() == id).findFirst();
+        if(data.isEmpty()) return;
+
+        atWar.remove(data.get());
+    }
+
+    public boolean isAtWar(int id){
+        return atWar.stream().anyMatch(obj -> obj.id() == id);
+    }
+
+    public boolean isAggressor(int id){
+        return atWar.stream().anyMatch(obj -> obj.id() == id && obj.isAggressor());
+    }
+
+    public int getTotalWins(){
+        return totalWins;
+    }
+
+    public void setTotalWins(int value){
+        totalWins = value;
+    }
+
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         tag.putInt("level", level);
         tag.putString("leader", leader);
@@ -466,6 +513,15 @@ public class FactionCore {
             bankList.add(obj);
         }
         tag.put("bank", bankList);
+
+        ListTag wars = new ListTag();
+        for (WarInfo war : atWar) {
+            wars.add(war.toNBT());
+        }
+
+        tag.put("at_war", wars);
+
+        tag.putInt("total_wins", totalWins);
 
         return tag;
     }
@@ -519,6 +575,13 @@ public class FactionCore {
 
         faction.coreClaim = new ChunkPos(x, z);
 
+        ListTag wars = tag.getList("at_war", Tag.TAG_COMPOUND);
+        for (Tag element : wars) {
+            faction.atWar.add(WarInfo.fromNBT((CompoundTag) element));
+        }
+
+        faction.totalWins = tag.getInt("total_wins");
+
         return faction;
     }
 }
@@ -548,5 +611,22 @@ record ChunkInfo(ChunkPos pos, int accessLevel){
         int z = tag.getInt("z");
 
         return new ChunkInfo(new ChunkPos(x, z), level);
+    }
+}
+
+record WarInfo(int id, boolean isAggressor){
+    public CompoundTag toNBT(){
+        var tag = new CompoundTag();
+        tag.putInt("war_id", id);
+        tag.putBoolean("aggressor", isAggressor);
+
+        return tag;
+    }
+
+    public static WarInfo fromNBT(CompoundTag tag){
+        int id = tag.getInt("war_id");
+        boolean aggressor = tag.getBoolean("aggressor");
+
+        return new WarInfo(id, aggressor);
     }
 }
