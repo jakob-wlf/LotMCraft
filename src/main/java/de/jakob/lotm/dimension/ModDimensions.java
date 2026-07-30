@@ -294,7 +294,6 @@ public class ModDimensions {
     public static final ResourceKey<Biome> CHAOS_SEA_BIOME_KEY =
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "chaos_sea_biome"));
-
     // =========================================================================
     // RIVER OF ETERNAL DARKNESS dimension
     // =========================================================================
@@ -314,6 +313,126 @@ public class ModDimensions {
     public static final ResourceKey<Biome> RIVER_OF_ETERNAL_DARKNESS_BIOME_KEY =
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "river_of_eternal_darkness_biome"));
+
+    // =========================================================================
+    // BROOD HIVE dimension
+    // =========================================================================
+
+    public static final ResourceKey<LevelStem> SEFIRAH_CASTLE_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<Level> SEFIRAH_CASTLE_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<DimensionType> SEFIRAH_CASTLE_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<Biome> SEFIRAH_CASTLE_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle_biome"));
+
+    // =========================================================================
+    // CITY OF CALAMITY dimension
+    // =========================================================================
+
+    public static final ResourceKey<LevelStem> SEFIRAH_CASTLE_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<Level> SEFIRAH_CASTLE_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<DimensionType> SEFIRAH_CASTLE_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<Biome> SEFIRAH_CASTLE_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle_biome"));
+
+    // =========================================================================
+    // NATION OF DISORDER dimension
+    // =========================================================================
+
+    public static final ResourceKey<LevelStem> SEFIRAH_CASTLE_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<Level> SEFIRAH_CASTLE_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<DimensionType> SEFIRAH_CASTLE_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<Biome> SEFIRAH_CASTLE_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle_biome"));
+
+    // =========================================================================
+    // TENEBROUS WORLD dimension
+    // =========================================================================
+
+    public static final ResourceKey<LevelStem> SEFIRAH_CASTLE_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<Level> SEFIRAH_CASTLE_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<DimensionType> SEFIRAH_CASTLE_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<Biome> SEFIRAH_CASTLE_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle_biome"));
+
+    // =========================================================================
+    // KNOWLEDGE MOOR dimension
+    // =========================================================================
+
+    public static final ResourceKey<LevelStem> SEFIRAH_CASTLE_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<Level> SEFIRAH_CASTLE_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<DimensionType> SEFIRAH_CASTLE_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<Biome> SEFIRAH_CASTLE_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle_biome"));
+
+    // =========================================================================
+    // KEY OF LIGHT dimension
+    // =========================================================================
+
+    public static final ResourceKey<LevelStem> SEFIRAH_CASTLE_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<Level> SEFIRAH_CASTLE_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<DimensionType> SEFIRAH_CASTLE_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+
+    public static final ResourceKey<Biome> SEFIRAH_CASTLE_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle_biome"));
 
     // =========================================================================
     // CONCEALMENT WORLD dimension

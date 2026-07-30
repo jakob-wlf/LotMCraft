@@ -43,6 +43,12 @@ public class SefirotAuthorityManager {
         m.put("sefirah_castle",            Arrays.asList("fool", "error", "door"));
         m.put("river_of_eternal_darkness", Arrays.asList("darkness", "death", "twilight_giant"));
         m.put("chaos_sea",                 Arrays.asList("sun", "tyrant", "visionary", "hanged_man", "white_tower"));
+        m.put("brood_hive",                Arrays.asList("mother", "moon"));
+        m.put("city_of_calamity",          Arrays.asList("red_priest", "demoness"));
+        m.put("nation_of_disorder",        Arrays.asList("black_emperor", "justiciar"));
+        m.put("tenebrous_world",           Arrays.asList("abyss", "chained"));
+        m.put("knowledge_moor",            Arrays.asList("hermit", "paragon"));
+        m.put("key_of_light",              Arrays.asList("wheel_of_fortune"));
         NEIGHBORING_PATHS = Collections.unmodifiableMap(m);
     }
 

@@ -28,7 +28,13 @@ public class SefirahHandler {
             "sefirah_castle",
             "river_of_eternal_darkness",
             "chaos_sea",
-            "empty"
+            "brood_hive",
+            "city_of_calamity",
+            "nation_of_disorder",
+            "tenebrous_world",
+            "knowledge_moor",
+            "key_of_light",
+            "!empty"
     };
 
     public static boolean claimSefirot(ServerPlayer player, String sefirot) {
