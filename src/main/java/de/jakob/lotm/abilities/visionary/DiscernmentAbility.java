@@ -106,22 +106,22 @@ public class DiscernmentAbility extends ToggleAbility {
         if(VisionaryHandler.shouldFailAndTrigger(seq, entity, tracker.entity(), this))
             return;
 
-        Ability usedSkill = tracker.ability();
-        if(usedSkill.getRequirements().containsKey("visionary") && !cooldown.containsKey(entity.getUUID())){
-            String pos = "x=" + (int) tracker.position().x + " y=" + (int) tracker.position().y + " z=" + (int) tracker.position().z;
-
-            entity.sendSystemMessage(Component.literal("You sense the usage of "
-                    + usedSkill.getId() + " at " + pos + " by " + tracker.entity().getName().getString())
-                    .withColor(0xf5c56c));
-
-            cooldown.put(entity.getUUID(), 0);
-        }
-
-        if(cooldown.containsKey(entity.getUUID())) {
-            cooldown.put(entity.getUUID(), cooldown.get(entity.getUUID()) + 1);
-            if (cooldown.get(entity.getUUID()) >= COOLDOWN)
-                cooldown.remove(entity.getUUID());
-        }
+//        Ability usedSkill = tracker.ability();
+//        if(usedSkill.getRequirements().containsKey("visionary") && !cooldown.containsKey(entity.getUUID())){
+//            String pos = "x=" + (int) tracker.position().x + " y=" + (int) tracker.position().y + " z=" + (int) tracker.position().z;
+//
+//            entity.sendSystemMessage(Component.literal("You sense the usage of "
+//                    + usedSkill.getId() + " at " + pos + " by " + tracker.entity().getName().getString())
+//                    .withColor(0xf5c56c));
+//
+//            cooldown.put(entity.getUUID(), 0);
+//        }
+//
+//        if(cooldown.containsKey(entity.getUUID())) {
+//            cooldown.put(entity.getUUID(), cooldown.get(entity.getUUID()) + 1);
+//            if (cooldown.get(entity.getUUID()) >= COOLDOWN)
+//                cooldown.remove(entity.getUUID());
+//        }
 
         int entitySeq = BeyonderData.getSequence(entity);
         if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){

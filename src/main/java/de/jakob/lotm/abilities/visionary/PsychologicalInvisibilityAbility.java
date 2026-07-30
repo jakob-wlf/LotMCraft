@@ -51,6 +51,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         canBeCopied = false;
         canBeReplicated = false;
         cannotBeStolen = true;
+        canBeUsedInArtifact = false;
     }
 
     @Override
@@ -248,7 +249,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         if (event.getSource().getEntity() instanceof LivingEntity player) {
             var source = event.getSource();
 
-            if (!(source.is(ModDamageTypes.BEYONDER_GENERIC)) || !(source.is(ModDamageTypes.LOOSING_CONTROL))) {
+            if (!(source.is(ModDamageTypes.LOOSING_CONTROL))) {
                 if (invisiblePlayers.containsKey(player.getUUID())) {
                     remove(player);
                 }
@@ -274,22 +275,24 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
 
             if (clientPlayer == player) return;
 
+            boolean shouldFail = false;
+
             if (clientPlayer != null) {
                 if (ClientBeyonderCache.getPathway(clientPlayer.getUUID()).equals("visionary") &&
                         ClientBeyonderCache.getSequence(clientPlayer.getUUID()) < invisiblePlayersClient.get(player.getUUID()))
-                    return;
+                    shouldFail = true;
 
                 if (DecryptionRenderLayer.activeDecryption.contains(clientPlayer.getUUID()) ||
                         SpiritVisionOverlayRenderer.entitiesLookedAt.containsKey(clientPlayer.getUUID())) {
                     if (AbilityUtil.isTargetSignificantlyWeaker(ClientBeyonderCache.getSequence(clientPlayer.getUUID()),
                             invisiblePlayersClient.get(player.getUUID())))
-                        return;
+                        shouldFail = true;
                 }
             }
 
-            player.setInvisible(true);
-            player.setGlowingTag(false);
-            event.setCanceled(true);
+            player.setInvisible(!shouldFail);
+            player.setGlowingTag(shouldFail);
+            event.setCanceled(!shouldFail);
         }
     }
 

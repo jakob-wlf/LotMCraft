@@ -52,9 +52,9 @@ public class VisionaryLoosingControlHandler {
             case 6, 5 -> 2;
             case 4 -> 6;
             case 3 -> 10;
-            case 2 -> 20;
-            case 1 -> 30;
-            case 0 -> 50;
+            case 2 -> 18;
+            case 1 -> 28;
+            case 0 -> 40;
             default -> 0;
         };
     }
