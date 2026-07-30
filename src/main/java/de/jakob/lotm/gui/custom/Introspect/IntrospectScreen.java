@@ -1097,13 +1097,13 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 tooltipLines.add(Component.literal(""));
             }
 
-            int cooldown = hoveredAbility.getCooldown();
+            int cooldown = hoveredAbility.getCooldown(menu.getSequence());
             if (cooldown > 0) {
                 tooltipLines.add(Component.literal("Cooldown: ").withStyle(ChatFormatting.DARK_GRAY)
                         .append(Component.literal(cooldown / 20 + "s").withStyle(ChatFormatting.BLUE)));
             }
 
-            float spiritualityCost = hoveredAbility.spiritualityCost();
+            float spiritualityCost = hoveredAbility.spiritualityCost(menu.getSequence());
             if (spiritualityCost > 0) {
                 tooltipLines.add(Component.literal("Spirituality Cost: ").withStyle(ChatFormatting.DARK_GRAY)
                         .append(Component.literal(spiritualityCost + "").withStyle(ChatFormatting.DARK_PURPLE)));

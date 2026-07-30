@@ -28,10 +28,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class Ability {
 
@@ -70,6 +67,14 @@ public abstract class Ability {
     public HashMap<UUID, Integer> artifactScalingMap;
     protected boolean autoClear = true;
 
+    //dynamic spirituality
+    public boolean hasDynamicSpirituality = false;
+    public List<Float> dynamicSpirituality = new LinkedList<>(); // must be for every seq, if enabled
+
+    //dynamic cooldown
+    public boolean hasDynamicCooldown = false;
+    public List<Integer> dynamicCooldown = new LinkedList<>(); // must be for every seq, if enabled
+
     public Ability(String id, float cooldown, String... interactionFlags) {
         this.id = id;
         this.cooldown = Math.round(cooldown * 20);
@@ -103,9 +108,12 @@ public abstract class Ability {
             return;
         }
 
+        //Sequence for dynamic cooldown and spirituality
+        int seq = AbilityUtil.getSeqWithArt(newUser, this);
+
         // Consume spirituality
         if(shouldConsumeSpirituality(newUser) && consumeSpirituality) {
-            float cost = getInflatedSpiritualityCost(newUser, serverLevel);
+            float cost = getInflatedSpiritualityCost(newUser, serverLevel, seq);
             float current = BeyonderData.getSpirituality(newUser);
 
             // A spirituality shortfall (up to 30%) is paid in sanity: deeper deficits and pricier abilities cost more,
@@ -135,11 +143,13 @@ public abstract class Ability {
 
         // Handle Cooldown
         AbilityCooldownComponent component = newUser.getData(ModAttachments.COOLDOWN_COMPONENT);
-        int inflatedCooldown = cooldown;
+        int trueCooldown = hasDynamicCooldown ? 20 * dynamicCooldown.get(seq) : cooldown;
+
+        int inflatedCooldown = trueCooldown;
         var pdata = newUser.getPersistentData();
         if (pdata.contains(EntropySubAbility.SENSORY_DECAY_COOLDOWN_MULT_KEY)) {
             if (pdata.getLong(EntropySubAbility.SENSORY_DECAY_COOLDOWN_UNTIL_KEY) > serverLevel.getGameTime()) {
-                inflatedCooldown = (int)(cooldown * pdata.getFloat(EntropySubAbility.SENSORY_DECAY_COOLDOWN_MULT_KEY));
+                inflatedCooldown = (int)(trueCooldown * pdata.getFloat(EntropySubAbility.SENSORY_DECAY_COOLDOWN_MULT_KEY));
             } else {
                 pdata.remove(EntropySubAbility.SENSORY_DECAY_COOLDOWN_MULT_KEY);
                 pdata.remove(EntropySubAbility.SENSORY_DECAY_COOLDOWN_UNTIL_KEY);
@@ -186,8 +196,8 @@ public abstract class Ability {
 
     protected abstract float getSpiritualityCost();
 
-    public float getInflatedSpiritualityCost(LivingEntity entity, ServerLevel level) {
-        float base = getSpiritualityCost();
+    public float getInflatedSpiritualityCost(LivingEntity entity, ServerLevel level, int seq) {
+        float base = hasDynamicSpirituality ? dynamicSpirituality.get(seq) : getSpiritualityCost();
         var pdata = entity.getPersistentData();
         if (pdata.contains(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY)) {
             if (pdata.getLong(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY) > level.getGameTime()) {
@@ -376,11 +386,11 @@ public abstract class Ability {
         return shouldBeHidden;
     }
 
-    public int getCooldown() {
-        return cooldown;
+    public int getCooldown(int seq) {
+        return hasDynamicCooldown ? 20 * dynamicCooldown.get(seq) : cooldown;
     }
 
-    public float spiritualityCost() {
-        return getSpiritualityCost();
+    public float spiritualityCost(int seq) {
+        return hasDynamicSpirituality ? dynamicSpirituality.get(seq) : getSpiritualityCost();
     }
 }
