@@ -185,9 +185,8 @@ public class SefirahHandler {
         String sefirot = sefirotData.getClaimedSefirot(player.getUUID());
         switch (sefirot) {
             case "sefirah_castle" -> {
-                ResourceKey<Level> sefirotDimension = ResourceKey.create(Registries.DIMENSION,
-                        ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
-                ServerLevel sefirotLevel = player.serverLevel().getServer().getLevel(sefirotDimension);
+                ServerLevel sefirotLevel = player.serverLevel().getServer().getLevel(
+                        ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY);
                 if (sefirotLevel == null) {
                     return;
                 }
@@ -199,15 +198,15 @@ public class SefirahHandler {
                         90,
                         0);
 
-                    SefrotInvasionManager.recordOwnerEntry(player);
+                SefrotInvasionManager.recordOwnerEntry(player);
 
-                if(playTeleportEffect) {
+                if (playTeleportEffect) {
                     EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 24, -57, 0, sefirotLevel);
                 }
             }
             case "river_of_eternal_darkness" -> {
                 ServerLevel riverLevel = player.serverLevel().getServer().getLevel(
-                        de.jakob.lotm.dimension.ModDimensions.RIVER_OF_ETERNAL_DARKNESS_DIMENSION_KEY);
+                        ModDimensions.RIVER_OF_ETERNAL_DARKNESS_DIMENSION_KEY);
                 if (riverLevel == null) {
                     return;
                 }
@@ -218,11 +217,11 @@ public class SefirahHandler {
                         RiverBlessingManager.AUDIENCE_Z,
                         0,
                         0);
-                    SefrotInvasionManager.recordOwnerEntry(player);
+                SefrotInvasionManager.recordOwnerEntry(player);
             }
             case "chaos_sea" -> {
                 ServerLevel chaosSeaLevel = player.serverLevel().getServer().getLevel(
-                        de.jakob.lotm.dimension.ModDimensions.CHAOS_SEA_DIMENSION_KEY);
+                        ModDimensions.CHAOS_SEA_DIMENSION_KEY);
                 if (chaosSeaLevel == null) {
                     return;
                 }
@@ -234,10 +233,31 @@ public class SefirahHandler {
                         -90,
                         0);
 
-                    SefrotInvasionManager.recordOwnerEntry(player);
+                SefrotInvasionManager.recordOwnerEntry(player);
 
                 if (playTeleportEffect) {
                     EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, chaosSeaLevel);
+                }
+
+            }
+            case "brood_hive" -> {
+                ServerLevel broodHiveLevel = player.serverLevel().getServer().getLevel(
+                        ModDimensions.BROOD_HIVE_DIMENSION_KEY);
+                if (broodHiveLevel == null) {
+                    return;
+                }
+
+                player.teleportTo(broodHiveLevel,
+                        23568,
+                        66,
+                        299,
+                        -90,
+                        0);
+
+                SefrotInvasionManager.recordOwnerEntry(player);
+
+                if (playTeleportEffect) {
+                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, broodHiveLevel);
                 }
             }
         }
@@ -253,6 +273,7 @@ public class SefirahHandler {
             case "sefirah_castle"            -> ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY;
             case "chaos_sea"                 -> ModDimensions.CHAOS_SEA_DIMENSION_KEY;
             case "river_of_eternal_darkness" -> ModDimensions.RIVER_OF_ETERNAL_DARKNESS_DIMENSION_KEY;
+            case "brood_hive"                -> ModDimensions.BROOD_HIVE_DIMENSION_KEY;
             default                          -> null;
         };
     }

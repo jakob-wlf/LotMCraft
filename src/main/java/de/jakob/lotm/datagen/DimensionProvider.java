@@ -102,6 +102,23 @@ public class DimensionProvider {
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
                                                     .build());
 
+                                    bootstrap.register(ModDimensions.BROOD_HIVE_BIOME_KEY,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.5f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x808080)
+                                                            .fogColor(0x808080)
+                                                            .waterColor(0x3f76e4)
+                                                            .waterFogColor(0x050533)
+                                                            .grassColorOverride(0x79c05a)
+                                                            .foliageColorOverride(0x59ae30)
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
                                     bootstrap.register(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_BIOME_KEY,
                                             new Biome.BiomeBuilder()
                                                     .hasPrecipitation(false)
@@ -529,6 +546,13 @@ public class DimensionProvider {
                                                             new FixedBiomeSource(
                                                                     biomeRegistry.getOrThrow(ModDimensions.CHAOS_SEA_BIOME_KEY)),
                                                             "data/lotmcraft/dimension_data/chaos_sea/")));
+
+                                    bootstrap.register(ModDimensions.BROOD_HIVE_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.BROOD_HIVE_TYPE_KEY),
+                                                    new NatureDimensionWorldChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.BROOD_HIVE_BIOME_KEY)))));
                                 }),
                         Set.of(LOTMCraft.MOD_ID)
                 )
