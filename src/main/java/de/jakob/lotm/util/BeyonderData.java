@@ -103,21 +103,27 @@ public class BeyonderData {
 
     public static final List<String> implementedPathways = List.of(
             "fool",
-            "door",
             "error",
+            "door",
+            "visionary",
             "sun",
             "tyrant",
+            //"white_tower",
+            //"hanged_man",
             "darkness",
+            "death",
+            "twilight_giant",
             "demoness",
             "red_priest",
-            "mother",
-            "abyss",
-            "visionary",
+            "hermit",
+            //"paragon",
             "wheel_of_fortune",
-            "death",
-            "justiciar",
-            "twilight_giant",
-            "black_emperor"
+            "mother",
+            //"moon",
+            "abyss",
+            //"chained",
+            "black_emperor",
+            "justiciar"
     );
 
     public static int getHighestImplementedSequence(String pathway) {
