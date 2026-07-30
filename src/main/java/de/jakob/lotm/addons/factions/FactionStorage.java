@@ -225,6 +225,14 @@ public class FactionStorage extends SavedData {
         return false;
     }
 
+    public void setLevel(int id, int level){
+        var faction = getFaction(id);
+        faction.setLevel(level);
+
+        factions.put(id, faction);
+        setDirty();
+    }
+
     public void addCitizen(int id, String name) {
         var faction = factions.get(id);
 
@@ -462,10 +470,14 @@ public class FactionStorage extends SavedData {
     }
 
     public void winWar(List<Integer> winnersId, int looserId, ServerLevel level) {
+        var looser = factions.get(looserId);
+        int looserLevel = looser.getLevel();
+
         for(var winnerId : winnersId) {
             var winner = factions.get(winnerId);
 
-            winner.setTotalWins(winner.getTotalWins() + 1);
+            if(winner.getLevel() <= looserLevel)
+                winner.setTotalWins(winner.getTotalWins() + 1);
             winner.removeAtWar(looserId);
 
             factions.put(winnerId, winner);

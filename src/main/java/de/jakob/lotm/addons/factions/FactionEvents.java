@@ -164,6 +164,8 @@ public class FactionEvents {
                     int attackers = 1;
                     int defenders = 0;
 
+                    List<ServerPlayer> attackersList = new LinkedList<>();
+
                     for (var obj : entry.getValue()) {
                         int value = BeyonderData.factionStorage.isAtWar(obj, entry.getKey());
 
@@ -171,6 +173,11 @@ public class FactionEvents {
                             attackers += 1;
                             if (value == 1)
                                 type = 1;
+                            var attacker = event.getServer().overworld().getPlayerByUUID(Objects.requireNonNull(BeyonderData.playerMap.getKeyByName(obj)));
+                            if(attacker == null) continue;
+
+                            attackersList.add((ServerPlayer) attacker);
+
                         } else if (BeyonderData.factionStorage.isPartOfAndClaimed(obj, entry.getKey()))
                             defenders += 1;
                     }
@@ -193,6 +200,19 @@ public class FactionEvents {
 
                     if (defenders != 0) break;
 
+                    int claimedAmount = 0;
+                    for (int dx = -1; dx <= 1; dx++) {
+                        for (int dz = -1; dz <= 1; dz++) {
+                            if (dx == 0 && dz == 0) continue;
+
+                            if (factionObj.isClaimed(new ChunkPos(entry.getKey().x + dx, entry.getKey().z + dz))) {
+                                claimedAmount++;
+                            }
+                        }
+                    }
+
+                    if(claimedAmount == 8) break;
+
                     if (ticks % (20 * 10) * BeyonderData.factionStorage.getClaimLevel(entry.getKey(), type) == 0) {
                         Tuple<Integer, Integer> pair;
 
@@ -202,8 +222,8 @@ public class FactionEvents {
                             pair = new Tuple<>(type, 0);
                         }
 
-                        pair.setA(type);
-                        pair.setB(pair.getB() + 1);
+                        pair.setA(attackers); //amount of attacks
+                        pair.setB(pair.getB() + 1); //progress
 
                         warProgress.put(entry.getKey(), pair);
 
@@ -211,12 +231,16 @@ public class FactionEvents {
                             var blockpos = entry.getKey().getWorldPosition();
                             BeyonderData.factionStorage.messageEveryoneInFaction(event.getServer().overworld(), faction,
                                     Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() +"] was lost").withStyle(ChatFormatting.RED));
+
+                            messageAll(attackersList, Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() +"] was conquered").withStyle(ChatFormatting.DARK_GREEN));
                             BeyonderData.factionStorage.unclaim(faction, entry.getKey());
                         } else {
-                            if (pair.getB() % 25 == 0) {
+                            if (pair.getB() % 25 == 0 || pair.getB() == 1) {
                                 var blockpos = entry.getKey().getWorldPosition();
                                 BeyonderData.factionStorage.messageEveryoneInFaction(event.getServer().overworld(), faction,
-                                        Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() +"] is under attack").withStyle(ChatFormatting.RED));
+                                        Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() +"] is under attack - " + pair.getB() + "%").withStyle(ChatFormatting.RED));
+
+                                messageAll(attackersList, Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() +"] - " + pair.getB() + "%").withStyle(ChatFormatting.DARK_GREEN));
                             }
                         }
 
@@ -231,18 +255,29 @@ public class FactionEvents {
 
         }
 
-        long oneWeekMillis = 7L * 24 * 60 * 60 * 1000;
-        var set = BeyonderData.factionStorage.getLastOnlineEntrySet();
-        for (var obj : set) {
-            if (BeyonderData.factionStorage.isAtAnyWar(obj.getKey()) &&
-                    (System.currentTimeMillis() - obj.getValue() >= oneWeekMillis)) {
-                BeyonderData.factionStorage.messageEveryoneInFaction(event.getServer().overworld(), obj.getKey(),
-                        Component.literal("Your faction was disbanded due to inactivity during the war").withStyle(ChatFormatting.RED));
+//        long oneWeekMillis = 7L * 24 * 60 * 60 * 1000;
+//        long now = System.currentTimeMillis();
+//        List<Integer> toDisband = new LinkedList<>();
+//
+//        var set = BeyonderData.factionStorage.getLastOnlineEntrySet();
+//        for (var obj : set) {
+//            if (BeyonderData.factionStorage.isAtAnyWar(obj.getKey()) &&
+//                    (now - obj.getValue() >= oneWeekMillis)) {
+//                BeyonderData.factionStorage.messageEveryoneInFaction(event.getServer().overworld(), obj.getKey(),
+//                        Component.literal("Your faction was disbanded due to inactivity during the war").withStyle(ChatFormatting.RED));
+//
+//                toDisband.add(obj.getKey());
+//            }
+//        }
+//        for(var obj : toDisband){
+//            BeyonderData.factionStorage.disband(obj);
+//        }
 
-                BeyonderData.factionStorage.disband(obj.getKey());
+        for(var obj : warProgress.entrySet()){
+            if(obj.getValue().getA() == 0){
+                warProgress.remove(obj.getKey());
             }
         }
-
     }
 
     @SubscribeEvent
@@ -299,4 +334,10 @@ public class FactionEvents {
 
     }
 
+
+    private static void messageAll(List<ServerPlayer> list, Component msg){
+        for(var obj : list){
+            obj.sendSystemMessage(msg);
+        }
+    }
 }

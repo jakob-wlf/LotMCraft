@@ -203,17 +203,7 @@ public class FactionCommand {
 
                             return 1;
                         })
-                )
-                .then(Commands.literal("all")
-                        .requires(source -> source.hasPermission(2))
-                        .executes(context -> {
-                                    CommandSourceStack source = context.getSource();
-
-                                    source.sendSystemMessage(Component.literal(BeyonderData.factionStorage.getAllShortInfo() + "\n"));
-
-                                    return 1;
-                                }
-                        ));
+                );
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> claim() {
@@ -1743,15 +1733,20 @@ public class FactionCommand {
                                                         return 0;
                                                     }
 
-                                                    if(faction.getId() == id){
+                                                    if (faction.getId() == id) {
                                                         source.sendFailure(Component.literal("Incorrect target faction id. You can't declare war to yourself!"));
+                                                        return 0;
+                                                    }
+
+                                                    if (faction.getLevel() == 0) {
+                                                        source.sendFailure(Component.literal("Your faction must be at least level 1!"));
                                                         return 0;
                                                     }
 
                                                     BeyonderData.factionStorage.declareWar(faction.getId(), targetFaction.getId());
 
                                                     BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), faction.getId(), Component.literal("Declared war to \"" + targetFaction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
-                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), targetFaction.getId(), Component.literal( "\"" + faction.getName() + "\" declared war\n").withStyle(ChatFormatting.RED));
+                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), targetFaction.getId(), Component.literal("\"" + faction.getName() + "\" declared war\n").withStyle(ChatFormatting.RED));
 
                                                     return 1;
                                                 }
@@ -1789,12 +1784,12 @@ public class FactionCommand {
                                                         return 0;
                                                     }
 
-                                                    if(faction.getId() == id){
+                                                    if (faction.getId() == id) {
                                                         source.sendFailure(Component.literal("Incorrect target faction id. You can't stop war against yourself!"));
                                                         return 0;
                                                     }
 
-                                                    if(!faction.isAggressor(targetFaction.getId())){
+                                                    if (!faction.isAggressor(targetFaction.getId())) {
                                                         source.sendFailure(Component.literal("Your faction must be aggressor of the war!"));
                                                         return 0;
                                                     }
@@ -1802,7 +1797,7 @@ public class FactionCommand {
                                                     BeyonderData.factionStorage.stopWar(faction.getId(), targetFaction.getId());
 
                                                     BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), faction.getId(), Component.literal("Stopped war against \"" + targetFaction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
-                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), targetFaction.getId(), Component.literal( "\"" + faction.getName() + "\" stopped war\n").withStyle(ChatFormatting.GREEN));
+                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), targetFaction.getId(), Component.literal("\"" + faction.getName() + "\" stopped war\n").withStyle(ChatFormatting.GREEN));
 
                                                     return 1;
                                                 }
@@ -1843,15 +1838,20 @@ public class FactionCommand {
                                                         return 0;
                                                     }
 
-                                                    if(faction.getId() == id){
+                                                    if (faction.getId() == id) {
                                                         source.sendFailure(Component.literal("Incorrect target faction id. You can't declare war to yourself!"));
+                                                        return 0;
+                                                    }
+
+                                                    if (faction.getLevel() == 0) {
+                                                        source.sendFailure(Component.literal("Your faction must be at least level 1!"));
                                                         return 0;
                                                     }
 
                                                     BeyonderData.factionStorage.declareWar(faction.getId(), targetFaction.getId());
 
                                                     BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), faction.getId(), Component.literal("Declared war to \"" + targetFaction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
-                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), targetFaction.getId(), Component.literal( "\"" + faction.getName() + "\" declared war\n").withStyle(ChatFormatting.RED));
+                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), targetFaction.getId(), Component.literal("\"" + faction.getName() + "\" declared war\n").withStyle(ChatFormatting.RED));
 
                                                     return 1;
                                                 }
@@ -1889,12 +1889,12 @@ public class FactionCommand {
                                                         return 0;
                                                     }
 
-                                                    if(faction.getId() == id){
+                                                    if (faction.getId() == id) {
                                                         source.sendFailure(Component.literal("Incorrect target faction id. You can't stop war against yourself!"));
                                                         return 0;
                                                     }
 
-                                                    if(!faction.isAggressor(targetFaction.getId())){
+                                                    if (!faction.isAggressor(targetFaction.getId())) {
                                                         source.sendFailure(Component.literal("Your faction must be aggressor of the war!"));
                                                         return 0;
                                                     }
@@ -1902,7 +1902,7 @@ public class FactionCommand {
                                                     BeyonderData.factionStorage.stopWar(faction.getId(), targetFaction.getId());
 
                                                     BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), faction.getId(), Component.literal("Stopped war against \"" + targetFaction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
-                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), targetFaction.getId(), Component.literal( "\"" + faction.getName() + "\" stopped war\n").withStyle(ChatFormatting.GREEN));
+                                                    BeyonderData.factionStorage.messageEveryoneInFaction(source.getLevel(), targetFaction.getId(), Component.literal("\"" + faction.getName() + "\" stopped war\n").withStyle(ChatFormatting.GREEN));
 
                                                     return 1;
                                                 }

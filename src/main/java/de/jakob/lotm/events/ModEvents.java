@@ -244,6 +244,7 @@ public class ModEvents {
         SefirotCommand.register(event.getDispatcher());
         ResetCapCommand.register(event.getDispatcher());
         FactionCommand.register(event.getDispatcher());
+        FactionAdminCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent
