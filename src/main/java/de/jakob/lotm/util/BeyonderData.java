@@ -115,7 +115,7 @@ public class BeyonderData {
             "twilight_giant",
             "demoness",
             "red_priest",
-            "hermit",
+            //"hermit",
             //"paragon",
             "wheel_of_fortune",
             "mother",
