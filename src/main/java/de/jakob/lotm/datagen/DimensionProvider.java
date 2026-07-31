@@ -550,50 +550,50 @@ public class DimensionProvider {
                                     bootstrap.register(ModDimensions.BROOD_HIVE_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.BROOD_HIVE_TYPE_KEY),
-                                                    new PreGeneratedChunkGenerator(
+                                                    // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
                                                             new FixedBiomeSource(
-                                                                    biomeRegistry.getOrThrow(ModDimensions.BROOD_HIVE_BIOME_KEY)),
-                                                            "data/lotmcraft/dimension_data/brood_hive/")));
+                                                                    biomeRegistry.getOrThrow(ModDimensions.BROOD_HIVE_BIOME_KEY)))));
 
                                     bootstrap.register(ModDimensions.CITY_OF_CALAMITY_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.CITY_OF_CALAMITY_TYPE_KEY),
-                                                    new PreGeneratedChunkGenerator(
+                                                    // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
                                                             new FixedBiomeSource(
-                                                                    biomeRegistry.getOrThrow(ModDimensions.CITY_OF_CALAMITY_BIOME_KEY)),
-                                                            "data/lotmcraft/dimension_data/city_of_calamity/")));
+                                                                    biomeRegistry.getOrThrow(ModDimensions.CITY_OF_CALAMITY_BIOME_KEY)))));
 
                                     bootstrap.register(ModDimensions.NATION_OF_DISORDER_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.NATION_OF_DISORDER_TYPE_KEY),
-                                                    new PreGeneratedChunkGenerator(
+                                                    // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
                                                             new FixedBiomeSource(
-                                                                    biomeRegistry.getOrThrow(ModDimensions.NATION_OF_DISORDER_BIOME_KEY)),
-                                                            "data/lotmcraft/dimension_data/nation_of_disorder/")));
+                                                                    biomeRegistry.getOrThrow(ModDimensions.NATION_OF_DISORDER_BIOME_KEY)))));
 
                                     bootstrap.register(ModDimensions.TENEBROUS_WORLD_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.TENEBROUS_WORLD_TYPE_KEY),
-                                                    new PreGeneratedChunkGenerator(
+                                                     // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
                                                             new FixedBiomeSource(
-                                                                    biomeRegistry.getOrThrow(ModDimensions.TENEBROUS_WORLD_BIOME_KEY)),
-                                                            "data/lotmcraft/dimension_data/tenebrous_world/")));
+                                                                    biomeRegistry.getOrThrow(ModDimensions.TENEBROUS_WORLD_BIOME_KEY)))));
 
                                     bootstrap.register(ModDimensions.KNOWLEDGE_MOOR_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.KNOWLEDGE_MOOR_TYPE_KEY),
-                                                    new PreGeneratedChunkGenerator(
+                                                    // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
                                                             new FixedBiomeSource(
-                                                                    biomeRegistry.getOrThrow(ModDimensions.KNOWLEDGE_MOOR_BIOME_KEY)),
-                                                            "data/lotmcraft/dimension_data/knowledge_moor/")));
+                                                                    biomeRegistry.getOrThrow(ModDimensions.KNOWLEDGE_MOOR_BIOME_KEY)))));
 
                                     bootstrap.register(ModDimensions.KEY_OF_LIGHT_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.KEY_OF_LIGHT_TYPE_KEY),
-                                                    new PreGeneratedChunkGenerator(
+                                                    // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
                                                             new FixedBiomeSource(
-                                                                    biomeRegistry.getOrThrow(ModDimensions.KEY_OF_LIGHT_BIOME_KEY)),
-                                                            "data/lotmcraft/dimension_data/key_of_light/")));
+                                                                    biomeRegistry.getOrThrow(ModDimensions.KEY_OF_LIGHT_BIOME_KEY)))));
                                 }),
                         Set.of(LOTMCraft.MOD_ID)
                 )
