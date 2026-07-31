@@ -260,6 +260,106 @@ public class SefirahHandler {
                     EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, broodHiveLevel);
                 }
             }
+            case "city_of_calamity" -> {
+                ServerLevel cityLevel = player.serverLevel().getServer().getLevel(
+                        ModDimensions.CITY_OF_CALAMITY_DIMENSION_KEY);
+                if (cityLevel == null) {
+                    return;
+                }
+
+                player.teleportTo(cityLevel,
+                        23568,
+                        66,
+                        299,
+                        -90,
+                        0);
+
+                SefrotInvasionManager.recordOwnerEntry(player);
+
+                if (playTeleportEffect) {
+                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, cityLevel);
+                }
+            }
+            case "nation_of_disorder" -> {
+                ServerLevel nationLevel = player.serverLevel().getServer().getLevel(
+                        ModDimensions.NATION_OF_DISORDER_DIMENSION_KEY);
+                if (nationLevel == null) {
+                    return;
+                }
+
+                player.teleportTo(nationLevel,
+                        23568,
+                        66,
+                        299,
+                        -90,
+                        0);
+
+                SefrotInvasionManager.recordOwnerEntry(player);
+
+                if (playTeleportEffect) {
+                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, nationLevel);
+                }
+            }
+            case "tenebrous_world" -> {
+                ServerLevel tenebrousWorldLevel = player.serverLevel().getServer().getLevel(
+                        ModDimensions.TENEBROUS_WORLD_DIMENSION_KEY);
+                if (tenebrousWorldLevel == null) {
+                    return;
+                }
+
+                player.teleportTo(tenebrousWorldLevel,
+                        23568,
+                        66,
+                        299,
+                        -90,
+                        0);
+
+                SefrotInvasionManager.recordOwnerEntry(player);
+
+                if (playTeleportEffect) {
+                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, tenebrousWorldLevel);
+                }
+            }
+            case "knowledge_moor" -> {
+                ServerLevel knowledgeMoorLevel = player.serverLevel().getServer().getLevel(
+                        ModDimensions.KNOWLEDGE_MOOR_DIMENSION_KEY);
+                if (knowledgeMoorLevel == null) {
+                    return;
+                }
+
+                player.teleportTo(knowledgeMoorLevel,
+                        23568,
+                        66,
+                        299,
+                        -90,
+                        0);
+
+                SefrotInvasionManager.recordOwnerEntry(player);
+
+                if (playTeleportEffect) {
+                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, knowledgeMoorLevel);
+                }
+            }
+            case "key_of_light" -> {
+                ServerLevel keyOfLightLevel = player.serverLevel().getServer().getLevel(
+                        ModDimensions.KEY_OF_LIGHT_DIMENSION_KEY);
+                if (keyOfLightLevel == null) {
+                    return;
+                }
+
+                player.teleportTo(keyOfLightLevel,
+                        23568,
+                        66,
+                        299,
+                        -90,
+                        0);
+
+                SefrotInvasionManager.recordOwnerEntry(player);
+
+                if (playTeleportEffect) {
+                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, keyOfLightLevel);
+                }
+            }
         }
     }
 
@@ -274,6 +374,11 @@ public class SefirahHandler {
             case "chaos_sea"                 -> ModDimensions.CHAOS_SEA_DIMENSION_KEY;
             case "river_of_eternal_darkness" -> ModDimensions.RIVER_OF_ETERNAL_DARKNESS_DIMENSION_KEY;
             case "brood_hive"                -> ModDimensions.BROOD_HIVE_DIMENSION_KEY;
+            case "city_of_calamity"          -> ModDimensions.CITY_OF_CALAMITY_DIMENSION_KEY;
+            case "nation_of_disorder"        -> ModDimensions.NATION_OF_DISORDER_DIMENSION_KEY;
+            case "tenebrous_world"           -> ModDimensions.TENEBROUS_WORLD_DIMENSION_KEY;
+            case "knowledge_moor"            -> ModDimensions.KNOWLEDGE_MOOR_DIMENSION_KEY;
+            case "key_of_light"              -> ModDimensions.KEY_OF_LIGHT_DIMENSION_KEY;
             default                          -> null;
         };
     }

@@ -509,6 +509,20 @@ public class DimensionProvider {
                                                     dimensionTypes.getOrThrow(ModDimensions.SPIRIT_WORLD_TYPE_KEY),
                                                     new SpiritWorldChunkGenerator(spiritBiomeSource)));
 
+                                    bootstrap.register(ModDimensions.SPACE_TIME_LABYRINTH_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.SPACE_TIME_LABYRINTH_TYPE_KEY),
+                                                    new SpaceTimeLabyrinthChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.SPACE_TIME_LABYRINTH_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.CONCEALMENT_WORLD_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.CONCEALMENT_WORLD_TYPE_KEY),
+                                                    new ConcealmentWorldChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.CONCEALMENT_WORLD_BIOME_KEY)))));
+
                                     bootstrap.register(ModDimensions.SEFIRAH_CASTLE_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.SEFIRAH_CASTLE_TYPE_KEY),
@@ -525,20 +539,6 @@ public class DimensionProvider {
                                                                     biomeRegistry.getOrThrow(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_BIOME_KEY)),
                                                                     "data/lotmcraft/dimension_data/river_of_eternal_darkness/")));
 
-                                    bootstrap.register(ModDimensions.SPACE_TIME_LABYRINTH_LEVEL_KEY,
-                                            new LevelStem(
-                                                    dimensionTypes.getOrThrow(ModDimensions.SPACE_TIME_LABYRINTH_TYPE_KEY),
-                                                    new SpaceTimeLabyrinthChunkGenerator(
-                                                            new FixedBiomeSource(
-                                                                    biomeRegistry.getOrThrow(ModDimensions.SPACE_TIME_LABYRINTH_BIOME_KEY)))));
-
-                                    bootstrap.register(ModDimensions.CONCEALMENT_WORLD_LEVEL_KEY,
-                                            new LevelStem(
-                                                    dimensionTypes.getOrThrow(ModDimensions.CONCEALMENT_WORLD_TYPE_KEY),
-                                                    new ConcealmentWorldChunkGenerator(
-                                                            new FixedBiomeSource(
-                                                                    biomeRegistry.getOrThrow(ModDimensions.CONCEALMENT_WORLD_BIOME_KEY)))));
-
                                     bootstrap.register(ModDimensions.CHAOS_SEA_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.CHAOS_SEA_TYPE_KEY),
@@ -550,9 +550,50 @@ public class DimensionProvider {
                                     bootstrap.register(ModDimensions.BROOD_HIVE_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.BROOD_HIVE_TYPE_KEY),
-                                                    new NatureDimensionWorldChunkGenerator(
+                                                    new PreGeneratedChunkGenerator(
                                                             new FixedBiomeSource(
-                                                                    biomeRegistry.getOrThrow(ModDimensions.BROOD_HIVE_BIOME_KEY)))));
+                                                                    biomeRegistry.getOrThrow(ModDimensions.BROOD_HIVE_BIOME_KEY)),
+                                                            "data/lotmcraft/dimension_data/brood_hive/")));
+
+                                    bootstrap.register(ModDimensions.CITY_OF_CALAMITY_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.CITY_OF_CALAMITY_TYPE_KEY),
+                                                    new PreGeneratedChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.CITY_OF_CALAMITY_BIOME_KEY)),
+                                                            "data/lotmcraft/dimension_data/city_of_calamity/")));
+
+                                    bootstrap.register(ModDimensions.NATION_OF_DISORDER_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.NATION_OF_DISORDER_TYPE_KEY),
+                                                    new PreGeneratedChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.NATION_OF_DISORDER_BIOME_KEY)),
+                                                            "data/lotmcraft/dimension_data/nation_of_disorder/")));
+
+                                    bootstrap.register(ModDimensions.TENEBROUS_WORLD_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.TENEBROUS_WORLD_TYPE_KEY),
+                                                    new PreGeneratedChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.TENEBROUS_WORLD_BIOME_KEY)),
+                                                            "data/lotmcraft/dimension_data/tenebrous_world/")));
+
+                                    bootstrap.register(ModDimensions.KNOWLEDGE_MOOR_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.KNOWLEDGE_MOOR_TYPE_KEY),
+                                                    new PreGeneratedChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.KNOWLEDGE_MOOR_BIOME_KEY)),
+                                                            "data/lotmcraft/dimension_data/knowledge_moor/")));
+
+                                    bootstrap.register(ModDimensions.KEY_OF_LIGHT_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.KEY_OF_LIGHT_TYPE_KEY),
+                                                    new PreGeneratedChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.KEY_OF_LIGHT_BIOME_KEY)),
+                                                            "data/lotmcraft/dimension_data/key_of_light/")));
                                 }),
                         Set.of(LOTMCraft.MOD_ID)
                 )
