@@ -353,7 +353,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
 
         if(entity.level().isClientSide()) return;
 
-        if(BeyonderData.getSequence(entity) <= 0 && BeyonderData.getPathway(entity).equalsIgnoreCase("door")) return;
+        if(BeyonderData.getSequence(entity) >= 0 && BeyonderData.getPathway(entity).equalsIgnoreCase("door")) return;
 
         List<ItemEntity> nearbyTraps = AbilityUtil.getAllNearbyEntities(null, (ServerLevel) entity.level(), entity.position(), 2.5).stream()
                 .filter(e -> e instanceof net.minecraft.world.entity.item.ItemEntity)
