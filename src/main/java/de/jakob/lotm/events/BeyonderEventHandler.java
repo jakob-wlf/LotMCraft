@@ -275,21 +275,23 @@ public class BeyonderEventHandler {
 
         var data = playerMap.get(player).get();
 
+        String dropPath = BeyonderData.getPathway(player);
+
         BeyonderCharacteristicItem charItem = BeyonderCharacteristicItemHandler
-                .selectCharacteristicOfPathwayAndSequence(BeyonderData.getPathway(player), dropSequence);
+                .selectCharacteristicOfPathwayAndSequence(dropPath, dropSequence);
 
         BeyonderData.setBeyonder(player, data.pathway(), data.sequence(), true, false, false, false);
 
         if (charItem == null) return;
 
         int current = BeyonderData.getCharList(player).stream()
-                .filter(c -> c.sequence() == dropSequence && c.pathway().equals(BeyonderData.getPathway(player))).mapToInt(Characteristic::stack).findFirst().orElse(0);
+                .filter(c -> c.sequence() == dropSequence && c.pathway().equals(dropPath)).mapToInt(Characteristic::stack).findFirst().orElse(0);
 
         BeyonderData.setCharacteristic(player,
                 current != 0 ?  current-1 : 0,
                 dropSequence,
                 true,
-                BeyonderData.getPathway(player)
+                dropPath
         );
 
 
@@ -335,8 +337,7 @@ public class BeyonderEventHandler {
                 BeyonderData.recalculateCharStackModifiers(player);
                 return;
             }
-            if (!BeyonderData.isBeyonder(player)) return;
-            if (playerMap.get(player).isEmpty()) return;
+
 
             // Great Old One: only a seq-0 beyonder can end their transcendence
             if (de.jakob.lotm.beyonders.sefirah.GreatOldOneManager.isGreatOldOne(player)) {
