@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "lotmcraft:loosing_control"
+    "#lotmcraft:mind",
+    "#lotmcraft:soul"
   ]
 }
