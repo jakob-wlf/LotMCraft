@@ -3,9 +3,12 @@ package de.jakob.lotm.beyonders.abilities.mother;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.RingEffectManager;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,6 +16,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 //TODO: Rework effects using geckolib
@@ -83,11 +87,14 @@ public class CleansingAbility extends SelectableAbility {
 
         entity.setRemainingFireTicks(0);
 
-        entity.getActiveEffects().stream()
+
+        List<Holder<MobEffect>> effectsToRemove = entity.getActiveEffects().stream()
                 .map(MobEffectInstance::getEffect)
                 .filter(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL)
-                .filter(effect -> !effect.getKey().toString().equals("cataclysm:ghost_sickness"))
-                .forEach(entity::removeEffect);
+                .filter(effect -> !effect.is(ResourceLocation.fromNamespaceAndPath("cataclysm", "ghost_sickness")))
+                .toList();
+
+        effectsToRemove.forEach(entity::removeEffect);
 
 
         if(entity instanceof Player player) {
