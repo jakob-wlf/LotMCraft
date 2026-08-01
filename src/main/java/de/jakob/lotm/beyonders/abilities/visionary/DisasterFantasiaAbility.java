@@ -38,7 +38,7 @@ public class DisasterFantasiaAbility extends SelectableAbility {
     private final DustParticleOptions plagueDust = new DustParticleOptions(new Vector3f(0, 0, 0), 10f);
 
     public DisasterFantasiaAbility(String id) {
-        super(id, 35f);
+        super(id, 30f);
     }
 
     @Override

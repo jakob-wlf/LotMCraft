@@ -26,15 +26,16 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MentalPlagueAbility extends SelectableAbility {
     public MentalPlagueAbility(String id) {
         super(id, 10, "plague");
         canBeUsedByNPC = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(3, 3, 5, 7, 10, 10, 10, 10, 10, 10));
     }
 
     @Override
