@@ -5,6 +5,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
@@ -13,8 +14,37 @@ import net.minecraft.world.level.Level;
 
 public class ModDamageTypes {
 
+    //3 base types of damage
+    public static final TagKey<DamageType> MIND = TagKey.create(
+            Registries.DAMAGE_TYPE,
+            ResourceLocation.fromNamespaceAndPath("lotmcraft", "mind")
+    );
+    public static final TagKey<DamageType> PHYSICAL = TagKey.create(
+            Registries.DAMAGE_TYPE,
+            ResourceLocation.fromNamespaceAndPath("lotmcraft", "physical")
+    );
+    public static final TagKey<DamageType> SOUL = TagKey.create(
+            Registries.DAMAGE_TYPE,
+            ResourceLocation.fromNamespaceAndPath("lotmcraft", "soul")
+    );
+
+    public static final ResourceKey<DamageType> MIND_BASED = key("mind_based");
+    public static final ResourceKey<DamageType> PHYSICAL_BASED = key("physical_based");
+    public static final ResourceKey<DamageType> SOUL_BASED = key("soul_based");
+
+    //derived types
+
+    //general
     public static final ResourceKey<DamageType> LOOSING_CONTROL = key("loosing_control");
+    ////fallback (remove when rework is finished or just ignore it)
+    public static final ResourceKey<DamageType> BEYONDER_GENERIC = key("beyonder_generic");
+
+    //sun
     public static final ResourceKey<DamageType> PURIFICATION = key("purification");
+
+    //visionary
+    public static final ResourceKey<DamageType> IMAGINATION = key("imagination");
+
     /** Used by ticking/AoE Sun abilities — treated as indirect for digestion drain purposes. */
     public static final ResourceKey<DamageType> PURIFICATION_INDIRECT = key("purification_indirect");
     public static final ResourceKey<DamageType> HUNTER_FIRE = key("hunter_fire");
@@ -24,8 +54,9 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> DOOR_SPACE = key("door_space");
     public static final ResourceKey<DamageType> DARKNESS_GENERIC = key("darkness_generic");
     public static final ResourceKey<DamageType> DEMONESS_GENERIC = key("demoness_generic");
-    public static final ResourceKey<DamageType> BEYONDER_GENERIC = key("beyonder_generic");
+
     public static final ResourceKey<DamageType> SPIRIT_CALLED = key("spirit_called");
+
 
     // -------------------------------------------------------------------------
     // Utility
