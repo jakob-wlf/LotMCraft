@@ -100,10 +100,16 @@ public class CorruptionEventHandler {
 
             int expectedStack = (charPathway.equals(currentPathway)) ? 2 : 0;
 
-            if (currentSequence <= 0 && Arrays.stream(BeyonderData.pathwayInfos.get(charPathway).neighboringPathways()).filter(p -> p.equals(currentPathway)).toString().equals(currentPathway)){
-                expectedStack = 3;
+            SefirotData sefirotData = SefirotData.get(entity.getServer());
+
+            if ((currentSequence <= 0 ) && Arrays.stream(BeyonderData.pathwayInfos.get(charPathway).neighboringPathways()).filter(p -> p.equals(currentPathway)).toString().equals(currentPathway)){
+                expectedStack += 1;
             }
-            
+
+            if (sefirotData.getMentalImprint(sefirotData.getClaimedSefirot(entity.getUUID())) > 0.5  && Arrays.stream(BeyonderData.pathwayInfos.get(charPathway).neighboringPathways()).filter(p -> p.equals(currentPathway)).toString().equals(currentPathway)){
+                expectedStack += 1;
+            }
+
             int extraStack = Math.max(0, charStack - expectedStack);
 
             if (extraStack > 0) {
