@@ -58,18 +58,6 @@ public class CorruptionEventHandler {
     private static void handleCorruptionGain(LivingEntity entity) {
         CorruptionComponent corruptionComp = entity.getData(ModAttachments.CORRUPTION_COMPONENT);
         BeyonderComponent beyonderComp = entity.getData(ModAttachments.BEYONDER_COMPONENT);
-        CorruptedPlayerComponent corruptedComp = entity.getData(ModAttachments.CORRUPTED_PLAYER_COMPONENT);
-
-        if (entity.level() instanceof ServerLevel serverLevel) {
-            Entity npc = serverLevel.getEntity(corruptedComp.getNpcUUID());
-            if (npc != null) {
-                if (corruptedComp.isFullyCorrupted() && corruptedComp.getNpcUUID() != null && entity.distanceTo(npc) > 30) {
-                    entity.teleportTo(npc.getX(), npc.getY(), npc.getZ());
-                } else {
-
-                }
-            }
-        }
 
         // Players exempted from corruption leakage gain nothing
         //if (corruptionComp.isLeakageExempt()) return;
@@ -110,13 +98,13 @@ public class CorruptionEventHandler {
             // If you have more than 1 of fool 5, it's extra.
             // If you have fool 4, it's extra (and likely dangerous).
 
-            int expectedStack = (charPathway.equals(currentPathway)) ? 1 : 0;
+            int expectedStack = (charPathway.equals(currentPathway)) ? 2 : 0;
 
-            if (currentSequence <= 0 && Arrays.stream(BeyonderData.pathwayInfos.get(charPathway).neighboringPathways()).filter(p -> p.equals(currentPathway)).toString() == currentPathway){
-                expectedStack = 2;
+            if (currentSequence <= 0 && Arrays.stream(BeyonderData.pathwayInfos.get(charPathway).neighboringPathways()).filter(p -> p.equals(currentPathway)).toString().equals(currentPathway)){
+                expectedStack = 3;
             }
             
-            int extraStack = Math.max(0, charStack - (1 + expectedStack));
+            int extraStack = Math.max(0, charStack - expectedStack);
 
             if (extraStack > 0) {
                 float baseGain = 0.00005f * extraStack * ((float) (10 - charSeq) / 10); // Base gain per extra characteristic
