@@ -835,12 +835,19 @@ public class AbilityUtil {
 
         Class<T> entityClass = (Class<T>) (includeAllEntities ? Entity.class : LivingEntity.class);
 
-        return level.getEntitiesOfClass(entityClass, detectionBox).stream()
-                .filter(e -> !(e instanceof Player player) || (!player.isCreative() || allowCreativeMode))
-                .filter(entity -> entity.position().distanceToSqr(center) <= radiusSquared)
-                .filter(entity -> entity != exclude)
-                .filter(e -> exclude == null || (!(e instanceof LivingEntity le) || mayTarget(exclude, le, allowAllies, false)))
-                .toList();
+        List<T> entities = level.getEntitiesOfClass(entityClass, detectionBox);
+        List<T> result = new ArrayList<>(entities.size());
+
+        for (T e : entities) {
+            if (e == exclude) continue;
+            if (e instanceof Player player && player.isCreative() && !allowCreativeMode) continue;
+            if (e.position().distanceToSqr(center) > radiusSquared) continue;
+            if (exclude != null && e instanceof LivingEntity le && !mayTarget(exclude, le, allowAllies, false)) continue;
+
+            result.add(e);
+        }
+
+        return result;
     }
 
     private static AABB createDetectionBox(Vec3 center, double radius) {
@@ -953,10 +960,7 @@ public class AbilityUtil {
                                                boolean ignoreCooldown, int cooldownTicks, int fireTicks,
                                                DamageSource damageSource) {
         AABB detectionBox = createDetectionBox(center, maxRadius);
-        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, detectionBox)
-                .stream()
-                .filter(e -> mayTarget(source, e))
-                .toList();
+        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, detectionBox);
 
         boolean hitAnyEntity = false;
         double maxRadiusSquared = maxRadius * maxRadius;
@@ -964,6 +968,7 @@ public class AbilityUtil {
 
         for (LivingEntity entity : nearbyEntities) {
             if (ignoreSource && entity == source) continue;
+            if (!mayTarget(source, entity)) continue;
 
             double distanceSquared = entity.position().distanceToSqr(center);
 

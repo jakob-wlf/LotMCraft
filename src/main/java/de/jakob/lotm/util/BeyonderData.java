@@ -716,7 +716,7 @@ public class BeyonderData {
             return getMaxSpirituality(bodyData.getString("pathway"), bodyData.getInt("sequence"));
         }
         for(int i = 0; i < BeyonderData.pathways.size(); i++){
-            sp += getMaxSpirituality(path, BeyonderData.getCharList(player).parallelStream().filter(c -> c.pathway().equals(path)).mapToInt(Characteristic::sequence).max().orElse(0));
+            sp += getMaxSpirituality(path, BeyonderData.getCharList(player).stream().filter(c -> c.pathway().equals(path)).mapToInt(Characteristic::sequence).max().orElse(0));
         }
         return getMaxSpirituality(path, seq) * ActingCapHelper.getEffectiveCap(player);
     }
