@@ -92,6 +92,7 @@ public class RequiemAbility extends Ability {
         pacifiedEntities.add(targetEntity.getUUID());
 
         float multiplier_target = multiplier(targetEntity);
+        multiplier_target = multiplier_target != 0 ? multiplier_target : 0;
         int duration = 0;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
