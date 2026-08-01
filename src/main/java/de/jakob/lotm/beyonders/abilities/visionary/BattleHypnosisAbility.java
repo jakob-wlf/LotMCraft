@@ -29,14 +29,18 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class BattleHypnosisAbility extends SelectableAbility {
     public BattleHypnosisAbility(String id) {
         super(id, 2);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3, 3, 10, 10, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(550f, 500f, 400f, 300f, 300f, 300f, 250f, 100f, 40f, 40f));
+
     }
 
     @Override

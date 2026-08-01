@@ -22,6 +22,8 @@ import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import static de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler.checkAsleep;
@@ -30,6 +32,13 @@ public class NightmareSpectatorAbility extends Ability {
 
     public NightmareSpectatorAbility(String id) {
         super(id, 10f);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(3, 3, 5, 7, 8, 10, 10, 10, 10, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 1500f, 750f, 360f, 280f, 200f, 150f, 100f, 40f, 40f));
+
     }
 
     @Override

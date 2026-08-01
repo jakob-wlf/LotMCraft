@@ -20,11 +20,20 @@ import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class FrenzyAbility extends Ability {
     public FrenzyAbility(String id) {
         super(id, 5f, "corruption");
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 2, 3, 3, 4, 5, 5, 6, 10, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2500f, 1000f, 750f, 360f, 280f, 200f, 150f, 100f, 40f, 40f));
+
     }
 
     @Override
