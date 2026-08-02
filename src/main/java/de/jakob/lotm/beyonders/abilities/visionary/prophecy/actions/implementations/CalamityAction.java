@@ -23,6 +23,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -67,10 +68,9 @@ public class CalamityAction extends ActionBase {
         switch (stream.peek()){
             case "meteor", "meteors" -> spawnMeteorShower(serverLevel,center,multiplier,griefing,entity);
             case "tornado" -> createTornados(serverLevel, entity, multiplier, center);
-            case "earthquake" -> new Earthquake().spawnCalamity(serverLevel, center, multiplier, griefing, 65, (float) DamageLookup.lookupDps(4, .925, 8, 20) * (int) multiplier, entity, true);
+            case "earthquake" -> new Earthquake().spawnCalamity(serverLevel, center, multiplier, griefing, 65, (float) DamageLookup.lookupDps(4, .325, 8, 20) * (int) multiplier, entity, true);
             case "plague" -> createPlague(serverLevel, entity, multiplier);
         }
-
 
     }
 
@@ -89,7 +89,7 @@ public class CalamityAction extends ActionBase {
                 double offsetZ = Math.sin(angle) * distance;
                 Vec3 meteorPos = new Vec3(center.x + offsetX, center.y, center.z + offsetZ);
 
-                MeteorEntity meteor = new MeteorEntity(level, 2.5f,  (float) DamageLookup.lookupDamage(2, 1)  * (int)multiplier, 3, null, griefing, 13, 12);
+                MeteorEntity meteor = new MeteorEntity(level, 2.5f,  (float) DamageLookup.lookupDamage(2, .4)  * (int)multiplier, 3, null, griefing, 13, 12);
                 meteor.setPosition(meteorPos);
                 level.addFreshEntity(meteor);
             }, level, () -> AbilityUtil.getTimeInArea(null, new Location(center, level)));
@@ -130,7 +130,7 @@ public class CalamityAction extends ActionBase {
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*(int) multiplier, entity.position(), new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 2, false, false, false));
             AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*(int) multiplier, DamageLookup.lookupDps(4, .3, 35, 20) *(int) Math.max(multiplier/6,1) * damageMult, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
 
-            entity.hurt(ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, null), (float) (DamageLookup.lookupDps(4, .3, 35, 20) *(int) Math.max(multiplier/6,1) * damageMult));
+            entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.DEMONESS_GENERIC), (float) (DamageLookup.lookupDps(4, .3, 35, 20) *(int) Math.max(multiplier/6,1) * damageMult));
         });
     }
 }

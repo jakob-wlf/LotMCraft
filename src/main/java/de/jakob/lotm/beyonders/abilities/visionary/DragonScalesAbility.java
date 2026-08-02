@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -71,15 +72,9 @@ public class DragonScalesAbility extends ToggleAbility {
     }
 
     public static boolean canBlock(DamageSource source){
-        return source.is(ModDamageTypes.BEYONDER_GENERIC) ||
-                source.is(ModDamageTypes.DARKNESS_GENERIC) ||
-                source.is(ModDamageTypes.PURIFICATION) ||
-                source.is(ModDamageTypes.PURIFICATION_INDIRECT) ||
-                source.is(ModDamageTypes.SAILOR_LIGHTNING) ||
-                (!source.is(DamageTypeTags.IS_FIRE)
-                        && !source.is(DamageTypeTags.WITCH_RESISTANT_TO)
-                        && !source.is(DamageTypeTags.BYPASSES_ARMOR))
-                ;
+        return !source.is(DamageTypeTags.BYPASSES_ARMOR)
+                || !source.is(ModDamageTypes.MIND)
+                || !source.is(ModDamageTypes.SOUL);
     }
 
     public static float getDamageReductionPerSeq(int seq){
@@ -109,7 +104,8 @@ public class DragonScalesAbility extends ToggleAbility {
 
             event.setAmount(damage);
 
-            ParticleUtil.spawnParticles((ServerLevel) entity.level(), dust, entity.getEyePosition(), 5, .45f, .8, .45f, 0);
+            if(!VisionaryHandler.isInvisible(entity))
+                ParticleUtil.spawnParticles((ServerLevel) entity.level(), dust, entity.getEyePosition(), 5, .45f, .8, .45f, 0);
         }
     }
 }

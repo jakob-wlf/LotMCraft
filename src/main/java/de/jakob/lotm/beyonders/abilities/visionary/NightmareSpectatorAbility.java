@@ -37,7 +37,7 @@ public class NightmareSpectatorAbility extends Ability {
         dynamicCooldown = new LinkedList<>(List.of(3, 3, 5, 7, 8, 10, 10, 10, 10, 10));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(3000f, 1500f, 750f, 360f, 280f, 200f, 150f, 100f, 40f, 40f));
+        dynamicSpirituality = new LinkedList<>(List.of(5000f, 3000f, 1000f, 500f, 350f, 250f, 150f, 100f, 40f, 40f));
 
     }
 
@@ -94,17 +94,12 @@ public class NightmareSpectatorAbility extends Ability {
 
         VisionaryLoosingControlHandler.applyEffect(entity, target, this);
 
-        // Damage target
         target.hurt(new DamageSource(
                 serverLevel.registryAccess()
                         .registryOrThrow(Registries.DAMAGE_TYPE)
-                        .getHolderOrThrow(ModDamageTypes.LOOSING_CONTROL)
-        ), (float) DamageLookup.lookupDamage(5, 1.1) * multiplier(entity));
+                        .getHolderOrThrow(ModDamageTypes.IMAGINATION)
+        ), (float) DamageLookup.lookupDamage(5, -0.4) * multiplier(entity));
 
-        // Add effect
-        target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, 1));
-
-        // Decrease Sanity
         target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.0165f* (int) Math.max(multiplier(entity)/4,1)), target, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(target));
     }
 }

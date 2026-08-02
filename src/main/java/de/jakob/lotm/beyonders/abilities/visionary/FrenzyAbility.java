@@ -91,7 +91,7 @@ public class FrenzyAbility extends Ability {
                 BattleHypnosisAbility.performRandomEffect((ServerLevel) level, entity, target, entitySeq);
         }
 
-        target.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), (float) (DamageLookup.lookupDamage(7, .85) * (int) Math.max(multiplier(entity)/4,1)));
+        target.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), (float) (DamageLookup.lookupDamage(7, .3) * (int) Math.max(multiplier(entity)/4,1)));
 
         target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.0065f * (int) Math.max(multiplier(entity)/4,1)), target, entitySeq, BeyonderData.getSequence(target));
     }

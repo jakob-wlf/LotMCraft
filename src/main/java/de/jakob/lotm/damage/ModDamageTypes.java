@@ -32,18 +32,14 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> PHYSICAL_BASED = key("physical_based");
     public static final ResourceKey<DamageType> SOUL_BASED = key("soul_based");
 
-    //derived types
 
-    //general
     public static final ResourceKey<DamageType> LOOSING_CONTROL = key("loosing_control");
     ////fallback (remove when rework is finished or just ignore it)
     public static final ResourceKey<DamageType> BEYONDER_GENERIC = key("beyonder_generic");
 
-    //sun
     public static final ResourceKey<DamageType> PURIFICATION = key("purification");
 
-    //visionary
-    public static final ResourceKey<DamageType> IMAGINATION = key("imagination");
+    public static final ResourceKey<DamageType> IMAGINATION = key("imagination"); //for illusions
 
     /** Used by ticking/AoE Sun abilities — treated as indirect for digestion drain purposes. */
     public static final ResourceKey<DamageType> PURIFICATION_INDIRECT = key("purification_indirect");
