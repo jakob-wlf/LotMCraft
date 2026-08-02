@@ -92,6 +92,12 @@ public class CorruptionEventHandler {
             int charSeq = characteristic.sequence();
             int charStack = characteristic.stack();
 
+            if (!BeyonderData.implementedPathways.contains(charPathway)){
+                characteristic.setStack(0);
+                beyonderComp.getCharacteristicList().remove(characteristic);
+                continue;
+            }
+
             // We consider the "main" characteristics as the one belonging to the current pathway and current sequence.
             // Everything else is "extra".
             // Actually, if you are a sequence 5 fool, you should have characteristics for fool 9, 8, 7, 6, 5.
