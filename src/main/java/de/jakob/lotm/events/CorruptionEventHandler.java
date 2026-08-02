@@ -87,16 +87,18 @@ public class CorruptionEventHandler {
         PathwayInfos currentPathwayInfo = BeyonderData.pathwayInfos.get(currentPathway);
         List<String> neighboring = currentPathwayInfo != null ? Arrays.asList(currentPathwayInfo.neighboringPathways()) : List.of();
 
+        beyonderComp.getCharacteristicList().removeIf( c -> {
+            String charPathway = c.pathway();
+            return !BeyonderData.implementedPathways.contains(charPathway);
+        });
+
+
         for (Characteristic characteristic : beyonderComp.getCharacteristicList()) {
             String charPathway = characteristic.pathway();
             int charSeq = characteristic.sequence();
             int charStack = characteristic.stack();
 
-            if (!BeyonderData.implementedPathways.contains(charPathway)){
-                characteristic.setStack(0);
-                beyonderComp.getCharacteristicList().remove(characteristic);
-                continue;
-            }
+
 
             // We consider the "main" characteristics as the one belonging to the current pathway and current sequence.
             // Everything else is "extra".
