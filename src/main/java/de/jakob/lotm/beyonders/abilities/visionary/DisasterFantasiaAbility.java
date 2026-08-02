@@ -79,7 +79,7 @@ public class DisasterFantasiaAbility extends SelectableAbility {
         }
 
         switch (abilityIndex) {
-            case 0 -> EARTHQUAKE.spawnCalamity(serverLevel, targetPos, multiplier, griefing, (int) (65* multiplier(entity)), (float) DamageLookup.lookupDps(4, .925, 8, 20) * multiplier(entity), entity, false);
+            case 0 -> EARTHQUAKE.spawnCalamity(serverLevel, targetPos, multiplier, griefing, (int) (65* multiplier(entity)), (float) DamageLookup.lookupDps(4, .325, 8, 20) * multiplier(entity), entity, false);
             case 1 -> spawnMeteorShower(serverLevel, targetPos, multiplier, griefing, entity);
             case 2 -> createTornados(serverLevel, entity);
             case 3 -> createPlague(level, entity);
@@ -98,7 +98,7 @@ public class DisasterFantasiaAbility extends SelectableAbility {
                 Vec3 meteorPos = new Vec3(center.x + offsetX, center.y, center.z + offsetZ);
 
 
-                MeteorEntity meteor = new MeteorEntity(level, 2.5f,  (float) DamageLookup.lookupDamage(2, 1)  * multiplier(entity), 3, entity, griefing, 13, 12);
+                MeteorEntity meteor = new MeteorEntity(level, 2.5f,  (float) DamageLookup.lookupDamage(2, .4)  * multiplier(entity), 3, entity, griefing, 13, 12);
                 meteor.setPosition(meteorPos);
                 level.addFreshEntity(meteor);
             }, level, () -> AbilityUtil.getTimeInArea(null, new Location(center, level)));
