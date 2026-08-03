@@ -39,6 +39,12 @@ public class DisasterFantasiaAbility extends SelectableAbility {
 
     public DisasterFantasiaAbility(String id) {
         super(id, 30f);
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(18000f, 7500f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(24, 30));
     }
 
     @Override
@@ -96,7 +102,6 @@ public class DisasterFantasiaAbility extends SelectableAbility {
                 double offsetX = Math.cos(angle) * distance;
                 double offsetZ = Math.sin(angle) * distance;
                 Vec3 meteorPos = new Vec3(center.x + offsetX, center.y, center.z + offsetZ);
-
 
                 MeteorEntity meteor = new MeteorEntity(level, 2.5f,  (float) DamageLookup.lookupDamage(2, .4)  * multiplier(entity), 3, entity, griefing, 13, 12);
                 meteor.setPosition(meteorPos);

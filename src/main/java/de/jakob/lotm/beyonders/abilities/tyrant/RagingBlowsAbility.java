@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.tyrant;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -15,11 +16,19 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class RagingBlowsAbility extends Ability {
     public RagingBlowsAbility(String id) {
         super(id, 1.2f);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 2, 2, 3, 3, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(800f, 700f, 600f, 400f, 300f, 200f, 100f, 50f, 25f));
     }
 
     @Override
@@ -36,6 +45,7 @@ public class RagingBlowsAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
             double multiplier = multiplier(entity)/1.5;
+
             ServerScheduler.scheduleForDuration(0, 6, 6 * 9, () -> {
                 Vec3 pos = VectorUtil.getRelativePosition(entity.getEyePosition(), entity.getLookAngle().normalize(), random.nextDouble(1, 2), random.nextDouble(-1.5, 1.5), random.nextDouble(-.5, .5));
                 ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.POOF, pos, 4, 0, 0.125);
@@ -44,7 +54,7 @@ public class RagingBlowsAbility extends Ability {
 
                 level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.GENERIC_EXPLODE.value(), entity.getSoundSource(), 1, 1);
 
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75f, DamageLookup.lookupDamage(8, .8) * multiplier, pos, true, false, true, 0);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75f, ModDamageTypes.IMPACT,DamageLookup.lookupDamage(8, .8) * multiplier, pos, true, false);
             }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
         }
     }

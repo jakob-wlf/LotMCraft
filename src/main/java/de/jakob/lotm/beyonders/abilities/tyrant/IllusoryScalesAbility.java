@@ -32,7 +32,7 @@ public class IllusoryScalesAbility extends ToggleAbility {
     @Override
     public void start(Level level, LivingEntity entity) {
         if(level.isClientSide) return;
-        PhysicalEnhancementsAbility.addEnhancementBoost(entity, PhysicalEnhancementsAbility.EnhancementType.RESISTANCE, "illusory_scales", 5);
+        PhysicalEnhancementsAbility.addEnhancementBoost(entity, PhysicalEnhancementsAbility.EnhancementType.RESISTANCE, "illusory_scales", 2);
     }
 
     private final DustParticleOptions blueDust = new DustParticleOptions(new Vector3f(87 / 255f, 212 / 255f, 183 / 255f), 1.75f);

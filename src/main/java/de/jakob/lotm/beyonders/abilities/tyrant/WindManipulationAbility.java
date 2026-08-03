@@ -28,6 +28,12 @@ public class WindManipulationAbility extends SelectableAbility {
 
     public WindManipulationAbility(String id) {
         super(id, 1.5f);
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 1500f, 1000f, 650f, 650f, 380f, 300f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 1, 2, 2));
     }
 
     @Override
@@ -223,7 +229,9 @@ public class WindManipulationAbility extends SelectableAbility {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BREEZE_WIND_CHARGE_BURST, entity.getSoundSource(), 1.0f, 1.0f);
 
-        WindBladeEntity blade = new WindBladeEntity(level, entity, DamageLookup.lookupDamage(6, .75) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
+        float damage = (float) (DamageLookup.lookupDamage(6, .4) * multiplier(entity)/3);
+
+        WindBladeEntity blade = new WindBladeEntity(level, entity, damage, BeyonderData.isGriefingEnabled(entity));
         blade.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
         blade.shoot(direction.x, direction.y, direction.z, 2.4f* multiplier(entity), 0);
         level.addFreshEntity(blade);

@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom.ability_entities;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -231,8 +232,9 @@ public class TornadoEntity extends Entity {
                 }
                 float distance = this.distanceTo(entity);
                 if (distance < 6.0f) {
-                    entity.hurt(this.damageSources().magic(), getDamage());
-                    
+                    entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.IMPACT), getDamage()/2);
+                    entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.WIND), getDamage()/2);
+
                     Vec3 direction = this.position().subtract(entity.position()).normalize();
                     entity.push(direction.x * 0.3, 0.3, direction.z * 0.3);
                 }

@@ -40,6 +40,17 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> PURIFICATION = key("purification");
 
     public static final ResourceKey<DamageType> IMAGINATION = key("imagination"); //for illusions
+    public static final ResourceKey<DamageType> AWE = key("awe");
+
+    public static final ResourceKey<DamageType> LIGHTNING = key("lightning");
+    public static final ResourceKey<DamageType> INFORMATION = key("information");
+    public static final ResourceKey<DamageType> WATER = key("water");
+    public static final ResourceKey<DamageType> WIND = key("wind");
+    public static final ResourceKey<DamageType> FIRE = key("fire");
+    public static final ResourceKey<DamageType> IMPACT = key("impact");
+    public static final ResourceKey<DamageType> MATTER = key("matter");
+
+
 
     /** Used by ticking/AoE Sun abilities — treated as indirect for digestion drain purposes. */
     public static final ResourceKey<DamageType> PURIFICATION_INDIRECT = key("purification_indirect");

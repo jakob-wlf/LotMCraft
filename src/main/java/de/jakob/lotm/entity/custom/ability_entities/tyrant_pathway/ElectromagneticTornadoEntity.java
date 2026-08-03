@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -9,6 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -167,9 +169,9 @@ public class ElectromagneticTornadoEntity extends Entity {
             return;
         }
 
-        if(this.getTags().contains("petrified")) {
+        if (this.getTags().contains("petrified")) {
             petrifiedTicks++;
-            if(petrifiedTicks > 20 * 5) {
+            if (petrifiedTicks > 20 * 5) {
                 this.discard();
             }
             return;
@@ -227,10 +229,22 @@ public class ElectromagneticTornadoEntity extends Entity {
 
     private void damageNearbyEntities() {
         AABB boundingBox = this.getBoundingBox().inflate(5.0);
-        List<Entity> entities = this.level().getEntities(this, boundingBox);
+
+        List<LivingEntity> entities =
+                this.level().getEntitiesOfClass(
+                        LivingEntity.class,
+                        boundingBox,
+                        e -> e.isAlive() && e != getCaster()
+                );
+
         Entity caster = getCaster();
 
         UUID casterUUID = getCasterUUID();
+
+        DamageSource matterSource =
+                ModDamageTypes.source(level(), ModDamageTypes.MATTER);
+        DamageSource infoSource =
+                ModDamageTypes.source(level(), ModDamageTypes.INFORMATION);
 
         for (Entity entity : entities) {
             if (entity instanceof LivingEntity && entity != caster) {
@@ -238,12 +252,30 @@ public class ElectromagneticTornadoEntity extends Entity {
                     continue;
                 }
                 float distance = this.distanceTo(entity);
-                if (distance < 6.0f) {
-                    if(this.tickCount % 18 == 0)
-                        entity.hurt(this.damageSources().lightningBolt(), getDamage());
+                if (distance <= 6.0f) {
+                    if (this.tickCount % 20 == 0) {
+                        entity.hurt(matterSource, getDamage() / 2);
+                        entity.hurt(infoSource, getDamage() / 2);
+                    }
 
                     Vec3 direction = this.position().subtract(entity.position()).normalize();
-                    entity.push(direction.x * 0.3, 0.3, direction.z * 0.3);
+
+                    Vec3 force = new Vec3(
+                            direction.x * 0.12,
+                            0.3,
+                            direction.z * 0.12
+                    );
+
+                    Vec3 newVelocity = entity.getDeltaMovement().add(force);
+
+
+                    double maxSpeed = 1.2;
+                    if (newVelocity.lengthSqr() > maxSpeed * maxSpeed) {
+                        newVelocity = newVelocity.normalize().scale(maxSpeed);
+                    }
+
+                    entity.setDeltaMovement(newVelocity);
+                    entity.hasImpulse = true;
                 }
             }
         }

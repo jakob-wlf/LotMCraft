@@ -11,14 +11,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class WrathAbility extends Ability {
     public WrathAbility(String id) {
         super(id, 12);
         canBeUsedByNPC = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 1500f, 1000f, 650f, 650f, 380f, 300f, 200f, 100f));
     }
 
     @Override
