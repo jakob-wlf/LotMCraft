@@ -54,11 +54,11 @@ public class GiftAbility extends SelectableAbility {
     protected String[] getAbilityNames() {
         return new String[]{
                 "ability.lotmcraft.gift_ability.item",
+                "ability.lotmcraft.gift_ability.corruption",
                 "ability.lotmcraft.gift_ability.distance",
                 "ability.lotmcraft.gift_ability.health",
                 "ability.lotmcraft.gift_ability.digestion",
-                "ability.lotmcraft.gift_ability.luck",
-                "ability.lotmcraft.gift_ability.corruption"
+                "ability.lotmcraft.gift_ability.luck"
         };
     }
 
@@ -79,7 +79,7 @@ public class GiftAbility extends SelectableAbility {
             selectedAbility = 0;
         }
 
-        if((entitySeq > 5 && selectedAbility >= 1)
+        if((entitySeq > 5 && selectedAbility >= 2)
                 || (entitySeq > 1 && selectedAbility >= 3)){
             selectedAbility = 0;
         }
@@ -104,9 +104,9 @@ public class GiftAbility extends SelectableAbility {
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        if((entitySeq > 5 && selectedAbility >= 1)
+        if((entitySeq > 5 && selectedAbility >= 2)
                 || (entitySeq > 1 && selectedAbility >= 3)){
-            selectedAbility = 0;
+            selectedAbility = 1;
         }
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
@@ -117,11 +117,11 @@ public class GiftAbility extends SelectableAbility {
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
         switch(selectedAbility){
             case 0 -> giftItem(level, entity);
-            case 1 -> giftDistance(level, entity);
-            case 2 -> giftHealth(level, entity);
-            case 3 -> giftDigestion(level, entity);
-            case 4 -> giftLuck(level, entity);
-            case 5 -> giftCorruption(level, entity);
+            case 1 -> giftCorruption(level, entity);
+            case 2 -> giftDistance(level, entity);
+            case 3 -> giftHealth(level, entity);
+            case 4 -> giftDigestion(level, entity);
+            case 5 -> giftDigestion(level, entity);
         }
     }
 
