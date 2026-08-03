@@ -198,10 +198,10 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
             // Set Beyonder Data
             if (this._sequence != -1 && !this._pathway.isEmpty() && !this._pathway.equals("none")) {
-                BeyonderData.setBeyonder(this, this._pathway, this._sequence, true, true, true, true, true, false, true);
+                BeyonderData.setBeyonder(this, this._pathway, this._sequence, false, true, true, true, true, false, true);
             } else {
                 if (!BeyonderData.isBeyonder(this)) {
-                    BeyonderData.setBeyonder(this, getRandomPathway(), getWeightedHighSequence(), true, true, true, true, true, false, true);
+                    BeyonderData.setBeyonder(this, getRandomPathway(), getWeightedHighSequence(), false, true, true, true, true, false, true);
                 }
             }
 
