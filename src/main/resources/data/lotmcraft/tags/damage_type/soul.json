@@ -2,6 +2,8 @@
   "replace": false,
   "values": [
     "lotmcraft:soul_based",
-    "lotmcraft:purification"
+    "lotmcraft:purification",
+    "lotmcraft:information",
+    "lotmcraft:awe"
   ]
 }

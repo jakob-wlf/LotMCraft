@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.tyrant;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -18,12 +19,19 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class WrathOfTheOceanAbility extends SelectableAbility {
     public WrathOfTheOceanAbility(String id) {
         super(id, 50);
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(20000f, 8000f, 5000f, 3000f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(20, 25, 30, 40));
     }
 
     @Override
@@ -74,11 +82,13 @@ public class WrathOfTheOceanAbility extends SelectableAbility {
                 .map(BlockPos::immutable)
                 .toList();
 
+       float damage = (float) DamageLookup.lookupDamage(3, .05f) * multiplier(caster)/7;
+
         ServerScheduler.scheduleForDuration(0, 10, 1000, () -> {
             AbilityUtil.getNearbyEntities(caster, level, origin, 100, false).stream()
                     .filter(t -> !isAquatic(t) && t.isInWater())
                     .forEach(t -> {
-                        t.hurt(level.damageSources().genericKill(), (float) DamageLookup.lookupDamage(3, .05f) * multiplier(caster));
+                        t.hurt(ModDamageTypes.source(level, ModDamageTypes.WATER, caster), damage);
                         level.playSound(null, t.blockPosition(), SoundEvents.GENERIC_BURN, SoundSource.PLAYERS, 0.6f, 0.8f + level.random.nextFloat() * 0.4f);
                         ParticleUtil.spawnParticles(level, ParticleTypes.BUBBLE_POP,
                                 t.position().add(0, 0.5, 0), 12, 0.3, 0.3, 0.3, 0.1);

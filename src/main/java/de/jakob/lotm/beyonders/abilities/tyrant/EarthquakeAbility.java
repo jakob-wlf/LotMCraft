@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.tyrant;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.calamities.Earthquake;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
@@ -19,17 +20,21 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EarthquakeAbility extends Ability {
+    private static final Earthquake EARTHQUAKE = new Earthquake();
 
     public EarthquakeAbility(String id) {
         super(id, 16, "explosion");
         interactionRadius = 70;
         interactionCacheTicks = 20 * 25;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(8500f, 3400f, 2000f, 1300f, 1000f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(8, 10, 12, 14, 16));
     }
 
     @Override
@@ -48,73 +53,15 @@ public class EarthquakeAbility extends Ability {
             return;
 
         Vec3 startPos = entity.position();
-
-
-        List<BlockPos> blocks = new ArrayList<>(AbilityUtil.getBlocksInCircle((ServerLevel) level, startPos.add(0, -2, 0), 70));
-        for(int i = -12; i < 13; i++) {
-            blocks.addAll(AbilityUtil.getBlocksInCircle((ServerLevel) level, startPos.add(0, i, 0), 70));
-        }
-
-        List<BlockPos> validBlocks = blocks.stream().filter(b -> !level.getBlockState(b).getCollisionShape(level, b).isEmpty() && level.getBlockState(b.above()).getCollisionShape(level, b).isEmpty() && !level.getBlockState(b).is(Blocks.WATER)).toList();
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
-
         double multiplier = multiplier(entity);
-        ServerScheduler.scheduleForDuration(0, 8, (int) (20 * 25* multiplier(entity)), () -> {
-            AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 90* multiplier(entity)).forEach(e -> {
-                if(AbilityUtil.distanceToGround(level, e) < 1.5) {
-                    if(random.nextBoolean())
-                        e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) DamageLookup.lookupDps(4, .925, 8, 20) * multiplier(entity));
-                    if(random.nextInt(12) == 0)
-                        e.setDeltaMovement(new Vec3((0.5 - random.nextDouble()) * 0.5, 0.25 + random.nextDouble() * .75, (0.5 - random.nextDouble()) * 0.25));
-                }
-            });
+        float damage = (float) DamageLookup.lookupDps(4, .325, 8, 20) * multiplier(entity)/4;
 
-            for(BlockPos b : validBlocks) {
-                if(random.nextInt(35) == 0)
-                    ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.EARTHQUAKE.get(), new Vec3(b.getCenter().x, b.getCenter().y + .85, b.getCenter().z), 1, .2, 0);
-
-                if(random.nextInt(200) == 0)
-                    ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.EXPLOSION, new Vec3(b.getCenter().x, b.getCenter().y + .85, b.getCenter().z), 1, .2, 0);
-            }
-
-            for (int i = 0; i < 80; i++) {
-                BlockPos pos = validBlocks.get(random.nextInt(validBlocks.size()));
-                BlockState state = level.getBlockState(pos);
-
-                if (!state.isAir()) {
-                    double y = pos.getY() + 1;
-                    for(int j = 0; j < 10; j++) {
-                        if(!level.getBlockState(BlockPos.containing(pos.getX(), y, pos.getZ())).isAir())
-                            y++;
-                        else {
-                            break;
-                        }
-                    }
-
-                    FallingBlockEntity falling = FallingBlockEntity.fall(
-                            level,
-                            BlockPos.containing(pos.getCenter().x, y, pos.getCenter().z),
-                            state
-                    );
-
-                    double xVel = (random.nextDouble() - 0.5) * 0.15;
-                    double yVel = 0.5 + random.nextDouble() * .6;
-                    double zVel = (random.nextDouble() - 0.5) * 0.15;
-                    falling.setDeltaMovement(xVel, yVel, zVel);
-
-                    ServerScheduler.scheduleForDuration(0, 1, 40, () -> {
-                        falling.setDeltaMovement(falling.getDeltaMovement().x, falling.getDeltaMovement().y - 0.03, falling.getDeltaMovement().z);
-                        falling.hurtMarked = true;
-                    });
-
-                    falling.dropItem = false;
-                    if(!griefing)
-                        falling.disableDrop();
-
-
-                    level.addFreshEntity(falling);
-                }
-            }
-        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
-    }
+        EARTHQUAKE.spawnCalamity((ServerLevel) level,
+                startPos,
+                (float) multiplier,
+                griefing,
+                (int) (65* multiplier(entity)), damage,
+                entity, false);
+        }
 }

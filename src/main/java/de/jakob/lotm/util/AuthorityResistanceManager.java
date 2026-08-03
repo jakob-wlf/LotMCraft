@@ -19,9 +19,16 @@ public class AuthorityResistanceManager {
         Map<ResourceKey<DamageType>, List<Float>> visionary = new HashMap<>();
         visionary.put(ModDamageTypes.LOOSING_CONTROL, List.of(0.5f, 0.7f, 0.8f, 0.9f, 0.9f));
         visionary.put(ModDamageTypes.IMAGINATION, List.of(0f, 0.5f, 0.8f, 0.9f));
-        visionary.put(ModDamageTypes.MIND_BASED, List.of(0.1f, 0.5f, 0.7f));
-
+        visionary.put(ModDamageTypes.MIND_BASED, List.of(0f, 0.5f, 0.7f, 0.8f, 0.9f));
         resistances.put("visionary",visionary);
+
+        Map<ResourceKey<DamageType>, List<Float>> tyrant = new HashMap<>();
+        tyrant.put(ModDamageTypes.WATER, List.of(0f, 0.5f, 0.6f, 0.7f, 0.9f));
+        tyrant.put(ModDamageTypes.LIGHTNING, List.of(0f, 0.3f, 0.4f, 0.7f, 0.9f));
+        tyrant.put(ModDamageTypes.WIND, List.of(0f, 0.5f, 0.6f, 0.7f, 0.9f));
+        tyrant.put(ModDamageTypes.IMPACT, List.of(0.7f, 0.75f, 0.8f, 0.85f, 0.9f));
+        tyrant.put(ModDamageTypes.MATTER, List.of(0.8f, 0.85f, 0.9f));
+        resistances.put("tyrant", tyrant);
     }
 
     public static float getResistance(DamageSource source, String path, int seq){

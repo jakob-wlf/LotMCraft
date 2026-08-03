@@ -44,7 +44,7 @@ public class Earthquake extends Calamity{
             AbilityUtil.getNearbyEntities(caster, level, startPos, radius + 6).forEach(e -> {
                 if(AbilityUtil.distanceToGround(level, e) < 1.5) {
                     if(random.nextBoolean())
-                        e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC), rawDamage * multiplier);
+                        e.hurt(ModDamageTypes.source(level, ModDamageTypes.IMPACT), rawDamage * multiplier);
                     if(random.nextInt(12) == 0)
                         e.setDeltaMovement(new Vec3((0.5 - random.nextDouble()) * 0.5, 0.25 + random.nextDouble() * .75, (0.5 - random.nextDouble()) * 0.25));
                 }
@@ -53,7 +53,7 @@ public class Earthquake extends Calamity{
             if(damageCaster){
                 if(AbilityUtil.distanceToGround(level, caster) < 1.5) {
                     if(random.nextBoolean())
-                        caster.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC), rawDamage * multiplier);
+                        caster.hurt(ModDamageTypes.source(level, ModDamageTypes.IMPACT), rawDamage * multiplier);
                     if(random.nextInt(12) == 0)
                         caster.setDeltaMovement(new Vec3((0.5 - random.nextDouble()) * 0.5, 0.25 + random.nextDouble() * .75, (0.5 - random.nextDouble()) * 0.25));
                 }

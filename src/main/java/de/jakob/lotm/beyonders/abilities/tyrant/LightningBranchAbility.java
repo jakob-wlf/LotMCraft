@@ -8,12 +8,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class LightningBranchAbility extends Ability {
     public LightningBranchAbility(String id) {
         super(id, 5f);
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 3, 4, 5));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(5000f, 2000f, 1200f, 900f));
     }
 
     @Override
@@ -34,7 +42,9 @@ public class LightningBranchAbility extends Ability {
         Vec3 dir = entity.getLookAngle().normalize();
         Vec3 startPos = entity.position().add(dir).add(0, 1.5, 0);
 
-        LightningBranchEntity branch = new LightningBranchEntity(level, entity, startPos, dir, 30, DamageLookup.lookupDamage(3, .3) * multiplier(entity));
+        float damage = (float) (DamageLookup.lookupDamage(3, 0) * multiplier(entity)/6);
+
+        LightningBranchEntity branch = new LightningBranchEntity(level, entity, startPos, dir, 30, damage);
         level.addFreshEntity(branch);
     }
 }

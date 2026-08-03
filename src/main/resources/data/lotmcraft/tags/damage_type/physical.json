@@ -2,6 +2,12 @@
   "replace": false,
   "values": [
     "lotmcraft:physical_based",
-    "lotmcraft:beyonder_generic"
+    "lotmcraft:beyonder_generic",
+    "lotmcraft:lightning",
+    "lotmcraft:wind",
+    "lotmcraft:water",
+    "lotmcraft:fire",
+    "lotmcraft:impact",
+    "lotmcraft:matter"
   ]
 }

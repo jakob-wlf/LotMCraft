@@ -17,12 +17,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ThunderclapAbility extends Ability {
     public ThunderclapAbility(String id) {
         super(id, 4);
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(9500f, 4500f, 2800f, 2500f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 2, 3, 4));
     }
 
     @Override
@@ -52,6 +60,7 @@ public class ThunderclapAbility extends Ability {
         AtomicBoolean hasLanded = new AtomicBoolean(false);
 
         double multiplier = multiplier(entity);
+        float damage = (float) (DamageLookup.lookupDamage(3, .7) * multiplier/2);
         ServerScheduler.scheduleForDuration(0, 0, 15, () -> {
             if(hasLanded.get())
                 return;
@@ -60,7 +69,7 @@ public class ThunderclapAbility extends Ability {
             ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.LIGHTNING.get(), entity.position(), 80, 1, 0.1);
             level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 2, 1);
 
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8, DamageLookup.lookupDamage(3, .85) * multiplier(entity), entity.position(), true, false, ModDamageTypes.source(level, ModDamageTypes.SAILOR_LIGHTNING, entity));
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8, ModDamageTypes.LIGHTNING,damage, entity.position(), true, false);
 
             entity.setDeltaMovement(new Vec3(dir.x, dir.y * .1, dir.z).scale(7));
             entity.hurtMarked = true;

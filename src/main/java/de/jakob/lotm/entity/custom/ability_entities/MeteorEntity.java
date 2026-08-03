@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity.custom.ability_entities;
 
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -201,7 +202,9 @@ public class MeteorEntity extends Entity {
         moveTo(position().add(direction.normalize().scale(getSpeed())));
 
         if(!level().getBlockState(BlockPos.containing(position())).isAir()) {
-            AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), getDamage(), position(), true, false);
+            AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), ModDamageTypes.IMPACT, getDamage()/2, position(), true, false);
+            AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), ModDamageTypes.FIRE, getDamage()/2, position(), true, false);
+
             EffectManager.playEffect(EffectManager.Effect.EXPLOSION, position().x, position().y, position().z, serverLevel);
             PerformantExplosion.create(serverLevel, getCaster(), position(), getExplosionSize() * 1.5f, isGriefing(), isGriefing() ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.KEEP);
 

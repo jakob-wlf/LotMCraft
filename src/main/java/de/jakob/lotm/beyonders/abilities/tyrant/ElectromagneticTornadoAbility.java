@@ -10,12 +10,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class ElectromagneticTornadoAbility extends Ability {
     public ElectromagneticTornadoAbility(String id) {
         super(id, 20f, "explosion");
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(5, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(10000f, 5000f));
     }
 
     @Override
@@ -36,9 +44,12 @@ public class ElectromagneticTornadoAbility extends Ability {
 
         Vec3 pos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 2);
 
-        ElectromagneticTornadoEntity tornado = target == null ?
-                new ElectromagneticTornadoEntity(ModEntities.ELECTROMAGNETIC_TORNADO.get(), level, .4f, (float) DamageLookup.lookupDamage(1, .6) * multiplier(entity), entity) :
-                new ElectromagneticTornadoEntity(ModEntities.ELECTROMAGNETIC_TORNADO.get(), level, .4f, (float) DamageLookup.lookupDamage(1, .6) * multiplier(entity), target);
+        float damage = (float) DamageLookup.lookupDamage(1, .5) * multiplier(entity)/4;
+
+        ElectromagneticTornadoEntity tornado = new ElectromagneticTornadoEntity(
+                ModEntities.ELECTROMAGNETIC_TORNADO.get(),
+                level, .4f, damage , entity, target);
+
         tornado.setPos(pos);
         level.addFreshEntity(tornado);
     }

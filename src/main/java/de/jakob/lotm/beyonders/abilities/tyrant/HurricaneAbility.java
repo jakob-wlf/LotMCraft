@@ -10,11 +10,19 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class HurricaneAbility extends Ability {
     public HurricaneAbility(String id) {
         super(id, 10f, "explosion");
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(9000f, 4000f, 2250f, 1500f, 1200f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(6, 7, 8, 9, 10));
     }
 
     @Override
@@ -35,7 +43,12 @@ public class HurricaneAbility extends Ability {
 
         Vec3 pos = AbilityUtil.getTargetLocation(entity, 12, 2);
 
-        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) (DamageLookup.lookupDamage(4, .65)* multiplier(entity)), entity) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) (DamageLookup.lookupDamage(4, .65)* multiplier(entity)), entity, target, 1.5f);
+        float damage = (float) (DamageLookup.lookupDamage(4, .3)* multiplier(entity)/4);
+
+        TornadoEntity tornado =
+                new TornadoEntity(ModEntities.TORNADO.get(), level,
+                        .15f, damage , entity, target, 1.5f);
+
         tornado.setPos(pos);
         level.addFreshEntity(tornado);
     }

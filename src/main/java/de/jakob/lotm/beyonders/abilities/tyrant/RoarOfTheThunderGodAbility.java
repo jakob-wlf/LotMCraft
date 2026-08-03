@@ -20,12 +20,20 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class RoarOfTheThunderGodAbility extends Ability {
     public RoarOfTheThunderGodAbility(String id) {
         super(id, 20);
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(10, 15));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(12500f, 6000f));
     }
 
     @Override
@@ -47,6 +55,8 @@ public class RoarOfTheThunderGodAbility extends Ability {
 
         Vec3 startPos = entity.position();
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
+        double multiplier = multiplier(entity);
+        float damage = (float) (DamageLookup.lookupDamage(1, 0.4) * multiplier/3);
 
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);
@@ -54,7 +64,8 @@ public class RoarOfTheThunderGodAbility extends Ability {
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);
 
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 50* multiplier(entity)).forEach(e -> {
-            e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(1, 0.4) * multiplier(entity)));
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.INFORMATION, entity), damage);
+
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(2.75);
             e.setDeltaMovement(knockBack);
         });

@@ -19,11 +19,19 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class RoarAbility extends Ability {
     public RoarAbility(String id) {
         super(id, 12);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(6, 7, 8, 9, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(7000f, 3000f, 2000f, 1200f, 1000f));
     }
 
     @Override
@@ -43,12 +51,15 @@ public class RoarAbility extends Ability {
 
         Vec3 startPos = entity.position();
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
+        double multiplier = multiplier(entity);
+        float damage = (float) (DamageLookup.lookupDamage(4, 1) * multiplier);
 
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 3, 1);
 
-        double multiplier = multiplier(entity);
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 19* multiplier(entity)).forEach(e -> {
-            e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(4, .85) * multiplier(entity)));
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.WIND, entity), (float) damage/2);
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.AWE, entity), (float) damage/2);
+
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(1.5);
             e.setDeltaMovement(knockBack);
         });
