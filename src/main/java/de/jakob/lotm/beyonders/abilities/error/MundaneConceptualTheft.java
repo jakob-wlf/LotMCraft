@@ -124,7 +124,7 @@ public class MundaneConceptualTheft extends SelectableAbility {
         CorruptionComponent targetComp = target.getData(ModAttachments.CORRUPTION_COMPONENT);
         CorruptionComponent casterComp = entity.getData(ModAttachments.CORRUPTION_COMPONENT);
 
-        if(targetComp == null && casterComp == null && targetComp.getCorruption() !=0){
+        if(targetComp != null && casterComp != null && targetComp.getCorruption() !=0){
             float transfer = Math.min( targetComp.getCorruption(), 10);
             targetComp.decreaseCorruptionAndSync(transfer, target);
             casterComp.increaseCorruptionAndSync(transfer, entity);
