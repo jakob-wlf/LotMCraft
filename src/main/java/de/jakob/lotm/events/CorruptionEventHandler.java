@@ -179,8 +179,9 @@ public class CorruptionEventHandler {
         int corruptionValue = (int) (corruption * 100);
 
         if (corruptionValue < 50) {
-            if (entity instanceof ServerPlayer player) {
+            if (entity instanceof ServerPlayer player && corruptedComp.isFullyCorrupted()) {
                 revertFullCorruption(player);
+                corruptedComp.setFullyCorrupted(false);
 
             }
 
@@ -243,7 +244,7 @@ public class CorruptionEventHandler {
                 sp.getData(ModAttachments.SANITY_COMPONENT).setSanity(1);
                 sp.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 200, 20));
                 sp.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, 4));
-
+                corruptedComp.setFullyCorrupted(true);
 
                 MythicalCreatureFormAbility ability = (MythicalCreatureFormAbility) LOTMCraft.abilityHandler.getById("mythical_creature_form_ability");
                 
