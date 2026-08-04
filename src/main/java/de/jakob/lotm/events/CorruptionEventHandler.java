@@ -110,11 +110,13 @@ public class CorruptionEventHandler {
 
             SefirotData sefirotData = SefirotData.get(entity.getServer());
 
-            if ((currentSequence <= 0 ) && Arrays.stream(BeyonderData.pathwayInfos.get(charPathway).neighboringPathways()).filter(p -> p.equals(currentPathway)).toString().equals(currentPathway)){
+
+            if ((currentSequence <= 0 ) && Arrays.asList(BeyonderData.pathwayInfos.get(charPathway).neighboringPathways()).contains(currentPathway))
+            {
                 expectedStack += 1;
             }
 
-            if (sefirotData.getMentalImprint(sefirotData.getClaimedSefirot(entity.getUUID())) > 0.5  && Arrays.stream(BeyonderData.pathwayInfos.get(charPathway).neighboringPathways()).filter(p -> p.equals(currentPathway)).toString().equals(currentPathway)){
+            if (sefirotData.getMentalImprint(sefirotData.getClaimedSefirot(entity.getUUID())) > 0.5  && Arrays.asList(BeyonderData.pathwayInfos.get(charPathway).neighboringPathways()).contains(currentPathway)){
                 expectedStack += 1;
             }
 
