@@ -40,7 +40,7 @@ public class AweAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(2500f, 1000f, 750f, 360f, 280f, 200f, 150f, 100f, 40f, 40f));
 
-        baseDamage = 7f;
+        baseDamage = 4f;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class AweAbility extends Ability {
 
         level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 1, 1);
 
-        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 10 * (int) Math.max(multiplier(entity)/2,1)).forEach(e -> {
+        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 17 * (int) Math.max(multiplier(entity),1)).forEach(e -> {
             if(!VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, e, this)){
                 if (BeyonderData.isBeyonder(e)) {
                     BeyonderData.addModifier(e, "awe", .625);

@@ -33,18 +33,14 @@ public class DamageResistanceHandler {
         var source = event.getSource();
         float damage = event.getAmount();
 
-        LOTMCraft.LOGGER.info("before if 1");
-
         var sourceEntity = source.getEntity();
+
         if(sourceEntity != null && (sourceEntity instanceof LivingEntity livingSource
                 && BeyonderData.isBeyonder(livingSource))){
 
             float mult = 1f;
 
-            LOTMCraft.LOGGER.info("before if 2");
-
             if(BeyonderData.isBeyonder(entity) || entity instanceof ServerPlayer) {
-                LOTMCraft.LOGGER.info("after if 2");
 
                 float baseStep = 0.3f;
                 int seqDifference = BeyonderData.getSequence(entity) - BeyonderData.getSequence(livingSource);
@@ -55,18 +51,28 @@ public class DamageResistanceHandler {
                 }
             }
             else{
-                LOTMCraft.LOGGER.info("before if 3");
                 if(BeyonderData.getSequence(livingSource) <= 4){
-                    LOTMCraft.LOGGER.info("after if 3");
                     mult = 10f;
                 }
             }
 
-            LOTMCraft.LOGGER.info("after all ifs, mult {}", mult);
             damage *= mult;
         }
 
         if(BeyonderData.isBeyonder(entity)) {
+
+            int seq = BeyonderData.getSequence(entity);
+
+            float mult = 1.0f;
+            switch (seq){
+                case 4 -> mult = 0.75f;
+                case 3 -> mult = 0.5f;
+                case 0,1,2 -> mult = 0f;
+            }
+
+            if(!ModDamageTypes.isModDamage(source) && !(damage >= Float.MAX_VALUE/2)){
+                damage *= mult;
+            }
 
             LOTMCraft.LOGGER.info("AUTHORITY: entity path {}, seq {}", BeyonderData.getPathway(entity), BeyonderData.getSequence(entity));
 

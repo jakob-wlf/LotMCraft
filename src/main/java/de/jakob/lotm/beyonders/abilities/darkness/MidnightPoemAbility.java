@@ -298,17 +298,14 @@ public class MidnightPoemAbility extends SelectableAbility {
 
             int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
             int targetEntitySeq = BeyonderData.getSequence(e);
-            if(entitySeq < targetEntitySeq) {
-                duration = 20 * 20*(int) Math.max(multiplier/2,1) / (int) Math.max(multiplier_target/2,1);
+
+            if(entitySeq < targetEntitySeq ) {
+               return;
             }else if (entitySeq > targetEntitySeq){
-                if (!BeyonderData.getPathway(e).equals("darkness")){
-                    duration = 35*(int) Math.max(multiplier/2,1);
-                };
+                duration = 20 * 5;
             }else{
-                duration = 20*6*(int)Math.max(multiplier(entity)/2,1) / (int) Math.max(multiplier_target/2,1);
+                duration = 20 * 2;
             };
-
-
 
             if(!BeyonderData.isBeyonder(e) || targetEntitySeq > entitySeq-1 ) {
                 if(e instanceof Mob) {
@@ -320,6 +317,7 @@ public class MidnightPoemAbility extends SelectableAbility {
                     component.disableAbilityUsageForTime("pacify", purified ? duration/2:duration, e);
                 }
             }
+
             e.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, duration, 4, false, false, false));
             e.addEffect(new MobEffectInstance(MobEffects.DARKNESS, duration, 4, false, false, false));
             e.addEffect(new MobEffectInstance(ModEffects.ASLEEP, duration, 4, false, false, false));

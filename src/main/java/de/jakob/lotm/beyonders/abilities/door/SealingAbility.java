@@ -77,7 +77,7 @@ public class SealingAbility extends Ability {
             if((BeyonderData.getPathway(e).equals("door") && AbilityUtil.getSequenceDifference(entitySeq, BeyonderData.getSequence(e)) <= 0)) {
                 return;
             }else{
-                duration = 20*14;
+                duration = 20 * 14;
             };
 
             BeyonderData.addModifierWithTimeLimit(e, "sealed", .3,duration);

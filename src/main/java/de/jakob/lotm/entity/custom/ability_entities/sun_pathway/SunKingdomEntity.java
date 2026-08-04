@@ -96,7 +96,7 @@ public class SunKingdomEntity extends Entity {
             }
             else if(BeyonderData.getSequence(e) >= 4) {
                 DisabledAbilitiesComponent component = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                component.disableAbilityUsageForTime("sun_kingdom", 20 * 5, e);
+                component.disableAbilityUsageForTime("sun_kingdom", 20 * 3, e);
 
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, e.position().add(0, e.getEyeHeight() / 2, 0), 8, .5, e.getEyeHeight() / 2, .5, .01);
             }

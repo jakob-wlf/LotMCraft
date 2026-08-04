@@ -256,8 +256,8 @@ public class TsunamiEntity extends Entity {
                             livingEntity.hurt(damageSource, this.getDamage());
 
                             // Add knockback effect in the direction the tsunami is moving
-                            Vec3 knockbackDirection = getDirectionFacing().normalize().scale(2.0D);
-                            entity.setDeltaMovement(entity.getDeltaMovement().add(knockbackDirection.x, 0.5D, knockbackDirection.z));
+                            //Vec3 knockbackDirection = getDirectionFacing().normalize().scale(2.0D);
+                            //entity.setDeltaMovement(entity.getDeltaMovement().add(knockbackDirection.x, 0.5D, knockbackDirection.z));
                         }
                     }
                 }
