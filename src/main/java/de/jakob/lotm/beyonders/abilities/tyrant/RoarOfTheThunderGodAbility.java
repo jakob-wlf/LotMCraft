@@ -34,6 +34,8 @@ public class RoarOfTheThunderGodAbility extends Ability {
 
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(12500f, 6000f));
+
+        baseDamage = 25f;
     }
 
     @Override
@@ -56,7 +58,7 @@ public class RoarOfTheThunderGodAbility extends Ability {
         Vec3 startPos = entity.position();
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
         double multiplier = multiplier(entity);
-        float damage = (float) (DamageLookup.lookupDamage(1, 0.4) * multiplier/3);
+        float damage = baseDamage;
 
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);

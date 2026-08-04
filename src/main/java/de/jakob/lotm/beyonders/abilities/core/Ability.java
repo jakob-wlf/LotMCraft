@@ -68,12 +68,14 @@ public abstract class Ability {
     protected boolean autoClear = true;
 
     //dynamic spirituality
-    public boolean hasDynamicSpirituality = false;
-    public List<Float> dynamicSpirituality = new LinkedList<>(); // must be for every seq, if enabled
+    protected boolean hasDynamicSpirituality = false;
+    protected List<Float> dynamicSpirituality = new LinkedList<>(); // must be for every seq, if enabled
 
     //dynamic cooldown
-    public boolean hasDynamicCooldown = false;
-    public List<Integer> dynamicCooldown = new LinkedList<>(); // must be for every seq, if enabled
+    protected boolean hasDynamicCooldown = false;
+    protected List<Integer> dynamicCooldown = new LinkedList<>(); // must be for every seq, if enabled
+
+    public float baseDamage = 0f;
 
     public Ability(String id, float cooldown, String... interactionFlags) {
         this.id = id;
@@ -163,6 +165,9 @@ public abstract class Ability {
         }
 
         // Use ability client and server sided
+
+        baseDamage *= multiplier(newUser);
+
         onAbilityUse(serverLevel, newUser);
         if(entity instanceof ServerPlayer player) PacketHandler.sendToPlayer(player, new UseAbilityPacket(getId(), newUser.getId()));
 

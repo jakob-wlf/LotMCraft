@@ -25,6 +25,8 @@ public class StrongLightningAbility extends Ability {
 
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(5000f, 2500f, 1500f, 1000f, 800f));
+
+        baseDamage = 23f;
     }
 
     @Override
@@ -49,7 +51,7 @@ public class StrongLightningAbility extends Ability {
                 targetLoc = targetLoc.subtract(0, 1, 0);
         }
 
-        float damage = (float) (DamageLookup.lookupDamage(4, -0.3)* multiplier(entity)/5);
+        float damage = baseDamage;
 
         StrongLightningEntity lightning = new StrongLightningEntity(level, entity, targetLoc, 50, 6, damage, BeyonderData.isGriefingEnabled(entity), 1, 200* multiplier(entity), 0xe0ac00);
         level.addFreshEntity(lightning);

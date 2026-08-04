@@ -41,6 +41,8 @@ public class WaterMasteryAbility extends SelectableAbility {
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(1, 2, 2, 3, 4));
+
+        baseDamage = 3f;
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(
@@ -127,7 +129,7 @@ public class WaterMasteryAbility extends SelectableAbility {
         activeWaterWalls.add(wallData);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        float damage = (float) (DamageLookup.lookupDamage(4, -0.1f) * multiplier(entity)/5);
+        float damage = baseDamage;
 
         ServerScheduler.scheduleForDuration(0, 7, (int) (20 * 30* multiplier(entity)), () -> {
             if(random.nextInt(10) == 0)

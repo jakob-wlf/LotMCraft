@@ -208,13 +208,13 @@ public class TornadoEntity extends Entity {
         this.move(MoverType.SELF, this.getDeltaMovement());
         this.hurtMarked = true;
 
-        damageNearbyEntities();
-
         spawnParticles();
 
         if (this.tickCount % 20 == 0) {
             this.level().playSound(null, this.blockPosition(), SoundEvents.ELYTRA_FLYING,
                     SoundSource.HOSTILE, 1.0f, 0.5f + this.random.nextFloat() * 0.3f);
+
+            damageNearbyEntities();
         }
     }
     

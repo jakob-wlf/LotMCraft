@@ -34,6 +34,8 @@ public class WindManipulationAbility extends SelectableAbility {
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 1, 2, 2));
+
+        baseDamage = 6f;
     }
 
     @Override
@@ -229,7 +231,7 @@ public class WindManipulationAbility extends SelectableAbility {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BREEZE_WIND_CHARGE_BURST, entity.getSoundSource(), 1.0f, 1.0f);
 
-        float damage = (float) (DamageLookup.lookupDamage(6, .4) * multiplier(entity)/3);
+        float damage = baseDamage;
 
         WindBladeEntity blade = new WindBladeEntity(level, entity, damage, BeyonderData.isGriefingEnabled(entity));
         blade.setPos(startPos.x, startPos.y, startPos.z); // Set initial position

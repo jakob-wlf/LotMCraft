@@ -26,6 +26,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class DisasterFantasiaAbility extends SelectableAbility {
@@ -45,6 +46,8 @@ public class DisasterFantasiaAbility extends SelectableAbility {
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(24, 30));
+
+        baseDamage = 30f;
     }
 
     @Override
@@ -73,7 +76,6 @@ public class DisasterFantasiaAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (150* multiplier(entity)), 3);
-        float multiplier = multiplier(entity);
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
@@ -85,15 +87,20 @@ public class DisasterFantasiaAbility extends SelectableAbility {
         }
 
         switch (abilityIndex) {
-            case 0 -> EARTHQUAKE.spawnCalamity(serverLevel, targetPos, multiplier, griefing, (int) (65* multiplier(entity)), (float) DamageLookup.lookupDps(4, .325, 8, 20) * multiplier(entity), entity, false);
-            case 1 -> spawnMeteorShower(serverLevel, targetPos, multiplier, griefing, entity);
+            case 0 -> spawnEarthquake(serverLevel, targetPos, multiplier(entity) ,baseDamage, griefing, entity);
+            case 1 -> spawnMeteorShower(serverLevel, targetPos, baseDamage, griefing, entity);
             case 2 -> createTornados(serverLevel, entity);
             case 3 -> createPlague(level, entity);
         }
     }
 
-    private void spawnMeteorShower(ServerLevel level, Vec3 center,
-                                          float multiplier, boolean griefing, LivingEntity entity) {
+    public void spawnEarthquake(ServerLevel level, Vec3 center, float multiplier,
+                                float damage, boolean griefing, @Nullable LivingEntity entity){
+        EARTHQUAKE.spawnCalamity(level, center, griefing, (int) (65* multiplier), damage/ 6, entity, false);
+    }
+
+    public void spawnMeteorShower(ServerLevel level, Vec3 center,
+                                          float damage, boolean griefing, @Nullable LivingEntity entity) {
         Random rand = new Random();
         for (int i = 0; i < METEOR_COUNT; i++) {
             ServerScheduler.scheduleDelayed(i * 4, () -> {
@@ -103,19 +110,19 @@ public class DisasterFantasiaAbility extends SelectableAbility {
                 double offsetZ = Math.sin(angle) * distance;
                 Vec3 meteorPos = new Vec3(center.x + offsetX, center.y, center.z + offsetZ);
 
-                MeteorEntity meteor = new MeteorEntity(level, 2.5f,  (float) DamageLookup.lookupDamage(2, .4)  * multiplier(entity), 3, entity, griefing, 13, 12);
+                MeteorEntity meteor = new MeteorEntity(level, 2.5f,  damage/3, 3, entity, griefing, 13, 12);
                 meteor.setPosition(meteorPos);
                 level.addFreshEntity(meteor);
             }, level, () -> AbilityUtil.getTimeInArea(null, new Location(center, level)));
         }
     }
 
-    private void createTornados(ServerLevel serverLevel, LivingEntity entity) {
+    public void createTornados(ServerLevel serverLevel, LivingEntity entity) {
         LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (12* multiplier(entity)), 3);
 
         Vec3 pos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 2);
 
-        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35)  * multiplier(entity), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35)  * multiplier(entity), entity, target, 3);
+        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, baseDamage, entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, baseDamage, entity, target, 3);
         tornado.setPos(pos);
         serverLevel.addFreshEntity(tornado);
 
@@ -127,19 +134,19 @@ public class DisasterFantasiaAbility extends SelectableAbility {
         }
     }
 
-    private void createPlague(Level level, LivingEntity entity){
+    public void createPlague(Level level, LivingEntity entity){
         if(level.isClientSide || !(level instanceof ServerLevel serverLevel))
             return;
 
-        float multiplier = multiplier(entity);
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
 
-        ServerScheduler.scheduleForDuration(0, 20, 20 * 80, () -> {
+        ServerScheduler.scheduleForDuration(0, 20, 20 * 20, () -> {
             if (entity.level().isClientSide)
                 return;
 
             // Disease is suppressed by purification, cleansing, life aura, or blooming interactions
             Location currentLoc = new Location(entity.position(), entity.level());
-            int seq = AbilityUtil.getSeqWithArt(entity, this);
+
             if(InteractionHandler.isInteractionPossible(currentLoc, "purification", seq) ||
                     InteractionHandler.isInteractionPossible(currentLoc, "cleansing", seq))
                 return;
@@ -152,7 +159,12 @@ public class DisasterFantasiaAbility extends SelectableAbility {
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier(entity), entity.position(), new MobEffectInstance(MobEffects.WITHER, 20, 3, false, false, false));
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier(entity), entity.position(), new MobEffectInstance(MobEffects.BLINDNESS, 20, 4, false, false, false));
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier(entity), entity.position(), new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 2, false, false, false));
-            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier(entity), DamageLookup.lookupDps(4, .3, 35, 20) *(int) Math.max(multiplier(entity)/6,1) * damageMult, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
-        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
+
+            float damage = baseDamage/6;
+
+            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier(entity), damage/2, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.IMAGINATION, entity));
+            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier(entity), damage/2 * damageMult, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.PLAGUE, entity));
+
+            }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 }

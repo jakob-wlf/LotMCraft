@@ -31,6 +31,8 @@ public class ThunderclapAbility extends Ability {
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(2, 2, 3, 4));
+
+        baseDamage = 20f;
     }
 
     @Override
@@ -60,7 +62,7 @@ public class ThunderclapAbility extends Ability {
         AtomicBoolean hasLanded = new AtomicBoolean(false);
 
         double multiplier = multiplier(entity);
-        float damage = (float) (DamageLookup.lookupDamage(3, .5) * multiplier/4);
+        float damage = baseDamage;
         ServerScheduler.scheduleForDuration(0, 0, 15, () -> {
             if(hasLanded.get())
                 return;

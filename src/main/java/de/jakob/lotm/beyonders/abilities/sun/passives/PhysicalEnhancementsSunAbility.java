@@ -43,14 +43,14 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
             case 7 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 1),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 1),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 6),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 1)
             );
 
             case 6 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 3),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
+                    //new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 7),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
@@ -59,7 +59,7 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
 
             case 5 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 3),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 3),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 3),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 9),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
@@ -69,7 +69,7 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
 
             case 4 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 4),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 8),
+                    //new PhysicalEnhancement(EnhancementType.RESISTANCE, 8),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 18),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
@@ -79,7 +79,7 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
 
             case 3 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 4),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 9),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 9),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 19),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
@@ -89,7 +89,7 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
 
             case 2 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 5),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 12),
+                    //new PhysicalEnhancement(EnhancementType.RESISTANCE, 12),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 27),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
@@ -99,7 +99,7 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
 
             case 1 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 5),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 13),
+                    //new PhysicalEnhancement(EnhancementType.RESISTANCE, 13),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 32),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
@@ -109,7 +109,7 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
 
             case 0 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 6),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 16),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 16),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 47),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 6),

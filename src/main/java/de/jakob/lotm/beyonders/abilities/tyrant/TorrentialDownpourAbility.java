@@ -38,6 +38,8 @@ public class TorrentialDownpourAbility extends Ability {
 
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(12500f, 6500f, 3500f, 2500f));
+
+        baseDamage = 1f;
     }
 
     @Override
@@ -129,7 +131,7 @@ public class TorrentialDownpourAbility extends Ability {
 
         // Scheduler for Damage
         double multiplier = multiplier(entity);
-        float damage = (float) (DamageLookup.lookupDps(3, -0.2f, 5, 20) * multiplier/6);
+        float damage = baseDamage;
 
         ServerScheduler.scheduleForDuration(0, 10, (int) (20 * 15* multiplier(entity)), () -> {
             AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 25, ModDamageTypes.WATER, damage, startPos, true, false, true, 0);

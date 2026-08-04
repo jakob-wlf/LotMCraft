@@ -39,6 +39,8 @@ public class AweAbility extends Ability {
 
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(2500f, 1000f, 750f, 360f, 280f, 200f, 150f, 100f, 40f, 40f));
+
+        baseDamage = 7f;
     }
 
     @Override
@@ -74,8 +76,6 @@ public class AweAbility extends Ability {
 
         level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 1, 1);
 
-        var damage = (float) DamageLookup.lookupDamage(7, .1) * multiplier(entity);
-
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 10 * (int) Math.max(multiplier(entity)/2,1)).forEach(e -> {
             if(!VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, e, this)){
                 if (BeyonderData.isBeyonder(e)) {
@@ -85,8 +85,8 @@ public class AweAbility extends Ability {
                 e.addEffect(new MobEffectInstance(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 10, 11, false, false, false)));
                 e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20 * 10, 6, false, false, false));
 
-                e.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), damage/2);
-                e.hurt(entity.damageSources().source(ModDamageTypes.AWE), damage/2);
+                e.hurt(ModDamageTypes.source(level,ModDamageTypes.LOOSING_CONTROL, entity), baseDamage/2);
+                e.hurt(ModDamageTypes.source(level,ModDamageTypes.AWE, entity), baseDamage/2);
 
                 VisionaryLoosingControlHandler.applyEffect(entity, e, this);
 

@@ -29,6 +29,8 @@ public class RagingBlowsAbility extends Ability {
 
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(800f, 700f, 600f, 400f, 300f, 200f, 100f, 50f, 25f));
+
+        baseDamage = 5f;
     }
 
     @Override
@@ -45,6 +47,7 @@ public class RagingBlowsAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(!level.isClientSide) {
             double multiplier = multiplier(entity)/1.5;
+            float damage = baseDamage;
 
             ServerScheduler.scheduleForDuration(0, 6, 6 * 9, () -> {
                 Vec3 pos = VectorUtil.getRelativePosition(entity.getEyePosition(), entity.getLookAngle().normalize(), random.nextDouble(1, 2), random.nextDouble(-1.5, 1.5), random.nextDouble(-.5, .5));
@@ -54,7 +57,7 @@ public class RagingBlowsAbility extends Ability {
 
                 level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.GENERIC_EXPLODE.value(), entity.getSoundSource(), 1, 1);
 
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75f, ModDamageTypes.IMPACT,DamageLookup.lookupDamage(8, .8) * multiplier, pos, true, false);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75f, ModDamageTypes.IMPACT,damage, pos, true, false);
             }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
         }
     }

@@ -1,10 +1,16 @@
 package de.jakob.lotm.beyonders.abilities.visionary.passives;
 
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.MultiplierModifierComponent;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,9 +29,11 @@ public class PureIdealism extends PassiveAbilityItem {
     public void tick(Level level, LivingEntity entity) {
         var sanity = entity.getData(ModAttachments.SANITY_COMPONENT.get());
 
-        BeyonderData.addModifier(entity, "pure_idealism",
-                calculatemultiplier(sanity.getSanity(),
-                        getPerfectMultWithSeq(BeyonderData.getSequence(entity))));
+        MultiplierModifierComponent component = entity.getData(ModAttachments.MULTIPLIER_MODIFIER_COMPONENT);
+
+        component.addMultiplierForTime("pure_idealism", calculatemultiplier(sanity.getSanity(),
+                getPerfectMultWithSeq(BeyonderData.getSequence(entity))), 5);
+
     }
 
     private float calculatemultiplier(float sanity, float mult) {

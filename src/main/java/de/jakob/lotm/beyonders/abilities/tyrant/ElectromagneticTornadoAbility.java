@@ -24,6 +24,8 @@ public class ElectromagneticTornadoAbility extends Ability {
 
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(10000f, 5000f));
+
+        baseDamage = 15f;
     }
 
     @Override
@@ -44,7 +46,7 @@ public class ElectromagneticTornadoAbility extends Ability {
 
         Vec3 pos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 2);
 
-        float damage = (float) DamageLookup.lookupDamage(1, .5) * multiplier(entity)/4;
+        float damage = baseDamage;
 
         ElectromagneticTornadoEntity tornado = new ElectromagneticTornadoEntity(
                 ModEntities.ELECTROMAGNETIC_TORNADO.get(),

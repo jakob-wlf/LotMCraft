@@ -30,6 +30,8 @@ public class LightningStormAbility extends Ability {
 
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(15000f, 7000f, 4000f, 3000f));
+
+        baseDamage = 30f;
     }
 
     @Override
@@ -56,7 +58,7 @@ public class LightningStormAbility extends Ability {
         );
 
         double multiplier = multiplier(entity);
-        double damage = DamageLookup.lookupDamage(3, 0) * multiplier/4;
+        double damage = baseDamage;
 
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, (int) (25* multiplier(entity)), 2, true);
         for(int i = 0; i < 35; i++) {

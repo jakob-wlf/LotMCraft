@@ -32,6 +32,8 @@ public class WrathOfTheOceanAbility extends SelectableAbility {
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(20, 25, 30, 40));
+
+        baseDamage = 2f;
     }
 
     @Override
@@ -82,7 +84,7 @@ public class WrathOfTheOceanAbility extends SelectableAbility {
                 .map(BlockPos::immutable)
                 .toList();
 
-       float damage = (float) DamageLookup.lookupDamage(3, .05f) * multiplier(caster)/7;
+       float damage = baseDamage;
 
         ServerScheduler.scheduleForDuration(0, 10, 1000, () -> {
             AbilityUtil.getNearbyEntities(caster, level, origin, 100, false).stream()

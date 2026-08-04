@@ -27,6 +27,8 @@ public class HeavenlyPunishmentAbility extends Ability {
 
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(10000f, 4500f));
+
+        baseDamage = 50f;
     }
 
     @Override
@@ -52,9 +54,7 @@ public class HeavenlyPunishmentAbility extends Ability {
                 targetLoc = targetLoc.subtract(0, 1, 0);
         }
 
-        double damage = DamageLookup.lookupDamage(1, 1.1) * multiplier(entity)/2;
-
-        GiantLightningEntity lightning = new GiantLightningEntity(level, entity, targetLoc, 50, 6, damage, BeyonderData.isGriefingEnabled(entity), 2, 200* multiplier(entity), 0x6522a8);
+        GiantLightningEntity lightning = new GiantLightningEntity(level, entity, targetLoc, 50, 6, baseDamage, BeyonderData.isGriefingEnabled(entity), 0, 200* multiplier(entity), 0x6522a8);
         level.addFreshEntity(lightning);
     }
 }

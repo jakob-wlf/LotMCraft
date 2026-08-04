@@ -49,7 +49,7 @@ public class PhysicalEnhancementsJusticiarAbility extends PhysicalEnhancementsAb
 
             case 6 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 3 ),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
+                  //  new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 9),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 2)
@@ -57,7 +57,7 @@ public class PhysicalEnhancementsJusticiarAbility extends PhysicalEnhancementsAb
 
             case 5 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 3),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 4),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 4),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 11),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 2)
@@ -65,7 +65,7 @@ public class PhysicalEnhancementsJusticiarAbility extends PhysicalEnhancementsAb
 
             case 4 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 4 ),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 9),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 9),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 18),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 3)
@@ -73,7 +73,7 @@ public class PhysicalEnhancementsJusticiarAbility extends PhysicalEnhancementsAb
 
             case 3 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 4 ),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 10),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 10),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 19),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 3)
@@ -81,7 +81,7 @@ public class PhysicalEnhancementsJusticiarAbility extends PhysicalEnhancementsAb
 
             case 2 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 5 ),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 12),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 12),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 27),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 4)
@@ -89,7 +89,7 @@ public class PhysicalEnhancementsJusticiarAbility extends PhysicalEnhancementsAb
 
             case 1 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 6 ),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 14),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 14),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 34),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 4)
@@ -98,7 +98,7 @@ public class PhysicalEnhancementsJusticiarAbility extends PhysicalEnhancementsAb
             case 0 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 7),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 16),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 16),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 47),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 6)
