@@ -182,7 +182,7 @@ public class MentalPlagueAbility extends SelectableAbility {
         int finalStage = stage;
 
         ServerScheduler.scheduleForDuration(0, 20, 20 * 5 * stage, () -> {
-            if(!component.hasMentalPlague()){
+            if(!component.hasMentalPlague() || !component.shouldBeActivated() || !entity.isAlive()){
                 component.reset();
                 return;
             }

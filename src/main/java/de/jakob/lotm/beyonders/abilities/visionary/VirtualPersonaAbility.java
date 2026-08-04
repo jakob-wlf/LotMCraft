@@ -95,6 +95,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
             ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), 2, 20);
             ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(0, 0, 1), 2.0, 20);
             ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(1, 0, 0), 2.0, 20);
+            return;
         }
 
         if(!(level instanceof ServerLevel serverLevel)) return;
@@ -266,6 +267,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
             ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), 2, 20);
             ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(0, 0, 1), 2.0, 20);
             ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(1, 0, 0), 2.0, 20);
+            return;
         }
 
         var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
@@ -277,13 +279,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
             return;
         }
 
-        level.playSound(null,
-                entity.position().x, entity.position().y, entity.position().z,
-                SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
-
         component.create(seq);
-
-
     }
 
     @Override

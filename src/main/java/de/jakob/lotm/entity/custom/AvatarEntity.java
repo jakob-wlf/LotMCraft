@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity.custom;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.goals.AbilityUseGoal;
 import de.jakob.lotm.entity.custom.goals.RangedCombatGoal;
 import de.jakob.lotm.entity.custom.goals.avatar.AvatarTargetGoal;
@@ -65,6 +66,7 @@ public class AvatarEntity extends PathfinderMob {
         }
     }
 
+    // ========================= Entity Data Initialization =========================
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
@@ -128,7 +130,22 @@ public class AvatarEntity extends PathfinderMob {
         }
 
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Monster.class, true));
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Monster.class, true));
+
+        this.targetSelector.addGoal(
+                3,
+                new NearestAttackableTargetGoal<>(
+                        this,
+                        Player.class,
+                        10,
+                        true,
+                        false,
+                        player -> {
+                            UUID owner = getOriginalOwner();
+                            return !player.getUUID().equals(owner) && !player.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(owner);
+                        }
+                )
+        );
     }
 
     @Override

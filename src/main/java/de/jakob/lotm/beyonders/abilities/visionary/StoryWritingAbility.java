@@ -127,7 +127,12 @@ public class StoryWritingAbility extends ToggleAbility {
         var target = player.level().getPlayerByUUID(trigger.getTarget());
         if (target != null) {
             if (target instanceof ServerPlayer playerTarget)
-                MetaAwarenessAbility.sendWithMessage(player, playerTarget, "Tried to use story writing");
+                if(VisionaryHandler.shouldFailAndTrigger(BeyonderData.getSequence(player), player, playerTarget, null))
+                    return;
+        }
+        else{
+            if(VisionaryHandler.shouldFailAndTriggerOfflineTarget(BeyonderData.getSequence(player), player,BeyonderData.playerMap.get(trigger.getTarget()).get()))
+                return;
         }
 
         BeyonderData.playerMap.addProphecy(trigger.getTarget(), new Prophecy(trigger.getTarget(), trigger, trigger.getType(), player.getUUID()));

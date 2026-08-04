@@ -115,6 +115,10 @@ public class MetaAwarenessAbility extends PassiveAbilityItem {
 
    private static void triggerAutoPrayer(ServerPlayer sender, ServerPlayer target, String msg) {
         // Cooldown check on the target (prevent spam if their name is said repeatedly)
+
+       if(BeyonderData.getPathway(sender).equals("visionary") && BeyonderData.getSequence(sender) < BeyonderData.getSequence(target))
+           return;
+
         long now = System.currentTimeMillis();
         Long lastTrigger = COOLDOWNS.get(target.getUUID());
         if (lastTrigger != null && now - lastTrigger < COOLDOWN_MS) return;
