@@ -79,13 +79,13 @@ public class DragonScalesAbility extends ToggleAbility {
 
     public static float getDamageReductionPerSeq(int seq){
         return (float) (1.0f - switch (seq){
-                    case 6 -> 0.05f;
-                    case 5 -> 0.10f;
-                    case 4 -> 0.15;
-                    case 3 -> 0.20f;
-                    case 2 -> 0.25f;
-                    case 1 -> 0.30f;
-                    case 0 -> 0.40f;
+                    case 6 -> 0.20f;
+                    case 5 -> 0.25f;
+                    case 4 -> 0.35;
+                    case 3 -> 0.40f;
+                    case 2 -> 0.50f;
+                    case 1 -> 0.55f;
+                    case 0 -> 0.70f;
                     default -> 0.0f;
                 });
     }

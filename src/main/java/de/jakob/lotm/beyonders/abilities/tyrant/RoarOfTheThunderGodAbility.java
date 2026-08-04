@@ -64,7 +64,8 @@ public class RoarOfTheThunderGodAbility extends Ability {
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);
 
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 50* multiplier(entity)).forEach(e -> {
-            e.hurt(ModDamageTypes.source(level, ModDamageTypes.INFORMATION, entity), damage);
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.LIGHTNING, entity), damage/2);
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity), damage/2);
 
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(2.75);
             e.setDeltaMovement(knockBack);

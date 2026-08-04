@@ -24,7 +24,7 @@ public class LightningAbility extends Ability {
         dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(3500f, 1500f, 1000f, 500f, 500f, 300f));
+        dynamicSpirituality = new LinkedList<>(List.of(3500f, 1500f, 1000f, 700f, 500f, 300f));
     }
 
     @Override
@@ -43,7 +43,7 @@ public class LightningAbility extends Ability {
             return;
 
         float mult = multiplier(entity);
-        float damage = (float) (DamageLookup.lookupDamage(5, 0.5f)* mult/4);
+        float damage = (float) (DamageLookup.lookupDamage(5, -0.3f)* mult/5);
 
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, (int) (25 * mult), 2, true);
         for(int i = 0; i < 35; i++) {
@@ -52,7 +52,7 @@ public class LightningAbility extends Ability {
                 targetLoc = targetLoc.subtract(0, 1, 0);
         }
 
-        LightningEntity lightning = new LightningEntity(level, entity, targetLoc, 50, 6, damage, BeyonderData.isGriefingEnabled(entity), 2, 200* multiplier(entity), 0x11A8DD);
+        LightningEntity lightning = new LightningEntity(level, entity, targetLoc, 50, 6, damage, BeyonderData.isGriefingEnabled(entity), 1, 200* multiplier(entity), 0x11A8DD);
         level.addFreshEntity(lightning);
     }
 }

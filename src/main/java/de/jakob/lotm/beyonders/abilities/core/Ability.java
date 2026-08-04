@@ -143,7 +143,7 @@ public abstract class Ability {
 
         // Handle Cooldown
         AbilityCooldownComponent component = newUser.getData(ModAttachments.COOLDOWN_COMPONENT);
-        int trueCooldown = hasDynamicCooldown ? 20 * dynamicCooldown.get(seq) : cooldown;
+        int trueCooldown = getCooldown(seq);
 
         int inflatedCooldown = trueCooldown;
         var pdata = newUser.getPersistentData();
@@ -197,7 +197,7 @@ public abstract class Ability {
     protected abstract float getSpiritualityCost();
 
     public float getInflatedSpiritualityCost(LivingEntity entity, ServerLevel level, int seq) {
-        float base = hasDynamicSpirituality ? dynamicSpirituality.get(seq) : getSpiritualityCost();
+        float base = spiritualityCost(seq);
         var pdata = entity.getPersistentData();
         if (pdata.contains(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY)) {
             if (pdata.getLong(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY) > level.getGameTime()) {
@@ -387,10 +387,14 @@ public abstract class Ability {
     }
 
     public int getCooldown(int seq) {
+        if(seq + 1 > dynamicCooldown.size()) return cooldown;
+
         return hasDynamicCooldown ? 20 * dynamicCooldown.get(seq) : cooldown;
     }
 
     public float spiritualityCost(int seq) {
+        if(seq + 1 > dynamicSpirituality.size()) return cooldown;
+
         return hasDynamicSpirituality ? dynamicSpirituality.get(seq) : getSpiritualityCost();
     }
 }

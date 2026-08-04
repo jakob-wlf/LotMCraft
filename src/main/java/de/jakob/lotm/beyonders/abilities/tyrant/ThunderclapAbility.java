@@ -60,7 +60,7 @@ public class ThunderclapAbility extends Ability {
         AtomicBoolean hasLanded = new AtomicBoolean(false);
 
         double multiplier = multiplier(entity);
-        float damage = (float) (DamageLookup.lookupDamage(3, .7) * multiplier/2);
+        float damage = (float) (DamageLookup.lookupDamage(3, .5) * multiplier/4);
         ServerScheduler.scheduleForDuration(0, 0, 15, () -> {
             if(hasLanded.get())
                 return;

@@ -49,9 +49,9 @@ public class StrongLightningAbility extends Ability {
                 targetLoc = targetLoc.subtract(0, 1, 0);
         }
 
-        float damage = (float) (DamageLookup.lookupDamage(4, .3)* multiplier(entity)/4);
+        float damage = (float) (DamageLookup.lookupDamage(4, -0.3)* multiplier(entity)/5);
 
-        StrongLightningEntity lightning = new StrongLightningEntity(level, entity, targetLoc, 50, 6, damage, BeyonderData.isGriefingEnabled(entity), 2, 200* multiplier(entity), 0xe0ac00);
+        StrongLightningEntity lightning = new StrongLightningEntity(level, entity, targetLoc, 50, 6, damage, BeyonderData.isGriefingEnabled(entity), 1, 200* multiplier(entity), 0xe0ac00);
         level.addFreshEntity(lightning);
     }
 }

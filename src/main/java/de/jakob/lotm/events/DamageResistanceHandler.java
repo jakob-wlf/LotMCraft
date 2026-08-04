@@ -8,24 +8,25 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class DamageResistanceHandler {
 
     @SubscribeEvent
-   public static void onSunHitDigestion(LivingDamageEvent.Pre event) {
+   public static void onDamage(LivingIncomingDamageEvent event) {
         if(!(event.getEntity().level() instanceof ServerLevel level)) return;
 
         var entity = event.getEntity();
         var source = event.getSource();
-        float damage = event.getOriginalDamage();
+        float damage = event.getAmount();
 
         var sourceEntity = source.getEntity();
         if(sourceEntity != null && (sourceEntity instanceof LivingEntity livingSource
                 && BeyonderData.isBeyonder(livingSource))){
             LOTMCraft.LOGGER.info("AUTHORITY: source path {}, seq {}", BeyonderData.getPathway(livingSource), BeyonderData.getSequence(livingSource));
 
-            float baseStep = 0.2f;
+            float baseStep = 0.3f;
             int seqDifference = BeyonderData.getSequence(entity) - BeyonderData.getSequence(livingSource);
             float mult = 1.0f + (baseStep * seqDifference);
 
@@ -53,7 +54,11 @@ public class DamageResistanceHandler {
         }
 
 
-        event.setNewDamage(damage);
+        event.setAmount(damage);
+
+        if(damage <= 0f){
+            event.setCanceled(true);
+        }
     }
 
 }
