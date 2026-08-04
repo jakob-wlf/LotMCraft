@@ -180,7 +180,7 @@ public class BattleHypnosisAbility extends SelectableAbility {
         //AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.stop_beyonder_powers").withColor(0xf5c56c));
 
         DisabledAbilitiesComponent component = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        component.disableAbilityUsageForTime("battle_hypnosis_disable_beyonder_powers", 20 * 9, target);
+        component.disableAbilityUsageForTime("battle_hypnosis_disable_beyonder_powers", 20 * 5, target);
     }
 
     static private void weakenAndMoveAroundTarget(ServerLevel level, LivingEntity entity, LivingEntity target, int entitySeq) {
@@ -189,7 +189,7 @@ public class BattleHypnosisAbility extends SelectableAbility {
         //AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.weaken").withColor(0xf5c56c));
 
         BeyonderData.addModifier(target, "battle_hypnosis_weaken", .4);
-        ServerScheduler.scheduleDelayed(20 * 12, () -> BeyonderData.removeModifier(target, "battle_hypnosis_weaken"));
+        ServerScheduler.scheduleDelayed(20 * 10, () -> BeyonderData.removeModifier(target, "battle_hypnosis_weaken"));
 
         final UUID[] taskIdHolder = new UUID[1];
         taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 5, 20 * 8, () -> {
@@ -211,10 +211,10 @@ public class BattleHypnosisAbility extends SelectableAbility {
         //AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.battle_hypnosis.stop").withColor(0xf5c56c));
 
         DisabledAbilitiesComponent component = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        component.disableAbilityUsageForTime("battle_hypnosis_freeze", 20 * 3, target);
+        component.disableAbilityUsageForTime("battle_hypnosis_freeze", 20 * 2, target);
 
         final UUID[] taskIdHolder = new UUID[1];
-        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 1, 20 * 5, () -> {
+        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 1, 20 * 2, () -> {
             if(InteractionHandler.isInteractionPossible(new Location(target.position(), level), "purification", entitySeq)) {
                 target.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
                 component.enableAbilityUsage("battle_hypnosis_freeze");

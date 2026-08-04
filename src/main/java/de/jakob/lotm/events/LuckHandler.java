@@ -461,8 +461,8 @@ public class LuckHandler {
         long now = System.currentTimeMillis();
         if (lastAbilityDisableTime.containsKey(uuid) && now - lastAbilityDisableTime.get(uuid) < 5000) return;
         lastAbilityDisableTime.put(uuid, now);
-        double entityMultiplier = Math.max(BeyonderData.getMultiplier(entity)/2,1);
-        int duration = (int) (lerpClamped(magnitude, 0, 3000, 2000, 5000))/(int) entityMultiplier;
+
+        int duration = 20 * 3;
 
         DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
         component.disableAbilityUsageForTime("unluck_ability_disabled", duration, entity);

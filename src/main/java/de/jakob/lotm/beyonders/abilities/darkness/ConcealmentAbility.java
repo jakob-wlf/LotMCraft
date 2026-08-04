@@ -352,15 +352,13 @@ public class ConcealmentAbility extends SelectableAbility {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetEntitySeq = BeyonderData.getSequence(targetEntity);
-        if(entitySeq < targetEntitySeq) {
-            duration = 20 * 25*(int) Math.max(multiplier/2,1);
+        if(entitySeq < targetEntitySeq && !BeyonderData.getPathway(targetEntity).equals("darkness")) {
+            duration = 20;
         }else if (entitySeq > targetEntitySeq){
-            if (!BeyonderData.getPathway(targetEntity).equals("darkness")){
-                duration = 80*(int) Math.max(multiplier/2,1);
-            };
+            duration = 20 * 10;
         }else{
-            duration = 20 * 10*(int) Math.max(multiplier/2,1)/  (int) multiplier_target;
-        };
+            duration = 20 * 3;
+        }
 
         if(!BeyonderData.isBeyonder(targetEntity) || targetEntitySeq > entitySeq-1 ) {
             if(targetEntity instanceof Mob) {

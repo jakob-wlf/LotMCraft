@@ -33,7 +33,7 @@ public class SirenSongAbility extends SelectableAbility {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(6500f, 3250f, 2000f, 1000f, 800f, 600f));
 
-        baseDamage = 5f;
+        baseDamage = 3.5f;
     }
 
     @Override

@@ -34,7 +34,7 @@ public class FrenzyAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(2500f, 1000f, 750f, 360f, 280f, 200f, 150f, 100f, 40f, 40f));
 
-        baseDamage = 9f;
+        baseDamage = 5f;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class FrenzyAbility extends Ability {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * Math.max(multiplier(entity), 1)), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (25 * Math.max(multiplier(entity), 1)), 2);
 
         if (level.isClientSide) {
             if(target != null)
@@ -94,6 +94,5 @@ public class FrenzyAbility extends Ability {
 
         target.hurt(ModDamageTypes.source(level, ModDamageTypes.LOOSING_CONTROL, entity), baseDamage);
 
-        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.0065f * (int) Math.max(multiplier(entity)/4,1)), target, entitySeq, BeyonderData.getSequence(target));
     }
 }

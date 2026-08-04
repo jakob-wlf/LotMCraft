@@ -15,6 +15,9 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import java.util.HashMap;
 import java.util.Map;
 
+@EventBusSubscriber(
+        modid = LOTMCraft.MOD_ID
+)
 public class PureIdealism extends PassiveAbilityItem {
     public PureIdealism(Properties properties) {
         super(properties);
@@ -31,8 +34,13 @@ public class PureIdealism extends PassiveAbilityItem {
 
         MultiplierModifierComponent component = entity.getData(ModAttachments.MULTIPLIER_MODIFIER_COMPONENT);
 
-        component.addMultiplierForTime("pure_idealism", calculatemultiplier(sanity.getSanity(),
-                getPerfectMultWithSeq(BeyonderData.getSequence(entity))), 5);
+        if (!component.hasMultiplier("pure_idealism"))
+            BeyonderData.addModifier(entity, "pure_idealism", calculatemultiplier(sanity.getSanity(),
+                    getPerfectMultWithSeq(BeyonderData.getSequence(entity))));
+        else{
+            component.replaceMultiplier("pure_idealism", calculatemultiplier(sanity.getSanity(),
+                    getPerfectMultWithSeq(BeyonderData.getSequence(entity))));
+        }
 
     }
 
@@ -40,12 +48,26 @@ public class PureIdealism extends PassiveAbilityItem {
         return 1.0f + (mult - 1.0f) * sanity;
     }
 
-    private float getPerfectMultWithSeq(int seq){
-        return switch (seq){
+    private float getPerfectMultWithSeq(int seq) {
+        return switch (seq) {
             case 2 -> 1.05f;
-            case 1 -> 1.15f;
-            case 0 -> 1.25f;
+            case 1 -> 1.075f;
+            case 0 -> 1.10f;
             default -> 1.0f;
         };
+    }
+
+    @SubscribeEvent
+    public static void multiplierClean(EntityTickEvent.Post event) {
+        if (event.getEntity() instanceof LivingEntity entity) {
+
+            MultiplierModifierComponent component = entity.getData(ModAttachments.MULTIPLIER_MODIFIER_COMPONENT);
+
+            String path = BeyonderData.getPathway(entity);
+            int seq = BeyonderData.getSequence(entity);
+            if (component.hasMultiplier("pure_idealism") && (!path.equals("visionary") || seq > 2)) {
+                component.removeMultiplier("pure_idealism");
+            }
+        }
     }
 }

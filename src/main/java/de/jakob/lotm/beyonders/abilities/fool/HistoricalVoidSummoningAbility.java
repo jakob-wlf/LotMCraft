@@ -804,7 +804,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                     ListTag disabledAbilitiesList = tag.getList("StolenEffects", Tag.TAG_COMPOUND);
                     DisabledAbilitiesComponent disabledComponent = player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
                     for (int i = 0; i < disabledAbilitiesList.size(); i++) {
-                        disabledComponent.disableSpecificAbilityForTime(disabledAbilitiesList.getCompound(i).getString("AbilityName"), "theft_", 30 * 20);
+                        disabledComponent.disableSpecificAbilityForTime(disabledAbilitiesList.getCompound(i).getString("AbilityName"), "theft_", 20 * 5);
                     }
                 }
             } else if (specificInfo.type() == SummonType.SEQUENCE) {

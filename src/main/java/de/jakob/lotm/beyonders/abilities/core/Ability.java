@@ -1,7 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
@@ -26,7 +25,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
-import de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility;
 
 import java.util.*;
 
@@ -148,15 +146,6 @@ public abstract class Ability {
         int trueCooldown = getCooldown(seq);
 
         int inflatedCooldown = trueCooldown;
-        var pdata = newUser.getPersistentData();
-        if (pdata.contains(EntropySubAbility.SENSORY_DECAY_COOLDOWN_MULT_KEY)) {
-            if (pdata.getLong(EntropySubAbility.SENSORY_DECAY_COOLDOWN_UNTIL_KEY) > serverLevel.getGameTime()) {
-                inflatedCooldown = (int)(trueCooldown * pdata.getFloat(EntropySubAbility.SENSORY_DECAY_COOLDOWN_MULT_KEY));
-            } else {
-                pdata.remove(EntropySubAbility.SENSORY_DECAY_COOLDOWN_MULT_KEY);
-                pdata.remove(EntropySubAbility.SENSORY_DECAY_COOLDOWN_UNTIL_KEY);
-            }
-        }
         component.setCooldown(id, inflatedCooldown);
 
         if(AbilityUtil.hasArtifactScaling(entity)){
@@ -166,9 +155,15 @@ public abstract class Ability {
 
         // Use ability client and server sided
 
+        LOTMCraft.LOGGER.info("Before mult: damage {}, mult {}, res {}", baseDamage, multiplier(entity), baseDamage * multiplier(entity));
+
+        final float damageBackup = baseDamage;
         baseDamage *= multiplier(newUser);
 
         onAbilityUse(serverLevel, newUser);
+
+        baseDamage = damageBackup;
+
         if(entity instanceof ServerPlayer player) PacketHandler.sendToPlayer(player, new UseAbilityPacket(getId(), newUser.getId()));
 
         if(this.autoClear){
@@ -203,15 +198,6 @@ public abstract class Ability {
 
     public float getInflatedSpiritualityCost(LivingEntity entity, ServerLevel level, int seq) {
         float base = spiritualityCost(seq);
-        var pdata = entity.getPersistentData();
-        if (pdata.contains(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY)) {
-            if (pdata.getLong(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY) > level.getGameTime()) {
-                return base * pdata.getFloat(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
-            } else {
-                pdata.remove(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
-                pdata.remove(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY);
-            }
-        }
         return base;
     }
 
@@ -272,14 +258,6 @@ public abstract class Ability {
         boolean isClientSide = entity.level().isClientSide;
         boolean hasAbilityCopied = isClientSide ? ClientData.getCopiedAbilityIds().contains(getId()) : entity.getData(ModAttachments.COPIED_ABILITY_COMPONENT).getAbilityIds().contains(getId());
         if(!hasAbility(entity) && hasToHaveAbility && !hasAbilityCopied) return false;
-
-        if (MausoleumDomainAbility.isInsideMausoleumDomain(entity.getUUID())) {
-            if (entity instanceof ServerPlayer player) {
-                AbilityUtil.sendActionBar(player,
-                        Component.literal("Your abilities are sealed.").withColor(0xFF5555));
-            }
-            return false;
-        }
 
         AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
         if(component.isOnCooldown(id)) return false;

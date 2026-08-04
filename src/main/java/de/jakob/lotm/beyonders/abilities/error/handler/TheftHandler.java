@@ -408,13 +408,13 @@ public class TheftHandler {
 
     public static int getDisablingTimeForSequenceInSeconds(int sequence) {
         return switch (sequence) {
-            default -> 35;
-            case 5 -> 60;
-            case 4 -> 120;
-            case 3 -> 240;
-            case 2 -> 480;
-            case 1 -> 800;
-            case 0 -> 900;
+            default -> 3;
+            case 5 -> 4;
+            case 4 -> 5;
+            case 3 -> 6;
+            case 2 -> 7;
+            case 1 -> 10;
+            case 0 -> 12;
 
         };
     }

@@ -281,9 +281,9 @@ public class SealingAuthorityAbility extends SelectableAbility {
     private int getSealingDuration(LivingEntity entity, LivingEntity target) {
         int sequenceDifference = BeyonderData.getSequence(target) - BeyonderData.getSequence(entity);
         if(sequenceDifference >= 0) {
-            return 20 * 18 * sequenceDifference;
+            return 20 * 2 * sequenceDifference;
         }
-        return 20 * 3;
+        return 20;
     }
 
     @SubscribeEvent

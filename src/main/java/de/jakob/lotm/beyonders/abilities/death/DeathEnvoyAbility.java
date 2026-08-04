@@ -26,7 +26,7 @@ public class DeathEnvoyAbility extends Ability {
 
     private static final int RADIUS = 5;
     private static final int DURATION = 20 * 20;
-    private static final int SPIRIT_CALLED_DURATION = 20 * 10;
+    private static final int SPIRIT_CALLED_DURATION = 20 * 5;
 
     private static final DustParticleOptions SOUL_DUST =
             new DustParticleOptions(new Vector3f(0.15f, 0.85f, 0.75f), 1.8f);

@@ -64,7 +64,7 @@ public class MaternalEmbraceAbility extends Ability {
         component.setTransformationIndexAndSync(TransformationComponent.TransformationType.COFFIN, targetEntity);
 
         DisabledAbilitiesComponent disabledAbilitiesComponent = targetEntity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        disabledAbilitiesComponent.disableAbilityUsageForTime("maternal_embrace", (int) (20 * 30*multiplier(entity)), targetEntity);
+        disabledAbilitiesComponent.disableAbilityUsageForTime("maternal_embrace", (20 * 5), targetEntity);
 
         targetEntity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, (int) (20 * 30*multiplier(entity)), 20, false, false, false));
         targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, (int) (20 * 30*multiplier(entity)), 20, false, false, false));

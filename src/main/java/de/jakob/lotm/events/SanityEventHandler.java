@@ -62,37 +62,9 @@ public class SanityEventHandler {
 
 
         if (BeyonderData.isBeyonder(entity)) {
-            Random random = new Random();
             double sanityMultiplier = getSanityMultiplier(entity, sanity, sanityValue);
 
             BeyonderData.addModifier(entity, "sanity_loss", sanityMultiplier);
-
-            if (!entity.level().isClientSide) {
-
-                int disableChance;
-                int disableDuration = 20;
-
-                if (sanityValue >= 64) {
-                    disableChance = -1;
-                } else if (sanityValue >= 50) {
-                    disableChance = 120;
-                    disableDuration = 1500;
-                } else if (sanityValue >= 35) {
-                    disableChance = 80;
-                    disableDuration = 2500;
-                } else if (sanityValue >= 20) {
-                    disableChance = 40;
-                    disableDuration = 3500;
-                } else {
-                    disableChance = 15;
-                    disableDuration = 5000;
-                }
-
-                if (disableChance > 0 && random.nextInt(disableChance) == 0) {
-                    DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                    component.disableAbilityUsageForTime("sanity_instability", disableDuration, entity);
-                }
-            }
         }
 
 

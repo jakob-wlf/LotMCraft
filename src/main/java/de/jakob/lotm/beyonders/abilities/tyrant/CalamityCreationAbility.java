@@ -80,7 +80,7 @@ public class CalamityCreationAbility extends SelectableAbility {
     private void createVolcano(ServerLevel serverLevel, LivingEntity entity) {
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (60* multiplier(entity)), 2);
 
-        VolcanoEntity volcano = new VolcanoEntity(serverLevel, targetPos, baseDamage, entity);
+        VolcanoEntity volcano = new VolcanoEntity(serverLevel, targetPos, baseDamage/2, entity);
         serverLevel.addFreshEntity(volcano);
     }
 

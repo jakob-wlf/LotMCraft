@@ -231,11 +231,6 @@ public class LOTMCraft
     public void onServerStarting(ServerStartingEvent event) {
     }
 
-    @SubscribeEvent
-    public void onServerStarted(ServerStartedEvent event) {
-        de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility.prePlaceStructure(event.getServer());
-    }
-
     @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
     public static class ClientModEvents {
         @SubscribeEvent

@@ -36,7 +36,7 @@ public class EarthquakeAbility extends Ability {
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(8, 10, 12, 14, 16));
 
-        baseDamage = 5f;
+        baseDamage = 2.5f;
     }
 
     @Override

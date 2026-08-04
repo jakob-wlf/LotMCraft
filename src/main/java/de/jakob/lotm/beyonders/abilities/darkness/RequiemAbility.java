@@ -96,14 +96,12 @@ public class RequiemAbility extends Ability {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetEntitySeq = BeyonderData.getSequence(targetEntity);
-        if(entitySeq < targetEntitySeq) {
-            duration = 20 * 65*(int) multiplier/ (int) multiplier_target;
+        if(entitySeq < targetEntitySeq && !BeyonderData.getPathway(targetEntity).equals("darkness")) {
+            duration = 20;
         }else if (entitySeq > targetEntitySeq){
-            if (!BeyonderData.getPathway(targetEntity).equals("darkness")){
-                duration = 35*(int) multiplier;
-            };
+            duration = 20 * 6;
         }else{
-            duration = 20 * 15*(int) multiplier/  (int) multiplier_target;
+            duration = 20 * 2;
         };
 
         if(!BeyonderData.isBeyonder(targetEntity) || (targetEntitySeq >= entitySeq-1)) {

@@ -39,7 +39,7 @@ public class NightmareSpectatorAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(5000f, 3000f, 1000f, 500f, 350f, 250f, 150f, 100f, 40f, 40f));
 
-        baseDamage = 13f;
+        baseDamage = 9f;
     }
 
     @Override

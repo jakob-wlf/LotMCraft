@@ -120,7 +120,7 @@ public class SefirahCastleEventHandler {
         // Disable ability use
         if(!(entity instanceof ServerPlayer player) || !SefirahHandler.getClaimedSefirot(player).equalsIgnoreCase("sefirah_castle")) {
             DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-            component.disableAbilityUsageForTime("sefirah_castle", 20 * 20, entity);
+            component.disableAbilityUsageForTime("sefirah_castle", 20 * 5, entity);
         }
     }
 

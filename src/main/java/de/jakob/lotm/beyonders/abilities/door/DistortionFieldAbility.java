@@ -100,7 +100,7 @@ public class DistortionFieldAbility extends Ability {
             AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, 40).forEach(e -> {
                 if(random.nextInt(15) == 0 && AbilityUtil.getSeqWithArt(entity, this) <= BeyonderData.getSequence(e)) {
                     DisabledAbilitiesComponent component = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                    component.disableAbilityUsageForTime("distortion_field", 20 * 4, e);
+                    component.disableAbilityUsageForTime("distortion_field", 20 * 2, e);
                 }
 
                 e.teleportTo(e.getX() + random.nextDouble(-8, 8), e.getY() + random.nextDouble(-1, 2), e.getZ() + random.nextDouble(-8, 8));

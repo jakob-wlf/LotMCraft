@@ -34,7 +34,7 @@ public class SealAction extends ActionBase {
         DisabledAbilitiesComponent comp = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
         comp.disableAbilityUsage("sealed_visionary");
 
-        ServerScheduler.scheduleDelayed(20 * 30, ()->{
+        ServerScheduler.scheduleDelayed(20 * 7, ()->{
             comp.enableAbilityUsage("sealed_visionary");
         });
     }
