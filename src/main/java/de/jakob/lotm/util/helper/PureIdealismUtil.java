@@ -46,7 +46,13 @@ public class PureIdealismUtil {
         component.setSeq(sequence);
         component.setPathway(path);
 
-        BeyonderData.setBeyonder(entity, path, sequence,true, false, false, false, true, false);
+        // Temporary discernment form, not a real advancement — must not trigger the acting cap
+        de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = true;
+        try {
+            BeyonderData.setBeyonder(entity, path, sequence,true, false, false, false, true, false);
+        } finally {
+            de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = false;
+        }
         component.setDiscerning(true);
 
         wheelData.setAbilities(savedWheelData.getAbilities());
@@ -80,7 +86,13 @@ public class PureIdealismUtil {
         component.setSeq(LOTMCraft.NON_BEYONDER_SEQ);
         component.setPathway("none");
 
-        BeyonderData.setBeyonder(entity, "visionary", component.getPreviosSeq(),true, false, false, false, true, false);
+        // Restoring the real form after discernment — must not trigger the acting cap
+        de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = true;
+        try {
+            BeyonderData.setBeyonder(entity, "visionary", component.getPreviosSeq(),true, false, false, false, true, false);
+        } finally {
+            de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = false;
+        }
         component.setDiscerning(false);
 
         wheelData.setAbilities(component.getPreviousWheel().getAbilities());
