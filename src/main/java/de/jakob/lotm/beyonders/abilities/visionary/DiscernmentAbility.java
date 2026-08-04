@@ -11,6 +11,7 @@ import de.jakob.lotm.network.packets.toClient.SyncSpectatingAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,7 +26,7 @@ public class DiscernmentAbility extends ToggleAbility {
     private static final Map<UUID, String> ENTITY_TEAM_MAP = new HashMap<>();
     private static final Map<UUID, Set<String>> SENT_TEAMS = new HashMap<>();
 
-    private static final int COOLDOWN = 20 * 3;
+    private static final int COOLDOWN = 20 * 2;
     private static final Map<UUID, Integer> cooldown = new HashMap<>();
 
     public DiscernmentAbility(String id) {
@@ -57,6 +58,14 @@ public class DiscernmentAbility extends ToggleAbility {
         int seq = BeyonderData.getSequence(entity);
         int range = getRange(seq);
 
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(seq)){
+            AbilityUtil.sendActionBar(entity,
+                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
+                            .withColor(0xFFff124d));
+            cancel((ServerLevel) level, player);
+            return;
+        }
+
         LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, range, 1.2f, false, true);
         if(lookedAt != null) {
             if (VisionaryHandler.shouldStayInvisible(seq, lookedAt)){
@@ -84,22 +93,22 @@ public class DiscernmentAbility extends ToggleAbility {
         if(VisionaryHandler.shouldFailAndTrigger(seq, entity, tracker.entity(), this))
             return;
 
-        Ability usedSkill = tracker.ability();
-        if(usedSkill.getRequirements().containsKey("visionary") && !cooldown.containsKey(entity.getUUID())){
-            String pos = "x=" + (int) tracker.position().x + " y=" + (int) tracker.position().y + " z=" + (int) tracker.position().z;
-
-            entity.sendSystemMessage(Component.literal("You sense the usage of "
-                    + usedSkill.getId() + " at " + pos + " by " + tracker.entity().getName().getString())
-                    .withColor(0xf5c56c));
-
-            cooldown.put(entity.getUUID(), 0);
-        }
-
-        if(cooldown.containsKey(entity.getUUID())) {
-            cooldown.put(entity.getUUID(), cooldown.get(entity.getUUID()) + 1);
-            if (cooldown.get(entity.getUUID()) >= COOLDOWN)
-                cooldown.remove(entity.getUUID());
-        }
+//        Ability usedSkill = tracker.ability();
+//        if(usedSkill.getRequirements().containsKey("visionary") && !cooldown.containsKey(entity.getUUID())){
+//            String pos = "x=" + (int) tracker.position().x + " y=" + (int) tracker.position().y + " z=" + (int) tracker.position().z;
+//
+//            entity.sendSystemMessage(Component.literal("You sense the usage of "
+//                    + usedSkill.getId() + " at " + pos + " by " + tracker.entity().getName().getString())
+//                    .withColor(0xf5c56c));
+//
+//            cooldown.put(entity.getUUID(), 0);
+//        }
+//
+//        if(cooldown.containsKey(entity.getUUID())) {
+//            cooldown.put(entity.getUUID(), cooldown.get(entity.getUUID()) + 1);
+//            if (cooldown.get(entity.getUUID()) >= COOLDOWN)
+//                cooldown.remove(entity.getUUID());
+//        }
 
         int entitySeq = BeyonderData.getSequence(entity);
         if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
@@ -112,6 +121,8 @@ public class DiscernmentAbility extends ToggleAbility {
 
     @Override
     public void start(Level level, LivingEntity entity) {
+        if(!(level instanceof ServerLevel serverLevel)) return;
+
         int entitySeq = BeyonderData.getSequence(entity);
         if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
             AbilityUtil.sendActionBar(entity,

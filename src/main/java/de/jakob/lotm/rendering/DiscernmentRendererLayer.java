@@ -56,10 +56,14 @@ public class DiscernmentRendererLayer<T extends LivingEntity, M extends EntityMo
         float r = 1f, g = 1f, b = 1f;
 
         if(entity instanceof Player){
-            r = 1.0F; g = 0.0F; b = 1.0F;
+            r = 0.0F;
+            g = 1.0F;
+            b = 0.0F;
         }
         else if (entity.getType().getCategory().isFriendly()) {
-            r = 0.0F; g = 1F; b = 0.0F;
+            r = 1.0F;
+            g = 0.08F;
+            b = 0.58F;
         } else if (ClientBeyonderCache.isBeyonder(entity.getUUID())) {
             r = 1.0F; g = 1F; b = 0.0F;
         }
