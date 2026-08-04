@@ -1002,17 +1002,14 @@ public class BeyonderData {
     }
 
     public static void addCharacteristic(LivingEntity player, int sequence, String pathway) {
-        playerMap.addStack(player, 1, sequence, pathway);
         BeyonderComponent component = player.getData(ModAttachments.BEYONDER_COMPONENT);
         int currentPathwayStack = component.getCharacteristicList().stream()
                 .filter(c -> c.sequence() == sequence && c.pathway().equals(pathway))
                 .mapToInt(Characteristic::stack)
                 .findFirst().orElse(0);
-        component.setCharacteristic(currentPathwayStack + 1, sequence, pathway);
-        component.setDigestionProgress(0);
+        int newStack = currentPathwayStack + 1;
 
-        recalculateCharStackModifiers(player);
-        if (player instanceof ServerPlayer sp) PacketHandler.syncBeyonderDataToPlayer(sp);
+        setCharacteristic(player, newStack, sequence, false, pathway);
     }
 
     public static void setCharacteristic(LivingEntity player, int value, int sequence, boolean ignoreDigestion, String pathway) {

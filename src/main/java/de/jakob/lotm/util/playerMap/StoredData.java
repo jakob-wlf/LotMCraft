@@ -117,7 +117,8 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
         int currentStack = chars.stream()
                 .filter(c -> c.sequence() == sequence && c.pathway().equals(pathway))
                 .mapToInt(Characteristic::stack)
-                .sum();
+                .findFirst()
+                .orElse(0);
         if (respectCharStack && currentStack > 0) {
             // Still has stacks — lose one, stay at current sequence
             return builder.copyFrom(this).characteristic(currentStack - 1, sequence, pathway).build();

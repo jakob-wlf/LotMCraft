@@ -464,7 +464,8 @@ public class PlayerMap extends SavedData {
         int current = map.get(entity.getUUID()).chars().stream()
                 .filter(c -> c.pathway().equals(pathway) && c.sequence() == sequence)
                 .mapToInt(Characteristic::stack)
-                .sum();
+                .findFirst()
+                .orElse(0);
         setStack(entity, current + value, sequence, pathway);
     }
 

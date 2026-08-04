@@ -282,13 +282,16 @@ public class BeyonderEventHandler {
 
         BeyonderData.setBeyonder(player, data.pathway(), data.sequence(), true, false, false, false);
 
-        if (charItem == null) return;
+        if (charItem == null) {
+            BeyonderData.recalculateCharStackModifiers(player);
+            return;
+        }
 
         int current = BeyonderData.getCharList(player).stream()
                 .filter(c -> c.sequence() == dropSequence && c.pathway().equals(dropPath)).mapToInt(Characteristic::stack).findFirst().orElse(0);
 
         BeyonderData.setCharacteristic(player,
-                current != 0 ?  current-1 : 0,
+                current > 0 ? current - 1 : 0,
                 dropSequence,
                 true,
                 dropPath
