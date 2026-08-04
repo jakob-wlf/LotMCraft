@@ -23,6 +23,8 @@ public class HurricaneAbility extends Ability {
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(6, 7, 8, 9, 10));
+
+        baseDamage = 3f;
     }
 
     @Override
@@ -43,11 +45,9 @@ public class HurricaneAbility extends Ability {
 
         Vec3 pos = AbilityUtil.getTargetLocation(entity, 12, 2);
 
-        float damage = (float) (DamageLookup.lookupDamage(4, .3)* multiplier(entity)/4);
-
         TornadoEntity tornado =
                 new TornadoEntity(ModEntities.TORNADO.get(), level,
-                        .15f, damage , entity, target, 1.5f);
+                        .15f, baseDamage, entity, target, 1.5f);
 
         tornado.setPos(pos);
         level.addFreshEntity(tornado);

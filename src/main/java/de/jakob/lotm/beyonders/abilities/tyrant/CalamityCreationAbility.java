@@ -44,6 +44,8 @@ public class CalamityCreationAbility extends SelectableAbility {
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(15, 20, 25));
+
+        baseDamage = 7f;
     }
 
     @Override
@@ -78,8 +80,7 @@ public class CalamityCreationAbility extends SelectableAbility {
     private void createVolcano(ServerLevel serverLevel, LivingEntity entity) {
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (60* multiplier(entity)), 2);
 
-        float damage = (float) DamageLookup.lookupDamage(2, -0.1) * multiplier(entity)/6;
-        VolcanoEntity volcano = new VolcanoEntity(serverLevel, targetPos, damage, entity);
+        VolcanoEntity volcano = new VolcanoEntity(serverLevel, targetPos, baseDamage, entity);
         serverLevel.addFreshEntity(volcano);
     }
 
@@ -103,14 +104,15 @@ public class CalamityCreationAbility extends SelectableAbility {
                 .filter(b -> serverLevel.isEmptyBlock(b.above()))    // mimic onlyExposed = true
                 .toList();
 
-        double multiplier = multiplier(entity)/5;
-        float damage = (float) (DamageLookup.lookupDps(2, .3, 4, 30) * multiplier);
-        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30* multiplier(entity)), () -> {
-            // Damage and Effects
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier(entity), ModDamageTypes.WATER ,damage/2, startPos, true, false);
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier(entity), ModDamageTypes.WIND ,damage/2, startPos, true, false);
+        double multiplier = multiplier(entity);
+        float damage = baseDamage/3;
 
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 60* multiplier(entity), startPos,
+        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30* multiplier), () -> {
+            // Damage and Effects
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier, ModDamageTypes.WATER ,damage/2, startPos, true, false);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier, ModDamageTypes.WIND ,damage/2, startPos, true, false);
+
+            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 60* multiplier, startPos,
                     new MobEffectInstance(MobEffects.WEAKNESS, 20 * 5, 1, false, false, false),
                     new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 7, false, false, false));
 
@@ -181,15 +183,15 @@ public class CalamityCreationAbility extends SelectableAbility {
                 .filter(b -> serverLevel.isEmptyBlock(b.above()))    // mimic onlyExposed = true
                 .toList();
 
-        double multiplier = multiplier(entity)/5;
-        float damage = (float) (DamageLookup.lookupDps(2, .3, 4, 30) * multiplier);
+        double multiplier = multiplier(entity);
+        float damage = baseDamage/3;
 
-        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30* multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30* multiplier), () -> {
             // Damage and Effects
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier(entity), ModDamageTypes.FIRE ,damage/2, startPos, true, false);
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier(entity), ModDamageTypes.WIND ,damage/2, startPos, true, false);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier, ModDamageTypes.FIRE ,damage/2, startPos, true, false);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier, ModDamageTypes.WIND ,damage/2, startPos, true, false);
 
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 90* multiplier(entity), startPos,
+            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 90* multiplier, startPos,
                     new MobEffectInstance(MobEffects.WEAKNESS, 20 * 5, 1, false, false, false),
                     new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 4, false, false, false));
 
@@ -249,7 +251,7 @@ public class CalamityCreationAbility extends SelectableAbility {
 
         Vec3 pos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 2);
 
-        float damage = (float) DamageLookup.lookupDamage(2, -0.1) * multiplier(entity)/6;
+        float damage = baseDamage/5;
         TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, damage , entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, damage, entity, target, 3);
         tornado.setPos(pos);
         serverLevel.addFreshEntity(tornado);

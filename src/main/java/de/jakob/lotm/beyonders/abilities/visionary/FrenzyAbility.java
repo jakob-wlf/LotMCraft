@@ -34,6 +34,7 @@ public class FrenzyAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(2500f, 1000f, 750f, 360f, 280f, 200f, 150f, 100f, 40f, 40f));
 
+        baseDamage = 9f;
     }
 
     @Override
@@ -91,7 +92,7 @@ public class FrenzyAbility extends Ability {
                 BattleHypnosisAbility.performRandomEffect((ServerLevel) level, entity, target, entitySeq);
         }
 
-        target.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), (float) (DamageLookup.lookupDamage(7, .3) * (int) Math.max(multiplier(entity)/4,1)));
+        target.hurt(ModDamageTypes.source(level, ModDamageTypes.LOOSING_CONTROL, entity), baseDamage);
 
         target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.0065f * (int) Math.max(multiplier(entity)/4,1)), target, entitySeq, BeyonderData.getSequence(target));
     }

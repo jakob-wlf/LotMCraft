@@ -35,6 +35,8 @@ public class EarthquakeAbility extends Ability {
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(8, 10, 12, 14, 16));
+
+        baseDamage = 5f;
     }
 
     @Override
@@ -55,13 +57,12 @@ public class EarthquakeAbility extends Ability {
         Vec3 startPos = entity.position();
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
         double multiplier = multiplier(entity);
-        float damage = (float) DamageLookup.lookupDps(4, .325, 8, 20) * multiplier(entity)/4;
+        float damage = baseDamage;
 
         EARTHQUAKE.spawnCalamity((ServerLevel) level,
                 startPos,
-                (float) multiplier,
                 griefing,
-                (int) (65* multiplier(entity)), damage,
+                (int) (65* multiplier), damage,
                 entity, false);
         }
 }

@@ -22,6 +22,8 @@ public class LightningBranchAbility extends Ability {
 
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(5000f, 2000f, 1200f, 900f));
+
+        baseDamage = 7f; //3 total attacks
     }
 
     @Override
@@ -42,9 +44,7 @@ public class LightningBranchAbility extends Ability {
         Vec3 dir = entity.getLookAngle().normalize();
         Vec3 startPos = entity.position().add(dir).add(0, 1.5, 0);
 
-        float damage = (float) (DamageLookup.lookupDamage(3, 0) * multiplier(entity)/6);
-
-        LightningBranchEntity branch = new LightningBranchEntity(level, entity, startPos, dir, 30, damage);
+        LightningBranchEntity branch = new LightningBranchEntity(level, entity, startPos, dir, 30, baseDamage);
         level.addFreshEntity(branch);
     }
 }

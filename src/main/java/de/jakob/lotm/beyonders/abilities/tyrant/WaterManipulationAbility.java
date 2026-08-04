@@ -45,6 +45,8 @@ public class WaterManipulationAbility extends SelectableAbility {
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 1, 2, 2, 3));
+
+        baseDamage = 3f;
     }
 
     private final DustParticleOptions dustOptions = new DustParticleOptions(
@@ -185,7 +187,7 @@ public class WaterManipulationAbility extends SelectableAbility {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.PLAYER_SPLASH_HIGH_SPEED, entity.getSoundSource(), 1.0f, 1.0f);
 
-        float damage = (float) (DamageLookup.lookupDamage(7, .3) * multiplier(entity)/3);
+        float damage = baseDamage;
         ServerScheduler.scheduleDelayed(18, () -> AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, ModDamageTypes.WATER ,damage, entity.position().add(0, .2, 0), true, false, true, 0));
 
         AtomicDouble i = new AtomicDouble(0.6);
@@ -219,7 +221,7 @@ public class WaterManipulationAbility extends SelectableAbility {
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SNEEZE, rainPos, 45, 4, 4, 4, 0);
         }, () -> castingCorrosiveRain.remove(entity.getUUID()), (ServerLevel) level);
 
-        float damage = (float) (DamageLookup.lookupDps(7, .9, 10, 20 * 15) * multiplier(entity));
+        float damage = baseDamage/3;
         ServerScheduler.scheduleForDuration(0, 10, 20 * 15, () -> {
             AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5, ModDamageTypes.WATER, damage, startPos, true, false, true, 0);
         }, (ServerLevel) level);
@@ -239,7 +241,7 @@ public class WaterManipulationAbility extends SelectableAbility {
         AtomicBoolean hasHit = new AtomicBoolean(false);
         AtomicBoolean frozen = new AtomicBoolean(false);
 
-        float damage = (float) (DamageLookup.lookupDamage(7, .3) * multiplier(entity)/3);
+        float damage = baseDamage;
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 5, () -> {
             if (hasHit.get()) {

@@ -32,6 +32,8 @@ public class RoarAbility extends Ability {
 
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(7000f, 3000f, 2000f, 1200f, 1000f));
+
+        baseDamage = 15f;
     }
 
     @Override
@@ -52,7 +54,7 @@ public class RoarAbility extends Ability {
         Vec3 startPos = entity.position();
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
         double multiplier = multiplier(entity);
-        float damage = (float) (DamageLookup.lookupDamage(4, 1) * multiplier);
+        float damage = baseDamage;
 
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 3, 1);
 

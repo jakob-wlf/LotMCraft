@@ -12,6 +12,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import javax.annotation.Nullable;
+
 public class ModDamageTypes {
 
     //3 base types of damage
@@ -50,7 +52,7 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> IMPACT = key("impact");
     public static final ResourceKey<DamageType> MATTER = key("matter");
 
-
+    public static final ResourceKey<DamageType> PLAGUE = key("plague");
 
     /** Used by ticking/AoE Sun abilities — treated as indirect for digestion drain purposes. */
     public static final ResourceKey<DamageType> PURIFICATION_INDIRECT = key("purification_indirect");
@@ -90,8 +92,23 @@ public class ModDamageTypes {
     }
 
     /** Damage with a direct attacker — uses .player death message key if attacker is a player or named entity. */
-    public static DamageSource source(Level level, ResourceKey<DamageType> key, Entity attacker) {
+    public static DamageSource source(Level level, ResourceKey<DamageType> key, @Nullable Entity attacker) {
+        if(attacker == null)
+            return source(level, key);
+
         return new DamageSource(holder(level, key), attacker);
+    }
+
+    public static boolean isModDamage(DamageSource source){
+        return source.is(ModDamageTypes.MIND)
+                || source.is(ModDamageTypes.PHYSICAL)
+                ||source.is(ModDamageTypes.SOUL);
+    }
+
+    public static boolean isModDamage(Holder<DamageType> source){
+        return source.is(ModDamageTypes.MIND)
+                || source.is(ModDamageTypes.PHYSICAL)
+                ||source.is(ModDamageTypes.SOUL);
     }
 
     /**

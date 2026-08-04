@@ -25,6 +25,8 @@ public class TsunamiAbility extends Ability {
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(8, 10, 12, 14, 16));
+
+        baseDamage = 15f;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class TsunamiAbility extends Ability {
 
         level.playSound(null, entity.blockPosition(), SoundEvents.GENERIC_SPLASH, entity.getSoundSource(), 5, 1.0f);
 
-        float damage = (float) (DamageLookup.lookupDamage(4, .1)* multiplier(entity));
+        float damage = baseDamage;
         TsunamiEntity tsunami = new TsunamiEntity(level, position, direction, damage, BeyonderData.isGriefingEnabled(entity), entity);
         level.addFreshEntity(tsunami);
     }

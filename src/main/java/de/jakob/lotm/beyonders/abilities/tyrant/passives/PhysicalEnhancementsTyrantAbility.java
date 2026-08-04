@@ -31,20 +31,20 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
         return switch (sequenceLevel) {
             case 9 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 1),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 1),
+                    //new PhysicalEnhancement(EnhancementType.RESISTANCE, 1),
                     new PhysicalEnhancement(EnhancementType.SPEED, 1)
             );
 
             case 8 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
+                    //new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 5)
             );
             case 7 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 6),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.OXYGEN_BONUS,1),
@@ -53,7 +53,7 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
 
             case 6 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 3),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 3),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 7),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
@@ -64,7 +64,7 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
 
             case 5 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 4),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 4),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 9),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
@@ -75,7 +75,7 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
 
             case 4 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 3),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 9),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 9),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 16),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
@@ -86,7 +86,7 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
 
             case 3 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 4),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 10),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 10),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 17),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
@@ -97,7 +97,7 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
 
             case 2 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 5),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 13),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 13),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 25),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
@@ -108,7 +108,7 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
 
             case 1 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 5),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 15),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 15),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 30),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
@@ -119,7 +119,7 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
 
             case 0 -> List.of(
                     new PhysicalEnhancement(EnhancementType.STRENGTH, 7),
-                    new PhysicalEnhancement(EnhancementType.RESISTANCE, 17),
+                   // new PhysicalEnhancement(EnhancementType.RESISTANCE, 17),
                     new PhysicalEnhancement(EnhancementType.SPEED, 7),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 45),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 6),

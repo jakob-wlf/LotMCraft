@@ -32,6 +32,8 @@ public class SirenSongAbility extends SelectableAbility {
 
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(6500f, 3250f, 2000f, 1000f, 800f, 600f));
+
+        baseDamage = 5f;
     }
 
     @Override
@@ -127,7 +129,7 @@ public class SirenSongAbility extends SelectableAbility {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         float multiplier = multiplier(entity);
-        float damage = (float) (DamageLookup.lookupDps(5,  -0.4f, 18, 20) * multiplier/6);
+        float damage = baseDamage;
 
         final UUID[] posTrackerHolder = new UUID[1];
         posTrackerHolder[0] = ServerScheduler.scheduleForDuration(0,  2, (int) (20 * 8* multiplier(entity)), () -> {
