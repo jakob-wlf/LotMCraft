@@ -261,7 +261,7 @@ public abstract class Ability {
             return true;
         }
 
-        return BeyonderData.getCharList(entity).stream().anyMatch(character -> getRequirements().containsKey(character.pathway()) && getRequirements().get(character.pathway()) >= sequence);
+        return BeyonderData.getCharList(entity).stream().anyMatch(character -> getRequirements().containsKey(character.pathway()) && getRequirements().get(character.pathway()) >= sequence && character.isEnabled());
 
         //return false;
     }

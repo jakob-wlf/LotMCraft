@@ -215,7 +215,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                     }
 
                     for (Characteristic characteristic : charList) {
-                        if (characteristic.stack() <= 0) {
+                        if (characteristic.stack() <= 0 || !characteristic.isEnabled()) {
                             continue;
                         }
                         // Skip the GOO marker entry — it has no ability row of its own
