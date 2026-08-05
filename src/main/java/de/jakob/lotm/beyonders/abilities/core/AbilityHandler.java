@@ -180,20 +180,28 @@ public class AbilityHandler {
 
         // MOTHER PATHWAY
         abilities.add(new PlantNurturingAbility("plant_nurturing_ability"));
+        abilities.add(new DoctorAbility("doctor_ability"));
         abilities.add(new HealingAbility("healing_ability"));
         abilities.add(new CleansingAbility("cleanse_ability"));
+        abilities.add(new SoulSutureAbility("soul_suture_ability"));
         abilities.add(new PlantControllingAbility("plant_controlling_ability"));
+        abilities.add(new RainCallingAbility("rain_calling_ability"));
+        abilities.add(new InsectCommandAbility("insect_command_ability"));
         abilities.add(new PoisonCreationAbility("poison_creation_ability"));
         abilities.add(new CrossbreedingAbility("crossbreeding_ability"));
         abilities.add(new NatureSpellsAbility("nature_spells_ability"));
+        abilities.add(new UndergroundTravelAbility("underground_travel_ability"));
         abilities.add(new LifeAuraAbility("life_aura_ability"));
         abilities.add(new MutationCreationAbility("mutation_creation_ability"));
         abilities.add(new GolemCreationAbility("golem_creation_ability"));
+        abilities.add(new ReturnToEarthAbility("return_to_earth_ability"));
         abilities.add(new LifeDeprivationAbility("life_deprivation_ability"));
         abilities.add(new MaternalEmbraceAbility("maternal_embrace_ability"));
+        abilities.add(new DesolateRootsAbility("desolate_roots_ability"));
         abilities.add(new AreaDesolationAbility("area_desolation_ability"));
         abilities.add(new BloomingAreaAbility("blooming_area_ability"));
         abilities.add(new WorldCreationAbility("world_creation_ability"));
+        abilities.add(new ChildOfNatureAbility("child_of_nature_ability"));
         abilities.add(new WrathOfNatureAbility("wrath_of_nature_ability"));
 
         // DOOR PATHWAY
