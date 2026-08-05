@@ -1,0 +1,19 @@
+﻿{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "lotmcraft:marauder"},
+    {"item": "lotmcraft:swindler"},
+    {"item": "lotmcraft:cryptologist"},
+    {"item": "lotmcraft:prometheus"},
+    {"item": "lotmcraft:dream_stealer"},
+    {"item": "lotmcraft:parasite"},
+    {"item": "lotmcraft:mentor_of_deceit"},
+    {"item": "lotmcraft:trojan_horse_of_destiny"},
+    {"item": "lotmcraft:worm_of_time"}
+  ],
+  "result": {
+    "id": "lotmcraft:error_blasphemy_card",
+    "count": 1
+  },
+  "category": "misc"
+}

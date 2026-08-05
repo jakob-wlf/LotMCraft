@@ -1,12 +1,12 @@
 package de.jakob.lotm.beyonders.abilities.darkness;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.attachments.LuckComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -26,6 +26,9 @@ import java.util.Map;
 import java.util.UUID;
 
 public class NightDomainAbility extends Ability {
+    private static final float BASE_LUCK_DRAIN_RATE_PER_MINUTE = 120;
+    private static final int LUCK_DRAIN_DURATION_TICKS = 20;
+
     public NightDomainAbility(String id) {
         super(id, 30, "darkness");
         autoClear = false;
@@ -81,8 +84,10 @@ public class NightDomainAbility extends Ability {
             AbilityUtil.damageNearbyEntities(serverLevel, entity, 35*(int) Math.max(multiplier/2,1), DamageLookup.lookupDps(4, .85, 2, 20) * 20, startPos, true, false, ModDamageTypes.source(level, ModDamageTypes.DARKNESS_GENERIC, entity));
 
             AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, 35).forEach(e -> {
-                LuckComponent luckComponent = e.getData(ModAttachments.LUCK_COMPONENT);
-                luckComponent.addLuckWithMin(-120*(int) Math.max(multiplier/2,1), purified ? -240*(int) Math.max(multiplier/2,1) : -960*(int) Math.max(multiplier/2,1));
+                int strength = (int) Math.max(multiplier / 2, 1);
+                int minimumLuck = purified ? -240 * strength : -960 * strength;
+                LuckManager.applyLuckDrain(entity, e, "night_domain:" + entity.getUUID(),
+                        BASE_LUCK_DRAIN_RATE_PER_MINUTE * strength, LUCK_DRAIN_DURATION_TICKS, minimumLuck);
                 BeyonderData.addModifierWithTimeLimit(e, "night_domain_debuff", .65, 2000); 
             });
             BeyonderData.addModifierWithTimeLimit(entity, "night_domain_buff", 1.35f, 2000);

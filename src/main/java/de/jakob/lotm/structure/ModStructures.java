@@ -13,19 +13,15 @@ public class ModStructures {
 
     //tutorial for structure placement: https://github.com/TelepathicGrunt/StructureTutorialMod/blob/1.21-Neoforge-Jigsaw/src/main/java/com/telepathicgrunt/structure_tutorial/STStructures.java
 
-    /**
-     * We are using the Deferred Registry system to register our structure as this is the preferred way on NeoForge.
-     * This will handle registering the base structure for us at the correct time so we don't have to handle it ourselves.
-     */
     public static final DeferredRegister<StructureType<?>> DEFERRED_REGISTRY_STRUCTURE = DeferredRegister.create(Registries.STRUCTURE_TYPE, LOTMCraft.MOD_ID);
 
-    /**
-     * Registers the base structure itself and sets what its path is. In this case,
-     * this base structure will have the resourcelocation of structure_tutorial:sky_structures.
-     */
+
     public static final DeferredHolder<StructureType<?>, StructureType<SimpleStructures>> SIMPLE_STRUCTURES = DEFERRED_REGISTRY_STRUCTURE.register("simple_structures", () -> explicitStructureTypeTyping(SimpleStructures.CODEC));
     public static final DeferredHolder<StructureType<?>, StructureType<CityStructure>> CITY_STRUCTURE =
             DEFERRED_REGISTRY_STRUCTURE.register("city_structure", () -> () -> CityStructure.CODEC);
+
+    public static final DeferredHolder<StructureType<?>, StructureType<PairedStructure>> PAIRED_STRUCTURE =
+            DEFERRED_REGISTRY_STRUCTURE.register("paired_structure", () -> () -> PairedStructure.CODEC);
 
     /**
      * Originally, I had a double lambda ()->()-> for the RegistryObject line above, but it turns out that

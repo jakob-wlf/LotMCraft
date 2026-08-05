@@ -189,6 +189,15 @@ public class SpaceConcealmentAbility extends SelectableAbility {
         return false;
     }
 
+    public static boolean isInsideConcealedSpace(ServerLevel level, Vec3 position) {
+        for (List<ConcealedSpace> spaces : playerSpaces.values()) {
+            for (ConcealedSpace space : spaces) {
+                if (space.level == level && space.contains(position)) return true;
+            }
+        }
+        return false;
+    }
+
     private static class ConcealedSpace {
         private final Vec3 center;
         private final ServerLevel level;

@@ -2,9 +2,12 @@ package de.jakob.lotm.beyonders.abilities.door;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.FogComponent;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SealedDimensionData;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.TimeChangeEntity;
@@ -298,6 +301,13 @@ public class SealingAuthorityAbility extends SelectableAbility {
             return;
         }
 
+        // Gathering members of any castle and River-blessed players bypass the dimension lock
+        if (event.getEntity() instanceof ServerPlayer sp) {
+            de.jakob.lotm.attachments.GatheringData gd = de.jakob.lotm.attachments.GatheringData.get(sp.getServer());
+            if (gd.isMemberOfAnyCastle(sp.getUUID())) return;
+            if (de.jakob.lotm.beyonders.sefirah.RiverBlessingManager.hasActiveBlessingEffects(sp.getUUID())) return;
+        }
+
         event.setCanceled(true);
         ParticleUtil.spawnParticles(level, ModParticles.STAR.get(), event.getEntity().getEyePosition().subtract(0, .5, 0), 200, .8, .05);
     }
@@ -343,7 +353,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
 
         if(entity.level().isClientSide()) return;
 
-        if(BeyonderData.getSequence(entity) <= 0 && BeyonderData.getPathway(entity).equalsIgnoreCase("door")) return;
+        if(BeyonderData.getSequence(entity) >= 0 || !BeyonderData.getPathway(entity).equalsIgnoreCase("door")) return;
 
         List<ItemEntity> nearbyTraps = AbilityUtil.getAllNearbyEntities(null, (ServerLevel) entity.level(), entity.position(), 2.5).stream()
                 .filter(e -> e instanceof net.minecraft.world.entity.item.ItemEntity)

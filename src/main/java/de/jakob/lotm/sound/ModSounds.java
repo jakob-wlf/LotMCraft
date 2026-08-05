@@ -18,6 +18,7 @@ public class ModSounds {
     public static final Supplier<SoundEvent> DAZING_SONG = registerSound("dazing_song");
     public static final Supplier<SoundEvent> SONG_OF_COURAGE = registerSound("song_of_courage");
     public static final Supplier<SoundEvent> LOUD_SOUND_1 = registerSound("loud_sound_1");
+    public static final Supplier<SoundEvent> GAMBLING_WHEEL_SPIN = registerSound("gambling_wheel_spin");
 
     private static Supplier<SoundEvent> registerSound(String name) {
         return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, name)));

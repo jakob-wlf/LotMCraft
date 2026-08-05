@@ -2,9 +2,9 @@ package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
-import de.jakob.lotm.attachments.LuckComponent;
-import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveLuckAccumulationAbility;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BlessingAbility extends Ability {
+    private static final int luckCost = 150;
+    private static final int blessingDurationTicks = 20 * 60;
+
     public BlessingAbility(String id) {
         super(id, 4, "cleansing");
 
@@ -38,6 +41,11 @@ public class BlessingAbility extends Ability {
     @Override
     public float getSpiritualityCost() {
         return 750;
+    }
+
+    @Override
+    public int luckCost() {
+        return luckCost;
     }
 
     private static final DustParticleOptions dust = new DustParticleOptions(
@@ -63,14 +71,19 @@ public class BlessingAbility extends Ability {
             return;
         }
 
+        if (!PassiveLuckAccumulationAbility.consumeStoredLuck(entity, luckCost)) {
+            AbilityUtil.sendActionBar(entity, Component.literal("\u00A7cBlessing requires more luck."));
+            return;
+        }
+
         EffectManager.playEffect(EffectManager.Effect.BLESSING, target.getX(), target.getY(), target.getZ(), serverLevel);
 
         double eyeHeight = target.getEyeHeight();
         ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, eyeHeight / 2, 0), 120, .3, eyeHeight / 2, .3, 0);
 
-        int amplifier = Math.min(Math.round(multiplier(entity) * 750), 3000);
-        LuckComponent component = target.getData(ModAttachments.LUCK_COMPONENT.get());
-        component.addLuckWithMax(amplifier, 3000);
+        int ratePerMinute = Math.min(Math.round(LuckManager.getSequenceScaledEffectRate(
+            entity, multiplier(entity) * 750)), 3000);
+        LuckManager.applyLuckGain(target, "blessing:" + entity.getUUID(), ratePerMinute, blessingDurationTicks);
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, target.position(), entity, target, this, interactionFlags, interactionRadius, interactionCacheTicks));
     }
 }

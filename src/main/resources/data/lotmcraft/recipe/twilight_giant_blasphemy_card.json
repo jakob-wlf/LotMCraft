@@ -1,0 +1,19 @@
+﻿{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "lotmcraft:warrior"},
+    {"item": "lotmcraft:pugilist"},
+    {"item": "lotmcraft:weapon_master"},
+    {"item": "lotmcraft:dawn_paladin"},
+    {"item": "lotmcraft:guardian"},
+    {"item": "lotmcraft:demon_hunter"},
+    {"item": "lotmcraft:silver_knight"},
+    {"item": "lotmcraft:glory"},
+    {"item": "lotmcraft:hand_of_god"}
+  ],
+  "result": {
+    "id": "lotmcraft:twilight_giant_blasphemy_card",
+    "count": 1
+  },
+  "category": "misc"
+}

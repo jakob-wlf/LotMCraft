@@ -28,5 +28,11 @@
     "sounds": [
       "lotmcraft:loud_sound_1"
     ]
+  },
+  "gambling_wheel_spin": {
+    "subtitle": "sounds.lotmcraft.gambling_wheel_spin",
+    "sounds": [
+      "lotmcraft:wheel_spin"
+    ]
   }
 }

@@ -1,6 +1,7 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.common.DivinationAbility;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
@@ -42,6 +43,10 @@ public record StructureDivinationSelectedPacket(String structureId) implements C
 
         if (structureKey == null) {
             player.sendSystemMessage(Component.literal("§cInvalid structure id"));
+            return;
+        }
+        if (!DivinationAbility.isStructureDivinable(structureKey)) {
+            player.sendSystemMessage(Component.literal("§5That structure is concealed from divination."));
             return;
         }
 

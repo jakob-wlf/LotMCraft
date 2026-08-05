@@ -3,6 +3,7 @@ package de.jakob.lotm.quest;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.QuestComponent;
+import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenQuestAcceptanceScreenPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -16,7 +17,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -40,6 +40,13 @@ public class QuestManager {
             }
         }
 
+        if(player.getRandom().nextFloat() < .15f) {
+            ItemStack map = new ItemStack(ModItems.CITY_MAP.get());
+            if(!player.addItem(map)) {
+                player.drop(map, false);
+            }
+        }
+
         float digestionReward = component.getLockedQuestDigestionRewards().getOrDefault(questId, quest.getDigestionReward(player));
         if(quest.shouldScaleDigestionBySequence() && BeyonderData.getSequence(player) < quest.sequence) {
             int sequenceDifference = quest.sequence - BeyonderData.getSequence(player);
@@ -56,10 +63,6 @@ public class QuestManager {
         player.sendSystemMessage(Component.translatable("lotm.quest.completed", Component.translatable("lotm.quest.impl." + questId).getString()).withColor(0x2196F3));
     }
 
-    /**
-     * Opens the quest acceptance dialog for the player.
-     * This sends a packet to the client to display the GUI.
-     */
     public static boolean openQuestDialog(ServerPlayer player, String questId, int npcId) {
         Quest quest = QuestRegistry.getQuest(questId);
         if(quest == null)
@@ -67,19 +70,16 @@ public class QuestManager {
 
         QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
 
-        // Check if player already has an active quest
         if(!component.getQuestProgress().isEmpty()) {
             player.sendSystemMessage(Component.translatable("lotm.quest.already_active").withColor(0xFF5722));
             return false;
         }
 
-        // Check if Quest can be accepted by player
         if(!quest.canAccept(player)) {
             player.sendSystemMessage(Component.translatable("lotm.quest.cannot_accept").withColor(0xFF5722));
             return false;
         }
 
-        // Get quest information
         List<ItemStack> rewards = component.getLockedQuestRewards()
                 .computeIfAbsent(questId, ignored -> quest.getRewards(player).stream().map(ItemStack::copy).toList())
                 .stream()
@@ -105,10 +105,6 @@ public class QuestManager {
         return true;
     }
 
-    /**
-     * Internal method called by the acceptance packet.
-     * This is separated so the dialog can call it after the player confirms.
-     */
     public static boolean acceptQuestInternal(ServerPlayer player, String questId) {
         Quest quest = QuestRegistry.getQuest(questId);
         if(quest == null)
@@ -123,7 +119,8 @@ public class QuestManager {
 
         component.getQuestProgress().put(questId, 0f);
         component.getLockedQuestRewards().computeIfAbsent(questId, ignored -> quest.getRewards(player).stream().map(ItemStack::copy).toList());
-        component.getLockedQuestDigestionRewards().computeIfAbsent(questId, ignored -> quest.getDigestionReward(player));player.sendSystemMessage(Component.translatable("lotm.quest.accepted", Component.translatable("lotm.quest.impl." + questId).getString()).withColor(0x4CAF50));
+        component.getLockedQuestDigestionRewards().computeIfAbsent(questId, ignored -> quest.getDigestionReward(player));
+        player.sendSystemMessage(Component.translatable("lotm.quest.accepted", Component.translatable("lotm.quest.impl." + questId).getString()).withColor(0x4CAF50));
         quest.startQuest(player);
         player.sendSystemMessage(quest.getDescription(player).withColor(0x4CAF50));
 

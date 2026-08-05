@@ -1,7 +1,6 @@
 package de.jakob.lotm.rendering;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.client.Minecraft;

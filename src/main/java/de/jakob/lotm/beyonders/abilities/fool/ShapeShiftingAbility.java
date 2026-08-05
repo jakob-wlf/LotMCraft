@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.fool;
 
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.MemorisedEntities;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.packets.toClient.OpenShapeShiftingScreenPacket;
 import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.server.level.ServerPlayer;

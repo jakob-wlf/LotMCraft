@@ -868,6 +868,62 @@ public class PotionRecipes {
                 new ItemStack(Items.NETHER_STAR, 1),
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 1)))
         ));
+
+        // Twilight Giant pathway
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.WARRIOR_POTION.get(),
+                new ItemStack(Items.IRON_SWORD, 1),
+                new ItemStack(Items.BEEF, 1),
+                new ItemStack(ModIngredients.IRON_WARRIOR_BLOOD.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.PUGILIST_POTION.get(),
+                new ItemStack(Items.IRON_CHESTPLATE, 1),
+                new ItemStack(Items.SUGAR, 1),
+                new ItemStack(ModIngredients.GIANT_CRAB_CLAW.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.WEAPON_MASTER_POTION.get(),
+                new ItemStack(Items.DIAMOND_SWORD, 1),
+                new ItemStack(Items.BLAZE_POWDER, 1),
+                new ItemStack(ModIngredients.ENCHANTED_BLADE_FRAGMENT.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DAWN_PALADIN_POTION.get(),
+                new ItemStack(Items.DAYLIGHT_DETECTOR, 1),
+                new ItemStack(Items.GLOWSTONE_DUST, 1),
+                new ItemStack(ModIngredients.DAWN_HOLY_CRYSTAL.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.GUARDIAN_POTION.get(),
+                new ItemStack(Items.SHIELD, 1),
+                new ItemStack(Items.OBSIDIAN, 1),
+                new ItemStack(ModIngredients.ANCIENT_SHIELD_SHARD.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DEMON_HUNTER_POTION.get(),
+                new ItemStack(Items.CROSSBOW, 1),
+                new ItemStack(Items.FERMENTED_SPIDER_EYE, 1),
+                new ItemStack(ModIngredients.DEMON_CLAW.get())
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.SILVER_KNIGHT_POTION.get(),
+                new ItemStack(Items.IRON_BLOCK, 1),
+                new ItemStack(Items.GOLDEN_SWORD, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("twilight_giant", 3)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.GLORY_POTION.get(),
+                new ItemStack(Items.GOLDEN_APPLE, 1),
+                new ItemStack(Items.BEACON, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("twilight_giant", 2)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.HAND_OF_GOD_POTION.get(),
+                new ItemStack(Items.NETHER_STAR, 1),
+                new ItemStack(Items.TOTEM_OF_UNDYING, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("twilight_giant", 1)))
+        ));
     }
 
     @Nullable

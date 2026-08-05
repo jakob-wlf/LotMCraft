@@ -2,6 +2,8 @@ package de.jakob.lotm.beyonders.acting;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.events.custom.ContainerCraftingEvent;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.tags.BlockTags;
@@ -13,16 +15,13 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CropBlock;
-import net.minecraft.world.level.block.LadderBlock;
-import net.minecraft.world.level.block.ScaffoldingBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -31,7 +30,10 @@ import net.neoforged.neoforge.event.brewing.PlayerBrewedPotionEvent;
 import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
-import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.living.AnimalTameEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -217,6 +219,21 @@ public class ActingEventHandler {
 
         if (event.getEntityBeingMounted() instanceof Boat)             ActingHandler.onActingEvent(player, "ride_boat");
         if (event.getEntityBeingMounted() instanceof AbstractMinecart) ActingHandler.onActingEvent(player, "ride_minecart");
+    }
+
+
+    @SubscribeEvent
+    public static void ContainerCraftingEvent(ContainerCraftingEvent event){
+        if (event.getContainer() instanceof SmithingMenu menu) {
+            if (event.getEntity() instanceof Player player) {
+                Item item =  event.getItem();
+                if (item instanceof TieredItem tiered) {
+                    Tier tier = tiered.getTier();
+                    if (tier == Tiers.NETHERITE) ActingHandler.onActingEvent(player, "craft_netherite_tool");
+                }
+            }
+        }
+
     }
 
     @SubscribeEvent
@@ -419,16 +436,16 @@ public class ActingEventHandler {
     public static void onItemPickup(ItemEntityPickupEvent.Post event) {
         ActingHandler.onActingEvent(event.getPlayer(), "pickup_item");
 
-        if (event.getItemEntity().getItem().is(Items.GOLD_INGOT)
+        if (event.getOriginalStack().is(Items.GOLD_INGOT)
                 || event.getItemEntity().getItem().is(Items.GOLD_NUGGET)
                 || event.getItemEntity().getItem().is(Items.GOLDEN_APPLE))
             ActingHandler.onActingEvent(event.getPlayer(), "pickup_gold");
 
-        if (event.getItemEntity().getItem().is(Items.BONE)
+        if (event.getOriginalStack().is(Items.BONE)
                 || event.getItemEntity().getItem().is(Items.BONE_MEAL))
             ActingHandler.onActingEvent(event.getPlayer(), "pickup_bone");
 
-        if (event.getItemEntity().getItem().is(Items.ROTTEN_FLESH))
+        if (event.getOriginalStack().is(Items.ROTTEN_FLESH))
             ActingHandler.onActingEvent(event.getPlayer(), "pickup_rotten_flesh");
     }
 
@@ -472,6 +489,9 @@ public class ActingEventHandler {
 
         if (player.getHealth() >= player.getMaxHealth())
             fire(player, "kill_while_full_health");
+
+        if (player.getHealth()/player.getMaxHealth() <= 0.5)
+            fire(player, "kill_while_low_health");
 
         if (player.getY() > 100)
             fire(player, "kill_at_high_altitude");

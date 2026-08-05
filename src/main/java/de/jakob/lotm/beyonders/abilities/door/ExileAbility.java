@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class ExileAbility extends Ability {
     public ExileAbility(String id) {
-        super(id, 60, "sealing");
+        super(id, 18, "sealing");
         canBeCopied = false;
     }
 

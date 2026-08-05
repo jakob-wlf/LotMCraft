@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.visionary.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;

@@ -11,9 +11,13 @@ import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
 
@@ -52,7 +56,18 @@ public class UniquenessCommand {
 
                                     if (UniquenessEntity.anyPlayerHoldsUniqueness(context.getSource().getLevel(), pathway)) return 0;
 
-                                    if (BeyonderData.playerMap != null && BeyonderData.playerMap.count(pathway, 0) > 0) return 0;
+                                    int seq0Count = BeyonderData.countTotalSequence(context.getSource().getLevel(), pathway, 0);
+                                    if (context.getSource().getEntity() instanceof LivingEntity living
+                                            && BeyonderData.isBeyonder(living)
+                                            && BeyonderData.getSequence(living) == 0
+                                            && pathway.equalsIgnoreCase(BeyonderData.getPathway(living))) {
+                                        seq0Count = Math.max(0, seq0Count - 1);
+                                    }
+                                    if (context.getSource().getEntity() instanceof ServerPlayer player) {
+                                        int stored = countStoredSeq0Souls(player, pathway);
+                                        seq0Count = Math.max(0, seq0Count - stored);
+                                    }
+                                    if (seq0Count > 0) return 0;
 
                                     UniquenessEntity.trySpawn(context.getSource().getLevel(), context.getSource().getPosition().add(0, -2, 0), pathway);
                                     return 1;
@@ -137,5 +152,22 @@ public class UniquenessCommand {
         }
 
         return 1;
+    }
+
+    private static int countStoredSeq0Souls(ServerPlayer player, String pathway) {
+        CompoundTag data = player.getPersistentData();
+        if (!data.contains("InternalUnderworldSouls", Tag.TAG_LIST)) {
+            return 0;
+        }
+        ListTag list = data.getList("InternalUnderworldSouls", Tag.TAG_COMPOUND);
+        int count = 0;
+        for (int i = 0; i < list.size(); i++) {
+            CompoundTag soul = list.getCompound(i);
+            if (!soul.contains("Sequence", Tag.TAG_INT)) continue;
+            if (soul.getInt("Sequence") != 0) continue;
+            if (!pathway.equalsIgnoreCase(soul.getString("Pathway"))) continue;
+            count++;
+        }
+        return count;
     }
 }

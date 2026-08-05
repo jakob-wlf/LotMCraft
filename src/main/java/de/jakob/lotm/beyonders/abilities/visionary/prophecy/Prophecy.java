@@ -2,6 +2,9 @@ package de.jakob.lotm.beyonders.abilities.visionary.prophecy;
 
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.TriggerBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.TriggerEnum;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.MercuryBodyAbility;
+import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,7 +19,27 @@ public record Prophecy(UUID targetID, TriggerBase trigger, TriggerEnum triggerTy
     public static final String CASTER_ID = "caster_id";
 
     public int checkAndPerform(Level level, LivingEntity entity){
-        return trigger.checkTrigger(level, entity, casterId);
+        if (!MercuryBodyAbility.hasMercuryBody(entity)) {
+            return trigger.checkTrigger(level, entity, casterId);
+        }
+
+        var casterData = BeyonderData.playerMap.get(casterId);
+        int casterSequence = casterData.map(data -> data.sequence()).orElse(-1);
+        if (MercuryBodyAbility.blocksInquiry(entity, casterSequence)) return -1;
+
+        int result = trigger.checkTrigger(level, entity, casterId);
+        if (result == 1) {
+            String casterName = casterData.map(data -> data.trueName()).orElse(casterId.toString());
+            if (level instanceof ServerLevel serverLevel && serverLevel.getPlayerByUUID(casterId) != null) {
+                casterName = serverLevel.getPlayerByUUID(casterId).getGameProfile().getName();
+            }
+            MercuryBodyAbility.warn(
+                    entity,
+                    casterName,
+                    casterSequence,
+                    "Story Writing triggered " + trigger.getType() + " and executed " + trigger.getActionType());
+        }
+        return result;
     }
 
     public CompoundTag toNBT(HolderLookup.Provider provider){

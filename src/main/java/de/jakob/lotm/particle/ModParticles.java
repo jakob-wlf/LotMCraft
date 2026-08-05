@@ -29,6 +29,7 @@ public class ModParticles {
     public static final Supplier<SimpleParticleType> LIGHTNING = PARTICLE_TYPES.register("lightning_particles", () -> new SimpleParticleType(true));
     public static final Supplier<SimpleParticleType> STAR = PARTICLE_TYPES.register("star_particles", () -> new SimpleParticleType(true));
     public static final Supplier<SimpleParticleType> FOG_OF_WAR = PARTICLE_TYPES.register("fog_of_war_particles", () -> new SimpleParticleType(true));
+    public static final Supplier<SimpleParticleType> GREY_SEAL = PARTICLE_TYPES.register("grey_seal_particles", () -> new SimpleParticleType(true));
     public static void register(IEventBus eventBus) {
         PARTICLE_TYPES.register(eventBus);
     }

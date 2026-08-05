@@ -465,7 +465,7 @@ Passive. During daytime (while the sun is up), the caster receives **Weakness I*
 
 Passive. When the caster would die (excluding loss-of-control deaths):
 - Death is cancelled and the caster is fully healed.
-- The caster is teleported to a random safe location at least **500 blocks** from the death point, within the world border.
+- The caster is teleported to a random safe location between **500** and **5000 blocks** from the death point, within the world border.
 - The caster is granted **Invisibility for 5 minutes**.
 - All current-sequence abilities are sealed for a duration based on the caster's sequence.
 - **Cooldown** persists through server restarts.

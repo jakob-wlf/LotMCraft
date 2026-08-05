@@ -23,11 +23,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class RestructionAbility extends SelectableAbility {
 
@@ -59,13 +55,13 @@ public class RestructionAbility extends SelectableAbility {
     }
 
     @Override
-    public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements) {
+    public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements, boolean isCopied) {
         // Release sub-ability bypasses cooldown and spirituality cost
         if (getSelectedAbilityIndex(entity.getUUID()) == 1) {
             onAbilityUse(serverLevel, entity);
             return;
         }
-        super.useAbility(serverLevel, entity, consumeSpirituality, hasToHaveAbility, hasToMeetRequirements);
+        super.useAbility(serverLevel, entity, consumeSpirituality, hasToHaveAbility, hasToMeetRequirements, isCopied);
     }
 
     @Override

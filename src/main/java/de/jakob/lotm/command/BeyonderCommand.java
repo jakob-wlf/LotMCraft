@@ -72,10 +72,10 @@ public class BeyonderCommand {
                 return 0;
             }
             
-            // Call the setBeyonder method. Skip acting cap so admin commands don't penalise players
+            // Admin command should force-set the target, including bypassing global sequence slot caps.
             ActingCapHelper.skipNextCapApplication = true;
             try {
-                BeyonderData.setBeyonder(target, pathway, sequence, false, true, true, true);
+                BeyonderData.setBeyonder(target, pathway, sequence, true, true, true, true, true, true, true);
             } finally {
                 ActingCapHelper.skipNextCapApplication = false;
             }
@@ -89,10 +89,13 @@ public class BeyonderCommand {
                     if (data.sequence() != sequence || (!data.pathway().equals(pathway)
                             && !data.pathway().equals("none"))) {
                         source.sendFailure(Component.literal(
-                                "Failed to advance due to insufficient amount of characteristics"));
+                            "Failed to set beyonder data."));
                         return 0;
                     }
                 }
+
+                // Command-set sequences start with a fresh slate, same as /resetcap
+                ActingCapHelper.clearCap(player);
             }
 
             // Send success message

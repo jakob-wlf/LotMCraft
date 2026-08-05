@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -32,6 +33,11 @@ public class VoidImmunityAbility extends PassiveAbilityItem {
     public void tick(Level level, LivingEntity entity) {
         IMMUNE_ENTITIES.removeIf(e -> !this.shouldApplyTo(e));
         IMMUNE_ENTITIES.add(entity);
+    }
+
+    @Override
+    public void onPassiveAbilityRemoved(LivingEntity entity, ServerLevel serverLevel) {
+        IMMUNE_ENTITIES.remove(entity);
     }
 
     @SubscribeEvent

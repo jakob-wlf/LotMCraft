@@ -2,8 +2,6 @@ package de.jakob.lotm.effect;
 
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket;
 import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
 import net.minecraft.server.level.ServerLevel;

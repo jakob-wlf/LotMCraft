@@ -74,6 +74,14 @@ public class ModIngredients {
     public static final DeferredItem<Item> SUCCUBUS_EYES = ITEMS.registerItem("succubus_eyes", (properties) -> new PotionIngredient(properties, 6, true, "demoness"), new Item.Properties());
     public static final DeferredItem<Item> SHADOW_LIZARD_SCALES = ITEMS.registerItem("shadow_lizard_scales", (properties) -> new PotionIngredient(properties, 5, true, "demoness"), new Item.Properties());
 
+    // Twilight Giant pathway
+    public static final DeferredItem<Item> IRON_WARRIOR_BLOOD = ITEMS.registerItem("iron_warrior_blood", (properties) -> new PotionIngredient(properties, 9, true, "twilight_giant"), new Item.Properties());
+    public static final DeferredItem<Item> GIANT_CRAB_CLAW = ITEMS.registerItem("giant_crab_claw", (properties) -> new PotionIngredient(properties, 8, true, "twilight_giant"), new Item.Properties());
+    public static final DeferredItem<Item> ENCHANTED_BLADE_FRAGMENT = ITEMS.registerItem("enchanted_blade_fragment", (properties) -> new PotionIngredient(properties, 7, true, "twilight_giant"), new Item.Properties());
+    public static final DeferredItem<Item> DAWN_HOLY_CRYSTAL = ITEMS.registerItem("dawn_holy_crystal", (properties) -> new PotionIngredient(properties, 6, true, "twilight_giant"), new Item.Properties());
+    public static final DeferredItem<Item> ANCIENT_SHIELD_SHARD = ITEMS.registerItem("ancient_shield_shard", (properties) -> new PotionIngredient(properties, 5, true, "twilight_giant"), new Item.Properties());
+    public static final DeferredItem<Item> DEMON_CLAW = ITEMS.registerItem("demon_claw", (properties) -> new PotionIngredient(properties, 4, true, "twilight_giant"), new Item.Properties());
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

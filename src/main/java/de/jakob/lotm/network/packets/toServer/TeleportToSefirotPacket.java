@@ -1,7 +1,10 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.CorruptedPlayerComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.SefrotInvasionManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -30,6 +33,19 @@ public record TeleportToSefirotPacket() implements CustomPacketPayload {
             if (context.flow().getReceptionSide().isServer() && context.player() instanceof ServerPlayer serverPlayer) {
                 if(!SefirahHandler.hasSefirot(serverPlayer)) {
                     AbilityUtil.sendActionBar(serverPlayer, Component.translatable("lotm.sefirot.no_sefirot").withColor(0x942de3));
+                    return;
+                }
+
+                if (SefrotInvasionManager.isDefenderLocked(serverPlayer)) {
+                    AbilityUtil.sendActionBar(serverPlayer, Component.literal(
+                            "You cannot leave while your Sefrot is being invaded.").withColor(0xFF3322));
+                    return;
+                }
+
+                // Block teleport while fully corrupted
+                CorruptedPlayerComponent corruptedComp = serverPlayer.getData(ModAttachments.CORRUPTED_PLAYER_COMPONENT);
+                if (corruptedComp.isFullyCorrupted()) {
+                    AbilityUtil.sendActionBar(serverPlayer, Component.literal("You cannot access your Sefirot while fully corrupted.").withColor(0xFF3322));
                     return;
                 }
 

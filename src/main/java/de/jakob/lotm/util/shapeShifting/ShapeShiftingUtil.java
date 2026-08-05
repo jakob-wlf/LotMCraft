@@ -68,6 +68,9 @@ public class ShapeShiftingUtil {
                 player.getAbilities().flying = true;
                 player.onUpdateAbilities();
             }
+            if (List.of("bat", "phantom", "allay", "bee", "parrot", "vex").contains(entityName)) {
+                player.getAttribute(Attributes.SCALE).setBaseValue(2);
+            }
         }
 
         // set attributes one time when shape shifting

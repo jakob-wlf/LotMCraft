@@ -33,6 +33,7 @@ This guide covers everything you need to know to contribute to or extend the mod
 13. [Network & Packets](#13-network--packets)
 14. [Event Handling](#14-event-handling)
 15. [Keybinding System](#15-keybinding-system)
+16. [Luck and Sefirot Systems](#16-luck-and-sefirot-systems)
 
 ---
 
@@ -1326,6 +1327,17 @@ public class MyClientEventHandler {
 | P | Return to main body |
 
 All keybinds are registered under the `key.categories.beyonders` category.
+
+---
+
+## 16. Luck and Sefirot Systems
+
+These stateful systems have focused references because their behavior spans attachments, SavedData, abilities, event handlers, packets, HUD state, and dimensions:
+
+- [Luck System](docs/LUCK_SYSTEM.md): capacities, regeneration, spending, harmful-effect resistance, timed sources, migration, and synchronization.
+- [Sefirot Systems](docs/SEFIROT_SYSTEMS.md): ownership, accommodation rituals, authority scaling, dimensions, mental imprints, special systems, and Great Old One transformation.
+
+Use `LuckManager` as the gameplay API for luck. Use `SefirahHandler`, `SefirotData`, and `SefirotAuthorityManager` as the ownership and authority boundaries for Sefirot work. The subsystem references identify the narrower managers and event handlers.
 
 ---
 

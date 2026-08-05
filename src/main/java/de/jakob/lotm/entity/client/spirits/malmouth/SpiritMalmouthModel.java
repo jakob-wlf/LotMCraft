@@ -6,7 +6,6 @@ package de.jakob.lotm.entity.client.spirits.malmouth;// Made with Blockbench 5.1
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentWizardAnimations;
 import de.jakob.lotm.entity.custom.spirits.SpiritMalmouthEntity;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;

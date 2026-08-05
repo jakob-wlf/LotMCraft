@@ -1,10 +1,10 @@
 package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.beyonders.abilities.error.DeceitAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.error.DeceitAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.custom.AvatarEntity;
@@ -420,6 +420,39 @@ public class AbilityUtil {
         return BlockPos.containing(targetPosition);
     }
 
+    // ==================== REMOTE TARGETING ====================
+    private static final ThreadLocal<UUID> REMOTE_CAST_TARGET_UUID = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> REMOTE_CAST_TARGET_RESOLVED =
+            ThreadLocal.withInitial(() -> false);
+
+    public static void setRemoteCastTargetUUID(UUID uuid) {
+        REMOTE_CAST_TARGET_UUID.set(uuid);
+        REMOTE_CAST_TARGET_RESOLVED.set(false);
+    }
+
+    public static void clearRemoteCastTargetUUID() {
+        REMOTE_CAST_TARGET_UUID.remove();
+        REMOTE_CAST_TARGET_RESOLVED.remove();
+    }
+
+    @Nullable
+    public static UUID getRemoteCastTargetUUID() {
+        return REMOTE_CAST_TARGET_UUID.get();
+    }
+
+    public static boolean wasRemoteCastTargetResolved() {
+        return REMOTE_CAST_TARGET_RESOLVED.get();
+    }
+
+    @Nullable
+    private static Entity resolveRemoteCastTarget(LivingEntity caster, UUID targetUUID) {
+        if (caster instanceof ServerPlayer player) {
+            ServerPlayer target = player.server.getPlayerList().getPlayer(targetUUID);
+            if (target != null) return target;
+        }
+        return caster.level().getPlayerByUUID(targetUUID);
+    }
+
     // ==================== TARGET ENTITY METHODS ====================
 
     @Nullable
@@ -487,6 +520,22 @@ public class AbilityUtil {
     @Nullable
     private static LivingEntity getTargetEntityInternal(LivingEntity entity, int radius, float entityDetectionRadius,
                                                         boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes) {
+        // Check for remote target first
+        UUID remoteTargetUUID = getRemoteCastTargetUUID();
+        if (remoteTargetUUID != null) {
+            Entity target = resolveRemoteCastTarget(entity, remoteTargetUUID);
+            if (target == null) {
+                for (Entity e : entity.level().getEntities((Entity) null, entity.getBoundingBox().inflate(512), e -> e.getUUID().equals(remoteTargetUUID))) {
+                    target = e;
+                    break;
+                }
+            }
+            if (target instanceof LivingEntity livingTarget) {
+                REMOTE_CAST_TARGET_RESOLVED.set(true);
+                return livingTarget;
+            }
+        }
+
         // Check for existing targets first (unless line of sight only)
         if (!onlyAllowWithLineOfSight) {
             LivingEntity currentTarget = getCurrentTarget(entity);
@@ -596,6 +645,22 @@ public class AbilityUtil {
      */
     public static Vec3 getTargetLocation(LivingEntity entity, int radius, float entityDetectionRadius,
                                          boolean positionAtEntityFeet, boolean allowAllies) {
+        // Check for remote target first
+        UUID remoteTargetUUID = getRemoteCastTargetUUID();
+        if (remoteTargetUUID != null) {
+            Entity target = resolveRemoteCastTarget(entity, remoteTargetUUID);
+            if (target == null) {
+                for (Entity e : entity.level().getEntities((Entity) null, entity.getBoundingBox().inflate(512), e -> e.getUUID().equals(remoteTargetUUID))) {
+                    target = e;
+                    break;
+                }
+            }
+            if (target != null) {
+                REMOTE_CAST_TARGET_RESOLVED.set(true);
+                return positionAtEntityFeet ? target.position() : target.position().add(0, target.getEyeHeight(), 0);
+            }
+        }
+
         // Set flag to prevent TargetEntityEvent from firing during this call
         INSIDE_GET_TARGET_LOCATION.set(true);
 
@@ -789,12 +854,19 @@ public class AbilityUtil {
 
         Class<T> entityClass = (Class<T>) (includeAllEntities ? Entity.class : LivingEntity.class);
 
-        return level.getEntitiesOfClass(entityClass, detectionBox).stream()
-                .filter(e -> !(e instanceof Player player) || (!player.isCreative() || allowCreativeMode))
-                .filter(entity -> entity.position().distanceToSqr(center) <= radiusSquared)
-                .filter(entity -> entity != exclude)
-                .filter(e -> exclude == null || (!(e instanceof LivingEntity le) || mayTarget(exclude, le, allowAllies, false)))
-                .toList();
+        List<T> entities = level.getEntitiesOfClass(entityClass, detectionBox);
+        List<T> result = new ArrayList<>(entities.size());
+
+        for (T e : entities) {
+            if (e == exclude) continue;
+            if (e instanceof Player player && player.isCreative() && !allowCreativeMode) continue;
+            if (e.position().distanceToSqr(center) > radiusSquared) continue;
+            if (exclude != null && e instanceof LivingEntity le && !mayTarget(exclude, le, allowAllies, false)) continue;
+
+            result.add(e);
+        }
+
+        return result;
     }
 
     private static AABB createDetectionBox(Vec3 center, double radius) {
@@ -907,10 +979,7 @@ public class AbilityUtil {
                                                boolean ignoreCooldown, int cooldownTicks, int fireTicks,
                                                DamageSource damageSource) {
         AABB detectionBox = createDetectionBox(center, maxRadius);
-        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, detectionBox)
-                .stream()
-                .filter(e -> mayTarget(source, e))
-                .toList();
+        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, detectionBox);
 
         boolean hitAnyEntity = false;
         double maxRadiusSquared = maxRadius * maxRadius;
@@ -918,6 +987,7 @@ public class AbilityUtil {
 
         for (LivingEntity entity : nearbyEntities) {
             if (ignoreSource && entity == source) continue;
+            if (!mayTarget(source, entity)) continue;
 
             double distanceSquared = entity.position().distanceToSqr(center);
 

@@ -1,0 +1,19 @@
+﻿{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "lotmcraft:corpse_collector"},
+    {"item": "lotmcraft:gravedigger"},
+    {"item": "lotmcraft:spirit_medium"},
+    {"item": "lotmcraft:spirit_guide"},
+    {"item": "lotmcraft:gatekeeper"},
+    {"item": "lotmcraft:undying"},
+    {"item": "lotmcraft:ferryman"},
+    {"item": "lotmcraft:death_consul"},
+    {"item": "lotmcraft:pale_emperor"}
+  ],
+  "result": {
+    "id": "lotmcraft:death_blasphemy_card",
+    "count": 1
+  },
+  "category": "misc"
+}

@@ -1,10 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.red_priest;
 
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.KillCountComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SacrificeRevertComponent;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.WarBannerEntity;
 import de.jakob.lotm.network.PacketHandler;
@@ -105,7 +105,13 @@ public class SacrificeAbility extends Ability {
         int animationTicks = 35;
         ServerScheduler.scheduleDelayed(animationTicks, () -> {
             float savedDigestion = BeyonderData.getDigestionProgress(player);
-            BeyonderData.setBeyonder(player, pathway, tempSeq, true, false, true, false);
+            // Temporary advance that reverts after the duration — must not trigger the acting cap
+            de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = true;
+            try {
+                BeyonderData.setBeyonder(player, pathway, tempSeq, true, false, true, false);
+            } finally {
+                de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = false;
+            }
             // Temp sequence starts at 0 digestion — prevents drinking potions to exploit the advance
             BeyonderData.setDigestionProgress(player, 0);
             PacketHandler.syncBeyonderDataToPlayer(player);

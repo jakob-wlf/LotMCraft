@@ -42,7 +42,7 @@ public class DoorOpeningAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        BlockPos targetLoc = AbilityUtil.getTargetBlock(entity, 15, false);
+        BlockPos targetLoc = AbilityUtil.getTargetBlock(entity, 25, false);
 
         if(level.getBlockState(targetLoc).isAir()) {
             Vec3 failureParticleLoc = AbilityUtil.getTargetBlock(entity, 4).getCenter();
@@ -103,7 +103,7 @@ public class DoorOpeningAbility extends Ability {
 
     private int getMaxRadius(int sequence) {
         return switch (sequence) {
-            default -> 2;
+            case 9 -> 2;
             case 8 -> 4;
             case 7 -> 6;
             case 6 -> 7;
@@ -112,6 +112,8 @@ public class DoorOpeningAbility extends Ability {
             case 3 -> 70;
             case 2 -> 200;
             case 1 -> 500;
+            case 0 -> 1000;
+            default -> sequence < 0 ? 1000 : 2;
         };
     }
 

@@ -1,11 +1,12 @@
 package de.jakob.lotm.beyonders.abilities.demoness.passives;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
+import de.jakob.lotm.beyonders.sefirah.SefrotInvasionManager;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -67,6 +68,12 @@ public class MirrorRevivalAbility extends PassiveAbilityItem {
         }
         SanityComponent sanity = entity.getData(ModAttachments.SANITY_COMPONENT);
         if (sanity.getSanity() < 0.1) return;
+
+        if (entity instanceof net.minecraft.server.level.ServerPlayer player
+                && SefrotInvasionManager.forfeitForResurrection(player)) {
+            event.setCanceled(true);
+            return;
+        }
 
         event.setCanceled(true);
         entity.setHealth(entity.getMaxHealth());

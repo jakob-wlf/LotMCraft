@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "lotmcraft:blasphemy_slate_left_half"},
+    {"item": "lotmcraft:blasphemy_slate_right_half"}
+  ],
+  "result": {
+    "id": "lotmcraft:blasphemy_slate",
+    "count": 1
+  },
+  "category": "misc"
+}

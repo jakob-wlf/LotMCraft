@@ -1,12 +1,12 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.TeamComponent;
 import de.jakob.lotm.attachments.SharedAbilitiesComponent;
+import de.jakob.lotm.attachments.TeamComponent;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.BeyonderData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -63,7 +63,8 @@ public record UseSelectedAbilityPacket() implements CustomPacketPayload {
 
                     if (ability != null && serverPlayer.level() instanceof ServerLevel serverLevel) {
                         boolean isSharedAbility = isSharedAbility(serverPlayer, abilityId);
-                        ability.useAbility(serverLevel, serverPlayer, true, !isSharedAbility, true);
+                        boolean isCopied = isCopied(component.getAbilities().get(selectedIndex));
+                        ability.useAbility(serverLevel, serverPlayer, true, !isSharedAbility, true, isCopied);
                     }
                 }
             }
@@ -78,6 +79,12 @@ public record UseSelectedAbilityPacket() implements CustomPacketPayload {
         } catch (NumberFormatException e) {
             return -1;
         }
+    }
+
+    private static boolean isCopied(String s) {
+        String[] parts = s.split(":");
+        if (parts.length < 3) return false;
+        return parts[2].equals("copied");
     }
 
     private static boolean isSharedAbility(ServerPlayer player, String abilityId) {

@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -30,6 +31,8 @@ public class AsleepEffect extends MobEffect {
         return true;
     }
 
+
+
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
@@ -39,6 +42,10 @@ public class AsleepEffect extends MobEffect {
         boolean isFirstPerson = mc.options.getCameraType().isFirstPerson();
         boolean shouldHaveBlur = isAsleep && isFirstPerson;
 
+        if (mc.player.hasEffect(ModEffects.SLEEP_RESISTANCE)){
+            mc.player.removeEffect(ModEffects.ASLEEP);
+        }
+
         // Only apply/remove effect when state changes to avoid unnecessary operations
         if (shouldHaveBlur && !wasAsleepLastTick) {
             // Apply blur effect
@@ -46,6 +53,9 @@ public class AsleepEffect extends MobEffect {
         } else if (!shouldHaveBlur && wasAsleepLastTick) {
             // Remove blur effect
             removeBlurEffect(mc);
+        }
+        if(!isAsleep && wasAsleepLastTick){
+            mc.player.addEffect(new MobEffectInstance(ModEffects.SLEEP_RESISTANCE, 40));
         }
 
         wasAsleepLastTick = shouldHaveBlur;

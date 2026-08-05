@@ -14,16 +14,15 @@ import java.util.List;
 
 public class RecipeMenuProvider implements MenuProvider {
     private final List<ItemStack> ingredients;
-
     private final String pathway;
     private final int sequence;
+    private final boolean fromCard;
 
-
-
-    public RecipeMenuProvider(List<ItemStack> ingredients, String pathway, int sequence) {
+    public RecipeMenuProvider(List<ItemStack> ingredients, String pathway, int sequence, boolean fromCard) {
         this.ingredients = ingredients;
         this.pathway = pathway;
         this.sequence = sequence;
+        this.fromCard = fromCard;
     }
 
     @Override
@@ -33,6 +32,6 @@ public class RecipeMenuProvider implements MenuProvider {
 
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-        return new RecipeMenu(ingredients, containerId, playerInventory);
+        return new RecipeMenu(ingredients, containerId, playerInventory, pathway, sequence, fromCard);
     }
 }

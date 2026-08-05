@@ -1,0 +1,19 @@
+﻿{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "lotmcraft:apprentice"},
+    {"item": "lotmcraft:trickmaster"},
+    {"item": "lotmcraft:astrologer"},
+    {"item": "lotmcraft:scribe"},
+    {"item": "lotmcraft:traveler"},
+    {"item": "lotmcraft:secrets_sorcerer"},
+    {"item": "lotmcraft:wanderer"},
+    {"item": "lotmcraft:planeswalker"},
+    {"item": "lotmcraft:key_of_stars"}
+  ],
+  "result": {
+    "id": "lotmcraft:door_blasphemy_card",
+    "count": 1
+  },
+  "category": "misc"
+}

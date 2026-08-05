@@ -2,11 +2,11 @@ package de.jakob.lotm.beyonders.abilities.fool;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -116,6 +116,14 @@ public class HistoricalVoidHidingAbility extends ToggleAbility {
             transformationComponent.setTransformedAndSync(false, entity);
         }
 
+    }
+
+    public static void forceExit(ServerLevel level, LivingEntity entity) {
+        for (ToggleAbility ability : ToggleAbility.getActiveAbilitiesForEntity(entity)) {
+            if (ability instanceof HistoricalVoidHidingAbility hiding) {
+                hiding.cancel(level, entity);
+            }
+        }
     }
 
     @SubscribeEvent

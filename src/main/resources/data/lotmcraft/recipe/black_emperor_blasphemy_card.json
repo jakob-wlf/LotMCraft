@@ -1,0 +1,19 @@
+﻿{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "lotmcraft:lawyer"},
+    {"item": "lotmcraft:barbarian"},
+    {"item": "lotmcraft:briber"},
+    {"item": "lotmcraft:baron_of_corruption"},
+    {"item": "lotmcraft:mentor_of_disorder"},
+    {"item": "lotmcraft:earl_of_the_fallen"},
+    {"item": "lotmcraft:frenzied_mage"},
+    {"item": "lotmcraft:duke_of_entropy"},
+    {"item": "lotmcraft:prince_of_abolition"}
+  ],
+  "result": {
+    "id": "lotmcraft:black_emperor_blasphemy_card",
+    "count": 1
+  },
+  "category": "misc"
+}

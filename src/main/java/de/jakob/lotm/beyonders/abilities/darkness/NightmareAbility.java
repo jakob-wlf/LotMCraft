@@ -5,7 +5,6 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncNightmareAbilityPacket;
-import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.data.NightmareCenter;
 import de.jakob.lotm.util.helper.*;
@@ -33,6 +32,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -440,6 +440,20 @@ public class NightmareAbility extends SelectableAbility {
             event.getDrops().clear();
             unmarkNoDrop((ServerLevel) event.getLevel(), pos);
         }
+    }
+
+    @SubscribeEvent
+    public static void onExplosionDetonate(ExplosionEvent.Detonate event) {
+        if (!(event.getLevel() instanceof ServerLevel level)) return;
+
+        HashSet<BlockPos> set = noDropPositions.get(level.dimension());
+        if (set == null || set.isEmpty()) return;
+
+        event.getAffectedBlocks().removeIf(pos -> {
+            if (!set.remove(pos)) return false;
+            level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+            return true;
+        });
     }
 
     private static void markNoDrop(ServerLevel level, BlockPos pos) {

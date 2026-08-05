@@ -2,6 +2,7 @@
   "type": "lotmcraft:sefirah_castle",
   "generator": {
     "type": "lotmcraft:pregenerated",
+    "region_path": "data/lotmcraft/dimension_data/sefirah_castle/",
     "biome_source": {
       "type": "minecraft:fixed",
       "biome": "lotmcraft:sefirah_castle_biome"

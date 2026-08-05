@@ -17,13 +17,15 @@ public class HonorificNamesMenuProvider implements MenuProvider {
     private final String pathway;
     private final int sequence;
     private final LinkedList<PendingPrayer> pendingPrayers;
+    private final boolean sefirotOwner;
 
     public HonorificNamesMenuProvider(HonorificName ownName, String pathway, int sequence,
-                                      LinkedList<PendingPrayer> pendingPrayers) {
+                                      LinkedList<PendingPrayer> pendingPrayers, boolean sefirotOwner) {
         this.ownName = ownName;
         this.pathway = pathway;
         this.sequence = sequence;
         this.pendingPrayers = pendingPrayers;
+        this.sefirotOwner = sefirotOwner;
     }
 
     @Override
@@ -33,6 +35,6 @@ public class HonorificNamesMenuProvider implements MenuProvider {
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
-        return new HonorificNamesMenu(id, inventory, ownName, pathway, sequence, pendingPrayers);
+        return new HonorificNamesMenu(id, inventory, ownName, pathway, sequence, pendingPrayers, sefirotOwner);
     }
 }

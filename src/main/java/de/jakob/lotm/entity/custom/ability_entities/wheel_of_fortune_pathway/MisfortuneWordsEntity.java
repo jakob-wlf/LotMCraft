@@ -1,10 +1,10 @@
 package de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway;
 
-import de.jakob.lotm.attachments.LuckComponent;
+import de.jakob.lotm.beyonders.abilities.common.passives.FateResistanceAbility;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -15,7 +15,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,6 +27,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class MisfortuneWordsEntity extends Entity {
+    private static final float LUCK_DRAIN_RATE_PER_MINUTE = 3000;
+    private static final float MAXIMUM_LUCK_DRAIN_RATE_PER_MINUTE = 6500;
+    private static final int LUCK_DRAIN_DURATION_TICKS = 20 * 60;
+    private static final int MINIMUM_LUCK = -3000;
 
     private static final EntityDataAccessor<Optional<UUID>> OWNER =
             SynchedEntityData.defineId(MisfortuneWordsEntity.class, EntityDataSerializers.OPTIONAL_UUID);
@@ -61,18 +64,27 @@ public class MisfortuneWordsEntity extends Entity {
         super.tick();
 
         if(this.level() instanceof ServerLevel serverLevel) {
-            AbilityUtil.getNearbyEntities(null, serverLevel, this.position(), this.getBoundingBox().getXsize()).forEach(e -> {
+            AbilityUtil.getNearbyEntities(null, serverLevel, this.position(), this.getBoundingBox().getXsize(), true).forEach(e -> {
                 if(BeyonderData.isBeyonder(e) && BeyonderData.getPathway(e).equalsIgnoreCase("wheel_of_fortune") && BeyonderData.getSequence(e) <= 2)
                     return;
+
+                // Players with Elevated Fate are immune unless the caster is seq 1 or lower
+                if (FateResistanceAbility.FATE_RESISTANCE_ACTIVE.contains(e.getUUID())) {
+                    LivingEntity caster = getCasterEntity();
+                    int casterSeq = caster != null ? BeyonderData.getSequence(caster) : Integer.MAX_VALUE;
+                    if (casterSeq > 1) return;
+                }
 
                 if(getCasterEntity() != null && !AbilityUtil.mayTarget(getCasterEntity(), e))
                     return;
 
-                LuckComponent luckComponent = e.getData(ModAttachments.LUCK_COMPONENT.get());
-                int luck = luckComponent.getLuck();
+                int luck = LuckManager.getLuck(e);
 
-                if(luck < 1000 && luck > -3000) {
-                    luckComponent.setLuck(-3000);
+                if(luck > MINIMUM_LUCK) {
+                        float drainRate = Math.min(LuckManager.getSequenceScaledEffectRate(
+                            getCasterEntity(), LUCK_DRAIN_RATE_PER_MINUTE), MAXIMUM_LUCK_DRAIN_RATE_PER_MINUTE);
+                        LuckManager.applyLuckDrain(getCasterEntity(), e, "words_of_misfortune:" + getUUID(),
+                            drainRate, LUCK_DRAIN_DURATION_TICKS, MINIMUM_LUCK);
                 }
 
                 if(!affectedEntities.contains(e.getUUID())) {

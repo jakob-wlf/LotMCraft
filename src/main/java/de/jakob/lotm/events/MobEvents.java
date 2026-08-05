@@ -31,7 +31,7 @@ public class MobEvents {
                  event.setResult(MobSpawnEvent.PositionCheck.Result.FAIL);
             }
         }
-        else if(!BeyonderData.playerMap.check(npc.getPathway(), npc.get_sequence())){
+        else if(!BeyonderData.playerMap.check(npc.getPathway(), npc.getSequence())){
             event.setResult(MobSpawnEvent.PositionCheck.Result.FAIL);
         }
 
@@ -46,7 +46,7 @@ public class MobEvents {
 
         BlockPos pos = npc.getOnPos();
 
-        if(!BeyonderData.playerMap.check(npc.getPathway(), npc.get_sequence())){
+        if(!BeyonderData.playerMap.check(npc.getPathway(), npc.getSequence())){
             event.setCanceled(true);
         }
     }

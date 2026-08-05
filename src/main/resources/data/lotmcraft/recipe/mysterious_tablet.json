@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "lotmcraft:upper_fragment_of_a_mysterious_tablet"},
+    {"item": "lotmcraft:right_fragment_of_a_mysterious_tablet"},
+    {"item": "lotmcraft:left_fragment_of_a_mysterious_tablet"},
+    {"item": "lotmcraft:lower_fragment_of_a_mysterious_tablet"}
+  ],
+  "result": {
+    "id": "lotmcraft:mysterious_tablet",
+    "count": 1
+  },
+  "category": "misc"
+}

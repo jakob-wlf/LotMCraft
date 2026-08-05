@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "lotmcraft:red_priest_blasphemy_card"},
+    {"item": "lotmcraft:demoness_blasphemy_card"},
+    {"item": "lotmcraft:error_blasphemy_card"},
+    {"item": "lotmcraft:door_blasphemy_card"},
+    {"item": "lotmcraft:fool_blasphemy_card"},
+    {"item": "lotmcraft:mother_blasphemy_card"},
+    {"item": "lotmcraft:black_emperor_blasphemy_card"},
+    {"item": "lotmcraft:darkness_blasphemy_card"}
+  ],
+  "result": {
+    "id": "lotmcraft:blasphemy_slate_right_half",
+    "count": 1
+  },
+  "category": "misc"
+}

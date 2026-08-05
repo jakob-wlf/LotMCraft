@@ -2,10 +2,10 @@ package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.block.ModBlocks;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -30,6 +30,11 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.CRYSTAL_BALL.get());
                         output.accept(ModItems.CANE.get());
                         output.accept(ModItems.GUIDING_BOOK.get());
+                        output.accept(ModItems.UPPER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
+                        output.accept(ModItems.RIGHT_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
+                        output.accept(ModItems.LEFT_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
+                        output.accept(ModItems.LOWER_FRAGMENT_OF_A_MYSTERIOUS_TABLET.get());
+                        output.accept(ModItems.MYSTERIOUS_TABLET.get());
                         output.accept(ModItems.MYSTICAL_RING.get());
                         output.accept(ModBlocks.BREWING_CAULDRON.get());
                         output.accept(ModBlocks.VOID);
@@ -41,6 +46,32 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.PAPER_SHOVEL);
                         output.accept(ModItems.ONE_POUND);
                         output.accept(ModItems.ONE_SOLI);
+                        output.accept(ModItems.UNIQUENESS_MAP);
+                        output.accept(ModItems.CITY_MAP);
+                        output.accept(ModItems.DROPS_OF_ETERNAL_DARKNESS_BUCKET.get());
+                        output.accept(ModItems.SEALED_BOTTLE.get());
+                        output.accept(ModItems.ETERNAL_DARKNESS_RIVER_WATER_BOTTLE.get());
+                        // ── Blasphemy Cards ──
+                        output.accept(ModItems.FOOL_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.DOOR_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.ERROR_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.SUN_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.TYRANT_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.VISIONARY_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.DARKNESS_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.DEATH_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.TWILIGHT_GIANT_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.DEMONESS_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.RED_PRIEST_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.MOTHER_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.ABYSS_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.WHEEL_OF_FORTUNE_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.BLACK_EMPEROR_BLASPHEMY_CARD.get());
+                        output.accept(ModItems.JUSTICIAR_BLASPHEMY_CARD.get());
+                        // ── Blasphemy Slate ──
+                        output.accept(ModItems.BLASPHEMY_SLATE_LEFT_HALF.get());
+                        output.accept(ModItems.BLASPHEMY_SLATE_RIGHT_HALF.get());
+                        output.accept(ModItems.BLASPHEMY_SLATE.get());
                     })
                     .build());
 

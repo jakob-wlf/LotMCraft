@@ -3,13 +3,10 @@ package de.jakob.lotm.util.helper.marionettes;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.goals.*;
 import de.jakob.lotm.item.ModItems;
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.*;
@@ -47,15 +44,6 @@ public class MarionetteUtils {
         // Clear existing goals and add marionette goals
         if (entity instanceof Mob mob) {
             // Remove hostile targeting goals
-            mob.targetSelector.removeAllGoals(goal ->
-                    goal instanceof StrollThroughVillageGoal ||
-                    goal instanceof BreedGoal ||
-                    goal instanceof MoveToBlockGoal ||
-                    goal instanceof PanicGoal ||
-                    goal instanceof RandomStrollGoal ||
-                    goal instanceof TargetGoal
-            );
-
             mob.goalSelector.addGoal(0, new MarionetteFollowGoal(mob));
             mob.goalSelector.addGoal(0, new MarionetteLoadChunksGoal(mob));
             mob.goalSelector.addGoal(1, new MarionetteStayGoal(mob));
@@ -104,8 +92,13 @@ public class MarionetteUtils {
         component.setFollowMode(false);
         
         if (entity instanceof Mob mob) {
-            mob.goalSelector.getAvailableGoals().clear();
-            mob.targetSelector.getAvailableGoals().clear();
+            mob.goalSelector.removeAllGoals(goal -> goal instanceof MarionetteFollowGoal
+                    || goal instanceof MarionetteLoadChunksGoal
+                    || goal instanceof MarionetteStayGoal
+                    || goal instanceof MarionetteUseAbilityGoal
+                    || goal instanceof MarionetteLifelinkGoal);
+            mob.targetSelector.removeAllGoals(goal -> goal instanceof MarionetteTargetGoal);
+            mob.setTarget(null);
         }
     }
 }

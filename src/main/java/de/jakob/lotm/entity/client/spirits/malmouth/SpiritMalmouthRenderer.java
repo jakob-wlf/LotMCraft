@@ -2,8 +2,6 @@ package de.jakob.lotm.entity.client.spirits.malmouth;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.client.spirits.ghost.SpiritGhostModel;
-import de.jakob.lotm.entity.custom.spirits.SpiritGhostEntity;
 import de.jakob.lotm.entity.custom.spirits.SpiritMalmouthEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;

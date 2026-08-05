@@ -3,7 +3,6 @@ package de.jakob.lotm.events.custom;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Event fired when a target location is being selected.

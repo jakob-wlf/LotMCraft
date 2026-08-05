@@ -6,7 +6,6 @@ package de.jakob.lotm.entity.client.ability_entities.death_pathway.underworld_ga
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.client.spirits.bizarro_bane.SpiritBizarroBaneAnimations;
 import de.jakob.lotm.entity.custom.ability_entities.death_pathway.UnderworldGateEntity;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -14,7 +13,6 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
 public class UnderworldGateModel<T extends UnderworldGateEntity> extends HierarchicalModel<T> {

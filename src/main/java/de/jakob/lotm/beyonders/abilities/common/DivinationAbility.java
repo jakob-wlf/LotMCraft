@@ -1,19 +1,23 @@
 package de.jakob.lotm.beyonders.abilities.common;
 
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toClient.*;
+import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.MercuryBodyAbility;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import de.jakob.lotm.util.data.PlayerInfo;
+import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import de.jakob.lotm.util.scheduling.ClientScheduler;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -32,6 +36,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DivinationAbility extends SelectableAbility {
     public static final Set<UUID> dangerPremonitionActive = new HashSet<>();
     public static final Set<UUID> DIVINATION_IMMUNE = Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+    private static final Set<ResourceLocation> UNDIVINABLE_STRUCTURES = Set.of(
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "fragment_structure"),
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "river_of_eternal_darkness_well")
+    );
 
     public DivinationAbility(String id) {
         super(id, 1);
@@ -188,6 +196,18 @@ public class DivinationAbility extends SelectableAbility {
                 .stream()
                 .filter(p -> p != player)
                 .filter(p -> !DIVINATION_IMMUNE.contains(p.getUUID()))
+                .filter(p -> {
+                    if (MercuryBodyAbility.blocksInquiry(p, player)) return false;
+                    if (MercuryBodyAbility.hasMercuryBody(p)) {
+                        MercuryBodyAbility.warn(
+                                p,
+                                player.getGameProfile().getName(),
+                                BeyonderData.getSequence(player),
+                                "Player Divination is revealing you as a target");
+                    }
+                    return true;
+                })
+                .filter(p -> !SefirotAuthorityManager.blocksConcealment(p.getUUID(), player))
                 .map(p -> new PlayerInfo(p.getUUID(), p.getGameProfile().getName()))
                 .toList();
 
@@ -204,8 +224,9 @@ public class DivinationAbility extends SelectableAbility {
                 .registry(Registries.STRUCTURE).orElseThrow();
 
         List<String> structureIds = registry.holders()
-                .map(holder -> holder.key().location().toString())
-                .filter(id -> !id.contains("uniqueness"))
+            .map(holder -> holder.key().location())
+            .filter(DivinationAbility::isStructureDivinable)
+            .map(ResourceLocation::toString)
                 .sorted()
                 .toList();
 
@@ -213,6 +234,11 @@ public class DivinationAbility extends SelectableAbility {
                 player,
                 new OpenStructureDivinationScreenPacket(structureIds)
         );
+    }
+
+    public static boolean isStructureDivinable(ResourceLocation structureId) {
+        return !structureId.getPath().contains("uniqueness")
+                && !UNDIVINABLE_STRUCTURES.contains(structureId);
     }
 
     private void antiDivination(Level level, LivingEntity entity) {

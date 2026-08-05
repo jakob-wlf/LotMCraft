@@ -1,7 +1,9 @@
 package de.jakob.lotm.events;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.custom.uniqueness.UniquenessEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,12 +13,13 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @EventBusSubscriber(modid = "lotmcraft")
 public class UniquenessProximityHandler {
 
-    private static final int PROXIMITY_CHECK_INTERVAL = 600;
+    private static final int PROXIMITY_CHECK_INTERVAL = 60;
     private static final double PROXIMITY_RANGE = 500.0;
 
     private static final Map<String, Long> lastProximityMessageTime = new HashMap<>();
@@ -36,13 +39,32 @@ public class UniquenessProximityHandler {
         String playerPathway = BeyonderData.getPathway(player);
         int playerSeq = BeyonderData.getSequence(player);
 
-        if (playerSeq != 1) return;
+        if (playerSeq >= 2) return;
         if (playerPathway.isEmpty()) return;
 
-        if (!UniquenessEntity.existsInWorld(level, playerPathway)) return;
+        //if (!UniquenessEntity.existsInWorld(level, playerPathway)) return;
 
-        if (UniquenessEntity.ACTIVE_ENTITIES.containsKey(playerPathway)) {
-            int entityId = UniquenessEntity.ACTIVE_ENTITIES.get(playerPathway);
+        List<Characteristic> eligableChars = BeyonderData.getCharList(player).parallelStream().filter(c -> c.sequence() == 1).toList();
+        for (Characteristic i : eligableChars) {
+            playerPathway = i.pathway();
+            if (UniquenessEntity.ACTIVE_ENTITIES.containsKey(playerPathway)) {
+                int entityId = UniquenessEntity.ACTIVE_ENTITIES.get(playerPathway);
+                net.minecraft.world.entity.Entity uniquenessEntity = level.getEntity(entityId);
+
+                if (uniquenessEntity != null && !uniquenessEntity.isRemoved()) {
+                    Vec3 playerPos = player.position();
+                    Vec3 uniquenessPos = uniquenessEntity.position();
+                    double distance = playerPos.distanceTo(uniquenessPos);
+
+                    if (distance <= PROXIMITY_RANGE) {
+                        sendProximityMessage(player, distance);
+                    }
+                }
+            }
+        }
+        if (UniquenessEntity.ACTIVE_ENTITIES.containsKey("")) {
+            LOTMCraft.LOGGER.debug("Unequness exists");
+            int entityId = UniquenessEntity.ACTIVE_ENTITIES.get("");
             net.minecraft.world.entity.Entity uniquenessEntity = level.getEntity(entityId);
 
             if (uniquenessEntity != null && !uniquenessEntity.isRemoved()) {
@@ -50,11 +72,13 @@ public class UniquenessProximityHandler {
                 Vec3 uniquenessPos = uniquenessEntity.position();
                 double distance = playerPos.distanceTo(uniquenessPos);
 
-                if (distance <= PROXIMITY_RANGE) {
+                if (distance <= PROXIMITY_RANGE - 300) {
                     sendProximityMessage(player, distance);
                 }
             }
         }
+        LOTMCraft.LOGGER.debug("No unequness");
+        LOTMCraft.LOGGER.debug(UniquenessEntity.ACTIVE_ENTITIES);
     }
 
     private static void sendProximityMessage(ServerPlayer player, double distance) {

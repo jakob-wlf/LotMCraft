@@ -1,0 +1,19 @@
+﻿{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "lotmcraft:criminal"},
+    {"item": "lotmcraft:unwinged_angel"},
+    {"item": "lotmcraft:serial_killer"},
+    {"item": "lotmcraft:devil"},
+    {"item": "lotmcraft:desire_apostle"},
+    {"item": "lotmcraft:demon"},
+    {"item": "lotmcraft:blatherer"},
+    {"item": "lotmcraft:bloody_archduke"},
+    {"item": "lotmcraft:filthy_monarch"}
+  ],
+  "result": {
+    "id": "lotmcraft:abyss_blasphemy_card",
+    "count": 1
+  },
+  "category": "misc"
+}

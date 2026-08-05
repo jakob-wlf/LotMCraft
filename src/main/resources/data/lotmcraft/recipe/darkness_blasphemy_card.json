@@ -1,0 +1,19 @@
+﻿{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "lotmcraft:sleepless"},
+    {"item": "lotmcraft:midnight_poet"},
+    {"item": "lotmcraft:nightmare"},
+    {"item": "lotmcraft:soul_assurer"},
+    {"item": "lotmcraft:spirit_warlock"},
+    {"item": "lotmcraft:nightwatcher"},
+    {"item": "lotmcraft:horror_bishop"},
+    {"item": "lotmcraft:servant_of_concealment"},
+    {"item": "lotmcraft:knight_of_misfortune"}
+  ],
+  "result": {
+    "id": "lotmcraft:darkness_blasphemy_card",
+    "count": 1
+  },
+  "category": "misc"
+}

@@ -11,6 +11,8 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
 public class ApotheosisComponent implements INBTSerializable<CompoundTag> {
     private int apotheosisTicksLeft;
     private String pathway;
+    /** True when this apotheosis represents the GOO Transcendence ritual (not regular apotheosis). */
+    private boolean isTranscendence;
 
     public String getPathway() {
         return pathway;
@@ -37,12 +39,21 @@ public class ApotheosisComponent implements INBTSerializable<CompoundTag> {
         this.apotheosisTicksLeft = apotheosisTicksLeft;
     }
 
+    public boolean isTranscendence() {
+        return isTranscendence;
+    }
+
+    public void setTranscendence(boolean transcendence) {
+        this.isTranscendence = transcendence;
+    }
+
     @Override
     public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
 
         tag.putInt("apotheosisTicksLeft", apotheosisTicksLeft);
         tag.putString("pathway", pathway == null ? "" : pathway);
+        tag.putBoolean("isTranscendence", isTranscendence);
         return tag;
     }
 
@@ -50,5 +61,6 @@ public class ApotheosisComponent implements INBTSerializable<CompoundTag> {
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
         this.apotheosisTicksLeft = tag.getInt("apotheosisTicksLeft");
         this.pathway = tag.getString("pathway");
+        this.isTranscendence = tag.getBoolean("isTranscendence");
     }
 }

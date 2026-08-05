@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NDN",
+    "DBD",
+    "NDN"
+  ],
+  "key": {
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "B": {
+      "item": "lotmcraft:empty_bottle"
+    }
+  },
+  "result": {
+    "id": "lotmcraft:sealed_bottle",
+    "count": 1
+  }
+}

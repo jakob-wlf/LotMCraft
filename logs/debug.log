@@ -1,0 +1,50 @@
+[02Jun2026 18:28:52.863] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: found legacy key characteristicStack with tag class ListTag
+[02Jun2026 18:28:52.865] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: migrating ListTag of size 11 and elementType 10
+[02Jun2026 18:28:52.866] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: legacy entry 0 -> 0 (raw keys [index, value])
+[02Jun2026 18:28:52.866] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: wrote characteristicStack[0] = 0
+[02Jun2026 18:28:52.866] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: legacy entry 1 -> 0 (raw keys [index, value])
+[02Jun2026 18:28:52.866] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: wrote characteristicStack[1] = 0
+[02Jun2026 18:28:52.867] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: legacy entry 2 -> 5 (raw keys [index, value])
+[02Jun2026 18:28:52.867] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: wrote characteristicStack[2] = 5
+[02Jun2026 18:28:52.867] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: legacy entry 3 -> 0 (raw keys [index, value])
+[02Jun2026 18:28:52.867] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: wrote characteristicStack[3] = 0
+[02Jun2026 18:28:52.867] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: legacy entry 4 -> 5 (raw keys [index, value])
+[02Jun2026 18:28:52.867] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: wrote characteristicStack[4] = 5
+[02Jun2026 18:28:52.868] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: legacy entry 5 -> 0 (raw keys [index, value])
+[02Jun2026 18:28:52.868] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: wrote characteristicStack[5] = 0
+[02Jun2026 18:28:52.868] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: legacy entry 6 -> 0 (raw keys [index, value])
+[02Jun2026 18:28:52.868] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: wrote characteristicStack[6] = 0
+[02Jun2026 18:28:52.868] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: legacy entry 7 -> 0 (raw keys [index, value])
+[02Jun2026 18:28:52.868] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: wrote characteristicStack[7] = 0
+[02Jun2026 18:28:52.869] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: legacy entry 8 -> 0 (raw keys [index, value])
+[02Jun2026 18:28:52.869] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: wrote characteristicStack[8] = 0
+[02Jun2026 18:28:52.869] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: legacy entry 9 -> 0 (raw keys [index, value])
+[02Jun2026 18:28:52.869] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: wrote characteristicStack[9] = 0
+[02Jun2026 18:28:52.869] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: legacy entry 10 -> 0 (raw keys [index, value])
+[02Jun2026 18:28:52.869] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: legacy entry index 10 out of bounds
+[02Jun2026 18:28:52.869] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: migrated characteristicStack [0, 0, 5, 0, 5, 0, 0, 0, 0, 0]
+[02Jun2026 18:28:52.873] [main/INFO] [lotmcraft/]: Loading data for 
+[02Jun2026 18:28:52.876] [main/INFO] [lotmcraft/]: Loaded  0: 1 chars for 
+[02Jun2026 18:28:52.877] [main/INFO] [lotmcraft/]: MigrationTest[indexValueList]: component chars = [death 0: 1, death 1: 1, death 2: 6, death 3: 1, death 4: 6, death 5: 1, death 6: 1, death 7: 1, death 8: 1, death 9: 1]
+[02Jun2026 18:28:52.877] [main/INFO] [lotmcraft/]: MigrationTest[indexValueList]: stored chars    = [ 0: 1]
+[02Jun2026 18:28:52.877] [main/INFO] [lotmcraft/]: MigrationTest[indexValueList]: equal = false
+[02Jun2026 18:28:52.877] [main/INFO] [lotmcraft/]: Diff component: [death 0: 1, death 1: 1, death 2: 6, death 3: 1, death 4: 6, death 5: 1, death 6: 1, death 7: 1, death 8: 1, death 9: 1]
+[02Jun2026 18:28:52.877] [main/INFO] [lotmcraft/]: Diff stored   : [ 0: 1]
+[02Jun2026 18:28:52.878] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: found legacy key characteristicStack with tag class ListTag
+[02Jun2026 18:28:52.878] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: migrating ListTag of size 10 and elementType 3
+[02Jun2026 18:28:52.878] [main/INFO] [lotmcraft/]: Loading data for 
+[02Jun2026 18:28:52.878] [main/INFO] [lotmcraft/]: Loaded  0: 1 chars for 
+[02Jun2026 18:28:52.878] [main/INFO] [lotmcraft/]: MigrationTest[intList]: component chars = [death 3: 3]
+[02Jun2026 18:28:52.878] [main/INFO] [lotmcraft/]: MigrationTest[intList]: stored chars    = [ 0: 1]
+[02Jun2026 18:28:52.879] [main/INFO] [lotmcraft/]: MigrationTest[intList]: equal = false
+[02Jun2026 18:28:52.879] [main/INFO] [lotmcraft/]: Diff component: [death 3: 3]
+[02Jun2026 18:28:52.879] [main/INFO] [lotmcraft/]: Diff stored   : [ 0: 1]
+[02Jun2026 18:28:52.880] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: found legacy key characteristicStack with tag class IntArrayTag
+[02Jun2026 18:28:52.880] [main/INFO] [lotmcraft/]: BeyonderComponent.deserializeNBT: migrating IntArrayTag [0, 0, 0, 0, 0, 4, 0, 0, 0, 0]
+[02Jun2026 18:28:52.880] [main/INFO] [lotmcraft/]: Loading data for 
+[02Jun2026 18:28:52.880] [main/INFO] [lotmcraft/]: Loaded  0: 1 chars for 
+[02Jun2026 18:28:52.880] [main/INFO] [lotmcraft/]: MigrationTest[intArray]: component chars = [death 5: 5]
+[02Jun2026 18:28:52.880] [main/INFO] [lotmcraft/]: MigrationTest[intArray]: stored chars    = [ 0: 1]
+[02Jun2026 18:28:52.881] [main/INFO] [lotmcraft/]: MigrationTest[intArray]: equal = false
+[02Jun2026 18:28:52.881] [main/INFO] [lotmcraft/]: Diff component: [death 5: 5]
+[02Jun2026 18:28:52.881] [main/INFO] [lotmcraft/]: Diff stored   : [ 0: 1]

@@ -46,6 +46,10 @@ public class AbilityWheelEvents {
             serverPlayer.getServer().execute(() -> {
                 AbilityWheelHelper.syncToClient(serverPlayer);
                 CopiedAbilityHelper.syncToClient(serverPlayer);
+                // Re-apply death-imprint ability seals: the DisabledAbilitiesComponent is not
+                // copied on death, so seals must be re-applied after every respawn.
+                de.jakob.lotm.attachments.DeathImprintData.get(serverPlayer.getServer())
+                        .reapplySealedAbilities(serverPlayer);
             });
         }
     }

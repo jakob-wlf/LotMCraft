@@ -7,7 +7,6 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec3;
 
 public class MovableEffectFactory {
 
@@ -40,6 +39,8 @@ public class MovableEffectFactory {
             case 2 -> new FearAuraEffect(location, duration, infinite);
             case 3 -> new BeamsOfLightEffect(location, duration);
             case 4 -> new SpaceTearEffect(location, duration, infinite);
+            case 5 -> new SefirahSkyBeamEffect(location, duration, infinite);
+            case 6 -> new RiverSkyBeamEffect(location, duration, infinite);
             default -> throw new IllegalArgumentException("Unknown movable effect index: " + effectIndex);
         };
 

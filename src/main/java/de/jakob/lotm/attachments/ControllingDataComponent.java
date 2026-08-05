@@ -19,6 +19,7 @@ public class ControllingDataComponent {
     private UUID targetUUID = null;
     private CompoundTag targetEntity = null;
     private CompoundTag bodyEntity = null;
+    private boolean isMovementOnly = false;
 
     public ControllingDataComponent() {}
 
@@ -103,6 +104,14 @@ public class ControllingDataComponent {
         syncData(player);
     }
 
+    public boolean isMovementOnly() {
+        return isMovementOnly;
+    }
+
+    public void setMovementOnly(boolean movementOnly) {
+        isMovementOnly = movementOnly;
+    }
+
 
     public void syncData(ServerPlayer player) {
         if (player != null) {
@@ -124,6 +133,7 @@ public class ControllingDataComponent {
                     if (tag.hasUUID("targetUUID")) component.targetUUID = tag.getUUID("targetUUID");
                     if (tag.contains("targetEntity")) component.targetEntity = tag.getCompound("targetEntity");
                     if (tag.contains("bodyEntity")) component.bodyEntity = tag.getCompound("bodyEntity");
+                    component.isMovementOnly = tag.getBoolean("isMovementOnly");
                     return component;
                 }
 
@@ -138,6 +148,7 @@ public class ControllingDataComponent {
                     if (component.getTargetUUID() != null) tag.putUUID("targetUUID", component.getTargetUUID()); else tag.remove("targetUUID");
                     if (component.getTargetEntity() != null) tag.put("targetEntity", component.getTargetEntity()); else tag.remove("targetEntity");
                     if (component.getBodyEntity() != null) tag.put("bodyEntity", component.getBodyEntity()); else tag.remove("bodyEntity");
+                    tag.putBoolean("isMovementOnly", component.isMovementOnly);
                     return tag;
                 }
             };

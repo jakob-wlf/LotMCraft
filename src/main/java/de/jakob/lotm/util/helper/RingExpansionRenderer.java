@@ -15,8 +15,10 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Helper class for rendering expanding ring/hollow cylinder effects in the world
@@ -25,6 +27,7 @@ import java.util.List;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class RingExpansionRenderer {
     private static final List<RingEffect> activeEffects = new ArrayList<>();
+    private static final Map<String, RingEffect> keyedEffects = new HashMap<>();
 
     /**
      * Represents a single expanding ring/hollow cylinder effect
@@ -81,6 +84,10 @@ public class RingExpansionRenderer {
         public boolean tick() {
             currentTick++;
             return currentTick >= duration;
+        }
+
+        public void refresh() {
+            currentTick = Math.max(1, (int) Math.ceil(duration / expansionSpeed));
         }
 
         public float getCurrentRadius() {
@@ -168,6 +175,18 @@ public class RingExpansionRenderer {
      * Handle incoming ring effect packet from server (called by packet handler)
      */
     public static void handleRingEffectPacket(RingEffectPacket packet) {
+        if (!packet.effectKey().isEmpty()) {
+            if (packet.remove()) {
+                RingEffect removed = keyedEffects.remove(packet.effectKey());
+                activeEffects.remove(removed);
+                return;
+            }
+            RingEffect existing = keyedEffects.get(packet.effectKey());
+            if (existing != null) {
+                existing.refresh();
+                return;
+            }
+        }
         Vec3 center = new Vec3(packet.x(), packet.y(), packet.z());
         RingEffect effect = new RingEffect(
                 center, packet.maxRadius(), packet.duration(),
@@ -175,6 +194,10 @@ public class RingExpansionRenderer {
                 packet.ringThickness(), packet.ringHeight(),
                 packet.expansionSpeed(), packet.smoothExpansion(), true, packet.fadeOut()
         );
+        if (!packet.effectKey().isEmpty()) {
+            effect.refresh();
+            keyedEffects.put(packet.effectKey(), effect);
+        }
         activeEffects.add(effect);
     }
 
@@ -258,6 +281,7 @@ public class RingExpansionRenderer {
             RingEffect effect = iterator.next();
             if (effect.tick()) {
                 iterator.remove();
+                keyedEffects.values().removeIf(keyed -> keyed == effect);
             }
         }
     }
@@ -467,6 +491,7 @@ public class RingExpansionRenderer {
      */
     public static void clearAllEffects() {
         activeEffects.clear();
+        keyedEffects.clear();
     }
 
     /**

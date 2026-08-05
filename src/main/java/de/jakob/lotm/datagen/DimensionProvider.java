@@ -102,6 +102,40 @@ public class DimensionProvider {
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
                                                     .build());
 
+                                    bootstrap.register(ModDimensions.BROOD_HIVE_BIOME_KEY,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.5f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x808080)
+                                                            .fogColor(0x808080)
+                                                            .waterColor(0x3f76e4)
+                                                            .waterFogColor(0x050533)
+                                                            .grassColorOverride(0x79c05a)
+                                                            .foliageColorOverride(0x59ae30)
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
+                                    bootstrap.register(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_BIOME_KEY,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.2f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x000000)
+                                                            .fogColor(0x050505)
+                                                            .waterColor(0x000000)
+                                                            .waterFogColor(0x000000)
+                                                            .grassColorOverride(0x0a0a0a)
+                                                            .foliageColorOverride(0x0a0a0a)
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
                                     bootstrap.register(ModDimensions.CONCEALMENT_WORLD_BIOME_KEY,
                                             new Biome.BiomeBuilder()
                                                     .hasPrecipitation(false)
@@ -403,6 +437,14 @@ public class DimensionProvider {
                                             1.0f,
                                             new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
 
+                                    bootstrap.register(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_TYPE_KEY, new DimensionType(
+                                            OptionalLong.of(18000), false, false, false, false,
+                                            1.0, false, false, -64, 384, 384,
+                                            BlockTags.INFINIBURN_OVERWORLD,
+                                            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "river_of_eternal_darkness"),
+                                            0.2f,
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
+
                                     bootstrap.register(ModDimensions.SPIRIT_WORLD_TYPE_KEY, new DimensionType(
                                             OptionalLong.empty(), true, false, false, false,
                                             1.0, false, false, 0, 256, 256,
@@ -467,13 +509,6 @@ public class DimensionProvider {
                                                     dimensionTypes.getOrThrow(ModDimensions.SPIRIT_WORLD_TYPE_KEY),
                                                     new SpiritWorldChunkGenerator(spiritBiomeSource)));
 
-                                    bootstrap.register(ModDimensions.SEFIRAH_CASTLE_LEVEL_KEY,
-                                            new LevelStem(
-                                                    dimensionTypes.getOrThrow(ModDimensions.SEFIRAH_CASTLE_TYPE_KEY),
-                                                    new PreGeneratedChunkGenerator(
-                                                            new FixedBiomeSource(
-                                                                    biomeRegistry.getOrThrow(ModDimensions.SEFIRAH_CASTLE_BIOME_KEY)))));
-
                                     bootstrap.register(ModDimensions.SPACE_TIME_LABYRINTH_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.SPACE_TIME_LABYRINTH_TYPE_KEY),
@@ -487,6 +522,78 @@ public class DimensionProvider {
                                                     new ConcealmentWorldChunkGenerator(
                                                             new FixedBiomeSource(
                                                                     biomeRegistry.getOrThrow(ModDimensions.CONCEALMENT_WORLD_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.SEFIRAH_CASTLE_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.SEFIRAH_CASTLE_TYPE_KEY),
+                                                    new PreGeneratedChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.SEFIRAH_CASTLE_BIOME_KEY)),
+                                                            "data/lotmcraft/dimension_data/sefirah_castle/")));
+
+                                    bootstrap.register(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_TYPE_KEY),
+                                                    new PreGeneratedChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_BIOME_KEY)),
+                                                                    "data/lotmcraft/dimension_data/river_of_eternal_darkness/")));
+
+                                    bootstrap.register(ModDimensions.CHAOS_SEA_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.CHAOS_SEA_TYPE_KEY),
+                                                    new PreGeneratedChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.CHAOS_SEA_BIOME_KEY)),
+                                                            "data/lotmcraft/dimension_data/chaos_sea/")));
+
+                                    bootstrap.register(ModDimensions.BROOD_HIVE_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.BROOD_HIVE_TYPE_KEY),
+                                                    // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.BROOD_HIVE_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.CITY_OF_CALAMITY_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.CITY_OF_CALAMITY_TYPE_KEY),
+                                                    // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.CITY_OF_CALAMITY_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.NATION_OF_DISORDER_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.NATION_OF_DISORDER_TYPE_KEY),
+                                                    // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.NATION_OF_DISORDER_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.TENEBROUS_WORLD_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.TENEBROUS_WORLD_TYPE_KEY),
+                                                     // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.TENEBROUS_WORLD_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.KNOWLEDGE_MOOR_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.KNOWLEDGE_MOOR_TYPE_KEY),
+                                                    // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.KNOWLEDGE_MOOR_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.KEY_OF_LIGHT_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.KEY_OF_LIGHT_TYPE_KEY),
+                                                    // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.KEY_OF_LIGHT_BIOME_KEY)))));
                                 }),
                         Set.of(LOTMCraft.MOD_ID)
                 )

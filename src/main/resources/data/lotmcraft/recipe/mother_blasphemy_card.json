@@ -1,0 +1,19 @@
+﻿{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "lotmcraft:planter"},
+    {"item": "lotmcraft:doctor"},
+    {"item": "lotmcraft:harvest_priest"},
+    {"item": "lotmcraft:biologist"},
+    {"item": "lotmcraft:druid"},
+    {"item": "lotmcraft:classical_alchemist"},
+    {"item": "lotmcraft:pallbearer"},
+    {"item": "lotmcraft:desolate_matriarch"},
+    {"item": "lotmcraft:naturewalker"}
+  ],
+  "result": {
+    "id": "lotmcraft:mother_blasphemy_card",
+    "count": 1
+  },
+  "category": "misc"
+}

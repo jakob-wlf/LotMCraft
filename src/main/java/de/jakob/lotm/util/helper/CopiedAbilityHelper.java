@@ -30,20 +30,6 @@ public class CopiedAbilityHelper {
         syncToClient(player);
     }
 
-    public static boolean isAbilityCopied(LivingEntity entity, String abilityId) {
-        Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
-        if(ability == null || ability.hasAbility(entity)) return false;
-
-        if(!entity.level().isClientSide) {
-            CopiedAbilityComponent component = entity.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
-            if (component.getAbilityIds().contains(abilityId)) return true;
-        }
-        else {
-            List<String> copiedAbilities = ClientData.getCopiedAbilityIds();
-            if (copiedAbilities.contains(abilityId)) return true;
-        }
-        return false;
-    }
 
     public static void clearAbilities(ServerPlayer player) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);

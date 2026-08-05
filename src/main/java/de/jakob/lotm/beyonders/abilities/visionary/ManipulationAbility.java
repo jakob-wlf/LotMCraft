@@ -1,11 +1,11 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.custom.MarionetteControllerItem;
 import de.jakob.lotm.util.BeyonderData;

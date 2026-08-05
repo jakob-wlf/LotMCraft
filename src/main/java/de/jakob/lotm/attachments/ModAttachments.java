@@ -3,7 +3,6 @@ package de.jakob.lotm.attachments;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
-import com.mojang.serialization.Codec;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.bus.api.IEventBus;
@@ -105,6 +104,14 @@ public class ModAttachments {
             ATTACHMENT_TYPES.register("sanity_component", () ->
                     AttachmentType.builder(SanityComponent::new)
                             .serialize(SanityComponent.SERIALIZER)
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<CorruptionComponent>> CORRUPTION_COMPONENT =
+            ATTACHMENT_TYPES.register("corruption_component", () ->
+                    AttachmentType.builder(CorruptionComponent::new)
+                            .serialize(CorruptionComponent.SERIALIZER)
+                            .copyOnDeath()
                             .build()
             );
 
@@ -317,6 +324,46 @@ public class ModAttachments {
                     .copyOnDeath()
                     .build()
     );
+
+    public static final Supplier<AttachmentType<SefirotUnlockedAbilitiesComponent>> SEFIROT_UNLOCKED_ABILITIES =
+            ATTACHMENT_TYPES.register("sefirot_unlocked_abilities", () ->
+                    AttachmentType.serializable(SefirotUnlockedAbilitiesComponent::new)
+                            .copyOnDeath()
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<DailySpinComponent>> DAILY_SPIN_COMPONENT =
+            ATTACHMENT_TYPES.register("daily_spin_component", () ->
+                    AttachmentType.builder(DailySpinComponent::new)
+                            .serialize(DailySpinComponent.SERIALIZER)
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<CorruptedPlayerComponent>> CORRUPTED_PLAYER_COMPONENT =
+            ATTACHMENT_TYPES.register("corrupted_player_component", () ->
+                    AttachmentType.builder(CorruptedPlayerComponent::new)
+                            .serialize(CorruptedPlayerComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<AnchorComponent>> ANCHOR_COMPONENT =
+            ATTACHMENT_TYPES.register("anchor_component", () ->
+                    AttachmentType.builder(AnchorComponent::new)
+                            .serialize(AnchorComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<ActiveBlessingComponent>> ACTIVE_BLESSING_COMPONENT =
+            ATTACHMENT_TYPES.register("active_blessing_component", () ->
+                    AttachmentType.serializable(ActiveBlessingComponent::new).copyOnDeath().build()
+            );
+
+    public static final Supplier<AttachmentType<ReceivedBlessingComponent>> RECEIVED_BLESSING_COMPONENT =
+            ATTACHMENT_TYPES.register("received_blessing_component", () ->
+                    AttachmentType.serializable(ReceivedBlessingComponent::new).copyOnDeath().build()
+            );
 
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);

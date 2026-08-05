@@ -10,11 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class ToggleAbility extends Ability {
 
@@ -70,18 +66,7 @@ public abstract class ToggleAbility extends Ability {
 
     public void prepareTick(Level level, LivingEntity entity) {
         if(!level.isClientSide && shouldConsumeSpirituality(entity)) {
-            float cost = getSpiritualityCost();
-            if (level instanceof ServerLevel sl) {
-                var pdata = entity.getPersistentData();
-                if (pdata.contains(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY)) {
-                    if (pdata.getLong(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY) > sl.getGameTime()) {
-                        cost *= pdata.getFloat(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
-                    } else {
-                        pdata.remove(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
-                        pdata.remove(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY);
-                    }
-                }
-            }
+            float cost = getInflatedSpiritualityCost(entity, (ServerLevel) level);
             if(BeyonderData.getSpirituality(entity) <= cost) {
                 cancel((ServerLevel) level, entity);
                 return;

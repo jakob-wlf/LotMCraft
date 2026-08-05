@@ -2,9 +2,9 @@ package de.jakob.lotm.beyonders.abilities.darkness;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.sound.ModSounds;

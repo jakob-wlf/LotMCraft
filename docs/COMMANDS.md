@@ -75,7 +75,7 @@ Manage the characteristic stack for a Beyonder entity. The stack tracks how many
 
 | Subcommand | Description |
 |---|---|
-| `/characteristicstack set <target> <seq> <stack>` | Sets the characteristic stack count for the given sequence (1–9) on the target. |
+| `/characteristicstack set <target> <seq> <stack>` | Sets the characteristic stack count for the given sequence (0–9) on the target. |
 | `/characteristicstack delete <target> <seq>` | Zeroes the stack for a specific sequence. |
 | `/characteristicstack delete <target> all` | Clears all stack data for the target. |
 | `/characteristicstack delete <target> modifiers` | Removes all applied characteristic stack damage modifiers. |
@@ -107,9 +107,17 @@ Sets a player's kill count to the specified value. Kill count is used by the Red
 
 ---
 
-### `/luck <target>`
+### `/luck <player> [value]`
 
-Reads and displays the current Luck value of the target entity. Requires OP level 2.
+Reads or sets a player's current Luck. Requires OP level 2.
+
+- `/luck <player>` displays the current net Luck value.
+- `/luck <player> <value>` sets Luck to the requested value, clamped to the player's cap.
+- Wheel of Fortune players use their pathway's larger sequence capacity.
+- Other Beyonders use a separate lower cap: Seq 9 **100**, Seq 8 **125**, Seq 7 **150**, Seq 6 **200**, Seq 5 **250**, Seq 4 **400**, Seq 3 **600**, Seq 2 **900**, Seq 1 **1200**, and Seq 0 **2000**.
+- Non-Beyonders have a maximum positive Luck of **100**. All entities have a minimum Luck of **-10000**.
+
+See [LUCK_SYSTEM.md](LUCK_SYSTEM.md) for capacities, regeneration, resistance, timed effects, and developer APIs.
 
 ---
 
@@ -133,14 +141,18 @@ Sets the sanity of a living entity to the given value (0.0–1.0). Sanity affect
 
 ### `/sefirot`
 
-Manages Sefirah assignment. Only `sefirah_castle` and `empty` are currently implemented. Requires OP level 2.
+Manages Sefirot ownership, mental imprints, and convergence. Requires OP level 2. All nine Sefirot IDs are accepted for administration and dimension routing; survival accommodation rituals currently exist for `sefirah_castle`, `river_of_eternal_darkness`, `chaos_sea`, and `key_of_light`.
 
 | Subcommand | Description |
 |---|---|
 | `/sefirot check <sefirot>` | Looks up which player has claimed the given sefirot and prints their full Beyonder info. |
 | `/sefirot set <player> <sefirot>` | Assigns a sefirot to a player. Use `empty` to unclaim. One sefirot can only be held by one player at a time. If the player is offline, the assignment applies on next login. |
+| `/sefirot clear <sefirot>` | Clears all ownership state for the selected Sefirot. |
+| `/sefirot imprint check <sefirot>` | Shows the first owner, current holder, and mental imprint percentage. |
+| `/sefirot imprint set <sefirot> <0-100>` | Sets the mental imprint percentage directly. |
+| `/sefirot convergence` | Manually attempts convergence using a matching Sefirot piece held by the executor. |
 
-Claiming `sefirah_castle` allows that player to toggle between the overworld and the Sefirah Castle dimension at a fixed spawn point (x=24, y=−57, z=0) via the in-game UI.
+Owners use the U key to enter their Sefirot dimension and return to their saved location. Use `/locate structure key_of_light_temple` to locate the generated Key of Light temple. See [SEFIROT_SYSTEMS.md](SEFIROT_SYSTEMS.md) for rituals, authority scaling, dimensions, and Great Old One requirements.
 
 ---
 

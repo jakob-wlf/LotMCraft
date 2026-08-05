@@ -1,12 +1,14 @@
 package de.jakob.lotm.beyonders.abilities.error;
 
+import de.jakob.lotm.attachments.CorruptionComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -53,6 +55,7 @@ public class GiftAbility extends SelectableAbility {
     protected String[] getAbilityNames() {
         return new String[]{
                 "ability.lotmcraft.gift_ability.item",
+                "ability.lotmcraft.gift_ability.corruption",
                 "ability.lotmcraft.gift_ability.distance",
                 "ability.lotmcraft.gift_ability.health",
                 "ability.lotmcraft.gift_ability.digestion",
@@ -77,7 +80,7 @@ public class GiftAbility extends SelectableAbility {
             selectedAbility = 0;
         }
 
-        if((entitySeq > 5 && selectedAbility >= 1)
+        if((entitySeq > 5 && selectedAbility >= 2)
                 || (entitySeq > 1 && selectedAbility >= 3)){
             selectedAbility = 0;
         }
@@ -102,9 +105,9 @@ public class GiftAbility extends SelectableAbility {
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        if((entitySeq > 5 && selectedAbility >= 1)
+        if((entitySeq > 5 && selectedAbility >= 2)
                 || (entitySeq > 1 && selectedAbility >= 3)){
-            selectedAbility = 0;
+            selectedAbility = 1;
         }
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
@@ -115,11 +118,33 @@ public class GiftAbility extends SelectableAbility {
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
         switch(selectedAbility){
             case 0 -> giftItem(level, entity);
-            case 1 -> giftDistance(level, entity);
-            case 2 -> giftHealth(level, entity);
-            case 3 -> giftDigestion(level, entity);
-            case 4 -> giftLuck(level, entity);
+            case 1 -> giftCorruption(level, entity);
+            case 2 -> giftDistance(level, entity);
+            case 3 -> giftHealth(level, entity);
+            case 4 -> giftDigestion(level, entity);
+            case 5 -> giftDigestion(level, entity);
         }
+    }
+
+    private void giftCorruption(Level level, LivingEntity entity) {
+        if(!(entity instanceof ServerPlayer player)) {
+            if(entity instanceof Player player && entity.level().isClientSide) {
+                player.playSound(SoundEvents.BELL_RESONATE, 1, 1);
+            }
+            return;
+        }
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2, false, true);
+        CorruptionComponent targetComp = target.getData(ModAttachments.CORRUPTION_COMPONENT);
+        CorruptionComponent casterComp = entity.getData(ModAttachments.CORRUPTION_COMPONENT);
+
+        if(targetComp == null && casterComp == null && casterComp.getCorruption() !=0){
+            float transfer = Math.min( targetComp.getCorruption(), 10);
+            targetComp.increaseCorruptionAndSync(transfer, target);
+            casterComp.decreaseCorruptionAndSync(transfer, entity);
+        }
+
+
+
     }
 
     private void giftLuck(Level level, LivingEntity entity){
@@ -130,7 +155,7 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2, false, true);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.no_target").withColor(0x6d32a8));
             return;
@@ -147,18 +172,20 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        var luck = entity.getData(ModAttachments.LUCK_COMPONENT.get());
-        if(luck.getLuck() == 0){
+        if(LuckManager.getLuck(entity) == 0){
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.failed").withColor(0x6d32a8));
             return;
         }
 
         EffectManager.playEffect(EffectManager.Effect.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
 
-        var targetLuck = target.getData(ModAttachments.LUCK_COMPONENT.get());
-
-        targetLuck.setLuck(targetLuck.getLuck() + luck.getLuck());
-        luck.setLuck(0);
+        int giftedLuck = LuckManager.getLuck(entity);
+        if (giftedLuck < 0) {
+            LuckManager.resetLuck(entity);
+            LuckManager.applyLuckDrain(entity, target, "gift:" + entity.getUUID(), -giftedLuck, 20 * 60);
+        } else {
+            LuckManager.transferAllLuck(entity, target);
+        }
     }
 
     private void giftDigestion(Level level, LivingEntity entity){
@@ -169,7 +196,7 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int)(15 * (multiplier(entity) * multiplier(entity))), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int)(15 * (multiplier(entity) * multiplier(entity))), 2, false, true);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.no_target").withColor(0x6d32a8));
             return;
@@ -208,7 +235,7 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2, false, true);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.no_target").withColor(0x6d32a8));
             return;

@@ -20,27 +20,32 @@ public class IntrospectMenu extends AbstractContainerMenu {
     private String pathway;
     private float digestionProgress;
     private float sanity;
+    private float corruption;
+    private boolean sefirotOwner;
 
     // Client-side constructor
     public IntrospectMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buf) {
-        this(new ArrayList<>(List.of()), containerId, playerInventory, buf.readInt(), buf.readUtf(), 0.0f, 1.0f);
+        this(new ArrayList<>(List.of()), containerId, playerInventory, buf.readInt(), buf.readUtf(), 0.0f, 1.0f, 0.0f, buf.readBoolean());
     }
 
-    public void updateData(int sequence, String pathway, float digestionProgress, float sanity) {
+    public void updateData(int sequence, String pathway, float digestionProgress, float sanity, float corruption) {
         this.sequence = sequence;
         this.pathway = pathway;
         this.digestionProgress = digestionProgress;
         this.sanity = sanity;
+        this.corruption = corruption;
     }
 
     // Server-side constructor
-    public IntrospectMenu(List<ItemStack> passiveAbilities, int containerId, Inventory playerInventory, int sequence, String pathway, float digestionProgress, float sanity) {
+    public IntrospectMenu(List<ItemStack> passiveAbilities, int containerId, Inventory playerInventory, int sequence, String pathway, float digestionProgress, float sanity, float corruption, boolean sefirotOwner) {
         super(ModMenuTypes.INTROSPECT_MENU.get(), containerId);
 
         this.sequence = sequence;
         this.pathway = pathway;
         this.digestionProgress = digestionProgress;
         this.sanity = sanity;
+        this.corruption = corruption;
+        this.sefirotOwner = sefirotOwner;
         this.itemHandler = new ItemStackHandler(9) {
             @Override
             public boolean isItemValid(int slot, ItemStack stack) {
@@ -94,5 +99,13 @@ public class IntrospectMenu extends AbstractContainerMenu {
 
     public float getSanity() {
         return sanity;
+    }
+
+    public float getCorruption() {
+        return corruption;
+    }
+
+    public boolean isSefirotOwner() {
+        return sefirotOwner;
     }
 }
