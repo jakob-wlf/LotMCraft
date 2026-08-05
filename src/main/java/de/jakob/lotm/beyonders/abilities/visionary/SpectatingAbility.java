@@ -62,7 +62,7 @@ public class SpectatingAbility extends ToggleAbility {
         if(!(entity instanceof ServerPlayer player) || level.isClientSide)
             return;
 
-        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f, true, true);
+        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, baseDistance, 1.2f, true, true);
 
         int seq = AbilityUtil.getSeqWithArt(entity, this);
         if(lookedAt != null) {

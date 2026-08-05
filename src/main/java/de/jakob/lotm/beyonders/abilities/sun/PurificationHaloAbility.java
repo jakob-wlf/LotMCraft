@@ -13,6 +13,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class PurificationHaloAbility extends Ability {
@@ -20,6 +22,13 @@ public class PurificationHaloAbility extends Ability {
         super(id, 9, "purification", "light_weak");
         interactionRadius = 15;
 
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(5, 6, 7, 8, 8, 9));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 1300f, 830f, 550f, 550f, 475f));
+
+        baseDamage = 2f;
     }
 
     @Override
@@ -41,9 +50,8 @@ public class PurificationHaloAbility extends Ability {
 
         RingEffectManager.createRingForAll(entity.getEyePosition().subtract(0, .4, 0), 30, 20 * 20, 252 / 255f, 173 /255f, 3 / 255f, .85f, 1f, 2f, .24f, true, (ServerLevel) level);
         AtomicDouble radius = new AtomicDouble(.5);
-        double multiplier = multiplier(entity);
         ServerScheduler.scheduleForDuration(0, 2, 20 * 5, () -> {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius.get() - .25, radius.get() + .25, DamageLookup.lookupDamage(5, .8) * multiplier(entity), entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius.get() - .25, radius.get() + .25, baseDamage, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
             radius.addAndGet(.25f);
         });
     }

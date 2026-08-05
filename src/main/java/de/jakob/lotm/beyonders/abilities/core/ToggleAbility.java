@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.core;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncToggleAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -69,7 +70,8 @@ public abstract class ToggleAbility extends Ability {
 
     public void prepareTick(Level level, LivingEntity entity) {
         if(!level.isClientSide && shouldConsumeSpirituality(entity)) {
-            float cost = getSpiritualityCost();
+
+            float cost = spiritualityCost(AbilityUtil.getSeqWithArt(entity, this));
             if(BeyonderData.getSpirituality(entity) <= cost) {
                 cancel((ServerLevel) level, entity);
                 return;

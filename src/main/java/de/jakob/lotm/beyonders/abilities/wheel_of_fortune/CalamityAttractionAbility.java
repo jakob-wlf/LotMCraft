@@ -17,11 +17,21 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class CalamityAttractionAbility extends Ability {
     public CalamityAttractionAbility(String id) {
         super(id, 10);
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(10000f, 4700f, 3500f, 2500f, 2500f, 2000f, 2000f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(4, 5, 6, 7, 8, 9, 10));
+
+        baseDamage = 6f;
     }
 
     @Override
@@ -48,12 +58,11 @@ public class CalamityAttractionAbility extends Ability {
             player.connection.send(packet);
         }
 
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 14, 2, true);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 2, true);
 
-        double multiplier = multiplier(entity);
         ServerScheduler.scheduleDelayed(random.nextInt(31, 60), () -> {
             Calamity calamity = calamities[random.nextInt(calamities.length)];
-            calamity.spawnCalamity(serverLevel, targetPos, (float) multiplier, BeyonderData.isGriefingEnabled(entity));
+            calamity.spawnCalamity(serverLevel, targetPos, baseDamage, BeyonderData.isGriefingEnabled(entity));
         }, serverLevel);
     }
 }

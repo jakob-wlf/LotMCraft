@@ -36,7 +36,7 @@ public class DreamMazeAbility extends SelectableAbility {
     private static final int FLOOR_Y_OFFSET = 0;
     private static final int CEILING_Y_OFFSET = MAZE_HEIGHT + 1;
     private static final int DOOR_COUNT = 15;
-    private static final int SURROUNDING_RADIUS = 25;
+    private static final int SURROUNDING_RADIUS = 50;
 
     private static final Map<UUID, List<BlockPos>> DOOR_POSITIONS = new HashMap<>();
     private boolean[][] removedHorizWalls;

@@ -158,6 +158,15 @@ public class BeyonderData {
         pathwayInfos.put("placeholder", new PathwayInfos("placeholder", 0xFFfcd99f, new String[]{"", "", "", "", "", "", "", "", "", "",}, new String[]{}));
     }
 
+    public static boolean isEvilPathway(LivingEntity entity){
+        return isEvilPathway(BeyonderData.getPathway(entity));
+    }
+
+    public static boolean isEvilPathway(String path){
+        return path.equals("abyss") || path.equals("hanged_man") || path.equals("darkness")
+                || path.equals("death") || path.equals("demoness") || path.equals("chained");
+    }
+
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence) {
         setBeyonder(entity, pathway, sequence, false, false, true, false, true, true);
     }

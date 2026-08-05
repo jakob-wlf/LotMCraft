@@ -52,8 +52,8 @@ public class ManipulationAbility extends SelectableAbility {
     @Override
     protected String[] getAbilityNames() {
         return new String[]{
-                "ability.lotmcraft.manipulation.group_incite",
-                "ability.lotmcraft.manipulation.control"
+                "ability.lotmcraft.manipulation.group_incite"
+                //"ability.lotmcraft.manipulation.control"
         };
     }
 
@@ -86,7 +86,7 @@ public class ManipulationAbility extends SelectableAbility {
 
     public void groupIncite(Level level, LivingEntity entity) {
         if (level.isClientSide) {
-            LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20*multiplier(entity)), 2);
+            LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
             if(target == null) return;
             ParticleUtil.spawnSphereParticles((ClientLevel) level, ParticleTypes.SMOKE, target.getEyePosition(), 1, 30);
             ParticleUtil.spawnParticles((ClientLevel) level, dust,  target.getEyePosition(), 40, .5);
@@ -94,7 +94,7 @@ public class ManipulationAbility extends SelectableAbility {
         }
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 *multiplier(entity)), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if (target == null) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));

@@ -75,7 +75,7 @@ public class DisasterFantasiaAbility extends SelectableAbility {
         if (level.isClientSide) return;
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (150* multiplier(entity)), 3);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 3);
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
@@ -96,7 +96,7 @@ public class DisasterFantasiaAbility extends SelectableAbility {
 
     public void spawnEarthquake(ServerLevel level, Vec3 center, float multiplier,
                                 float damage, boolean griefing, @Nullable LivingEntity entity){
-        EARTHQUAKE.spawnCalamity(level, center, griefing, (int) (65* multiplier), damage/ 6, entity, false);
+        EARTHQUAKE.spawnCalamity(level, center, griefing, (int) (65* multiplier), damage/ 6, entity, false, true);
     }
 
     public void spawnMeteorShower(ServerLevel level, Vec3 center,
@@ -111,6 +111,7 @@ public class DisasterFantasiaAbility extends SelectableAbility {
                 Vec3 meteorPos = new Vec3(center.x + offsetX, center.y, center.z + offsetZ);
 
                 MeteorEntity meteor = new MeteorEntity(level, 2.5f,  damage/3, 3, entity, griefing, 13, 12);
+                meteor.setEnvisioned(true);
                 meteor.setPosition(meteorPos);
                 level.addFreshEntity(meteor);
             }, level, () -> AbilityUtil.getTimeInArea(null, new Location(center, level)));
@@ -122,14 +123,16 @@ public class DisasterFantasiaAbility extends SelectableAbility {
 
         Vec3 pos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 2);
 
-        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, baseDamage, entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, baseDamage, entity, target, 3);
+        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, baseDamage/10, entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, baseDamage/10, entity, target, 3);
         tornado.setPos(pos);
+        tornado.setEnvisioned(true);
         serverLevel.addFreshEntity(tornado);
 
         for(int i = 0; i < 30; i++) {
-            TornadoEntity additionalTornado = target == null || random.nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35)  * multiplier(entity), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35)  * multiplier(entity), entity, target, 2);
+            TornadoEntity additionalTornado = target == null || random.nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, baseDamage/10, entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, baseDamage/10, entity, target, 2);
             Vec3 randomOffset = new Vec3((serverLevel.random.nextDouble() - 0.5) * 120, 3, (serverLevel.random.nextDouble() - 0.5) * 120);
             additionalTornado.setPos(pos.add(randomOffset));
+            additionalTornado.setEnvisioned(true);
             serverLevel.addFreshEntity(additionalTornado);
         }
     }

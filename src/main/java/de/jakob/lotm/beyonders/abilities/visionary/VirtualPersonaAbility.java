@@ -126,7 +126,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         int seq = BeyonderData.getSequence(entity);
-        var target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.2f, true);
+        var target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.2f, true);
 
         if(target == null){
             var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
@@ -242,7 +242,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
             return;
         }
 
-        var target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.2f);
+        var target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.2f);
         if(target == null){
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed")
                     .withColor(0xFFff124d));

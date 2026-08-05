@@ -3,8 +3,10 @@
   "values": [
     "lotmcraft:soul_based",
     "lotmcraft:purification",
-    "lotmcraft:information",
-    "lotmcraft:awe",
-    "lotmcraft:plague"
+    "lotmcraft:information_destruction",
+    "lotmcraft:plague",
+    "lotmcraft:unluck",
+    "lotmcraft:spiritual",
+    "lotmcraft:order"
   ]
 }

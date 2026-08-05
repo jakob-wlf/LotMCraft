@@ -1,6 +1,5 @@
 package de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway;
 
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.tyrant.WaterMasteryAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -310,7 +309,7 @@ public class GiantLightningEntity extends Entity {
             float waterMultiplier = inWater ? 2.0f : 1.0f;
 
             entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.LIGHTNING, source), (float) damage * waterMultiplier / 2);
-            entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.INFORMATION, source), (float) damage / 2);
+            entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.INFORMATION_DESTRUCTION, source), (float) damage / 2);
 
 
             // Damage nearby entities as well

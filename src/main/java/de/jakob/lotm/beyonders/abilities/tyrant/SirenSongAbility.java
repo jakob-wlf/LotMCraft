@@ -8,7 +8,6 @@ import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -154,7 +153,7 @@ public class SirenSongAbility extends SelectableAbility {
             }
             else{
                 AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 25, ModDamageTypes.AWE, damage/2, entity.position(), true, false, true, 0);
-                AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 25, ModDamageTypes.INFORMATION, damage/2, entity.position(), true, false, true, 0);
+                AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 25, ModDamageTypes.INFORMATION_DESTRUCTION, damage/2, entity.position(), true, false, true, 0);
 
             }
             }, level);

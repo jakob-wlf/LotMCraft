@@ -1264,10 +1264,10 @@ public class AbilityUtil {
     }
 
     public static boolean isUndead(LivingEntity entity) {
-        return switch (BeyonderData.getPathway(entity)) {
-            case "death", "abyss", "chained", "hanged_man" -> true;
-            default -> entity.getType().is(EntityTypeTags.UNDEAD);
-        };
+        if(BeyonderData.isEvilPathway(entity))
+            return true;
+
+        return entity.getType().is(EntityTypeTags.UNDEAD);
     }
 
     public static void setArtifactScaling(LivingEntity entity, String path, int seq){

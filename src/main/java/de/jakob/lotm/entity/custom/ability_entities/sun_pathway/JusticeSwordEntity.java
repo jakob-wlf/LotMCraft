@@ -2,6 +2,7 @@ package de.jakob.lotm.entity.custom.ability_entities.sun_pathway;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -136,7 +137,9 @@ public class JusticeSwordEntity extends Entity {
             playHitAnimation();
 
             if(!level().isClientSide()) {
-                AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner((ServerLevel) level()), 3.75f, getDamage(), position(), true, false);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner((ServerLevel) level()), 3.75f, ModDamageTypes.ORDER, getDamage()/2, position(), true, false);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner((ServerLevel) level()), 3.75f, ModDamageTypes.LIGHT, getDamage()/2, position(), true, false);
+
                 postAbilityUsedEvent(position());
             }
         }

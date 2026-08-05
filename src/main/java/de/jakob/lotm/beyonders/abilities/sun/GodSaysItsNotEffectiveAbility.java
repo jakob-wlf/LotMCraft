@@ -15,12 +15,16 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class GodSaysItsNotEffectiveAbility extends Ability {
     public GodSaysItsNotEffectiveAbility(String id) {
         super(id, 20);
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 1100f, 670f, 420f, 410f, 270f, 240f));
     }
 
     @Override

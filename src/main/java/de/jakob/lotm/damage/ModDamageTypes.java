@@ -29,36 +29,51 @@ public class ModDamageTypes {
             Registries.DAMAGE_TYPE,
             ResourceLocation.fromNamespaceAndPath("lotmcraft", "soul")
     );
+    public static final TagKey<DamageType> HOLY = TagKey.create(
+            Registries.DAMAGE_TYPE,
+            ResourceLocation.fromNamespaceAndPath("lotmcraft", "holy")
+    );
+    public static final TagKey<DamageType> EVIL = TagKey.create(
+            Registries.DAMAGE_TYPE,
+            ResourceLocation.fromNamespaceAndPath("lotmcraft", "evil")
+    );
 
     public static final ResourceKey<DamageType> MIND_BASED = key("mind_based");
     public static final ResourceKey<DamageType> PHYSICAL_BASED = key("physical_based");
     public static final ResourceKey<DamageType> SOUL_BASED = key("soul_based");
-
+    public static final ResourceKey<DamageType> HOLY_BASED = key("holy_based");
+    public static final ResourceKey<DamageType> EVIL_BASED = key("evil_based");
 
     public static final ResourceKey<DamageType> LOOSING_CONTROL = key("loosing_control");
     ////fallback (remove when rework is finished or just ignore it)
     public static final ResourceKey<DamageType> BEYONDER_GENERIC = key("beyonder_generic");
 
     public static final ResourceKey<DamageType> PURIFICATION = key("purification");
+    public static final ResourceKey<DamageType> LIGHT = key("light");
+    public static final ResourceKey<DamageType> FAITH = key("faith");
+    public static final ResourceKey<DamageType> ORDER = key("order");
 
     public static final ResourceKey<DamageType> IMAGINATION = key("imagination"); //for illusions
     public static final ResourceKey<DamageType> AWE = key("awe");
 
     public static final ResourceKey<DamageType> LIGHTNING = key("lightning");
-    public static final ResourceKey<DamageType> INFORMATION = key("information");
+    public static final ResourceKey<DamageType> INFORMATION_DESTRUCTION = key("information_destruction");
     public static final ResourceKey<DamageType> WATER = key("water");
     public static final ResourceKey<DamageType> WIND = key("wind");
     public static final ResourceKey<DamageType> FIRE = key("fire");
     public static final ResourceKey<DamageType> IMPACT = key("impact");
-    public static final ResourceKey<DamageType> MATTER = key("matter");
+    public static final ResourceKey<DamageType> SPACE_DESTRUCTION = key("space_destruction");
 
     public static final ResourceKey<DamageType> PLAGUE = key("plague");
+
+    public static final ResourceKey<DamageType> UNLUCK = key("unluck");
+    public static final ResourceKey<DamageType> SPIRITUAL = key("spiritual");
 
     /** Used by ticking/AoE Sun abilities — treated as indirect for digestion drain purposes. */
     public static final ResourceKey<DamageType> PURIFICATION_INDIRECT = key("purification_indirect");
     public static final ResourceKey<DamageType> HUNTER_FIRE = key("hunter_fire");
     public static final ResourceKey<DamageType> SAILOR_LIGHTNING = key("sailor_lightning");
-    public static final ResourceKey<DamageType> UNLUCK = key("unluck");
+
     public static final ResourceKey<DamageType> MOTHER_GENERIC = key("mother_generic");
     public static final ResourceKey<DamageType> DOOR_SPACE = key("door_space");
     public static final ResourceKey<DamageType> DARKNESS_GENERIC = key("darkness_generic");
@@ -102,7 +117,7 @@ public class ModDamageTypes {
     public static boolean isModDamage(DamageSource source){
         return source.is(ModDamageTypes.MIND)
                 || source.is(ModDamageTypes.PHYSICAL)
-                ||source.is(ModDamageTypes.SOUL);
+                || source.is(ModDamageTypes.SOUL);
     }
 
     public static boolean isModDamage(Holder<DamageType> source){

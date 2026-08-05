@@ -75,6 +75,9 @@ public abstract class Ability {
 
     public float baseDamage = 0f;
 
+    protected boolean hasManualDistance = false;
+    protected int baseDistance = 0;
+
     public Ability(String id, float cooldown, String... interactionFlags) {
         this.id = id;
         this.cooldown = Math.round(cooldown * 20);
@@ -159,6 +162,9 @@ public abstract class Ability {
 
         final float damageBackup = baseDamage;
         baseDamage *= multiplier(newUser);
+
+        if(!hasManualDistance)
+            baseDistance = 10 * (int) ((1 << (9 - seq)) * multiplier(newUser));
 
         onAbilityUse(serverLevel, newUser);
 

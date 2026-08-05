@@ -14,6 +14,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class WingsOfLightAbility extends ToggleAbility {
@@ -21,6 +23,9 @@ public class WingsOfLightAbility extends ToggleAbility {
     public WingsOfLightAbility(String id) {
         super(id);
         canBeShared = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(40f, 35f, 30f, 25f, 20f, 15f, 10f, 5f));
     }
 
     @Override
@@ -54,18 +59,6 @@ public class WingsOfLightAbility extends ToggleAbility {
     @Override
     public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide) {
-            return;
-        }
-
-        BeyonderData.reduceSpirituality(entity, 80);
-
-        if (BeyonderData.getSpirituality(entity) <= 0) {
-            if (entity instanceof ServerPlayer player) {
-                player.connection.send(new ClientboundSetActionBarTextPacket(
-                        Component.literal("Your spirituality is exhausted.").withColor(0xFF422a2a)
-                ));
-            }
-            cancel((ServerLevel) level, entity);
             return;
         }
 

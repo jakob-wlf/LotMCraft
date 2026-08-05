@@ -44,6 +44,7 @@ public class MeteorEntity extends Entity {
     private int lifeTicks = 0;
     private int petrifiedTicks = 0;
     private int maxLifeTicks = 20 * 12;
+    protected boolean isEnvisioned = false;
 
     public MeteorEntity(EntityType<?> type, Level level) {
         super(type, level);
@@ -78,6 +79,8 @@ public class MeteorEntity extends Entity {
         builder.define(COLOR_B, 0.0f);
         builder.define(ABYSS_IMPACT, false);
     }
+
+    public void setEnvisioned(boolean value) {isEnvisioned = value;}
     
     public float getSpeed() {
         return this.entityData.get(SPEED);
@@ -202,8 +205,15 @@ public class MeteorEntity extends Entity {
         moveTo(position().add(direction.normalize().scale(getSpeed())));
 
         if(!level().getBlockState(BlockPos.containing(position())).isAir()) {
-            AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), ModDamageTypes.IMPACT, getDamage()/2, position(), true, false);
-            AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), ModDamageTypes.FIRE, getDamage()/2, position(), true, false);
+            if(!isEnvisioned) {
+                AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), ModDamageTypes.IMPACT, getDamage() / 2, position(), true, false);
+                AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), ModDamageTypes.FIRE, getDamage() / 2, position(), true, false);
+            }
+            else{
+                AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), ModDamageTypes.IMAGINATION, getDamage() / 2, position(), true, false);
+                AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), ModDamageTypes.IMPACT, getDamage() / 4, position(), true, false);
+                AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), ModDamageTypes.FIRE, getDamage() / 4, position(), true, false);
+            }
 
             EffectManager.playEffect(EffectManager.Effect.EXPLOSION, position().x, position().y, position().z, serverLevel);
             PerformantExplosion.create(serverLevel, getCaster(), position(), getExplosionSize() * 1.5f, isGriefing(), isGriefing() ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.KEEP);

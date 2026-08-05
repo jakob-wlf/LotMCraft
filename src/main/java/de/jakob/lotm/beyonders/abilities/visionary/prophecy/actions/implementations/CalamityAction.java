@@ -73,7 +73,7 @@ public class CalamityAction extends ActionBase {
 
         switch (stream.peek()){
             case "meteor", "meteors" -> ability.spawnMeteorShower(serverLevel,center, ability.baseDamage * mult, griefing, null);
-            case "tornado" -> createTornados(serverLevel, entity, ability.baseDamage * mult, center);
+            case "tornado" -> createTornados(serverLevel, entity, (ability.baseDamage * mult)/10, center);
             case "earthquake" -> ability.spawnEarthquake(serverLevel, center, mult, ability.baseDamage * mult, griefing, null);
             case "plague" -> createPlague(serverLevel, entity, mult, (ability.baseDamage * mult)/2);
         }
@@ -87,12 +87,14 @@ public class CalamityAction extends ActionBase {
     private void createTornados(ServerLevel serverLevel, LivingEntity entity, float multiplier, Vec3 pos) {
         TornadoEntity tornado =  new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35)  * (int)multiplier, null) ;
         tornado.setPos(pos);
+        tornado.setEnvisioned(true);
         serverLevel.addFreshEntity(tornado);
 
         for(int i = 0; i < 30; i++) {
             TornadoEntity additionalTornado = new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, 17f, null);
             Vec3 randomOffset = new Vec3((serverLevel.random.nextDouble() - 0.5) * 120, 3, (serverLevel.random.nextDouble() - 0.5) * 120);
             additionalTornado.setPos(pos.add(randomOffset));
+            additionalTornado.setEnvisioned(true);
             serverLevel.addFreshEntity(additionalTornado);
         }
     }

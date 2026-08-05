@@ -8,6 +8,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class WordsOfMisfortuneAbility extends Ability {
@@ -16,6 +18,11 @@ public class WordsOfMisfortuneAbility extends Ability {
 
         canBeUsedByNPC = false;
         canBeShared = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(20000f, 10000f, 7000f));
+
+        baseDamage = 2f;
     }
 
     @Override
@@ -42,7 +49,7 @@ public class WordsOfMisfortuneAbility extends Ability {
             return;
         }
 
-        MisfortuneWordsEntity wordsEntity = new MisfortuneWordsEntity(level, entity.position().add(0, 1, 0));
+        MisfortuneWordsEntity wordsEntity = new MisfortuneWordsEntity(level, entity.position().add(0, 1, 0), baseDamage);
         level.addFreshEntity(wordsEntity);
     }
 }
