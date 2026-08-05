@@ -12,7 +12,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
@@ -27,7 +26,7 @@ public class ReturnToEarthAbility extends Ability {
         serverLevel.playSound(null, entity.blockPosition(), SoundEvents.SOUL_ESCAPE, SoundSource.PLAYERS, 1f, 0.7f);
         ServerScheduler.scheduleForDuration(0, 4, 60, () -> {
             AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 22).forEach(target -> {
-                if (target.getMobType() != MobType.UNDEAD) return;
+                if (!target.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) return;
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SOUL_FIRE_FLAME, target.getEyePosition(), 8, 0.35, 0.6, 0.35, 0.03);
                 target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30, 4, false, false, false));
                 target.hurt(target.damageSources().magic(), (float) (4.5f * multiplier(entity)));

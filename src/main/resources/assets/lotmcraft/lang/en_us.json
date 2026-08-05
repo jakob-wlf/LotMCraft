@@ -688,7 +688,7 @@
   "lotmcraft.area_desolation_ability": "Area Desolation",
   "lotmcraft.area_desolation_ability.description": "Designate an area (200x200) that will become desolate and lifeless. Use the ability again in the same area to revert it back to normal",
   "lotmcraft.blooming_area_ability": "Blooming Area",
-  "lotmcraft.blooming_area_ability.description": "Designate an area (200x200) that will become lush and flourish greatly. Inside there wil be no hunger and other various effects. Use the ability again in the same area to revert it back to normal",
+  "lotmcraft.blooming_area_ability.description": "Designate an area (200x200) that will become lush and flourish greatly. Inside there will be no hunger and other various effects. Use the ability again in the same area to revert it back to normal",
   "lotmcraft.child_of_nature_ability": "Child of Nature",
   "lotmcraft.child_of_nature_ability.description": "Manifest a living domain or traverse through nature to a distant point",
   "ability.lotmcraft.child_of_nature.domain": "Living Domain",

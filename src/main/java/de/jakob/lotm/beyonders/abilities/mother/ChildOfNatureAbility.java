@@ -36,7 +36,7 @@ public class ChildOfNatureAbility extends SelectableAbility {
             ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SPORE_BLOSSOM_AIR, center.add(0, 2, 0), 24, 8, 2.5, 8, 0.01);
             AbilityUtil.getNearbyEntities(entity, serverLevel, center, 18).forEach(target -> {
                 if (target == entity) { target.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 40, 2, false, false, false)); target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 40, 1, false, false, false)); return; }
-                if (target.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) { target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.MOTHER_GENERIC, entity), (float) (5 * multiplier(entity))); target.invulnerableTime = 0; } else { target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30, 2, false, false, false)); }
+                if (target.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) { target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.MOTHER_GENERIC, entity), (float) (5 * multiplier(entity))); target.invulnerableTime = 0; } else if (!AbilityUtil.areAllied(entity, target)) { target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30, 2, false, false, false)); }
             });
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(center, serverLevel)));
     }
