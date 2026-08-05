@@ -10,8 +10,8 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 /**
  * Handles periodic recalculation of Sefirot Authority effects:
- *   – Cross-path ability grants
- *   – Passive divination / concealment immunity
+ *   - Cross-path ability grants
+ *   - Passive divination / concealment immunity
  *
  * Recalculates every 20 ticks per sefirot owner to catch sequence changes.
  * Also re-initialises on login so the in-memory state survives server restarts.
@@ -27,8 +27,8 @@ public class SefirotAuthorityEventHandler {
         if (player.tickCount % 20 != 0) return;
         if (!SefirahHandler.hasSefirot(player)) return;
         if (SefrotInvasionManager.isDefenderLocked(player)) {
-            SefirotAuthorityManager.SEFIROT_DIVINATION_IMMUNE.remove(player.getUUID());
-            SefirotAuthorityManager.RIVER_CONCEALMENT_ACTIVE.remove(player.getUUID());
+            SefirotAuthorityManager.sefirotDivinationImmune.remove(player.getUUID());
+            SefirotAuthorityManager.riverConcealmentActive.remove(player.getUUID());
             return;
         }
 
@@ -51,8 +51,8 @@ public class SefirotAuthorityEventHandler {
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        SefirotAuthorityManager.SEFIROT_DIVINATION_IMMUNE.remove(player.getUUID());
-        SefirotAuthorityManager.RIVER_CONCEALMENT_ACTIVE.remove(player.getUUID());
+        SefirotAuthorityManager.sefirotDivinationImmune.remove(player.getUUID());
+        SefirotAuthorityManager.riverConcealmentActive.remove(player.getUUID());
         // Note: grantedAbilities entries stay (they're per-UUID, will be refreshed on next login)
     }
 }

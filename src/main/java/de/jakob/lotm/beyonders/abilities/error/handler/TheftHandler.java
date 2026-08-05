@@ -3,11 +3,11 @@ package de.jakob.lotm.beyonders.abilities.error.handler;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import net.minecraft.network.chat.Component;
@@ -435,11 +435,8 @@ public class TheftHandler {
 
         int difference = targetSeq - userSeq;
 
-        LuckComponent userLuckComponent = user.getData(ModAttachments.LUCK_COMPONENT);
-        LuckComponent targetLuckComponent = target.getData(ModAttachments.LUCK_COMPONENT);
-
-        int userLuck = userLuckComponent.getLuck();
-        int targetLuck = targetLuckComponent.getLuck();
+        int userLuck = LuckManager.getLuck(user);
+        int targetLuck = LuckManager.getLuck(target);
 
         double luckMultiplier = (double) (userLuck - targetLuck) / (600 * 10);
 
@@ -544,11 +541,7 @@ public class TheftHandler {
             return;
         }
 
-        var luck = entity.getData(ModAttachments.LUCK_COMPONENT.get());
-        var targetLuck = target.getData(ModAttachments.LUCK_COMPONENT.get());
-
-        luck.setLuck(luck.getLuck() + targetLuck.getLuck());
-        targetLuck.setLuck(0);
+        LuckManager.transferAllLuck(target, entity);
     }
 
     public static double getDistancePerSeq(int seq){

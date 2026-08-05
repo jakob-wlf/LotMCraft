@@ -43,7 +43,15 @@ public class GreatOldOneCommand {
                                 .executes(context -> transform(
                                         context.getSource(),
                                         "eternal-darkness",
-                                        StringArgumentType.getString(context, "player")))))
+                                    StringArgumentType.getString(context, "player")))))
+                        .then(Commands.literal("key-of-light")
+                            .executes(context -> transform(context.getSource(), "key-of-light", null))
+                            .then(Commands.argument("player", StringArgumentType.string())
+                                .suggests(PLAYER_SUGGESTIONS)
+                                .executes(context -> transform(
+                                    context.getSource(),
+                                    "key-of-light",
+                                    StringArgumentType.getString(context, "player")))))
         );
     }
 
@@ -74,7 +82,11 @@ public class GreatOldOneCommand {
         }
 
         GreatOldOneManager.transformAs(player, gooType);
-        String label = gooType.equalsIgnoreCase("eternal-darkness") ? "Eternal Darkness" : "Lord of Mysteries";
+        String label = switch (gooType.toLowerCase(java.util.Locale.ROOT)) {
+            case "eternal-darkness" -> "Eternal Darkness";
+            case "key-of-light" -> "Key of Light";
+            default -> "Lord of Mysteries";
+        };
         source.sendSuccess(() -> Component.literal(
                 "§d" + player.getGameProfile().getName() + " has been transformed into " + label + "."), true);
         return 1;

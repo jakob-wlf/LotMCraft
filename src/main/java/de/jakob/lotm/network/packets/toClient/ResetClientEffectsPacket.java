@@ -34,6 +34,7 @@ public record ResetClientEffectsPacket() implements CustomPacketPayload {
             DecryptionOverlayRenderer.clearCache();
             EyeOfDeathOverlayRenderer.clearCache();
             MarionetteOverlayRenderer.clearCache();
+            LuckPerceptionOverlayRenderer.clearCache();
             SpectatingOverlayRenderer.clearCache();
             SpiritVisionOverlayRenderer.clearCache();
             TelepathyOverlayRenderer.clearCache();

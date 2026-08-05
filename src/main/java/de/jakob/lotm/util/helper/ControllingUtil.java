@@ -12,6 +12,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncOriginalBodyOwnerPacket;
 import de.jakob.lotm.network.packets.toClient.UpdateAbilityBarPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
@@ -419,7 +420,7 @@ public class ControllingUtil {
                 float sourceDigestion = source instanceof Player sp
                         ? BeyonderData.getDigestionProgress(sp)
                         : source.getData(ModAttachments.BEYONDER_COMPONENT).getDigestionProgress();
-                int sourceLuck = source.getData(ModAttachments.LUCK_COMPONENT).getLuck();
+                int sourceLuck = LuckManager.getLuck(source);
 
             // This is a data copy between bodies, not a real advancement — it must not
             // trigger the acting cap (e.g. restoring the player after controlling a non-beyonder
@@ -435,7 +436,7 @@ public class ControllingUtil {
                 // Restore spirituality, digestion, and luck that setBeyonder wiped
                 BeyonderData.setSpirituality(target, sourceSpirituality);
                 target.getData(ModAttachments.BEYONDER_COMPONENT).setDigestionProgress(sourceDigestion);
-                target.getData(ModAttachments.LUCK_COMPONENT).setLuck(sourceLuck);
+                LuckManager.setLuck(target, sourceLuck);
 
                 if (target instanceof Player targetPlayer) {
                     BeyonderData.setGriefingEnabled(targetPlayer, BeyonderData.isGriefingEnabled(source instanceof Player sp ? sp : targetPlayer));

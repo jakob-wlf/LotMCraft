@@ -165,7 +165,7 @@ public class CharacteristicsStackCommand {
                                     }
 
                                     for(int i = 9; i >= BeyonderData.getSequence(livingEntity); i--) {
-                                        BeyonderData.removeModifier(livingEntity, BeyonderData.CHAR_STACK_BOOST_ID + "_" + i);
+                                        BeyonderData.removeModifier(livingEntity, BeyonderData.charStackBoostId + "_" + i);
                                     }
 
                                     return 1;

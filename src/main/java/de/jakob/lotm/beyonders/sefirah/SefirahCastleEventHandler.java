@@ -39,11 +39,11 @@ import java.util.*;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class SefirahCastleEventHandler {
 
-    private static final String SEFIROT_ID = "sefirah_castle";
-    private static final int REQUIRED_TICKS = 20 * 60 * 5;
-    private static final int COMMAND_PERMISSION_LEVEL = 2;
+    private static final String sefirotId = "sefirah_castle";
+    private static final int requiredTicks = 20 * 60 * 5;
+    private static final int commandPermissionLevel = 2;
 
-    private static final Set<String> ALLOWED_PATHWAYS = Set.of("fool", "door", "error");
+    private static final Set<String> allowedPathways = Set.of("fool", "door", "error");
 
     private static final Map<UUID, Integer> ritualTicks = new HashMap<>();
     private static final Map<UUID, UUID> ritualTabletIds = new HashMap<>();
@@ -122,7 +122,7 @@ public class SefirahCastleEventHandler {
         if (!(source.getEntity() instanceof ServerPlayer player)) {
             return;
         }
-        if (player.hasPermissions(COMMAND_PERMISSION_LEVEL)) {
+        if (player.hasPermissions(commandPermissionLevel)) {
             return;
         }
         if (!isAccommodating(player)) {
@@ -198,9 +198,9 @@ public class SefirahCastleEventHandler {
         }
 
         // Disable ability use
-        if (!(entity instanceof ServerPlayer player) || !SefirahHandler.getClaimedSefirot(player).equalsIgnoreCase(SEFIROT_ID)) {
+        if (!(entity instanceof ServerPlayer player) || !SefirahHandler.getClaimedSefirot(player).equalsIgnoreCase(sefirotId)) {
             DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-            component.disableAbilityUsageForTime(SEFIROT_ID, 20 * 20, entity);
+            component.disableAbilityUsageForTime(sefirotId, 20 * 20, entity);
         }
     }
 
@@ -228,7 +228,7 @@ public class SefirahCastleEventHandler {
             // Immediately cancel it on the accommodating player's own client
             MovableEffectManager.removeEffect(beamId, player);
         }
-        PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(0, REQUIRED_TICKS));
+        PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(0, requiredTicks));
     }
 
     private static void tickRitual(ServerPlayer player, ServerLevel serverLevel) {
@@ -250,20 +250,20 @@ public class SefirahCastleEventHandler {
 
         applyAccommodationEffects(player, serverLevel);
 
-        PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(ticks, REQUIRED_TICKS));
+        PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(ticks, requiredTicks));
 
-        if (ticks < REQUIRED_TICKS) {
+        if (ticks < requiredTicks) {
             return;
         }
 
-        // Remove the beam BEFORE teleporting — after teleport player.level() changes dimension,
+        // Remove the beam BEFORE teleporting - after teleport player.level() changes dimension,
         // so the RemoveMovableEffect packet would be sent to the wrong set of players.
         UUID finishBeamId = ritualBeamEffectIds.remove(playerId);
         if (finishBeamId != null) {
             MovableEffectManager.removeEffect(finishBeamId, serverLevel);
         }
 
-        boolean claimed = SefirahHandler.claimSefirot(player, SEFIROT_ID, true);
+        boolean claimed = SefirahHandler.claimSefirot(player, sefirotId, true);
         if (claimed) {
             player.sendSystemMessage(Component.translatable("lotm.sefirot.sefirah_castle_claimed"));
             SefirahHandler.teleportToSefirot(player, true);
@@ -306,7 +306,7 @@ public class SefirahCastleEventHandler {
             return false;
         }
 
-        if (SefirotData.get(player.server).isSefirotClaimed(SEFIROT_ID)) {
+        if (SefirotData.get(player.server).isSefirotClaimed(sefirotId)) {
             return false;
         }
 
@@ -315,7 +315,7 @@ public class SefirahCastleEventHandler {
         }
 
         String pathway = BeyonderData.getPathway(player);
-        return ALLOWED_PATHWAYS.contains(pathway);
+        return allowedPathways.contains(pathway);
     }
 
     private static boolean canContinueRitual(ServerPlayer player) {
@@ -330,7 +330,7 @@ public class SefirahCastleEventHandler {
             return Component.translatable("lotm.sefirot.wrong_pathway");
         }
 
-        if (SefirotData.get(player.server).isSefirotClaimed(SEFIROT_ID)) {
+        if (SefirotData.get(player.server).isSefirotClaimed(sefirotId)) {
             return Component.translatable("lotm.sefirot.sefirah_castle_already_occupied");
         }
 
@@ -339,7 +339,7 @@ public class SefirahCastleEventHandler {
         }
 
         String pathway = BeyonderData.getPathway(player);
-        if (!ALLOWED_PATHWAYS.contains(pathway)) {
+        if (!allowedPathways.contains(pathway)) {
             return Component.translatable("lotm.sefirot.wrong_pathway");
         }
 

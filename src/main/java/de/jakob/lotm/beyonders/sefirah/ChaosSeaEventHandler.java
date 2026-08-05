@@ -43,14 +43,14 @@ import java.util.*;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ChaosSeaEventHandler {
 
-    private static final String SEFIROT_ID    = "chaos_sea";
-    private static final int    REQUIRED_TICKS = 20 * 60 * 5;
+    private static final String sefirotId    = "chaos_sea";
+    private static final int    requiredTicks = 20 * 60 * 5;
 
-    private static final Set<String> ALLOWED_PATHWAYS = Set.of(
+    private static final Set<String> allowedPathways = Set.of(
             "tyrant", "sun", "visionary", "white_tower", "hanged_man");
 
     /** Pathways whose colours are used for the particle cloud. */
-    private static final String[] PARTICLE_PATHWAYS = {"sun", "tyrant", "visionary"};
+    private static final String[] particlePathways = {"sun", "tyrant", "visionary"};
 
     private static final Map<UUID, Integer> ritualTicks         = new HashMap<>();
     private static final Map<UUID, UUID>    ritualSlateIds      = new HashMap<>();
@@ -85,13 +85,13 @@ public class ChaosSeaEventHandler {
         if (!target.equals(ModDimensions.CHAOS_SEA_DIMENSION_KEY)) return;
 
         // The owner may always enter their own dimension
-        if (SEFIROT_ID.equals(SefirahHandler.getClaimedSefirot(player))) return;
+        if (sefirotId.equals(SefirahHandler.getClaimedSefirot(player))) return;
 
         // An active invader may enter only the Sefrot targeted by their invasion
         if (SefrotInvasionManager.isAuthorizedInvasionEntry(player, target)) return;
 
         // Gathering members (blessed by the owner) may freely enter and exit
-        UUID ownerUUID = SefirotData.get(player.server).getHolderOf(SEFIROT_ID);
+        UUID ownerUUID = SefirotData.get(player.server).getHolderOf(sefirotId);
         if (ownerUUID != null && GatheringData.get(player.server).isMember(ownerUUID, player.getUUID())) return;
 
         // Nobody else — including players coming from the Nature dimension — may enter
@@ -205,7 +205,7 @@ public class ChaosSeaEventHandler {
             MovableEffectManager.removeEffect(beamId, player);
         }
 
-        PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(0, REQUIRED_TICKS));
+        PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(0, requiredTicks));
     }
 
     private static void tickRitual(ServerPlayer player, ServerLevel serverLevel) {
@@ -229,9 +229,9 @@ public class ChaosSeaEventHandler {
 
         applyAccommodationEffects(player, serverLevel);
 
-        PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(ticks, REQUIRED_TICKS));
+        PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(ticks, requiredTicks));
 
-        if (ticks < REQUIRED_TICKS) return;
+        if (ticks < requiredTicks) return;
 
         // Finish — claim sefirah
         UUID finishBeamId = ritualBeamEffectIds.remove(playerId);
@@ -239,7 +239,7 @@ public class ChaosSeaEventHandler {
             MovableEffectManager.removeEffect(finishBeamId, serverLevel);
         }
 
-        boolean claimed = SefirahHandler.claimSefirot(player, SEFIROT_ID, true);
+        boolean claimed = SefirahHandler.claimSefirot(player, sefirotId, true);
         if (claimed) {
             player.sendSystemMessage(Component.literal(
                     "The Chaos Sea has accepted you. Its endless disorder flows through your veins.")
@@ -258,7 +258,7 @@ public class ChaosSeaEventHandler {
     private static void applyAccommodationEffects(ServerPlayer player, ServerLevel serverLevel) {
         Vec3 center = player.position().add(0, player.getEyeHeight() * 0.5, 0);
 
-        for (String pathway : PARTICLE_PATHWAYS) {
+        for (String pathway : particlePathways) {
             DustParticleOptions dust = dustForPathway(pathway);
             ParticleUtil.spawnParticles(serverLevel, dust, center, 150, 2.5, 2.5, 2.5, 0.05);
             ParticleUtil.spawnParticles(serverLevel, dust, center,  80, 0.6, 0.6, 0.6, 0.02);
@@ -276,9 +276,9 @@ public class ChaosSeaEventHandler {
 
     private static boolean canStartRitual(ServerPlayer player) {
         if (!BeyonderData.isBeyonder(player)) return false;
-        if (SefirotData.get(player.server).isSefirotClaimed(SEFIROT_ID)) return false;
+        if (SefirotData.get(player.server).isSefirotClaimed(sefirotId)) return false;
         if (SefirahHandler.hasSefirot(player)) return false;
-        return ALLOWED_PATHWAYS.contains(BeyonderData.getPathway(player));
+        return allowedPathways.contains(BeyonderData.getPathway(player));
     }
 
     private static boolean canContinueRitual(ServerPlayer player) {
@@ -288,11 +288,11 @@ public class ChaosSeaEventHandler {
     private static Component getFailureMessage(ServerPlayer player) {
         if (!BeyonderData.isBeyonder(player))
             return Component.literal("You are not a beyonder.").withStyle(net.minecraft.ChatFormatting.RED);
-        if (SefirotData.get(player.server).isSefirotClaimed(SEFIROT_ID))
+        if (SefirotData.get(player.server).isSefirotClaimed(sefirotId))
             return Component.literal("The Chaos Sea is already claimed.").withStyle(net.minecraft.ChatFormatting.RED);
         if (SefirahHandler.hasSefirot(player))
             return Component.translatable("lotm.sefirot.already_has_sefirot");
-        if (!ALLOWED_PATHWAYS.contains(BeyonderData.getPathway(player)))
+        if (!allowedPathways.contains(BeyonderData.getPathway(player)))
             return Component.translatable("lotm.sefirot.wrong_pathway");
         return null;
     }

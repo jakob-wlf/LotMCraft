@@ -13,8 +13,9 @@ public class Tornado extends Calamity{
     }
 
     @Override
-    public void spawnCalamity(ServerLevel level, Vec3 position, float multiplier, boolean griefing) {
-        TornadoEntity tornado = new TornadoEntity(ModEntities.TORNADO.get(), level, .4f, 16 * multiplier, null);
+    protected void spawnScaledCalamity(ServerLevel level, Vec3 position, float damageMultiplier, boolean griefing, float rangeScale) {
+        TornadoEntity tornado = new TornadoEntity(
+                ModEntities.TORNADO.get(), level, .4f, 16 * damageMultiplier, null, null, rangeScale);
         tornado.setPos(position);
         level.addFreshEntity(tornado);
     }

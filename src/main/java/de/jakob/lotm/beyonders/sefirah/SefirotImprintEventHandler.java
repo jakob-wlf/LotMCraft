@@ -38,9 +38,9 @@ import java.util.UUID;
 public class SefirotImprintEventHandler {
 
     /** How many game-seconds constitute one "imprint hour". 3600 seconds = 1 hour at 20 TPS. */
-    private static final long SECONDS_PER_IMPRINT_HOUR = 3600L;
+    private static final long secondsPerImprintHour = 3600L;
 
-    // ── Per-entity tick (every 20 game-ticks = 1 game-second) ────────────────
+    // -- Per-entity tick (every 20 game-ticks = 1 game-second) ----------------
 
     @SubscribeEvent
     public static void onEntityTick(EntityTickEvent.Post event) {
@@ -105,7 +105,7 @@ public class SefirotImprintEventHandler {
         }
     }
 
-    // ── Player death → reclaim ────────────────────────────────────────────────
+    // -- Player death -> reclaim ------------------------------------------------
 
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event) {
@@ -121,11 +121,11 @@ public class SefirotImprintEventHandler {
         if (player.getUUID().equals(firstOwner)) return; // original owner dying doesn't trigger reclaim
         if (data.getMentalImprint(sefirot) <= 0) return;
 
-        // Non-original owner died while holding an imprinted sefirot → attempt reclaim
+        // Non-original owner died while holding an imprinted sefirot -> attempt reclaim
         tryReclaimForOriginalOwner(sefirot, firstOwner, player, player.server);
     }
 
-    // ── Player login → process pending reclaims ───────────────────────────────
+    // -- Player login -> process pending reclaims -------------------------------
 
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
@@ -179,7 +179,7 @@ public class SefirotImprintEventHandler {
         }
     }
 
-    // ── Internal helpers ──────────────────────────────────────────────────────
+    // -- Internal helpers ------------------------------------------------------
 
     /**
      * Unclaims the sefirot from {@code currentOwner} and attempts to return it to
@@ -219,7 +219,7 @@ public class SefirotImprintEventHandler {
         corruptComp.increaseCorruptionAndSync(burst, player);
 
         player.sendSystemMessage(Component.literal(
-                "The Sefirot's original owner still lingers in this realm — you feel their will crushing yours!")
+                "The Sefirot's original owner still lingers in this realm - you feel their will crushing yours!")
                 .withStyle(ChatFormatting.DARK_RED));
     }
 }

@@ -44,16 +44,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public final class SefrotInvasionManager {
-    private static final String WHEEL_MIGRATION_TAG = "lotm_sefrot_invasion_wheel_migrated";
-    private static final String AUTHORITY_SEAL_CAUSE = "sefrot_invasion";
-    private static final long INVASION_WINDOW_TICKS = 15L * 20L;
-    private static final double INVASION_RANGE_SQUARED = 30.0 * 30.0;
-    private static final int MIN_TELEPORT_DISTANCE = 16;
-    private static final int MAX_TELEPORT_DISTANCE = 64;
-    private static final int TELEPORT_ATTEMPTS = 64;
+    private static final String wheelMigrationTag = "lotm_sefrot_invasion_wheel_migrated";
+    private static final String authoritySealCause = "sefrot_invasion";
+    private static final long invasionWindowTicks = 15L * 20L;
+    private static final double invasionRangeSquared = 30.0 * 30.0;
+    private static final int minTeleportDistance = 16;
+    private static final int maxTeleportDistance = 64;
+    private static final int teleportAttempts = 64;
 
-    private static final Map<UUID, EntryOpportunity> ENTRY_OPPORTUNITIES = new ConcurrentHashMap<>();
-    private static final Map<UUID, Invasion> ACTIVE_INVASIONS = new ConcurrentHashMap<>();
+    private static final Map<UUID, EntryOpportunity> entryOpportunities = new ConcurrentHashMap<>();
+    private static final Map<UUID, Invasion> activeInvasions = new ConcurrentHashMap<>();
 
     private SefrotInvasionManager() {
     }
@@ -63,22 +63,22 @@ public final class SefrotInvasionManager {
         ServerLocation origin = SefirotData.get(owner.server).getReturnLocationForPlayer(owner);
         if (sefirot.isEmpty() || origin == null) return;
 
-        ENTRY_OPPORTUNITIES.put(owner.getUUID(), new EntryOpportunity(
+        entryOpportunities.put(owner.getUUID(), new EntryOpportunity(
                 owner.getUUID(), sefirot, origin.getLevel().dimension(), origin.getPosition(),
-                owner.serverLevel().getGameTime() + INVASION_WINDOW_TICKS));
+                owner.serverLevel().getGameTime() + invasionWindowTicks));
     }
 
     public static void tryInvade(ServerPlayer invader) {
         if (!BeyonderData.isBeyonder(invader) || BeyonderData.getSequence(invader) > 9) return;
-        if (ACTIVE_INVASIONS.containsKey(invader.getUUID())) {
+        if (activeInvasions.containsKey(invader.getUUID())) {
             notify(invader, "You are already part of a Sefrot invasion.");
             return;
         }
 
         long now = invader.serverLevel().getGameTime();
-        ENTRY_OPPORTUNITIES.entrySet().removeIf(entry -> entry.getValue().expiresAt() < now);
+        entryOpportunities.entrySet().removeIf(entry -> entry.getValue().expiresAt() < now);
 
-        EntryOpportunity opportunity = ENTRY_OPPORTUNITIES.values().stream()
+        EntryOpportunity opportunity = entryOpportunities.values().stream()
                 .filter(entry -> canInvade(invader, entry, now))
                 .min(Comparator.comparingDouble(entry -> entry.origin().distanceToSqr(invader.position())))
                 .orElse(null);
@@ -102,9 +102,9 @@ public final class SefrotInvasionManager {
         }
 
         Invasion invasion = new Invasion(defender.getUUID(), invader.getUUID(), opportunity.sefirot(), sefirotDimension);
-        ACTIVE_INVASIONS.put(defender.getUUID(), invasion);
-        ACTIVE_INVASIONS.put(invader.getUUID(), invasion);
-        ENTRY_OPPORTUNITIES.remove(defender.getUUID());
+        activeInvasions.put(defender.getUUID(), invasion);
+        activeInvasions.put(invader.getUUID(), invasion);
+        entryOpportunities.remove(defender.getUUID());
 
         SefirotData data = SefirotData.get(invader.server);
         data.setLastReturnLocation(invader);
@@ -119,22 +119,22 @@ public final class SefrotInvasionManager {
     }
 
     public static boolean isDefenderLocked(ServerPlayer player) {
-        Invasion invasion = ACTIVE_INVASIONS.get(player.getUUID());
+        Invasion invasion = activeInvasions.get(player.getUUID());
         return invasion != null && invasion.defenderId().equals(player.getUUID());
     }
 
     public static boolean isActiveParticipant(UUID playerId) {
-        return ACTIVE_INVASIONS.containsKey(playerId);
+        return activeInvasions.containsKey(playerId);
     }
 
     /** Include this check in new Sefrot dimension entry guards alongside their normal authorization rules. */
     public static boolean isAuthorizedInvasionEntry(ServerPlayer player, ResourceKey<Level> targetDimension) {
-        Invasion invasion = ACTIVE_INVASIONS.get(player.getUUID());
+        Invasion invasion = activeInvasions.get(player.getUUID());
         return invasion != null && invasion.dimension().equals(targetDimension);
     }
 
     public static boolean forfeitForResurrection(ServerPlayer player) {
-        Invasion invasion = ACTIVE_INVASIONS.get(player.getUUID());
+        Invasion invasion = activeInvasions.get(player.getUUID());
         if (invasion == null) return false;
 
         ServerLocation returnLocation = SefirotData.get(player.server).getReturnLocationForPlayer(player);
@@ -166,9 +166,9 @@ public final class SefrotInvasionManager {
     public static void onPlayerTick(EntityTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player) || player.tickCount % 20 != 0) return;
 
-        if (!player.getPersistentData().getBoolean(WHEEL_MIGRATION_TAG)) {
+        if (!player.getPersistentData().getBoolean(wheelMigrationTag)) {
             SefirahHandler.removeSefrotInvasionAbility(player);
-            player.getPersistentData().putBoolean(WHEEL_MIGRATION_TAG, true);
+            player.getPersistentData().putBoolean(wheelMigrationTag, true);
         }
 
         boolean eligible = BeyonderData.isBeyonder(player)
@@ -178,7 +178,7 @@ public final class SefrotInvasionManager {
             SefirahHandler.removeSefrotInvasionAbility(player);
         }
 
-        Invasion invasion = ACTIVE_INVASIONS.get(player.getUUID());
+        Invasion invasion = activeInvasions.get(player.getUUID());
         if (invasion == null) return;
 
         ServerPlayer opponent = player.server.getPlayerList().getPlayer(invasion.other(player.getUUID()));
@@ -190,9 +190,9 @@ public final class SefrotInvasionManager {
     private static boolean canInvade(ServerPlayer invader, EntryOpportunity entry, long now) {
         if (entry.expiresAt() < now || entry.ownerId().equals(invader.getUUID())) return false;
         if (!entry.originDimension().equals(invader.level().dimension())) return false;
-        if (entry.origin().distanceToSqr(invader.position()) > INVASION_RANGE_SQUARED) return false;
-        if (ACTIVE_INVASIONS.containsKey(entry.ownerId())) return false;
-        if (!SefirotAuthorityManager.NEIGHBORING_PATHS.getOrDefault(entry.sefirot(), java.util.List.of())
+        if (entry.origin().distanceToSqr(invader.position()) > invasionRangeSquared) return false;
+        if (activeInvasions.containsKey(entry.ownerId())) return false;
+        if (!SefirotAuthorityManager.neighboringPaths.getOrDefault(entry.sefirot(), java.util.List.of())
                 .contains(BeyonderData.getPathway(invader))) return false;
 
         ServerPlayer owner = invader.server.getPlayerList().getPlayer(entry.ownerId());
@@ -204,7 +204,7 @@ public final class SefrotInvasionManager {
     @SubscribeEvent
     public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        Invasion invasion = ACTIVE_INVASIONS.get(player.getUUID());
+        Invasion invasion = activeInvasions.get(player.getUUID());
         if (invasion == null || event.getTo().equals(invasion.dimension())) return;
         finishInvasion(player.server, invasion, player.getUUID(), "left the Sefirah");
     }
@@ -212,27 +212,27 @@ public final class SefrotInvasionManager {
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        Invasion invasion = ACTIVE_INVASIONS.get(player.getUUID());
+        Invasion invasion = activeInvasions.get(player.getUUID());
         if (invasion != null) finishInvasion(player.server, invasion, player.getUUID(), "died");
     }
 
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        ENTRY_OPPORTUNITIES.remove(player.getUUID());
-        Invasion invasion = ACTIVE_INVASIONS.get(player.getUUID());
+        entryOpportunities.remove(player.getUUID());
+        Invasion invasion = activeInvasions.get(player.getUUID());
         if (invasion != null) finishInvasion(player.server, invasion, player.getUUID(), "disconnected");
     }
 
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).clearCause(AUTHORITY_SEAL_CAUSE);
+        player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).clearCause(authoritySealCause);
     }
 
     private static void finishInvasion(MinecraftServer server, Invasion invasion, UUID loserId, String reason) {
-        if (!ACTIVE_INVASIONS.remove(invasion.defenderId(), invasion)) return;
-        ACTIVE_INVASIONS.remove(invasion.invaderId(), invasion);
+        if (!activeInvasions.remove(invasion.defenderId(), invasion)) return;
+        activeInvasions.remove(invasion.invaderId(), invasion);
 
         UUID winnerId = invasion.other(loserId);
         SefirotData.get(server).setIsInSefirot(loserId, false);
@@ -261,10 +261,10 @@ public final class SefrotInvasionManager {
 
     @Nullable
     private static BlockPos findSafeInvasionPosition(ServerLevel level, BlockPos origin, RandomSource random) {
-        for (int attempt = 0; attempt < TELEPORT_ATTEMPTS; attempt++) {
+        for (int attempt = 0; attempt < teleportAttempts; attempt++) {
             double angle = random.nextDouble() * Math.PI * 2.0;
-            double distance = MIN_TELEPORT_DISTANCE
-                    + random.nextDouble() * (MAX_TELEPORT_DISTANCE - MIN_TELEPORT_DISTANCE);
+            double distance = minTeleportDistance
+                    + random.nextDouble() * (maxTeleportDistance - minTeleportDistance);
             int x = origin.getX() + (int) Math.round(Math.cos(angle) * distance);
             int z = origin.getZ() + (int) Math.round(Math.sin(angle) * distance);
 
@@ -368,17 +368,17 @@ public final class SefrotInvasionManager {
     private static void sealAuthority(ServerPlayer defender) {
         defender.closeContainer();
         DisabledAbilitiesComponent disabled = defender.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        disabled.clearCause(AUTHORITY_SEAL_CAUSE);
-        disabled.disableSpecificAbility("sefirot_authority_ability", AUTHORITY_SEAL_CAUSE);
+        disabled.clearCause(authoritySealCause);
+        disabled.disableSpecificAbility("sefirot_authority_ability", authoritySealCause);
         for (String abilityId : SefirotAuthorityManager.getUnlockedAbilityIds(defender)) {
-            disabled.disableSpecificAbility(abilityId, AUTHORITY_SEAL_CAUSE);
+            disabled.disableSpecificAbility(abilityId, authoritySealCause);
         }
-        SefirotAuthorityManager.SEFIROT_DIVINATION_IMMUNE.remove(defender.getUUID());
-        SefirotAuthorityManager.RIVER_CONCEALMENT_ACTIVE.remove(defender.getUUID());
+        SefirotAuthorityManager.sefirotDivinationImmune.remove(defender.getUUID());
+        SefirotAuthorityManager.riverConcealmentActive.remove(defender.getUUID());
     }
 
     private static void restoreAuthority(ServerPlayer defender) {
-        defender.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).clearCause(AUTHORITY_SEAL_CAUSE);
+        defender.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).clearCause(authoritySealCause);
         if (SefirahHandler.hasSefirot(defender)) {
             SefirotAuthorityManager.updatePlayerAuthority(defender);
         }

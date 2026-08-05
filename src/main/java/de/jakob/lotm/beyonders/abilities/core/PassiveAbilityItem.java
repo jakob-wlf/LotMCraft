@@ -168,7 +168,15 @@ public abstract class PassiveAbilityItem extends Item {
 
     @Override
     public @NotNull Component getName(ItemStack stack) {
-        return Component.translatable(this.getDescriptionId(stack)).append(Component.literal(" (")).append(Component.translatable("lotm.passive")).append(Component.literal(")"));
+        Component name = Component.translatable(this.getDescriptionId(stack))
+                .append(Component.literal(" ("))
+                .append(Component.translatable("lotm.passive"))
+                .append(Component.literal(")"));
+        Map<String, Integer> requirements = getRequirements();
+        if (requirements.size() == 1) {
+            return name.copy().withColor(getColorForPathway(requirements.keySet().iterator().next()));
+        }
+        return name;
     }
 
     /**

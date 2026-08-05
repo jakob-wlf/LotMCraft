@@ -15,7 +15,8 @@ public record RingEffectPacket(
         float maxRadius, int duration,
         float red, float green, float blue, float alpha,
         float ringThickness, float ringHeight,
-        float expansionSpeed, boolean smoothExpansion, boolean fadeOut
+    float expansionSpeed, boolean smoothExpansion, boolean fadeOut,
+    String effectKey, boolean remove
 ) implements CustomPacketPayload {
 
     public static final Type<RingEffectPacket> TYPE =
@@ -39,6 +40,8 @@ public record RingEffectPacket(
         buf.writeFloat(packet.expansionSpeed);
         buf.writeBoolean(packet.smoothExpansion);
         buf.writeBoolean(packet.fadeOut);
+        buf.writeUtf(packet.effectKey);
+        buf.writeBoolean(packet.remove);
     }
 
     private static RingEffectPacket read(FriendlyByteBuf buf) {
@@ -56,7 +59,9 @@ public record RingEffectPacket(
                 buf.readFloat(),   // ringHeight
                 buf.readFloat(),   // expansionSpeed
                 buf.readBoolean(), // smoothExpansion
-                buf.readBoolean()  // fadeOut
+                buf.readBoolean(), // fadeOut
+                buf.readUtf(),     // effectKey
+                buf.readBoolean()  // remove
         );
     }
 

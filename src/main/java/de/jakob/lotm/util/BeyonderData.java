@@ -6,8 +6,8 @@ import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.ProphecyAbility;
 import de.jakob.lotm.attachments.ControllingDataComponent;
-import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.MultiplierModifierComponent;
 import de.jakob.lotm.attachments.SanityComponent;
@@ -50,7 +50,7 @@ public class BeyonderData {
     private static final double[] sanityDecreaseMultiplier = {.01, .02, .025, .05, .1, .65, .75, .88, 1.0, 1.0};
 
     // Stored soul snapshots count toward global sequence slot limits.
-    private static final String INTERNAL_UNDERWORLD_SOULS_TAG = "InternalUnderworldSouls";
+    private static final String internalUnderworldSoulsTag = "InternalUnderworldSouls";
 
     public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>();
 
@@ -138,6 +138,7 @@ public class BeyonderData {
             return switch (pathway) {
                 case "fool", "error", "door"                  -> "Lord of Mysteries";
                 case "darkness", "death", "twilight_giant"    -> "Eternal Darkness";
+                case "wheel_of_fortune"                         -> "Key of Light";
                 default                                       -> "Great Old One";
             };
         }
@@ -308,8 +309,7 @@ public class BeyonderData {
         uniquenessComponent.resetKillCount();
         if (entity instanceof ServerPlayer serverPlayer) PacketHandler.syncUniquenessToPlayer(serverPlayer);
 
-        LuckComponent luckComponent = entity.getData(ModAttachments.LUCK_COMPONENT);
-        luckComponent.setLuck(0);
+        LuckManager.resetLuck(entity);
 
         if (entity.level() instanceof ServerLevel serverLevel) {
 
@@ -401,8 +401,8 @@ public class BeyonderData {
         // Walk player persistent data (online or offline) to find stored souls.
         for (Map.Entry<UUID, StoredData> entry : playerMap.entrySet()) {
             CompoundTag data = getPersistentDataForCount(level, entry.getKey());
-            if (data == null || !data.contains(INTERNAL_UNDERWORLD_SOULS_TAG, Tag.TAG_LIST)) continue;
-            ListTag list = data.getList(INTERNAL_UNDERWORLD_SOULS_TAG, Tag.TAG_COMPOUND);
+            if (data == null || !data.contains(internalUnderworldSoulsTag, Tag.TAG_LIST)) continue;
+            ListTag list = data.getList(internalUnderworldSoulsTag, Tag.TAG_COMPOUND);
             for (int i = 0; i < list.size(); i++) {
                 CompoundTag soul = list.getCompound(i);
                 if (!pathway.equals(soul.getString("Pathway"))) continue;
@@ -689,6 +689,7 @@ public class BeyonderData {
         if(!(entity instanceof Player player))
             return;
 
+        amount = ProphecyAbility.modifySpiritualityGain(entity, amount);
         float current = getSpirituality(player);
         float newAmount = Math.min(getMaxSpirituality(getPathway(player), getSequence(player), player), current + amount);
         player.getData(ModAttachments.BEYONDER_COMPONENT).setSpirituality(newAmount);
@@ -1040,7 +1041,7 @@ public class BeyonderData {
     /**
      * Force-replace the player's entire characteristic list, updating both the
      * {@link BeyonderComponent} and the {@link de.jakob.lotm.util.playerMap.PlayerMap}
-     * atomically. Does NOT sync to the client — callers must do that.
+     * atomically. Does NOT sync to the client - callers must do that.
      * <p>
      * Unlike {@link #clearCharacteristics}/{@link #setCharacteristic}, this does NOT
      * require the player to already be a beyonder; it is safe to call immediately
@@ -1059,19 +1060,19 @@ public class BeyonderData {
             playerMap.setStack(player, c.stack(), c.sequence(), c.pathway());
             bc.setCharacteristic(c.stack(), c.sequence(), c.pathway());
         }
-        // syncHighest() was called inside each bc.setCharacteristic — pathway/sequence now correct.
+        // syncHighest() was called inside each bc.setCharacteristic - pathway/sequence now correct.
 
         recalculateCharStackModifiers(player);
-        // Intentionally no sync here — caller does it.
+        // Intentionally no sync here - caller does it.
     }
 
-    public static final String CHAR_STACK_BOOST_ID = "characteristics_stack_boost";
+    public static final String charStackBoostId = "characteristics_stack_boost";
 
     public static void recalculateCharStackModifiers(LivingEntity player) {
         if (!isBeyonder(player)) return;
 
         // Remove any previously applied boost
-        removeModifier(player, CHAR_STACK_BOOST_ID);
+        removeModifier(player, charStackBoostId);
 
         int sequence = getSequence(player);
         String mainPathway = getPathway(player);
@@ -1089,11 +1090,11 @@ public class BeyonderData {
         }
 
         for(int i = 0; i <= 9; i++) {
-            removeModifier(player, CHAR_STACK_BOOST_ID + "_" + i);
+            removeModifier(player, charStackBoostId + "_" + i);
 
             int extras = extraStacks.getOrDefault(i, 0);
             if(extras > 0) {
-                addModifier(player, CHAR_STACK_BOOST_ID + "_" + i, getDamageBoostByCharStack(i, extras));
+                addModifier(player, charStackBoostId + "_" + i, getDamageBoostByCharStack(i, extras));
             }
         }
     }

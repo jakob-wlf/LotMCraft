@@ -8,6 +8,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.MercuryBodyAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PlayerInfo;
 import de.jakob.lotm.util.data.PlayerSelectionWorkType;
@@ -195,6 +196,17 @@ public class DivinationAbility extends SelectableAbility {
                 .stream()
                 .filter(p -> p != player)
                 .filter(p -> !DIVINATION_IMMUNE.contains(p.getUUID()))
+                .filter(p -> {
+                    if (MercuryBodyAbility.blocksInquiry(p, player)) return false;
+                    if (MercuryBodyAbility.hasMercuryBody(p)) {
+                        MercuryBodyAbility.warn(
+                                p,
+                                player.getGameProfile().getName(),
+                                BeyonderData.getSequence(player),
+                                "Player Divination is revealing you as a target");
+                    }
+                    return true;
+                })
                 .filter(p -> !SefirotAuthorityManager.blocksConcealment(p.getUUID(), player))
                 .map(p -> new PlayerInfo(p.getUUID(), p.getGameProfile().getName()))
                 .toList();

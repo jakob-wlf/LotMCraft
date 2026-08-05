@@ -34,6 +34,18 @@ public class PacketHandler {
 
     private static void registerClientPackets(PayloadRegistrar registrar) {
         registrar.playToClient(
+                SyncLuckResourcePacket.TYPE,
+                SyncLuckResourcePacket.STREAM_CODEC,
+                SyncLuckResourcePacket::handle
+        );
+
+        registrar.playToClient(
+                SyncLuckPerceptionPacket.TYPE,
+                SyncLuckPerceptionPacket.STREAM_CODEC,
+                SyncLuckPerceptionPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncBeyonderDataPacket.TYPE,
                 SyncBeyonderDataPacket.STREAM_CODEC,
                 SyncBeyonderDataPacket::handle
@@ -49,6 +61,12 @@ public class PacketHandler {
                 SyncWeaknessDetectionTargetsAbilityPacket.TYPE,
                 SyncWeaknessDetectionTargetsAbilityPacket.STREAM_CODEC,
                 SyncWeaknessDetectionTargetsAbilityPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncAbsolutePerceptionColorsPacket.TYPE,
+                SyncAbsolutePerceptionColorsPacket.STREAM_CODEC,
+                SyncAbsolutePerceptionColorsPacket::handle
         );
 
         registrar.playToClient(
@@ -601,6 +619,24 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                OpenConnectionManagerPacket.TYPE,
+                OpenConnectionManagerPacket.STREAM_CODEC,
+                OpenConnectionManagerPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenAnchorCuttingScreenPacket.TYPE,
+                OpenAnchorCuttingScreenPacket.STREAM_CODEC,
+                OpenAnchorCuttingScreenPacket::handle
+        );
+
+        registrar.playToClient(
+                OpenProbabilityManipulationPacket.TYPE,
+                OpenProbabilityManipulationPacket.STREAM_CODEC,
+                OpenProbabilityManipulationPacket::handle
+        );
+
+        registrar.playToClient(
                 OpenAboveSeqAuthorityScreenPacket.TYPE,
                 OpenAboveSeqAuthorityScreenPacket.STREAM_CODEC,
                 OpenAboveSeqAuthorityScreenPacket::handle
@@ -1060,6 +1096,30 @@ public class PacketHandler {
                 SetAbilitySealPacket.TYPE,
                 SetAbilitySealPacket.STREAM_CODEC,
                 SetAbilitySealPacket::handle
+        );
+
+        registrar.playToServer(
+                ClearConnectionPacket.TYPE,
+                ClearConnectionPacket.STREAM_CODEC,
+                ClearConnectionPacket::handle
+        );
+
+        registrar.playToServer(
+                CutAnchorPacket.TYPE,
+                CutAnchorPacket.STREAM_CODEC,
+                CutAnchorPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestProbabilityManipulationPacket.TYPE,
+                RequestProbabilityManipulationPacket.STREAM_CODEC,
+                RequestProbabilityManipulationPacket::handle
+        );
+
+        registrar.playToServer(
+                UpdateProbabilityManipulationPacket.TYPE,
+                UpdateProbabilityManipulationPacket.STREAM_CODEC,
+                UpdateProbabilityManipulationPacket::handle
         );
 
         registrar.playToServer(

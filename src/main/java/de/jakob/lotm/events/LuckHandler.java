@@ -1,14 +1,19 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveLuckAccumulationAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.LoosingControlEffect;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.SyncLuckResourcePacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
@@ -42,39 +47,43 @@ import org.joml.Vector3f;
 import java.util.*;
 
 /**
- * Luck Stages (luck value -3000 to 3000):
+ * Positive luck effects gain one amplifier at every 500 stored luck.
  *
- * Severe Unluck  [-3000, -1500) — All unluck penalties are active at full strength.
+ * Severe Unluck  [-3000, -1500) - All unluck penalties are active at full strength.
  *                                  Drops destroyed, tool damaged, extra damage taken,
  *                                  weak hits dealt, harmful effects applied, trips,
  *                                  mob spawns, item drops from inventory, slipping,
- *                                  and — for Beyonders — multiplier reduction and
+ *                                  and - for Beyonders - multiplier reduction and
  *                                  ability disabling.
  *
- * Mild Unluck    [-1500,    -1] — The same unluck systems are active but at reduced
+ * Mild Unluck    [-1500,    -1] - The same unluck systems are active but at reduced
  *                                  intensity, scaling linearly from minimum at -1
  *                                  to maximum at -3000.
  *
- * Neutral        [       0    ] — No luck or unluck effects apply.
+ * Neutral        [       0    ] - No luck or unluck effects apply.
  *
- * Mild Luck      [    1, 1500] — Luck bonuses are active at reduced intensity,
- *                                  scaling linearly from minimum at 1 to maximum
- *                                  at 3000. Includes dodge chance, crit hits, double
- *                                  block drops, random item drops, harmful effect
- *                                  removal, enemy trips, and Hero of the Village
- *                                  at higher values.
- *
- * Peak Luck      [1500,  3000] — All luck bonuses active at full strength.
+ * Positive Luck  [       1, infinity) - Dodge, crits, improved drops, cleansing, enemy
+ *                                  trips, and beneficial effects scale in discrete
+ *                                  500-luck tiers up to each effect's safety cap.
  */
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class LuckHandler {
+    private static final Map<UUID, Float> LAST_SYNCED_DRAIN_RATES = new HashMap<>();
+
+    private static final int IMPROVED_DROP_COST = 5;
+    private static final int RANDOM_DROP_COST = 5;
+    private static final int COMBAT_TRIP_COST = 15;
+    private static final int CRITICAL_HIT_COST = 20;
+    private static final int DODGE_COST = 25;
+    private static final int EFFECT_CLEANSING_BASE_COST = 10;
+    private static final int EFFECT_CLEANSING_LEVEL_COST = 5;
+    private static final int MODDED_EFFECT_PREMIUM = 15;
 
     private static final HashMap<UUID, CombatTarget> combatTargets = new HashMap<>();
 
     private static final HashMap<UUID, Long> lastSpawnTime             = new HashMap<>();
     private static final HashMap<UUID, Long> lastSlipTime              = new HashMap<>();
     private static final HashMap<UUID, Long> lastMultiplierReductionTime = new HashMap<>();
-    private static final HashMap<UUID, Long> lastAbilityDisableTime    = new HashMap<>();
     private static final HashMap<UUID, Long> lastTripTime              = new HashMap<>();
 
     private static final DustParticleOptions LUCK_DUST = new DustParticleOptions(
@@ -117,7 +126,8 @@ public class LuckHandler {
     }
 
     private static void handleLuckBlockBreak(BlockDropsEvent event, LivingEntity entity, ServerLevel level, int luck) {
-        if (Math.random() < getChanceForRandomDrop(luck)) {
+        if (Math.random() < getChanceForRandomDrop(luck)
+                && PassiveLuckAccumulationAbility.consumeStoredLuck(entity, RANDOM_DROP_COST)) {
             if (new Random().nextBoolean())
                 ParticleUtil.spawnParticles(level, LUCK_DUST, event.getPos().getCenter(), 12, .6, .6, .6, 0);
             dropRandomLuckItem(event.getPos().getCenter(), level);
@@ -127,6 +137,7 @@ public class LuckHandler {
             List<ItemEntity> drops = event.getDrops();
             if (drops.isEmpty()) return;
             if (drops.stream().anyMatch(ie -> ie.getItem().is(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "shulker_boxes"))))) return;
+            if (!PassiveLuckAccumulationAbility.consumeStoredLuck(entity, IMPROVED_DROP_COST)) return;
 
             if (new Random().nextBoolean())
                 ParticleUtil.spawnParticles(level, LUCK_DUST, event.getPos().getCenter(), 12, .6, .6, .6, 0);
@@ -158,18 +169,24 @@ public class LuckHandler {
     }
 
     // -------------------------------------------------------------------------
-    // Incoming damage — dodge (luck) or extra damage (unluck)
+    // Incoming damage - dodge (luck) or extra damage (unluck)
     // -------------------------------------------------------------------------
 
     @SubscribeEvent
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
         if (!(event.getEntity().level() instanceof ServerLevel level)) return;
+        if (event.getEntity() instanceof ServerPlayer victim
+                && event.getSource().getEntity() instanceof ServerPlayer attacker) {
+            PassiveLuckAccumulationAbility.markInCombat(victim);
+            PassiveLuckAccumulationAbility.markInCombat(attacker);
+        }
         if (event.getAmount() > 500) return;
 
         int luck = getLuck(event.getEntity());
 
         if (luck > 0) {
-            if (Math.random() < getDodgeChance(luck)) {
+            if (Math.random() < getDodgeChance(luck)
+                    && PassiveLuckAccumulationAbility.consumeStoredLuck(event.getEntity(), DODGE_COST)) {
                 event.setCanceled(true);
                 Entity entity = event.getEntity();
                 ParticleUtil.spawnParticles(level, LUCK_DUST, entity.position().add(0, entity.getEyeHeight() / 2, 0), 55, .4, entity.getEyeHeight() / 2, .4, 0);
@@ -191,7 +208,7 @@ public class LuckHandler {
     }
 
     // -------------------------------------------------------------------------
-    // Outgoing damage — crits (luck) or weak hits (unluck)
+    // Outgoing damage - crits (luck) or weak hits (unluck)
     // -------------------------------------------------------------------------
 
     @SubscribeEvent
@@ -202,7 +219,8 @@ public class LuckHandler {
         int luck = getLuck(attacker);
 
         if (luck > 0) {
-            if (Math.random() < getCritChance(luck)) {
+            if (Math.random() < getCritChance(luck)
+                    && PassiveLuckAccumulationAbility.consumeStoredLuck(attacker, CRITICAL_HIT_COST)) {
                 event.setAmount(event.getAmount() * 1.75f);
                 ParticleUtil.spawnParticles(level, LUCK_DUST, event.getEntity().position().add(0, event.getEntity().getEyeHeight() / 2, 0), 55, .4, event.getEntity().getEyeHeight() / 2, .4, 0);
                 if (attacker instanceof ServerPlayer player)
@@ -247,7 +265,32 @@ public class LuckHandler {
         if (!(event.getEntity() instanceof LivingEntity entity)) return;
         if (!(entity.level() instanceof ServerLevel level)) return;
 
+        LuckManager.tickLuckDrains(entity);
         int luck = getLuck(entity);
+        float drainRate = LuckManager.getLuckDrainRatePerMinute(entity);
+        float lastDrainRate = LAST_SYNCED_DRAIN_RATES.getOrDefault(entity.getUUID(), 0f);
+        boolean drainRateChanged = Float.compare(drainRate, lastDrainRate) != 0;
+        if (entity instanceof ServerPlayer player
+            && BeyonderData.isBeyonder(entity)
+            && (entity.tickCount % 20 == 0 || drainRateChanged)) {
+            var reserve = entity.getData(ModAttachments.LUCK_ACCUMULATION_COMPONENT.get());
+            boolean wheelOfFortune = LuckManager.usesWheelLuckResource(entity);
+            PacketHandler.sendToPlayer(player, new SyncLuckResourcePacket(
+                wheelOfFortune ? 0 : luck,
+                reserve.getStoredLuck(),
+                LuckManager.getMaximumLuck(entity),
+                wheelOfFortune
+                    ? PassiveLuckAccumulationAbility.getEffectiveRegenerationRate(entity, reserve)
+                        + LuckManager.getLuckGainRatePerMinute(entity)
+                    : LuckManager.getLuckGainRatePerMinute(entity),
+                drainRate,
+                wheelOfFortune));
+            if (drainRate > 0) {
+                LAST_SYNCED_DRAIN_RATES.put(entity.getUUID(), drainRate);
+            } else {
+                LAST_SYNCED_DRAIN_RATES.remove(entity.getUUID());
+            }
+        }
         if (luck == 0) return;
 
         if (luck > 0) {
@@ -261,9 +304,13 @@ public class LuckHandler {
         if (Math.random() < getChanceForPotionEffectRemoval(luck))
             removeLuckHarmfulEffects(entity, level);
 
-        if (luck >= 1500)
-            entity.addEffect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, 40,
-                    (int) lerpClamped(luck, 1500, 3000, 0, 3), false, false, false));
+        int amplifier = LuckManager.getPositiveLuckAmplifier(luck);
+        MobEffectInstance heroEffect = entity.getEffect(MobEffects.HERO_OF_THE_VILLAGE);
+        if (amplifier >= 2 && (heroEffect == null || heroEffect.getDuration() <= 20
+            || heroEffect.getAmplifier() < amplifier)) {
+            entity.addEffect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, 100,
+            amplifier, false, false, false));
+        }
 
         if (Math.random() < getChanceForEntityTrip(luck))
             makeCombatTargetTrip(entity, luck, level);
@@ -289,11 +336,27 @@ public class LuckHandler {
         if (Math.random() < getSlipChance(magnitude))
             makeEntitySlip(entity, level);
 
-        if (BeyonderData.isBeyonder(entity)) {
-           /* if (Math.random() < getMultiplierReductionChance(magnitude))
-                reduceMultiplierTemporarily(entity, level, magnitude);*/
-            if (Math.random() < getAbilityDisableChance(magnitude))
-                disableAbilitiesTemporarily(entity, level, magnitude);
+    }
+
+    @SubscribeEvent
+    public static void onAbilityUse(AbilityUseEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (entity == null || entity.level().isClientSide) return;
+
+        int luck = LuckManager.getEffectiveLuck(entity);
+        if (luck >= 0 || Math.random() >= getAbilityFailureChance(-luck)) return;
+
+        event.setCanceled(true);
+        if (entity instanceof ServerPlayer player) {
+            sendActionBar(player, Component.literal("Your bad luck caused the ability to fail.")
+                    .withColor(0xFFFF5555));
+        }
+        if (entity.level() instanceof ServerLevel level) {
+            ParticleUtil.spawnParticles(level, UNLUCK_DUST,
+                    entity.position().add(0, entity.getEyeHeight() / 2, 0),
+                    30, .35, entity.getEyeHeight() / 2, .35, 0);
+            level.playSound(null, entity.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE,
+                    SoundSource.PLAYERS, 0.4f, 0.5f);
         }
     }
 
@@ -302,15 +365,22 @@ public class LuckHandler {
     // -------------------------------------------------------------------------
 
     private static void removeLuckHarmfulEffects(LivingEntity entity, ServerLevel level) {
-        List<Holder<MobEffect>> harmful = entity.getActiveEffects().stream()
-                .map(MobEffectInstance::getEffect)
-                .filter(e -> e.value().getCategory() == MobEffectCategory.HARMFUL
-                        && !(e.value() instanceof LoosingControlEffect))
+        List<MobEffectInstance> harmful = entity.getActiveEffects().stream()
+            .filter(effect -> effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL
+                && !(effect.getEffect().value() instanceof LoosingControlEffect))
                 .toList();
 
         if (harmful.isEmpty()) return;
 
-        harmful.forEach(entity::removeEffect);
+        boolean removedEffect = false;
+        for (MobEffectInstance effect : harmful) {
+            if (PassiveLuckAccumulationAbility.consumeStoredLuck(entity, getEffectCleansingCost(effect))) {
+            entity.removeEffect(effect.getEffect());
+            removedEffect = true;
+            }
+        }
+        if (!removedEffect) return;
+
         ParticleUtil.spawnParticles(level, LUCK_DUST, entity.position().add(0, entity.getEyeHeight() / 2, 0), 55, .4, entity.getEyeHeight() / 2, .4, 0);
 
         if (entity instanceof ServerPlayer player)
@@ -330,9 +400,10 @@ public class LuckHandler {
         if (target.isDeadOrDying() || target.level() != level) {
             combatTargets.remove(entity.getUUID());
             return;
-        };
-        float scalable_damage = (float) (Math.abs(luck) *0.0054+ 2.4722);
-        float damage =(float) lerpClamped(luck, 0, 3000, 1, scalable_damage);
+        }
+        if (!PassiveLuckAccumulationAbility.consumeStoredLuck(entity, COMBAT_TRIP_COST)) return;
+
+        float damage = 2.5f * (LuckManager.getPositiveLuckAmplifier(luck) + 1);
         target.hurt(target.damageSources().generic(), damage);
 
         Random random = new Random();
@@ -459,47 +530,37 @@ public class LuckHandler {
         ParticleUtil.spawnParticles(level, UNLUCK_DUST, entity.position().add(0, entity.getEyeHeight() / 2, 0), 40, .4, entity.getEyeHeight() / 2, .4, 0);
     }*/
 
-    private static void disableAbilitiesTemporarily(LivingEntity entity, ServerLevel level, int magnitude) {
-        UUID uuid = entity.getUUID();
-        long now = System.currentTimeMillis();
-        if (lastAbilityDisableTime.containsKey(uuid) && now - lastAbilityDisableTime.get(uuid) < 5000) return;
-        lastAbilityDisableTime.put(uuid, now);
-        double entityMultiplier = Math.max(BeyonderData.getMultiplier(entity)/2,1);
-        int duration = (int) (lerpClamped(magnitude, 0, 3000, 2000, 5000))/(int) entityMultiplier;
-
-        DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        component.disableAbilityUsageForTime("unluck_ability_disabled", duration, entity);
-
-        ParticleUtil.spawnParticles(level, UNLUCK_DUST, entity.position().add(0, entity.getEyeHeight() / 2, 0), 50, .5, entity.getEyeHeight() / 2, .5, 0);
-        level.playSound(null, entity.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 0.5f, 0.5f);
-    }
-
     // -------------------------------------------------------------------------
-    // Probability scaling — luck and magnitude are always positive [0, 3000]
+    // Positive probabilities advance in discrete 500-luck tiers.
     // -------------------------------------------------------------------------
 
     private static double getCritChance(int luck) {
-        return lerpClamped(luck, 0, 3000, 0.04, 0.90);
+        return Math.min(0.90, Math.max(0.05,
+                0.04 * (LuckManager.getPositiveLuckAmplifier(luck) + 1)));
     }
 
     private static double getDodgeChance(int luck) {
-        return lerpClamped(luck, 0, 3000, 0.035, 0.65);
+        return Math.min(0.65, 0.035 * (LuckManager.getPositiveLuckAmplifier(luck) + 1));
     }
 
     private static double getMultipleBlocksChance(int luck) {
-        return lerpClamped(luck, 0, 3000, 0.10, 0.99);
+        return Math.min(0.99, 0.10 + 0.045 * (LuckManager.getPositiveLuckAmplifier(luck) + 1));
     }
 
     private static double getChanceForPotionEffectRemoval(int luck) {
-        return lerpClamped(luck, 0, 3000, 0.0025, 0.05);
+        return positiveTierLerp(luck, 0.0025, 0.05);
     }
 
     private static double getChanceForEntityTrip(int luck) {
-        return lerpClamped(luck, 0, 3000, 0.002, 0.035);
+        return positiveTierLerp(luck, 0.002, 0.035);
     }
 
     private static double getChanceForRandomDrop(int luck) {
-        return lerpClamped(luck, 0, 3000, 0.01, 0.20);
+        return Math.min(0.20, 0.01 * (LuckManager.getPositiveLuckAmplifier(luck) + 1));
+    }
+
+    private static double positiveTierLerp(int luck, double minimum, double maximum) {
+        return lerpClamped(LuckManager.getPositiveLuckAmplifier(luck), 0, 19, minimum, maximum);
     }
 
     private static double getExtraDamageChance(int magnitude) {
@@ -540,8 +601,8 @@ public class LuckHandler {
     }
     */
 
-    private static double getAbilityDisableChance(int magnitude) {
-        return lerpClamped(magnitude, 0, 3000, 0.0003, 0.005);
+    private static double getAbilityFailureChance(int magnitude) {
+        return lerpClamped(magnitude, 0, -LuckManager.minimumLuck, 0, 0.8);
     }
 
     private static double getTripChance(int magnitude) {
@@ -553,7 +614,17 @@ public class LuckHandler {
     // -------------------------------------------------------------------------
 
     private static int getLuck(LivingEntity entity) {
-        return entity.getData(ModAttachments.LUCK_COMPONENT).getLuck();
+        return LuckManager.getEffectiveLuck(entity);
+    }
+
+    private static int getEffectCleansingCost(MobEffectInstance effect) {
+        int cost = EFFECT_CLEANSING_BASE_COST
+                + (effect.getAmplifier() + 1) * EFFECT_CLEANSING_LEVEL_COST;
+        ResourceLocation effectId = BuiltInRegistries.MOB_EFFECT.getKey(effect.getEffect().value());
+        if (effectId != null && !ResourceLocation.DEFAULT_NAMESPACE.equals(effectId.getNamespace())) {
+            cost += MODDED_EFFECT_PREMIUM;
+        }
+        return cost;
     }
 
     private static double lerpClamped(double value, double minIn, double maxIn, double minOut, double maxOut) {

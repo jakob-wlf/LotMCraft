@@ -4,7 +4,6 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ApotheosisComponent;
 import de.jakob.lotm.attachments.BeyonderComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.Characteristic;
@@ -21,11 +20,12 @@ import java.util.Map;
  * Manages the Great Old One transformation.
  *
  * Requirements to transform into a Great Old One:
- *   1. Own a sefirot that has a GOO form (sefirah_castle → Lord of Mysteries,
- *      river_of_eternal_darkness → Eternal Darkness, chaos_sea → God Almighty).
+ *   1. Own a sefirot that has a GOO form (sefirah_castle -> Lord of Mysteries,
+ *      river_of_eternal_darkness -> Eternal Darkness, chaos_sea -> God Almighty,
+ *      key_of_light -> Key of Light).
  *   2. Be seq 0 of your OWN path (charList contains own-path entry at seq 0).
- *   3. Have ≥3 seq-1 characteristics of your own path in the charList.
- *   4. Be seq 0 of EVERY neighboring path (charList has each neighbor at seq 0).
+ *   3. Have at least one seq-1 characteristic from every other pathway in the
+ *      owned sefirot's domain. Neighboring seq-0 characteristics are not required.
  *
  * State is stored as a seq-(-1) entry in BeyonderComponent.charList so that
  * syncHighest() naturally resolves sequence to -1. The PlayerMap StoredData
@@ -37,20 +37,21 @@ import java.util.Map;
 public class GreatOldOneManager {
 
     /** The special sequence value representing a Great Old One. */
-    public static final int GREAT_OLD_ONE_SEQ = LOTMCraft.GREAT_OLD_ONE_SEQ;
+    public static final int greatOldOneSeq = LOTMCraft.GREAT_OLD_ONE_SEQ;
 
     /** Display name per sefirot. */
-    private static final Map<String, String> SEFIROT_TO_NAME;
+    private static final Map<String, String> sefirotToName;
 
     /** Display name per pathway (for getSequenceName without sefirot context). */
-    public static final Map<String, String> PATHWAY_TO_NAME;
+    public static final Map<String, String> pathwayToName;
 
     static {
         Map<String, String> s = new HashMap<>();
         s.put("sefirah_castle",            "Lord of Mysteries");
         s.put("river_of_eternal_darkness", "Eternal Darkness");
         s.put("chaos_sea",                 "God Almighty");
-        SEFIROT_TO_NAME = Collections.unmodifiableMap(s);
+        s.put("key_of_light",              "Key of Light");
+        sefirotToName = Collections.unmodifiableMap(s);
 
         Map<String, String> p = new HashMap<>();
         // Sefirah Castle neighbors (fool, error, door)
@@ -67,7 +68,9 @@ public class GreatOldOneManager {
         p.put("visionary",     "God Almighty");
         p.put("hanged_man",    "God Almighty");
         p.put("white_tower",   "God Almighty");
-        PATHWAY_TO_NAME = Collections.unmodifiableMap(p);
+        // Key of Light domain
+        p.put("wheel_of_fortune", "Key of Light");
+        pathwayToName = Collections.unmodifiableMap(p);
     }
 
     /** True if this player is currently in the Transcendence ritual (apotheosis component flagged). */
@@ -78,17 +81,17 @@ public class GreatOldOneManager {
 
     /** True if this player is currently a Great Old One (sequence == -1). */
     public static boolean isGreatOldOne(ServerPlayer player) {
-        return BeyonderData.getSequence(player) == GREAT_OLD_ONE_SEQ;
+        return BeyonderData.getSequence(player) == greatOldOneSeq;
     }
 
     /** Returns the GOO display name for a pathway, e.g. "Lord of Mysteries". */
     public static String getNameByPathway(String pathway) {
-        return PATHWAY_TO_NAME.getOrDefault(pathway, "Great Old One");
+        return pathwayToName.getOrDefault(pathway, "Great Old One");
     }
 
     /** Returns the GOO display name for a sefirot. */
     public static String getNameBySefirot(String sefirot) {
-        return SEFIROT_TO_NAME.getOrDefault(sefirot, "Great Old One");
+        return sefirotToName.getOrDefault(sefirot, "Great Old One");
     }
 
     /**
@@ -107,8 +110,8 @@ public class GreatOldOneManager {
         java.util.List<String> missing = new java.util.ArrayList<>();
 
         String sefirot = SefirahHandler.getClaimedSefirot(player);
-        if (!SEFIROT_TO_NAME.containsKey(sefirot)) {
-            missing.add("You do not own a GOO-eligible sefirot (sefirah_castle, river_of_eternal_darkness, or chaos_sea). Current: \"" + sefirot + "\"");
+        if (!sefirotToName.containsKey(sefirot)) {
+            missing.add("You do not own a GOO-eligible sefirot (sefirah_castle, river_of_eternal_darkness, chaos_sea, or key_of_light). Current: \"" + sefirot + "\"");
             return missing; // rest of checks are meaningless without a sefirot
         }
 
@@ -123,29 +126,18 @@ public class GreatOldOneManager {
                 .orElse(LOTMCraft.NON_BEYONDER_SEQ);
         if (ownSeq != 0) missing.add("You must be Sequence 0 of your own path (" + ownPath + "). Current best: " + ownSeq);
 
-        // 2. Must have ≥3 seq-1 characteristics of all domain pathways
-        int requiredSeq1 = player.serverLevel().getGameRules().getInt(ModGameRules.CHARSTACK_REQUIRED_FOR_APOTHEOSIS);
-        for(String path : SefirotAuthorityManager.NEIGHBORING_PATHS.getOrDefault(sefirot, Collections.emptyList())) {
+        // 2. Must have one seq-1 characteristic from every other pathway in the sefirot domain
+        for (String path : SefirotAuthorityManager.neighboringPaths
+            .getOrDefault(sefirot, Collections.emptyList())) {
+            if (path.equals(ownPath)) continue;
             int seq1Stack = charList.stream()
                     .filter(c -> c.pathway().equals(path) && c.sequence() == 1)
                     .mapToInt(Characteristic::stack)
                     .findFirst()
                     .orElse(0);
-            if (seq1Stack < requiredSeq1)
-                missing.add("You need " + requiredSeq1 + " Sequence-1 characteristics of " + ownPath + ". Current: " + seq1Stack + "/3");
-        }
-
-        // 3. Must be seq 0 of every neighboring path
-        List<String> neighbors = SefirotAuthorityManager.NEIGHBORING_PATHS
-                .getOrDefault(sefirot, Collections.emptyList());
-        for (String neighborPath : neighbors) {
-            if (neighborPath.equals(ownPath)) continue;
-            int neighborSeq = charList.stream()
-                    .filter(c -> c.pathway().equals(neighborPath))
-                    .mapToInt(Characteristic::sequence)
-                    .min()
-                    .orElse(LOTMCraft.NON_BEYONDER_SEQ);
-            if (neighborSeq != 0) missing.add("You must be Sequence 0 of neighboring path \"" + neighborPath + "\". Current best: " + neighborSeq);
+            if (seq1Stack < 1) {
+            missing.add("You need one Sequence-1 characteristic of neighboring path \"" + path + "\".");
+            }
         }
 
         return missing;
@@ -169,14 +161,14 @@ public class GreatOldOneManager {
         player.level().players().forEach(p -> p.playSound(net.minecraft.sounds.SoundEvents.WITHER_SPAWN));
 
         player.sendSystemMessage(
-                Component.literal("The boundaries of sequence have dissolved. Transcendence begins — \"").
+                Component.literal("The boundaries of sequence have dissolved. Transcendence begins - \"").
                         append(Component.literal(gooName).withStyle(s -> s.withColor(0xFFFFAA00)))
                         .append(Component.literal("\".")));
     }
 
     /**
      * Called internally by {@link de.jakob.lotm.events.ApotheosisTickHandler} when
-     * the Transcendence ritual completes. Do not call directly — use {@link #startTranscendence}.
+     * the Transcendence ritual completes. Do not call directly - use {@link #startTranscendence}.
      */
     public static void transform(ServerPlayer player) {
         String pathway = BeyonderData.getPathway(player);
@@ -187,13 +179,18 @@ public class GreatOldOneManager {
 
     /**
      * OP/admin force-transform. {@code gooType} must be either
-     * {@code "lord-of-mysteries"}, {@code "eternal-darkness"}, or {@code "god-almighty"}.
+    * {@code "lord-of-mysteries"}, {@code "eternal-darkness"},
+    * {@code "god-almighty"}, or {@code "key-of-light"}.
      */
     public static void transformAs(ServerPlayer player, String gooType) {
         String pathway = BeyonderData.getPathway(player);
-        String gooName = gooType.equalsIgnoreCase("god-almighty") || gooType.equalsIgnoreCase("god_almighty")
-                ? "God Almighty"
-                : gooType.equalsIgnoreCase("eternal-darkness") ? "Eternal Darkness" : "Lord of Mysteries";
+        String normalizedType = gooType.replace('_', '-');
+        String gooName = switch (normalizedType.toLowerCase(java.util.Locale.ROOT)) {
+            case "god-almighty" -> "God Almighty";
+            case "eternal-darkness" -> "Eternal Darkness";
+            case "key-of-light" -> "Key of Light";
+            default -> "Lord of Mysteries";
+        };
         transformInternal(player, pathway, gooName);
     }
 
@@ -201,14 +198,14 @@ public class GreatOldOneManager {
 
         // Update BeyonderComponent
         BeyonderComponent component = player.getData(ModAttachments.BEYONDER_COMPONENT);
-        component.setCharacteristic(1, GREAT_OLD_ONE_SEQ, pathway);
+        component.setCharacteristic(1, greatOldOneSeq, pathway);
 
         // Update PlayerMap StoredData
         BeyonderData.playerMap.get(player).ifPresent(data -> {
             StoredData updated = StoredData.builder
                     .copyFrom(data)
-                    .sequence(GREAT_OLD_ONE_SEQ)
-                    .characteristic(1, GREAT_OLD_ONE_SEQ, pathway)
+                    .sequence(greatOldOneSeq)
+                    .characteristic(1, greatOldOneSeq, pathway)
                     .build();
             BeyonderData.playerMap.put(player, updated);
         });
@@ -233,14 +230,14 @@ public class GreatOldOneManager {
 
         // Remove the -1 entry from BeyonderComponent; syncHighest() will settle on seq 0
         BeyonderComponent component = player.getData(ModAttachments.BEYONDER_COMPONENT);
-        component.setCharacteristic(0, GREAT_OLD_ONE_SEQ, pathway);
+        component.setCharacteristic(0, greatOldOneSeq, pathway);
 
         // Update PlayerMap StoredData
         BeyonderData.playerMap.get(player).ifPresent(data -> {
             StoredData updated = StoredData.builder
                     .copyFrom(data)
                     .sequence(0)
-                    .characteristic(0, GREAT_OLD_ONE_SEQ, pathway)
+                    .characteristic(0, greatOldOneSeq, pathway)
                     .build();
             BeyonderData.playerMap.put(player, updated);
         });

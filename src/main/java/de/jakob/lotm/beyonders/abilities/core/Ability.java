@@ -5,6 +5,9 @@ import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility;
 import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
+import de.jakob.lotm.beyonders.sefirah.ProbabilityManipulationManager;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.ConnectionAbility;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.ProphecyAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
@@ -33,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
 import de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
@@ -149,6 +153,7 @@ public abstract class Ability {
                 pdata.remove(EntropySubAbility.SENSORY_DECAY_COOLDOWN_UNTIL_KEY);
             }
         }
+        inflatedCooldown = Math.round(inflatedCooldown * ProphecyAbility.getCooldownMultiplier(newUser));
         component.setCooldown(id, inflatedCooldown);
 
         if(AbilityUtil.hasArtifactScaling(entity)){
@@ -156,8 +161,32 @@ public abstract class Ability {
             AbilityUtil.removeArtifactScaling(entity);
         }
 
+        if (ProbabilityManipulationManager.shouldFail(serverLevel, newUser, this)) {
+            if (this.autoClear) clearArtifactScaling(entity);
+            if (AbilityUtil.ignoreAllies.containsKey(entity.getUUID())
+                    && !AbilityUtil.ignoreAllies.get(entity.getUUID())) {
+                AbilityUtil.ignoreAllies.remove(entity.getUUID());
+            }
+            return;
+        }
+
         // Use ability client and server sided
-        onAbilityUse(serverLevel, newUser);
+        List<ServerPlayer> connectedTargets = ConnectionAbility.consumeConnectedTargets(newUser, this);
+        if (connectedTargets.isEmpty()) {
+            onAbilityUse(serverLevel, newUser);
+        } else {
+            for (ServerPlayer connectedTarget : connectedTargets) {
+                AbilityUtil.setRemoteCastTargetUUID(connectedTarget.getUUID());
+                try {
+                    onAbilityUse(connectedTarget.serverLevel(), newUser);
+                    if (!AbilityUtil.wasRemoteCastTargetResolved()) {
+                        break;
+                    }
+                } finally {
+                    AbilityUtil.clearRemoteCastTargetUUID();
+                }
+            }
+        }
         if(entity instanceof ServerPlayer player) PacketHandler.sendToPlayer(player, new UseAbilityPacket(getId(), newUser.getId()));
 
         if(this.autoClear){
@@ -195,17 +224,18 @@ public abstract class Ability {
         var pdata = entity.getPersistentData();
         if (pdata.contains(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY)) {
             if (pdata.getLong(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY) > level.getGameTime()) {
-                return base * pdata.getFloat(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
+                base *= pdata.getFloat(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
             } else {
                 pdata.remove(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
                 pdata.remove(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY);
             }
         }
-        return base;
+        return base * ProphecyAbility.getCostMultiplier(entity);
     }
 
     public float multiplier(LivingEntity entity) {
-        return (float) AbilityUtil.getMultiplierWithArt(entity, this);
+        return (float) AbilityUtil.getMultiplierWithArt(entity, this)
+                * ProphecyAbility.getAbilityStrengthMultiplier(entity);
     }
 
     public void onHold(Level level, LivingEntity entity) {
@@ -293,7 +323,11 @@ public abstract class Ability {
         }
 
         // Allow use down to a 30% spirituality deficit; the shortfall is paid in sanity on use
-        if(shouldConsumeSpirituality(entity) && doesConsumeSpirituality && BeyonderData.getSpirituality(entity) < getSpiritualityCost() * 0.7f) {
+        float requiredSpirituality = entity.level() instanceof ServerLevel serverLevel
+            ? getInflatedSpiritualityCost(entity, serverLevel)
+            : getSpiritualityCost();
+        if(shouldConsumeSpirituality(entity) && doesConsumeSpirituality
+            && BeyonderData.getSpirituality(entity) < requiredSpirituality * 0.7f) {
             return false;
         }
 
@@ -410,5 +444,9 @@ public abstract class Ability {
 
     public float spiritualityCost() {
         return getSpiritualityCost();
+    }
+
+    public int luckCost() {
+        return 0;
     }
 }

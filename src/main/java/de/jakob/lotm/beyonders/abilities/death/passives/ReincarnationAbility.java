@@ -70,9 +70,9 @@ public class ReincarnationAbility extends PassiveAbilityItem {
     // Death intercept — HIGHEST so we run before BeyonderEventHandler's regression
     // -------------------------------------------------------------------------
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onLivingDeath(LivingDeathEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!(event.getEntity() instanceof ServerPlayer player) || event.isCanceled()) return;
 
         // Never trigger on losing-control deaths
         if (event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) return;
