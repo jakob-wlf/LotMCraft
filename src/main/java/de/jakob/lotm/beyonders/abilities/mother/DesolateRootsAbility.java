@@ -38,6 +38,6 @@ public class DesolateRootsAbility extends Ability {
             for (int i = 0; i < 14; i++) { Vec3 pos = center.add(serverLevel.random.nextDouble(-8, 8), 0.1, serverLevel.random.nextDouble(-8, 8)); ParticleUtil.drawParticleLine(serverLevel, ROOT_DUST, pos, pos.add(0, 6 + serverLevel.random.nextDouble(3), 0), 10, 0.03); }
             for (LivingEntity target : targets) { if (target == entity) continue; target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.MOTHER_GENERIC, entity), (float) (DamageLookup.lookupDamage(3, 1.0) * multiplier(entity))); target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 4, false, false, false)); target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40, 2, false, false, false)); target.invulnerableTime = 0; }
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(center, serverLevel)));
-        if (BeyonderData.isGriefingEnabled(entity)) for (BlockPos pos : AbilityUtil.getBlocksInCircle(serverLevel, center, 10, 30)) if (serverLevel.getBlockState(pos).is(Blocks.GRASS_BLOCK) || serverLevel.getBlockState(pos).is(Blocks.DIRT)) serverLevel.setBlockAndUpdate(pos, Blocks.ROOTED_DIRT.defaultBlockState());
+        if (BeyonderData.isGriefingEnabled(entity)) for (BlockPos pos : AbilityUtil.getBlocksInCircle(serverLevel, center, 10, 30)) { var state = serverLevel.getBlockState(pos); if (state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.DIRT)) serverLevel.setBlockAndUpdate(pos, Blocks.ROOTED_DIRT.defaultBlockState()); }
     }
 }

@@ -42,7 +42,7 @@ public class RainCallingAbility extends SelectableAbility {
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.RAIN, Vec3.atCenterOf(pos).add(0, 2.2, 0), 2, 0.3, 0.2, 0.3, 0.02);
                 if (!griefing) continue;
                 BlockState state = serverLevel.getBlockState(pos);
-                if (state.getBlock() instanceof BonemealableBlock bonemealableBlock && bonemealableBlock.isBonemealSuccess(serverLevel, serverLevel.random, pos, state)) bonemealableBlock.performBonemeal(serverLevel, serverLevel.random, pos, state);
+                if (state.getBlock() instanceof BonemealableBlock bonemealableBlock) { var random = net.minecraft.util.RandomSource.create(); if (bonemealableBlock.isBonemealSuccess(serverLevel, random, pos, state)) bonemealableBlock.performBonemeal(serverLevel, net.minecraft.util.RandomSource.create(), pos, state); }
             }
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(center, serverLevel)));
     }
