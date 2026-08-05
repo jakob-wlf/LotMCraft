@@ -84,7 +84,7 @@ public class BattleHypnosisAbility extends SelectableAbility {
     }
 
     private void single(Level level, LivingEntity entity){
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20* multiplier(entity)), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
 
         if(target == null) {
             if(entity instanceof ServerPlayer player) {

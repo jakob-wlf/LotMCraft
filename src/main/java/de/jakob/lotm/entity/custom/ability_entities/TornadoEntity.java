@@ -40,6 +40,8 @@ public class TornadoEntity extends Entity {
     private Vec3 randomDirection = Vec3.ZERO;
     private int directionChangeCooldown = 0;
 
+    protected boolean isEnvisioned = false;
+
     private static final float TARGET_HEIGHT_ABOVE_GROUND = 0.5f;
     public TornadoEntity(EntityType<?> entityType, Level level) {
         this(entityType, level, 1.0f, 4.0f, null, null, 1);
@@ -76,7 +78,9 @@ public class TornadoEntity extends Entity {
         builder.define(CASTER_UUID, Optional.empty());
         builder.define(TARGET_UUID, Optional.empty());
     }
-    
+
+    public void setEnvisioned(boolean value){isEnvisioned = value;}
+
     public float getSpeed() {
         return this.entityData.get(SPEED);
     }
@@ -232,8 +236,16 @@ public class TornadoEntity extends Entity {
                 }
                 float distance = this.distanceTo(entity);
                 if (distance < 6.0f) {
-                    entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.IMPACT), getDamage()/2);
-                    entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.WIND), getDamage()/2);
+                    if(isEnvisioned) {
+                        entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.IMAGINATION, caster), getDamage() / 2);
+
+                        entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.IMPACT, caster), getDamage() / 4);
+                        entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.WIND, caster), getDamage() / 4);
+                    }
+                    else{
+                        entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.IMPACT, caster), getDamage() / 2);
+                        entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.WIND, caster), getDamage() / 2);
+                    }
 
                     Vec3 direction = this.position().subtract(entity.position()).normalize();
                     entity.push(direction.x * 0.3, 0.3, direction.z * 0.3);

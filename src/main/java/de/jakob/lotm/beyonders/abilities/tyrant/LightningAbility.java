@@ -44,9 +44,7 @@ public class LightningAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        float mult = multiplier(entity);
-
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, (int) (25 * mult), 2, true);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 2, true);
         for(int i = 0; i < 35; i++) {
             BlockState state = level.getBlockState(BlockPos.containing(targetLoc.subtract(0, 1, 0)));
             if(state.getCollisionShape(level, BlockPos.containing(targetLoc)).isEmpty())

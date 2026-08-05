@@ -47,7 +47,7 @@ public class HeavenlyPunishmentAbility extends Ability {
             return;
         }
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, (int) (70* multiplier(entity)), 2, true);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 2, true);
         for(int i = 0; i < 35; i++) {
             BlockState state = level.getBlockState(BlockPos.containing(targetLoc.subtract(0, 1, 0)));
             if(state.getCollisionShape(level, BlockPos.containing(targetLoc)).isEmpty())

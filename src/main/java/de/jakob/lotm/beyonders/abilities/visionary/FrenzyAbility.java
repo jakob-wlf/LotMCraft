@@ -65,7 +65,7 @@ public class FrenzyAbility extends Ability {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (25 * Math.max(multiplier(entity), 1)), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
 
         if (level.isClientSide) {
             if(target != null)

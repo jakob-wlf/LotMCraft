@@ -26,6 +26,9 @@ public class PlacateAbility extends SelectableAbility {
         interactionRadius = 18;
         interactionCacheTicks = 20 * 5;
         canAlwaysBeUsed = true;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(1200f, 800f, 470f, 280f, 260f, 160f, 134f, 100f));
     }
 
     @Override
@@ -77,7 +80,7 @@ public class PlacateAbility extends SelectableAbility {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        var targetPlayer = AbilityUtil.getTargetEntity(entity, (int) (40* multiplier(entity)),
+        var targetPlayer = AbilityUtil.getTargetEntity(entity, baseDistance,
                 1f, true, true) == null ?
                 entity :  AbilityUtil.getTargetEntity(
                         entity, 40, 1f, true, true);
@@ -149,7 +152,7 @@ public class PlacateAbility extends SelectableAbility {
             return;
         if (!(entity instanceof ServerPlayer player)) return;
 
-        var target = AbilityUtil.getTargetEntity(entity, 40, 1f, true, true);
+        var target = AbilityUtil.getTargetEntity(entity, baseDistance, 1f, true, true);
 
         if(target != null)
             RingEffectManager.createRingForPlayer(target.getEyePosition().subtract(0, .4, 0), 2, 60, 255 / 255f, 211 / 255f, 92 / 255f, 1, .5f, .75f, (ServerLevel) entity.level(), player);

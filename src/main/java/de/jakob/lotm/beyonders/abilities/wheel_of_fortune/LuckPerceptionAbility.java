@@ -27,7 +27,7 @@ public class LuckPerceptionAbility extends ToggleAbility {
 
         if (entity.tickCount % 10 != 0) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 1.5f, true);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true);
         if(target == null){
             LuckComponent luck = entity.getData(ModAttachments.LUCK_COMPONENT.get());
             String name = entity.hasCustomName()

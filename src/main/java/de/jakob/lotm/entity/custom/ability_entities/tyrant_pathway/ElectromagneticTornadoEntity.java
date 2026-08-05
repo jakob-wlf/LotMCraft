@@ -242,9 +242,9 @@ public class ElectromagneticTornadoEntity extends Entity {
         UUID casterUUID = getCasterUUID();
 
         DamageSource matterSource =
-                ModDamageTypes.source(level(), ModDamageTypes.MATTER);
+                ModDamageTypes.source(level(), ModDamageTypes.SPACE_DESTRUCTION);
         DamageSource infoSource =
-                ModDamageTypes.source(level(), ModDamageTypes.INFORMATION);
+                ModDamageTypes.source(level(), ModDamageTypes.INFORMATION_DESTRUCTION);
 
         for (Entity entity : entities) {
             if (entity instanceof LivingEntity && entity != caster) {

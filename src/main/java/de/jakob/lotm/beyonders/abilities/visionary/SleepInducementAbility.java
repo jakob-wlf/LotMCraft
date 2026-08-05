@@ -74,7 +74,7 @@ public class SleepInducementAbility extends SelectableAbility {
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 10 * (int) Math.max(multiplier(entity)/4,1)).forEach(e -> {
+        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 50).forEach(e -> {
             if(!VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, e, this)){
                e.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 20 * 6* (int) Math.max(multiplier(entity)/4,1), 1, false, false, false));
             }
@@ -82,7 +82,7 @@ public class SleepInducementAbility extends SelectableAbility {
     }
 
     private void single(Level level, LivingEntity entity){
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 80, 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
 
         if(!(level instanceof ServerLevel)) {
             if(target != null) {

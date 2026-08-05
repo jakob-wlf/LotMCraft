@@ -42,9 +42,9 @@ public class ElectromagneticTornadoAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide()) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (12* multiplier(entity)), 3);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 3);
 
-        Vec3 pos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 2);
+        Vec3 pos = AbilityUtil.getTargetLocation(entity, baseDistance, 2);
 
         float damage = baseDamage;
 

@@ -118,7 +118,7 @@ public class WaterMasteryAbility extends SelectableAbility {
     }
 
     private void waterWall(ServerLevel level, LivingEntity entity) {
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 1.4f);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
 
         Vec3 perpendicular = VectorUtil.getPerpendicularVector(entity.getLookAngle()).normalize();
 

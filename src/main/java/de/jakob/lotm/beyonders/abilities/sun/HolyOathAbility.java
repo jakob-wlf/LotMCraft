@@ -15,11 +15,16 @@ import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class HolyOathAbility extends ToggleAbility {
     public HolyOathAbility(String id) {
         super(id, "morale_boost");
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(40f, 35f, 30f, 25f, 20f, 15f, 10f, 5f));
     }
 
     @Override
@@ -47,18 +52,6 @@ public class HolyOathAbility extends ToggleAbility {
         if(level.isClientSide)
             return;
 
-        int sequence = BeyonderData.getSequence(entity);
-        float tickCost;
-
-        if (sequence <= 4) {
-            tickCost = (6 - sequence) * 32.0f;
-        }
-        else {
-            tickCost = 8.0f;
-        }
-        int effectlevel =  sequence<=4? 1: 0;
-        BeyonderData.reduceSpirituality(entity, tickCost);
-
         if (BeyonderData.getSpirituality(entity) <= 0) {
             if (entity instanceof ServerPlayer player) {
                 player.connection.send(new ClientboundSetActionBarTextPacket(
@@ -74,7 +67,6 @@ public class HolyOathAbility extends ToggleAbility {
         ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, entity.getEyePosition().subtract(0, entity.getEyeHeight() / 2, 0), 3, .3, .6, .3, 0);
         entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false));
         entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 1, false, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 6, effectlevel, false, false, false));
         entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 2, false, false, false));
         entity.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 6, false, false, false));
         entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20 * 6, 1, false, false, false));

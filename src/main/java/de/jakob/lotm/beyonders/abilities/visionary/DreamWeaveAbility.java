@@ -100,7 +100,7 @@ public class DreamWeaveAbility extends SelectableAbility {
         if (level.isClientSide) return;
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 *multiplier(entity)), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if (target == null) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));
@@ -130,7 +130,7 @@ public class DreamWeaveAbility extends SelectableAbility {
         if (level.isClientSide) return;
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if (target == null) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));

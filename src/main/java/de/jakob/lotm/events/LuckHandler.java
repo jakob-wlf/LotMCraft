@@ -327,10 +327,12 @@ public class LuckHandler {
         if (target.isDeadOrDying() || target.level() != level) {
             combatTargets.remove(entity.getUUID());
             return;
-        };
-        float scalable_damage = (float) (Math.abs(luck) *0.0054+ 2.4722);
-        float damage =(float) lerpClamped(luck, 0, 3000, 1, scalable_damage);
-        target.hurt(target.damageSources().generic(), damage);
+        }
+
+//        float scalable_damage = (float) (Math.abs(luck) *0.0054+ 2.4722);
+//        float damage =(float) lerpClamped(luck, 0, 3000, 1, scalable_damage);
+
+        target.hurt(ModDamageTypes.source(level, ModDamageTypes.UNLUCK, entity), 5);
 
         Random random = new Random();
         target.setDeltaMovement(random.nextDouble(-.5, .5), random.nextDouble(0, .2), random.nextDouble(-.5, .5));
@@ -376,10 +378,11 @@ public class LuckHandler {
         long now = System.currentTimeMillis();
         if (lastTripTime.containsKey(uuid) && now - lastTripTime.get(uuid) < 2000) return;
         lastTripTime.put(uuid, now);
-        float scalable_damage = (float) (Math.abs(magnitude) *0.0077+ 3.3088);
+        //float scalable_damage = (float) (Math.abs(magnitude) *0.0077+ 3.3088);
         // scalable_damage = 20+(Math.abs(magnitude)*0.018);
-        float damage = (float) lerpClamped(magnitude, 0, 3000, 5, scalable_damage);
-        entity.hurt(ModDamageTypes.source(level, ModDamageTypes.UNLUCK), damage);
+        //float damage = (float) lerpClamped(magnitude, 0, 3000, 5, scalable_damage);
+
+        entity.hurt(ModDamageTypes.source(level, ModDamageTypes.UNLUCK), 5);
 
         Random random = new Random();
         entity.setDeltaMovement(random.nextDouble(-0.2, 0.2), 0.1, random.nextDouble(-0.2, 0.2));

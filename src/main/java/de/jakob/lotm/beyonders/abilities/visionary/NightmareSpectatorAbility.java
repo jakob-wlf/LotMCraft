@@ -68,7 +68,7 @@ public class NightmareSpectatorAbility extends Ability {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 200, 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
 
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));

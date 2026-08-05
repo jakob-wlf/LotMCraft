@@ -120,7 +120,7 @@ public class DreamTraversalAbility extends SelectableAbility {
     }
 
     private void jump(Level level, LivingEntity entity) {
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f);
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.no_target").withColor(0xFFff124d));
@@ -172,7 +172,7 @@ public class DreamTraversalAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (40 * multiplier(entity)), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f);
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.no_target").withColor(0xFFff124d));
