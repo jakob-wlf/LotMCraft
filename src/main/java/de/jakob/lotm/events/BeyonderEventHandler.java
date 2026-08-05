@@ -22,6 +22,7 @@ import de.jakob.lotm.network.packets.toClient.SyncKillCountPacket;
 import de.jakob.lotm.network.packets.toClient.SyncPsychologicalInvisibilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.PureIdealismUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
@@ -98,7 +99,6 @@ public class BeyonderEventHandler {
 
             serverPlayer.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, 20 * 5, 99));
             BeyonderData.recalculateCharStackModifiers(serverPlayer);
-            serverPlayer.getData(ModAttachments.LUCK_COMPONENT.get()).setLuck(0);
             PacketHandler.sendToPlayer(serverPlayer, new SyncPsychologicalInvisibilityPacket(PsychologicalInvisibilityAbility.invisiblePlayers));
 
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
@@ -196,7 +196,6 @@ public class BeyonderEventHandler {
             // Re-sync data on respawn
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
             BeyonderData.recalculateCharStackModifiers(serverPlayer);
-            serverPlayer.getData(ModAttachments.LUCK_COMPONENT.get()).setLuck(0);
             // Re-sync corruption so client-side HUD/shaders don't reset to zero
             float corruption = serverPlayer.getData(ModAttachments.CORRUPTION_COMPONENT).getCorruption();
             PacketHandler.sendToPlayer(serverPlayer, new de.jakob.lotm.network.packets.toClient.SyncCorruptionPacket(corruption, serverPlayer.getId()));
@@ -385,7 +384,6 @@ public class BeyonderEventHandler {
             // We DO NOT update BeyonderComponent here, as onPlayerDrops needs to compare component (old) with playerMap (new)
 
             BeyonderData.setDigestionProgress(player, 1.0f);
-            player.getData(ModAttachments.LUCK_COMPONENT.get()).setLuck(0);
             SefirahHandler.unclaimSefirot(player);
 
             if (Objects.equals(regressed.sequence(), LOTMCraft.NON_BEYONDER_SEQ)) {
@@ -653,7 +651,7 @@ public class BeyonderEventHandler {
 
             victim.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, 20 * 5, 99, false, false));
 
-            victim.getData(ModAttachments.LUCK_COMPONENT).setLuck(0);
+            LuckManager.resetLuck(victim);
         }
     }
 

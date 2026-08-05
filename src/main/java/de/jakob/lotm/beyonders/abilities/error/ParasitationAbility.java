@@ -75,6 +75,30 @@ public class ParasitationAbility extends SelectableAbility {
         }
     }
 
+    public static boolean cleanseParasite(ServerLevel serverLevel, LivingEntity host) {
+        ParasitationComponent component = host.getData(ModAttachments.PARASITE_COMPONENT);
+        if (!component.isParasited()) return false;
+        UUID parasiteUUID = component.getParasiteUUID();
+        component.setParasited(false);
+        component.setParasiteUUID(null);
+        if (parasiteUUID == null) return true;
+
+        ServerPlayer parasite = serverLevel.getServer().getPlayerList().getPlayer(parasiteUUID);
+        if (host.getUUID().equals(controllingMap.get(parasiteUUID))) {
+            controllingMap.remove(parasiteUUID);
+            controllingTimer.remove(parasiteUUID);
+            controllingLowerSeq.remove(parasiteUUID);
+            if (parasite != null) ControllingUtil.reset(parasite, serverLevel, true);
+        }
+        if (host.getUUID().equals(concealedMap.get(parasiteUUID))) {
+            concealedMap.remove(parasiteUUID);
+            if (parasite != null) {
+                parasite.setCamera(null);
+                parasite.setGameMode(GameType.SURVIVAL);
+            }
+        }
+        return true;
+    }
     private void controlling(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
         if (!(level instanceof ServerLevel serverLevel)) return;

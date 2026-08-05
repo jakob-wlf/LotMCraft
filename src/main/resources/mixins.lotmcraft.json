@@ -5,6 +5,7 @@
   "mixins": [
     "ContainerCraftingListenerMixin",
     "EntityAccessor",
+    "EntityTeamColorMixin",
     "MixinIngredient",
     "ServerGamePacketListenerImplMixin"
   ],

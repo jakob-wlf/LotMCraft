@@ -72,7 +72,7 @@ public class ApotheosisTickHandler {
 
         // Cycle through pathway colors for this player's sefirot group
         String pathway = BeyonderData.getPathway(player);
-        int[] colors = GreatOldOneManager.PATHWAY_TO_NAME.getOrDefault(pathway, "").equals("Eternal Darkness")
+        int[] colors = GreatOldOneManager.pathwayToName.getOrDefault(pathway, "").equals("Eternal Darkness")
                 ? ETERNAL_DARKNESS_COLORS : LORD_OF_MYSTERIES_COLORS;
         int colorInt = colors[(ticksLeft / 8) % colors.length];
         float red   = ((colorInt >> 16) & 0xFF) / 255.0f;

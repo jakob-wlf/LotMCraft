@@ -12,12 +12,16 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class PassiveCalamityAttraction extends PassiveAbilityItem {
+    private static final double minimumSpawnDistance = 4;
+    private static final double maximumSpawnDistance = 20;
+
     public PassiveCalamityAttraction(Properties properties) {
         super(properties);
     }
@@ -29,7 +33,17 @@ public class PassiveCalamityAttraction extends PassiveAbilityItem {
 
     private final Calamity[] calamities = new Calamity[]{new Tornado(), new Earthquake(), new Meteor()};
 
-    private final HashMap<UUID, Long> nextCalamity = new HashMap<>();
+    private static final HashMap<UUID, Long> nextCalamity = new HashMap<>();
+    private static final HashMap<UUID, Vec3> nextCalamityOffset = new HashMap<>();
+
+    public static long getTicksUntilCalamity(LivingEntity entity) {
+        return nextCalamity.getOrDefault(entity.getUUID(), -1L);
+    }
+
+    public static Vec3 getCalamityPosition(LivingEntity entity) {
+        Vec3 offset = nextCalamityOffset.get(entity.getUUID());
+        return offset == null ? null : entity.position().add(offset);
+    }
 
     @Override
     public void tick(Level level, LivingEntity entity) {
@@ -43,6 +57,7 @@ public class PassiveCalamityAttraction extends PassiveAbilityItem {
 
         if(!nextCalamity.containsKey(entity.getUUID())) {
             nextCalamity.put(entity.getUUID(), (long) random.nextInt(20 * 20, 20 * 90));
+            nextCalamityOffset.put(entity.getUUID(), createRandomCalamityOffset(serverLevel));
             return;
         }
 
@@ -57,10 +72,23 @@ public class PassiveCalamityAttraction extends PassiveAbilityItem {
 
         if(nextCalamity.get(entity.getUUID()) <= 0) {
             Calamity calamity = calamities[random.nextInt(calamities.length)];
-            calamity.spawnCalamity(serverLevel, entity.position().offsetRandom(serverLevel.random, 6f), (float) BeyonderData.getMultiplier(entity), BeyonderData.isGriefingEnabled(entity));
+            calamity.spawnCalamity(
+                    serverLevel,
+                    getCalamityPosition(entity),
+                    (float) BeyonderData.getMultiplier(entity),
+                    BeyonderData.isGriefingEnabled(entity),
+                    BeyonderData.getSequence(entity));
 
             nextCalamity.put(entity.getUUID(), (long) random.nextInt(20 * 20, 20 * 90));
+            nextCalamityOffset.put(entity.getUUID(), createRandomCalamityOffset(serverLevel));
         }
+    }
+
+    private static Vec3 createRandomCalamityOffset(ServerLevel level) {
+        double angle = level.random.nextDouble() * Math.PI * 2;
+        double distance = minimumSpawnDistance
+                + level.random.nextDouble() * (maximumSpawnDistance - minimumSpawnDistance);
+        return new Vec3(Math.cos(angle) * distance, 0, Math.sin(angle) * distance);
     }
 
     private static void sendActionBar(ServerPlayer player, Component message) {

@@ -2,6 +2,7 @@ package de.jakob.lotm.block;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.block.custom.BrewingCauldronBlock;
+import de.jakob.lotm.block.custom.KeyOfLightStatueBlock;
 import de.jakob.lotm.block.custom.MysticalRingBlock;
 import de.jakob.lotm.block.custom.RealityPortalBlock;
 import de.jakob.lotm.block.custom.VoidBlock;
@@ -81,6 +82,16 @@ public class ModBlocks {
             () -> new VoidBlock(BlockBehaviour.Properties.of()
                     .noLootTable()
                     .strength(-1.0f, 3600000.0F)
+            ));
+
+        public static final DeferredBlock<KeyOfLightStatueBlock> KEY_OF_LIGHT_STATUE = BLOCKS.register(
+            "key_of_light_statue",
+            () -> new KeyOfLightStatueBlock(BlockBehaviour.Properties.of()
+                    .noLootTable()
+                    .strength(-1.0f, 3600000.0F)
+                    .sound(SoundType.STONE)
+                    .lightLevel(state -> 10)
+                    .noOcclusion()
             ));
 
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {

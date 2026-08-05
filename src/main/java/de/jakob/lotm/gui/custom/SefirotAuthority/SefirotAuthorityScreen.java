@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.RequestGatheringScreenPacket;
+import de.jakob.lotm.network.packets.toServer.RequestProbabilityManipulationPacket;
 import de.jakob.lotm.network.packets.toServer.ToggleSefirotAuthorityAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PathwayInfos;
@@ -134,6 +135,16 @@ public class SefirotAuthorityScreen extends AbstractContainerScreen<SefirotAutho
             ).bounds(leftPos + 4, topPos + PANEL_HEIGHT - 20, 60, 16).build());
         }
 
+        if ("key_of_light".equals(menu.getSefirotName())) {
+            addRenderableWidget(Button.builder(
+                    Component.literal("Probability Manipulation").withStyle(ChatFormatting.GOLD),
+                    button -> {
+                        PacketHandler.sendToServer(new RequestProbabilityManipulationPacket());
+                        this.onClose();
+                    }
+            ).bounds(leftPos + PANEL_WIDTH - 124, topPos + 5, 120, 14).build());
+        }
+
         unlocked.clear();
         unlocked.addAll(menu.getUnlockedIds());
     }
@@ -164,8 +175,10 @@ public class SefirotAuthorityScreen extends AbstractContainerScreen<SefirotAutho
 
         // Title
         Component titleText = Component.literal("Sefirot Authority").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD);
-        g.drawString(this.font, titleText,
-                leftPos + PANEL_WIDTH / 2 - font.width(titleText) / 2, topPos + 6, 0xFFFFDD88, true);
+        int titleX = "key_of_light".equals(menu.getSefirotName())
+            ? leftPos + 6
+            : leftPos + PANEL_WIDTH / 2 - font.width(titleText) / 2;
+        g.drawString(this.font, titleText, titleX, topPos + 6, 0xFFFFDD88, true);
 
         // Hint
         Component hint = Component.literal("Enable abilities to add them to Introspect").withStyle(ChatFormatting.GRAY);

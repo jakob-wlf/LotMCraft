@@ -40,7 +40,7 @@ public class HonorificNamesEventHandler {
         pendingPrayers.computeIfAbsent(targetUUID, k -> new LinkedList<>()).add(prayer);
     }
 
-    /** Pending prayers per target player UUID: target → list of prayers addressed to them. */
+    /** Pending prayers per target player UUID: target -> list of prayers addressed to them. */
     private static final HashMap<UUID, LinkedList<PendingPrayer>> pendingPrayers = new HashMap<>();
 
     /** Returns a copy of the pending prayers for the given target player, or an empty list. */
@@ -98,7 +98,7 @@ public class HonorificNamesEventHandler {
 
         storePendingPrayer(sender, target);
 
-        // ── Gathering member / River-blessed sefirot access ───────────────
+        // -- Gathering member / River-blessed sefirot access ---------------
         GatheringData gd = GatheringData.get(server);
         boolean isMember  = gd.isMember(targetUUID, playerUUID);
         boolean isBlessed = RiverBlessingManager.isBlessed(playerUUID)
@@ -107,7 +107,7 @@ public class HonorificNamesEventHandler {
             handleSefirotAccess(sender, targetUUID, server);
             return;
         }
-        // ─────────────────────────────────────────────────────────────────
+        // -----------------------------------------------------------------
 
     }
 
@@ -206,7 +206,7 @@ public class HonorificNamesEventHandler {
                         BeyonderData.getSequence(sender),
                                 (int) sender.getX(), (int) sender.getY(), (int) sender.getZ())
                         .withStyle(ChatFormatting.GREEN))
-                .append(Component.literal("\n→ Open your ")
+                .append(Component.literal("\n\u2192 Open your ")
                         .withStyle(ChatFormatting.DARK_GREEN))
                 .append(Component.literal("Honorific Names menu")
                         .withStyle(style -> style
@@ -244,7 +244,7 @@ public class HonorificNamesEventHandler {
         SefirotData sefirotData = SefirotData.get(server);
         String ownerSefirot = sefirotData.getClaimedSefirot(ownerUUID);
         if (ownerSefirot == null || ownerSefirot.isEmpty()) {
-            member.sendSystemMessage(Component.literal("§cThe owner has no sefirot."));
+            member.sendSystemMessage(Component.literal("\u00A7cThe owner has no sefirot."));
             return;
         }
 
@@ -261,12 +261,12 @@ public class HonorificNamesEventHandler {
             } else {
                 GatheringData.returnPlayer(member, server);
             }
-            member.sendSystemMessage(Component.literal("§bYou have left the sefirot.").withStyle(ChatFormatting.AQUA));
+            member.sendSystemMessage(Component.literal("\u00A7bYou have left the sefirot.").withStyle(ChatFormatting.AQUA));
         } else {
             ResourceKey<net.minecraft.world.level.Level> dimKey = ResourceKey.create(Registries.DIMENSION, sefirotDimLoc);
             ServerLevel sefirotLevel = server.getLevel(dimKey);
             if (sefirotLevel == null) {
-                member.sendSystemMessage(Component.literal("§cSefirot dimension not loaded."));
+                member.sendSystemMessage(Component.literal("\u00A7cSefirot dimension not loaded."));
                 return;
             }
 
@@ -275,9 +275,9 @@ public class HonorificNamesEventHandler {
                 // as audience BEFORE teleporting so the dimension-change guard lets them through.
                 RiverBlessingManager.markInAudience(member);
                 member.teleportTo(sefirotLevel,
-                        RiverBlessingManager.AUDIENCE_X,
-                        RiverBlessingManager.AUDIENCE_Y,
-                        RiverBlessingManager.AUDIENCE_Z,
+                        RiverBlessingManager.audienceX,
+                        RiverBlessingManager.audienceY,
+                        RiverBlessingManager.audienceZ,
                         member.getYRot(), member.getXRot());
             } else {
                 // Castle / Chaos Sea: save location and mark gathered BEFORE teleporting so
@@ -287,7 +287,7 @@ public class HonorificNamesEventHandler {
                 double[] pos = GatheringData.CHAIR_POSITIONS[0];
                 member.teleportTo(sefirotLevel, pos[0], pos[1], pos[2], member.getYRot(), member.getXRot());
             }
-            member.sendSystemMessage(Component.literal("§bYou have entered the sefirot.").withStyle(ChatFormatting.AQUA));
+            member.sendSystemMessage(Component.literal("\u00A7bYou have entered the sefirot.").withStyle(ChatFormatting.AQUA));
         }
     }
 }

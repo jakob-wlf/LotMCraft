@@ -287,6 +287,11 @@ public class DivinationUtil {
         return addedValue;
     }
 
+    public static void grantAntiDivination(LivingEntity entity, int durationTicks, int power) {
+        if (entity.level().isClientSide() || durationTicks <= 0 || power <= 0) return;
+        entity.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, durationTicks, power, false, false));
+    }
+
     // get dimension
     private static int getConcealmentDimension(ServerPlayer serverPlayer){
         int addedValue = 0;

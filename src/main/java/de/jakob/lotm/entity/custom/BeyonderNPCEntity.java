@@ -276,6 +276,14 @@ public class BeyonderNPCEntity extends PathfinderMob {
         }
     }
 
+    public void restoreNormalNpcState() {
+        setPuppetWarrior(false);
+        setMaxLifetimeIfPuppet(0);
+        this.goalSelector.getAvailableGoals().clear();
+        this.targetSelector.getAvailableGoals().clear();
+        registerGoals();
+        setTarget(null);
+    }
     // ========================= Tick Logic =========================
     @Override
     public void tick() {

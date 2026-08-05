@@ -212,9 +212,9 @@ public class SefirahHandler {
                 }
 
                 player.teleportTo(riverLevel,
-                        RiverBlessingManager.AUDIENCE_X,
-                        RiverBlessingManager.AUDIENCE_Y,
-                        RiverBlessingManager.AUDIENCE_Z,
+                        RiverBlessingManager.audienceX,
+                        RiverBlessingManager.audienceY,
+                        RiverBlessingManager.audienceZ,
                         0,
                         0);
                 SefrotInvasionManager.recordOwnerEntry(player);

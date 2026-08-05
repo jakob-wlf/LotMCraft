@@ -47,12 +47,12 @@ import java.util.*;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class RiverOfEternalDarknessEventHandler {
 
-    private static final String RIVER_SEFIROT_ID = "river_of_eternal_darkness";
-    private static final int REQUIRED_TICKS = 20 * 60 * 5;
-    private static final float SANITY_DRAIN_PER_SECOND = 0.05f;
-    private static final float DAMAGE_PER_SECOND = 5.0f;
+    private static final String riverSefirotId = "river_of_eternal_darkness";
+    private static final int requiredTicks = 20 * 60 * 5;
+    private static final float sanityDrainPerSecond = 0.05f;
+    private static final float damagePerSecond = 5.0f;
 
-    private static final Set<String> ALLOWED_PATHWAYS = Set.of(
+    private static final Set<String> allowedPathways = Set.of(
             "darkness",
             "death",
             "twilight_giant"
@@ -71,7 +71,7 @@ public class RiverOfEternalDarknessEventHandler {
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        // NOTE: blessings are intentionally NOT cleared on logout — they persist until revoked
+        // NOTE: blessings are intentionally NOT cleared on logout - they persist until revoked
         RiverBlessingManager.clearAudience(player.server);
         // If this player was in the audience, just unmark them (can't teleport offline player)
         if (RiverBlessingManager.isInAudience(player.getUUID())) {
@@ -100,7 +100,7 @@ public class RiverOfEternalDarknessEventHandler {
                 && !event.getTo().equals(net.minecraft.world.level.Level.OVERWORLD)) {
             resetRitual(player, true);
             player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                    "§8Accommodation ritual interrupted — you must remain in the Overworld."));
+                    "\u00A78Accommodation ritual interrupted - you must remain in the Overworld."));
         }
 
         // Block unauthorised entry into the River dimension
@@ -114,9 +114,9 @@ public class RiverOfEternalDarknessEventHandler {
 
         if (isOwner || isTrapped || isAudience || isInvading) return;
 
-        // Unauthorised — teleport back to overworld spawn
+        // Unauthorised - teleport back to overworld spawn
         player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                "§4The River of Eternal Darkness rejects your uninvited presence."));
+                "\u00A74The River of Eternal Darkness rejects your uninvited presence."));
         net.minecraft.core.BlockPos spawn = player.server.overworld().getSharedSpawnPos();
         player.teleportTo(player.server.overworld(),
                 spawn.getX() + 0.5, spawn.getY(), spawn.getZ() + 0.5,
@@ -210,33 +210,33 @@ public class RiverOfEternalDarknessEventHandler {
             ensureWellBase(player);
         }
 
-        entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.DARKNESS_GENERIC), DAMAGE_PER_SECOND);
+        entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.DARKNESS_GENERIC), damagePerSecond);
 
         if (entity instanceof Player player) {
-            player.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(-SANITY_DRAIN_PER_SECOND, player);
+            player.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(-sanityDrainPerSecond, player);
         }
     }
 
     private static boolean isAccommodating(ServerPlayer player) {
         if (!BeyonderData.isBeyonder(player)) return false;
-        if (SefirotData.get(player.server).isSefirotClaimed(RIVER_SEFIROT_ID)) return false;
+        if (SefirotData.get(player.server).isSefirotClaimed(riverSefirotId)) return false;
         if (SefirahHandler.hasSefirot(player)) return false;
         String pathway = BeyonderData.getPathway(player);
-        if (!ALLOWED_PATHWAYS.contains(pathway)) return false;
+        if (!allowedPathways.contains(pathway)) return false;
         // Accommodation is now started exclusively by drinking the bottle
         return ritualTicks.containsKey(player.getUUID());
     }
 
     private static boolean isEligibleAccommodator(ServerPlayer player) {
         if (!BeyonderData.isBeyonder(player)) return false;
-        if (SefirotData.get(player.server).isSefirotClaimed(RIVER_SEFIROT_ID)) return false;
+        if (SefirotData.get(player.server).isSefirotClaimed(riverSefirotId)) return false;
         if (SefirahHandler.hasSefirot(player)) return false;
         String pathway = BeyonderData.getPathway(player);
-        return ALLOWED_PATHWAYS.contains(pathway);
+        return allowedPathways.contains(pathway);
     }
 
     private static boolean isRiverOwner(ServerPlayer player) {
-        return RIVER_SEFIROT_ID.equals(SefirahHandler.getClaimedSefirot(player));
+        return riverSefirotId.equals(SefirahHandler.getClaimedSefirot(player));
     }
 
     private static void tickRitual(ServerPlayer player) {
@@ -245,7 +245,7 @@ public class RiverOfEternalDarknessEventHandler {
             return;
         }
 
-        if (SefirotData.get(player.server).isSefirotClaimed(RIVER_SEFIROT_ID)) {
+        if (SefirotData.get(player.server).isSefirotClaimed(riverSefirotId)) {
             resetRitual(player, true);
             return;
         }
@@ -256,7 +256,7 @@ public class RiverOfEternalDarknessEventHandler {
         }
 
         String pathway = BeyonderData.getPathway(player);
-        if (!ALLOWED_PATHWAYS.contains(pathway)) {
+        if (!allowedPathways.contains(pathway)) {
             resetRitual(player, true);
             return;
         }
@@ -284,9 +284,9 @@ public class RiverOfEternalDarknessEventHandler {
             ParticleUtil.spawnParticles(sl, dustForPathway("twilight_giant"), center, 80,  0.6, 0.6, 0.6, 0.02);
         }
 
-        PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(ticks, REQUIRED_TICKS));
+        PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(ticks, requiredTicks));
 
-        if (ticks < REQUIRED_TICKS) {
+        if (ticks < requiredTicks) {
             return;
         }
 
@@ -296,7 +296,7 @@ public class RiverOfEternalDarknessEventHandler {
             MovableEffectManager.removeEffect(finishBeamId, sl);
         }
 
-        boolean claimed = SefirahHandler.claimSefirot(player, RIVER_SEFIROT_ID, true);
+        boolean claimed = SefirahHandler.claimSefirot(player, riverSefirotId, true);
         if (claimed) {
             player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("lotm.sefirot.river_claimed"));
         } else {
@@ -331,22 +331,22 @@ public class RiverOfEternalDarknessEventHandler {
     public static void beginAccommodationFromBottle(ServerPlayer player) {
         if (!BeyonderData.isBeyonder(player)) {
             player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                    "§8The liquid dissipates — you have no beyonder power to resonate with it."));
+                    "\u00A78The liquid dissipates - you have no beyonder power to resonate with it."));
             return;
         }
         if (!player.level().dimension().equals(net.minecraft.world.level.Level.OVERWORLD)) {
             player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                    "§8The River's essence requires the foundation of the Overworld. Return to the surface before attempting accommodation."));
+                    "\u00A78The River's essence requires the foundation of the Overworld. Return to the surface before attempting accommodation."));
             return;
         }
-        if (SefirotData.get(player.server).isSefirotClaimed(RIVER_SEFIROT_ID)) {
+        if (SefirotData.get(player.server).isSefirotClaimed(riverSefirotId)) {
             player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                    "§8The River already has an owner. The water stirs but cannot bind to you."));
+                    "\u00A78The River already has an owner. The water stirs but cannot bind to you."));
             return;
         }
         if (SefirahHandler.hasSefirot(player)) {
             player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                    "§8You already own a Sefirot. The water cannot change your nature."));
+                    "\u00A78You already own a Sefirot. The water cannot change your nature."));
             return;
         }
 
@@ -374,9 +374,9 @@ public class RiverOfEternalDarknessEventHandler {
             MovableEffectManager.removeEffect(beamId, player);
         }
 
-        PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(newProgress, REQUIRED_TICKS));
+        PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(newProgress, requiredTicks));
         player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                "§5The River's essence flows through you — the accommodation has begun..."));
+                "\u00A75The River's essence flows through you - the accommodation has begun..."));
     }
 
     private static DustParticleOptions dustForPathway(String pathway) {

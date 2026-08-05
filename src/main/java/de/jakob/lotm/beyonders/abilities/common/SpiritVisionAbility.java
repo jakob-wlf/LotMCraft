@@ -51,7 +51,7 @@ public class SpiritVisionAbility extends ToggleAbility {
                         "hermit", 9,
                         "demoness", 7,
                         "mother", 8,
-                        "wheel_of_fortune", 9,
+                        "wheel_of_fortune", 7,
                         "darkness", 7,
                         "abyss", 9,
                         "red_priest", 8
@@ -62,6 +62,20 @@ public class SpiritVisionAbility extends ToggleAbility {
                 reqs.put(pathway, 5);
         }
         return reqs;
+    }
+
+    @Override
+    public void onAbilityUse(Level level, LivingEntity entity) {
+        if (!level.isClientSide() && isPermanentlyActiveFor(entity) && isActiveForEntity(entity)) {
+            return;
+        }
+        super.onAbilityUse(level, entity);
+    }
+
+    public static boolean isPermanentlyActiveFor(LivingEntity entity) {
+        int sequence = BeyonderData.getSequence(entity);
+        return "wheel_of_fortune".equals(BeyonderData.getPathway(entity))
+                && (sequence == 9 || sequence == 8);
     }
 
     @Override
@@ -267,6 +281,11 @@ public class SpiritVisionAbility extends ToggleAbility {
     @Override
     protected float getSpiritualityCost() {
         return .5f;
+    }
+
+    @Override
+    protected boolean shouldConsumeSpirituality(LivingEntity entity) {
+        return !isPermanentlyActiveFor(entity) && super.shouldConsumeSpirituality(entity);
     }
 
 }

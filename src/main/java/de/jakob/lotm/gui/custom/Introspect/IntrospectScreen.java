@@ -132,7 +132,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private int maxCopiedScroll = 0;
 
     private static final java.util.Set<String> GOO_ELIGIBLE_PATHWAYS = java.util.Set.of(
-            "fool", "error", "door", "darkness", "death", "twilight_giant");
+            "fool", "error", "door", "darkness", "death", "twilight_giant", "wheel_of_fortune");
     private record SubAbilityEntry(Ability parent, int subIndex) {}
 
 
@@ -152,7 +152,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 int subIdx = Integer.parseInt(potentialIndex);
                 return new ParsedAbilityId(withoutCopied.substring(0, lastColon), subIdx, isCopied);
             } catch (NumberFormatException ignored) {
-                // Not a number — treat the whole thing as the base ID
+                // Not a number - treat the whole thing as the base ID
             }
         }
 
@@ -185,7 +185,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private void initializeAbilities() {
         availableAbilities.clear();
         subAbilityEntries.clear();
-        // Do NOT reset abilitiesScrollOffset here — callers that genuinely need a reset
+        // Do NOT reset abilitiesScrollOffset here - callers that genuinely need a reset
         // (e.g. tab switch) do so explicitly before calling this method.
 
         if (showAllAbilities) {
@@ -218,7 +218,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         if (characteristic.stack() <= 0) {
                             continue;
                         }
-                        // Skip the GOO marker entry — it has no ability row of its own
+                        // Skip the GOO marker entry - it has no ability row of its own
                         if (characteristic.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) {
                             continue;
                         }
@@ -406,7 +406,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (keybind.equalsIgnoreCase("Middle Mouse Button")) return "MMB";
         if (keybind.equalsIgnoreCase("Left Mouse Button")) return "LMB";
         if (keybind.equalsIgnoreCase("Right Mouse Button")) return "RMB";
-        if (keybind.length() > 5) return keybind.substring(0, 4) + "…";
+        if (keybind.length() > 5) return keybind.substring(0, 4) + "\u2026";
         return keybind;
     }
 
@@ -424,26 +424,17 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 .min().orElse(LOTMCraft.NON_BEYONDER_SEQ);
         if (ownSeq != 0) return false;
 
-        // 2. Must have ≥3 seq-1 chars of own path
-        int seq1Stack = charList.stream()
-                .filter(c -> c.pathway().equals(ownPath) && c.sequence() == 1)
-                .mapToInt(de.jakob.lotm.util.playerMap.Characteristic::stack)
-                .findFirst().orElse(0);
-        if (seq1Stack < 3) return false;
-
-        // 3. Must be seq 0 of every neighboring path
-        // Infer sefirot from pathway group
-        java.util.List<String> castle = java.util.List.of("fool", "error", "door");
-        String sefirot = castle.contains(ownPath) ? "sefirah_castle" : "river_of_eternal_darkness";
-        java.util.List<String> neighbors = de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager.NEIGHBORING_PATHS
+        // 2. Must have one seq-1 characteristic from every other pathway in the sefirot domain
+        String sefirot = ClientData.getClaimedSefirot();
+        java.util.List<String> neighbors = de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager.neighboringPaths
                 .getOrDefault(sefirot, java.util.Collections.emptyList());
         for (String neighborPath : neighbors) {
             if (neighborPath.equals(ownPath)) continue;
-            int neighborSeq = charList.stream()
-                    .filter(c -> c.pathway().equals(neighborPath))
-                    .mapToInt(de.jakob.lotm.util.playerMap.Characteristic::sequence)
-                    .min().orElse(LOTMCraft.NON_BEYONDER_SEQ);
-            if (neighborSeq != 0) return false;
+            int seq1Stack = charList.stream()
+                .filter(c -> c.pathway().equals(neighborPath) && c.sequence() == 1)
+                .mapToInt(de.jakob.lotm.util.playerMap.Characteristic::stack)
+                .findFirst().orElse(0);
+            if (seq1Stack < 1) return false;
         }
         return true;
     }
@@ -455,9 +446,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         // Calculate base position
         int baseLeftPos = this.leftPos;
 
-        // ── Wheels (Daily Spin / Sell Soul / Char Exchange) ───────────────────
+        // -- Wheels (Daily Spin / Sell Soul / Char Exchange) -------------------
         Button wheelsButton = Button.builder(
-                Component.literal("✦ Wheels").withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE),
+            Component.literal("\u2726 Wheels").withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE),
                 b -> {
                     if (minecraft != null) {
                         minecraft.setScreen(new de.jakob.lotm.gui.custom.WheelSelection.WheelSelectionScreen(
@@ -636,7 +627,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             boolean canTranscend = clientMeetsTranscendConditions();
 
             Button transcendButton = Button.builder(
-                            Component.literal("✦ Transcend the Sequence ✦")
+                            Component.literal("\u2726 Transcend the Sequence \u2726")
                                     .withStyle(canTranscend ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.DARK_GRAY),
                             button -> {
                                 if (canTranscend) PacketHandler.sendToServer(new RequestTranscendencePacket());
@@ -760,7 +751,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (currentTab == Tab.ABILITY_WHEEL) wheelTabButton.active = false;
         else if (currentTab == Tab.ABILITY_BAR) barTabButton.active = false;
 
-        // Sub-abilities toggle — only for non-copied tabs
+        // Sub-abilities toggle - only for non-copied tabs
         if (showSubToggle) {
             Button toggleSubAbilitiesButton = Button.builder(
                             Component.literal(showSubAbilities ? "Sub: ON" : "Sub: OFF")
@@ -947,7 +938,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             }
 
             if (actingName.getString().length() > 24) {
-                actingName = Component.literal(actingName.getString().substring(0, 21).strip() + "…");
+                actingName = Component.literal(actingName.getString().substring(0, 21).strip() + "\u2026");
             }
             int textY = listY + (i - startIndex) * lineHeight + 5 + skipLineAmount * lineHeight;
             guiGraphics.drawString(this.font, "- ", panelX + 5, textY, BeyonderData.pathwayInfos.get(menu.getPathway()).color(), false);
@@ -1105,11 +1096,11 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             String questId = completedQuests.get(i);
             Component questName = Component.translatable("lotm.quest.impl." + questId);
             if (questName.getString().length() > 24) {
-                questName = Component.literal(questName.getString().substring(0, 21).strip() + "…");
+                questName = Component.literal(questName.getString().substring(0, 21).strip() + "\u2026");
             }
 
             int textY = listY + (i - startIndex) * lineHeight;
-            guiGraphics.drawString(this.font, "✓ ", panelX + 5, textY, 0xFF4CAF50, false);
+            guiGraphics.drawString(this.font, "\u2713 ", panelX + 5, textY, 0xFF4CAF50, false);
             guiGraphics.drawString(this.font, questName, panelX + 15, textY, 0xFFCCCCCC, false);
         }
 
@@ -1204,7 +1195,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 .withColor(BeyonderData.pathwayInfos.get(menu.getPathway()).color());
 
         if (questName.getString().length() > 24) {
-            questName = Component.literal(questName.getString().substring(0, 21).strip() + "…")
+            questName = Component.literal(questName.getString().substring(0, 21).strip() + "\u2026")
                     .withStyle(ChatFormatting.BOLD)
                     .withColor(BeyonderData.pathwayInfos.get(menu.getPathway()).color());
         }
@@ -1429,6 +1420,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                         .append(Component.literal(spiritualityCost + "").withStyle(ChatFormatting.DARK_PURPLE)));
             }
 
+            int luckCost = hoveredAbility.luckCost();
+            if (luckCost > 0) {
+                tooltipLines.add(Component.literal("Luck Cost: ").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.literal(Integer.toString(luckCost)).withStyle(ChatFormatting.GOLD)));
+            }
+
             guiGraphics.renderTooltip(this.font, tooltipLines, java.util.Optional.empty(), mouseX, mouseY);
         }
     }
@@ -1602,7 +1599,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         String tabLabel = "Copied";
 
-        // Upper panel – copied ability pool
+        // Upper panel - copied ability pool
         guiGraphics.fill(panelX, panelY, panelX + ABILITIES_PANEL_WIDTH, panelY + COPIED_PANEL_HEIGHT, 0xCC000000);
         guiGraphics.renderOutline(panelX, panelY, ABILITIES_PANEL_WIDTH, COPIED_PANEL_HEIGHT, 0xFFAAAAAA);
         guiGraphics.drawString(this.font,

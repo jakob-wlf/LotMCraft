@@ -20,24 +20,24 @@ import java.util.concurrent.ConcurrentHashMap;
  * Central manager for Sefirot Authority effects.
  *
  * Each sefirot grants the owner:
- *   1. A passive protection – divination (and for River: concealment) fails for non-sefirot attackers.
+ *   1. A passive protection - divination (and for River: concealment) fails for non-sefirot attackers.
  *   2. Cross-path ability access based on sequence:
- *        Seq 2 → abilities at exactly (seq + 2) = seq 4 from neighbouring paths
- *        Seq 1 → abilities at exactly (seq + 1) = seq 2 from neighbouring paths
- *        Seq 0 → ALL abilities at seq 1+ from neighbouring paths
- *        Seq 3+ → no cross-path bonus
+ *        Seq 2 -> abilities at exactly (seq + 2) = seq 4 from neighbouring paths
+ *        Seq 1 -> abilities at exactly (seq + 1) = seq 2 from neighbouring paths
+ *        Seq 0 -> ALL abilities at seq 1+ from neighbouring paths
+ *        Seq 3+ -> no cross-path bonus
  *
  * Neighbouring paths per sefirot (edit these lists to customise):
- *   sefirah_castle              → fool, error, door
- *   river_of_eternal_darkness   → darkness, death, twilight_giant
- *   chaos_sea                   → sun, tyrant, visionary, hanged_man, white_tower
+ *   sefirah_castle              -> fool, error, door
+ *   river_of_eternal_darkness   -> darkness, death, twilight_giant
+ *   chaos_sea                   -> sun, tyrant, visionary, hanged_man, white_tower
  */
 public class SefirotAuthorityManager {
 
-    // ── Neighbouring paths ────────────────────────────────────────────────────
+    // -- Neighbouring paths ----------------------------------------------------
 
     /** Pathways whose abilities can be borrowed by the owner of each sefirot. */
-    public static final Map<String, List<String>> NEIGHBORING_PATHS;
+    public static final Map<String, List<String>> neighboringPaths;
     static {
         Map<String, List<String>> m = new HashMap<>();
         m.put("sefirah_castle",            Arrays.asList("fool", "error", "door"));
@@ -49,24 +49,24 @@ public class SefirotAuthorityManager {
         m.put("tenebrous_world",           Arrays.asList("abyss", "chained"));
         m.put("knowledge_moor",            Arrays.asList("hermit", "paragon"));
         m.put("key_of_light",              Arrays.asList("wheel_of_fortune"));
-        NEIGHBORING_PATHS = Collections.unmodifiableMap(m);
+        neighboringPaths = Collections.unmodifiableMap(m);
     }
 
-    // ── Passive protection sets (server-only, in-memory) ─────────────────────
+    // -- Passive protection sets (server-only, in-memory) ---------------------
 
     /**
      * Players whose divination protection is active.
      * Divination from a NON-sefirot owner targeting a player in this set will fail.
      */
-    public static final Set<UUID> SEFIROT_DIVINATION_IMMUNE = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    public static final Set<UUID> sefirotDivinationImmune = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     /**
      * Players with River-of-Eternal-Darkness passive concealment.
      * Can be checked by teleportation / location abilities to also block those.
      */
-    public static final Set<UUID> RIVER_CONCEALMENT_ACTIVE = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    public static final Set<UUID> riverConcealmentActive = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    // ── Public API ────────────────────────────────────────────────────────────
+    // -- Public API ------------------------------------------------------------
 
     /**
      * Returns the neighbour paths applicable to the player's sefirot, excluding the player's own pathway.
@@ -74,7 +74,7 @@ public class SefirotAuthorityManager {
     public static List<String> getNeighborPaths(ServerPlayer player) {
         String sefirot = SefirahHandler.getClaimedSefirot(player);
         String playerPathway = BeyonderData.getPathway(player);
-        List<String> all = NEIGHBORING_PATHS.getOrDefault(sefirot, Collections.emptyList());
+        List<String> all = neighboringPaths.getOrDefault(sefirot, Collections.emptyList());
         List<String> result = new ArrayList<>();
         for (String p : all) {
             if (!p.equals(playerPathway)) result.add(p);
@@ -83,7 +83,7 @@ public class SefirotAuthorityManager {
     }
 
     public static boolean isSefirotDimension(ResourceKey<Level> dimension) {
-        return NEIGHBORING_PATHS.containsKey(dimension.location().getPath());
+        return neighboringPaths.containsKey(dimension.location().getPath());
     }
 
     public static boolean blocksEnvisioningTarget(ServerPlayer target, ServerPlayer caster) {
@@ -147,19 +147,19 @@ public class SefirotAuthorityManager {
      * Returns true if the divination attempt on {@code targetUUID} should be blocked.
      *
      * Covers two cases:
-     *   1. The target owns a sefirot (SEFIROT_DIVINATION_IMMUNE set).
+     *   1. The target owns a sefirot (sefirotDivinationImmune set).
      *   2. The target has been blessed by the River of Eternal Darkness
      *      ({@link RiverBlessingManager#blocksDivination}).
      *
-     * Rules for the Sefirah Castle owner (SEFIROT_DIVINATION_IMMUNE):
-     *   – Inside the castle dimension: nobody can divine them (absolute block).
-     *   – Outside the castle: only diviners who are 4+ sequences stronger can pierce the protection.
-     *     Other sefirot owners are NOT exempt — the sequence gap rule applies to everyone.
+     * Rules for the Sefirah Castle owner (sefirotDivinationImmune):
+     *   - Inside the castle dimension: nobody can divine them (absolute block).
+     *   - Outside the castle: only diviners who are 4+ sequences stronger can pierce the protection.
+     *     Other sefirot owners are NOT exempt - the sequence gap rule applies to everyone.
      */
     public static boolean blocksDivination(UUID targetUUID, ServerPlayer diviner) {
         // Check River blessing first (separate rule set)
         if (RiverBlessingManager.blocksDivination(targetUUID, diviner)) return true;
-        if (!SEFIROT_DIVINATION_IMMUNE.contains(targetUUID)) return false;
+        if (!sefirotDivinationImmune.contains(targetUUID)) return false;
 
         // Check whether the target player is currently in the Sefirah Castle dimension
         ServerPlayer targetPlayer = diviner.server.getPlayerList().getPlayer(targetUUID);
@@ -171,7 +171,7 @@ public class SefirotAuthorityManager {
 
         // Outside the castle: allow divination only if the diviner is at least 4 sequences
         // stronger than the owner (lower seq number = more powerful). Everyone else is blocked.
-        // Example: owner is seq 9 → only seq 5 or stronger (seq ≤ 5) can divine them.
+        // Example: owner is seq 9 -> only seq 5 or stronger (seq <= 5) can divine them.
         int divinerSeq = BeyonderData.getSequence(diviner);
         int targetSeq = BeyonderData.playerMap != null
                 ? BeyonderData.playerMap.get(targetUUID).map(d -> d.sequence()).orElse(LOTMCraft.NON_BEYONDER_SEQ)
@@ -182,8 +182,8 @@ public class SefirotAuthorityManager {
 
     /**
      * Returns true if a targeting ability on {@code targetUUID} should be blocked because:
-     *   – the target has Elevated Concealment active (River of Eternal Darkness owner), AND
-     *   – the caster does not own any sefirot.
+     *   - the target has Elevated Concealment active (River of Eternal Darkness owner), AND
+     *   - the caster does not own any sefirot.
      */
     public static boolean blocksConcealment(UUID targetUUID, ServerPlayer caster) {
         return ElevatedConcealmentAbility.ELEVATED_CONCEALMENT_ACTIVE.contains(targetUUID)
@@ -224,15 +224,15 @@ public class SefirotAuthorityManager {
      */
     public static void clearPlayerAuthority(ServerPlayer player) {
         player.getData(ModAttachments.SEFIROT_UNLOCKED_ABILITIES).clear();
-        SEFIROT_DIVINATION_IMMUNE.remove(player.getUUID());
-        RIVER_CONCEALMENT_ACTIVE.remove(player.getUUID());
+        sefirotDivinationImmune.remove(player.getUUID());
+        riverConcealmentActive.remove(player.getUUID());
         // Sync empty state to client
         PacketHandler.sendToPlayer(player, new SyncSefirotAuthorityDataPacket(Collections.emptyList(), Collections.emptyList(), false, ""));
     }
 
-    // ── Blacklisted ability IDs (never offered as cross-path abilities) ──────
+    // -- Blacklisted ability IDs (never offered as cross-path abilities) ------
 
-    private static final Set<String> BLACKLISTED_ABILITY_IDS = Set.of(
+    private static final Set<String> blacklistedAbilityIds = Set.of(
             "angel_authority_ability",
             "spirit_vision_ability",
             "ally_ability",
@@ -241,14 +241,14 @@ public class SefirotAuthorityManager {
             "divination_ability"
     );
 
-    // ── Private helpers ───────────────────────────────────────────────────────
+    // -- Private helpers -------------------------------------------------------
 
     private static Set<String> calculateCrossPathAbilities(String sefirot,
                                                             String playerPathway,
                                                             int    playerSequence) {
         Set<String> result    = new HashSet<>();
 
-        List<String> neighbors = NEIGHBORING_PATHS.getOrDefault(sefirot, Collections.emptyList());
+        List<String> neighbors = neighboringPaths.getOrDefault(sefirot, Collections.emptyList());
         if (neighbors.isEmpty()) {
             return result;
         }
@@ -263,7 +263,7 @@ public class SefirotAuthorityManager {
                 if (neighborPath.equals(playerPathway)) continue;
                 Set<Ability> toGrant = LOTMCraft.abilityHandler.getByPathwayAndSequence(neighborPath, 0);
                 for (Ability ability : toGrant) {
-                    if (!BLACKLISTED_ABILITY_IDS.contains(ability.getId())) {
+                    if (!blacklistedAbilityIds.contains(ability.getId())) {
                         result.add(ability.getId());
                     }
                 }
@@ -272,9 +272,9 @@ public class SefirotAuthorityManager {
         }
 
         // Minimum sequence required on the neighbouring path:
-        //   Own seq 0  → neighbours at seq 1 and above
-        //   Own seq 1  → neighbours at seq 2 and above
-        //   Own seq 2  → neighbours at seq 4 and above
+        //   Own seq 0  -> neighbours at seq 1 and above
+        //   Own seq 1  -> neighbours at seq 2 and above
+        //   Own seq 2  -> neighbours at seq 4 and above
         int minNeighbourSeq = (playerSequence == 0) ? 1
                             : (playerSequence == 1) ? 2
                             : 4;
@@ -284,7 +284,7 @@ public class SefirotAuthorityManager {
 
             Set<Ability> toGrant = LOTMCraft.abilityHandler.getByPathwayAndSequence(neighborPath, minNeighbourSeq);
             for (Ability ability : toGrant) {
-                if (!BLACKLISTED_ABILITY_IDS.contains(ability.getId())) {
+                if (!blacklistedAbilityIds.contains(ability.getId())) {
                     result.add(ability.getId());
                 }
             }
@@ -297,18 +297,22 @@ public class SefirotAuthorityManager {
         UUID uuid = player.getUUID();
 
         // Clear previous passive state for this player
-        SEFIROT_DIVINATION_IMMUNE.remove(uuid);
-        RIVER_CONCEALMENT_ACTIVE.remove(uuid);
+        sefirotDivinationImmune.remove(uuid);
+        riverConcealmentActive.remove(uuid);
 
         switch (sefirot) {
             case "sefirah_castle" -> {
                 // Sefirah Castle Authority: divination on owner fails for non-sefirot diviners
-                SEFIROT_DIVINATION_IMMUNE.add(uuid);
+                sefirotDivinationImmune.add(uuid);
             }
             case "river_of_eternal_darkness" -> {
                 // River Authority: divination fails + passive concealment from detection
-                SEFIROT_DIVINATION_IMMUNE.add(uuid);
-                RIVER_CONCEALMENT_ACTIVE.add(uuid);
+                sefirotDivinationImmune.add(uuid);
+                riverConcealmentActive.add(uuid);
+            }
+            case "key_of_light" -> {
+                // Key of Light Authority: fate and divination cannot expose its owner
+                sefirotDivinationImmune.add(uuid);
             }
         }
     }

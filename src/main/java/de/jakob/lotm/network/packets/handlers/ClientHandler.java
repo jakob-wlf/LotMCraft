@@ -9,17 +9,21 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.VisionaryAbilityMenus;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.WheelOfFortuneAbilityMenus;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.acting.ActingHelper;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
 import de.jakob.lotm.gui.custom.AbilitySeal.AbilitySealScreen;
 import de.jakob.lotm.gui.custom.AboveSeqAuthority.AboveSeqAuthorityScreen;
+import de.jakob.lotm.gui.custom.AnchorCutting.AnchorCuttingScreen;
 import de.jakob.lotm.gui.custom.CharSlotRoll.CharSlotRollScreen;
+import de.jakob.lotm.gui.custom.ConnectionManager.ConnectionManagerScreen;
 import de.jakob.lotm.gui.custom.CoordinateInput.CoordinateInputScreen;
 import de.jakob.lotm.gui.custom.InternalUnderworld.InternalUnderworldAbilityScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.Quest.QuestAcceptanceScreen;
+import de.jakob.lotm.gui.custom.ProbabilityManipulation.ProbabilityManipulationScreen;
 import de.jakob.lotm.gui.custom.SelectionGui.*;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.network.packets.toServer.ConsumeCharacteristicPacket;
@@ -559,6 +563,10 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(VisionaryAbilityMenus.createStoryWritingAbilityMenu(Minecraft.getInstance().screen));
     }
 
+    public static void openProphecyExplanation() {
+        Minecraft.getInstance().setScreen(WheelOfFortuneAbilityMenus.createProphecyAbilityMenu(Minecraft.getInstance().screen));
+    }
+
     public static void handleStructureDivinationScreenPacket(OpenStructureDivinationScreenPacket packet) {
         Minecraft.getInstance().setScreen(new StructureSelectionGui(packet.structureIds()));
     }
@@ -811,6 +819,18 @@ public class ClientHandler {
                         packet.abilityIds(),
                         packet.abilityNames(),
                         packet.currentlySealed()));
+    }
+
+    public static void openConnectionManagerScreen(OpenConnectionManagerPacket packet) {
+        Minecraft.getInstance().setScreen(new ConnectionManagerScreen(packet.connections()));
+    }
+
+    public static void openAnchorCuttingScreen(OpenAnchorCuttingScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new AnchorCuttingScreen(packet.anchors()));
+    }
+
+    public static void openProbabilityManipulationScreen(OpenProbabilityManipulationPacket packet) {
+        Minecraft.getInstance().setScreen(new ProbabilityManipulationScreen(packet));
     }
 
     public static void openAboveSeqAuthorityScreen() {

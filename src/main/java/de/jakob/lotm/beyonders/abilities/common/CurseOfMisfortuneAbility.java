@@ -1,11 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.common;
 
-import de.jakob.lotm.attachments.LuckComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -23,6 +22,9 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class CurseOfMisfortuneAbility extends Ability {
+    private static final float BASE_LUCK_DRAIN_RATE_PER_MINUTE = 120;
+    private static final int LUCK_DRAIN_DURATION_TICKS = 20 * 60;
+
     public CurseOfMisfortuneAbility(String id) {
         super(id, 12, "unluck");
         postsUsedAbilityEventManually = true;
@@ -75,16 +77,17 @@ public class CurseOfMisfortuneAbility extends Ability {
         double eyeHeight = target.getEyeHeight();
         ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, eyeHeight / 2, 0), 120, .3, eyeHeight / 2, .3, 0);
 
-        double resistance = AbilityUtil.getSequenceResistanceFactor(entitySeq, targetSeq);
         float multiplier = multiplier(entity);
-        int amplifier = (int) Math.min(Math.round(multiplier * 6.25f * (1.0 - resistance)) * 120, 6500);
+        float drainRate = Math.min(
+            Math.round(multiplier * 6.25f) * BASE_LUCK_DRAIN_RATE_PER_MINUTE,
+            6500);
 
-        if (amplifier <= 0) {
+        if (drainRate <= 0) {
             return; // Full resistance – curse has no meaningful effect
         }
 
-        LuckComponent luckComponent = target.getData(ModAttachments.LUCK_COMPONENT);
-        luckComponent.addLuckWithMin(-amplifier, -3000);
+        LuckManager.applyLuckDrain(entity, target, LuckManager.sourceForCaster("curse_of_misfortune", entity),
+            drainRate, LUCK_DRAIN_DURATION_TICKS, -3000);
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, target.position(), entity, target, this, interactionFlags, interactionRadius, interactionCacheTicks));
     }
 }

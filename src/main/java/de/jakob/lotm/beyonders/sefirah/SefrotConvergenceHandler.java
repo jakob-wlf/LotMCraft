@@ -30,12 +30,12 @@ import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public final class SefrotConvergenceHandler {
-    private static final long TICKS_PER_MINUTE = 20L * 60L;
-    private static final long MIN_INTERVAL_TICKS = 5L * TICKS_PER_MINUTE;
-    private static final long MAX_INTERVAL_TICKS = 60L * TICKS_PER_MINUTE;
-    private static final double DISTANCE_SCALE = 4_000.0;
+    private static final long ticksPerMinute = 20L * 60L;
+    private static final long minIntervalTicks = 5L * ticksPerMinute;
+    private static final long maxIntervalTicks = 60L * ticksPerMinute;
+    private static final double distanceScale = 4_000.0;
 
-    private static final Map<UUID, Long> NEXT_CHECK_TICKS = new HashMap<>();
+    private static final Map<UUID, Long> nextCheckTicks = new HashMap<>();
 
     private SefrotConvergenceHandler() {
     }
@@ -49,25 +49,25 @@ public final class SefrotConvergenceHandler {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             List<HeldSefrot> heldSefrots = getEligibleSefrots(player);
             if (heldSefrots.isEmpty()) {
-                NEXT_CHECK_TICKS.remove(player.getUUID());
+                nextCheckTicks.remove(player.getUUID());
                 continue;
             }
 
-            long nextCheck = NEXT_CHECK_TICKS.getOrDefault(player.getUUID(), 0L);
+            long nextCheck = nextCheckTicks.getOrDefault(player.getUUID(), 0L);
             if (nextCheck == 0L) {
-                NEXT_CHECK_TICKS.put(player.getUUID(), now + randomInterval(player, heldSefrots));
+                nextCheckTicks.put(player.getUUID(), now + randomInterval(player, heldSefrots));
                 continue;
             }
             if (now < nextCheck) continue;
 
             attemptConvergence(player, heldSefrots, false);
-            NEXT_CHECK_TICKS.put(player.getUUID(), now + randomInterval(player, heldSefrots));
+            nextCheckTicks.put(player.getUUID(), now + randomInterval(player, heldSefrots));
         }
     }
 
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
-        NEXT_CHECK_TICKS.remove(event.getEntity().getUUID());
+        nextCheckTicks.remove(event.getEntity().getUUID());
     }
 
     public static ConvergenceResult triggerManualConvergence(ServerPlayer player) {
@@ -120,8 +120,8 @@ public final class SefrotConvergenceHandler {
                 .max().orElse(0.0);
         double proximity = targets.isEmpty() ? 0.0 : distanceFactor(targets.getFirst().distance());
         double convergenceStrength = Mth.clamp(strongestRatio * 0.65 + proximity * 0.35, 0.0, 1.0);
-        long variableRange = Math.round((MAX_INTERVAL_TICKS - MIN_INTERVAL_TICKS) * (1.0 - convergenceStrength));
-        return MIN_INTERVAL_TICKS + Math.round(player.getRandom().nextDouble() * variableRange);
+        long variableRange = Math.round((maxIntervalTicks - minIntervalTicks) * (1.0 - convergenceStrength));
+        return minIntervalTicks + Math.round(player.getRandom().nextDouble() * variableRange);
     }
 
     private static List<SenseTarget> findTargets(ServerPlayer sourcePlayer, List<HeldSefrot> heldSefrots) {
@@ -149,7 +149,7 @@ public final class SefrotConvergenceHandler {
     private static List<HeldSefrot> getEligibleSefrots(ServerPlayer player) {
         List<HeldSefrot> result = new ArrayList<>();
         for (SefrotItemSet type : SefrotItemSet.values()) {
-            if (!SefirotAuthorityManager.NEIGHBORING_PATHS
+            if (!SefirotAuthorityManager.neighboringPaths
                     .getOrDefault(type.sefrotId(), List.of())
                     .contains(de.jakob.lotm.util.BeyonderData.getPathway(player))) {
                 continue;
@@ -197,7 +197,7 @@ public final class SefrotConvergenceHandler {
     }
 
     private static double distanceFactor(double distance) {
-        return Mth.clamp(1.0 / (1.0 + distance / DISTANCE_SCALE), 0.15, 1.0);
+        return Mth.clamp(1.0 / (1.0 + distance / distanceScale), 0.15, 1.0);
     }
 
     private static int estimateDistance(double distance) {

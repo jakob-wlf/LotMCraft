@@ -2,9 +2,9 @@ package de.jakob.lotm.loottables;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.LuckManager;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -37,8 +37,7 @@ public class DoubleLootModifier extends LootModifier {
             return generatedLoot;
         }
 
-        LuckComponent luckComponent = playerEntity.getData(ModAttachments.LUCK_COMPONENT);
-        int luck = luckComponent.getLuck();
+        int luck = LuckManager.getLuck(playerEntity);
 
         if (luck <= 0) {
             return generatedLoot;
@@ -48,7 +47,7 @@ public class DoubleLootModifier extends LootModifier {
             return generatedLoot;
         }
 
-        int amplifier = (int) (luck / 120f); // Conversion from old to new system
+        int amplifier = LuckManager.getPositiveLuckAmplifier(luck);
         double chance = getExtraLootChance(amplifier);
 
         // Roll for extra loot

@@ -6,6 +6,7 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.rendering.effectRendering.DirectionalEffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
@@ -138,12 +139,12 @@ public class FateSiphoningAbility extends Ability {
         if(!(target instanceof LivingEntity targetLiving))
             return;
 
-        var luck = entity.getData(ModAttachments.LUCK_COMPONENT.get());
-        var luckTarget = target.getData(ModAttachments.LUCK_COMPONENT.get());
-
-        if(luck.getLuck() < 0) {
-            luckTarget.setLuck(luckTarget.getLuck() + luck.getLuck());
-            luck.setLuck(0);
+        int luck = LuckManager.getLuck(player);
+        if(luck < 0) {
+            LuckManager.resetLuck(player);
+                LuckManager.applyLuckDrain(player, targetLiving,
+                    "fate_siphoning:" + player.getUUID() + ":" + player.tickCount,
+                    -luck * 60f, 20);
         }
     }
 

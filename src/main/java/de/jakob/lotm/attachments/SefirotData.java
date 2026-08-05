@@ -3,6 +3,7 @@ package de.jakob.lotm.attachments;
 import de.jakob.lotm.util.data.LocationWithLevelKey;
 import de.jakob.lotm.util.data.ServerLocation;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -21,31 +22,32 @@ import java.util.*;
 
 public class SefirotData extends SavedData {
 
-    private static final String DATA_NAME = "sefirotData";
+    private static final String dataName = "sefirotData";
 
     private final HashMap<UUID, String> claimedSefirah = new HashMap<>();
     private final HashMap<UUID, LocationWithLevelKey> returnLocations = new HashMap<>();
     private final HashSet<UUID> isInSefirot = new HashSet<>();
+    private BlockPos keyOfLightShrinePos;
 
-    // ── Mental Imprint ────────────────────────────────────────────────────────
-    /** sefirot name → UUID of the very first player to ever claim it (never changes once set). */
+    // -- Mental Imprint --------------------------------------------------------
+    /** sefirot name -> UUID of the very first player to ever claim it (never changes once set). */
     private final HashMap<String, UUID> firstOwners = new HashMap<>();
-    /** sefirot name → imprint percentage 0–100. Grows while first owner holds it; can only drop to 10. */
+    /** sefirot name -> imprint percentage 0-100. Grows while first owner holds it; can only drop to 10. */
     private final HashMap<String, Integer> mentalImprintPercent = new HashMap<>();
-    /** sefirot name → total game-seconds the original owner has been online holding it. */
+    /** sefirot name -> total game-seconds the original owner has been online holding it. */
     private final HashMap<String, Long> originalOwnerSecondsOnline = new HashMap<>();
-    /** sefirot name → total game-seconds the current non-original owner has been online reducing it. */
+    /** sefirot name -> total game-seconds the current non-original owner has been online reducing it. */
     private final HashMap<String, Long> currentOwnerSecondsOnline = new HashMap<>();
-    /** sefirot name → real seconds the current non-original owner has been offline reducing it. */
+    /** sefirot name -> real seconds the current non-original owner has been offline reducing it. */
     private final HashMap<String, Long> currentOwnerSecondsOffline = new HashMap<>();
-    /** sefirot name → UUID of original owner when a reclaim is pending (original owner was offline). */
+    /** sefirot name -> UUID of original owner when a reclaim is pending (original owner was offline). */
     private final HashMap<String, UUID> pendingReclaims = new HashMap<>();
     /**
-     * sefirot name → epoch-second (System.currentTimeMillis()/1000) when the original owner was
+     * sefirot name -> epoch-second (System.currentTimeMillis()/1000) when the original owner was
      * last seen online. Used to accumulate imprint growth while the original owner is offline.
      */
     private final HashMap<String, Long> originalOwnerLastEpoch = new HashMap<>();
-    /** sefirot name → epoch-second when the current non-original owner was last seen online. */
+    /** sefirot name -> epoch-second when the current non-original owner was last seen online. */
     private final HashMap<String, Long> currentOwnerLastEpoch = new HashMap<>();
 
     public static SefirotData get(MinecraftServer server) {
@@ -53,7 +55,7 @@ public class SefirotData extends SavedData {
         return storage.computeIfAbsent(new Factory<>(
                 SefirotData::new,
                 SefirotData::load
-        ), DATA_NAME);
+        ), dataName);
     }
 
     public boolean claimSefirot(UUID uuid, String sefirot) {
@@ -99,6 +101,15 @@ public class SefirotData extends SavedData {
         return claimedSefirah.containsValue(sefirot);
     }
 
+    public Optional<BlockPos> getKeyOfLightShrinePos() {
+        return Optional.ofNullable(keyOfLightShrinePos);
+    }
+
+    public void setKeyOfLightShrinePos(BlockPos pos) {
+        keyOfLightShrinePos = pos.immutable();
+        setDirty();
+    }
+
     public void setIsInSefirot(UUID uuid, boolean inSefirot) {
         if(!inSefirot) {
             isInSefirot.remove(uuid);
@@ -138,7 +149,7 @@ public class SefirotData extends SavedData {
         return new ServerLocation(new Vec3(locationWithLevelKey.getPosition().x, locationWithLevelKey.getPosition().y, locationWithLevelKey.getPosition().z), level);
     }
 
-    // ── Mental Imprint API ────────────────────────────────────────────────────
+    // -- Mental Imprint API ----------------------------------------------------
 
     /** Sets the first owner for a sefirot only if none has been recorded yet. */
     public void setFirstOwnerIfAbsent(String sefirot, UUID uuid) {
@@ -157,12 +168,12 @@ public class SefirotData extends SavedData {
         return firstOwners.containsKey(sefirot);
     }
 
-    /** Returns the current imprint percentage (0–100) for the given sefirot. */
+    /** Returns the current imprint percentage (0-100) for the given sefirot. */
     public int getMentalImprint(String sefirot) {
         return mentalImprintPercent.getOrDefault(sefirot, 0);
     }
 
-    /** Directly sets the imprint percentage (admin/command use). Clamps to 0–100. */
+    /** Directly sets the imprint percentage (admin/command use). Clamps to 0-100. */
     public void setMentalImprintDirect(String sefirot, int percent) {
         mentalImprintPercent.put(sefirot, Math.max(0, Math.min(100, percent)));
         setDirty();
@@ -223,7 +234,7 @@ public class SefirotData extends SavedData {
         return false;
     }
 
-    // ── Offline Imprint Growth (original owner) ──────────────────────────────
+    // -- Offline Imprint Growth (original owner) ------------------------------
 
     /**
      * Stamps the current wall-clock second for the given sefirot's original owner.
@@ -246,7 +257,7 @@ public class SefirotData extends SavedData {
     public int applyOfflineOriginalOwnerTime(String sefirot) {
         Long lastEpoch = originalOwnerLastEpoch.get(sefirot);
         if (lastEpoch == null) {
-            // First time tracking — just initialise and return.
+            // First time tracking - just initialise and return.
             updateOriginalOwnerEpoch(sefirot);
             return 0;
         }
@@ -332,7 +343,7 @@ public class SefirotData extends SavedData {
         return null;
     }
 
-    // ── Pending Reclaim ───────────────────────────────────────────────────────
+    // -- Pending Reclaim -------------------------------------------------------
 
     public void setPendingReclaim(String sefirot, UUID originalOwner) {
         pendingReclaims.put(sefirot, originalOwner);
@@ -348,7 +359,7 @@ public class SefirotData extends SavedData {
         return pendingReclaims.get(sefirot);
     }
 
-    /** Returns a snapshot of all pending reclaims (sefirot → original owner UUID). */
+    /** Returns a snapshot of all pending reclaims (sefirot -> original owner UUID). */
     public java.util.Map<String, UUID> getAllPendingReclaims() {
         return java.util.Collections.unmodifiableMap(pendingReclaims);
     }
@@ -383,6 +394,10 @@ public class SefirotData extends SavedData {
             playersInSefirotList.add(entryTag);
         }
         tag.put("playersInSefirot", playersInSefirotList);
+
+        if (keyOfLightShrinePos != null) {
+            tag.putLong("keyOfLightShrinePos", keyOfLightShrinePos.asLong());
+        }
 
         // Mental Imprint
         ListTag firstOwnersList = new ListTag();
@@ -487,6 +502,10 @@ public class SefirotData extends SavedData {
             CompoundTag entryTag = playersInSefirotList.getCompound(i);
             UUID uuid = entryTag.getUUID("UUID");
             data.isInSefirot.add(uuid);
+        }
+
+        if (tag.contains("keyOfLightShrinePos")) {
+            data.keyOfLightShrinePos = BlockPos.of(tag.getLong("keyOfLightShrinePos"));
         }
 
         // Mental Imprint

@@ -8,6 +8,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -171,18 +172,20 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        var luck = entity.getData(ModAttachments.LUCK_COMPONENT.get());
-        if(luck.getLuck() == 0){
+        if(LuckManager.getLuck(entity) == 0){
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.failed").withColor(0x6d32a8));
             return;
         }
 
         EffectManager.playEffect(EffectManager.Effect.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
 
-        var targetLuck = target.getData(ModAttachments.LUCK_COMPONENT.get());
-
-        targetLuck.setLuck(targetLuck.getLuck() + luck.getLuck());
-        luck.setLuck(0);
+        int giftedLuck = LuckManager.getLuck(entity);
+        if (giftedLuck < 0) {
+            LuckManager.resetLuck(entity);
+            LuckManager.applyLuckDrain(entity, target, "gift:" + entity.getUUID(), -giftedLuck, 20 * 60);
+        } else {
+            LuckManager.transferAllLuck(entity, target);
+        }
     }
 
     private void giftDigestion(Level level, LivingEntity entity){

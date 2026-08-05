@@ -1,13 +1,17 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.attachments.LuckAccumulationComponent;
-import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveLuckAccumulationAbility;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.SyncLuckResourcePacket;
+import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.data.EntityLocation;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
@@ -45,20 +49,22 @@ public class LuckReleaseAbility extends Ability {
         }
 
         LuckAccumulationComponent component = entity.getData(ModAttachments.LUCK_ACCUMULATION_COMPONENT.get());
-        long ticks = component.getTicksAccumulated();
-        component.setTicksAccumulated(0);
+        int releasedLuck = Math.min(LuckManager.getLuck(entity), 240);
+        if (releasedLuck <= 0 || !LuckManager.consumeLuck(entity, releasedLuck)) {
+            return;
+        }
 
-        int additionalLuck = getAdditionalLuckByTicks(ticks);
-
-        LuckComponent luckComponent = entity.getData(ModAttachments.LUCK_COMPONENT.get());
-        luckComponent.addLuck(-additionalLuck);
+        if (entity instanceof ServerPlayer player) {
+            PacketHandler.sendToPlayer(player, new SyncLuckResourcePacket(
+                    0,
+                LuckManager.getLuck(entity),
+                LuckManager.getMaximumLuck(entity),
+                    PassiveLuckAccumulationAbility.getEffectiveRegenerationRate(entity, component),
+                    LuckManager.getLuckDrainRatePerMinute(entity),
+                    true));
+        }
 
         EntityLocation loc = new EntityLocation(entity);
         ParticleUtil.createParticleSpirals(dust, loc, 1.75, 1.75, 2.25, .35, 5, 20 * 35, 15, 8);
-    }
-
-    private int getAdditionalLuckByTicks(long ticks) {
-        int additionalLuck = Math.round(ticks / (20 * 60 * 2f)) * 120;
-        return Math.clamp(additionalLuck, 1, 8);
     }
 }

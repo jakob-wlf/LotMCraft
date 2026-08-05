@@ -18,8 +18,8 @@ public class LuckComponent implements INBTSerializable<CompoundTag> {
         if(this.luck > 3000) {
             this.luck = 3000;
         }
-        if(this.luck < -6360) {
-            this.luck = -6360;
+        if(this.luck < -10000) {
+            this.luck = -10000;
         }
     }
 
@@ -28,8 +28,8 @@ public class LuckComponent implements INBTSerializable<CompoundTag> {
         if(luck > 3000) {
             luck = 3000;
         }
-        if(luck < -6360) {
-            luck = -6360;
+        if(luck < -10000) {
+            luck = -10000;
         }
     }
 

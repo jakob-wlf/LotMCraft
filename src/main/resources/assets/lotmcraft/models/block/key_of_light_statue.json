@@ -1,0 +1,85 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "stone": "minecraft:block/iron_block",
+    "robe": "minecraft:block/gold_block",
+    "gold": "minecraft:block/iron_block",
+    "particle": "minecraft:block/gold_block"
+  },
+  "elements": [
+    {
+      "from": [1, 0, 1],
+      "to": [15, 2, 15],
+      "faces": {
+        "down": { "texture": "#stone" },
+        "up": { "texture": "#gold" },
+        "north": { "texture": "#stone" },
+        "south": { "texture": "#stone" },
+        "west": { "texture": "#stone" },
+        "east": { "texture": "#stone" }
+      }
+    },
+    {
+      "from": [3, 2, 3],
+      "to": [13, 6, 13],
+      "faces": {
+        "down": { "texture": "#robe" },
+        "up": { "texture": "#robe" },
+        "north": { "texture": "#robe" },
+        "south": { "texture": "#robe" },
+        "west": { "texture": "#robe" },
+        "east": { "texture": "#robe" }
+      }
+    },
+    {
+      "from": [5, 6, 5],
+      "to": [11, 13, 11],
+      "faces": {
+        "down": { "texture": "#robe" },
+        "up": { "texture": "#stone" },
+        "north": { "texture": "#robe" },
+        "south": { "texture": "#robe" },
+        "west": { "texture": "#robe" },
+        "east": { "texture": "#robe" }
+      }
+    },
+    {
+      "from": [5.5, 13, 5.5],
+      "to": [10.5, 18, 10.5],
+      "faces": {
+        "down": { "texture": "#stone" },
+        "up": { "texture": "#gold" },
+        "north": { "texture": "#stone" },
+        "south": { "texture": "#stone" },
+        "west": { "texture": "#stone" },
+        "east": { "texture": "#stone" }
+      }
+    },
+    {
+      "from": [3, 7, 3],
+      "to": [6, 9, 10],
+      "rotation": { "origin": [6, 8, 8], "axis": "z", "angle": -22.5 },
+      "faces": {
+        "down": { "texture": "#robe" },
+        "up": { "texture": "#robe" },
+        "north": { "texture": "#robe" },
+        "south": { "texture": "#robe" },
+        "west": { "texture": "#robe" },
+        "east": { "texture": "#robe" }
+      }
+    },
+    {
+      "from": [10, 7, 3],
+      "to": [13, 9, 10],
+      "rotation": { "origin": [10, 8, 8], "axis": "z", "angle": 22.5 },
+      "faces": {
+        "down": { "texture": "#robe" },
+        "up": { "texture": "#robe" },
+        "north": { "texture": "#robe" },
+        "south": { "texture": "#robe" },
+        "west": { "texture": "#robe" },
+        "east": { "texture": "#robe" }
+      }
+    }
+  ]
+}

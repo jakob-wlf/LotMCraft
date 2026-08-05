@@ -29,20 +29,20 @@ import java.util.concurrent.ConcurrentHashMap;
  *      can pierce the protection.
  *
  * Blessing limits scale with the River owner's sequence:
- *   Seq > 4          → 0 blessings (cannot bless yet)
- *   Seq 3–4          → 1 blessed player at a time
- *   Seq ≤ 2 (or GOO) → 2 blessed players at a time
+ *   Seq > 4          -> 0 blessings (cannot bless yet)
+ *   Seq 3-4          -> 1 blessed player at a time
+ *   Seq <= 2 (or GOO) -> 2 blessed players at a time
  */
 public class RiverBlessingManager {
 
-    // ── In-memory state (server-only) ─────────────────────────────────────────
+    // -- In-memory state (server-only) -----------------------------------------
 
-    /** Maps River owner UUID → set of blessed player UUIDs. */
+    /** Maps River owner UUID -> set of blessed player UUIDs. */
     private static final Map<UUID, Set<UUID>> blessingsByOwner = new ConcurrentHashMap<>();
 
-    /** Reverse lookup: blessed player UUID → owner UUID. */
+    /** Reverse lookup: blessed player UUID -> owner UUID. */
     private static final Map<UUID, UUID> blessedToOwner = new ConcurrentHashMap<>();
-    // ── Persistence ─────────────────────────────────────────────────────────────────
+    // -- Persistence -----------------------------------------------------------------
 
     /**
      * Populates the in-memory maps from the SavedData store.
@@ -60,7 +60,7 @@ public class RiverBlessingManager {
             for (UUID t : entry.getValue()) blessedToOwner.put(t, owner);
         }
     }
-    // ── Sequence-based limit ──────────────────────────────────────────────────
+    // -- Sequence-based limit --------------------------------------------------
 
     /**
     * Returns the number of designated blessed players who may receive active
@@ -75,7 +75,7 @@ public class RiverBlessingManager {
         return 0;
     }
 
-    // ── Blessing management ───────────────────────────────────────────────────
+    // -- Blessing management ---------------------------------------------------
 
     /**
      * Attempts to bless {@code targetUUID} on behalf of {@code owner}.
@@ -180,21 +180,21 @@ public class RiverBlessingManager {
         if (server != null) RiverOfEternalDarknessData.get(server).clearBlessingsByOwner(ownerUUID);
     }
 
-    // ── River audience ────────────────────────────────────────────────────────
+    // -- River audience --------------------------------------------------------
 
     /** Audience safe landing spot (above the fluid, separate from River's Call trap zone). */
-    public static final double AUDIENCE_X = -100;
-    public static final double AUDIENCE_Y = 65;
-    public static final double AUDIENCE_Z = 903;
+    public static final double audienceX = -100;
+    public static final double audienceY = 65;
+    public static final double audienceZ = 903;
 
     /** Players currently present in the river as the owner's invited audience. */
-    private static final Set<UUID> CURRENTLY_IN_AUDIENCE = ConcurrentHashMap.newKeySet();
+    private static final Set<UUID> currentlyInAudience = ConcurrentHashMap.newKeySet();
 
     /** Return locations saved when each audience member was summoned. */
-    private static final Map<UUID, CompoundTag> AUDIENCE_RETURN_LOCATIONS = new ConcurrentHashMap<>();
+    private static final Map<UUID, CompoundTag> audienceReturnLocations = new ConcurrentHashMap<>();
 
     public static boolean isInAudience(UUID uuid) {
-        return CURRENTLY_IN_AUDIENCE.contains(uuid);
+        return currentlyInAudience.contains(uuid);
     }
 
     public static void markInAudience(ServerPlayer player) {
@@ -203,13 +203,13 @@ public class RiverBlessingManager {
         loc.putDouble("y", player.getY());
         loc.putDouble("z", player.getZ());
         loc.putString("dim", player.level().dimension().location().toString());
-        AUDIENCE_RETURN_LOCATIONS.put(player.getUUID(), loc);
-        CURRENTLY_IN_AUDIENCE.add(player.getUUID());
+        audienceReturnLocations.put(player.getUUID(), loc);
+        currentlyInAudience.add(player.getUUID());
     }
 
     public static void unmarkFromAudience(UUID uuid) {
-        CURRENTLY_IN_AUDIENCE.remove(uuid);
-        AUDIENCE_RETURN_LOCATIONS.remove(uuid);
+        currentlyInAudience.remove(uuid);
+        audienceReturnLocations.remove(uuid);
     }
 
     /**
@@ -219,7 +219,7 @@ public class RiverBlessingManager {
     public static void summonBlessedToAudience(ServerPlayer owner, MinecraftServer server) {
         ServerLevel riverLevel = server.getLevel(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_DIMENSION_KEY);
         if (riverLevel == null) {
-            owner.sendSystemMessage(Component.literal("§cRiver dimension not found."));
+            owner.sendSystemMessage(Component.literal("\u00A7cRiver dimension not found."));
             return;
         }
 
@@ -230,7 +230,7 @@ public class RiverBlessingManager {
             if (target == null || isInAudience(uuid)) continue;
             markInAudience(target);
             // Spread audience members along Z so they don't overlap
-            target.teleportTo(riverLevel, AUDIENCE_X, AUDIENCE_Y, AUDIENCE_Z - (slot * 3.0), 0f, 0f);
+            target.teleportTo(riverLevel, audienceX, audienceY, audienceZ - (slot * 3.0), 0f, 0f);
             target.sendSystemMessage(Component.literal(
                     "You have been summoned to the River of Eternal Darkness.").withStyle(ChatFormatting.DARK_AQUA));
             slot++;
@@ -238,9 +238,9 @@ public class RiverBlessingManager {
 
         if (slot > 0) {
             owner.sendSystemMessage(Component.literal(
-                    "§8Summoned " + slot + " blessed player" + (slot != 1 ? "s" : "") + " to the River."));
+                    "\u00A78Summoned " + slot + " blessed player" + (slot != 1 ? "s" : "") + " to the River."));
         } else {
-            owner.sendSystemMessage(Component.literal("§cNo blessed players are currently online."));
+            owner.sendSystemMessage(Component.literal("\u00A7cNo blessed players are currently online."));
         }
     }
 
@@ -250,7 +250,7 @@ public class RiverBlessingManager {
      */
     public static void dismissAudience(MinecraftServer server) {
         int count = 0;
-        for (UUID uuid : new HashSet<>(CURRENTLY_IN_AUDIENCE)) {
+        for (UUID uuid : new HashSet<>(currentlyInAudience)) {
             ServerPlayer target = server.getPlayerList().getPlayer(uuid);
             if (target != null) {
                 returnAudienceMember(target, server);
@@ -265,7 +265,7 @@ public class RiverBlessingManager {
      * Teleports a single audience member back to their saved pre-summon location.
      */
     public static void returnAudienceMember(ServerPlayer player, MinecraftServer server) {
-        CompoundTag loc = AUDIENCE_RETURN_LOCATIONS.get(player.getUUID());
+        CompoundTag loc = audienceReturnLocations.get(player.getUUID());
         if (loc != null) {
             String dimStr = loc.getString("dim");
             ResourceKey<Level> dimKey = ResourceKey.create(Registries.DIMENSION,
@@ -294,7 +294,7 @@ public class RiverBlessingManager {
         dismissAudience(server);
     }
 
-    // ── Divination blocking ───────────────────────────────────────────────────
+    // -- Divination blocking ---------------------------------------------------
 
     /**
      * Returns {@code true} if a divination attempt on {@code targetUUID} by
@@ -316,8 +316,8 @@ public class RiverBlessingManager {
         if (targetSeq == LOTMCraft.NON_BEYONDER_SEQ) return false;
 
         // Allow piercing only if diviner is MORE than 3 sequences stronger.
-        // divinerSeq <= targetSeq - 4  →  allowed (can divine)
-        // divinerSeq >  targetSeq - 4  →  blocked
+        // divinerSeq <= targetSeq - 4  ->  allowed (can divine)
+        // divinerSeq >  targetSeq - 4  ->  blocked
         return divinerSeq > targetSeq - 4;
     }
 }

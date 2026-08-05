@@ -48,9 +48,14 @@ import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility
 import de.jakob.lotm.beyonders.abilities.visionary.passives.PhysicalEnhancementsVisionaryAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.PureIdealism;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveCalamityAttraction;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.AbsolutePerceptionAbility;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.InnateSpiritVisionAbility;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.LuckPerceptionAbility;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.MercuryBodyAbility;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveLuckAbility;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveLuckAccumulationAbility;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PhysicalEnhancementsWheelOfFortuneAbility;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.RebootAbility;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
@@ -95,6 +100,11 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> PASSIVE_LUCK = ITEMS.registerItem("passive_luck_ability", PassiveLuckAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> CALAMITY_ATTRACTION = ITEMS.registerItem("passive_calamity_attraction_ability", PassiveCalamityAttraction::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> PASSIVE_LUCK_ACCUMULATION = ITEMS.registerItem("passive_luck_accumulation_ability", PassiveLuckAccumulationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> LUCK_PERCEPTION = ITEMS.registerItem("luck_perception_ability", LuckPerceptionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> MERCURY_BODY = ITEMS.registerItem("mercury_body_ability", MercuryBodyAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+    public static final DeferredItem<Item> ABSOLUTE_PERCEPTION = ITEMS.registerItem("absolute_perception_ability", AbsolutePerceptionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+    public static final DeferredItem<Item> INNATE_SPIRIT_VISION = ITEMS.registerItem("innate_spirit_vision_ability", InnateSpiritVisionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> REBOOT = ITEMS.registerItem("reboot_ability", RebootAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     public static final DeferredItem<Item> PAPER_DAGGERS = ITEMS.registerItem("paper_dagger_ability", PaperDaggersAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> ACROBATICS = ITEMS.registerItem("acrobatics_ability", AcrobaticsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));

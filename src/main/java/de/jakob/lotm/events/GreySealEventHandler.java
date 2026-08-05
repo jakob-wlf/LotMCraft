@@ -521,7 +521,7 @@ public class GreySealEventHandler {
     private static boolean isExempt(ServerPlayer player) {
         if (!SefirahHandler.getClaimedSefirot(player).isEmpty()) return true;
         int seq = BeyonderData.getSequence(player);
-        if (seq <= 2 || seq == GreatOldOneManager.GREAT_OLD_ONE_SEQ) return true;
+        if (seq <= 2 || seq == GreatOldOneManager.greatOldOneSeq) return true;
         if (isSealActive() && player.getServer() != null) {
             return GatheringData.get(player.getServer()).isMember(
                     activeSeal.ownerUUID, player.getUUID());

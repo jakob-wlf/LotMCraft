@@ -5,6 +5,8 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientAccommodationCache;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.ClientLuckResourceCache;
+import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.data.ClientSacrificeCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -33,6 +35,7 @@ public class HudProgressBarsRenderer {
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "progress_bar"), (guiGraphics, deltaTracker) -> {
             renderProgressBar(guiGraphics);
+            renderLuckResourceBar(guiGraphics);
             renderSacrificeBar(guiGraphics);
             renderSanityBar(guiGraphics);
             renderCorruptionBar(guiGraphics);
@@ -42,6 +45,53 @@ public class HudProgressBarsRenderer {
             renderAccommodationColorOverlay(guiGraphics);
             renderAccommodationBar(guiGraphics);
         });
+    }
+
+    private static void renderLuckResourceBar(GuiGraphics guiGraphics) {
+        Minecraft mc = Minecraft.getInstance();
+        int storedLuck = ClientLuckResourceCache.getStoredLuck();
+        boolean wheelOfFortune = ClientLuckResourceCache.isWheelOfFortune();
+        int luck = wheelOfFortune
+            ? storedLuck + Math.min(0, ClientLuckResourceCache.getLuck())
+            : ClientLuckResourceCache.getLuck();
+        int maximum = ClientLuckResourceCache.getMaximumLuck();
+        if (mc.player == null || mc.options.hideGui || (!wheelOfFortune && luck == 0) || maximum <= 0) return;
+
+        int barWidth = 14;
+        int barHeight = 120;
+        int barX = 30;
+        int barY = 60;
+        int scale = luck < 0 ? -LuckManager.minimumLuck : maximum;
+        float progress = Math.clamp((float) Math.abs(luck) / scale, 0, 1);
+
+        guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0x80000000);
+        int progressHeight = (int) (barHeight * progress);
+        if (progressHeight > 0) {
+                int startColor = luck < 0 ? 0xFF8F3030 : 0xFFF8D66D;
+                int endColor = luck < 0 ? 0xFFE16D6D : 0xFF72E8D2;
+                drawVerticalGradient(guiGraphics, barX, barY + barHeight - progressHeight, barWidth, progressHeight,
+                    startColor, endColor);
+        }
+
+        ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/spirituality_bar_background.png");
+        guiGraphics.blit(backgroundTexture, barX - 4, barY - 4, barWidth + 8, barHeight + 8, 0, 0, 44, 256, 44, 256);
+
+        String amount = "Luck: " + luck;
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(barX + barWidth / 2.0f, barY + barHeight + 8, 0);
+        guiGraphics.pose().scale(0.75f, 0.75f, 1.0f);
+        guiGraphics.drawString(mc.font, amount, -mc.font.width(amount) / 2, 0, 0xFFF8D66D, true);
+        float netRate = ClientLuckResourceCache.getRegenerationRate()
+            - ClientLuckResourceCache.getDrainRate();
+        String rate = netRate > 0
+            ? "\u2191 " + String.format("%.1f", netRate)
+            : netRate < 0
+                ? "\u2193 " + String.format("%.1f", Math.abs(netRate))
+                : "0.0";
+        int rateColor = netRate > 0 ? 0xFF55FF55
+            : netRate < 0 ? 0xFFFF5555 : 0xFFAAAAAA;
+        guiGraphics.drawString(mc.font, rate, -mc.font.width(rate) / 2, 10, rateColor, true);
+        guiGraphics.pose().popPose();
     }
 
     private static void renderProgressBar(GuiGraphics guiGraphics) {
@@ -87,24 +137,24 @@ public class HudProgressBarsRenderer {
         if (ClientSacrificeCache.getTotalTicks() <= 0 || ClientSacrificeCache.getRemainingTicks() <= 0) return;
         if (!ClientBeyonderCache.isBeyonder(mc.player.getUUID())) return;
 
-        int barWidth = 14;
-        int barHeight = 120;
-        int barX = 6 + barWidth + 6; // right of the spirituality bar
-        int barY = 60;
+        int barWidth = 120;
+        int barHeight = 6;
+        int barX = guiGraphics.guiWidth() / 2 - barWidth / 2;
+        int barY = guiGraphics.guiHeight() - 55;
 
         float progress = (float) ClientSacrificeCache.getRemainingTicks() / ClientSacrificeCache.getTotalTicks();
 
         guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0x80000000);
 
-        int progressHeight = (int) (barHeight * progress);
-        int progressStartY = barY + barHeight - progressHeight;
-        if (progressHeight > 0) {
-            drawVerticalGradient(guiGraphics, barX, progressStartY, barWidth, progressHeight,
-                    0xFFFF4444, 0xFFAA0000);
+        int fillWidth = (int) (barWidth * progress);
+        if (fillWidth > 0) {
+            guiGraphics.fill(barX, barY, barX + fillWidth, barY + barHeight, 0xFFB51F2E);
         }
 
-        ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/spirituality_bar_background.png");
-        guiGraphics.blit(backgroundTexture, barX - 4, barY - 4, barWidth + 8, barHeight + 8, 0, 0, 44, 256, 44, 256);
+        String duration = "Sacrifice: " + String.format("%.1fs", ClientSacrificeCache.getRemainingTicks() / 20.0f);
+        guiGraphics.drawString(mc.font, duration,
+                guiGraphics.guiWidth() / 2 - mc.font.width(duration) / 2,
+                barY - 10, 0xFFFF6B72, true);
     }
 
     private static void renderSanityBar(GuiGraphics guiGraphics) {
@@ -176,8 +226,11 @@ public class HudProgressBarsRenderer {
         if (mc.player == null || mc.options.hideGui) return;
         if (ClientAccommodationCache.getTotalTicks() <= 0) return;
 
-        // Three pathway colors: Fool (purple), Error (blue), Door (cyan)
-        int[] colors = {0x864ec7, 0x0018b8, 0x89f5f5};
+        boolean keyOfLight = "wheel_of_fortune".equalsIgnoreCase(
+            ClientBeyonderCache.getPathway(mc.player.getUUID()));
+        int[] colors = keyOfLight
+            ? new int[] {0xbad2f5, 0x9a63d8, 0xf0d778}
+            : new int[] {0x864ec7, 0x0018b8, 0x89f5f5};
 
         // Full cycle = 9 seconds (3s per color transition)
         long cycleMs = 3000L;
@@ -218,14 +271,14 @@ public class HudProgressBarsRenderer {
 
         int totalTicks = ClientAccommodationCache.getTotalTicks();
         int progressTicks = ClientAccommodationCache.getProgressTicks();
-        if (totalTicks <= 0 || progressTicks <= 0) return;
+        if (totalTicks <= 0) return;
 
         float progress = Math.min(1.0f, (float) progressTicks / totalTicks);
 
         int barWidth = 120;
         int barHeight = 6;
         int barX = guiGraphics.guiWidth() / 2 - barWidth / 2;
-        int barY = guiGraphics.guiHeight() - 90;
+        int barY = 20;
 
         guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0x80000000);
 
@@ -234,7 +287,7 @@ public class HudProgressBarsRenderer {
             guiGraphics.fill(barX, barY, barX + fillWidth, barY + barHeight, 0xFF2B0A45);
         }
 
-        String percentText = Math.round(progress * 100.0f) + "%";
+        String percentText = "Alignment " + Math.round(progress * 100.0f) + "%";
         int textX = guiGraphics.guiWidth() / 2 - mc.font.width(percentText) / 2;
         int textY = barY - 10;
         guiGraphics.drawString(mc.font, percentText, textX, textY, 0xFFEDEDED, true);

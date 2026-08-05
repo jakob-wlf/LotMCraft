@@ -44,15 +44,6 @@ public class MarionetteUtils {
         // Clear existing goals and add marionette goals
         if (entity instanceof Mob mob) {
             // Remove hostile targeting goals
-            mob.targetSelector.removeAllGoals(goal ->
-                    goal instanceof StrollThroughVillageGoal ||
-                    goal instanceof BreedGoal ||
-                    goal instanceof MoveToBlockGoal ||
-                    goal instanceof PanicGoal ||
-                    goal instanceof RandomStrollGoal ||
-                    goal instanceof TargetGoal
-            );
-
             mob.goalSelector.addGoal(0, new MarionetteFollowGoal(mob));
             mob.goalSelector.addGoal(0, new MarionetteLoadChunksGoal(mob));
             mob.goalSelector.addGoal(1, new MarionetteStayGoal(mob));
@@ -101,8 +92,13 @@ public class MarionetteUtils {
         component.setFollowMode(false);
         
         if (entity instanceof Mob mob) {
-            mob.goalSelector.getAvailableGoals().clear();
-            mob.targetSelector.getAvailableGoals().clear();
+            mob.goalSelector.removeAllGoals(goal -> goal instanceof MarionetteFollowGoal
+                    || goal instanceof MarionetteLoadChunksGoal
+                    || goal instanceof MarionetteStayGoal
+                    || goal instanceof MarionetteUseAbilityGoal
+                    || goal instanceof MarionetteLifelinkGoal);
+            mob.targetSelector.removeAllGoals(goal -> goal instanceof MarionetteTargetGoal);
+            mob.setTarget(null);
         }
     }
 }

@@ -14,6 +14,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncOnHoldAbilityPacket;
 import de.jakob.lotm.network.packets.toClient.SyncToggleAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.LuckManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -142,14 +143,8 @@ public class BeyonderDataTickHandler {
                 tickAbilities(livingEntity);
 
                 // Remove Unluck gradually
-                LuckComponent luckComponent = livingEntity.getData(ModAttachments.LUCK_COMPONENT);
-                if(luckComponent.getLuck() < 0) {
-                    luckComponent.addLuckWithMax(1, 0);
-                }
-
-                // Remove Luck gradually
-                if(luckComponent.getLuck() > PassiveLuckAbility.getNormalLuckForEntity(livingEntity)) {
-                    luckComponent.addLuckWithMin(-1, PassiveLuckAbility.getNormalLuckForEntity(livingEntity));
+                if(LuckManager.getLuck(livingEntity) < 0) {
+                    LuckManager.cleanseMisfortune(livingEntity, 1);
                 }
             }
 

@@ -422,18 +422,35 @@ public class AbilityUtil {
 
     // ==================== REMOTE TARGETING ====================
     private static final ThreadLocal<UUID> REMOTE_CAST_TARGET_UUID = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> REMOTE_CAST_TARGET_RESOLVED =
+            ThreadLocal.withInitial(() -> false);
 
     public static void setRemoteCastTargetUUID(UUID uuid) {
         REMOTE_CAST_TARGET_UUID.set(uuid);
+        REMOTE_CAST_TARGET_RESOLVED.set(false);
     }
 
     public static void clearRemoteCastTargetUUID() {
         REMOTE_CAST_TARGET_UUID.remove();
+        REMOTE_CAST_TARGET_RESOLVED.remove();
     }
 
     @Nullable
     public static UUID getRemoteCastTargetUUID() {
         return REMOTE_CAST_TARGET_UUID.get();
+    }
+
+    public static boolean wasRemoteCastTargetResolved() {
+        return REMOTE_CAST_TARGET_RESOLVED.get();
+    }
+
+    @Nullable
+    private static Entity resolveRemoteCastTarget(LivingEntity caster, UUID targetUUID) {
+        if (caster instanceof ServerPlayer player) {
+            ServerPlayer target = player.server.getPlayerList().getPlayer(targetUUID);
+            if (target != null) return target;
+        }
+        return caster.level().getPlayerByUUID(targetUUID);
     }
 
     // ==================== TARGET ENTITY METHODS ====================
@@ -506,7 +523,7 @@ public class AbilityUtil {
         // Check for remote target first
         UUID remoteTargetUUID = getRemoteCastTargetUUID();
         if (remoteTargetUUID != null) {
-            Entity target = entity.level().getPlayerByUUID(remoteTargetUUID);
+            Entity target = resolveRemoteCastTarget(entity, remoteTargetUUID);
             if (target == null) {
                 for (Entity e : entity.level().getEntities((Entity) null, entity.getBoundingBox().inflate(512), e -> e.getUUID().equals(remoteTargetUUID))) {
                     target = e;
@@ -514,6 +531,7 @@ public class AbilityUtil {
                 }
             }
             if (target instanceof LivingEntity livingTarget) {
+                REMOTE_CAST_TARGET_RESOLVED.set(true);
                 return livingTarget;
             }
         }
@@ -630,7 +648,7 @@ public class AbilityUtil {
         // Check for remote target first
         UUID remoteTargetUUID = getRemoteCastTargetUUID();
         if (remoteTargetUUID != null) {
-            Entity target = entity.level().getPlayerByUUID(remoteTargetUUID);
+            Entity target = resolveRemoteCastTarget(entity, remoteTargetUUID);
             if (target == null) {
                 for (Entity e : entity.level().getEntities((Entity) null, entity.getBoundingBox().inflate(512), e -> e.getUUID().equals(remoteTargetUUID))) {
                     target = e;
@@ -638,6 +656,7 @@ public class AbilityUtil {
                 }
             }
             if (target != null) {
+                REMOTE_CAST_TARGET_RESOLVED.set(true);
                 return positionAtEntityFeet ? target.position() : target.position().add(0, target.getEyeHeight(), 0);
             }
         }
