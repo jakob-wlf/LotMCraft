@@ -1,4 +1,4 @@
-// 1.21.1	2026-06-29T15:43:41.0750263	Item Models: lotmcraft
+// 1.21.1	2026-08-04T23:10:30.4999019	Item Models: lotmcraft
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 d79ff3aedef37faf54603234b4a98f66afb8991f assets/lotmcraft/models/item/abyss_uniqueness.json
 4e7075a5dc34701bda2cb5db71047fdcdb9a3de6 assets/lotmcraft/models/item/acrobatics_ability.json
@@ -84,6 +84,7 @@ bdf79e19dba75dc318d78bbac6cd8878e3ed29db assets/lotmcraft/models/item/corpse_col
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/criminal.json
 ff9f27fdd18fe144d00221800523dbf8cef49722 assets/lotmcraft/models/item/criminal_characteristic.json
 d8397ae32798711abd27be503264a2d98d3abded assets/lotmcraft/models/item/criminal_potion.json
+c5f8b4eb1f1e8bd6149b36d16192030403666e33 assets/lotmcraft/models/item/criminal_proficiency_ability.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/cryptologist.json
 1867d61d6de2ed7a8b3fdfa7aa0019498e70b218 assets/lotmcraft/models/item/cryptologist_characteristic.json
 3d7539c5d5cf7af8e155d157cc9b678eb6b4c839 assets/lotmcraft/models/item/cryptologist_potion.json

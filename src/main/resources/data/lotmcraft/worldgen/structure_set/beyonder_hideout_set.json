@@ -8,8 +8,8 @@
   "placement": {
     "type": "minecraft:random_spread",
     "salt": 91834465,
-    "spacing": 40,
-    "separation": 12,
+    "spacing": 60,
+    "separation": 25,
     "heightmap": "MOTION_BLOCKING_NO_LEAVES",
     "max_tries": 10
   }

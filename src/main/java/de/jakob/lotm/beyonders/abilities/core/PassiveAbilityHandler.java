@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.CriminalProficiencyAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.FireResistanceAbyssAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.PhysicalEnhancementsAbyssAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.WordImmunityAbility;
@@ -74,6 +75,7 @@ public class PassiveAbilityHandler {
     public static final DeferredItem<Item> FLAMING_HIT = ITEMS.registerItem("flaming_hit_ability", FlamingHitAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> FIRE_RESISTANCE = ITEMS.registerItem("fire_resistance_ability", FireResistanceAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
+    public static final DeferredItem<Item> CRIMINAL_PROFICIENCY = ITEMS.registerItem("criminal_proficiency_ability", CriminalProficiencyAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> FIRE_RESISTANCE_ABYSS = ITEMS.registerItem("fire_resistance_abyss_ability", FireResistanceAbyssAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> WORD_IMMUNITY_ABYSS = ITEMS.registerItem("word_immunity_abyss_ability", WordImmunityAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 

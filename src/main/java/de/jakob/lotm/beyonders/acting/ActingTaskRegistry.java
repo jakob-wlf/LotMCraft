@@ -702,7 +702,6 @@ public class ActingTaskRegistry {
 
         register("abyss", 6, new EventActingTask("use_enchanting_table", 0.1f, 20 * 10));
         register("abyss", 6, new EventActingTask("brew_potion", 0.1f, 20 * 15));
-        register("abyss", 6, new EventActingTask("use_defiling_seed_ability", 0.2f, 20 * 20));
         register("abyss", 6, new EventActingTask("eat_cake", 0.06f, 20 * 10));
         register("abyss", 6, new EventActingTask("eat_golden_apple", 0.06f, 20 * 10));
         register("abyss", 6, new EventActingTask("pickup_gold", 0.05f, 20 * 5));

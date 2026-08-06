@@ -201,7 +201,7 @@ public abstract class Ability {
     }
 
     public float multiplier(LivingEntity entity) {
-        return (float) AbilityUtil.getMultiplierWithArt(entity, this);
+        return entity != null ? (float) AbilityUtil.getMultiplierWithArt(entity, this) : 1f;
     }
 
     public void onHold(Level level, LivingEntity entity) {

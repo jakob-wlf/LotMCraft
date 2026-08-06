@@ -116,6 +116,10 @@ public class AbilityHandler {
         abilities.add(new FlameSpellsAbility("flame_spells_ability"));
         abilities.add(new LanguageOfFoulnessAbility("language_of_foulness_ability"));
         abilities.add(new DevilTransformationAbility("devil_transformation_ability"));
+        abilities.add(new DangerPremonitionAbility("danger_premonition_ability"));
+        abilities.add(new FlameCageAbility("flame_cage_ability"));
+        abilities.add(new ShadowShiftAbility("shadow_shift_ability"));
+        abilities.add(new SwordOfLavaAbility("sword_of_lava_ability"));
         abilities.add(new AvatarOfDesireAbility("avatar_of_desire_ability"));
         abilities.add(new DefilingSeedAbility("defiling_seed_ability"));
         abilities.add(new DemonicSpellsAbility("demonic_spells_ability"));
@@ -123,6 +127,7 @@ public class AbilityHandler {
         abilities.add(new DesireControlAbility("desire_control_ability"));
         abilities.add(new CorruptingVoiceAbility("corrupting_voice_ability"));
         abilities.add(new MaliceSeedAbility("malice_seed_ability"));
+        abilities.add(new BloodSovereignAbility("blood_sovereign_ability"));
         abilities.add(new FearAuraAbility("fear_aura_ability"));
         abilities.add(new FlamesOfTheAbyssAbility("flames_of_the_abyss_ability"));
 
@@ -186,11 +191,13 @@ public class AbilityHandler {
         abilities.add(new PoisonCreationAbility("poison_creation_ability"));
         abilities.add(new CrossbreedingAbility("crossbreeding_ability"));
         abilities.add(new NatureSpellsAbility("nature_spells_ability"));
+        abilities.add(new UndergroundTravelAbility("underground_travel_ability"));
         abilities.add(new LifeAuraAbility("life_aura_ability"));
         abilities.add(new MutationCreationAbility("mutation_creation_ability"));
         abilities.add(new GolemCreationAbility("golem_creation_ability"));
         abilities.add(new LifeDeprivationAbility("life_deprivation_ability"));
         abilities.add(new MaternalEmbraceAbility("maternal_embrace_ability"));
+        abilities.add(new ReturnToEarthAbility("return_to_earth_ability"));
         abilities.add(new AreaDesolationAbility("area_desolation_ability"));
         abilities.add(new BloomingAreaAbility("blooming_area_ability"));
         abilities.add(new WorldCreationAbility("world_creation_ability"));
