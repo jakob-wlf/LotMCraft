@@ -390,6 +390,7 @@
   "lotmcraft.flame_cage_ability.description": "Trap your enemies in a Flame Cage",
   "lotmcraft.danger_premonition_ability": "Danger Premonition",
   "lotmcraft.danger_premonition_ability.description": "While active, you get informed of all nearby that would be capable of harming you or want to harm you.",
+  "ability.lotmcraft.danger_premonition.threat_detected": "Threat Detected",
   "lotmcraft.demonic_spells_ability": "Demonic Spells",
   "lotmcraft.demonic_spells_ability.description": "Cast devastating demonic magic: plant a Acid Swamp dealing posion, create a clone of yourself that explodes, plant a wall of fire around you no one can get in or get out",
   "ability.lotmcraft.demonic_spells.acid_swamp": "Acid Swamp",

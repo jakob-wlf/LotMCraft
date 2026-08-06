@@ -49,9 +49,6 @@ public class DangerPremonitionAbility extends ToggleAbility {
     public void start(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
         knownThreats.put(entity.getUUID(), new HashSet<>());
-        AbilityUtil.sendActionBar(entity,
-                Component.translatable("ability.lotmcraft.danger_premonition.activated")
-                        .withColor(0x8B0000));
         ParticleUtil.spawnSphereParticles((ServerLevel) level, MALICE_DUST,
                 entity.getEyePosition(), 3, 30);
     }
@@ -120,9 +117,6 @@ public class DangerPremonitionAbility extends ToggleAbility {
     public void stop(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
         knownThreats.remove(entity.getUUID());
-        AbilityUtil.sendActionBar(entity,
-                Component.translatable("ability.lotmcraft.danger_premonition.deactivated")
-                        .withColor(0x4a0000));
     }
 
     private boolean consumeSpiritualityQuietly(LivingEntity entity, float amount) {
