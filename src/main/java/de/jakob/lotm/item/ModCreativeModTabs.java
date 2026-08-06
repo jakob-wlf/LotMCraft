@@ -41,6 +41,8 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.PAPER_SHOVEL);
                         output.accept(ModItems.ONE_POUND);
                         output.accept(ModItems.ONE_SOLI);
+                        output.accept(ModItems.UNIQUENESS_MAP);
+                        output.accept(ModItems.CITY_MAP);
                     })
                     .build());
 

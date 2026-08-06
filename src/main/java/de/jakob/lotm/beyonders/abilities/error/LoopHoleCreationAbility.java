@@ -196,7 +196,7 @@ public class LoopHoleCreationAbility extends Ability {
             // Use the creator as the caster but potentially keep original targeting
             isRedirecting.set(true);
             try {
-                ability.useAbility(serverLevel, creator, false, false, true);
+                ability.useAbility(serverLevel, creator, false, false, true, false);
             } finally {
                 isRedirecting.set(false); // Always clean up, even on exception
             }

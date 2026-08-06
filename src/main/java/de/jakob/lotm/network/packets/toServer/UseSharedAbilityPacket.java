@@ -60,7 +60,7 @@ public record UseSharedAbilityPacket(String abilityId) implements CustomPacketPa
             if (reqSeq >= 0 && playerSeq > reqSeq) return;
 
             boolean isShared = isSharedAbility(serverPlayer, abilityId);
-            ability.useAbility(serverLevel, serverPlayer, true, !isShared, true);
+            ability.useAbility(serverLevel, serverPlayer, true, !isShared, true, false);
         });
     }
 

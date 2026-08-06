@@ -158,7 +158,7 @@ public class SanityEventHandler {
                 entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 3.0f);
             }
 
-            if(random.nextInt(40) == 0 && entity instanceof Player player) {
+            if(random.nextInt(40) == 0 && entity instanceof Player) {
                 entity.level().playSound(null, entity.blockPosition(),
                         SoundEvents.ZOMBIE_AMBIENT, SoundSource.HOSTILE, 1.0f, 1.0f);
             }
@@ -276,7 +276,6 @@ public class SanityEventHandler {
 
     private static double getSanityMultiplier(LivingEntity entity, float sanity, int sanityValue) {
         float sanityLoss = 1.0f - sanity;
-        UUID uuid = entity.getUUID();
 
         // ----- MULTIPLIER SCALING -----
         double sanityMultiplier;

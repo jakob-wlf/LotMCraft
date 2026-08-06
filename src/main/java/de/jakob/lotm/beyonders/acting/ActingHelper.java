@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.acting;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncPlayerActingDataPayload;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -70,8 +71,10 @@ public class ActingHelper {
     public static void onCopyPlayerData(PlayerEvent.Clone event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             if (event.isWasDeath()) {
-                // Reinstate cap fresh for the current sequence rather than copying old accumulated data.
-                // This clears missed acting from sequences the player no longer holds after death.
+                // Death resets acting: completed methods become redoable (otherwise a player
+                // who already acted could never restore the cap after regressing) and the cap
+                // is reinstated fresh for the current sequence
+                serverPlayer.getPersistentData().remove(NBT_UNLOCKED_KEY);
                 ActingCapHelper.reinstateCapForCurrentSequence(serverPlayer);
             }
             CompoundTag unlocked = serverPlayer.getPersistentData().getCompound(NBT_UNLOCKED_KEY);
@@ -87,6 +90,15 @@ public class ActingHelper {
             CompoundTag unlocked = player.getPersistentData().getCompound(NBT_UNLOCKED_KEY);
             PacketHandler.sendToPlayer(serverPlayer, new SyncPlayerActingDataPayload(unlocked));
             ActingCapHelper.syncToClient(serverPlayer);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onChangeGameMode(PlayerEvent.PlayerChangeGameModeEvent event) {
+        // Creative players are exempt from the acting cap, so the synced value changes with the
+        // game mode. The event fires before the mode is applied, hence the one-tick delay.
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            ServerScheduler.scheduleDelayed(1, () -> ActingCapHelper.syncToClient(serverPlayer));
         }
     }
 }

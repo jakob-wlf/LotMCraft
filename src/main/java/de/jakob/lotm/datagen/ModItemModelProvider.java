@@ -35,6 +35,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.CRYSTAL_BALL.get());
         basicItem(ModItems.ONE_POUND.get());
         basicItem(ModItems.ONE_SOLI.get());
+        basicItem(ModItems.UNIQUENESS_MAP.get());
+        basicItem(ModItems.CITY_MAP.get());
         basicItem(ModItems.CANE.get());
 
         handheldItem(ModItems.PAPER_SWORD.get());

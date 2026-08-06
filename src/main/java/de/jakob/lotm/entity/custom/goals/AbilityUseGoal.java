@@ -138,7 +138,7 @@ public class AbilityUseGoal extends Goal {
         if(!ignoreUsageConditions)
             selectedAbility.useAbility((ServerLevel) level, entity);
         else
-            selectedAbility.useAbility((ServerLevel) level, entity, false, false, false);
+            selectedAbility.useAbility((ServerLevel) level, entity, false, false, false, false);
     }
 
     private Ability selectWeightedAbility(List<Ability> abilities, Random random) {
