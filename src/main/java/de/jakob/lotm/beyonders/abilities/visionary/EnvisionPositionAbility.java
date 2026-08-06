@@ -57,7 +57,7 @@ public class EnvisionPositionAbility extends SelectableAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 1000;
+        return 4000;
     }
 
     private void onSight(Level level, LivingEntity entity){

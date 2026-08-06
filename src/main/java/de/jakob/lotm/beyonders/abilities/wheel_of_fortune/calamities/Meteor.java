@@ -3,7 +3,10 @@ package de.jakob.lotm.beyonders.abilities.wheel_of_fortune.calamities;
 import de.jakob.lotm.entity.custom.ability_entities.MeteorEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+
+import javax.annotation.Nullable;
 
 public class Meteor extends Calamity{
     @Override
@@ -12,8 +15,8 @@ public class Meteor extends Calamity{
     }
 
     @Override
-    public void spawnCalamity(ServerLevel level, Vec3 position, float damage, boolean griefing) {
-        MeteorEntity meteor = new MeteorEntity(level, 1.6f, damage, 2, null, griefing, 7, 12);
+    public void spawnCalamity(ServerLevel level, Vec3 position, float damage, boolean griefing,@Nullable LivingEntity caster) {
+        MeteorEntity meteor = new MeteorEntity(level, 1.6f, damage, 2, caster, griefing, 7, 12);
         meteor.setPosition(position);
         setEnvisioned(isEnvisioned);
         level.addFreshEntity(meteor);

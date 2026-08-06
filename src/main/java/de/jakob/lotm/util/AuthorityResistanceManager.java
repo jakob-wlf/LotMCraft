@@ -26,6 +26,7 @@ public class AuthorityResistanceManager {
         tyrant.put(ModDamageTypes.WIND, List.of(0f, 0.5f, 0.6f, 0.7f, 0.9f));
         tyrant.put(ModDamageTypes.IMPACT, List.of(0.7f, 0.75f, 0.8f, 0.85f, 0.9f));
         tyrant.put(ModDamageTypes.SPACE_DESTRUCTION, List.of(0.8f, 0.85f, 0.9f));
+        visionary.put(ModDamageTypes.UNLUCK, List.of(0.5f, 0.7f, 0.8f));
         resistances.put("tyrant", tyrant);
 
         Map<ResourceKey<DamageType>, List<Float>> wof = new HashMap<>();
