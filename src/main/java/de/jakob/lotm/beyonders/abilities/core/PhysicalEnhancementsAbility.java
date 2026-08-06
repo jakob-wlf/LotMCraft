@@ -433,7 +433,6 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             }
         }
 
-        System.out.println("removeAllEnhancements called for " + entity.getUUID());
         entityEnhancements.remove(entity.getUUID());
         temporaryEnhancements.remove(entity.getUUID());
         enhancementBoosts.remove(entity.getUUID());

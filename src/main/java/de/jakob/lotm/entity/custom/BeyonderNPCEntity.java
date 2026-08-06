@@ -403,12 +403,12 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
     private TradeEntry generateRandomTrade(RandomSource random) {
         int itemSequence = Math.clamp(BeyonderData.getSequence(this) + (random.nextInt(3) - 1), 1, 9);
-
-        Item item = switch (random.nextInt(10)) {
-            case 0, 1, 2, 3 -> PotionRecipeItemHandler.selectRandomRecipeOfSequence(random, itemSequence);
-            case 4 -> PotionItemHandler.selectRandomPotionOfSequence(random, itemSequence);
-            default -> BeyonderCharacteristicItemHandler.selectRandomCharacteristicOfSequence(random, itemSequence);
-        };
+        
+        float randomFloat = random.nextFloat();
+        Item item = randomFloat < .4f ? PotionRecipeItemHandler.selectRandomRecipeOfSequence(random, itemSequence) :
+                randomFloat < .5f ? PotionItemHandler.selectRandomPotionOfSequence(random, itemSequence) :
+                randomFloat < .94f ? BeyonderCharacteristicItemHandler.selectRandomCharacteristicOfSequence(random, itemSequence) :
+                        ModItems.UNIQUENESS_MAP.get();
 
         if (item == null) {
             return null;
@@ -450,6 +450,11 @@ public class BeyonderNPCEntity extends PathfinderMob {
         } else {
             costA = new ItemStack(ModItems.ONE_SOLI.get(), soli);
             costB = ItemStack.EMPTY;
+        }
+
+        if(randomFloat >= .94) {
+            costA = new ItemStack(ModItems.ONE_POUND.get(), 64);
+            costB = new ItemStack(ModItems.ONE_POUND.get(), 64);
         }
 
         return new TradeEntry(costA, costB, itemStack);

@@ -6,6 +6,7 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.VisionaryAbilityMenus;
+import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.acting.ActingHelper;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
@@ -648,13 +649,13 @@ public class ClientHandler {
         }
     }
 
-    public static void handleActingCapPacket(de.jakob.lotm.network.packets.toClient.SyncActingCapPacket packet) {
+    public static void handleActingCapPacket(SyncActingCapPacket packet) {
         net.minecraft.client.player.LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
         player.getPersistentData().putFloat(
-                de.jakob.lotm.beyonders.acting.ActingCapHelper.CAP_REDUCTION_KEY, packet.capReduction());
+                ActingCapHelper.CAP_REDUCTION_KEY, packet.capReduction());
         player.getPersistentData().put(
-                de.jakob.lotm.beyonders.acting.ActingCapHelper.MISSED_ACTING_KEY, packet.missedActing());
+                ActingCapHelper.MISSED_ACTING_KEY, packet.missedActing());
     }
 
     public static void handleApotheosisPacket(SyncApotheosisPacket packet) {

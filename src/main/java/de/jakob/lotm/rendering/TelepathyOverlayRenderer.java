@@ -37,52 +37,67 @@ public class TelepathyOverlayRenderer {
 
         if (entitiesLookedAtByPlayerWithActiveTelepathy.containsKey(mc.player.getUUID())) {
             List<String> goalNames = entitiesLookedAtByPlayerWithActiveTelepathy.get(mc.player.getUUID());
-            if(goalNames != null && !goalNames.isEmpty()) {
+            if (goalNames != null && !goalNames.isEmpty()) {
                 displayGoals(guiGraphics, goalNames, screenWidth, screenHeight);
             }
         }
     }
 
-    private static void renderOutLine(GuiGraphics guiGraphics, int x, int y, int width, int height) {
-        guiGraphics.fill(x, y, x + width, y + height, 0x77000000);
-        guiGraphics.fill(x, y, x + width, y + 2, 0xFFf7cd83);
-        guiGraphics.fill(x, y + height - 2, x + width, y + height, 0xFFf7cd83);
-        guiGraphics.fill(x, y + 2, x + 2, y + height - 2, 0xFFf7cd83);
-        guiGraphics.fill(x + width - 2, y + 2, x + width, y + height - 2, 0xFFf7cd83);
+    private static void renderPanel(GuiGraphics guiGraphics, int x, int y, int width, int height, int accentColor) {
+        guiGraphics.fill(x + 2, y + 2, x + width - 2, y + height - 2, 0xCC0a0a12);
+        guiGraphics.fill(x + 2, y + 2, x + width - 2, y + 10, 0x220d0d1a);
+
+        guiGraphics.fill(x, y + 2, x + 2, y + height - 2, accentColor);
+        guiGraphics.fill(x + width - 2, y + 2, x + width, y + height - 2, accentColor);
+        guiGraphics.fill(x + 2, y, x + width - 2, y + 2, accentColor);
+        guiGraphics.fill(x + 2, y + height - 2, x + width - 2, y + height, accentColor);
+
+        guiGraphics.fill(x, y, x + 2, y + 2, 0x00000000);
+        guiGraphics.fill(x + width - 2, y, x + width, y + 2, 0x00000000);
+        guiGraphics.fill(x, y + height - 2, x + 2, y + height, 0x00000000);
+        guiGraphics.fill(x + width - 2, y + height - 2, x + width, y + height, 0x00000000);
+
+        guiGraphics.fill(x + 2, y + 2, x + 4, y + 4, accentColor);
+        guiGraphics.fill(x + width - 4, y + 2, x + width - 2, y + 4, accentColor);
+        guiGraphics.fill(x + 2, y + height - 4, x + 4, y + height - 2, accentColor);
+        guiGraphics.fill(x + width - 4, y + height - 4, x + width - 2, y + height - 2, accentColor);
     }
 
     private static void displayGoals(GuiGraphics guiGraphics, List<String> goalNames, int screenWidth, int screenHeight) {
-        int startingX = screenWidth - 10 - goalNames.stream()
-                .map(g -> Minecraft.getInstance().font.width(g.replace("%", "")))
+        Font font = Minecraft.getInstance().font;
+
+        int maxTextWidth = goalNames.stream()
+                .map(g -> font.width(g.replace("%", "")))
                 .max(Comparator.naturalOrder())
                 .orElse(0);
 
-        if (startingX == 0)
-            return;
+        if (maxTextWidth == 0) return;
 
-        Font font = Minecraft.getInstance().font;
+        int padding = 14;
+        int lineSpacing = font.lineHeight + 6;
+        int panelWidth = maxTextWidth + padding * 2;
+        int panelHeight = goalNames.size() * lineSpacing + padding * 2 - 6;
 
-        int bottomY = screenHeight - 10;
-        int outlineX = startingX - 10;
-        int startingY = bottomY - (goalNames.size() * 2 * font.lineHeight);
-        int outlineY = startingY - 10;
-        int outlineWidth = screenWidth - outlineX;
-        int outlineHeight = bottomY - outlineY;
+        int panelX = screenWidth - panelWidth - 10;
+        int panelY = screenHeight - panelHeight - 10;
 
-        guiGraphics.fill(startingX - 10, startingY - 10,
-                screenWidth,
-                bottomY,
-                0x77000000);
+        renderPanel(guiGraphics, panelX, panelY, panelWidth, panelHeight, 0xFFf7cd83);
 
-        renderOutLine(guiGraphics, outlineX, outlineY, outlineWidth, outlineHeight);
+        int textX = panelX + padding;
+        int textY = panelY + padding;
 
         for (String s : goalNames) {
-            int color = s.contains("%") ? 0xFFffc363 : 0xFFFFFFFF;
+            boolean highlight = s.contains("%");
             s = s.replace("%", "");
-            guiGraphics.drawString(font,
-                    s,
-                    startingX, startingY, color);
-            startingY += font.lineHeight * 2;
+
+            if (highlight) {
+                guiGraphics.fill(textX - 4, textY - 2, textX + maxTextWidth + 4, textY + font.lineHeight + 1, 0x22f7cd83);
+            }
+
+            guiGraphics.drawString(font, s, textX + 1, textY + 1, 0x55000000);
+            guiGraphics.drawString(font, s, textX, textY, highlight ? 0xFFffc363 : 0xFFd4cfc8);
+
+            textY += lineSpacing;
         }
     }
 
