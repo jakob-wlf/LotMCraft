@@ -28,15 +28,18 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ManipulationAbility extends SelectableAbility {
 
     public ManipulationAbility(String id) {
         super(id, 5);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 2, 3, 5));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(1200f, 800f, 470f, 280f, 260f, 160f, 134f, 100f));
     }
 
     @Override
@@ -103,7 +106,7 @@ public class ManipulationAbility extends SelectableAbility {
 
         int casterSeq = AbilityUtil.getSeqWithArt(entity, this);
         List<LivingEntity> nearby = AbilityUtil.getNearbyEntities(
-                entity, serverLevel, entity.position(), 20, false, true);
+                entity, serverLevel, entity.position(), 80, false, true);
 
         if(VisionaryHandler.shouldFailAndTrigger(casterSeq, entity, target, this)){
             return;
@@ -127,15 +130,7 @@ public class ManipulationAbility extends SelectableAbility {
                 // For beyonder mobs, check sequence. For non-beyonder mobs, always incite.
                 if (BeyonderData.isBeyonder(mob) && BeyonderData.getSequence(mob) < casterSeq) continue;
 
-                LivingEntity originalTarget = mob.getTarget();
                 mob.setTarget(target);
-
-                ServerScheduler.scheduleDelayed(20 * 10, () -> {
-                    if (!mob.isRemoved()) {
-                        mob.setTarget(originalTarget != null && originalTarget.isAlive()
-                                ? originalTarget : null);
-                    }
-                });
             }
         }
     }

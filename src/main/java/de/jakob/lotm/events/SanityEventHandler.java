@@ -60,7 +60,6 @@ public class SanityEventHandler {
             return;
         }
 
-
         if (BeyonderData.isBeyonder(entity)) {
             double sanityMultiplier = getSanityMultiplier(entity, sanity, sanityValue);
 
@@ -123,8 +122,6 @@ public class SanityEventHandler {
             entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 200, 0, false, false));
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 25, 2, false, true));
             entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0, false, false));
-
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 2, 0, false, true));
 
             if(random.nextInt(10) == 0) {
                 entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 3.0f);

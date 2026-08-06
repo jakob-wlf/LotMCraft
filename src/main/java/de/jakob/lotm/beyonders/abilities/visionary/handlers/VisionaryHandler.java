@@ -8,6 +8,7 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.playerMap.StoredData;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -35,6 +36,31 @@ public class VisionaryHandler {
 
     public static boolean checkAsleep(LivingEntity entity, LivingEntity target){
         return requiresAsleep(entity) && !(target.hasEffect(ModEffects.ASLEEP) || target.isSleeping());
+    }
+
+    public static void shouldTrigger(int seq, LivingEntity caster, LivingEntity target, @Nullable Ability skill){
+        int seqTarget = BeyonderData.getSequence(target);
+        String pathTarget = BeyonderData.getPathway(target);
+
+        if(caster.equals(target)) return;
+
+        if(target instanceof ServerPlayer targetPlayer) {
+            var data = BeyonderData.playerMap.get(targetPlayer.getUUID()).get();
+            seqTarget = data.sequence();
+            pathTarget = data.pathway();
+        }
+
+        if(!pathTarget.equals("visionary")) return;
+
+        if(target instanceof ServerPlayer targetPlayer && caster instanceof ServerPlayer entityPlayer){
+            if(!(BeyonderData.getPathway(entityPlayer).equals("visionary") && seq < seqTarget)) {
+                if (skill != null)
+                    MetaAwarenessAbility.sendWithMessage(entityPlayer, targetPlayer, "Tried to use: " + skill.getId());
+                else
+                    MetaAwarenessAbility.onDivined(entityPlayer, targetPlayer);
+            }
+        }
+
     }
 
     public static boolean shouldFailAndTrigger(int seq, LivingEntity caster, LivingEntity target, @Nullable Ability skill){
@@ -110,6 +136,9 @@ public class VisionaryHandler {
 
 
     public static boolean isInvisible(LivingEntity target){
+        if(target.level() instanceof ServerLevel)
+            return PsychologicalInvisibilityAbility.invisiblePlayers.containsKey(target.getUUID());
+
         return PsychologicalInvisibilityAbility.invisiblePlayersClient.containsKey(target.getUUID());
     }
 

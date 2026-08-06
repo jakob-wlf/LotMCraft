@@ -30,6 +30,12 @@ public class DreamWeaveAbility extends SelectableAbility {
 
     public DreamWeaveAbility(String id) {
         super(id, 20f);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 4, 6, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(7500f, 3000f, 2000f, 1600f));
     }
 
     @Override

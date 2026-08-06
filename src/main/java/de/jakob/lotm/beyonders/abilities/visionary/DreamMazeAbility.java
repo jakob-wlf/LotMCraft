@@ -50,6 +50,12 @@ public class DreamMazeAbility extends SelectableAbility {
         canBeReplicated = false;
         cannotBeStolen = true;
         canBeUsedInArtifact = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 3, 4));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(10000f, 4000f, 2500f));
     }
 
     @Override

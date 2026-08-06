@@ -37,7 +37,7 @@ public class AngelAuthorityAbility extends SelectableAbility {
     private AngelFlightAbility flightSkill;
 
     public AngelAuthorityAbility(String id) {
-        super(id, 2.0f);
+        super(id, 1.0f);
         this.canBeUsedByNPC = false;
         this.canBeCopied = false;
         this.cannotBeStolen = true;

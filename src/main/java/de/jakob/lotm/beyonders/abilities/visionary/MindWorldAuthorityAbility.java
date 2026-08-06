@@ -38,7 +38,7 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
     private MindWorldAuthorityEnvisioningAbility envisioningToggle;
 
     public MindWorldAuthorityAbility(String id) {
-        super(id, 3f);
+        super(id, 2f);
 
         canBeCopied = false;
         canBeReplicated = false;

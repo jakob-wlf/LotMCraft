@@ -29,8 +29,8 @@ public class Earthquake extends Calamity {
     private final Random random = new Random();
 
     @Override
-    public void spawnCalamity(ServerLevel level, Vec3 startPos, float damage, boolean griefing) {
-        spawnCalamity(level, startPos, griefing, 28, damage, null, false);
+    public void spawnCalamity(ServerLevel level, Vec3 startPos, float damage, boolean griefing, @Nullable LivingEntity caster) {
+        spawnCalamity(level, startPos, griefing, 28, damage, caster, false);
     }
 
     public void spawnCalamity(ServerLevel level, Vec3 startPos, boolean griefing, int radius, float rawDamage, @Nullable LivingEntity caster, boolean damageCaster, boolean isEnvisioned) {

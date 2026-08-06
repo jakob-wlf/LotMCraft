@@ -72,16 +72,16 @@ public class IllusoryScalesAbility extends ToggleAbility {
 
     public static float getDamageReductionPerSeq(int seq){
         return (float) (1.0f - switch (seq){
-            case 9 -> 0.05f;
-            case 8 -> 0.1f;
-            case 7 -> 0.15f;
-            case 6 -> 0.20f;
-            case 5 -> 0.25f;
+            case 9 -> 0.10f;
+            case 8 -> 0.15f;
+            case 7 -> 0.20f;
+            case 6 -> 0.25f;
+            case 5 -> 0.30f;
             case 4 -> 0.35;
             case 3 -> 0.40f;
-            case 2 -> 0.45f;
-            case 1 -> 0.5f;
-            case 0 -> 0.60f;
+            case 2 -> 0.55f;
+            case 1 -> 0.60f;
+            case 0 -> 0.65f;
             default -> 0.0f;
         });
     }

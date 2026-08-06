@@ -60,59 +60,60 @@ public class AweAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
-        if(level.isClientSide) {
+        if (level.isClientSide) {
             ParticleUtil.spawnParticles((ClientLevel) level, dust, entity.position(), 1300, 17, 3, 17, 0);
             return;
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
-                    .withColor(0xFFff124d));
+                            .withColor(0xFFff124d));
             return;
         }
 
         level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 1, 1);
 
-        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 17 * (int) Math.max(multiplier(entity),1)).forEach(e -> {
-            if(!VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, e, this)){
-                if (BeyonderData.isBeyonder(e)) {
-                    BeyonderData.addModifier(e, "awe", .625);
-                }
+        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 17 * (int) Math.max(multiplier(entity), 1)).forEach(e -> {
+            VisionaryHandler.shouldTrigger(entitySeq, entity, e, this);
 
-                e.addEffect(new MobEffectInstance(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 10, 11, false, false, false)));
-                e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20 * 10, 6, false, false, false));
+            if (BeyonderData.isBeyonder(e)) {
+                BeyonderData.addModifier(e, "awe", .625);
+            }
 
-                e.hurt(ModDamageTypes.source(level,ModDamageTypes.LOOSING_CONTROL, entity), baseDamage/2);
-                e.hurt(ModDamageTypes.source(level,ModDamageTypes.AWE, entity), baseDamage/2);
+            e.addEffect(new MobEffectInstance(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 10, 11, false, false, false)));
+            e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20 * 10, 6, false, false, false));
 
-                VisionaryLoosingControlHandler.applyEffect(entity, e, this);
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.LOOSING_CONTROL, entity), baseDamage / 2);
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.AWE, entity), baseDamage / 2);
 
-                ServerScheduler.scheduleForDuration(0, 8, 20 * 10, () -> {
-                    Location eLoc = new Location(e.position(), e.level());
+            VisionaryLoosingControlHandler.applyEffect(entity, e, this);
 
-                    if (InteractionHandler.isInteractionPossibleForEntity(eLoc, "morale_boost", entitySeq, e)) {
-                        if (BeyonderData.isBeyonder(e)) {
-                            BeyonderData.removeModifier(e, "awe");
-                        }
-                        e.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
-                        e.removeEffect(MobEffects.WEAKNESS);
-                        return;
-                    }
+            ServerScheduler.scheduleForDuration(0, 8, 20 * 10, () -> {
+                Location eLoc = new Location(e.position(), e.level());
 
-                    if(entitySeq <= 4)
-                        BattleHypnosisAbility.performRandomEffect((ServerLevel) level, entity, e, entitySeq);
-
-                    e.setDeltaMovement((new Vec3(random.nextDouble(-1, 1), random.nextDouble(0, .1), random.nextDouble(-1, 1))).normalize().scale(0.3));
-                    e.hurtMarked = true;
-                }, () -> {
+                if (InteractionHandler.isInteractionPossibleForEntity(eLoc, "morale_boost", entitySeq, e)) {
                     if (BeyonderData.isBeyonder(e)) {
                         BeyonderData.removeModifier(e, "awe");
                     }
-                }, (ServerLevel) level);
-            }
+                    e.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+                    e.removeEffect(MobEffects.WEAKNESS);
+                    return;
+                }
+
+                if (entitySeq <= 4)
+                    BattleHypnosisAbility.performRandomEffect((ServerLevel) level, entity, e, entitySeq);
+
+                e.setDeltaMovement((new Vec3(random.nextDouble(-1, 1), random.nextDouble(0, .1), random.nextDouble(-1, 1))).normalize().scale(0.3));
+                e.hurtMarked = true;
+            }, () -> {
+                if (BeyonderData.isBeyonder(e)) {
+                    BeyonderData.removeModifier(e, "awe");
+                }
+            }, (ServerLevel) level);
+
         });
     }
 }

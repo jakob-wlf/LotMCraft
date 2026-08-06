@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class CalamityAttractionAbility extends Ability {
     public CalamityAttractionAbility(String id) {
@@ -60,9 +61,17 @@ public class CalamityAttractionAbility extends Ability {
 
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 2, true);
 
+        AtomicReference<Float> damage = new AtomicReference<>(baseDamage);
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
         ServerScheduler.scheduleDelayed(random.nextInt(31, 60), () -> {
             Calamity calamity = calamities[random.nextInt(calamities.length)];
-            calamity.spawnCalamity(serverLevel, targetPos, baseDamage, BeyonderData.isGriefingEnabled(entity));
+
+            if(calamity instanceof Meteor)
+                damage.set(25f);
+
+            calamity.spawnCalamity(serverLevel, targetPos, damage.get(), BeyonderData.isGriefingEnabled(entity), entitySeq <= 3 ? entity : null);
         }, serverLevel);
     }
 }

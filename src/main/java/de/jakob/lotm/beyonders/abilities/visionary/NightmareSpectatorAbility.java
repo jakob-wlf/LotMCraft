@@ -84,9 +84,7 @@ public class NightmareSpectatorAbility extends Ability {
             return;
         }
 
-        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
-            return;
-        }
+        VisionaryHandler.shouldTrigger(entitySeq, entity, target, this);
 
         if(checkAsleep(entity, target)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.must_be_asleep").withColor(0xFFff124d));

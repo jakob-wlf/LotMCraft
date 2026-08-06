@@ -43,8 +43,8 @@ public class VisionaryLoosingControlHandler {
 
     public static int getBasePerSeq(int seq){
         return switch (seq){
-            case 9,8,7 -> 1;
-            case 6, 5 -> 2;
+            case 9,8,7,6 -> 1;
+            case 5 -> 2;
             case 4 -> 4;
             case 3 -> 6;
             case 2 -> 10;

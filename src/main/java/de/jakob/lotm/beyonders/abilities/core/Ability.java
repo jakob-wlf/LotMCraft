@@ -158,8 +158,6 @@ public abstract class Ability {
 
         // Use ability client and server sided
 
-        LOTMCraft.LOGGER.info("Before mult: damage {}, mult {}, res {}", baseDamage, multiplier(entity), baseDamage * multiplier(entity));
-
         final float damageBackup = baseDamage;
         baseDamage *= multiplier(newUser);
 

@@ -57,7 +57,11 @@ public class PassiveCalamityAttraction extends PassiveAbilityItem {
 
         if(nextCalamity.get(entity.getUUID()) <= 0) {
             Calamity calamity = calamities[random.nextInt(calamities.length)];
-            calamity.spawnCalamity(serverLevel, entity.position().offsetRandom(serverLevel.random, 6f), (float) BeyonderData.getMultiplier(entity), BeyonderData.isGriefingEnabled(entity));
+            calamity.spawnCalamity(serverLevel,
+                    entity.position().offsetRandom(serverLevel.random, 6f),
+                    15f,
+                    BeyonderData.isGriefingEnabled(entity),
+                    BeyonderData.getSequence(entity) <= 3 ? entity : null);
 
             nextCalamity.put(entity.getUUID(), (long) random.nextInt(20 * 20, 20 * 90));
         }

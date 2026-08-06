@@ -77,7 +77,7 @@ public class ProphecyAbility extends SelectableAbility {
             case 0 -> {
                 Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 3);
 
-                float damage = baseDamage * 5;
+                float damage = baseDamage * 25;
 
                 MeteorEntity meteor = new MeteorEntity(level, 3.25f, damage, 4, entity, BeyonderData.isGriefingEnabled(entity), 20, 34);
                 meteor.setPosition(targetLoc);

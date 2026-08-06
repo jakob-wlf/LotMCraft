@@ -81,9 +81,7 @@ public class FrenzyAbility extends Ability {
             return;
         }
 
-        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
-            return;
-        }
+        VisionaryHandler.shouldTrigger(entitySeq, entity, target, this);
 
         VisionaryLoosingControlHandler.applyEffect(entity, target, this);
 

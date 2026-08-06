@@ -38,7 +38,7 @@ public class BeyonderData {
     private static final int[] spiritualityLookup = {60000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180};
     //private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
     private static final double[] multiplier = {1, 1, 1, 1, 1, 1, 1, 1, 1.0, 1.0};
-    private static final double[] sanityDecreaseMultiplier = {.01, .02, .025, .05, .1, .65, .75, .88, 1.0, 1.0};
+    private static final double[] sanityDecreaseMultiplier = {.01, .02, .025, .05, .1, .2, .3, .4, 1.0, 1.0};
 
     public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>();
 

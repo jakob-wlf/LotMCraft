@@ -23,12 +23,19 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class SleepInducementAbility extends SelectableAbility {
     public SleepInducementAbility(String id) {
         super(id, 2);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 2, 2));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(1000f, 800f, 600f, 400f, 200f, 100f));
     }
 
     @Override
