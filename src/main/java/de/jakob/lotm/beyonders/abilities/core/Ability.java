@@ -157,12 +157,11 @@ public abstract class Ability {
         component.setCooldown(id, inflatedCooldown);
 
         // Use ability client and server sided
-
         final float damageBackup = baseDamage;
         baseDamage *= multiplier(newUser);
 
         if(!hasManualDistance)
-            baseDistance = 10 * (int) ((1 << (9 - seq)) * multiplier(newUser));
+            baseDistance = (int) (Math.max(Math.max((1 << (9 - seq)), 15), 125) * multiplier(newUser));
         AuthorityResistanceManager.addToBuffer(entity, seq);
 
         onAbilityUse(serverLevel, newUser);

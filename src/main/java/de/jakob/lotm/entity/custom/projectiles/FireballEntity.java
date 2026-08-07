@@ -117,10 +117,12 @@ public class FireballEntity extends AbstractArrow {
 
         level.explode(owner, target.position().x, target.position().y, target.position().z, 3.5f, griefing, Level.ExplosionInteraction.NONE);
         // check if the owner exists before - to not crash
-        if (this.getOwner() instanceof LivingEntity livingOwner) {
-            target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, livingOwner), (float) damage);
+        if(owner != null){
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE, owner), (float) damage/2);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.SOUL_FIRE, owner), (float) damage/2);
         } else {
-            target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC), (float) damage);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE), (float) damage/2);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.SOUL_FIRE), (float) damage/2);
         }
         target.setRemainingFireTicks(target.getRemainingFireTicks() + 20 * 6);
         if(!level.isClientSide)
@@ -130,12 +132,7 @@ public class FireballEntity extends AbstractArrow {
     @Override
     protected void onHitBlock(BlockHitResult result) {
         this.discard();
-        if(griefing) {
-            level.explode(owner, result.getLocation().x, result.getLocation().y, result.getLocation().z, 4f, true, Level.ExplosionInteraction.MOB);
-        }
-        else {
-            level.explode(owner, result.getLocation().x, result.getLocation().y, result.getLocation().z, 4f, false, Level.ExplosionInteraction.NONE);
-        }
+
         if(!level.isClientSide)
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, position(), owner, null, new String[]{"explosion", "burning"}, 3, 10));
     }

@@ -87,8 +87,16 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
             return;
         }
         level.explode(owner, target.position().x, target.position().y, target.position().z, 3.5f, griefing, Level.ExplosionInteraction.NONE);
-        if(owner != null) target.hurt(ModDamageTypes.source(level, ModDamageTypes.HUNTER_FIRE, owner), (float) damage);
-        else              target.hurt(ModDamageTypes.source(level, ModDamageTypes.HUNTER_FIRE), (float) damage);
+
+        if(owner != null){
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.SOUL_FIRE, owner), (float) damage/2);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE, owner), (float) damage/2);
+        }
+        else {
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.SOUL_FIRE), (float) damage/2);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE), (float) damage/2);
+        }
+
         target.setRemainingFireTicks(target.getRemainingFireTicks() + 20 * 6);
         if(!level.isClientSide && owner != null)
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, position(), owner, null, new String[]{"burning", "explosion"}, 3.5, 10));

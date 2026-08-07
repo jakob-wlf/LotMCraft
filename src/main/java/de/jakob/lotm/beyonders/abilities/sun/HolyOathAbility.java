@@ -24,7 +24,7 @@ public class HolyOathAbility extends ToggleAbility {
         super(id, "morale_boost");
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(40f, 35f, 30f, 25f, 20f, 15f, 10f, 5f));
+        dynamicSpirituality = new LinkedList<>(List.of(40f, 35f, 30f, 15f, 11.5f, 8.5f, 6.5f, 5f));
     }
 
     @Override
@@ -66,7 +66,6 @@ public class HolyOathAbility extends ToggleAbility {
 
         ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, entity.getEyePosition().subtract(0, entity.getEyeHeight() / 2, 0), 3, .3, .6, .3, 0);
         entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 1, false, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 6, 1, false, false, false));
         entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 6, 2, false, false, false));
         entity.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 20 * 6, 6, false, false, false));
         entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20 * 6, 1, false, false, false));

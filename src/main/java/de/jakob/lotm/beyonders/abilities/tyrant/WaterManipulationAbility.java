@@ -14,7 +14,10 @@ import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -102,6 +105,18 @@ public class WaterManipulationAbility extends SelectableAbility {
         if(level.isClientSide) return;
 
         level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.PLAYER_SPLASH, entity.getSoundSource(), 1.0f, 1.0f);
+
+        if (entity.level().dimension().equals(Level.NETHER)) {
+            return;
+        }
+
+        if(!BeyonderData.isGriefingEnabled(entity)) {
+            if(entity instanceof ServerPlayer serverPlayer) {
+                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("lotmcraft.griefing_enabled_required").withColor(0x456bd6));
+                serverPlayer.connection.send(packet);
+            }
+            return;
+        }
 
         ItemStack handItem = entity.getMainHandItem();
         boolean wasOffHand = false;

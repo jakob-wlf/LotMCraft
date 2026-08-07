@@ -229,6 +229,10 @@ public class TornadoEntity extends Entity {
 
         UUID casterUUID = getCasterUUID();
 
+        var imagination = ModDamageTypes.source(this.level(), ModDamageTypes.IMAGINATION, caster);
+        var impact = ModDamageTypes.source(this.level(), ModDamageTypes.IMPACT, caster);
+        var wind = ModDamageTypes.source(this.level(), ModDamageTypes.WIND, caster);
+
         for (Entity entity : entities) {
             if (entity instanceof LivingEntity && entity != caster) {
                 if (casterUUID != null && entity.getUUID().equals(casterUUID)) {
@@ -237,14 +241,14 @@ public class TornadoEntity extends Entity {
                 float distance = this.distanceTo(entity);
                 if (distance < 6.0f) {
                     if(isEnvisioned) {
-                        entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.IMAGINATION, caster), getDamage() / 2);
+                        entity.hurt(imagination, getDamage() / 2);
 
-                        entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.IMPACT, caster), getDamage() / 4);
-                        entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.WIND, caster), getDamage() / 4);
+                        entity.hurt(impact, getDamage() / 4);
+                        entity.hurt(wind, getDamage() / 4);
                     }
                     else{
-                        entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.IMPACT, caster), getDamage() / 2);
-                        entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.WIND, caster), getDamage() / 2);
+                        entity.hurt(impact, getDamage() / 2);
+                        entity.hurt(wind, getDamage() / 2);
                     }
 
                     Vec3 direction = this.position().subtract(entity.position()).normalize();

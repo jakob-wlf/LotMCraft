@@ -1,34 +1,44 @@
-package de.jakob.lotm.beyonders.abilities.tyrant;
+package de.jakob.lotm.beyonders.abilities.red_priest;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.attachments.DisabledFlightComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.WindBladeEntity;
+import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.entity.custom.FireRavenEntity;
+import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
+import de.jakob.lotm.entity.custom.projectiles.FlamingSpearProjectileEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class WindManipulationFlightAbility extends ToggleAbility {
-    public WindManipulationFlightAbility(String id) {
-        super(id);
+public class PyrokinesisFlightAbility extends ToggleAbility {
+    private final HashSet<UUID> transformedEntities = new HashSet<>();
+
+    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(1.0f, .95f, .95f), 2.0f);
+
+    public PyrokinesisFlightAbility(String id) {
+        super(id, "burning");
 
         this.canBeUsedByNPC = false;
 
@@ -45,11 +55,13 @@ public class WindManipulationFlightAbility extends ToggleAbility {
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("tyrant", 6));
+        return new HashMap<>(Map.of(
+                "red_priest", 4
+        ));
     }
 
     @Override
-    public float getSpiritualityCost() {
+    protected float getSpiritualityCost() {
         return 30;
     }
 
@@ -74,6 +86,8 @@ public class WindManipulationFlightAbility extends ToggleAbility {
             player.onUpdateAbilities();
         }
 
+        ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.FLAME, entity.getEyePosition(), 60, 1.2, .05);
+        ParticleUtil.spawnParticles((ServerLevel) level, dust, entity.getEyePosition(), 30, 1.2, .05);
 
         // Stop when overridden by another transformation
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);

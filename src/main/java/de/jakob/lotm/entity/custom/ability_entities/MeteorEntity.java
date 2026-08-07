@@ -216,7 +216,7 @@ public class MeteorEntity extends Entity {
             }
 
             EffectManager.playEffect(EffectManager.Effect.EXPLOSION, position().x, position().y, position().z, serverLevel);
-            PerformantExplosion.create(serverLevel, getCaster(), position(), getExplosionSize() * 1.5f, isGriefing(), isGriefing() ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.KEEP);
+            // PerformantExplosion.create(serverLevel, getCaster(), position(), getExplosionSize() * 1.5f, isGriefing(), isGriefing() ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.KEEP);
 
             if(getCaster() instanceof LivingEntity livingCaster) {
                 String[] flags = isAbyssImpact() ? new String[]{"explosion", "corruption"} : new String[]{"explosion", "burning"};

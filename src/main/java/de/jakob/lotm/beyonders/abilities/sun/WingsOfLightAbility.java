@@ -25,7 +25,7 @@ public class WingsOfLightAbility extends ToggleAbility {
         canBeShared = false;
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(40f, 35f, 30f, 25f, 20f, 15f, 10f, 5f));
+        dynamicSpirituality = new LinkedList<>(List.of(40f, 35f, 30f));
     }
 
     @Override

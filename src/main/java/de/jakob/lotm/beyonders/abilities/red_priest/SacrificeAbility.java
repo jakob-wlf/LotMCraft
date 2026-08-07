@@ -5,6 +5,7 @@ import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.KillCountComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SacrificeRevertComponent;
+import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.WarBannerEntity;
 import de.jakob.lotm.network.PacketHandler;
@@ -29,6 +30,8 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -38,13 +41,16 @@ public class SacrificeAbility extends Ability {
     private static final int MAX_DURATION_SECONDS = 60;
 
     public SacrificeAbility(String id) {
-        super(id, 20 * 60 * 5);
+        super(id, 20 * 60 * 2);
         canBeCopied = false;
         canBeReplicated = false;
         canBeUsedInArtifact = false;
         cannotBeStolen = true;
         canBeUsedByNPC = false;
         canBeShared = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(24000f, 10000f, 5000f, 3000f));
     }
 
     @Override
@@ -73,7 +79,7 @@ public class SacrificeAbility extends Ability {
         }
 
         int currentSeq = BeyonderData.getSequence(player);
-        if (currentSeq > 3 || currentSeq < 1) return;
+        if (currentSeq > 3) return;
 
         KillCountComponent killCount = player.getData(ModAttachments.KILL_COUNT_COMPONENT);
         int kills = killCount.getKillCount();
@@ -104,39 +110,51 @@ public class SacrificeAbility extends Ability {
         // Activate after animation completes (20 ticks banner + 15 ticks ball = 35 ticks)
         int animationTicks = 35;
         ServerScheduler.scheduleDelayed(animationTicks, () -> {
-            float savedDigestion = BeyonderData.getDigestionProgress(player);
-            // Temporary advance that reverts after the duration — must not trigger the acting cap
-            de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = true;
-            try {
-                BeyonderData.setBeyonder(player, pathway, tempSeq, true, false, true, false);
-            } finally {
-                de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = false;
+
+            if(currentSeq <= 0) {
+                BeyonderData.addModifier(entity, "sacrifice", 1.65);
+
+                PacketHandler.sendToPlayer(player, new SyncSacrificeDurationPacket(durationTicks));
+
+                ServerScheduler.scheduleDelayed(durationTicks, () -> {
+                    BeyonderData.removeModifier(entity, "sacrifice");
+                });
             }
-            // Temp sequence starts at 0 digestion — prevents drinking potions to exploit the advance
-            BeyonderData.setDigestionProgress(player, 0);
-            PacketHandler.syncBeyonderDataToPlayer(player);
-            AbilityWheelHelper.removeUnusableAbilities(player);
-
-            SacrificeRevertComponent revert = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);
-            revert.set(serverLevel.getGameTime() + durationTicks, currentSeq, pathway, savedDigestion);
-
-            PacketHandler.sendToPlayer(player, new SyncSacrificeDurationPacket(durationTicks));
-
-            // Revert while online after duration expires
-            ServerScheduler.scheduleDelayed(durationTicks, () -> {
-                SacrificeRevertComponent r = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);
-                if (!r.isActive()) return;
-                if (BeyonderData.isBeyonder(player)
-                        && BeyonderData.getPathway(player).equals(pathway)
-                        && BeyonderData.getSequence(player) == tempSeq) {
-                    float digestion = r.getSavedDigestion();
-                    BeyonderData.setBeyonder(player, pathway, currentSeq, true, false, false, false);
-                    BeyonderData.setDigestionProgress(player, digestion);
-                    PacketHandler.syncBeyonderDataToPlayer(player);
-                    AbilityWheelHelper.removeUnusableAbilities(player);
+            else{
+                float savedDigestion = BeyonderData.getDigestionProgress(player);
+                // Temporary advance that reverts after the duration — must not trigger the acting cap
+                ActingCapHelper.skipNextCapApplication = true;
+                try {
+                    BeyonderData.setBeyonder(player, pathway, tempSeq, true, false, true, false);
+                } finally {
+                    ActingCapHelper.skipNextCapApplication = false;
                 }
-                r.clear();
-            }, serverLevel);
+                // Temp sequence starts at 0 digestion — prevents drinking potions to exploit the advance
+                BeyonderData.setDigestionProgress(player, 0);
+                PacketHandler.syncBeyonderDataToPlayer(player);
+                AbilityWheelHelper.removeUnusableAbilities(player);
+
+                SacrificeRevertComponent revert = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);
+                revert.set(serverLevel.getGameTime() + durationTicks, currentSeq, pathway, savedDigestion);
+
+                PacketHandler.sendToPlayer(player, new SyncSacrificeDurationPacket(durationTicks));
+
+                // Revert while online after duration expires
+                ServerScheduler.scheduleDelayed(durationTicks, () -> {
+                    SacrificeRevertComponent r = player.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT);
+                    if (!r.isActive()) return;
+                    if (BeyonderData.isBeyonder(player)
+                            && BeyonderData.getPathway(player).equals(pathway)
+                            && BeyonderData.getSequence(player) == tempSeq) {
+                        float digestion = r.getSavedDigestion();
+                        BeyonderData.setBeyonder(player, pathway, currentSeq, true, false, false, false);
+                        BeyonderData.setDigestionProgress(player, digestion);
+                        PacketHandler.syncBeyonderDataToPlayer(player);
+                        AbilityWheelHelper.removeUnusableAbilities(player);
+                    }
+                    r.clear();
+                }, serverLevel);
+            }
         }, serverLevel);
     }
 

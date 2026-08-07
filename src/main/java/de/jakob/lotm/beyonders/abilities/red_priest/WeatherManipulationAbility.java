@@ -6,9 +6,11 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ActiveShaderComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.TornadoEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -27,16 +29,21 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WeatherManipulationAbility extends SelectableAbility {
     public WeatherManipulationAbility(String id) {
         super(id, 25);
         postsUsedAbilityEventManually = true;
         canBeShared = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(10000f, 4000f, 2500f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(15, 20, 25));
+
+        baseDamage = 4f;
     }
 
     @Override
@@ -51,7 +58,11 @@ public class WeatherManipulationAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.calamity_creation.snow_storm", "ability.lotmcraft.calamity_creation.drought", "ability.lotmcraft.calamity_creation.tornados"};
+        return new String[]{
+                "ability.lotmcraft.calamity_creation.snow_storm",
+                "ability.lotmcraft.calamity_creation.drought",
+                "ability.lotmcraft.calamity_creation.tornados"
+        };
     }
 
     @Override
@@ -88,16 +99,19 @@ public class WeatherManipulationAbility extends SelectableAbility {
                 .toList();
 
         double multiplier = multiplier(entity);
+        float damage = baseDamage/3;
 
-        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 15*multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 15), () -> {
             // Damage and Effects
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 45*multiplier(entity), DamageLookup.lookupDps(2, .5, 4, 30) *multiplier(entity), startPos, true, false);
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 45*multiplier(entity), startPos,
-                    new MobEffectInstance(MobEffects.WEAKNESS, (int) (20 * 5*multiplier(entity)), 1, false, false, false),
-                    new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, (int) (20 * 5*multiplier(entity)), 7, false, false, false));
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier, ModDamageTypes.WATER ,damage/2, startPos, true, false);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier, ModDamageTypes.WIND ,damage/2, startPos, true, false);
+
+            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 60* multiplier, startPos,
+                    new MobEffectInstance(MobEffects.WEAKNESS, 20 * 5, 1, false, false, false),
+                    new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 7, false, false, false));
 
             // Particles and shader
-            for(Player player : AbilityUtil.getNearbyEntities(null, serverLevel, startPos, 45*multiplier(entity), true)
+            for(Player player : AbilityUtil.getNearbyEntities(null, serverLevel, startPos, 60, true)
                     .stream()
                     .filter(e -> e instanceof Player)
                     .map(e -> (Player)e)
@@ -137,7 +151,7 @@ public class WeatherManipulationAbility extends SelectableAbility {
                     }
                 }
             }
-        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(startPos, serverLevel)));
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 
     private final DustParticleOptions droughtDust = new DustParticleOptions(new Vector3f(217 / 255f, 121 / 255f, 65 / 255f), 10.0f);
@@ -164,16 +178,19 @@ public class WeatherManipulationAbility extends SelectableAbility {
                 .toList();
 
         double multiplier = multiplier(entity);
+        float damage = baseDamage/3;
 
-        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30*multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 15), () -> {
             // Damage and Effects
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, 45*multiplier(entity), DamageLookup.lookupDps(2, .5, 4, 30) *multiplier(entity), startPos, true, false, 20 * 10);
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 45*multiplier(entity), startPos,
-                    new MobEffectInstance(MobEffects.WEAKNESS, (int) (20 * 5*multiplier(entity)), 1, false, false, false),
-                    new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, (int) (20 * 5*multiplier(entity)), 4, false, false, false));
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier, ModDamageTypes.FIRE ,damage/2, startPos, true, false);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier, ModDamageTypes.WIND ,damage/2, startPos, true, false);
+
+            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 90* multiplier, startPos,
+                    new MobEffectInstance(MobEffects.WEAKNESS, 20 * 5, 1, false, false, false),
+                    new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 4, false, false, false));
 
             // Particles and shader
-            for(Player player : AbilityUtil.getNearbyEntities(null, serverLevel, startPos, 45*multiplier(entity), true)
+            for(Player player : AbilityUtil.getNearbyEntities(null, serverLevel, startPos, 90, true)
                     .stream()
                     .filter(e -> e instanceof Player)
                     .map(e -> (Player)e)
@@ -220,20 +237,21 @@ public class WeatherManipulationAbility extends SelectableAbility {
                     }
                 }
             }
-        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(startPos, serverLevel)));
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 
     private void createTornados(ServerLevel serverLevel, LivingEntity entity) {
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 12, 3);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 3);
 
-        Vec3 pos = AbilityUtil.getTargetLocation(entity, 12, 2);
+        Vec3 pos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 2);
 
-        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35) *multiplier(entity), entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, 32.5f *multiplier(entity), entity, target, 3);
+        float damage = baseDamage/5;
+        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, damage , entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, damage, entity, target, 3);
         tornado.setPos(pos);
         serverLevel.addFreshEntity(tornado);
 
         for(int i = 0; i < 30; i++) {
-            TornadoEntity additionalTornado = target == null || random.nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, 17f, entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, 17f, entity, target, 2);
+            TornadoEntity additionalTornado = target == null || random.nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, 10f, entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, 10f, entity, target, 2);
             Vec3 randomOffset = new Vec3((serverLevel.random.nextDouble() - 0.5) * 120, 3, (serverLevel.random.nextDouble() - 0.5) * 120);
             additionalTornado.setPos(pos.add(randomOffset));
             serverLevel.addFreshEntity(additionalTornado);
