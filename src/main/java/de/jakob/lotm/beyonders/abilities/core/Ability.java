@@ -10,6 +10,7 @@ import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
+import de.jakob.lotm.util.AuthorityResistanceManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.ClientData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -111,6 +112,11 @@ public abstract class Ability {
             return;
         }
 
+        if(AbilityUtil.hasArtifactScaling(entity)){
+            artifactScalingMap.put(entity.getUUID(), AbilityUtil.getArtifactScalingSeq(entity));
+            AbilityUtil.removeArtifactScaling(entity);
+        }
+
         //Sequence for dynamic cooldown and spirituality
         int seq = AbilityUtil.getSeqWithArt(newUser, this);
 
@@ -143,18 +149,12 @@ public abstract class Ability {
             CopiedAbilityHelper.decrementUses(entity, getId());
         }
 
-
         // Handle Cooldown
         AbilityCooldownComponent component = newUser.getData(ModAttachments.COOLDOWN_COMPONENT);
         int trueCooldown = getCooldown(seq);
 
         int inflatedCooldown = trueCooldown;
         component.setCooldown(id, inflatedCooldown);
-
-        if(AbilityUtil.hasArtifactScaling(entity)){
-            artifactScalingMap.put(entity.getUUID(), AbilityUtil.getArtifactScalingSeq(entity));
-            AbilityUtil.removeArtifactScaling(entity);
-        }
 
         // Use ability client and server sided
 
@@ -163,6 +163,7 @@ public abstract class Ability {
 
         if(!hasManualDistance)
             baseDistance = 10 * (int) ((1 << (9 - seq)) * multiplier(newUser));
+        AuthorityResistanceManager.addToBuffer(entity, seq);
 
         onAbilityUse(serverLevel, newUser);
 

@@ -264,6 +264,11 @@ public class BeyonderNPCEntity extends PathfinderMob {
         }
     }
 
+    @Override
+    public boolean canRide(Entity vehicle) {
+        return false;
+    }
+
     // ========================= Tick Logic =========================
     @Override
     public void tick() {

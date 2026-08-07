@@ -146,6 +146,11 @@ public class AvatarEntity extends PathfinderMob {
     }
 
     @Override
+    public boolean canRide(Entity vehicle) {
+        return false;
+    }
+
+    @Override
     public void tick() {
         super.tick();
 

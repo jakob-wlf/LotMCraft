@@ -1,16 +1,25 @@
 package de.jakob.lotm.util;
 
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.abyss.LanguageOfFoulnessAbility;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AuthorityResistanceManager {
     private static final Map<String, Map<ResourceKey<DamageType>, List<Float>>> resistances = new HashMap(22);
+
+    private static Map<UUID, Integer> sequenceBuffer = new ConcurrentHashMap<>();
 
     static{
         Map<ResourceKey<DamageType>, List<Float>> visionary = new HashMap<>();
@@ -24,6 +33,7 @@ public class AuthorityResistanceManager {
         tyrant.put(ModDamageTypes.WATER, List.of(0f, 0.5f, 0.6f, 0.7f, 0.9f));
         tyrant.put(ModDamageTypes.LIGHTNING, List.of(0f, 0.3f, 0.4f, 0.7f, 0.9f));
         tyrant.put(ModDamageTypes.WIND, List.of(0f, 0.5f, 0.6f, 0.7f, 0.9f));
+        tyrant.put(ModDamageTypes.FIRE, List.of(0.6f, 0.7f, 0.8f));
         tyrant.put(ModDamageTypes.IMPACT, List.of(0.7f, 0.75f, 0.8f, 0.85f, 0.9f));
         tyrant.put(ModDamageTypes.SPACE_DESTRUCTION, List.of(0.8f, 0.85f, 0.9f));
         visionary.put(ModDamageTypes.UNLUCK, List.of(0.5f, 0.7f, 0.8f));
@@ -47,6 +57,17 @@ public class AuthorityResistanceManager {
         sun.put(ModDamageTypes.EVIL_BASED, List.of(0.4f, 0.6f, 0.7f, 0.8f, 0.9f));
         sun.put(ModDamageTypes.HOLY_BASED, List.of(0.4f, 0.6f, 0.7f, 0.8f, 0.9f));
         resistances.put("sun", sun);
+
+        Map<ResourceKey<DamageType>, List<Float>> hunter = new HashMap<>();
+        hunter.put(ModDamageTypes.MIND_BASED, List.of(0.65f, 0.70f, 0.75f, 0.85f, 0.9f));
+        hunter.put(ModDamageTypes.IMAGINATION, List.of(1f, 1f, 1f, 1f, 1f));
+        hunter.put(ModDamageTypes.FIRE, List.of(0f, 0.3f, 0.4f, 0.6f, 0.7f, 0.85f, 0.9f, 0.95f));
+        hunter.put(ModDamageTypes.SOUL_FIRE, List.of(0f, 0.4f, 0.5f, 0.7f, 0.9f));
+        hunter.put(ModDamageTypes.PROVOCATION, List.of(0f, 0.4f, 0.5f, 0.7f, 0.9f));
+        tyrant.put(ModDamageTypes.WATER, List.of(0.6f, 0.7f, 0.8f));
+        tyrant.put(ModDamageTypes.LIGHTNING, List.of(0.6f, 0.7f, 0.8f));
+        tyrant.put(ModDamageTypes.WIND, List.of(0.6f, 0.7f, 0.8f));
+        resistances.put("red_priest", hunter);
     }
 
     public static float getResistance(DamageSource source, String path, int seq){
@@ -89,4 +110,18 @@ public class AuthorityResistanceManager {
         return listRes.get(seq);
     }
 
+    public static void addToBuffer(LivingEntity entity, Integer seq){
+        sequenceBuffer.put(entity.getUUID(), seq);
+    }
+
+    public static void removeFromBuffer(LivingEntity entity){
+        sequenceBuffer.remove(entity.getUUID());
+    }
+
+    public static int getFromBuffer(LivingEntity entity){
+        if(!sequenceBuffer.containsKey(entity.getUUID()))
+            return BeyonderData.getSequence(entity);
+
+        return sequenceBuffer.get(entity.getUUID());
+    }
 }

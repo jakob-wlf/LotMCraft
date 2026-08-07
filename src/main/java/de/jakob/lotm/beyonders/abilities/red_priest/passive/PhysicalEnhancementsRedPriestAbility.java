@@ -30,20 +30,20 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
     protected List<PhysicalEnhancement> getEnhancementsForSequence(int sequenceLevel) {
         return switch (sequenceLevel) {
             case 9 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 1),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 1),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 1)
             );
 
             case 8 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 5),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 1)
             );
 
             case 7 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 6),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
@@ -51,7 +51,7 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
             );
 
             case 6 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 1),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 8),
@@ -60,7 +60,7 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
             );
 
             case 5 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 3),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 3),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 10),
@@ -69,7 +69,7 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
             );
 
             case 4 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 4),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 4),
                   //  new PhysicalEnhancement(EnhancementType.RESISTANCE, 7),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 18),
@@ -78,7 +78,7 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
             );
 
             case 3 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 4),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 4),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 8),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 19),
@@ -87,7 +87,7 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
             );
 
             case 2 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 6),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 6),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 11),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 26),
@@ -96,7 +96,7 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
             );
 
             case 1 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 6),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 6),
                   //  new PhysicalEnhancement(EnhancementType.RESISTANCE, 12),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 31),
@@ -105,7 +105,7 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
             );
 
             case 0 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 7),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 7),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 15),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 46),

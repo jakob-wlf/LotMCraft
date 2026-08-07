@@ -69,6 +69,9 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> UNLUCK = key("unluck");
     public static final ResourceKey<DamageType> SPIRITUAL = key("spiritual");
 
+    public static final ResourceKey<DamageType> PROVOCATION = key("provocation");
+    public static final ResourceKey<DamageType> SOUL_FIRE = key("soul_fire");
+
     /** Used by ticking/AoE Sun abilities — treated as indirect for digestion drain purposes. */
     public static final ResourceKey<DamageType> PURIFICATION_INDIRECT = key("purification_indirect");
     public static final ResourceKey<DamageType> HUNTER_FIRE = key("hunter_fire");
