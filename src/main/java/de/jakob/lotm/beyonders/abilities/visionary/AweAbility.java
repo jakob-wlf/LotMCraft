@@ -76,7 +76,7 @@ public class AweAbility extends Ability {
 
         level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 1, 1);
 
-        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 17 * (int) Math.max(multiplier(entity), 1)).forEach(e -> {
+        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), Math.max(baseDistance, 75)).forEach(e -> {
             VisionaryHandler.shouldTrigger(entitySeq, entity, e, this);
 
             if (BeyonderData.isBeyonder(e)) {
@@ -91,7 +91,7 @@ public class AweAbility extends Ability {
 
             VisionaryLoosingControlHandler.applyEffect(entity, e, this);
 
-            ServerScheduler.scheduleForDuration(0, 8, 20 * 10, () -> {
+            ServerScheduler.scheduleForDuration(0, 8, 20 * 5, () -> {
                 Location eLoc = new Location(e.position(), e.level());
 
                 if (InteractionHandler.isInteractionPossibleForEntity(eLoc, "morale_boost", entitySeq, e)) {

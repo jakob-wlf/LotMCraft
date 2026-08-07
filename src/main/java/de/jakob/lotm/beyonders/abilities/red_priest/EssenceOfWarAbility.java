@@ -9,12 +9,20 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class EssenceOfWarAbility extends Ability {
     public EssenceOfWarAbility(String id) {
         super(id, 180);
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(15, 20, 25, 40));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(6000f, 2600f, 1600f, 1000f));
     }
 
     @Override
@@ -32,7 +40,7 @@ public class EssenceOfWarAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        WarBannerEntity banner = new WarBannerEntity(ModEntities.WAR_BANNER.get(), level, 20 * 90, entity.getUUID());
+        WarBannerEntity banner = new WarBannerEntity(ModEntities.WAR_BANNER.get(), level, 20 * 30, entity.getUUID());
         banner.setPos(entity.getX(), entity.getY() + .75, entity.getZ());
         level.addFreshEntity(banner);
 

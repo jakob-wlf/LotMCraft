@@ -3,10 +3,12 @@ package de.jakob.lotm.beyonders.abilities.red_priest;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -15,6 +17,7 @@ import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,16 +30,22 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FlameMasteryAbility extends SelectableAbility {
     private final HashSet<UUID> transformedEntities = new HashSet<>();
+
     public FlameMasteryAbility(String id) {
         super(id, 5f, "burning");
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 3, 3, 4, 5));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3200f, 1300f, 800f, 600f, 550f));
+
+        baseDamage = 24f;
     }
 
     @Override
@@ -155,7 +164,9 @@ public class FlameMasteryAbility extends SelectableAbility {
         ParticleUtil.spawnParticles(level, ParticleTypes.EXPLOSION, targetPos, 90, 2, 6, 2, .02);
         ParticleUtil.spawnParticles(level, dust, targetPos, 400, 2, 6, 2, 0);
 
-        AbilityUtil.damageNearbyEntities(level, entity, 9, DamageLookup.lookupDamage(4, 1) * multiplier(entity), targetPos, true, false);
+        float damage = baseDamage;
+        AbilityUtil.damageNearbyEntities(level, entity, 9, ModDamageTypes.SOUL_FIRE,damage/2, targetPos, true, false);
+        AbilityUtil.damageNearbyEntities(level, entity, 9, ModDamageTypes.FIRE,damage/2, targetPos, true, false);
 
         for(int i = 0; i < 25; i++) {
             FallingBlockEntity falling = FallingBlockEntity.fall(
@@ -184,7 +195,7 @@ public class FlameMasteryAbility extends SelectableAbility {
         Vec3 pos = entity.getEyePosition();
         Vec3 dir = entity.getLookAngle();
         for (int i = 0; i < shots; i++) {
-            ServerScheduler.scheduleDelayed(i * 7, () -> fireball(level, entity, pos, dir, targetPos), level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(pos, level)));
+            ServerScheduler.scheduleDelayed(i * 7, () -> fireball(level, entity, pos, dir, targetPos), level, () -> AbilityUtil.getTimeInArea(entity, new Location(pos, level)));
         }
     }
 
@@ -194,8 +205,9 @@ public class FlameMasteryAbility extends SelectableAbility {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
 
-        FireballEntity fireball = new FireballEntity(level, entity, DamageLookup.lookupDamage(4, 0.4) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 1.75f);
-        //LOTMCraft.LOGGER.info("damage {} multiplier {}",DamageLookup.lookupDamage(4, 0.4),multiplier(entity));
+        float damage = baseDamage/2;
+        FireballEntity fireball = new FireballEntity(level, entity, damage, BeyonderData.isGriefingEnabled(entity), 1.75f);
+
         fireball.setPos(startPos.x, startPos.y, startPos.z); // Set initial position,
         fireball.shoot(direction.x, direction.y, direction.z, 1.85f*multiplier(entity), 0);
         level.addFreshEntity(fireball);

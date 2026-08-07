@@ -11,12 +11,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class PuppetSoldierCreationAbility extends Ability {
     public PuppetSoldierCreationAbility(String id) {
         super(id, 20 * 60 * 2);
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(40, 90));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(24000f, 10000f));
     }
 
     @Override

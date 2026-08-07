@@ -221,9 +221,15 @@ public class FireRavenEntity extends Animal {
                 if(this.distanceToSqr(target) < 8) {
                     if(isTrackingEntity) {
                         if(targetEntity.isAlive()) {
-                            if(sourceEntity != null) targetEntity.hurt(sourceEntity.damageSources().mobAttack(sourceEntity), (float) damage);
-                            else                     targetEntity.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC), (float) damage);
-                        }
+                            if(sourceEntity != null){
+                                targetEntity.hurt(ModDamageTypes.source(level, ModDamageTypes.SOUL_FIRE, sourceEntity), (float) damage/2);
+                                targetEntity.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE, sourceEntity), (float) damage/2);
+                            }
+                            else {
+                                targetEntity.hurt(ModDamageTypes.source(level, ModDamageTypes.SOUL_FIRE), (float) damage/2);
+                                targetEntity.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE), (float) damage/2);
+                            }
+                            }
                         if(sourceEntity != null)
                             NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetEntity.position(), sourceEntity, null, new String[]{"burning"}, 2, 10));
                     } else {

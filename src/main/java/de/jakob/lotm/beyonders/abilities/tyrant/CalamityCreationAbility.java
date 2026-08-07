@@ -107,7 +107,7 @@ public class CalamityCreationAbility extends SelectableAbility {
         double multiplier = multiplier(entity);
         float damage = baseDamage/3;
 
-        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30* multiplier), () -> {
+        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30), () -> {
             // Damage and Effects
             AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier, ModDamageTypes.WATER ,damage/2, startPos, true, false);
             AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier, ModDamageTypes.WIND ,damage/2, startPos, true, false);
@@ -186,7 +186,7 @@ public class CalamityCreationAbility extends SelectableAbility {
         double multiplier = multiplier(entity);
         float damage = baseDamage/3;
 
-        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30* multiplier), () -> {
+        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30), () -> {
             // Damage and Effects
             AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier, ModDamageTypes.FIRE ,damage/2, startPos, true, false);
             AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier, ModDamageTypes.WIND ,damage/2, startPos, true, false);

@@ -63,7 +63,7 @@ public class EnvisionPositionAbility extends SelectableAbility {
     private void onSight(Level level, LivingEntity entity){
         if(!(level instanceof ServerLevel serverLevel)) return;
 
-        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, getDistancePerSeq(BeyonderData.getSequence(entity)), true).getCenter().add(0, 1, 0);
+        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, baseDistance, true).getCenter().add(0, 1, 0);
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
 
         var validatedPos = TeleportationUtil.clampToBorder(serverLevel, targetLoc);

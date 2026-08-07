@@ -1,51 +1,63 @@
-package de.jakob.lotm.beyonders.abilities.tyrant;
+package de.jakob.lotm.beyonders.abilities.red_priest;
 
-import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class IllusoryScalesAbility extends ToggleAbility {
+public class SteelSkinAbility extends ToggleAbility {
     public static HashSet<UUID> set = new HashSet<>();
 
-    public IllusoryScalesAbility(String id) {
+    private final static DustParticleOptions dust = new DustParticleOptions(new Vector3f(0.3f, 0.3f, 0.3f), 2.25f);
+
+
+    public SteelSkinAbility(String id) {
         super(id);
         canBeCopied = false;
         canBeReplicated =false;
         canBeUsedInArtifact = false;
         cannotBeStolen = true;
         canBeShared = false;
-    }
+        shouldBeHidden = true;
 
-    @Override
-    protected float getSpiritualityCost() {
-        return 1;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(150f, 85f, 55f, 35f));
     }
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("tyrant", 9));
+        return new HashMap<>(Map.of("red_priest", 4));
     }
 
-    private static final DustParticleOptions blueDust = new DustParticleOptions(new Vector3f(87 / 255f, 212 / 255f, 183 / 255f), 1.75f);
+    @Override
+    protected float getSpiritualityCost() {
+        return 500;
+    }
 
     @Override
     public void start(Level level, LivingEntity entity) {
@@ -73,11 +85,6 @@ public class IllusoryScalesAbility extends ToggleAbility {
 
     public static float getDamageReductionPerSeq(int seq){
         return (float) (1.0f - switch (seq){
-            case 9 -> 0.10f;
-            case 8 -> 0.15f;
-            case 7 -> 0.20f;
-            case 6 -> 0.25f;
-            case 5 -> 0.30f;
             case 4 -> 0.35;
             case 3 -> 0.40f;
             case 2 -> 0.55f;
@@ -102,7 +109,7 @@ public class IllusoryScalesAbility extends ToggleAbility {
             event.setAmount(damage);
 
             if(!VisionaryHandler.isInvisible(entity))
-                ParticleUtil.spawnParticles((ServerLevel) entity.level(), blueDust, entity.getEyePosition(), 5, .45f, .8, .45f, 0);
+                ParticleUtil.spawnParticles((ServerLevel) entity.level(), dust, entity.getEyePosition(), 5, .45f, .8, .45f, 0);
         }
     }
 }

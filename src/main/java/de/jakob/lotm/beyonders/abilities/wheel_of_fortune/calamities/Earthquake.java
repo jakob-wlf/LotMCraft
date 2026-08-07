@@ -103,28 +103,30 @@ public class Earthquake extends Calamity {
                         }
                     }
 
-                    FallingBlockEntity falling = FallingBlockEntity.fall(
-                            level,
-                            BlockPos.containing(pos.getCenter().x, y, pos.getCenter().z),
-                            state
-                    );
+                    if(i % 10 == 0) {
+                        FallingBlockEntity falling = FallingBlockEntity.fall(
+                                level,
+                                BlockPos.containing(pos.getCenter().x, y, pos.getCenter().z),
+                                state
+                        );
 
-                    double xVel = (random.nextDouble() - 0.5) * 0.15;
-                    double yVel = 0.5 + random.nextDouble() * .6;
-                    double zVel = (random.nextDouble() - 0.5) * 0.15;
-                    falling.setDeltaMovement(xVel, yVel, zVel);
+                        double xVel = (random.nextDouble() - 0.5) * 0.15;
+                        double yVel = 0.5 + random.nextDouble() * .6;
+                        double zVel = (random.nextDouble() - 0.5) * 0.15;
+                        falling.setDeltaMovement(xVel, yVel, zVel);
 
-                    ServerScheduler.scheduleForDuration(0, 1, 40, () -> {
-                        falling.setDeltaMovement(falling.getDeltaMovement().x, falling.getDeltaMovement().y - 0.03, falling.getDeltaMovement().z);
-                        falling.hurtMarked = true;
-                    });
+                        ServerScheduler.scheduleForDuration(0, 1, 40, () -> {
+                            falling.setDeltaMovement(falling.getDeltaMovement().x, falling.getDeltaMovement().y - 0.03, falling.getDeltaMovement().z);
+                            falling.hurtMarked = true;
+                        });
 
-                    falling.dropItem = false;
-                    if (!griefing)
-                        falling.disableDrop();
+                        falling.dropItem = false;
+                        if (!griefing)
+                            falling.disableDrop();
 
 
-                    level.addFreshEntity(falling);
+                        level.addFreshEntity(falling);
+                    }
                 }
             }
         }, level);

@@ -1,6 +1,7 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.red_priest.CullAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.AuthorityResistanceManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -43,7 +44,18 @@ public class DamageResistanceHandler {
             if(BeyonderData.isBeyonder(entity) || entity instanceof ServerPlayer) {
 
                 float baseStep = 0.3f;
-                int seqDifference = BeyonderData.getSequence(entity) - BeyonderData.getSequence(livingSource);
+
+                int entitySeq = BeyonderData.getSequence(entity);
+                int sourceSeq = BeyonderData.getSequence(livingSource);
+
+                if (entitySeq >= 5 && sourceSeq >= 5)
+                    baseStep = 0.1f;
+
+                if(CullAbility.active.contains(livingSource.getUUID())){
+                    baseStep /= 2;
+                }
+
+                int seqDifference = entitySeq - sourceSeq;
                 mult = 1.0f + (baseStep * seqDifference);
 
                 if (mult <= 0.0f) {
@@ -55,6 +67,9 @@ public class DamageResistanceHandler {
                     mult = 10f;
                 }
             }
+
+            LOTMCraft.LOGGER.info("AUTHORITY: godhood target seq {} - path {}",BeyonderData.getSequence(entity), BeyonderData.getPathway(entity));
+            LOTMCraft.LOGGER.info("AUTHORITY: godhood mult: {}, damage: {}", mult, damage);
 
             damage *= mult;
         }
@@ -74,14 +89,12 @@ public class DamageResistanceHandler {
                 damage *= mult;
             }
 
-            LOTMCraft.LOGGER.info("AUTHORITY: entity path {}, seq {}", BeyonderData.getPathway(entity), BeyonderData.getSequence(entity));
-
             float resistance = AuthorityResistanceManager.getResistance(source,
                     BeyonderData.getPathway(entity), BeyonderData.getSequence(entity));
 
-            float result = damage * resistance;
+            LOTMCraft.LOGGER.info("AUTHORITY: res {}, damage {}, result {}", resistance, damage, damage * resistance);
 
-            LOTMCraft.LOGGER.info("AUTHORITY: resistance {}, damage {}, res {}", resistance, damage, result);
+            float result = damage * resistance;
 
             damage = result;
         }

@@ -18,12 +18,21 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class ProvokingAbility extends Ability {
     public ProvokingAbility(String id) {
         super(id, 5, "morale_boost");
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 1, 2, 2, 3, 4));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(1600f, 640f, 400f, 200f, 200f, 125f, 100f, 90f, 50f));
+
+        baseDamage = 7f;
     }
 
     @Override
@@ -48,7 +57,7 @@ public class ProvokingAbility extends Ability {
 
                 e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, (int) (20 * 6* multiplier(entity)), 1, false, false, false));
                 e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, (int) (20 * 6* multiplier(entity)), 1, false, false, false));
-                e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) DamageLookup.lookupDamage(8, .65) * multiplier(entity));
+                e.hurt(ModDamageTypes.source(level, ModDamageTypes.PROVOCATION, entity), baseDamage);
             });
         }
         else {
