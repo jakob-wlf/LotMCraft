@@ -33,9 +33,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -46,6 +44,14 @@ public class MundaneConceptualTheft extends SelectableAbility {
 
     public MundaneConceptualTheft(String id) {
         super(id, 1);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(4000f, 1600f, 1000f, 670f, 650f, 430f));
+
+        baseDamage = 10;
     }
 
     @Override
@@ -60,7 +66,8 @@ public class MundaneConceptualTheft extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.mundane_conceptual_theft.steal_walk",
+        return new String[]{
+                "ability.lotmcraft.mundane_conceptual_theft.steal_walk",
                 "ability.lotmcraft.mundane_conceptual_theft.steal_sight",
                 "ability.lotmcraft.mundane_conceptual_theft.steal_health",
                 "ability.lotmcraft.mundane_conceptual_theft.steal_distance",
@@ -69,21 +76,11 @@ public class MundaneConceptualTheft extends SelectableAbility {
     }
 
     private int getTheftDuration(int userSeq, int targetSeq) {
-        int baseDurationSeconds = 30;
-
-        if(targetSeq == -1) {
-            return baseDurationSeconds * 20;
-        }
-
         if (targetSeq < userSeq) {
-            int difference = userSeq - targetSeq;
-            int durationSeconds = Math.max(5, baseDurationSeconds - (difference * 5));
-            return durationSeconds * 20;
+            return 15 * 20;
         }
 
-        int difference = targetSeq - userSeq;
-        int durationSeconds = Math.min(120, baseDurationSeconds + (difference * 10));
-        return durationSeconds * 20;
+        return 6 * 20;
     }
 
     @Override
@@ -100,7 +97,8 @@ public class MundaneConceptualTheft extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true);
+
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mundane_conceptual_theft.no_target").withColor(0x4742c9));
             return;
@@ -130,7 +128,7 @@ public class MundaneConceptualTheft extends SelectableAbility {
 
         if(entitySeq > 6) return;
 
-        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, TheftHandler.getDistancePerSeq(entitySeq), true).getCenter().add(0, 1, 0);
+        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, Math.max(10, baseDistance), true).getCenter().add(0, 1, 0);
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
 
         var validatedPos = TeleportationUtil.clampToBorder(level, targetLoc);
@@ -148,8 +146,8 @@ public class MundaneConceptualTheft extends SelectableAbility {
     }
 
     private void stealHealth(LivingEntity entity, LivingEntity target) {
-        float healthToSteal = (float) (DamageLookup.lookupDamage(5, 1f) *(int) Math.max(multiplier(entity)/2,1));
-        target.hurt(ModDamageTypes.source(target.level(), ModDamageTypes.BEYONDER_GENERIC, entity), healthToSteal);
+        float healthToSteal = baseDamage;
+        target.hurt(ModDamageTypes.source(target.level(), ModDamageTypes.IMPACT, entity), healthToSteal);
         entity.setHealth(Math.min(entity.getMaxHealth(), entity.getHealth() + healthToSteal));
     }
 

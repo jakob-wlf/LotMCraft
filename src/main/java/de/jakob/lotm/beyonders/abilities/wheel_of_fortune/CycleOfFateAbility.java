@@ -1,19 +1,28 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.CycleOfFateEntity;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CycleOfFateHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class CycleOfFateAbility extends SelectableAbility {
     public CycleOfFateAbility(String id) {
         super(id, 1);
@@ -25,7 +34,7 @@ public class CycleOfFateAbility extends SelectableAbility {
         canBeUsedInArtifact = false;
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(14000f, 7000f));
+        dynamicSpirituality = new LinkedList<>(List.of(35000f, 17500f));
     }
 
     @Override
@@ -40,7 +49,10 @@ public class CycleOfFateAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.cycle_of_fate.create_cycle", "ability.lotmcraft.cycle_of_fate.trigger_cycle"};
+        return new String[]{
+                "ability.lotmcraft.cycle_of_fate.create_cycle",
+                "ability.lotmcraft.cycle_of_fate.trigger_cycle"
+        };
     }
 
     @Override
@@ -60,5 +72,48 @@ public class CycleOfFateAbility extends SelectableAbility {
                 }
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerDamage(LivingDamageEvent.Pre event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+
+        if (player.getHealth() - event.getNewDamage() > 0) {
+            return;
+        }
+
+        if (event.getSource().is(DamageTypes.GENERIC_KILL)) {
+            return;
+        }
+
+        ServerLevel level = player.serverLevel();
+
+        var cycle = CycleOfFateHelper.findCycleOfFateForOwner(level, player);
+        if (cycle == null) {
+            return;
+        }
+
+        var skill = LOTMCraft.abilityHandler.getById("cycle_of_fate_ability");
+
+        float sp = BeyonderData.getSpirituality(player);
+        float neededSp = skill.getInflatedSpiritualityCost(
+                player,
+                level,
+                BeyonderData.getSequence(player)
+        );
+
+        if (sp <= neededSp) {
+            cycle.discard();
+            return;
+        }
+
+        BeyonderData.incrementSpirituality(player, -neededSp);
+
+        cycle.trigger(player);
+        CycleOfFateHelper.spawnCycleOfFateAtOwner(player);
+
+        event.setNewDamage(0);
     }
 }
