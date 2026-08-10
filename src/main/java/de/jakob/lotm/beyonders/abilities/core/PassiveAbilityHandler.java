@@ -25,6 +25,7 @@ import de.jakob.lotm.beyonders.abilities.fool.passives.*;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.ChaosHuntingAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.EnhancedMentalAttributesAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.OrderJusticiarAbility;
+
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.PhysicalEnhancementsJusticiarAbility;
 import de.jakob.lotm.beyonders.abilities.mother.passives.PhysicalEnhancementsMotherAbility;
 import de.jakob.lotm.beyonders.abilities.red_priest.passive.FireResistanceAbility;
